@@ -3,7 +3,7 @@ import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import { FlightSegmentEntity } from "../flight/models/flight/FlightSegmentEntity";
 import { FlightPolicy } from "../flight/models/PassengerFlightInfo";
-import { Subject, BehaviorSubject, throwError, of, Observable } from "rxjs";
+import { Subject, BehaviorSubject } from "rxjs";
 import { IdentityService } from "../services/identity/identity.service";
 import {
   PassengerBookInfo,
@@ -30,15 +30,10 @@ import { environment } from "src/environments/environment";
 import { IdentityEntity } from "../services/identity/identity.entity";
 import { LanguageHelper } from "../languageHelper";
 import { FlightRouteEntity } from "../flight/models/flight/FlightRouteEntity";
-import { StaffService, StaffEntity, CostCenterEntity, OrganizationEntity, StaffApprover } from "../hr/staff.service";
+import { StaffService } from "../hr/staff.service";
 import { MemberService } from "../member/member.service";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { CredentialsType } from "../member/pipe/credential.pipe";
-import { PassengerDto } from '../tmc/models/PassengerDto';
-import { TaskType } from '../workflow/models/TaskType';
-import { InsuranceProductEntity } from '../insurance/models/InsuranceProductEntity';
-import { OrderTravelType } from '../order/models/OrderTravelEntity';
-import { ITmcOutNumberInfo } from '../tmc/components/book-tmc-outnumber/book-tmc-outnumber.component';
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -1263,60 +1258,4 @@ export interface IInternationalFlightSegmentInfo {
   flightPolicy: FlightPolicy;
   isDontAllowBook?: boolean;
   id?: string;
-}
-export interface IInterFlightCombindInfo {
-  id: string;
-  vmModal: PassengerBookInfo<IInternationalFlightSegmentInfo>;
-  modal: PassengerBookInfo<IInternationalFlightSegmentInfo>;
-  passengerDto: PassengerDto;
-  openrules: boolean; // 打开退改签规则
-  vmCredential: CredentialsEntity;
-  credentials: CredentialsEntity[];
-  expenseType: string;
-  credentialsRequested: boolean;
-  appovalStaff: StaffEntity;
-  credentialStaff: StaffEntity;
-  isSkipApprove: boolean;
-  notifyLanguage: string;
-  serviceFee: number;
-  isShowGroupedInfo: boolean;
-  credentialStaffMobiles: {
-    checked: boolean;
-    mobile: string;
-  }[];
-  credentialStaffOtherMobile: string;
-  credentialStaffApprovers: {
-    Tag: string;
-    Type: TaskType;
-    approvers: StaffApprover[];
-  }[];
-  credentialStaffEmails: {
-    checked: boolean;
-    email: string;
-  }[];
-  credentialStaffOtherEmail: string;
-  showFriendlyReminder: boolean;
-  costCenters: CostCenterEntity[];
-  selectedCostCenter: CostCenterEntity;
-  illegalReason: any;
-  otherIllegalReason: any;
-  isOtherIllegalReason: boolean;
-  isOtherCostCenter: boolean;
-  costCenter: {
-    code: string;
-    name: string;
-  };
-  otherCostCenterName: any;
-  otherCostCenterCode: any;
-  isOtherOrganization: boolean;
-  organization: OrganizationEntity;
-  otherOrganizationName: string;
-  selectedInsuranceProductId: string;
-  insuranceProducts: {
-    insuranceResult: InsuranceProductEntity;
-    disabled: boolean;
-    showDetail?: boolean;
-  }[];
-  tmcOutNumberInfos: ITmcOutNumberInfo[];
-  travelType: OrderTravelType; // 因公、因私
 }

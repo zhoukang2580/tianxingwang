@@ -1,4 +1,4 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <app-back-button></app-back-button>
@@ -34,16 +34,15 @@
                     {{s?.flightSegment?.FromCityName}}
                     <ion-text color='dark' style="font-size: 0.7rem;">到</ion-text>
                     {{s?.flightSegment?.ToCityName}}
-                    <span>【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
+                    <span></span>
                   </ion-text>
                 </strong>
               </div>
             </ion-item>
             <ion-item>
-              <div style='width: 100%'>
-                <app-fly-list-item [flightSegment]='s.flightSegment' [showDetails]='true'
-                  [flightPolicy]='s.flightPolicy'>
-                </app-fly-list-item>
+              <div style='width: 100%' *ngIf='combindInfo.isShowTrip'>
+                <app-flight-list-item [flight]='s.flightRoute'>
+                </app-flight-list-item>
                 <div class='price'>
                   <ion-label color='danger'>机票票价:￥{{s.flightPolicy?.Cabin?.TicketPrice}}</ion-label>
                   <ion-label color='danger' class='ion-margin-start'>税费:￥{{s.flightSegment?.Tax}}
@@ -303,4 +302,4 @@
     </ion-button>
   </ion-toolbar>
 </ion-footer>
-<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预定中，请稍后...</app-waiting-check-pay>
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预定中，请稍后...</app-waiting-check-pay> -->
