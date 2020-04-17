@@ -39,9 +39,9 @@
       <p>
         订单编号：<span>{{trip?.OrderId}}</span>
       </p>
-      <p>
+      <!-- <p>
         火车票事务号：<span>{{trip?.OrderTicketId}}</span>
-      </p>
+      </p> -->
     </ion-text>
     <ion-label class='ion-text-wrap' *ngIf='getTrainProducts(trip) as products'>
       <span *ngFor='let product of products ' class='ion-margin-end'>{{product.Name}}({{product.Price}})</span>

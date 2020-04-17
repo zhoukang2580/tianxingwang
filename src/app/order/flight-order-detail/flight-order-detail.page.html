@@ -360,7 +360,7 @@
                 *ngIf="flightTicket.VariablesJsonObj.IsCustomApplyRefund||flightTicket.VariablesJsonObj.IsCustomApplyExchange||tikectId2OriginalTickets&&tikectId2OriginalTickets[flightTicket.Id]?.length>0">
                 <ion-col class="ion-text-justify" color="secondary">
                   <ion-button expand='full' color="secondary" (click)="onShowFlightTicket(flightTicket,flightTicket?.VariablesJsonObj?.OriginalTicketId,$event)">
-                    原始航班信息
+                    原始航班信息{{flightTicket?.VariablesJsonObj?.OriginalTicketId}}
                     <ion-icon name="chevron-down-outline" *ngIf="flightTicket.VariablesJsonObj.isShowOriginalTicket">
                     </ion-icon>
                     <ion-icon name="chevron-up-outline" *ngIf="!flightTicket.VariablesJsonObj.isShowOriginalTicket">
@@ -748,7 +748,7 @@
                   *ngIf="ticket.VariablesJsonObj.IsCustomApplyRefund||ticket.VariablesJsonObj.IsCustomApplyExchange||tikectId2OriginalTickets&&tikectId2OriginalTickets[ticket.Id]?.length>0">
                   <ion-col class="ion-text-justify" color="secondary">
                     <ion-button expand='full' color="secondary" (click)="onShowFlightTicket(ticket,ticket.VariablesJsonObj.OriginalTicketId,$event)">
-                      原始航班信息
+                      原始航班信息{{ticket?.VariablesJsonObj?.OriginalTicketId}}
                       <ion-icon name="chevron-down-outline" *ngIf="ticket.VariablesJsonObj.isShowOriginalTicket">
                       </ion-icon>
                       <ion-icon name="chevron-up-outline" *ngIf="!ticket.VariablesJsonObj.isShowOriginalTicket">
