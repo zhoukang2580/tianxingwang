@@ -21,7 +21,7 @@
         </ng-container>
         <ng-container *ngIf='trip.Type == "Flight"'>
           <!-- getVariablesJsonObj(trip) -->
-          <ng-container *ngIf="!(trip.VariablesJsonObj?.IsCustomApplyRefund||trip.VariablesJsonObj?.IsCustomApplyExchange)">
+          <ng-container *ngIf="!(trip.VariablesJsonObj&&trip.VariablesJsonObj.IsCustomApplyRefund)">
             <app-flight-trip [trip]="trip" [isShowInsurance]='isShowInsurance&&!trip.IsInternational'
               (showInsuranceEvt)='onShowSelectedInsurance($event)' (payInsuranceEvt)="payInsurance($event)">
             </app-flight-trip>
