@@ -31,6 +31,7 @@ import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 import { environment } from "src/environments/environment";
 import { RefresherComponent } from "src/app/components/refresher";
+import { OrderFlightTicketStatusType } from 'src/app/order/models/OrderFlightTicketStatusType';
 @Component({
   selector: "app-trip",
   templateUrl: "trip.page.html",
@@ -43,6 +44,7 @@ export class TripPage implements OnInit, OnDestroy {
     PageSize: 15,
     LastTime: null,
   } as TravelModel;
+  OrderFlightTicketStatusType = OrderFlightTicketStatusType;
   private subscriptions: Subscription[] = [];
   OrderFlightTicketType = OrderFlightTicketType;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
@@ -158,7 +160,10 @@ export class TripPage implements OnInit, OnDestroy {
       .subscribe((res) => {
         const trips = (res && res.Data && res.Data.Trips) || [];
         if (trips.length) {
-          this.trips = this.trips.concat(trips);
+          this.trips = this.trips.concat(trips).map(trip => {
+            trip = this.getVariablesJsonObj(trip);
+            return trip
+          });
           this.searchCondition.PageIndex++;
         }
         if (this.infiniteScroll) {
@@ -202,16 +207,22 @@ export class TripPage implements OnInit, OnDestroy {
       trip.Type == "Flight"
         ? "flight"
         : trip.Type == "Train"
-        ? "train"
-        : trip.Type == "Hotel"
-        ? "hotel"
-        : trip.Type == "Car"
-        ? "car"
-        : "";
+          ? "train"
+          : trip.Type == "Hotel"
+            ? "hotel"
+            : trip.Type == "Car"
+              ? "car"
+              : "";
     if (tag) {
       this.router.navigate([AppHelper.getRoutePath(`${tag}-order-detail`)], {
         queryParams: { orderId: trip.OrderId },
       });
     }
+  }
+  private getVariablesJsonObj(trip: OrderTripModel) {
+    if (!trip) { return trip }
+    // <ng-container *ngIf="trip.VariablesJsonObj.IsCustomApplyRefund||trip.VariablesJsonObj.IsCustomApplyExchange||trip.Status!= OrderFlightTicketStatusType.Refunded">
+    trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables);
+    return trip;
   }
 }

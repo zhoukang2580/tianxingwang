@@ -20,9 +20,12 @@
           <app-hotel-trip [trip]="trip"></app-hotel-trip>
         </ng-container>
         <ng-container *ngIf='trip.Type == "Flight"'>
-          <app-flight-trip [trip]="trip" [isShowInsurance]='isShowInsurance&&!trip.IsInternational'
-            (showInsuranceEvt)='onShowSelectedInsurance($event)' (payInsuranceEvt)="payInsurance($event)">
-          </app-flight-trip>
+          <!-- getVariablesJsonObj(trip) -->
+          <ng-container *ngIf="!(trip.VariablesJsonObj?.IsCustomApplyRefund||trip.VariablesJsonObj?.IsCustomApplyExchange)">
+            <app-flight-trip [trip]="trip" [isShowInsurance]='isShowInsurance&&!trip.IsInternational'
+              (showInsuranceEvt)='onShowSelectedInsurance($event)' (payInsuranceEvt)="payInsurance($event)">
+            </app-flight-trip>
+          </ng-container>
         </ng-container>
       </div>
     </ng-container>
