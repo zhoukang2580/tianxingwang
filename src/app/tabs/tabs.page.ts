@@ -54,6 +54,7 @@ export class TabsPage implements OnInit {
     this.router.navigate([AppHelper.getRoutePath(`tabs/${tab}`)]);
   }
   ngOnInit() {
+    this.tab="tmc-home"
     // this.subscription = this.router.events
     //   .pipe(filter(evt => evt instanceof NavigationStart))
     //   .subscribe((evt: NavigationStart) => {
