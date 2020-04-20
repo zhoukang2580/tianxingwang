@@ -12,15 +12,12 @@
       <div class="item">
         <div [style.align-self]='order["checkPay"]?"center":""'>金额</div>
         <div style="display: flex;align-items: center;">
-          <ion-text color='danger'>
-            <span>
-              ￥{{order.TotalAmount}}
-            </span>
-            <span *ngIf='order.OrderInsurances?.length'>
-              (含保险)</span>
+          <ion-text  color='danger' class="ion-text-nowrap">
+            <ion-text >￥{{order.TotalAmount}}</ion-text>
+            <ion-text  *ngIf='order.OrderInsurances?.length'>(含保险)</ion-text >
           </ion-text>
           <span>
-            <ion-text color='secondary'>
+            <ion-text color='secondary' class="ion-text-nowrap">
               ({{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}})
             </ion-text>
           </span>

@@ -389,7 +389,8 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       this.orderDetail.Order.OrderFlightTickets.forEach((it, idx) => {
         if (it.VariablesJsonObj.isShow) {
-          this.tabs.push({ label: it.Id, value: idx + 1 });
+
+          this.tabs.push({ label: typeof it.Id==='string'?it.VariablesJsonObj.selfId:it.Id, value: idx + 1 });
         }
       });
     }
@@ -466,6 +467,26 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.orderDetail.Order.OrderFlightTickets = this.orderService.checkIfOrderFlightTicketShow(
       this.orderDetail.Order.OrderFlightTickets
     );
+    let ob = this.orderDetail.Order.OrderFlightTickets.filter(f => f.VariablesJsonObj.isShow && (f.VariablesJsonObj.IsCustomApplyRefund || f.VariablesJsonObj.IsCustomApplyExchange)).map(m => {
+      const res = {
+        ...m,
+        VariablesJsonObj: {
+          ...m.VariablesJsonObj,
+          OriginalTicketId: m.Id,
+          selfId: m.Id,
+          StatusName: m.VariablesJsonObj.IsCustomApplyRefund ? "退票申请中" :m.VariablesJsonObj.IsCustomApplyExchange? "改签申请中":m.StatusName
+        },
+        Id: AppHelper.uuid()
+      } as OrderFlightTicketEntity;
+      const one = this.orderDetail.Order.OrderFlightTickets.find(it => it.Id == res.VariablesJsonObj.selfId);
+      if (one) {
+        one.VariablesJsonObj.isShow = false;
+        // res.Id=one.Id
+      }
+      return res;
+    })
+    this.orderDetail.Order.OrderFlightTickets = [...this.orderDetail.Order.OrderFlightTickets, ...ob]
+
     this.orderDetail.Order.OrderFlightTickets.forEach((t) => {
       if (!this.tikectId2OriginalTickets[t.Id]) {
         const res: OrderFlightTicketEntity[] = [];
@@ -476,6 +497,8 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         );
       }
     });
+    console.log(this.tikectId2OriginalTickets);
+    
   }
   private initTicketsTripsInsurance() {
     if (
@@ -746,40 +769,21 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     originalid: string,
     event: CustomEvent
   ) {
-    if(!t.VariablesJsonObj.IsCustomApplyRefund&&!t.VariablesJsonObj.IsCustomApplyExchange){
-      const originalTicket =
-      this.tikectId2OriginalTickets[t.Id] &&
-      this.tikectId2OriginalTickets[t.Id].find((f) => f.Id == originalid);
-    // console.log(this.tikectId2OriginalTickets, "onShowFlightTicket");
-    t.VariablesJsonObj.isShowOriginalTicket = !t.VariablesJsonObj
-      .isShowOriginalTicket;
-    if (originalTicket) {
-      originalTicket.isShowOriginalTicket = !originalTicket.isShowOriginalTicket;
-      const height = this.plt.height();
-      setTimeout(() => {
-        const rect = (event.target as HTMLElement).getBoundingClientRect();
-        this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
-      }, 100);
-    }
-    }else if(t.VariablesJsonObj.IsCustomApplyRefund){
-      t.VariablesJsonObj.showReturnTicket=! t.VariablesJsonObj.showReturnTicket
-      t.VariablesJsonObj.isShowOriginalTicket = !t.VariablesJsonObj.isShowOriginalTicket;
-      const height = this.plt.height();
-      setTimeout(() => {
-        const rect = (event.target as HTMLElement).getBoundingClientRect();
-        this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
-      }, 100);
-    }else if(t.VariablesJsonObj.IsCustomApplyExchange){
-      t.VariablesJsonObj.showReturnTicket2=! t.VariablesJsonObj.showReturnTicket2
+    const originalTicket =
+        this.tikectId2OriginalTickets[t.Id] &&
+        this.tikectId2OriginalTickets[t.Id].find((f) => f.Id == originalid);
+      // console.log(this.tikectId2OriginalTickets, "onShowFlightTicket");
       t.VariablesJsonObj.isShowOriginalTicket = !t.VariablesJsonObj
         .isShowOriginalTicket;
-      const height = this.plt.height();
-      setTimeout(() => {
-        const rect = (event.target as HTMLElement).getBoundingClientRect();
-        this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
-      }, 100);
-    }
-  
+      if (originalTicket) {
+        originalTicket.isShowOriginalTicket = !originalTicket.isShowOriginalTicket;
+        const height = this.plt.height();
+        setTimeout(() => {
+          const rect = (event.target as HTMLElement).getBoundingClientRect();
+          this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
+        }, 100);
+      }
+
   }
   private getTicketOrderInsurances(t: OrderFlightTicketEntity) {
     return (
@@ -835,5 +839,12 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         (it) => t.Key == it.AdditionKey
       )
     );
+  }
+  onGetNewTicket(is: boolean) {
+    this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderFlightTickets
+    this.orderDetail.Order.OrderFlightTickets.filter(t => t.VariablesJsonObj.isShow == is)
+    console.log(this.orderDetail.Order.OrderFlightTickets.filter(t => t.VariablesJsonObj.isShow == is), "isisisisis");
   }
 }
