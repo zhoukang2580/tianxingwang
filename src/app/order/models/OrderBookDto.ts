@@ -7,8 +7,10 @@ import { OrderLinkmanDto } from "./OrderLinkmanDto";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
 import { OrderExpressDto } from "./OrderExpressDto";
 import { AgentDataEntity } from "src/app/tmc/models/AgentDataEntity";
-import { AccountEntity } from 'src/app/account/models/AccountEntity';
-import { ErrorInfo } from 'src/app/models/ErrorInfo';
+import { AccountEntity } from "src/app/account/models/AccountEntity";
+import { ErrorInfo } from "src/app/models/ErrorInfo";
+import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntity";
+import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
 
 export class OrderBookDto {
   /// <summary>

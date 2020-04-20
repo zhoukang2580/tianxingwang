@@ -74,7 +74,8 @@ import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { Storage } from "@ionic/storage";
-import { TMC_FLIGHT_OUT_NUMBER } from '../mock-data';
+import { TMC_FLIGHT_OUT_NUMBER } from "../mock-data";
+import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 @Component({
   selector: "app-flight-ticket-reserve",
   templateUrl: "./flight-ticket-reserve.page.html",
@@ -90,6 +91,7 @@ export class FlightTicketReservePage
   searchModel: IInternationalFlightSearchModel;
   travelForm: TravelFormEntity;
   addContacts: AddContact[] = [];
+  hasrequeiredoutnumber = false;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -148,9 +150,6 @@ export class FlightTicketReservePage
     // 秘书和特殊角色可以跳过审批(如果有审批人)
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async () => {
-        const m = this.flightService.getSearchModel();
-        if (m.voyageType != FlightVoyageType.MultiCity) {
-        }
         this.isCanSave = await this.identityService
           .getIdentityAsync()
           .catch((_) => null as IdentityEntity)
@@ -166,8 +165,8 @@ export class FlightTicketReservePage
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          tmc.FlightApprovalType != 0 &&
-          tmc.FlightApprovalType != TmcApprovalType.None &&
+          tmc.IntFlightApprovalType != 0 &&
+          tmc.IntFlightApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
         );
@@ -202,7 +201,7 @@ export class FlightTicketReservePage
     if (!this.initialBookDtoModel || !this.initialBookDtoModel.PayTypes) {
       return;
     }
-    this.orderTravelPayType = this.tmc && this.tmc.FlightPayType;
+    this.orderTravelPayType = this.tmc && this.tmc.IntFlightPayType;
     const arr1 = Object.keys(this.initialBookDtoModel.PayTypes);
     this.orderTravelPayTypes = [];
     arr1.forEach((it) => {
@@ -237,7 +236,7 @@ export class FlightTicketReservePage
           item.bookInfo &&
           item.bookInfo.flightRoute &&
           item.bookInfo.flightRoute.policy &&
-          item.bookInfo.flightRoute.policy.FlightCabin;
+          item.bookInfo.flightRoute.policy.FlightFare;
         p.Credentials = item.credential;
         const account = new AccountEntity();
         account.Id = item.passenger.AccountId;
@@ -292,6 +291,37 @@ export class FlightTicketReservePage
           this.ionRefresher.disabled = false;
         }, 300);
       }
+      if (
+        this.searchModel &&
+        this.searchModel.trips &&
+        this.searchModel.trips.some((it) => it.bookInfo)
+      ) {
+        if (this.searchModel.voyageType == FlightVoyageType.OneWay) {
+          this.flightService.setBookInfoSource(
+            this.flightService.getBookInfos().map((it, idx) => {
+              if (idx == 0) {
+                it.bookInfo = this.searchModel.trips[0].bookInfo;
+              }
+              return it;
+            })
+          );
+        } else if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
+          this.flightService.setBookInfoSource(
+            this.flightService.getBookInfos().map((it, idx) => {
+              it.bookInfo = this.searchModel.trips[idx].bookInfo;
+              return it;
+            })
+          );
+        } else if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
+          const trips = this.searchModel.trips;
+          this.flightService.setBookInfoSource(
+            this.flightService.getBookInfos().map((it) => {
+              it.bookInfo = trips[trips.length - 1].bookInfo;
+              return it;
+            })
+          );
+        }
+      }
       // this.vmCombindInfos = TMC_FLIGHT_OUT_NUMBER;
       // if (this.vmCombindInfos) { return; }
       if (byUser) {
@@ -336,7 +366,6 @@ export class FlightTicketReservePage
         // 处理非白名单的人员证件信息
         console.log("notWhitelistCredentials", notWhitelistCredentials);
       }
-      debugger;
       await this.initCombindInfos();
       this.initTmcOutNumberInfos();
       await this.initOrderTravelPayTypes();
@@ -368,11 +397,12 @@ export class FlightTicketReservePage
     if (!this.vmCombindInfos) {
       return false;
     }
-    const outnumbers = this.initialBookDtoModel && this.initialBookDtoModel.OutNumbers || {};
+    const outnumbers =
+      (this.initialBookDtoModel && this.initialBookDtoModel.OutNumbers) || {};
     this.vmCombindInfos.forEach((item) => {
       if (item.tmcOutNumberInfos) {
         item.tmcOutNumberInfos.forEach((it) => {
-          it.labelDataList = outnumbers[it.label] || []
+          it.labelDataList = outnumbers[it.label] || [];
           if (it.isLoadNumber) {
             if (
               it.staffNumber &&
@@ -393,7 +423,7 @@ export class FlightTicketReservePage
       this.vmCombindInfos.forEach((item) => {
         if (item.tmcOutNumberInfos) {
           item.tmcOutNumberInfos.forEach((info) => {
-            if (info.label.toLowerCase() == 'travelnumber') {
+            if (info.label.toLowerCase() == "travelnumber") {
               info.loadTravelUrlErrorMsg =
                 result[info.staffNumber] && result[info.staffNumber].Message;
               info.travelUrlInfos =
@@ -750,12 +780,12 @@ export class FlightTicketReservePage
     ) => {
       AppHelper.toast(
         `${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.bookInfo.credential &&
-          item.bookInfo.credential.CheckFirstName +
-          item.bookInfo.credential.CheckLastName)
+          (item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.CheckFirstName +
+              item.bookInfo.credential.CheckLastName)
         } 【${
-        item.bookInfo.credential && item.bookInfo.credential.Number
+          item.bookInfo.credential && item.bookInfo.credential.Number
         }】 ${msg} 信息不能为空`,
         2000,
         "bottom"
@@ -763,7 +793,22 @@ export class FlightTicketReservePage
       this.moveRequiredEleToViewPort(ele);
     };
     bookDto.Passengers = [];
+    let i = 0;
+    const trips = this.flightService.getSearchModel().trips;
+    const flightRoutes = trips
+      .map((t) => t.bookInfo && t.bookInfo.flightRoute)
+      .filter((it) => !!it)
+      .map((r) => {
+        return {
+          ...r,
+          FlightSegments: [],
+          fromSegment: null,
+          toSegment: null,
+          transferSegments: [],
+        };
+      });
     for (const combindInfo of combindInfos) {
+      i++;
       const accountId =
         combindInfo.bookInfo.passenger.AccountId ||
         (this.tmc && this.tmc.Account && this.tmc.Account.Id);
@@ -781,6 +826,26 @@ export class FlightTicketReservePage
       }
       const info = combindInfo.bookInfo.bookInfo;
       const p = new PassengerDto();
+      if (trips.length) {
+        if (i === 1) {
+          p.FlightRoutes = flightRoutes;
+          p.FlightSegments =
+            (this.flightService.flightListResult &&
+              this.flightService.flightListResult.FlightSegments) ||
+            [];
+        }
+        if (
+          trips[trips.length - 1].bookInfo &&
+          trips[trips.length - 1].bookInfo.flightRoute
+        ) {
+          p.FlightFare =
+            trips[trips.length - 1].bookInfo.flightRoute.flightFare;
+          p.FlightCabin = p.FlightFare as any;
+          p.IllegalPolicy =
+            trips[trips.length - 1].bookInfo.flightRoute.policy &&
+            trips[trips.length - 1].bookInfo.flightRoute.policy.Message;
+        }
+      }
       p.ClientId = accountId;
       p.ApprovalId =
         (this.isAllowSelectApprove(combindInfo) &&
@@ -843,11 +908,6 @@ export class FlightTicketReservePage
         return false;
       }
       p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
-      p.IllegalPolicy =
-        (info.flightPolicy &&
-          info.flightPolicy.Rules &&
-          info.flightPolicy.Rules.join(",")) ||
-        "";
       p.Mobile =
         (combindInfo.credentialStaffMobiles &&
           combindInfo.credentialStaffMobiles
@@ -860,7 +920,7 @@ export class FlightTicketReservePage
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -874,7 +934,7 @@ export class FlightTicketReservePage
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -888,6 +948,7 @@ export class FlightTicketReservePage
         }
       }
       p.ExpenseType = combindInfo.expenseType;
+      p.OrderFlightTicketType = OrderFlightTicketType.International;
       p.IllegalReason =
         (this.tmc &&
           this.tmc.IsAllowCustomReason &&
@@ -897,9 +958,9 @@ export class FlightTicketReservePage
       if (
         !combindInfo.bookInfo.isNotWhitelist &&
         combindInfo.bookInfo.bookInfo &&
-        combindInfo.bookInfo.bookInfo.flightPolicy &&
-        combindInfo.bookInfo.bookInfo.flightPolicy.Rules &&
-        combindInfo.bookInfo.bookInfo.flightPolicy.Rules.length
+        combindInfo.bookInfo.bookInfo.flightRoute &&
+        combindInfo.bookInfo.bookInfo.flightRoute.flightFare &&
+        combindInfo.bookInfo.bookInfo.flightRoute.policy
       ) {
         // 只有白名单的才需要考虑差标
         const ele: HTMLElement = this.getEleByAttr(
@@ -938,11 +999,16 @@ export class FlightTicketReservePage
       if (combindInfo.tmcOutNumberInfos) {
         if (!exists || !exists.OutNumbers) {
           p.OutNumbers = {};
-          combindInfo.tmcOutNumberInfos.forEach((it) => {
+          for (const it of combindInfo.tmcOutNumberInfos) {
+            if (it.required && !it.value) {
+              const el = this.getEleByAttr("outnumber", combindInfo.id);
+              showErrorMsg(it.label + "必填", combindInfo, el);
+              return;
+            }
             if (it.value) {
               p.OutNumbers[it.key] = it.value;
             }
-          });
+          }
         }
       }
       if (!combindInfo.travelType) {
@@ -972,13 +1038,6 @@ export class FlightTicketReservePage
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
-      p.FlightSegment = combindInfo.bookInfo.bookInfo.fromSegment;
-      p.FlightFare =
-        combindInfo.bookInfo.bookInfo.flightRoute.policy.FlightCabin;
-      if (p.FlightCabin) {
-        p.FlightCabin.InsuranceProducts = p.InsuranceProducts;
-        p.InsuranceProducts = null;
-      }
       p.Policy = combindInfo.bookInfo.passenger.Policy;
       bookDto.Passengers.push(p);
     }
@@ -1150,19 +1209,21 @@ export class FlightTicketReservePage
               return {
                 id: item.bookInfo.id,
                 passengerCredential: item.bookInfo && item.bookInfo.credential,
-                from:
-                  bookInfo &&
-                  bookInfo.fromSegment &&
-                  bookInfo.fromSegment.FromCityName,
-                to:
+                flightRoutes:
+                  this.searchModel &&
+                  this.searchModel.trips &&
+                  this.searchModel.trips.map(
+                    (it) => it.bookInfo && it.bookInfo.flightRoute
+                  ),
+                tos:
                   bookInfo &&
                   bookInfo.toSegment &&
                   bookInfo.toSegment.ToCityName,
                 price:
                   bookInfo &&
-                  bookInfo.flightPolicy &&
-                  bookInfo.flightPolicy.Cabin &&
-                  bookInfo.flightPolicy.Cabin.SalesPrice,
+                  bookInfo.flightRoute &&
+                  bookInfo.flightRoute.flightFare &&
+                  bookInfo.flightRoute.flightFare.SalesPrice,
                 tax:
                   bookInfo &&
                   bookInfo.flightRoute &&
@@ -1182,7 +1243,7 @@ export class FlightTicketReservePage
                   }),
               };
             })
-            .filter((it) => !!it.from),
+            .filter((it) => it.flightRoutes && it.flightRoutes.length > 0),
         fees: this.getTicketsFees(),
         isSelf,
       },
@@ -1298,20 +1359,20 @@ export class FlightTicketReservePage
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1407,16 +1468,16 @@ export class FlightTicketReservePage
     const Tmc = this.initialBookDtoModel && this.initialBookDtoModel.Tmc;
     if (
       !Tmc ||
-      Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      Tmc.IntFlightApprovalType == TmcApprovalType.None ||
+      Tmc.IntFlightApprovalType == 0
     ) {
       return false;
     }
-    if (Tmc.FlightApprovalType == TmcApprovalType.Approver) {
+    if (Tmc.IntFlightApprovalType == TmcApprovalType.Approver) {
       return true;
     }
     if (
-      Tmc.FlightApprovalType == TmcApprovalType.ExceedPolicyApprover &&
+      Tmc.IntFlightApprovalType == TmcApprovalType.ExceedPolicyApprover &&
       this.flightService
         .getBookInfos()
         .some(
@@ -1436,25 +1497,25 @@ export class FlightTicketReservePage
     const staff = info.credentialStaff;
     if (
       !Tmc ||
-      Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      Tmc.IntFlightApprovalType == TmcApprovalType.None ||
+      Tmc.IntFlightApprovalType == 0
     ) {
       return false;
     }
     if (!staff) {
       return true;
     }
-    if (Tmc.FlightApprovalType == TmcApprovalType.Free) {
+    if (Tmc.IntFlightApprovalType == TmcApprovalType.Free) {
       return true;
     }
     if (
       (!staff.Approvers || staff.Approvers.length == 0) &&
-      Tmc.FlightApprovalType == TmcApprovalType.Approver
+      Tmc.IntFlightApprovalType == TmcApprovalType.Approver
     ) {
       return true;
     }
     if (
-      Tmc.FlightApprovalType == TmcApprovalType.ExceedPolicyFree &&
+      Tmc.IntFlightApprovalType == TmcApprovalType.ExceedPolicyFree &&
       info.bookInfo &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo.flightRoute &&
@@ -1465,7 +1526,7 @@ export class FlightTicketReservePage
     }
     if (
       (!staff.Approvers || staff.Approvers.length == 0) &&
-      Tmc.FlightApprovalType == TmcApprovalType.ExceedPolicyApprover &&
+      Tmc.IntFlightApprovalType == TmcApprovalType.ExceedPolicyApprover &&
       info &&
       info.bookInfo &&
       info.bookInfo.bookInfo &&
@@ -1596,5 +1657,6 @@ interface ICombindInfo {
     showDetail?: boolean;
   }[];
   tmcOutNumberInfos: ITmcOutNumberInfo[];
+  isTmcOutNumberRequeired: boolean;
   travelType: OrderTravelType; // 因公、因私
 }

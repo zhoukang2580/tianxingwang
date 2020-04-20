@@ -57,11 +57,11 @@ export class FlightListPage implements OnInit, OnDestroy {
     console.log(this.searchModel, "this.searchModel");
     if (this.searchModel && this.searchModel.trips) {
       let trip = this.searchModel.trips.find((it) => !it.bookInfo);
-      const isCheckPolicy = this.searchModel.trips.findIndex(
-        (it) => it == trip
-      );
+      const isCheckPolicy =
+        this.searchModel.trips.findIndex((it) => it == trip) ==
+        this.searchModel.trips.length - 1;
       if (isCheckPolicy) {
-        if (flightRoute.policy) {
+        if (flightRoute.policy && !flightRoute.policy.IsAllowOrder) {
           AppHelper.alert(flightRoute.policy.Message || "不可预订");
           return;
         }
@@ -127,30 +127,30 @@ export class FlightListPage implements OnInit, OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   async doRefresh(loadFromServer = false, keepFilterCondition = false) {
-    this.flightRoutes = [];
-    this.scroller.disabled = true;
-    this.flightService.setFilterConditionSource({
-      ...this.flightService.getFilterCondition(),
-      time: "none",
-      price: "none",
-    });
-    if (this.isLoading) {
-      return;
-    }
-    this.isLoading = true;
-    this.flightQuery = await this.flightService
-      .getFlightList({ forceFetch: loadFromServer, keepFilterCondition })
-      .finally(() => {
-        this.refresher.complete();
-        this.isLoading = false;
-      });
-    console.log("list data", this.flightQuery);
-    if (this.flightQuery && this.flightQuery.FlightRoutes) {
-      this.flightRoutes = this.flightQuery.FlightRoutes.slice(0, this.pageSize);
-      this.scroller.disabled = this.flightRoutes.length < this.pageSize;
-    }
-    this.scrollToTop();
     try {
+      this.flightRoutes = [];
+      this.scroller.disabled = true;
+      this.flightService.setFilterConditionSource({
+        ...this.flightService.getFilterCondition(),
+        time: "none",
+        price: "none",
+      });
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+      this.flightQuery = await this.flightService
+        .getFlightList({ forceFetch: loadFromServer, keepFilterCondition })
+        .finally(() => {
+          this.refresher.complete();
+          this.isLoading = false;
+        });
+      console.log("list data", this.flightQuery);
+      if (this.flightQuery && this.flightQuery.FlightRoutes) {
+        this.flightRoutes = this.flightQuery.FlightRoutes.slice(0, this.pageSize);
+        this.scroller.disabled = this.flightRoutes.length < this.pageSize;
+      }
+      this.scrollToTop();
     } catch (e) {
       AppHelper.alert(e);
     }

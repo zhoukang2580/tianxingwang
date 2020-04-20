@@ -165,8 +165,8 @@ export class InternationalFlightService {
   private bookInfoSource: Subject<
     PassengerBookInfo<IInternationalFlightSegmentInfo>[]
   >;
-  private flightListResult: FlightResultEntity;
   private flightPolicyResult: FlightResultEntity;
+  flightListResult: FlightResultEntity;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService,
@@ -438,7 +438,6 @@ export class InternationalFlightService {
               return it;
             });
           }
-          this.checkTripsDate();
         }
         if (this.searchModel.voyageType == FlightVoyageType.OneWay) {
           this.searchModel.trips[0].date = dates[0].date;
@@ -450,6 +449,7 @@ export class InternationalFlightService {
             this.searchModel.trips[1].date = dates[0].date;
           }
         }
+        this.checkTripsDate();
       }
     }
     this.setSearchModelSource(this.searchModel);
@@ -689,6 +689,21 @@ export class InternationalFlightService {
     const m = this.searchModel;
     const { forceFetch, keepFilterCondition } = query;
     await this.initSelfBookTypeBookInfos(forceFetch);
+    const isSelf = await this.staffService.isSelfBookType();
+    if (this.searchModel && isSelf) {
+      if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
+        if (this.getBookInfos().length == 1) {
+          this.addPassengerBookInfo({
+            ...this.bookInfos[0],
+            id: AppHelper.uuid(),
+          });
+        }
+      } else if (this.searchModel.voyageType == FlightVoyageType.OneWay) {
+        if (this.getBookInfos().length > 1) {
+          this.setBookInfoSource([this.getBookInfos()[0]]);
+        }
+      }
+    }
     if (!environment.production && !forceFetch) {
       let result = this.flightListResult;
       if (!result || !result.FlightRoutes || !result.FlightRoutes.length) {
@@ -756,7 +771,7 @@ export class InternationalFlightService {
       days = [goTrip.date, backTrip.date];
       date = days.join(",");
       fromAirports = [goTrip.fromCity.Code];
-      toAirports = [backTrip.toCity.Code];
+      toAirports = [goTrip.toCity.Code];
     }
     if (m.voyageType == FlightVoyageType.MultiCity) {
       date = m.trips.map((it) => it.date).join(",");
@@ -865,8 +880,7 @@ export class InternationalFlightService {
       }>(req);
       this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
         (r) => {
-          r.policy = result[r.Id];
-          return r;
+          return { ...r, policy: result[r.flightFare.Id] };
         }
       );
     } catch (e) {
