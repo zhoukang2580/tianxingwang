@@ -41,7 +41,7 @@ export class AppHelper {
     this.modalController = modalController;
   }
   static getSystemTag() {
-    return "TmcId,AgentId,CmsId";
+    return "TmcId,AgentId,CmsId,WorkflowId";
   }
   static showLoading(message: string, duration = 0) {
     return this.loadingController.create({ message, duration }).then((l) => {

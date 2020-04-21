@@ -100,6 +100,9 @@ export class BookTmcOutnumberComponent
       }
     }, 300);
   }
+  compareWithFn(o1: ITmcOutNumberInfo, o2: ITmcOutNumberInfo) {
+    return o1 && o2 ? o1.value === o2.value : o1 === o2;
+  }
   ngAfterViewInit() {}
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());

@@ -848,17 +848,25 @@ export class InternationalFlightService {
             it.bookInfo && it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id
         )
         .map((it) => it.bookInfo.flightRoute.Id);
-      const flightFares = this.flightListResult.FlightFares.filter(
-        (it) =>
-          it.FlightRouteIds.slice(0, selectedRids.length).join(",") ==
-          selectedRids.join(",")
+      const flightFares = this.flightListResult.FlightFares.filter((it) =>
+        selectedRids.length
+          ? it.FlightRouteIds.slice(0, selectedRids.length).join(",") ==
+            selectedRids.join(",")
+          : true
+      );
+      const flightRouteInfos = (
+        this.flightListResult.FlightRoutes || []
+      ).filter((r) =>
+        flightFares.some((f) => f.FlightRouteIds.some((ffrid) => ffrid == r.Id))
       );
       req.Data = {
-        FlightRouteInfos: JSON.stringify(
-          this.flightListResult.FlightRoutes || []
-        ),
+        FlightRouteInfos: JSON.stringify(flightRouteInfos),
         FlightSegmentInfos: JSON.stringify(
-          this.flightListResult.FlightSegments || []
+          (this.flightListResult.FlightSegments || []).filter((s) => {
+            return flightRouteInfos.some((info) =>
+              info.FlightSegmentIds.some((segId) => segId == s.Id)
+            );
+          })
         ),
         FlightFares: JSON.stringify(flightFares),
         PolicyIds: bookInfos
@@ -867,22 +875,39 @@ export class InternationalFlightService {
               it.passenger && it.passenger.Policy && it.passenger.Policy.Id
           )
           .filter((it) => !!it)
+          .slice(0, 1)
           .join(","),
       };
       req.IsShowLoading = true;
       req.LoadingMsg = "正在计算差标信息";
       const result = await this.apiService.getPromiseData<{
-        [fareId: string]: {
-          IsAllowOrder: boolean;
-          IsIllegal: boolean;
-          Message: string;
+        PolicyDis: {
+          [fareId: string]: {
+            IsAllowOrder: boolean;
+            IsIllegal: boolean;
+            Message: string;
+          };
         };
+        flightCabinCodeDis: { [flightSegmentId: string]: string };
       }>(req);
-      this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
-        (r) => {
-          return { ...r, policy: result[r.flightFare.Id] };
-        }
-      );
+      if (result.PolicyDis) {
+        this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
+          (r) => {
+            return { ...r, policy: result.PolicyDis[r.flightFare.Id] };
+          }
+        );
+      }
+      if (result.flightCabinCodeDis) {
+        this.flightListResult.FlightSegments = this.flightListResult.FlightSegments.map(
+          (seg) => {
+            const cabinCode = result.flightCabinCodeDis[seg.Id];
+            if (cabinCode) {
+              seg.CabinCode = cabinCode;
+            }
+            return seg;
+          }
+        );
+      }
     } catch (e) {
       AppHelper.alert(e);
     }

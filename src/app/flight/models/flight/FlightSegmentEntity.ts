@@ -61,7 +61,7 @@ export class FlightSegmentEntity {
   /// </summary>
   Number: string;
   /// <summary>
-  ///航空公司
+  /// 航空公司
   /// </summary>
   Airline: string;
   /// <summary>
@@ -208,6 +208,10 @@ export class FlightSegmentEntity {
   ToCity: TrafficlineEntity;
   // PoliciedCabins: FlightPolicy[];
   Cabins: FlightCabinEntity[];
+  /// <summary>
+  /// 舱位代码--仅在国际*港澳台机票使用
+  /// </summary>
+  CabinCode: string;
 
   TakeoffShortTime: string;
 
