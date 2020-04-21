@@ -129,7 +129,7 @@ export class IdentityService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "ApiHomeUrl-Identity-Get";
-    req.Data = JSON.stringify({ Ticket: ticket,Tag:AppHelper.getSystemTag() });
+    req.Data = JSON.stringify({ Ticket: ticket });
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
     req.Ticket = ticket;
