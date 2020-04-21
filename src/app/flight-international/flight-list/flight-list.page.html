@@ -60,7 +60,8 @@
     <div *ngFor='let flight of flightRoutes' style="border-bottom: 1px solid rgba(var(--ion-color-dark-rgb),0.13);">
       <app-flight-list-item (click)='onSelectTrip(flight)' [flight]='flight' (transfer)='onTransfer(flight)'>
       </app-flight-list-item>
-      <div *ngIf='(flight.policy?.Message||flight.flightFare.ruleMessage) as rule' style="font-size: 0.6rem;text-indent: 3em;">
+      <div *ngIf='(flight.policy?.Message||flight.flightFare.ruleMessage) as rule'
+        style="font-size: 0.6rem;text-indent: 3em;">
         <ion-text color='danger'>{{rule}}</ion-text>
       </div>
     </div>

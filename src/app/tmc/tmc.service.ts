@@ -1113,6 +1113,7 @@ export class TmcEntity extends BaseEntity {
   Code: string;
   FlightApprovalType: TmcApprovalType;
   FlightPayType: OrderTravelPayType;
+  IntFlightPayType: OrderTravelPayType;
   FlightOrderType: string;
   FlightOrderPayType: string;
   FlightFeeType: TmcFlightFeeType;
@@ -1260,6 +1261,7 @@ export class TmcEntity extends BaseEntity {
   WechatMiniId: string;
   WechatMiniSecret: string;
   RegionTypeValue: string;
+  IntFlightApprovalType: TmcApprovalType;
   // =============== 微信支付配置 end ======
 }
 export interface PassengerBookInfo<T> {

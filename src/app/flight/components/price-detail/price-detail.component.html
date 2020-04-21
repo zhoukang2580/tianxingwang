@@ -4,7 +4,7 @@
         *ngIf='item.passengerCredential?.Number as n'>({{n}})</div>
     </ion-col>
   </ion-row>
-  <ion-row>
+  <ion-row *ngIf='item.from'>
     <ion-col>
       <ion-text color='secondary'>{{item.from}}</ion-text>
     </ion-col>
@@ -12,6 +12,17 @@
     <ion-col class='ion-text-end'>
       <ion-text color='secondary'>
         {{item.to}}
+      </ion-text>
+    </ion-col>
+  </ion-row>
+  <ion-row *ngFor='let r of item.flightRoutes'>
+    <ion-col>
+      <ion-text color='secondary'>{{r.fromSegment?.FromCityName}}</ion-text>
+    </ion-col>
+    <ion-col class='ion-text-center'>到</ion-col>
+    <ion-col class='ion-text-end'>
+      <ion-text color='secondary'>
+        <ion-text color='secondary'>{{r.toSegment?.ToCityName}}</ion-text>
       </ion-text>
     </ion-col>
   </ion-row>

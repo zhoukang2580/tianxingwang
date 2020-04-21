@@ -1,4 +1,4 @@
-import { flyInOut } from './../../../animations/flyInOut';
+import { flyInOut } from "./../../../animations/flyInOut";
 import {
   EventEmitter,
   ElementRef,
@@ -18,7 +18,7 @@ import { Subscription, fromEvent } from "rxjs";
   selector: "app-book-tmc-outnumber",
   templateUrl: "./book-tmc-outnumber.component.html",
   styleUrls: ["./book-tmc-outnumber.component.scss"],
-  animations: [flyInOut]
+  animations: [flyInOut],
 })
 export class BookTmcOutnumberComponent
   implements OnInit, OnDestroy, AfterViewInit {
@@ -47,8 +47,10 @@ export class BookTmcOutnumberComponent
     this.nativeElement = el.nativeElement;
   }
   onSelectText(str: string) {
-    console.log("onSelectText", str)
-    const one = this.tmcOutNumberInfos && this.tmcOutNumberInfos.find((it) => it.hasfocus);
+    console.log("onSelectText", str);
+    const one =
+      this.tmcOutNumberInfos &&
+      this.tmcOutNumberInfos.find((it) => it.hasfocus);
     this.hints = [];
     if (one) {
       one.hasfocus = false;
@@ -63,10 +65,11 @@ export class BookTmcOutnumberComponent
     }
   }
   onFocus(n: ITmcOutNumberInfo) {
-    this.vmTmcOutNumberInfos = this.vmTmcOutNumberInfos.map(it => {
+    this.vmTmcOutNumberInfos = this.vmTmcOutNumberInfos.map((it) => {
       it.hasfocus = it.label == n.label;
       return it;
-    })
+    });
+    this.onChange(n, { detail: { value: "" } } as any);
   }
   onBlur(arg: ITmcOutNumberInfo) {
     setTimeout(() => {
@@ -88,16 +91,16 @@ export class BookTmcOutnumberComponent
     this.timer = setTimeout(() => {
       const hints = (arg.labelDataList || []).filter((it) => !!it);
       this.hints = hints.filter((it) =>
-        evt.detail.value ? it.toLowerCase().includes(evt.detail.value.trim()) : true
+        evt.detail.value
+          ? it.toLowerCase().includes(evt.detail.value.trim())
+          : true
       );
       if (this.hints.length == 1 && this.hints[0] == arg.value) {
         this.hints = [];
       }
     }, 300);
   }
-  ngAfterViewInit() {
-
-  }
+  ngAfterViewInit() {}
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
