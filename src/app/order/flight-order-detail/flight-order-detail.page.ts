@@ -474,10 +474,10 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
           ...m.VariablesJsonObj,
           OriginalTicketId: m.Id,
           selfId: m.Id,
-          StatusName: m.VariablesJsonObj.IsCustomApplyRefund ? "退票申请中" :m.VariablesJsonObj.IsCustomApplyExchange? "改签申请中":m.StatusName
         },
         Id: AppHelper.uuid()
       } as OrderFlightTicketEntity;
+      res.StatusName= m.VariablesJsonObj.IsCustomApplyRefund ? "退票申请中" :m.VariablesJsonObj.IsCustomApplyExchange? "改签申请中":m.StatusName
       const one = this.orderDetail.Order.OrderFlightTickets.find(it => it.Id == res.VariablesJsonObj.selfId);
       if (one) {
         one.VariablesJsonObj.isShow = false;

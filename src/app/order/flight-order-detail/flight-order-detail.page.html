@@ -240,12 +240,14 @@
                 </ng-container>
                 <ion-row>
                   <ion-col *ngIf="flightTicket.Explain">
-                    退改签政策
+                      退改签政策
                   </ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col>
-                    <p style="margin-top: 0px">{{flightTicket.Explain?.split("\\n").join("")}}</p>
+                    <p style="margin-top: 0px" class='clip-text ion-no-margin'
+                    (click)='flightTicket["isShowDetail"]=!flightTicket["isShowDetail"]'
+                    [class.show]='flightTicket["isShowDetail"]'>{{flightTicket.Explain?.split("\\n").join("")}}</p>
                   </ion-col>
                 </ion-row>
               </ng-container>
@@ -449,12 +451,14 @@
                 </ng-container>
                 <ion-row>
                   <ion-col *ngIf="ticket.Explain">
-                    退改签政策
+                      退改签政策
                   </ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col>
-                    <p style="margin-top: 0px">{{ticket.Explain?.split("\\n").join("")}}</p>
+                    <p style="margin-top: 0px" class='clip-text ion-no-margin'
+                    (click)='ticket["isShowDetail"]=!ticket["isShowDetail"]'
+                    [class.show]='ticket["isShowDetail"]'>{{ticket.Explain?.split("\\n").join("")}}</p>
                   </ion-col>
                 </ion-row>
                 <ng-container *ngIf='tikect2Insurance[ticket.Key] as orderInsurances'>
