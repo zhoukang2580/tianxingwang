@@ -467,25 +467,25 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.orderDetail.Order.OrderFlightTickets = this.orderService.checkIfOrderFlightTicketShow(
       this.orderDetail.Order.OrderFlightTickets
     );
-    let ob = this.orderDetail.Order.OrderFlightTickets.filter(f => f.VariablesJsonObj.isShow && (f.VariablesJsonObj.IsCustomApplyRefund || f.VariablesJsonObj.IsCustomApplyExchange)).map(m => {
-      const res = {
-        ...m,
-        VariablesJsonObj: {
-          ...m.VariablesJsonObj,
-          OriginalTicketId: m.Id,
-          selfId: m.Id,
-        },
-        Id: AppHelper.uuid()
-      } as OrderFlightTicketEntity;
-      res.StatusName= m.VariablesJsonObj.IsCustomApplyRefund ? "退票申请中" :m.VariablesJsonObj.IsCustomApplyExchange? "改签申请中":m.StatusName
-      const one = this.orderDetail.Order.OrderFlightTickets.find(it => it.Id == res.VariablesJsonObj.selfId);
-      if (one) {
-        one.VariablesJsonObj.isShow = false;
-        // res.Id=one.Id
-      }
-      return res;
-    })
-    this.orderDetail.Order.OrderFlightTickets = [...this.orderDetail.Order.OrderFlightTickets, ...ob]
+    // let ob = this.orderDetail.Order.OrderFlightTickets.filter(f => f.VariablesJsonObj.isShow && (f.VariablesJsonObj.IsCustomApplyRefund || f.VariablesJsonObj.IsCustomApplyExchange)).map(m => {
+    //   const res = {
+    //     ...m,
+    //     VariablesJsonObj: {
+    //       ...m.VariablesJsonObj,
+    //       OriginalTicketId: m.Id,
+    //       selfId: m.Id,
+    //     },
+    //     Id: AppHelper.uuid()
+    //   } as OrderFlightTicketEntity;
+    //   res.StatusName= m.VariablesJsonObj.IsCustomApplyRefund ? "退票申请中" :m.VariablesJsonObj.IsCustomApplyExchange? "改签申请中":m.StatusName
+    //   const one = this.orderDetail.Order.OrderFlightTickets.find(it => it.Id == res.VariablesJsonObj.selfId);
+    //   if (one) {
+    //     one.VariablesJsonObj.isShow = false;
+    //     // res.Id=one.Id
+    //   }
+    //   return res;
+    // })
+    // this.orderDetail.Order.OrderFlightTickets = [...this.orderDetail.Order.OrderFlightTickets, ...ob]
 
     this.orderDetail.Order.OrderFlightTickets.forEach((t) => {
       if (!this.tikectId2OriginalTickets[t.Id]) {
