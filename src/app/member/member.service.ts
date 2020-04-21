@@ -3,6 +3,8 @@ import { Injectable } from "@angular/core";
 import { RequestEntity } from "../services/api/Request.entity";
 import { CredentialsType } from "./pipe/credential.pipe";
 import { AccountEntity } from "../account/models/AccountEntity";
+import { Subject, BehaviorSubject } from "rxjs";
+import { filter } from "rxjs/operators";
 export class MemberCredential {
   isAdd?: boolean;
   isLongPeriodOfTime?: boolean;
@@ -61,42 +63,65 @@ export class MemberCredential {
   Gender: string; //
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class MemberService {
-  constructor(private apiService: ApiService) {}
+  private credentialsChanges: Subject<{
+    action: "remove" | "add" | "modify";
+  }>;
+  constructor(private apiService: ApiService) {
+    this.credentialsChanges = new BehaviorSubject(undefined);
+  }
   async getCredentials(accountId: string): Promise<MemberCredential[]> {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-List";
     req.Data = {
-      accountId
+      accountId,
     };
     return this.apiService
       .getPromiseData<{ Credentials: MemberCredential[] }>(req)
-      .then(r => r.Credentials)
-      .catch(_ => []);
+      .then((r) => r.Credentials)
+      .catch((_) => []);
+  }
+  getCredentialsChangeSource() {
+    return this.credentialsChanges.asObservable().pipe(filter((it) => !!it));
   }
   addCredentials(c: MemberCredential) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Add";
     req.Data = c;
-    return this.apiService.getPromiseData<any>(req);
+    return this.apiService.getPromiseData<any>(req).then((r) => {
+      this.credentialsChanges.next({
+        action: "add",
+      });
+      return r;
+    });
   }
   modifyCredentials(c: MemberCredential) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Modify";
     req.Data = c;
-    return this.apiService.getPromiseData<any>(req);
+    return this.apiService.getPromiseData<any>(req).then((r) => {
+      this.credentialsChanges.next({
+        action: "modify",
+      });
+      return r;
+    });
   }
   removeCredentials(c: MemberCredential) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Remove";
     req.Data = c;
-    return this.apiService.getPromiseData<any>(req);
+    return this.apiService.getPromiseData<any>(req).then((r) => {
+      this.credentialsChanges.next({
+        action: "remove",
+      });
+      return r;
+    });
   }
   getMemberDetails() {
     const req = new RequestEntity();

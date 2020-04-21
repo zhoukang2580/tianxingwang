@@ -7,8 +7,10 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher (ionRefresh)='doRefresh()' slot='fixed'></ion-refresher>
-  <ng-container *ngIf='!isLoading '>
+  <app-refresher (ionRefresh)='doRefresh()' slot='fixed'>
+    <ion-refresher-content>正在刷新...</ion-refresher-content>
+  </app-refresher>
+  <ng-container *ngIf='!isLoading else loadingTpl'>
     <ng-container *ngIf='trips?.length else nomoredata'>
       <div *ngFor='let trip of trips' (click)='goToDetailPage(trip)'>
         <ng-container *ngIf='trip.Type=="Train"'>
@@ -18,13 +20,19 @@
           <app-hotel-trip [trip]="trip"></app-hotel-trip>
         </ng-container>
         <ng-container *ngIf='trip.Type == "Flight"'>
-          <app-flight-trip [trip]="trip" [isShowInsurance]='trip.TicketType==OrderFlightTicketType.Domestic'
-            (showInsuranceEvt)='onShowSelectedInsurance($event)' (payInsuranceEvt)="payInsurance($event)">
-          </app-flight-trip>
+          <!-- getVariablesJsonObj(trip) -->
+          <ng-container *ngIf="!(trip.VariablesJsonObj&&trip.VariablesJsonObj.IsCustomApplyRefund)">
+            <app-flight-trip [trip]="trip" [isShowInsurance]='isShowInsurance&&!trip.IsInternational'
+              (showInsuranceEvt)='onShowSelectedInsurance($event)' (payInsuranceEvt)="payInsurance($event)">
+            </app-flight-trip>
+          </ng-container>
         </ng-container>
       </div>
     </ng-container>
   </ng-container>
+  <ng-template #loadingTpl>
+    正在加载
+  </ng-template>
   <ng-template #nomoredata>
     <app-or-comp>暂无数据</app-or-comp>
   </ng-template>

@@ -4,7 +4,7 @@
         *ngIf='item.passengerCredential?.Number as n'>({{n}})</div>
     </ion-col>
   </ion-row>
-  <ion-row>
+  <ion-row *ngIf='item.from'>
     <ion-col>
       <ion-text color='secondary'>{{item.from}}</ion-text>
     </ion-col>
@@ -15,24 +15,35 @@
       </ion-text>
     </ion-col>
   </ion-row>
+  <ion-row *ngFor='let r of item.flightRoutes'>
+    <ion-col>
+      <ion-text color='secondary'>{{r.fromSegment?.FromCityName}}</ion-text>
+    </ion-col>
+    <ion-col class='ion-text-center'>到</ion-col>
+    <ion-col class='ion-text-end'>
+      <ion-text color='secondary'>
+        <ion-text color='secondary'>{{r.toSegment?.ToCityName}}</ion-text>
+      </ion-text>
+    </ion-col>
+  </ion-row>
   <ion-row>
     <ion-col>机票票价：</ion-col>
-    <ion-col>{{item.price}}</ion-col>
+    <ion-col size='3'>{{item.price}}</ion-col>
     <ion-col size='1'>元</ion-col>
   </ion-row>
   <ion-row>
     <ion-col>税费：</ion-col>
-    <ion-col>{{item.tax}}</ion-col>
+    <ion-col size='3'>{{item.tax}}</ion-col>
     <ion-col size='1'>元</ion-col>
   </ion-row>
   <ion-row *ngFor='let insurance of item.insurances'>
     <ion-col>{{insurance.name}}：</ion-col>
-    <ion-col>{{insurance.price}}</ion-col>
+    <ion-col size='3'>{{insurance.price}}</ion-col>
     <ion-col size='1'>元</ion-col>
   </ion-row>
   <ion-row *ngIf='fees&&fees[item.id]'>
     <ion-col>服务费：</ion-col>
-    <ion-col>{{fees[item.id]}}</ion-col>
+    <ion-col size='3'>{{fees[item.id]}}</ion-col>
     <ion-col size='1'>元</ion-col>
   </ion-row>
 </ion-grid>

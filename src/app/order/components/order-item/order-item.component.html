@@ -12,15 +12,12 @@
       <div class="item">
         <div [style.align-self]='order["checkPay"]?"center":""'>金额</div>
         <div style="display: flex;align-items: center;">
-          <ion-text color='danger'>
-            <span>
-              ￥{{getFlightOrderTotalAmount()}}
-            </span>
-            <span *ngIf='order.OrderInsurances?.length'>
-              (含保险)</span>
+          <ion-text  color='danger' class="ion-text-nowrap">
+            <ion-text >￥{{order.TotalAmount}}</ion-text>
+            <ion-text  *ngIf='order.OrderInsurances?.length'>(含保险)</ion-text >
           </ion-text>
           <span>
-            <ion-text color='secondary'>
+            <ion-text color='secondary' class="ion-text-nowrap">
               ({{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}})
             </ion-text>
           </span>
@@ -109,7 +106,7 @@
   </ng-container>
   <!-- 火车 -->
   <ng-container *ngIf='order.OrderTrainTickets?.length'>
-    <ng-container *ngFor='let orderTrainTicket of order.OrderTrainTickets'>
+    <ng-container *ngIf='order.OrderTrainTickets?.length'>
       <ion-grid class="train">
         <ion-row>
           <ion-col size='2'>
@@ -128,64 +125,72 @@
           </ion-col>
           <ion-col>
             <ion-text color='danger'>
-              ￥{{getTotalAmount(order,orderTrainTicket.Key) + trainInsuranceAmount(orderTrainTicket)}}
-              <span *ngIf="trainInsuranceAmount(orderTrainTicket) as amount">(含保险{{amount}})</span>
+              ￥{{order.TotalAmount}}
+              <span *ngIf="order.OrderInsurances?.length">
+                (含保险)
+              </span>
             </ion-text>
             <ion-text color='secondary'>
               （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
             </ion-text>
           </ion-col>
-          <ion-col class='ion-text-end' *ngIf='check(orderTrainTicket)' size='3'>
+          <!-- <ion-col class='ion-text-end' *ngIf='check(orderTrainTicket)' size='3'>
             <ion-col style="justify-content: flex-end;">
               <ng-container *ngIf='order["checkPay"]'>
                 <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
                 </ion-button>
               </ng-container>
             </ion-col>
-          </ion-col>
+          </ion-col> -->
         </ion-row>
-        <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;"
-          [class.btn-show-margin]="orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline||
-        (orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
-                  &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline">
-          <ion-col size='2'>
-            <ion-text color="medium"> 旅客</ion-text>
-          </ion-col>
-          <ion-col style="align-items: center;display: flex;">
-            <ng-container *ngIf='orderTrainTicket.Passenger as p'>
-              <ion-text>
-                {{p.CheckName}}
-              </ion-text>
-              <ion-text color='secondary' class="ion-padding-end">({{orderTrainTicket.StatusName}})</ion-text>
-              <!-- <span class='ion-margin-start'>{{p.CredentialsNumber}}</span> -->
-              <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
-                *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
-                <span>改签</span>
-              </ion-button>
-              <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
-                *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
-                  &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
-                <span>退票</span>
-              </ion-button>
-            </ng-container>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size='2'>
-            <ion-text color="medium"> 行程</ion-text>
-          </ion-col>
-          <ion-col>
-            <div>
-              <div *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
-                <span>{{orderTrainTrip.StartTime?.substr(0,"yyyy-mm-dd".length)}}</span>
-                <span style='margin-left:0.5em'>{{getHHmm(orderTrainTrip.StartTime)}}</span>
-                <span>{{orderTrainTrip.TrainNo}}</span>
-                <span class="ion-padding-start">{{orderTrainTrip.TrainCode}}</span>
-                <div>{{orderTrainTrip.FromStationName}}---{{orderTrainTrip.ToStationName}}</div>
+        <ng-container *ngFor='let orderTrainTicket of order.OrderTrainTickets;let i=index;'>
+          <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;" class="order-flight-ticket"
+            [class.btn-show-margin]="orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline||
+          (orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
+                    &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline">
+            <ion-col size='2'>
+              <ion-text color="medium"> 旅客</ion-text>
+            </ion-col>
+            <ion-col style="align-items: center;display: flex;">
+              <ng-container *ngIf='orderTrainTicket.Passenger as p'>
+                <ion-text>
+                  {{p.CheckName}}
+                </ion-text>
+                <ion-text color='secondary' class="ion-padding-end">({{orderTrainTicket.StatusName}})</ion-text>
+                <!-- <span class='ion-margin-start'>{{p.CredentialsNumber}}</span> -->
+                <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
+                  *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+                  <span>改签</span>
+                </ion-button>
+                <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
+                  *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
+                    &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+                  <span>退票</span>
+                </ion-button>
+                <!-- <ion-button size='small'
+                  (click)='onAbolishTraninOrder($event,orderTrainTicket)' color='secondary'>
+                  <ion-text color='light'>取消订单</ion-text>
+                </ion-button> -->
+              </ng-container>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size='2'>
+              <ion-text color="medium"> 行程</ion-text>
+            </ion-col>
+            <ion-col>
+              <div>
+                <div *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
+                  <span>{{orderTrainTrip.StartTime?.substr(0,"yyyy-mm-dd".length)}}</span>
+                  <span style='margin-left:0.5em'>{{getHHmm(orderTrainTrip.StartTime)}}</span>
+                  <span>{{orderTrainTrip.TrainNo}}</span>
+                  <span class="ion-padding-start">{{orderTrainTrip.TrainCode}}</span>
+                  <div>{{orderTrainTrip.FromStationName}}---{{orderTrainTrip.ToStationName}}</div>
+                </div>
               </div>
-            </div>
-          </ion-col>
-        </ion-row>
+            </ion-col>
+          </ion-row>
+        </ng-container>
       </ion-grid>
     </ng-container>
   </ng-container>

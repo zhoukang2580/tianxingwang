@@ -11,12 +11,13 @@ import { Platform } from "@ionic/angular";
 const lunarCalendar = window["LunarCalendar"];
 const _KEY_HOLIDAYS = "_key_holidays";
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class CalendarService {
   private selectedDaysSource: Subject<DayModel[]>;
   private selectedDays: DayModel[];
   private holidays: ICalendarEntity[] = [];
+  private fetchingHolidaysPromise: { promise: Promise<ICalendarEntity[]> };
   private dayOfWeekNames = {
     0: LanguageHelper.getSundayTip(),
     1: LanguageHelper.getMondayTip(),
@@ -24,7 +25,7 @@ export class CalendarService {
     3: LanguageHelper.getWednesdayTip(),
     4: LanguageHelper.getThursdayTip(),
     5: LanguageHelper.getFridayTip(),
-    6: LanguageHelper.getSaturdayTip()
+    6: LanguageHelper.getSaturdayTip(),
   };
   constructor(
     private apiService: ApiService,
@@ -57,7 +58,7 @@ export class CalendarService {
           date = date.replace(/\//g, "-");
         }
         if (!date.includes(":")) {
-          m = moment(date);
+          m = moment(`${date} 00:00:00`, format);
         } else {
           m = moment(date, format);
         }
@@ -81,6 +82,10 @@ export class CalendarService {
         return Promise.resolve(this.holidays);
       }
     }
+    if (this.fetchingHolidaysPromise) {
+      return this.fetchingHolidaysPromise.promise;
+    }
+
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `ApiHomeUrl-Home-GetCalendar`;
@@ -89,19 +94,24 @@ export class CalendarService {
       beginDate: moment()
         .startOf("year")
         .add(-3, "months")
-        .format("YYYY-MM-DD")
+        .format("YYYY-MM-DD"),
     };
-    this.holidays = await this.apiService
-      .getPromiseData<ICalendarEntity[]>(req)
-      .catch(_ => {
-        // console.error(_);
-        return [];
-      });
-    this.holidays = Array.isArray(this.holidays) ? this.holidays : [];
-    if (this.holidays.length) {
-      this.cacheHolidays(this.holidays);
-    }
-    return this.holidays;
+    this.fetchingHolidaysPromise = {
+      promise: this.apiService
+        .getPromiseData<ICalendarEntity[]>(req)
+        .then((data) => {
+          this.holidays = data;
+          this.holidays = Array.isArray(this.holidays) ? this.holidays : [];
+          if (this.holidays.length) {
+            this.cacheHolidays(this.holidays);
+          }
+          return data;
+        })
+        .finally(() => {
+          this.fetchingHolidaysPromise = null;
+        }),
+    };
+    return this.fetchingHolidaysPromise.promise;
   }
   private async cacheHolidays(holidays: ICalendarEntity[]) {
     if (holidays && holidays.length) {
@@ -256,16 +266,12 @@ export class CalendarService {
     d.dayOfWeekName = wn;
     return wn;
   }
-  async generateYearNthMonthCalendar(
-    year: number,
-    month: number
-  ): Promise<AvailableDate> {
+  generateYearNthMonthCalendar(year: number, month: number) {
     const iM = moment(`${year}-${month}-01`, "YYYY-MM-DD"); // 第i个月
-    // console.log("generateYearNthMonthCalendar", iM.format('YYYY-MM-DD'), year, month);
     const calender: AvailableDate = {
       dayList: [],
       disabled: false,
-      yearMonth: iM.format("YYYY-MM")
+      yearMonth: iM.format("YYYY-MM"),
     };
     const dayCountOfiM = iM
       .startOf("month")
@@ -273,9 +279,7 @@ export class CalendarService {
       .add(1, "months") // 下个月的一号
       .subtract(1, "days") // 这个月的最后一天
       .date(); // 最后一天是几，代表这个月有几天
-    const curMFistDate = moment(iM)
-      .startOf("month")
-      .date(1);
+    const curMFistDate = moment(iM).startOf("month").date(1);
     // console.log("curMoment", curMoment.format("YYYY-MM-DD"));
     const curWeek = curMFistDate.weekday();
     // console.log(curMFistDate.format("YYYY-MM-DD"), curWeek);
@@ -301,18 +305,19 @@ export class CalendarService {
       const dayOfiM = iM.startOf("month").date(j); // 每月的j号
       calender.dayList.push(this.generateDayModel(dayOfiM));
     }
-    const holidays = await this.getHolidays();
-    const clnder = this.initDaysDayOff(calender, holidays);
+    this.getHolidays().then((holidays) => {
+      this.initDaysDayOff(calender, holidays);
+    });
     // console.log("generateYearNthMonthCalendar", clnder);
-    return Promise.resolve(clnder);
+    return calender;
   }
   private initDaysDayOff(c: AvailableDate, holidays: ICalendarEntity[]) {
     if (holidays && holidays.length) {
-      holidays.forEach(hd => {
-        c.dayList.forEach(d => {
+      holidays.forEach((hd) => {
+        c.dayList.forEach((d) => {
           if (hd.Date.substr(0, 10) == d.date) {
             d.dayoff = true;
-            if (hd.Name && !c.dayList.find(it => it.bottomDesc == hd.Name)) {
+            if (hd.Name && !c.dayList.find((it) => it.bottomDesc == hd.Name)) {
               d.bottomDesc = hd.Name;
               if (d.date.includes("10-01")) {
                 if (!d.bottomDesc.includes("国庆")) {
@@ -335,7 +340,7 @@ export class CalendarService {
       const arr: { monthData: ILunarInfo[] } = lunarCalendar.calendar(y, m);
       if (arr && arr.monthData) {
         d.lunarInfo = arr.monthData.find(
-          it => it.year == +y && it.month == +m && it.day == +date
+          (it) => it.year == +y && it.month == +m && it.day == +date
         );
         if (d.lunarInfo) {
           d.bottomDesc = d.lunarInfo.lunarDayName;

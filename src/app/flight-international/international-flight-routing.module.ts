@@ -7,19 +7,47 @@ const routes: Routes = [
     loadChildren: () =>
       import(
         "./search-international-flight/search-international-flight.module"
-      ).then(m => m.SearchInternationalFlightPageModule)
+      ).then((m) => m.SearchInternationalFlightPageModule),
   },
   {
     path: "select-international-flight-city",
     loadChildren: () =>
       import("./select-city/select-city.module").then(
-        m => m.SelectFlightCityPageModule
-      )
-  }
+        (m) => m.SelectFlightCityPageModule
+      ),
+  },
+  {
+    path: "international-flight-list",
+    loadChildren: () =>
+      import("./flight-list/flight-list.module").then(
+        (m) => m.FlightListPageModule
+      ),
+  },
+  {
+    path: "selected-trip-info",
+    loadChildren: () =>
+      import("./selected-trip-info/selected-trip-info.module").then(
+        (m) => m.SelectedTripInfoPageModule
+      ),
+  },
+  {
+    path: "flight-ticket-reserve",
+    loadChildren: () =>
+      import("./flight-ticket-reserve/flight-ticket-reserve.module").then(
+        (m) => m.FlightTicketReservePageModule
+      ),
+  },
+  {
+    path: "choose-flight-seat",
+    loadChildren: () =>
+      import("./choose-flight-seat/choose-flight-seat.module").then(
+        (m) => m.ChooseFlightSeatPageModule
+      ),
+  },
 ];
 
 @NgModule({
   declarations: [],
-  imports: [CommonModule, RouterModule.forChild(routes)]
+  imports: [CommonModule, RouterModule.forChild(routes)],
 })
 export class FlightInternationalRoutingModule {}

@@ -11,14 +11,18 @@
   <ng-container *ngIf='!errors else errorTemp'>
     <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ng-container *ngIf='vmCombindInfos?.length'>
-      <ion-list *ngFor='let combindInfo of vmCombindInfos' lines='none'>
-        <ion-item-divider color='primary' class="backg_w" *ngIf="isShowTop" sticky>
+      <ion-list *ngFor='let combindInfo of vmCombindInfos;let idx=index;' lines='none'>
+        <ion-item-divider color='primary' class="backg_w sticky" [class.not-sticky]='isDingTalk' style="    z-index: 200;
+        box-shadow: 0.1em 0.2em 0.6em rgba(0,0,0,.1);
+        padding-bottom: 0.5em;">
           <div style="width: 100%">
-          <!-- <span [(ngModel)]="combindInfo?.modal?.credential.CheckName"></span> -->
-          {{combindInfo?.modal?.credential?.CheckName}}
-          【{{tmc?.Name}}】
-          {{combindInfo?.modal?.credential?.Number}}
-            <ion-label style="text-align:center;font-weight: bold">预订航班信息</ion-label>
+            {{combindInfo?.modal?.credential?.CheckName}}
+            【{{tmc?.Name}}】
+            {{combindInfo?.modal?.credential?.Number}}
+            <ion-label style="text-align:center;font-weight: bold">
+              <ng-container *ngIf='isRoundTrip'>第{{idx+1}}程</ng-container>
+              航班预订信息
+            </ion-label>
           </div>
         </ion-item-divider>
         <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
@@ -30,7 +34,6 @@
                     {{s?.flightSegment?.FromCityName}}
                     <ion-text color='dark' style="font-size: 0.7rem;">到</ion-text>
                     {{s?.flightSegment?.ToCityName}}
-                    <!-- {{getTripTip(s)}} -->
                     <span>【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
                   </ion-text>
                 </strong>
@@ -95,6 +98,10 @@
               (ionchange)='onIllegalReason($event,combindInfo)'>
             </app-book-illegal-reason-comp>
           </ng-container>
+          <ng-container *ngIf='expenseTypes?.length'>
+            <app-book-expense-types-comp [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
+            </app-book-expense-types-comp>
+          </ng-container>
           <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
             [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
             [otherCostCenterName]='combindInfo.otherCostCenterName'
@@ -132,44 +139,41 @@
             <ion-item-divider color="primary">
               保险:
             </ion-item-divider>
-            <ion-item *ngIf='combindInfo?.insuranceProducts?.length'>
-              <div style="width:100%">
-                <div *ngFor='let insurance of combindInfo?.insuranceProducts'>
-                  <input type="checkbox" #insuranceEle class='hidden'>
+            <ion-radio-group allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId'
+              [(ngModel)]='combindInfo.selectedInsuranceProductId' (ionChange)='calcTotalPrice()'>
+              <div *ngFor='let insurance of combindInfo?.insuranceProducts'
+                style="margin-top: 1em;background-color: var(--ion-color-primary);padding-right: 1em;">
+                <ion-buttons>
+                  <ion-item style="--background:transparent;flex: 1;">
+                    <ion-radio [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
+                    <ion-label class="ion-margin-horizontal">
+                      {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
+                  </ion-item>
+                  <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
+                    详情
+                    <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
+                    </ion-icon>
+                    <ion-icon name="caret-down-outline" *ngIf='!insurance.showDetail'>
+                    </ion-icon>
+                  </ion-label>
+                </ion-buttons>
+                <div [@flyInOut] *ngIf='insurance.showDetail' style='width: 100%;'
+                  (click)='insurance.showDetail=!insurance.showDetail'>
                   <ion-row>
-                    <ion-col size='9'>
-                      <ion-item>
-                        <ion-checkbox color="secondary" name='insurance'
-                          [disabled]='combindInfo?.modal?.passenger?.Policy?.FlightIsForceInsurance'
-                          [(ngModel)]="insurance.checked" [checked]='insurance.checked'>
-                        </ion-checkbox>
-                        <ion-label style='margin-left: 0.5em'>
-                          {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
-                      </ion-item>
-                    </ion-col>
-                    <ion-col size='3'>
-                      <ion-button fill='clear' (click)='insuranceEle.checked=!insuranceEle.checked' expand='full'
-                        color='secondary'>
-                        详情
-                        <ion-icon name="caret-up-outline" class='caret-up-outline'
-                          [class.dropdown]='insuranceEle.checked'></ion-icon>
-                      </ion-button>
+                    <ion-col>
+                      <ion-label color='medium' class='small-font ion-text-wrap'>
+                        <div style="user-select: text;"
+                          [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
+                      </ion-label>
                     </ion-col>
                   </ion-row>
-                  <div [@flyInOut] *ngIf='insuranceEle.checked' style='width: 100%;'
-                    (click)='insuranceEle.checked=!insuranceEle.checked'>
-                    <ion-row>
-                      <ion-col>
-                        <ion-label color='medium' class='small-font ion-text-wrap'>
-                          <div style="user-select: text;"
-                            [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
-                        </ion-label>
-                      </ion-col>
-                    </ion-row>
-                  </div>
+                  <ion-item style="--background: transparent;" *ngIf='insurance.insuranceResult?.DetailUrl' detail
+                    button (click)='onShowProductDetail(insurance.insuranceResult,$event)'>
+                    <ion-label color='secondary'>显示更多</ion-label>
+                  </ion-item>
                 </div>
               </div>
-            </ion-item>
+            </ion-radio-group>
           </ng-container>
           <ng-container *ngIf="isShowApprove()">
             <ion-item-divider>
@@ -212,12 +216,6 @@
         </ion-item-group>
         <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item-group>
-            <!-- <ion-list-header color='primary' sticky>
-              <ion-label class='ion-text-wrap' *ngIf='getGroupedTitle(combindInfo) as title'>
-                {{title}}
-                【{{tmc?.Name}}】
-              </ion-label>
-            </ion-list-header> -->
             <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
               <ion-label>通知语言:</ion-label>
               <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
@@ -268,7 +266,11 @@
           <div style='width: 100%'>
             <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
               <ion-item *ngFor='let pt of orderTravelPayTypes'>
-                <ion-label>{{pt.label}}</ion-label>
+                <ion-label>{{pt.label}}
+                  <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>
+                    (请在20分钟内完成支付)
+                  </ng-container>
+                </ion-label>
                 <ion-radio [value]="pt.value">
                 </ion-radio>
               </ion-item>

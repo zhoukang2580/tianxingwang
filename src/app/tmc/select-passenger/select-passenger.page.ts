@@ -8,7 +8,11 @@ import { CredentialsEntity } from "../models/CredentialsEntity";
 import { TmcService } from "../tmc.service";
 import { MemberService, MemberCredential } from "../../member/member.service";
 import { CanComponentDeactivate } from "../../guards/candeactivate.guard";
-import { StaffService, StaffBookType } from "../../hr/staff.service";
+import {
+  StaffService,
+  StaffBookType,
+  PolicyEntity,
+} from "../../hr/staff.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "../../services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -22,7 +26,7 @@ import {
   ViewChildren,
   QueryList,
   EventEmitter,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import {
   IonInfiniteScroll,
@@ -31,7 +35,6 @@ import {
   ModalController,
   IonGrid,
   DomController,
-  IonToolbar
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { StaffEntity } from "src/app/hr/staff.service";
@@ -47,10 +50,11 @@ import {
   state,
   style,
   transition,
-  animate
+  animate,
 } from "@angular/animations";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
-import { CountryEntity } from '../models/CountryEntity';
+import { CountryEntity } from "../models/CountryEntity";
+import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
 export const NOT_WHITE_LIST = "notwhitelist";
 @Component({
   selector: "app-select-passenger",
@@ -61,16 +65,17 @@ export const NOT_WHITE_LIST = "notwhitelist";
     trigger("openclose", [
       state("true", style({ height: "*", opacity: "1" })),
       state("false", style({ height: "0", opacity: "0" })),
-      transition("true<=>false", animate("200ms"))
-    ])
-  ]
+      transition("true<=>false", animate("200ms")),
+    ]),
+  ],
 })
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
   private keyword: string;
   private isOpenPageAsModal = false; // 设置是否通过modalcontroller打开
-  private forType: FlightHotelTrainType; // isOpenPageAsModal 传入参数
   private bookInfos: PassengerBookInfo<any>[];
+  forType: FlightHotelTrainType; // isOpenPageAsModal 传入参数
+  FlightHotelTrainType = FlightHotelTrainType;
   removeitem: EventEmitter<PassengerBookInfo<any>>; // isOpenPageAsModal 传入参数
   isShow = true;
   vmKeyword: string;
@@ -83,7 +88,7 @@ export class SelectPassengerPage
   vmStaffs: StaffEntity[];
   selectedPassenger: StaffEntity;
   removeitemSubscription = Subscription.EMPTY;
-  canAddMoreSubscription = Subscription.EMPTY;
+  subscriptions: Subscription[] = [];
   vmNewCredential: MemberCredential;
   loading = false;
   openclose = true;
@@ -101,6 +106,7 @@ export class SelectPassengerPage
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   title = "选择旅客";
+  selectedPassengerPolicy: PolicyEntity;
   constructor(
     public modalController: ModalController,
     private navCtrl: NavController,
@@ -114,17 +120,18 @@ export class SelectPassengerPage
     private trainService: TrainService,
     private hotelService: HotelService,
     private interHotelService: InternationalHotelService,
+    private interFlightService: InternationalFlightService,
     private route: ActivatedRoute
   ) {
     this.removeitem = new EventEmitter();
   }
   getIdentityTypes() {
     this.identityTypes = Object.keys(CredentialsType)
-      .filter(k => +k)
-      .map(k => {
+      .filter((k) => +k)
+      .map((k) => {
         return {
           key: k,
-          value: CredentialsType[k]
+          value: CredentialsType[k],
         };
       });
     console.log(this.identityTypes);
@@ -133,39 +140,43 @@ export class SelectPassengerPage
     return t1 == t2;
   }
   ngAfterViewInit() {
-    this.addForm.changes.subscribe(_ => {
-      console.log("this.addForm.changes ", this.addForm.last);
-      if (this.addForm.last) {
-        this.initializeValidateAdd(this.addForm.last["el"]);
-      }
-    });
+    this.subscriptions.push(
+      this.addForm.changes.subscribe((_) => {
+        if (this.addForm.last) {
+          this.initializeValidateAdd(this.addForm.last["el"]);
+        }
+      })
+    );
   }
   ngOnDestroy() {
     this.removeitemSubscription.unsubscribe();
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   async ngOnInit() {
-    this.route.queryParamMap.subscribe(_ => {
-      if (_.get("forType")) {
-        this.forType = (_.get("forType") as any) as FlightHotelTrainType;
-      }
-      this.getIdentityTypes();
-      this.initPassengerTypes();
-      this.initCredentialsRemarks();
-      this.initRemoveitem();
-      this.initBookInfos();
-      if (this.bookInfos$) {
-        this.selectedPasengersNumber$ = this.bookInfos$.pipe(
-          tap(infos => {
-            this.bookInfos = infos;
-          }),
-          map(infos => infos.length)
-        );
-      }
-      this.isCanDeactive = false;
-    });
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe((q) => {
+        if (q.get("forType")) {
+          this.forType = (q.get("forType") as any) as FlightHotelTrainType;
+        }
+        this.getIdentityTypes();
+        this.initPassengerTypes();
+        this.initCredentialsRemarks();
+        this.initRemoveitem();
+        this.initBookInfos();
+        if (this.bookInfos$) {
+          this.selectedPasengersNumber$ = this.bookInfos$.pipe(
+            tap((infos) => {
+              this.bookInfos = infos;
+            }),
+            map((infos) => infos.length)
+          );
+        }
+        this.isCanDeactive = false;
+      })
+    );
   }
   private initRemoveitem() {
-    this.removeitemSubscription = this.removeitem.subscribe(async info => {
+    this.removeitemSubscription = this.removeitem.subscribe(async (info) => {
       let ok = false;
       if (!this.isOpenPageAsModal) {
         ok = await AppHelper.alert(
@@ -201,6 +212,12 @@ export class SelectPassengerPage
             }
             break;
           }
+          case +FlightHotelTrainType.InternationalFlight: {
+            if (!this.isOpenPageAsModal) {
+              this.interFlightService.removeBookInfo(info, true);
+            }
+            break;
+          }
         }
       }
     });
@@ -218,15 +235,34 @@ export class SelectPassengerPage
     if (this.forType == FlightHotelTrainType.HotelInternational) {
       this.bookInfos$ = this.interHotelService.getBookInfoSource();
     }
+    if (this.forType == FlightHotelTrainType.InternationalFlight) {
+      this.bookInfos$ = this.interFlightService.getBookInfoSource().pipe(
+        tap((it) => {
+          if (it && it.length) {
+            const one = it[0];
+            if (
+              one.passenger &&
+              !one.passenger.isNotWhiteList &&
+              one.passenger.Policy
+            ) {
+              this.selectedPassengerPolicy = one.passenger.Policy;
+            }
+          } else {
+            this.selectedPassengerPolicy = null;
+          }
+        })
+      );
+    }
     if (this.bookInfos$) {
       this.bookInfos$ = this.bookInfos$.pipe(
-        tap(infos => {
+        tap((infos) => {
           this.bookInfos = infos;
           console.log(
             "bookinfos",
             this.bookInfos &&
               this.bookInfos.map(
-                it => it.passenger && it.passenger.Policy && it.passenger.Policy
+                (it) =>
+                  it.passenger && it.passenger.Policy && it.passenger.Policy
               )
           );
         })
@@ -237,40 +273,40 @@ export class SelectPassengerPage
     this.credentialsRemarks = [
       {
         key: "客户",
-        value: LanguageHelper.Flight.getPassengerTypeCustomerTip()
+        value: LanguageHelper.Flight.getPassengerTypeCustomerTip(),
       },
       {
         key: "供应商",
-        value: LanguageHelper.Flight.getPassengerTypeSupplierTip()
+        value: LanguageHelper.Flight.getPassengerTypeSupplierTip(),
       },
       {
         key: "员工",
-        value: LanguageHelper.Flight.getPassengerTypeEmployeeTip()
+        value: LanguageHelper.Flight.getPassengerTypeEmployeeTip(),
       },
       {
         key: "其它乘客类别",
-        value: LanguageHelper.Flight.getPassengerTypeOtherTip()
-      }
+        value: LanguageHelper.Flight.getPassengerTypeOtherTip(),
+      },
     ];
   }
   private initPassengerTypes() {
     this.passengerTypes = [
       {
         key: "1",
-        value: LanguageHelper.Flight.getPassengerTypeCustomerTip()
+        value: LanguageHelper.Flight.getPassengerTypeCustomerTip(),
       },
       {
         key: "2",
-        value: LanguageHelper.Flight.getPassengerTypeSupplierTip()
+        value: LanguageHelper.Flight.getPassengerTypeSupplierTip(),
       },
       {
         key: "3",
-        value: LanguageHelper.Flight.getPassengerTypeEmployeeTip()
+        value: LanguageHelper.Flight.getPassengerTypeEmployeeTip(),
       },
       {
         key: "4",
-        value: LanguageHelper.Flight.getPassengerTypeOtherTip()
-      }
+        value: LanguageHelper.Flight.getPassengerTypeOtherTip(),
+      },
     ];
   }
   async canAddNotWhiteListCredential() {
@@ -294,14 +330,14 @@ export class SelectPassengerPage
       component: SelectedPassengersComponent,
       componentProps: {
         bookInfos$: this.bookInfos$,
-        removeitem: this.removeitem
-      }
+        removeitem: this.removeitem,
+      },
     });
     await m.present();
     await m.onDidDismiss();
   }
   doRefresh(keyword) {
-    this.domCtrl.write(_ => {
+    this.domCtrl.write((_) => {
       this.openclose = true;
     });
     this.currentPage = 1;
@@ -317,7 +353,7 @@ export class SelectPassengerPage
     this.loadMore();
   }
   onSearch(event: any) {
-    console.log("onSearch", event);
+    // console.log("onSearch", event);
     this.loading = true;
     this.staffCredentails = [];
     this.doRefresh((this.vmKeyword || "").trim());
@@ -327,20 +363,20 @@ export class SelectPassengerPage
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Staff-List";
     req.Data = {
-      Name: this.keyword.trim()
+      Name: this.keyword.trim(),
     };
     const staffs: StaffEntity[] = await this.apiService
       .getPromiseData<StaffEntity[]>(req)
-      .then(res => res || [])
-      .catch(_ => []);
-    if (this.ionrefresher) {
+      .then((res) => res || [])
+      .catch((_) => []);
+    if (this.ionrefresher && this.currentPage <= 1) {
       this.ionrefresher.complete();
     }
     // 代理或者特殊，显示可以选择非白名单
     if (await this.canAddNotWhiteListCredential()) {
       const passenger = new StaffEntity();
       passenger.isNotWhiteList = true;
-      const tmc = await this.tmcService.getTmc(false).catch(_ => null);
+      const tmc = await this.tmcService.getTmc(false).catch((_) => null);
       passenger.Account = new AccountEntity();
       passenger.Account.Id = tmc && tmc.Account.Id; // 所选的tmcId
       passenger.AccountId = passenger.Account.Id;
@@ -351,6 +387,20 @@ export class SelectPassengerPage
     this.loading = false;
   }
   async onSelect(s: StaffEntity) {
+    if (this.forType == FlightHotelTrainType.InternationalFlight) {
+      if (s.Policy && s.Policy.Id) {
+        const one = this.interFlightService.getBookInfos()[0];
+        if (
+          one &&
+          !one.isNotWhitelist &&
+          one.passenger.Policy &&
+          one.passenger.Policy.Id != s.Policy.Id
+        ) {
+          AppHelper.toast("不能选择此旅客，其差标与已选旅客差标不一致");
+          return;
+        }
+      }
+    }
     console.log("onSelect", s);
     this.selectedPassenger = s;
     this.vmStaffs = null; // 是否显示搜索列表
@@ -361,14 +411,17 @@ export class SelectPassengerPage
     // 白名单
     if (!s.isNotWhiteList) {
       const staffCredentails = await this.getCredentials(s.AccountId);
-      if (this.forType == FlightHotelTrainType.HotelInternational) {
+      if (
+        this.forType == FlightHotelTrainType.HotelInternational ||
+        this.forType == FlightHotelTrainType.InternationalFlight
+      ) {
         const temp = staffCredentails.filter(
-          it =>
+          (it) =>
             it.Type == CredentialsType.Passport ||
             CredentialsType.HmPass == it.Type
         );
         const temp2 = staffCredentails.filter(
-          it =>
+          (it) =>
             !(
               it.Type == CredentialsType.Passport ||
               CredentialsType.HmPass == it.Type
@@ -379,13 +432,16 @@ export class SelectPassengerPage
         this.staffCredentails = staffCredentails;
       }
       let first =
-        this.staffCredentails.find(it => it.Type == CredentialsType.IdCard) ||
+        this.staffCredentails.find((it) => it.Type == CredentialsType.IdCard) ||
         this.staffCredentails.length
           ? this.staffCredentails[0]
           : null;
-      if (this.forType == FlightHotelTrainType.HotelInternational) {
+      if (
+        this.forType == FlightHotelTrainType.HotelInternational ||
+        this.forType == FlightHotelTrainType.InternationalFlight
+      ) {
         first = this.staffCredentails.find(
-          it => it.Type == CredentialsType.Passport
+          (it) => it.Type == CredentialsType.Passport
         );
       }
       if (first) {
@@ -422,13 +478,14 @@ export class SelectPassengerPage
     const id = uuid
       .substr(0, 8)
       .split("")
-      .map(i => {
+      .map((i) => {
         return +i || +i === 0 ? i : i.charCodeAt(0);
       })
       .join("");
     const id2 = uuid.match(/\d+/g) ? uuid.match(/\d+/g).join("") : "";
     return id2 || id;
   }
+
   onSelectCredential(credentialId: string) {
     console.log("onSelectCredential", credentialId);
     this.selectedCredentialId = credentialId;
@@ -447,7 +504,7 @@ export class SelectPassengerPage
     selectedCredential = (this.staffCredentails || [])
       .concat(this.frqPassengerCredentials || [])
       .concat(this.vmNewCredential ? [this.vmNewCredential] : [])
-      .find(c => c.Id == this.selectedCredentialId);
+      .find((c) => c.Id == this.selectedCredentialId);
     if (!selectedCredential) {
       AppHelper.alert(
         LanguageHelper.Flight.getMustSelectOneCredentialTip(),
@@ -494,7 +551,7 @@ export class SelectPassengerPage
       selectedCredential = {
         ...selectedCredential,
         Country: this.vmNewCredential.Country.Code,
-        IssueCountry: this.vmNewCredential.IssueCountry.Code
+        IssueCountry: this.vmNewCredential.IssueCountry.Code,
       };
     }
     if (!selectedCredential.Number) {
@@ -509,15 +566,15 @@ export class SelectPassengerPage
     const passengerBookInfo: PassengerBookInfo<any> = {
       credential: ({
         ...selectedCredential,
-        CheckName: `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`
+        CheckName: `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
       } as any) as CredentialsEntity,
       isNotWhitelist: this.selectedPassenger.isNotWhiteList,
       passenger: {
         ...this.selectedPassenger,
         Name:
           this.selectedPassenger.Name ||
-          `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`
-      }
+          `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
+      },
     };
     const canAdd = await this.onAddPassengerBookInfo(passengerBookInfo);
     this.isCanDeactive = true;
@@ -542,7 +599,7 @@ export class SelectPassengerPage
   ) {
     const action = () => {
       const one = bookInfos.find(
-        item =>
+        (item) =>
           item.isNotWhitelist &&
           item.credential.Id == passengerBookInfo.credential.Id
       );
@@ -588,6 +645,16 @@ export class SelectPassengerPage
       this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.flightService.addPassengerBookInfo(passengerBookInfo);
     }
+    if (this.forType == FlightHotelTrainType.InternationalFlight) {
+      const can = this.interFlightService.getBookInfos().length < 9;
+      if (!can) {
+        AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
+        return false;
+      }
+      const bookInfos = this.interFlightService.getBookInfos();
+      this.checkNewCredentialId(passengerBookInfo, bookInfos);
+      this.interFlightService.addPassengerBookInfo(passengerBookInfo);
+    }
     if (this.forType == FlightHotelTrainType.Train) {
       if (this.trainService.getBookInfos().length > 4) {
         AppHelper.alert(LanguageHelper.Train.getCannotBookMorePassengerTip());
@@ -605,7 +672,7 @@ export class SelectPassengerPage
     }
     const info = await this.validatorService
       .get("Beeant.Domain.Entities.Member.CredentialsEntity", "Add")
-      .catch(e => {
+      .catch((e) => {
         AppHelper.alert(e);
         return { rule: [] };
       });
@@ -677,7 +744,7 @@ export class SelectPassengerPage
       }
       if (!obj[pro]) {
         const rule = rules.find(
-          it => it.Name.toLowerCase() == pro.toLowerCase()
+          (it) => it.Name.toLowerCase() == pro.toLowerCase()
         );
         const input = container.querySelector(
           `input[ValidateName=${pro}]`
@@ -685,7 +752,7 @@ export class SelectPassengerPage
         console.log(`input[ValidateName=${pro}]`, input);
 
         if (rule) {
-          AppHelper.alert(rule.Message, true).then(_ => {
+          AppHelper.alert(rule.Message, true).then((_) => {
             if (input) {
               setTimeout(() => {
                 input.focus();
@@ -709,7 +776,7 @@ export class SelectPassengerPage
     if (!this.isOpenPageAsModal) {
       this.navCtrl.pop();
     } else {
-      this.modalController.getTop().then(t => {
+      this.modalController.getTop().then((t) => {
         if (t) {
           t.dismiss();
         }
@@ -733,12 +800,12 @@ export class SelectPassengerPage
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Staff-Credentials";
     req.Data = {
-      AccountId: accountId
+      AccountId: accountId,
     };
     const credentials = await this.apiService
       .getPromiseData<MemberCredential[]>(req)
-      .then(res => res || [])
-      .catch(_ => []);
+      .then((res) => res || [])
+      .catch((_) => []);
     if (await this.canAddNotWhiteListCredential()) {
       this.frqPassengerCredentials = await this.getPassengers(accountId);
     }
@@ -752,7 +819,7 @@ export class SelectPassengerPage
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Staff-Passengers";
     req.Data = {
-      AccountId: accountId
+      AccountId: accountId,
     };
     const passengers: any[] = await this.apiService
       .getPromiseData<
@@ -773,13 +840,13 @@ export class SelectPassengerPage
           Gender: string;
         }[]
       >(req)
-      .then(res => res || [])
-      .catch(_ => []);
-    return passengers.map(r => ({
+      .then((res) => res || [])
+      .catch((_) => []);
+    return passengers.map((r) => ({
       ...r,
       Type: r.CredentialsType,
       TypeName: r.CredentialsTypeName,
-      variables: "FrequentPassenger"
+      variables: "FrequentPassenger",
     }));
   }
   initializeValidateAdd(el: HTMLElement) {
@@ -809,8 +876,8 @@ export class SelectPassengerPage
       component: SelectCountryModalComponent,
       componentProps: {
         requestCode: this.requestCode,
-        title: LanguageHelper.getSelectIssueCountryTip()
-      }
+        title: LanguageHelper.getSelectIssueCountryTip(),
+      },
     });
     m.present();
     const result = await m.onDidDismiss();

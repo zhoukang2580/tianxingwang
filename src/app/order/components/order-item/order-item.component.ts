@@ -13,7 +13,7 @@ import {
   OnChanges,
   SimpleChanges,
   ViewChild,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import { OrderEntity, OrderStatusType } from "src/app/order/models/OrderEntity";
 import { OrderFlightTripStatusType } from "src/app/order/models/OrderFlightTripStatusType";
@@ -32,7 +32,7 @@ import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
 import {
   PopoverController,
   PickerController,
-  IonDatetime
+  IonDatetime,
 } from "@ionic/angular";
 import { RefundFlightTicketTipComponent } from "../refund-flight-ticket-tip/refund-flight-ticket-tip.component";
 import { OrderService } from "../../order.service";
@@ -41,7 +41,7 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
-  styleUrls: ["./order-item.component.scss"]
+  styleUrls: ["./order-item.component.scss"],
 })
 export class OrderItemComponent implements OnInit, OnChanges {
   private selfBookChannals = `Android  客户H5  IOS 客户PC`;
@@ -57,9 +57,10 @@ export class OrderItemComponent implements OnInit, OnChanges {
     ticketId: string;
     trip: OrderFlightTripEntity;
   }>;
-  @Output() abolishFlightOrder: EventEmitter<{
+  @Output() abolishOrder: EventEmitter<{
     orderId: string;
     ticketId: string;
+    tag: "flight" | "train";
   }>;
   @Output() refundFlightTicket: EventEmitter<{
     orderId: string;
@@ -87,7 +88,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     this.payaction = new EventEmitter();
     this.refundTrainTicket = new EventEmitter();
     this.refundFlightTicket = new EventEmitter();
-    this.abolishFlightOrder = new EventEmitter();
+    this.abolishOrder = new EventEmitter();
     this.exchangeFlightTicket = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
@@ -105,20 +106,20 @@ export class OrderItemComponent implements OnInit, OnChanges {
           this.order.VariablesJsonObj || JSON.parse(this.order.Variables);
         if (this.order.OrderFlightTickets) {
           this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(
-            t => {
+            (t) => {
               if (t.Variables && !t.VariablesJsonObj) {
                 t.VariablesJsonObj =
                   t.VariablesJsonObj || JSON.parse(t.Variables) || {};
               }
               if (t.OrderFlightTrips) {
-                t.OrderFlightTrips = t.OrderFlightTrips.map(trip => {
+                t.OrderFlightTrips = t.OrderFlightTrips.map((trip) => {
                   if (
                     !trip.OrderFlightTicket ||
                     !trip.OrderFlightTicket.Passenger
                   ) {
                     trip.OrderFlightTicket = {
                       Id: t.Id,
-                      Passenger: t.Passenger
+                      Passenger: t.Passenger,
                     } as any;
                   }
                   return trip;
@@ -141,13 +142,16 @@ export class OrderItemComponent implements OnInit, OnChanges {
           );
         }
         this.initPassengers();
-        this.checkIfOrderFlightTicketShow();
+        // this.initInsuranceAmount();
+        this.order.OrderFlightTickets = this.orderService.checkIfOrderFlightTicketShow(
+          this.order.OrderFlightTickets
+        );
       }
     }
   }
   private sortOrderFlightTicketsByTime(arr: OrderFlightTicketEntity[]) {
     const result = ((arr && arr.slice(0)) || []).filter(
-      t => t.OrderFlightTrips && t.OrderFlightTrips.length > 0
+      (t) => t.OrderFlightTrips && t.OrderFlightTrips.length > 0
     );
     result.sort((t1, t2) => {
       return (
@@ -157,21 +161,21 @@ export class OrderItemComponent implements OnInit, OnChanges {
     });
     return result;
   }
-  private checkIfOrderFlightTicketShow() {
-    if (this.order && this.order.OrderFlightTickets) {
-      const statusArr = [
-        OrderFlightTicketStatusType.ChangeTicket,
-        // OrderFlightTicketStatusType.Refunded
-      ];
-      this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
-        if (t.VariablesJsonObj) {
-          const isShow = !statusArr.some(s => s == t.Status);
-          t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
-        }
-        return t;
-      });
-    }
-  }
+  // private checkIfOrderFlightTicketShow() {
+  //   if (this.order && this.order.OrderFlightTickets) {
+  //     const statusArr = [
+  //       OrderFlightTicketStatusType.ChangeTicket,
+  //       // OrderFlightTicketStatusType.Refunded
+  //     ];
+  //     this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
+  //       if (t.VariablesJsonObj) {
+  //         const isShow = !statusArr.some(s => s == t.Status);
+  //         t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
+  //       }
+  //       return t;
+  //     });
+  //   }
+  // }
   check(orderTrainTicket: OrderTrainTicketEntity) {
     return (
       orderTrainTicket &&
@@ -206,7 +210,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
     return [
       OrderFlightTicketStatusType.Issued,
-      OrderFlightTicketStatusType.Exchanged
+      OrderFlightTicketStatusType.Exchanged,
     ].includes(orderFlightTicket && orderFlightTicket.Status);
   }
   private showBtnByTimeAndTicketType(
@@ -215,7 +219,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     return (
       orderFlightTicket &&
       orderFlightTicket.TicketType == OrderFlightTicketType.Domestic &&
-      orderFlightTicket.OrderFlightTrips.some(trip =>
+      orderFlightTicket.OrderFlightTrips.some((trip) =>
         this.isAfterTomorrow(trip.TakeoffTime)
       )
     );
@@ -236,7 +240,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
     return [
       OrderFlightTicketStatusType.Booked,
-      OrderFlightTicketStatusType.BookExchanged
+      OrderFlightTicketStatusType.BookExchanged,
     ].includes(orderFlightTicket.Status);
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
@@ -252,26 +256,28 @@ export class OrderItemComponent implements OnInit, OnChanges {
       orderFlightTicket &&
       [
         OrderFlightTicketStatusType.Issued,
-        OrderFlightTicketStatusType.Exchanged
+        OrderFlightTicketStatusType.Exchanged,
       ].includes(orderFlightTicket.Status)
     );
   }
   private initPassengers() {
     if (this.order) {
       if (this.order.OrderFlightTickets) {
-        this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
-          t.Passenger = this.getTicketPassenger(t);
-          return t;
-        });
+        this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(
+          (t) => {
+            t.Passenger = this.getTicketPassenger(t);
+            return t;
+          }
+        );
       }
       if (this.order.OrderTrainTickets) {
-        this.order.OrderTrainTickets = this.order.OrderTrainTickets.map(t => {
+        this.order.OrderTrainTickets = this.order.OrderTrainTickets.map((t) => {
           t.Passenger = this.getTicketPassenger(t);
           return t;
         });
       }
       if (this.order.OrderHotels) {
-        this.order.OrderHotels = this.order.OrderHotels.map(t => {
+        this.order.OrderHotels = this.order.OrderHotels.map((t) => {
           t.Passenger = this.getTicketPassenger(t);
           t.countDay =
             (AppHelper.getDate(t.EndDate).getTime() -
@@ -292,7 +298,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     this.exchangeFlightTicket.emit({
       orderId: this.order.Id,
       ticketId: ticket.Id,
-      trip
+      trip,
     });
   }
   onAbolishFlightOrder(evt: CustomEvent, ticket: OrderFlightTicketEntity) {
@@ -302,18 +308,36 @@ export class OrderItemComponent implements OnInit, OnChanges {
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
-    ).then(ok => {
+    ).then((ok) => {
       if (ok) {
-        this.abolishFlightOrder.emit({
+        this.abolishOrder.emit({
           orderId: this.order.Id,
-          ticketId: ticket.Id
+          ticketId: ticket.Id,
+          tag: "flight",
+        });
+      }
+    });
+  }
+  onAbolishTraninOrder(evt: CustomEvent, train: OrderTrainTicketEntity) {
+    evt.stopPropagation();
+    AppHelper.alert(
+      "确定取消订单？",
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    ).then((ok) => {
+      if (ok) {
+        this.abolishOrder.emit({
+          orderId: this.order.Id,
+          ticketId: train.Id,
+          tag: "train",
         });
       }
     });
   }
   private getTicketPassenger(ticket: { Passenger: OrderPassengerEntity }) {
     const p = (this.order && this.order.OrderPassengers) || [];
-    return p.find(it => it.Id == (ticket.Passenger && ticket.Passenger.Id));
+    return p.find((it) => it.Id == (ticket.Passenger && ticket.Passenger.Id));
   }
   getDateWeekName(date: string) {
     if (!date) {
@@ -321,18 +345,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
     }
     const d = this.calendarService.generateDayModelByDate(date);
     return d.dayOfWeekName;
-  }
-  getFlightOrderTotalAmount() {
-    let amount = 0;
-    const order = this.order;
-    if (!order || !order.OrderItems) {
-      return amount;
-    }
-    amount = order.OrderItems.reduce(
-      (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
-      0
-    );
-    return amount < 0 ? 0 : amount;
   }
   async onRefundFlightTicket(
     // 退票弹框
@@ -346,7 +358,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
       const popover = await this.popoverCtrl.create({
         component: RefundFlightTicketTipComponent,
         cssClass: "flight-refund-comp",
-        translucent: true
+        translucent: true,
       });
       await popover.present();
       const res = await popover.onDidDismiss();
@@ -359,7 +371,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
         this.refundFlightTicket.emit({
           ...result,
           orderId: this.order.Id,
-          ticketId: ticket.Id
+          ticketId: ticket.Id,
         });
       }
       // AppHelper.toast();
@@ -426,7 +438,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     rev =
       !order.OrderTrainTickets ||
       order.OrderTrainTickets.filter(
-        it =>
+        (it) =>
           it.Status == OrderTrainTicketStatusType.Booking ||
           it.Status == OrderTrainTicketStatusType.BookExchanging
       ).length > 0;
@@ -439,13 +451,13 @@ export class OrderItemComponent implements OnInit, OnChanges {
       return amount;
     }
     if (Tmc.IsShowServiceFee) {
-      amount = order.OrderItems.filter(it => it.Key == key).reduce(
+      amount = order.OrderItems.filter((it) => it.Key == key).reduce(
         (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
         0
       );
     } else {
       amount = order.OrderItems.filter(
-        it => it.Key == key && !(it.Tag || "").endsWith("Fee")
+        (it) => it.Key == key && !(it.Tag || "").endsWith("Fee")
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount > 0 ? amount : 0;
@@ -465,16 +477,16 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (orderFlightTicket && this.order && this.order.OrderItems) {
       const flighttripKeys =
         (orderFlightTicket.OrderFlightTrips &&
-          orderFlightTicket.OrderFlightTrips.map(it => it.Key)) ||
+          orderFlightTicket.OrderFlightTrips.map((it) => it.Key)) ||
         [];
       const keys =
         (this.order.OrderInsurances &&
-          this.order.OrderInsurances.filter(it =>
-            flighttripKeys.some(fk => fk == it.AdditionKey)
-          ).map(it => it.Key)) ||
+          this.order.OrderInsurances.filter((it) =>
+            flighttripKeys.some((fk) => fk == it.AdditionKey)
+          ).map((it) => it.Key)) ||
         [];
-      amount = this.order.OrderItems.filter(it =>
-        keys.some(k => k == it.Key)
+      amount = this.order.OrderItems.filter((it) =>
+        keys.some((k) => k == it.Key)
       ).reduce((acc, it) => {
         acc = AppHelper.add(acc, +it.Amount);
         return acc;
@@ -487,21 +499,20 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (this.order && this.order.OrderItems) {
       const flighttripKeys =
         (orderTrainTicket.OrderTrainTrips &&
-          orderTrainTicket.OrderTrainTrips.map(it => it.Key)) ||
+          orderTrainTicket.OrderTrainTrips.map((it) => it.Key)) ||
         [];
       const keys =
         (this.order.OrderInsurances &&
-          this.order.OrderInsurances.filter(it =>
+          this.order.OrderInsurances.filter((it) =>
             flighttripKeys.includes(it.AdditionKey)
-          ).map(it => it.Key)) ||
+          ).map((it) => it.Key)) ||
         [];
-      amount = this.order.OrderItems.filter(it => keys.includes(it.Key)).reduce(
-        (acc, it) => {
-          acc = AppHelper.add(acc, +it.Amount);
-          return acc;
-        },
-        0
-      );
+      amount = this.order.OrderItems.filter((it) =>
+        keys.includes(it.Key)
+      ).reduce((acc, it) => {
+        acc = AppHelper.add(acc, +it.Amount);
+        return acc;
+      }, 0);
     }
     return amount;
   }
@@ -510,7 +521,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
       this.order &&
       this.order.OrderFlightTickets &&
       this.order.OrderFlightTickets.filter(
-        t => t.Passenger && t.Passenger.Id == (p && p.Id)
+        (t) => t.Passenger && t.Passenger.Id == (p && p.Id)
       );
     console.log("getPassengerTicketStatus", tickets);
     if (tickets && tickets.length) {
@@ -522,8 +533,24 @@ export class OrderItemComponent implements OnInit, OnChanges {
     return (
       ticket.OrderFlightTrips &&
       ticket.OrderFlightTrips.filter(
-        it => it.OrderFlightTicket && it.OrderFlightTicket.Id
+        (it) => it.OrderFlightTicket && it.OrderFlightTicket.Id
       )
     );
   }
+  // initInsuranceAmount(){
+  //   this.order.OrderTrainTickets.forEach((it, idx) => {
+  //     // it.VariablesJsonObj.isShow
+  //     this.getTicketOrderInsurances(it.Key);
+  //   });
+  // }
+  // private getTicketOrderInsurances(tkey: string) {
+  //   return (
+  //     (this.order &&
+  //       this.order.OrderInsurances &&
+  //       this.order.OrderInsurances.filter(
+  //         it => it.TravelKey == tkey
+  //       )) ||
+  //     []
+  //   ).length>0;
+  // }
 }

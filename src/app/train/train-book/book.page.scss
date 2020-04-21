@@ -1,11 +1,10 @@
-ion-item-divider[sticky] {
+.sticky {
   border-left: 4px solid var(--ion-color-secondary);
-  z-index: 1000;
 }
 .back-icon {
   color: rgba(var(--ion-color-dark-rgb), 0.5);
 }
-ion-input.TravelNumber{
+ion-input.TravelNumber {
   // opacity: .8;
   font-size: 0.8rem;
 }

@@ -6,21 +6,18 @@ import { Component, OnInit, EventEmitter, Input, Output } from "@angular/core";
   styleUrls: ["./book-expense-types-comp.component.scss"]
 })
 export class BookExpenseTypesCompComponent implements OnInit {
-  expenseType: any;
-  @Input() expenseTypes: any[];
-  @Output() expenseTypesChange: EventEmitter<any>;
+  @Input() expenseType: string;
+  @Input() expenseTypes: string[];
+  @Output() expenseTypeChange: EventEmitter<any>;
   constructor() {
-    this.expenseTypesChange = new EventEmitter();
+    this.expenseTypeChange = new EventEmitter();
   }
 
   ngOnInit() {}
   onValueChange() {
-    if (this.expenseTypes) {
-      this.expenseTypes = this.expenseTypes.map(it => {
-        it.isChecked = it == this.expenseType;
-        return it;
-      });
-      this.expenseTypesChange.emit(this.expenseTypes);
-    }
+    this.expenseTypeChange.emit(this.expenseType);
+  }
+  compareFn(t1: string, t2: string) {
+    return t1 && t2 ? t1 === t2 : false;
   }
 }

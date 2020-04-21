@@ -41,12 +41,16 @@
           订单编号：<span>{{trip.OrderId}}</span>
         </p>
       </ion-text>
-      <div class='btns' *ngIf='isShowInsurance'>
-        <ng-container *ngFor='let p of products'>
-          <ion-button color='secondary' size='small' (click)='onShowSelectedInsurance(p,trip,$event)'>
-            {{p.Name}}({{p.Price}})
-          </ion-button>
-        </ng-container>
+      <div class='btns' *ngIf='isShowInsurance' >
+        <!-- orderDetail.insuranceAmount -->
+        <!-- <ng-container *ngIf="trip.OrderInsurances.length>0"> -->
+
+          <ng-container *ngFor='let p of trip.InsuranceProducts'>
+            <ion-button color='secondary' size='small' (click)='onShowSelectedInsurance(p,trip,$event)'>
+              {{p.Name}}({{p.Price}})
+            </ion-button>
+          </ng-container>
+        <!-- </ng-container> -->
         <ng-container *ngIf='getOrderInsurad() as orderInsurad'>
           <ion-button color='secondary' (click)='payInsurance(orderInsurad.Key,trip.OrderId,$event)' size='small'>
             继续支付{{orderInsurad.Name}}

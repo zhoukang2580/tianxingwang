@@ -16,4 +16,8 @@ export class SearchTicketConditionModel {
   fromCityName: string;
   toCityName: string;
   pageIndex: number;
+  LastFlightId: string;
+  LastHotelId: string; // = res.Data.LastHotelId;
+  LastTime: string; // = res.Data.LastTime;
+  LastTrainId: string; // = res.Data.LastTrainId;
 }

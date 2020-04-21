@@ -10,18 +10,20 @@ import {
   ViewChild,
   OnDestroy,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
+  ViewChildren,
+  QueryList,
+  ElementRef
 } from "@angular/core";
 import { AvailableDate } from "../../models/AvailableDate";
 import { CalendarService } from "../../calendar.service";
 import { DayModel } from "../../models/DayModel";
 import {
-  PopoverController,
-  IonSelect,
   IonInfiniteScroll,
-  IonRefresher
+  IonRefresher,
+  IonContent,
+  Platform
 } from "@ionic/angular";
-import { DateSelectWheelPopoverComponent } from "../date-select-wheel-popover/date-select-wheel-popover.component";
 @Component({
   selector: "app-calendar",
   templateUrl: "./calendar.component.html",
@@ -31,8 +33,11 @@ export class CalendarComponent
   implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   private subscription = Subscription.EMPTY;
   private page: { m: number; y: number };
+  private isSrollToCurYm = false;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonContent, { static: true }) content: IonContent;
   @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChildren("calendar") calendareles: QueryList<ElementRef<HTMLElement>>;
   weeks: string[];
   @Input() title: string;
   @Input() forType: FlightHotelTrainType;
@@ -41,11 +46,16 @@ export class CalendarComponent
   @Output() monthChange: EventEmitter<any>;
   @Output() back: EventEmitter<any>;
   @Output() daySelected: EventEmitter<any>;
+  @Input() scrollToMonth: string;
   year: number;
   month: number;
   months: { month: number; selected: boolean }[];
   years: { year: number; selected: boolean }[] = [];
-  constructor(private calendarService: CalendarService) {
+  constructor(
+    private calendarService: CalendarService,
+    private el: ElementRef<HTMLElement>,
+    private plt: Platform
+  ) {
     this.back = new EventEmitter();
     this.daySelected = new EventEmitter();
     this.yearChange = new EventEmitter();
@@ -88,14 +98,14 @@ export class CalendarComponent
     let nextM = m;
     this.page.m = m;
     this.page.y = y;
-    for (let i = 1; i <= 1; i++) {
+    for (let i = 1; i <= 3; i++) {
       nextM = ++nextM;
       if (nextM > 12) {
         y += 1;
         nextM = 1;
       }
       result.push(
-        await this.calendarService.generateYearNthMonthCalendar(y, nextM)
+         this.calendarService.generateYearNthMonthCalendar(y, nextM)
       );
     }
     this.calendars = this.calendars.concat(result);
@@ -123,7 +133,7 @@ export class CalendarComponent
       if (months > 1) {
         for (let i = 1; i <= months; i++) {
           this.calendars.unshift(
-            await this.calendarService.generateYearNthMonthCalendar(
+             this.calendarService.generateYearNthMonthCalendar(
               year,
               month - i
             )
@@ -132,12 +142,12 @@ export class CalendarComponent
       } else {
         if (this.refresher) {
           this.refresher.disabled = true;
-          let calendar = await this.calendarService.generateYearNthMonthCalendar(
+          let calendar =  this.calendarService.generateYearNthMonthCalendar(
             year,
             month - 1
           );
           if (month - 1 <= 0) {
-            calendar = await this.calendarService.generateYearNthMonthCalendar(
+            calendar =  this.calendarService.generateYearNthMonthCalendar(
               year - 1,
               12
             );
@@ -195,6 +205,28 @@ export class CalendarComponent
     if (this.forType == FlightHotelTrainType.Train) {
       if (this.scroller) {
         this.scroller.disabled = true;
+      }
+    }
+    this.calendareles.changes.subscribe(() => {
+      if (this.scrollToMonth) {
+        if (this.isSrollToCurYm) {
+          return;
+        }
+        this.isSrollToCurYm = true;
+        setTimeout(() => {
+          this.moveToCurMonth(this.scrollToMonth);
+        }, 200);
+      }
+    });
+  }
+  private moveToCurMonth(scrollToMonth: string) {
+    console.log("scrollToMonth", scrollToMonth);
+    const el = this.el.nativeElement.querySelector(`[ym='${scrollToMonth}']`);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      if (rect) {
+        this.isSrollToCurYm = true;
+        this.content.scrollByPoint(0, rect.top - this.plt.height() / 2, 100);
       }
     }
   }

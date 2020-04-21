@@ -1,14 +1,22 @@
-<ng-container *ngIf='tmcOutNumberInfos?.length' >
-  <ion-item>
-    <ion-text [color]='isExchange?"medium":"dark"'><strong>外部编号:</strong></ion-text>
-  </ion-item>
-  <ion-item *ngFor='let n of tmcOutNumberInfos' (click)='onSelectTravelNumber(n)'
+<ng-container *ngIf='tmcOutNumberInfos?.length'>
+  <ion-item *ngFor='let n of vmTmcOutNumberInfos' [class.hidden]='hints?.length&&!n.hasfocus'
     [disabled]='n.isDisabled||isExchange||!isShowGroupedInfo'>
     <ion-label>{{n.label}}:</ion-label>
-    <ion-input class='travel-number' (ionChange)='onChange(n)' [disabled]='n.isDisabled||isExchange||!isShowGroupedInfo'
-      [value]='n.value' [(ngModel)]='n.value'
+    <ion-input class='travel-number' (ionFocus)='onFocus(n)' (ionBlur)='onBlur(n)' (ionChange)='onChange(n,$event)'
+      [disabled]='n.isDisabled||isExchange||!isShowGroupedInfo' [(ngModel)]='n.value' placeholder="{{n.label||'暂无数据'}}">
+    </ion-input>
+  </ion-item>
+  <ion-item *ngFor='let h of hints' @flyInOut  (click)='onSelectText(h)'>
+    <ion-label >{{h}}</ion-label>
+  </ion-item>
+  <ion-item *ngFor='let n of travelNumbers' [class.hidden]='hints?.length'
+    [disabled]='n.isDisabled||isExchange||!isShowGroupedInfo' (click)='onSelectTravelNumber(n)'>
+    <ion-label>{{n.label}}:</ion-label>
+    <ion-input class='travel-number' #numberInputEle [attr.has-data]='n.labelDataList?.length>0' [attr.label]='n.label'
+      (ionChange)='onChange(n,$event)' [disabled]='n.isDisabled||isExchange||!isShowGroupedInfo' [(ngModel)]='n.value'
       placeholder="{{n.isLoadingNumber?'正在加载行程单号':(n.loadTravelUrlErrorMsg||'暂无数据')}}">
     </ion-input>
-    <ion-icon name='caret-down-outline' color='secondary' *ngIf='n.canSelect&&!isExchange&&isShowGroupedInfo'></ion-icon>
+    <ion-icon name='caret-down-outline' color='secondary' *ngIf='!isExchange&&isShowGroupedInfo'>
+    </ion-icon>
   </ion-item>
 </ng-container>

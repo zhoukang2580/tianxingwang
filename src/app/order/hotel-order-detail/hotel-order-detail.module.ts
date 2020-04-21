@@ -7,20 +7,28 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { OrderDetailPage } from "./order-detail.page";
 import { FlightPipesModule } from "src/app/flight/pipes/Pipes.module";
 import { OrderComponentsModule } from '../components/components.module';
 import { FlightComponentsModule } from 'src/app/flight/components/components.module';
 
+import { HotelOrderDetailPageRoutingModule } from './hotel-order-detail-routing.module';
+
+import { HotelOrderDetailPage } from './hotel-order-detail.page';
+
 const routes: Routes = [
   {
     path: "",
-    component: OrderDetailPage
+    component: HotelOrderDetailPage
   }
 ];
 
+
 @NgModule({
   imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    HotelOrderDetailPageRoutingModule,
     CommonModule,
     FormsModule,
     IonicModule,
@@ -31,6 +39,6 @@ const routes: Routes = [
     TmcComponentsModule,
     FlightComponentsModule
   ],
-  declarations: [OrderDetailPage]
+  declarations: [HotelOrderDetailPage]
 })
-export class OrderDetailPageModule {}
+export class HotelOrderDetailPageModule {}

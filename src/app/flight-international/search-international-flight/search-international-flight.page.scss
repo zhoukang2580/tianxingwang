@@ -11,7 +11,7 @@
     justify-content: center;
     font-size: 0.8rem;
     padding: 0.5em;
-    margin-top: 0.5em;
+    // margin-top: 0.5em;
     margin-right: 0.5em;
   }
 }
@@ -20,6 +20,7 @@ ul {
   margin: 0.5em;
   padding: 0;
   li {
+    margin-top: 0.5em;
     display: flex;
     &:not(:last-child) {
       border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
@@ -27,10 +28,7 @@ ul {
   }
 }
 .city-name {
-  max-width: 5em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 5em;
-  min-width: 5em;
+  white-space: normal;
+  max-width: 7em;
+  min-width: 7em;
 }

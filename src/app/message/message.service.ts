@@ -112,12 +112,14 @@ export class MessageService {
     };
     return this.apiService
       .getPromiseData<MessageModel[]>(req)
-      .catch(_ => [] as MessageModel[]).then(res => res.map(it => {
-        if (it.Url) {
-          it.Isshowbtn=it.Url.toLowerCase().includes("app_path")
-        }
-        return it;
-      })
+      .catch(_ => [] as MessageModel[])
+      .then(res =>
+        res.map(it => {
+          if (it.Url) {
+            it.Isshowbtn = it.Url.toLowerCase().includes("app_path");
+          }
+          return it;
+        })
       );
   }
   private popMessage(): Promise<MessageModel> {
@@ -132,7 +134,7 @@ export class MessageService {
         clearInterval(this.intervalId);
       }
       console.log("启动自动推送消息");
-      setInterval(async () => {
+      this.intervalId = setInterval(async () => {
         const message = await this.popMessage().catch(
           _ => null as MessageModel
         );

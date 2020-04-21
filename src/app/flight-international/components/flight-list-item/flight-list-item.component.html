@@ -1,0 +1,63 @@
+<ion-row *ngIf='flight'>
+  <ion-col size="0.8">
+    <div class="logo margin-t11">
+      <img [src]="flight.fromSegment.AirlineSrc">
+    </div>
+  </ion-col>
+  <ion-col>
+    <div class="cityAndTime">
+      <div class='padding-t11'>
+        <ion-text class="time">{{flight?.FirstTime.replace("T"," ")?.substring(10,16)}}</ion-text>
+        <div class="country">
+          {{flight.fromSegment?.FromAirportName?.replace("国际机场","")?.replace("机场","")}}{{flight.fromSegment.FromTerminal}}
+        </div>
+      </div>
+    </div>
+  </ion-col>
+  <ion-col size="2.3" class="ion-text-center">
+    <div class="ion-text-nowrap" style="font-size: 0.8rem;">
+      <ion-text style="display: flex;align-items: center;" color="secondary" (click)="onTransfer($event)"
+        *ngIf="flight.isTransfer else directfly">
+        <span>---</span>
+        <ion-text *ngIf="flight.isTransfer" color='secondary'>转机</ion-text>
+        <span>---</span>
+      </ion-text>
+      <ng-template #directfly>
+        <span>---</span>
+        <ion-text>直飞</ion-text>
+        <span>---</span>
+      </ng-template>
+    </div>
+  </ion-col>
+  <ion-col>
+    <div class="cityAndTime">
+      <div class="padding-t11">
+        <ng-container *ngIf='flight.addDays'>
+          <div class="addDay">
+            +{{flight.addDays}}天</div>
+        </ng-container>
+        <ion-text class="time">{{flight.ArrivalTime?.replace("T"," ")?.substring(10,16)}}</ion-text>
+        <div class="country">
+          {{flight.toSegment?.ToAirportName?.replace("国际机场","")?.replace("机场","")}}{{flight.toSegment.ToTerminal}}
+        </div>
+      </div>
+    </div>
+  </ion-col>
+  <ion-col size="3.1">
+    <div [class.margin-t11]="flight?.toSegment?.Variables?.AddDaysTip&&flight.toSegment?.Variables?.AddDaysTip>'0'">
+      <ion-text color="secondary" class="flightMoney">
+        <span style="font-weight:bold">¥</span>{{flight.flightFare.SalesPrice}}
+      </ion-text>
+      <div class="fontSize" style="color:var(--ion-color-medium)">{{flight.TypeName}}</div>
+    </div>
+  </ion-col>
+  <div class="flihtCompany">
+    <ion-text class="whiteSpece">{{flight.fromSegment.AirlineName}}</ion-text>
+    <div class="height"></div>
+    <span>{{flight.fromSegment.Number}}</span>
+    <ion-text color='secondary' *ngIf="flight.fromSegment.CodeShareNumber">(共享
+      {{flight?.fromSegment?.CodeShareNumber}})</ion-text>
+    <div class="height"></div>
+    <ion-text>{{flight.flyTime}}</ion-text>
+  </div>
+</ion-row>

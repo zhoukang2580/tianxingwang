@@ -17,13 +17,6 @@ export const routes: Routes = [
       )
   },
   {
-    path: "order-detail",
-    loadChildren: () =>
-      import("./order-detail/order-detail.module").then(
-        m => m.OrderDetailPageModule
-      )
-  },
-  {
     path: "car-order-detail",
     loadChildren: () =>
       import("./car-order-detail/car-order-detail.module").then(
@@ -37,10 +30,25 @@ export const routes: Routes = [
         m => m.FlightOrderDetailPageModule
       )
   },
+  {
+    path: "hotel-order-detail",
+    loadChildren: () =>
+      import("./hotel-order-detail/hotel-order-detail.module").then(
+        m => m.HotelOrderDetailPageModule
+      )
+  },
+ {
+    path: "train-order-detail",
+    loadChildren: () =>
+      import("./train-order-detail/train-order-detail.module").then(
+        m => m.TrainOrderDetailPageModule
+      )
+  }
+
 ];
 @NgModule({
   declarations: [],
   imports: [CommonModule, RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class RoutingModule { }
+export class RoutingModule {}

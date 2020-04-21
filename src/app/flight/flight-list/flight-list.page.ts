@@ -75,6 +75,7 @@ import {
   CandeactivateGuard,
   CanComponentDeactivate
 } from "src/app/guards/candeactivate.guard";
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -133,6 +134,7 @@ export class FlightListPage
   timeOrdM2N: boolean; // 时间从早到晚
   isLoading = false;
   isSelfBookType = true;
+  day:string;
   currentProcessStatus = "正在获取航班列表";
   st = 0;
   selectedPassengersNumbers$: Observable<number>;
@@ -265,7 +267,10 @@ export class FlightListPage
         arrival = moment(arrival)
           .add(1, "hours")
           .format("YYYY-MM-DD HH:mm");
-        return `${arrival.replace("T", " ")}之后已无航班`;
+          if(arrival.replace("T", " ").substring(0,10)==this.day||this.searchFlightModel.Date==arrival.replace("T", " ").substring(0,10)){
+            return `${arrival.replace("T", " ")}之后已无航班`;
+          }
+          return `无航班信息`;
       }
     } else {
       return "未查到符合条件的航班信息<br/>请更改查询条件重新查询";
@@ -289,6 +294,9 @@ export class FlightListPage
     }
   }
   async onChangedDay(day: DayModel, byUser: boolean) {
+    if(day){
+      this.day=day.date
+    }
     if (
       byUser &&
       (!day || this.searchFlightModel.Date == day.date || this.isLoading)
@@ -320,7 +328,7 @@ export class FlightListPage
     }
     this.activeTab = this.filterConditionIsFiltered ? "filter" : "none";
     this.searchFlightModel.Date = day.date;
-    this.flightService.setSearchFlightModelSource(this.searchFlightModel);
+    this.flightService.setSearchFlightModelSource(this.searchFlightModel);    
     this.doRefresh(true, true);
   }
   onSwapCity() {

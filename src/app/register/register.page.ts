@@ -156,9 +156,11 @@ export class RegisterPage implements OnInit {
       .subscribe(
         r => {
           if (!r.Ticket) {
+            AppHelper.setStorage("loginname", loginEntity.Data.Name);
+            this.router.navigate([AppHelper.getRoutePath("login")]);
           } else {
             AppHelper.setStorage("loginname", loginEntity.Data.Name);
-            this.router.navigate([AppHelper.getRoutePath("")]);
+            this.router.navigate([AppHelper.getRoutePath("home")]);
           }
         },
         e => {

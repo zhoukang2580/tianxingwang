@@ -64,6 +64,7 @@ export class InternationalHotelDetailPage
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonHeader) ionHeader: IonHeader;
   @ViewChild("hotelInfo") hotelInfoEle: IonList;
+  @ViewChild("trafficInfo") trafficInfo: IonList;
   isSelf = true;
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
@@ -71,7 +72,9 @@ export class InternationalHotelDetailPage
   private agent: any;
   private hotelPolicy: HotelPassengerModel[];
   private isAutoOpenHotelInfoDetails = true;
+  private isAutoOpenHotelInfoTrafficInfo = true;
   private curSlideIndx = 0;
+  hotelName: string;
   canAddPassengers = false;
   selectedPassengers: PassengerBookInfo<IInterHotelInfo>[];
   hotel: HotelEntity;
@@ -163,6 +166,7 @@ export class InternationalHotelDetailPage
   private observeScrollIsShowHoteldetails() {
     this.domCtrl.read(_ => {
       const el = this.hotelInfoEle && this.hotelInfoEle["el"];
+      const trafficInfoEl = this.trafficInfo && this.trafficInfo["el"];
       if (el) {
         const rect = el.getBoundingClientRect();
         const isShow = rect && rect.top <= this.plt.height() / 2;
@@ -177,16 +181,33 @@ export class InternationalHotelDetailPage
             rect && rect.top > 0.75 * this.plt.height();
         }
       }
+      if (trafficInfoEl) {
+        const rect = trafficInfoEl.getBoundingClientRect();
+        const isShow = rect && rect.top <= this.plt.height() / 2;
+        if (
+          this.isAutoOpenHotelInfoTrafficInfo &&
+          this.hotel &&
+          !this.hotel["isShowMap"]
+        ) {
+          this.hotel["isShowMap"] = isShow;
+        } else {
+          this.isAutoOpenHotelInfoTrafficInfo =
+            rect && rect.top > 0.75 * this.plt.height();
+        }
+      }
     });
   }
   onToggleDetails(detail: { isShowMoreDesc: boolean }) {
     detail.isShowMoreDesc = !detail.isShowMoreDesc;
   }
-  onToggleOpenStatus(obj: any, pro: "ishoteldetails" | "") {
+  onToggleOpenStatus(obj: any, pro: "ishoteldetails" | "isShowMap") {
     if (obj) {
       obj[pro] = !obj[pro];
       if (pro == "ishoteldetails") {
         this.isAutoOpenHotelInfoDetails = false;
+      }
+      if (pro == "isShowMap") {
+        this.isAutoOpenHotelInfoTrafficInfo = false;
       }
     }
   }
@@ -279,17 +300,19 @@ export class InternationalHotelDetailPage
             });
           }
         } else {
-          this.hotel.Rooms.forEach(r => {
-            if (r.RoomPlans) {
-              r.RoomPlans.forEach(plan => {
-                let color = "";
-                color = "success";
-                this.colors[
-                  this.hotelService.getRoomPlanUniqueId(plan)
-                ] = color;
-              });
-            }
-          });
+          if (this.hotel.Rooms) {
+            this.hotel.Rooms.forEach(r => {
+              if (r.RoomPlans) {
+                r.RoomPlans.forEach(plan => {
+                  let color = "";
+                  color = "success";
+                  this.colors[
+                    this.hotelService.getRoomPlanUniqueId(plan)
+                  ] = color;
+                });
+              }
+            });
+          }
         }
       }
     } catch (e) {
@@ -456,6 +479,16 @@ export class InternationalHotelDetailPage
           console.log("getHotelDetail", res);
           if (res) {
             this.hotel = res;
+            if (this.hotel) {
+              const name = this.hotel.Name;
+              const enName = this.hotel.HotelSummaries.find(
+                it => it.Tag == "Name" && it.Lang == "en"
+              );
+              this.hotelName = name;
+              if (enName) {
+                this.hotelName += `(${enName.Content})`;
+              }
+            }
             this.initHotelDetailInfos();
             this.initHotelImages();
             this.initFilterPolicy();
@@ -683,7 +716,7 @@ export class InternationalHotelDetailPage
     this.hotelService.showImages = this.getHotelImages();
     this.router.navigate(["international-hotel-show-images"], {
       queryParams: {
-        hotelName: this.hotel && this.hotel.Name,
+        hotelName: this.hotelName,
         initPos: this.curSlideIndx || 0
       }
     });
@@ -692,7 +725,20 @@ export class InternationalHotelDetailPage
     const checkindate = this.queryModel && this.queryModel.checkinDate;
     return this.hotelService.openCalendar(checkindate);
   }
-  onOpenMap() {}
+  onOpenMap() {
+    const el = this.trafficInfo && this.trafficInfo["el"];
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      if (rect) {
+        if (this.hotel && !this.hotel["isShowMap"]) {
+          this.hotel["isShowMap"] = true;
+        }
+        setTimeout(() => {
+          this.content.scrollByPoint(0, rect.top, 100);
+        }, 100);
+      }
+    }
+  }
   getWeekName(date: string) {
     return;
   }

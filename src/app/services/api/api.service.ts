@@ -11,7 +11,7 @@ import {
   finalize,
   switchMap,
   timeout,
-  delay
+  delay,
 } from "rxjs/operators";
 import { IResponse } from "./IResponse";
 import {
@@ -21,7 +21,7 @@ import {
   throwError,
   from,
   Observable,
-  TimeoutError
+  TimeoutError,
 } from "rxjs";
 import { ExceptionEntity } from "../log/exception.entity";
 import { Router } from "@angular/router";
@@ -34,11 +34,15 @@ interface ApiConfig {
   Token: string;
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class ApiService {
-  private reqLoadingStatus: { reqMethod: string; isShow: boolean; msg: string }[] = [];
-  private loadingSubject: Subject<{ isLoading: boolean; msg: string; }>;
+  private reqLoadingStatus: {
+    reqMethod: string;
+    isShow: boolean;
+    msg: string;
+  }[] = [];
+  private loadingSubject: Subject<{ isLoading: boolean; msg: string }>;
   public apiConfig: ApiConfig;
   private fetchingReq: {
     isFetching: boolean;
@@ -51,38 +55,56 @@ export class ApiService {
     private storage: Storage
   ) {
     this.loadingSubject = new BehaviorSubject({ isLoading: false, msg: "" });
-    this.storage.get(`KEY_API_CONFIG`).then(config => {
+    this.storage.get(`KEY_API_CONFIG`).then((config) => {
       if (config) {
         this.apiConfig = config;
       }
     });
     this.loadApiConfig(true)
-      .then(_ => { })
+      .then((_) => { })
       .catch(() => { });
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
   }
-  private setLoading(data: { msg: string; reqMethod: string; isShowLoading?: boolean }) {
-    const one = this.reqLoadingStatus.find(it => it.reqMethod == data.reqMethod);
+  private setLoading(data: {
+    msg: string;
+    reqMethod: string;
+    isShowLoading?: boolean;
+  }) {
+    const one = this.reqLoadingStatus.find(
+      (it) => it.reqMethod == data.reqMethod
+    );
     if (!one) {
-      this.reqLoadingStatus.push({ isShow: data.isShowLoading, reqMethod: data.reqMethod, msg: data.msg });
+      this.reqLoadingStatus.push({
+        isShow: data.isShowLoading,
+        reqMethod: data.reqMethod,
+        msg: data.msg,
+      });
     } else {
       one.isShow = data.isShowLoading;
       one.msg = data.msg;
     }
-    const show = this.reqLoadingStatus.find(it => it.isShow);
+    const show = this.reqLoadingStatus.find((it) => it.isShow);
     if (show) {
-      this.loadingSubject.next({ msg: show.msg, isLoading: true })
+      this.loadingSubject.next({ msg: show.msg, isLoading: true });
     } else {
-      this.loadingSubject.next({ msg: "", isLoading: false })
+      this.loadingSubject.next({ msg: "", isLoading: false });
     }
   }
-  showLoadingView(d: { msg: string; }) {
-    this.setLoading({ msg: d.msg, reqMethod: "showLoadingView", isShowLoading: true });
+  showLoadingView(d: { msg: string }) {
+    this.setLoading({
+      msg: d.msg,
+      reqMethod: "showLoadingView",
+      isShowLoading: true,
+    });
   }
   hideLoadingView() {
-    this.setLoading({ msg: "", reqMethod: "showLoadingView", isShowLoading: false });
+    this.setLoading({
+      msg: "",
+      reqMethod: "showLoadingView",
+      isShowLoading: false,
+    });
   }
   send<T>(
     method: string,
@@ -105,10 +127,10 @@ export class ApiService {
   getPromise<T>(req: RequestEntity): Promise<IResponse<T>> {
     return new Promise((resolve, reject) => {
       const sub = this.getResponse<T>(req).subscribe(
-        r => {
+        (r) => {
           resolve(r);
         },
-        e => {
+        (e) => {
           reject(e);
         },
         () => {
@@ -127,14 +149,14 @@ export class ApiService {
   getPromiseData<T>(req: RequestEntity): Promise<T> {
     return new Promise((resolve, reject) => {
       const sub = this.getResponse<T>(req).subscribe(
-        r => {
+        (r) => {
           if (r.Status) {
             resolve(r.Data);
           } else {
             reject(r.Message || r);
           }
         },
-        e => {
+        (e) => {
           reject(e.Message || e);
         },
         () => {
@@ -191,34 +213,34 @@ export class ApiService {
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
         Device: device,
-        Token: AppHelper.getStorage("loginToken")
+        Token: AppHelper.getStorage("loginToken"),
       });
     } else if (AppHelper.isWechatH5()) {
       const code = "";
       req.Method = "ApiLoginUrl-Home-WechatLogin";
       req.Data = JSON.stringify({
-        Code: code
+        Code: code,
       });
     } else if (AppHelper.isWechatMini()) {
       const code = "";
       req.Method = "ApiLoginUrl-Home-WechatLogin";
       req.Data = JSON.stringify({
         Code: code,
-        SdkType: "Mini"
+        SdkType: "Mini",
       });
     } else if (AppHelper.isDingtalkH5()) {
       const code = "";
       req.Method = "ApiLoginUrl-Home-DingtalkLogin";
       req.Data = JSON.stringify({
-        Code: code
+        Code: code,
       });
     }
     if (!req.Method) {
       req.Method = orgReq.Method;
     }
     const formObj = Object.keys(req)
-      .filter(it => it != "Url" && it != "IsShowLoading")
-      .map(k => `${k}=${req[k]}`)
+      .filter((it) => it != "Url" && it != "IsShowLoading")
+      .map((k) => `${k}=${req[k]}`)
       .join("&");
 
     const url = await this.getUrl(req);
@@ -231,11 +253,11 @@ export class ApiService {
           )}&x-requested-with=XMLHttpRequest`,
           {
             headers: { "content-type": "application/x-www-form-urlencoded" },
-            observe: "body"
+            observe: "body",
           }
         )
         .pipe(
-          map(r => r as any),
+          map((r) => r as any),
           switchMap((r: IResponse<any>) => {
             if (r && r.Status && !r.Data) {
               const id: IdentityEntity = new IdentityEntity();
@@ -250,7 +272,9 @@ export class ApiService {
             this.identityService.removeIdentity();
             if (orgReq.IsRedirctLogin == false) {
               if (r.Message) {
-                AppHelper.alert(r.Message);
+                if (!req.IsForbidShowMessage) {
+                  AppHelper.alert(r.Message);
+                }
               }
             } else {
               this.router.navigate([AppHelper.getRoutePath("login")]);
@@ -259,10 +283,10 @@ export class ApiService {
           })
         )
         .subscribe(
-          r => {
+          (r) => {
             resolve(r);
           },
-          e => {
+          (e) => {
             reject(e);
           },
           () => {
@@ -278,20 +302,31 @@ export class ApiService {
   private post(url: string, req: RequestEntity) {
     req.Token = this.apiConfig.Token;
     const formObj = Object.keys(req)
-      .filter(it => it != "Url" && it != "IsShowLoading")
-      .map(k => `${k}=${encodeURIComponent(req[k])}`)
+      .filter((it) => it != "Url" && it != "IsShowLoading")
+      .map((k) => `${k}=${encodeURIComponent(req[k])}`)
       .join("&");
     // console.log(`${formObj}&Sign=${this.getSign(req)}`);
-    return this.http.post(
-      url,
-      `${formObj}&Sign=${this.getSign(req)}&x-requested-with=XMLHttpRequest`,
-      {
-        headers: {
-          "content-type": "application/x-www-form-urlencoded"
-        },
-        observe: "body"
-      }
-    );
+    return this.http
+      .post(
+        url,
+        `${formObj}&Sign=${this.getSign(req)}&x-requested-with=XMLHttpRequest`,
+        {
+          headers: {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          observe: "body",
+        }
+      )
+      .pipe(
+        finalize(() => {
+          console.log("reqMethod =" + req.Method);
+          this.setLoading({
+            isShowLoading: false,
+            reqMethod: req.Method,
+            msg: "",
+          });
+        })
+      );
   }
   private processResponse(
     response: any,
@@ -302,8 +337,8 @@ export class ApiService {
     due = due < 1000 ? due * 1000 : due;
     return of(response).pipe(
       timeout(due),
-      tap(r => console.log(r)),
-      map(r => r as any),
+      tap((r) => console.log(r)),
+      map((r) => r as any),
       switchMap((r: IResponse<any>) => {
         if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
           return from(this.tryAutoLogin(req));
@@ -311,15 +346,19 @@ export class ApiService {
           this.identityService.removeIdentity();
           if (req.IsRedirctLogin == false) {
             if (r.Message) {
-              AppHelper.alert(r.Message);
+              if (!req.IsForbidShowMessage) {
+                AppHelper.alert(r.Message);
+              }
             }
           } else {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
         } else if (r.Code && r.Code.toUpperCase() === "NOAUTHORIZE") {
           this.router.navigate([AppHelper.getRoutePath("no-authorize")]);
-        } else if (r.Code && r.Code.toLowerCase() == "Systemerror") {
-          AppHelper.alert("接口请求异常，系统错误");
+        } else if (r.Code && r.Code.toLowerCase() == "systemerror") {
+          if (!req.IsForbidShowMessage) {
+            AppHelper.alert("接口请求异常，系统错误");
+          }
         }
         return of(r);
       }),
@@ -337,12 +376,7 @@ export class ApiService {
         }
         return throwError(error);
       }),
-      finalize(() => {
-        if (req.IsShowLoading) {
-          this.setLoading({ isShowLoading: false, reqMethod: req.Method, msg: "" });
-        }
-      }),
-      map(r => r as any)
+      map((r) => r as any)
     );
   }
   private sendRequest(
@@ -357,16 +391,20 @@ export class ApiService {
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
-    this.setLoading({ msg: req.LoadingMsg, isShowLoading: req.IsShowLoading, reqMethod: req.Method });
+    this.setLoading({
+      msg: req.LoadingMsg,
+      isShowLoading: req.IsShowLoading,
+      reqMethod: req.Method,
+    });
     return from(this.loadApiConfig()).pipe(
-      switchMap(config => {
+      switchMap((config) => {
         if (!config) {
           return throwError(LanguageHelper.getNetworkErrorTip());
         }
         return from(this.getUrl(req));
       }),
-      switchMap(url => this.post(url, req)),
-      switchMap(r => this.processResponse(r, isCheckLogin, req))
+      switchMap((url) => this.post(url, req)),
+      switchMap((r) => this.processResponse(r, isCheckLogin, req))
     );
   }
   private postBodyData(
@@ -380,12 +418,12 @@ export class ApiService {
       params: {
         Data: JSON.stringify({ FileName: filename }).trim(),
         Sign: this.getSign(req),
-        Ticket: req.Ticket
+        Ticket: req.Ticket,
       },
       headers: {
-        "Content-Type": contentType || "image/jpeg"
+        "Content-Type": contentType || "image/jpeg",
       },
-      observe: "body"
+      observe: "body",
     });
   }
   sendBodyData(
@@ -399,16 +437,20 @@ export class ApiService {
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.Domain = AppHelper.getDomain();
-    this.setLoading({ msg: req.LoadingMsg, isShowLoading: req.IsShowLoading, reqMethod: req.Method });
+    this.setLoading({
+      msg: req.LoadingMsg,
+      isShowLoading: req.IsShowLoading,
+      reqMethod: req.Method,
+    });
     return from(this.loadApiConfig()).pipe(
-      switchMap(config => {
+      switchMap((config) => {
         if (!config) {
           return throwError(LanguageHelper.getNetworkErrorTip());
         }
         return from(this.getUrl(req));
       }),
-      switchMap(url => this.postBodyData(url, req, contentType, fileName)),
-      switchMap(r => this.processResponse(r, isCheckLogin, req))
+      switchMap((url) => this.postBodyData(url, req, contentType, fileName)),
+      switchMap((r) => this.processResponse(r, isCheckLogin, req))
     );
   }
   private async loadApiConfig(forceRefresh = false): Promise<ApiConfig> {
@@ -432,7 +474,7 @@ export class ApiService {
     const due = 30 * 1000;
     this.fetchingReq = {
       isFetching: true,
-      promise: new Promise<ApiConfig>(s => {
+      promise: new Promise<ApiConfig>((s) => {
         const sub = this.http
           .get(url)
           .pipe(
@@ -471,7 +513,7 @@ export class ApiService {
               s(null);
             }
           );
-      })
+      }),
     };
     return this.fetchingReq.promise;
   }

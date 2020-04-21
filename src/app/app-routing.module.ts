@@ -93,13 +93,6 @@ const routes: Routes = [
       ).then(m => m.MemberCredentialListPageModule)
   },
   {
-    path: "car-order-detail",
-    loadChildren: () =>
-      import("./order/car-order-detail/car-order-detail.module").then(
-        m => m.CarOrderDetailPageModule
-      )
-  },
-  {
     path: "qrscan",
     loadChildren: () =>
       import("./pages/qrscan/qrscan.module").then(m => m.QrscanPageModule)
@@ -125,7 +118,12 @@ const routes: Routes = [
       import("./order/flight-order-detail/flight-order-detail.module").then(
         m => m.FlightOrderDetailPageModule
       )
+  },
+  {
+    path: 'hotel-order-detail',
+    loadChildren: () => import('./order/hotel-order-detail/hotel-order-detail.module').then( m => m.HotelOrderDetailPageModule)
   }
+
 ];
 @NgModule({
   imports: [

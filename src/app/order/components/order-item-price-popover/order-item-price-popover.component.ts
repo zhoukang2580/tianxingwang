@@ -17,6 +17,7 @@ import { OrderItemEntity, OrderEntity } from "../../models/OrderEntity";
 import { IonGrid, IonSlides } from "@ionic/angular";
 import { OrderInsuranceEntity } from '../../models/OrderInsuranceEntity';
 import { TmcEntity } from 'src/app/tmc/tmc.service';
+import { OrderInsuranceStatusType } from '../../models/OrderInsuranceStatusType';
 @Component({
   selector: "app-order-item-price-popover",
   templateUrl: "./order-item-price-popover.component.html",
@@ -90,7 +91,8 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   }
   getInsurances(t: OrderFlightTicketEntity) {
     return this.order&&this.order.OrderInsurances&&this.order.OrderInsurances.filter(it=>
-      it.TravelKey==(t&&t.Key))
+      it.TravelKey==(t&&t.Key)).filter(
+        it=>it.Status!=OrderInsuranceStatusType.Abolish&&it.Status!=OrderInsuranceStatusType.Refunded&&it.Status!=OrderInsuranceStatusType.PayFailure)
   }
   getAmount(
     ticket: OrderFlightTicketEntity,
@@ -109,7 +111,7 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       )
       .filter(it => tags.some(t => t == it.Tag))
       .reduce((acc, item) => {
-        if (amountFromVariable) {
+        if (amountFromVariable&&item.Variables) {
           item.VariablesJsonObj =
             item.VariablesJsonObj || JSON.parse(item.Variables) || {};
           acc = AppHelper.add(

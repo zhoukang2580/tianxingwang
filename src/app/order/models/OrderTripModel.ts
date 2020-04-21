@@ -2,8 +2,10 @@ import { OrderPassengerEntity } from "./OrderPassengerEntity";
 import { OrderInsuranceEntity } from "./OrderInsuranceEntity";
 import { InsuranceResultEntity } from "src/app/tmc/models/Insurance/InsuranceResultEntity";
 import { OrderFlightTicketType } from "./OrderFlightTicketType";
+import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
+import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
-export class OrderTripModel {
+export class OrderTripModel extends BaseVariablesEntity{
   /// <summary>
   /// 行程类型 Flight Train Hotel
   /// </summary>
@@ -20,7 +22,7 @@ export class OrderTripModel {
   /// <summary>
   /// 状态
   /// </summary>
-  Status: string;
+  Status: any;
   /// <summary>
   /// 开始时间
   /// </summary>
@@ -42,6 +44,7 @@ export class OrderTripModel {
   /// 到达
   /// </summary>
   ToName: string;
+  IsInternational: boolean;
   Passenger: OrderPassengerEntity;
   OrderInsurances: OrderInsuranceEntity[];
   Key: string;
@@ -49,4 +52,5 @@ export class OrderTripModel {
   Name: string;
   PassengerId: string;
   InsuranceResult: InsuranceResultEntity;
+  InsuranceProducts: InsuranceProductEntity[];
 }

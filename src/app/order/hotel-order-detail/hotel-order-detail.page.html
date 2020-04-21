@@ -1,0 +1,331 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
+    <ion-title>酒店订单详情</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
+    <app-swiper-slide-content [tabs]="tabs">
+      <div class="swiper-slide" #slide>
+        <!-- 订单信息 -->
+        <div>
+          <ion-item-divider>
+            订单信息
+          </ion-item-divider>
+          <div>
+            <ion-row>
+              <ion-col size='3'>订单编号:</ion-col>
+              <ion-col>{{orderDetail.Order.Id}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>订单状态:</ion-col>
+              <ion-col>{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" : orderDetail.Order.StatusName}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>付款方式:</ion-col>
+              <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>完成时间:</ion-col>
+              <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
+            </ion-row>
+            <ion-row (click)='showPricePopover()' *ngIf='orderDetail.Order?.Type=="Flight"'>
+              <ion-col size='3'>应付金额:</ion-col>
+              <ion-col>
+                <div>
+                  {{getOrderTotalAmount()}}
+                  <span *ngIf='getInsuranceAmount() as insuranceAmount'>(含保险{{insuranceAmount}})</span>
+                </div>
+              </ion-col>
+              <ion-col size='2'>
+                <ion-icon name="chevron-forward-outline" mode='ios'>
+                </ion-icon>
+              </ion-col>
+            </ion-row>
+            <ng-container>
+              <ng-container *ngIf='tmc?.IsShowServiceFee'>
+                <ion-row *ngFor='let orderHotel of orderDetail.Order.OrderHotels'>
+                  <ion-col size='3'>
+                    <ng-container *ngIf='orderDetail.Order.OrderHotels.length>1'>
+                      <strong *ngIf='orderHotel.HotelName as n'>
+                        {{n.length>10?n.substr(0,10)+"...":n}}
+                      </strong>
+                    </ng-container>
+                    服务费:
+                  </ion-col>
+                  <ion-col>{{getHotelServiceFee(orderHotel.Key)}}
+                  </ion-col>
+                </ion-row>
+              </ng-container>
+            </ng-container>
+            <ion-row>
+              <ion-col size='3'>已付金额:</ion-col>
+              <ion-col>{{getOrderPayAmount()}}</ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3' *ngIf="orderDetail?.Order?.OrderNumbers">外部编号</ion-col>
+              <ion-col>
+                <div *ngFor='let n of orderDetail?.Order?.OrderNumbers'>
+                  <span *ngIf='n.Tag=="TmcOutNumber"'>{{n.Name}}:{{n.Number}}</span>
+                </div>
+              </ion-col>
+            </ion-row>
+          </div>
+          <div>
+            <ion-item-divider *ngIf="orderDetail.Histories.length>0">审批记录</ion-item-divider>
+          </div>
+          <div>
+            <div *ngFor='let history of orderDetail.Histories'>
+              <div class='approval-info'>
+                <ion-row class="ion-padding-top">
+                  <ion-col size='4'>审批类型:</ion-col>
+                  <ion-col>{{getVariableObj(history,"TypeName")}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='4'>审批人:</ion-col>
+                  <ion-col>{{history.Account?.RealName}} <span
+                      *ngIf='history.StatusName'>({{history.StatusName}})</span></ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='4'>发起审批时间:</ion-col>
+                  <ion-col>{{history?.InsertDateTime}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='4'>审批截止时间:</ion-col>
+                  <ion-col>{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col>
+                </ion-row>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <ng-container> -->
+      <div class="swiper-slide" #slide *ngFor="let orderHotel of orderDetail?.Order?.OrderHotels">
+        <div>
+          <!-- 旅客信息 -->
+          <ng-container *ngIf='getPassengerCostOrgInfo(orderHotel) as info'>
+            <ion-item-divider>
+              旅客信息
+            </ion-item-divider>
+            <div *ngIf='info.Passenger as p'>
+              <div style='width: 100%' class='passenger-info'>
+                <ion-row>
+                  <ion-col size='3'>姓名</ion-col>
+                  <ion-col>{{p.CheckName}} <span
+                      *ngIf='orderDetail.Order.Type?.toLowerCase()!="hotel"&& p.PassengerTypeName'>({{p.PassengerTypeName}})</span>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>证件号码</ion-col>
+                  <ion-col>{{p.CredentialsNumber}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>联系电话</ion-col>
+                  <ion-col>{{p.Mobile}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>邮箱</ion-col>
+                  <ion-col>{{p.Email}}</ion-col>
+                </ion-row>
+                <ion-row *ngIf="getExpenseType(orderHotel?.Key)">
+                  <ion-col size='3'>费用类别</ion-col>
+                  <ion-col>{{getExpenseType(orderHotel?.Key)}}</ion-col>
+                </ion-row>
+                <ng-container>
+                  <ion-row>
+                    <ion-col size='3'>成本中心</ion-col>
+                    <ion-col>{{info?.CostCenterCode}}-{{info?.CostCenterName}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>组织架构</ion-col>
+                    <ion-col>{{info?.OrganizationCode}}-{{info?.OrganizationName}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>违规</ion-col>
+                    <ion-col>{{info.IllegalPolicy}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>违规原因</ion-col>
+                    <ion-col>{{info.IllegalReason}}</ion-col>
+                  </ion-row>
+                  <ng-container *ngIf='orderDetail.Order?.OrderHotels as OrderHotels'>
+                    <ion-row>
+                      <ion-col size='3.1'>其他入住人</ion-col>
+                      <ion-col>
+                        <ng-container *ngFor='let it of OrderHotels;let i=index;let last=last'>
+                          <div *ngIf='it.Type==OrderHotelType.International'>
+                            <div
+                              *ngIf='it.CustomerName?.substring(it.CustomerName?.indexOf("/")+1)?.replace(","," ") as n'>
+                              <ion-text class="ion-margin-end">
+                                {{n}}
+                              </ion-text>
+                            </div>
+                            <div *ngIf='it.ChildrenName.replace(","," ") as n '>
+                              <ion-text class="ion-margin-end">
+                                {{n}}
+                              </ion-text>
+                            </div>
+                          </div>
+                        </ng-container>
+                      </ion-col>
+                    </ion-row>
+                  </ng-container>
+                </ng-container>
+                <ion-row *ngIf='canSendEmailMsg()'>
+                  <ion-col>
+                    <ion-button no-margin size='small' color='secondary' (click)='sendMsg(p)'>
+                      <ion-icon name="create-outline" mode='ios' slot='start'></ion-icon>
+                      发送短信
+                    </ion-button>
+                  </ion-col>
+                  <ion-col>
+                    <ion-button no-margin size='small' color='secondary' (click)='sendEmail(p)'>
+                      <ion-icon name="mail" mode='ios' slot='start'></ion-icon>
+                      发送邮件
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </div>
+            </div>
+          </ng-container>
+          <!-- 联系信息 -->
+          <ng-container *ngIf="orderDetail?.Order?.OrderLinkmans">
+            <ion-item-divider>
+              联系人信息
+            </ion-item-divider>
+            <div *ngFor='let man of orderDetail.Order.OrderLinkmans;let i=index;'>
+              <ion-row>
+                <ion-col size='3'>类型</ion-col>
+                <ion-col>联系人{{i+1}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size='3'>姓名</ion-col>
+                <ion-col>{{man.Name}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size='3'>邮箱</ion-col>
+                <ion-col>{{man.Email}}</ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col size='3'>电话</ion-col>
+                <ion-col>{{man.Mobile}}</ion-col>
+              </ion-row>
+            </div>
+          </ng-container>
+          <!-- 酒店信息 -->
+          <ng-container>
+            <ion-item-divider>
+              酒店信息
+            </ion-item-divider>
+            <ion-row>
+              <ion-col size='3'>事务号</ion-col>
+              <ion-col>
+                {{orderHotel.Id}}
+              </ion-col>
+              <ion-col class="ion-text-end ion-padding-end">
+                {{orderHotel.StatusName}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                入住
+              </ion-col>
+              <ion-col>
+                {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                离店
+              </ion-col>
+              <ion-col>
+                {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                酒店名称
+              </ion-col>
+              <ion-col>
+                {{orderHotel.HotelName}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                房型
+              </ion-col>
+              <ion-col>
+                {{orderHotel.RoomName}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                早餐数量
+              </ion-col>
+              <ion-col>
+                {{orderHotel.Breakfast}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                房费
+              </ion-col>
+              <ion-col>
+                {{getHotelRoomFee(orderHotel.Key)}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                支付方式
+              </ion-col>
+              <ion-col>
+                {{orderHotel.PaymentType==2?"现付":orderHotel.PaymentType==1?"预付":"月结"}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                酒店地址
+              </ion-col>
+              <ion-col>
+                {{orderHotel.HotelAddress}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                酒店电话
+              </ion-col>
+              <ion-col>
+                {{orderHotel.HotelContact}}
+              </ion-col>
+            </ion-row>
+            <ion-row *ngIf='getVariable(orderHotel,"ExceptionMessage") as ExceptionMessage'>
+              <ion-col size='3'>异常消息</ion-col>
+              <ion-col>
+                <div>{{ExceptionMessage}}</div>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <div class='clip-text' (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]'
+                  [class.show]='orderHotel["isShowDetail"]'>
+                  {{orderHotel.RuleDescription}}
+                </div>
+              </ion-col>
+            </ion-row>
+          </ng-container>
+        </div>
+      </div>
+      <!-- </ng-container> -->
+    </app-swiper-slide-content>
+  </ng-container>
+  <ng-template #nomoredata>
+    <span *ngIf='isLoading'>
+      正在获取订单详情...
+    </span>
+    <app-or-comp *ngIf='!isLoading'>暂无数据</app-or-comp>
+  </ng-template>
+</ion-content>

@@ -10,7 +10,7 @@ import {
   ModalController,
   Platform,
   IonSelect,
-  IonDatetime
+  IonDatetime,
 } from "@ionic/angular";
 import {
   Component,
@@ -21,7 +21,7 @@ import {
   ViewChildren,
   QueryList,
   NgZone,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import { Router, ActivatedRoute } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
@@ -35,7 +35,7 @@ import { CountryEntity } from "src/app/tmc/models/CountryEntity";
 @Component({
   selector: "app-member-credential-management",
   templateUrl: "./member-credential-management.page.html",
-  styleUrls: ["./member-credential-management.page.scss"]
+  styleUrls: ["./member-credential-management.page.scss"],
 })
 export class MemberCredentialManagementPage
   implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
@@ -78,7 +78,7 @@ export class MemberCredentialManagementPage
     private tmcService: TmcService
   ) {
     this.subscriptions.push(
-      route.queryParamMap.subscribe(p => {
+      route.queryParamMap.subscribe((p) => {
         this.isCanDeactive = false;
         if (this.modifyCredential) {
           if (p.get("date")) {
@@ -98,10 +98,10 @@ export class MemberCredentialManagementPage
         if (p.get("data")) {
           this.credentials = [JSON.parse(p.get("data"))];
           if (this.credentials.length) {
-            this.credentials = this.credentials.map(c => {
+            this.credentials = this.credentials.map((c) => {
               if (
                 this.calendarService.getMoment(0, c.ExpirationDate).year() -
-                new Date().getFullYear() >=
+                  new Date().getFullYear() >=
                 70
               ) {
                 c.isLongPeriodOfTime = true;
@@ -124,10 +124,10 @@ export class MemberCredentialManagementPage
     this.backBtn.backToPrePage();
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   ngOnInit() {
-    this.tmcService.getCountries().then(cs => {
+    this.tmcService.getCountries().then((cs) => {
       this.countries = cs;
     });
     this.getIdentityTypes();
@@ -137,18 +137,18 @@ export class MemberCredentialManagementPage
   }
   private getIdentityTypes() {
     this.identityTypes = Object.keys(CredentialsType)
-      .filter(k => +k)
-      .map(k => {
+      .filter((k) => +k)
+      .map((k) => {
         return {
           key: k,
-          value: CredentialsType[k]
+          value: CredentialsType[k],
         };
       });
     console.log(this.identityTypes);
   }
   getCountryName(code: string) {
     const country =
-      this.countries && this.countries.find(it => it.Code == code);
+      this.countries && this.countries.find((it) => it.Code == code);
     return country && country.Name;
   }
   onIdTypeChange() {
@@ -172,15 +172,15 @@ export class MemberCredentialManagementPage
         await this.saveAdd(
           c,
           this.addFormEles &&
-          this.addFormEles.last &&
-          this.addFormEles.last.nativeElement
+            this.addFormEles.last &&
+            this.addFormEles.last.nativeElement
         );
       } else {
         await this.saveModify(
           c,
           this.addFormEles &&
-          this.addFormEles.last &&
-          this.addFormEles.last.nativeElement
+            this.addFormEles.last &&
+            this.addFormEles.last.nativeElement
         );
       }
     }
@@ -196,7 +196,7 @@ export class MemberCredentialManagementPage
     // console.log(ele);
     this.subscription.unsubscribe();
     ele.open();
-    this.subscription = ele.ionChange.subscribe(_ => {
+    this.subscription = ele.ionChange.subscribe((_) => {
       this.onIdTypeChange();
       this.onFirstLastNameChange();
       if (this.modifyCredential) {
@@ -211,7 +211,7 @@ export class MemberCredentialManagementPage
   private async onSelectDate() {
     let d: { date: string };
     const m = await this.modalController.create({
-      component: MyCalendarComponent
+      component: MyCalendarComponent,
     });
     m.present();
     const data = await m.onDidDismiss();
@@ -232,6 +232,7 @@ export class MemberCredentialManagementPage
     //   queryParams: { backRouteUrl: path }
     // });
     if (this.datetimeComp) {
+      this.datetimeComp.value = "";
       this.datetimeComp.open();
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value = d.detail.value;
@@ -259,6 +260,7 @@ export class MemberCredentialManagementPage
     //   queryParams: { backRouteUrl: path }
     // });
     if (this.datetimeComp) {
+      this.datetimeComp.value = "";
       this.datetimeComp.open();
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value: string = d.detail.value;
@@ -309,7 +311,7 @@ export class MemberCredentialManagementPage
       }
     };
     this.idInputEleSubscription = fromEvent(idInputEle, "blur").subscribe(
-      evt => {
+      (evt) => {
         setTimeout(() => {
           this.validateIdNumber(idInputEle);
           this.onFirstLastNameChange();
@@ -428,7 +430,7 @@ export class MemberCredentialManagementPage
       ) as HTMLIonInputElement);
     if (credential) {
       if (inputFirstNameEle) {
-        inputFirstNameEle.oninput = _ => {
+        inputFirstNameEle.oninput = (_) => {
           credential.CheckFirstName = inputFirstNameEle.value as string;
           this.onFirstLastNameChange();
         };
@@ -437,7 +439,7 @@ export class MemberCredentialManagementPage
         };
       }
       if (inputLastNameEle) {
-        inputLastNameEle.oninput = _ => {
+        inputLastNameEle.oninput = (_) => {
           credential.CheckLastName = inputLastNameEle.value as string;
           this.onFirstLastNameChange();
         };
@@ -456,7 +458,7 @@ export class MemberCredentialManagementPage
       window.scrollTo({
         top: 0,
         left: 0,
-        behavior: "smooth"
+        behavior: "smooth",
       }); // =======当键盘收起的时候让页面回到原始位置
     }, 200);
   }
@@ -481,7 +483,7 @@ export class MemberCredentialManagementPage
       }
       this.initializeValidate();
     }, 1000);
-    const sub = this.addFormEles.changes.subscribe(_ => {
+    const sub = this.addFormEles.changes.subscribe((_) => {
       // console.log(el);
       if (this.addFormEles.last && this.addFormEles.last.nativeElement) {
         if (this.modifyCredential) {
@@ -497,7 +499,7 @@ export class MemberCredentialManagementPage
       if (container) {
         if (this.credentials && this.modifyCredential) {
           const one = this.credentials.find(
-            it => it.Id == this.modifyCredential.Id
+            (it) => it.Id == this.modifyCredential.Id
           );
           this.initInputChanges(container.nativeElement, one);
         }
@@ -519,8 +521,8 @@ export class MemberCredentialManagementPage
     if (comfirmDel) {
       const result = await this.memberService
         .removeCredentials(c)
-        .then(_ => true)
-        .catch(e => {
+        .then((_) => true)
+        .catch((e) => {
           AppHelper.alert(e);
           return false;
         });
@@ -554,13 +556,13 @@ export class MemberCredentialManagementPage
     }
     const res = await this.memberService
       .modifyCredentials(c)
-      .then(_ => {
+      .then((_) => {
         if (_.Message) {
           AppHelper.alert(_.Message);
         }
         return true;
       })
-      .catch(e => {
+      .catch((e) => {
         AppHelper.alert(e);
       });
     this.modifyCredential = null;
@@ -584,7 +586,7 @@ export class MemberCredentialManagementPage
       Id: AppHelper.uuid(),
       isAdd: true,
       IssueCountry: "CN",
-      Country: "CN"
+      Country: "CN",
     } as MemberCredential;
     if (this.modifyCredential) {
       const ok = await AppHelper.alert("放弃当前修改？", true, "确定", "取消");
@@ -628,8 +630,8 @@ export class MemberCredentialManagementPage
       component: SelectCountryModalComponent,
       componentProps: {
         requestCode: this.requestCode,
-        title: LanguageHelper.getSelectIssueCountryTip()
-      }
+        title: LanguageHelper.getSelectIssueCountryTip(),
+      },
     });
     m.present();
     const result = await m.onDidDismiss();
@@ -680,8 +682,8 @@ export class MemberCredentialManagementPage
     c.Id = "0";
     const result = await this.memberService
       .addCredentials(c)
-      .then(_ => true)
-      .catch(e => {
+      .then((_) => true)
+      .catch((e) => {
         AppHelper.alert(e);
         return false;
       });
@@ -699,7 +701,7 @@ export class MemberCredentialManagementPage
 
     const info = await this.validatorService
       .get("Beeant.Domain.Entities.Member.CredentialsEntity", "Add")
-      .catch(e => {
+      .catch((e) => {
         AppHelper.alert(e);
         return { rule: [] };
       });
@@ -787,7 +789,7 @@ export class MemberCredentialManagementPage
       }
       if (!obj[pro]) {
         const rule = rules.find(
-          it => it.Name.toLowerCase() == pro.toLowerCase()
+          (it) => it.Name.toLowerCase() == pro.toLowerCase()
         );
         const input = container.querySelector(
           `input[ValidateName=${pro}]`
@@ -795,7 +797,7 @@ export class MemberCredentialManagementPage
         console.log(`input[ValidateName=${pro}]`, input);
 
         if (rule) {
-          AppHelper.alert(rule.Message, true).then(_ => {
+          AppHelper.alert(rule.Message, true).then((_) => {
             if (input) {
               setTimeout(() => {
                 input.focus();
@@ -815,7 +817,7 @@ export class MemberCredentialManagementPage
     item.isModified = !item.isModified;
     this.modifyCredential = { ...item };
     if (this.credentials) {
-      this.credentials = this.credentials.map(it => {
+      this.credentials = this.credentials.map((it) => {
         it.isModified = it.Id == item.Id;
         return it;
       });
@@ -830,7 +832,7 @@ export class MemberCredentialManagementPage
     }
     if (
       this.modifyCredential ||
-      (this.credentials && this.credentials.some(ite => !!ite["isModified"]))
+      (this.credentials && this.credentials.some((ite) => !!ite["isModified"]))
     ) {
       return AppHelper.alert(
         LanguageHelper.getModifyUnSavedTip(),
@@ -841,5 +843,5 @@ export class MemberCredentialManagementPage
     }
     return true;
   }
-  private loadCountries() { }
+  private loadCountries() {}
 }

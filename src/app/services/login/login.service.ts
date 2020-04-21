@@ -11,6 +11,7 @@ import { AppHelper } from "src/app/appHelper";
 import { IResponse } from "../api/IResponse";
 import { LanguageHelper } from "src/app/languageHelper";
 import { Storage } from "@ionic/storage";
+import { environment } from "src/environments/environment";
 @Injectable({
   providedIn: "root"
 })
@@ -258,7 +259,7 @@ export class LoginService {
   }
   async check() {
     const ticket = AppHelper.getTicket();
-    if (!this.identity || !ticket) {
+    if (!this.identity || !ticket || environment.mockProBuild) {
       return;
     }
     const req = new RequestEntity();

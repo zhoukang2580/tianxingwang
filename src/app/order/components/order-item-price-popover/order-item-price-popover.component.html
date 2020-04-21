@@ -5,15 +5,12 @@
         <ion-row *ngIf='getPassenger(t) as p'>
           <ion-col>
             <span>{{p.CheckName}}</span>
-            <span>{{p.CredentialsNumber}}</span>
           </ion-col>
         </ion-row>
         <ion-row *ngIf="t.Id">
-          <ion-col size='5'>
+          <ion-col >
             事务号
-          </ion-col>
-          <ion-col>
-          <span>{{t.Id}}</span>
+            <span>{{t.Id}}</span>
           </ion-col>
         </ion-row>
         <ion-row *ngIf='getAmount(t,OrderItemHelper.FlightTicket) as amount'>
@@ -122,7 +119,7 @@
           <ion-col size='1'>元</ion-col>
         </ion-row>
         <ion-row *ngFor="let insurance of getInsurances(t)">
-        <ion-col size='7'>{{insurance.Name}}</ion-col>
+          <ion-col size='7'>{{insurance.Name}}</ion-col>
           <ion-col class='price'>{{insurance.Premium}}</ion-col>
           <ion-col size='1'>元</ion-col>
         </ion-row>

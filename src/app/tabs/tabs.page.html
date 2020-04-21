@@ -1,8 +1,8 @@
 <ion-tabs color='primary' (ionTabsDidChange)='onTabChanged($event)' (ionTabsWillChange)='onIonTabsWillChange($event)'>
   <ion-tab-bar slot="bottom" translucent='false'>
-    <ion-tab-button [class.tab-selected]='tab==="home"' (click)='onTabActive("home")'>
+    <ion-tab-button [class.tab-selected]='tab==="tmc-home"' (click)='onTabActive("tmc-home")'>
       <!-- <i class='icon icon-tab-home {{tab==="home"?"active":""}}'></i> -->
-      <i class='icon icon-tab-home{{tab==="home"?"-fill":""}}'></i>
+      <i class='icon icon-tab-home{{tab==="tmc-home"?"-fill":""}}'></i>
       <!-- <img src="assets/svgs/tab-home.svg" appLazyloadimage alt="首页"> -->
       <ion-label>首页</ion-label>
     </ion-tab-button>

@@ -17,23 +17,15 @@ import { OrderPayStatusType } from "../models/OrderInsuranceEntity";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { OrderCarEntity } from "../models/OrderCarEntity";
 import { environment } from "src/environments/environment";
-type LabelValue =
-  | "baseInfo"
-  | "rentalInfo"
-  | "passengerInfo"
-  | "priceInfo"
-  | "approveInfo"
-  | "orderLogInfo"
-  | "contactInfo";
 interface ITab {
   label: string;
-  value: LabelValue;
+  value: number;
   active?: boolean;
 }
 @Component({
   selector: "app-car-order-detail",
   templateUrl: "./car-order-detail.page.html",
-  styleUrls: ["./car-order-detail.page.scss"]
+  styleUrls: ["./car-order-detail.page.scss"],
 })
 export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
@@ -45,8 +37,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
   tmc: TmcEntity;
   orderDetail: OrderDetailModel;
-  tabs: ITab[];
-  tab: ITab;
+  tabs: ITab[] = [];
   constructor(
     private orderService: OrderService,
     private route: ActivatedRoute,
@@ -54,7 +45,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     private tmcService: TmcService
   ) {}
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   onPay() {
     this.tmcService.payOrder(this.orderDetail.Order.Id).catch(() => 0);
@@ -63,7 +54,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     this.initTabs();
     this.subscriptions.push(this.subscription);
     this.subscriptions.push(
-      this.route.queryParamMap.subscribe(q => {
+      this.route.queryParamMap.subscribe((q) => {
         // if (!environment.production) {
         //   this.loadOrderDetail(this.orderId);
         // }
@@ -75,7 +66,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     );
     this.tmcService
       .getTmc()
-      .then(tmc => {
+      .then((tmc) => {
         this.tmc = tmc;
       })
       .catch(() => 0);
@@ -93,14 +84,18 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   async ngAfterViewInit() {}
   private initTabs() {
     this.tabs = [];
-    this.tabs.push({ label: "基础信息", value: "baseInfo" });
-    this.tabs.push({ label: "用车信息", value: "rentalInfo" });
-    this.tabs.push({ label: "乘客信息", value: "passengerInfo" });
-    this.tabs.push({ label: "联系信息", value: "contactInfo" });
-    // this.tabs.push({ label: "用车价格信息", value: "priceInfo" });
-    this.tabs.push({ label: "审批记录", value: "approveInfo" });
-    this.tab = this.tabs[0];
-    this.tab.active = true;
+    this.tabs.push({ label: "订单信息", value: 0 });
+    if (
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderCars
+    ) {
+      this.orderDetail.Order.OrderCars.forEach((it, idx) => {
+        // if (it.VariablesJsonObj.isShow) {
+        this.tabs.push({ label: it.Id, value: idx + 1 });
+        // }
+      });
+    }
   }
   getTotalAmount(order: OrderEntity) {
     const Tmc = this.tmc;
@@ -114,7 +109,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
         0
       );
     } else {
-      amount = order.OrderItems.filter(it => !it.Tag.endsWith("Fee")).reduce(
+      amount = order.OrderItems.filter((it) => !it.Tag.endsWith("Fee")).reduce(
         (acc, it) => (acc += AppHelper.add(acc, +it.Amount)),
         0
       );
@@ -128,13 +123,13 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     }
     let amount = 0;
     if (Tmc.IsShowServiceFee || order.Status == OrderStatusType.Cancel) {
-      amount = order.OrderItems.filter(it => it.Key == key).reduce(
+      amount = order.OrderItems.filter((it) => it.Key == key).reduce(
         (acc, it) => (acc += AppHelper.add(acc, +it.Amount)),
         0
       );
     } else {
       amount = order.OrderItems.filter(
-        it => it.Key == key && !it.Tag.endsWith("Fee")
+        (it) => it.Key == key && !it.Tag.endsWith("Fee")
       ).reduce((acc, it) => (acc += AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount;
@@ -144,7 +139,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
       return 0;
     }
     return order.OrderItems.filter(
-      it => it.Key == key && it.Tag == OrderItemHelper.Car
+      (it) => it.Key == key && it.Tag == OrderItemHelper.Car
     ).reduce((acc, it) => (acc += AppHelper.add(acc, +it.Amount)), 0);
   }
   getFeeAmount(order: OrderEntity, key: string) {
@@ -152,7 +147,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
       return 0;
     }
     return order.OrderItems.filter(
-      it => it.Key == key && it.Tag.includes("Fee")
+      (it) => it.Key == key && it.Tag.includes("Fee")
     ).reduce((acc, it) => (acc += AppHelper.add(acc, +it.Amount)), 0);
   }
   getOtherAmount(order: OrderEntity, key: string) {
@@ -160,7 +155,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
       return 0;
     }
     return order.OrderItems.filter(
-      it => it.Key == key && it.Tag == OrderItemHelper.CarItem
+      (it) => it.Key == key && it.Tag == OrderItemHelper.CarItem
     ).reduce((acc, it) => (acc += AppHelper.add(acc, +it.Amount)), 0);
   }
   getOrderNumbers() {
@@ -168,7 +163,9 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
       this.orderDetail &&
       this.orderDetail.Order &&
       this.orderDetail.Order.OrderNumbers &&
-      this.orderDetail.Order.OrderNumbers.filter(it => it.Tag == "TmcOutNumber")
+      this.orderDetail.Order.OrderNumbers.filter(
+        (it) => it.Tag == "TmcOutNumber"
+      )
     );
   }
   getPayAmount(order: OrderEntity) {
@@ -178,7 +175,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     }
     let amount = 0;
     amount = order.OrderPays.filter(
-      it => it.Status == OrderPayStatusType.Effective
+      (it) => it.Status == OrderPayStatusType.Effective
     ).reduce((acc, it) => (acc += AppHelper.add(acc, +it.Amount)), 0);
     if (amount == 0) {
       return 0;
@@ -188,28 +185,27 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     } else {
       return (
         amount -
-        order.OrderItems.filter(it => !it.Tag.endsWith("Fee")).reduce(
+        order.OrderItems.filter((it) => !it.Tag.endsWith("Fee")).reduce(
           (acc, it) => (acc += AppHelper.add(acc, +it.Amount)),
           0
         )
       );
     }
   }
-  getServicetip(order: OrderEntity){
+  getServicetip(order: OrderEntity) {
     const Tmc = this.tmc;
     if (!Tmc || !order || !order.OrderPays) {
       return 0;
     }
 
-    if (Tmc.IsShowServiceFee){
-     
-      let tip=order.OrderItems.find(item=>item.Tag=="CarOnlineFee")
-      return tip&&tip.Amount
-    //  order.OrderItems.forEach(item=>{
-    //    if(item.Tag="CarOnlineFee"){
+    if (Tmc.IsShowServiceFee) {
+      let tip = order.OrderItems.find((item) => item.Tag == "CarOnlineFee");
+      return tip && tip.Amount;
+      //  order.OrderItems.forEach(item=>{
+      //    if(item.Tag="CarOnlineFee"){
 
-    //    }
-    //  })
+      //    }
+      //  })
     }
   }
   private loadOrderDetail(id: string) {
@@ -222,21 +218,24 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
     //   return;
     // }
     this.subscription.unsubscribe();
-    this.subscription = this.orderService.getOrderDetail(id).subscribe(res => {
-      this.orderDetail = res && res.Data;
-      this.initOrderCarTravel();
-    });
+    this.subscription = this.orderService
+      .getOrderDetail(id)
+      .subscribe((res) => {
+        this.orderDetail = res && res.Data;
+        this.initOrderCarTravel();
+      });
   }
   private initOrderCarTravel() {
+    this.initTabs();
     if (this.orderDetail && this.orderDetail.Order) {
       if (
         this.orderDetail.Order.OrderCars &&
         this.orderDetail.Order.OrderTravels
       ) {
         this.orderDetail.Order.OrderCars = this.orderDetail.Order.OrderCars.map(
-          it => {
+          (it) => {
             const oneTravel = this.orderDetail.Order.OrderTravels.find(
-              t => t.Key == it.Key
+              (t) => t.Key == it.Key
             );
             if (oneTravel && !it.OrderTravel) {
               it.OrderTravel = oneTravel;

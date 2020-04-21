@@ -13,9 +13,16 @@ import {
   IonInfiniteScroll,
   IonRefresher,
   IonContent,
-  IonDatetime
+  IonDatetime,
+  PickerController,
 } from "@ionic/angular";
-import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  OnDestroy,
+  EventEmitter,
+} from "@angular/core";
 import { SearchTicketModalComponent } from "../components/search-ticket-modal/search-ticket-modal.component";
 import { SearchTicketConditionModel } from "../../tmc/models/SearchTicketConditionModel";
 import { ProductItemType, ProductItem } from "../../tmc/models/ProductItems";
@@ -40,13 +47,15 @@ import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 @Component({
   selector: "app-product-tabs",
   templateUrl: "./product-tabs.page.html",
-  styleUrls: ["./product-tabs.page.scss"]
+  styleUrls: ["./product-tabs.page.scss"],
 })
 export class ProductTabsPage implements OnInit, OnDestroy {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
   private loadDataSub = Subscription.EMPTY;
-  private exchangeDateSub = Subscription.EMPTY;
+  private subscriptions: Subscription[] = [];
+  private selectDateChange = new EventEmitter();
+  private selectDateSubscription = Subscription.EMPTY;
   productItemType = ProductItemType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
@@ -76,13 +85,16 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private orderService: OrderService,
     private identityService: IdentityService,
     private staffService: StaffService,
-    private flightService: FlightService
+    private flightService: FlightService,
+    private pickerCtrl: PickerController
   ) {
-    route.queryParamMap.subscribe(d => {
+    const sub = route.queryParamMap.subscribe((d) => {
       if (d && d.get("tabId")) {
-        const tab = ORDER_TABS.find(it => it.value == +d.get("tabId"));
+        const tab = ORDER_TABS.find((it) => it.value == +d.get("tabId"));
         console.log("product-tabs", tab);
-        const plane = ORDER_TABS.find(it => it.value == ProductItemType.plane);
+        const plane = ORDER_TABS.find(
+          (it) => it.value == ProductItemType.plane
+        );
         this.activeTab = this.isOpenUrl
           ? this.activeTab
           : this.activeTab || tab || plane;
@@ -93,10 +105,12 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.doRefresh();
       }
     });
+    this.subscriptions.push(sub);
+    this.subscriptions.push(this.selectDateSubscription);
+    this.subscriptions.push(this.loadDataSub);
   }
   ngOnDestroy() {
-    this.loadDataSub.unsubscribe();
-    this.exchangeDateSub.unsubscribe();
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   async onPay(order: OrderEntity) {
     try {
@@ -177,7 +191,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         this.doRefresh();
         this.doRefreshTasks();
       })
-      .catch(e => {
+      .catch((e) => {
         AppHelper.alert(e);
       });
   }
@@ -188,7 +202,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   }
   onshowMyTrips() {
     this.condition = new SearchTicketConditionModel();
-    this.condition.pageIndex = 0;
+    this.condition.pageIndex = 1;
     this.isShowMyTrips = true;
     this.myTrips = [];
     this.loadMoreMyTrips();
@@ -208,7 +222,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         : this.activeTab.value == ProductItemType.hotel
         ? "Hotel"
         : "Train";
-    this.isLoading = this.condition.pageIndex < 1;
+    this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
       .pipe(
@@ -217,9 +231,15 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         })
       )
       .subscribe(
-        res => {
+        (res) => {
+          if (res && res.Data) {
+            this.condition.LastFlightId = res.Data.LastFlightId;
+            this.condition.LastHotelId = res.Data.LastHotelId;
+            this.condition.LastTime = res.Data.LastTime;
+            this.condition.LastTrainId = res.Data.LastTrainId;
+          }
           if (res && res.Data && res.Data.Trips) {
-            if (this.condition.pageIndex < 1 && res.Data.Trips.length) {
+            if (this.condition.pageIndex <=1  && res.Data.Trips.length) {
               this.myTripsTotalCount = res.Data.DataCount;
             }
             if (this.infiniteScroll) {
@@ -228,17 +248,27 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             }
             if (res.Data.Trips.length) {
               this.myTrips = [...this.myTrips, ...res.Data.Trips];
+              this.myTrips = this.myTrips.map(trip => {
+                trip = this.getVariablesJsonObj(trip);
+                return trip
+              });
               this.condition.pageIndex++;
             }
           }
         },
-        err => {
+        (err) => {
           this.loadMoreErrMsg = err.Message || err;
         }
       );
   }
   back() {
     this.backbtn.backToPrePage();
+  }
+  private getVariablesJsonObj(trip: OrderTripModel) {
+    if (!trip) { return trip }
+    // <ng-container *ngIf="trip.VariablesJsonObj.IsCustomApplyRefund||trip.VariablesJsonObj.IsCustomApplyExchange||trip.Status!= OrderFlightTicketStatusType.Refunded">
+    trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables);
+    return trip;
   }
   async openSearchModal() {
     const condition = new SearchTicketConditionModel();
@@ -251,9 +281,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           orderFlightTicketStatusTypes:
             this.activeTab.value == ProductItemType.plane
               ? this.orderFlightTicketStatusTypes || []
-              : []
-        }
-      }
+              : [],
+        },
+      },
     });
     await m.present();
     const result = await m.onDidDismiss();
@@ -266,26 +296,58 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     //   this.doRefresh();
     // }
   }
-  onAbolishTrainOrder(data: { orderId: string; ticketId: string }) {
+  async onAbolishTrainOrder(data: { orderId: string; ticketId: string }) {
     this.orderService
       .abolishTrainOrder({
         OrderId: data.orderId,
-        TicketId: data.ticketId
+        TicketId: data.ticketId,
+        Channel: await this.tmcService.getChannel(),
       })
       .then(() => {
         this.doRefresh();
       })
-      .catch(e => {
+      .catch((e) => {
         AppHelper.alert(e);
       });
   }
-  private getExchangeDate() {
-    this.datetime.value = "";
-    this.datetime.open();
-    return new Promise<string>(resolve => {
-      this.exchangeDateSub = this.datetime.ionChange.subscribe(() => {
-        resolve(this.datetime.value);
+  private getExchangeDate(date = "") {
+    interface TV {
+      text: string;
+      value: string;
+    }
+    this.datetime.value = date;
+    if (!this.datetime.pickerOptions) {
+      this.datetime.pickerOptions = {
+        buttons: [],
+        cssClass: "exchange-date-time",
+      };
+      this.datetime.pickerOptions.buttons.push(
+        {
+          text: "请选择航班日期：",
+          handler: () => false,
+          cssClass: "label-text",
+        },
+        { text: "取消", handler: () => false, role: "cancel" },
+        {
+          text: "确定",
+          handler: (data: { year: TV; month: TV; day: TV }) => {
+            this.selectDateChange.emit(
+              `${data.year.value}-${
+                +data.month.value < 10
+                  ? "0" + data.month.value
+                  : data.month.value
+              }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
+            );
+          },
+        }
+      );
+    }
+    return new Promise<string>((resolve) => {
+      this.selectDateSubscription.unsubscribe();
+      this.selectDateSubscription = this.selectDateChange.subscribe((d) => {
+        resolve(d);
       });
+      this.datetime.open();
     });
   }
   async onExchangeFlightTicket(data: {
@@ -296,9 +358,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     try {
       this.datetime.yearValues = [
         new Date().getFullYear(),
-        new Date().getFullYear() + 1
+        new Date().getFullYear() + 1,
       ];
-      const date = await this.getExchangeDate();
+      const date = await this.getExchangeDate(data.trip.TakeoffDate);
       console.log("改签日期", date);
       if (!data) {
         AppHelper.alert("请选择改签日期");
@@ -307,7 +369,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       const res = await this.orderService.getExchangeFlightTrip({
         OrderId: data.orderId,
         TicketId: data.ticketId,
-        ExchangeDate: date
+        ExchangeDate: date,
       });
       this.flightService.removeAllBookInfos();
       await this.flightService.initSelfBookTypeBookInfos();
@@ -319,7 +381,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       bookInfos[0].exchangeInfo = {
         order: { Id: data.orderId } as any,
         ticket: { Id: data.ticketId } as any,
-        trip: res.trip
+        trip: res.trip,
       };
       this.flightService.setSearchFlightModelSource({
         ...this.flightService.getSearchFlightModel(),
@@ -331,47 +393,91 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         toCity: res.toCity,
         isExchange: true,
         isRoundTrip: false,
-        Date: date.substr(0, 10)
+        Date: date.substr(0, 10),
       });
       this.router.navigate(["flight-list"], {
-        queryParams: { doRefresh: true }
+        queryParams: { doRefresh: true },
       });
     } catch (e) {
       AppHelper.alert(e);
     }
   }
-  onAbolishFlightOrder(data: { orderId: string; ticketId: string }) {
-    this.orderService
-      .abolishFlightOrder({ OrderId: data.orderId, TicketId: data.ticketId })
-      .then(() => {
-        AppHelper.toast("订单取消申请中", 2000, "middle");
-        this.doRefresh();
-      })
-      .catch(e => {
-        AppHelper.alert(e);
-      });
+  async onAbolishOrder(data: {
+    orderId: string;
+    ticketId: string;
+    tag: "flight" | "train";
+  }) {
+    if (data.tag == "flight") {
+      this.orderService
+        .abolishFlightOrder({
+          OrderId: data.orderId,
+          Channel: await this.tmcService.getChannel(),
+          TicketId: data.ticketId,
+        })
+        .then(() => {
+          AppHelper.toast("订单取消申请中", 2000, "middle");
+          this.doRefresh();
+        })
+        .catch((e) => {
+          AppHelper.alert(e);
+        });
+    } else if (data.tag == "train") {
+      this.orderService
+        .abolishTrainOrder({
+          OrderId: data.orderId,
+          Channel: await this.tmcService.getChannel(),
+          TicketId: data.ticketId,
+        })
+        .then(() => {
+          AppHelper.toast("订单取消申请中", 2000, "middle");
+          this.doRefresh();
+        })
+        .catch((e) => {
+          AppHelper.alert(e);
+        });
+    }
   }
   goToDetailPage(orderId: string, type: string) {
     // Flight
+    console.log(type, "dddd");
+
     if (type && type.toLowerCase() == "car") {
       this.router.navigate([AppHelper.getRoutePath("car-order-detail")], {
-        queryParams: { Id: orderId }
+        queryParams: { Id: orderId },
       });
       return;
-    } else if (type && type.toLowerCase() == "flight") {
+    }
+    if (type && type.toLowerCase() == "flight") {
       this.router.navigate([AppHelper.getRoutePath("flight-order-detail")], {
         queryParams: {
           tab: JSON.stringify(this.activeTab),
-          orderId: orderId
-        }
+          orderId: orderId,
+        },
+      });
+      return;
+    } else if (type && type.toLowerCase() == "hotel") {
+      this.router.navigate([AppHelper.getRoutePath("hotel-order-detail")], {
+        queryParams: {
+          tab: JSON.stringify(this.activeTab),
+          orderId: orderId,
+        },
+      });
+      return;
+    }
+    if (type && type.toLowerCase() == "train") {
+      this.router.navigate([AppHelper.getRoutePath("train-order-detail")], {
+        queryParams: {
+          tab: JSON.stringify(this.activeTab),
+          orderId: orderId,
+        },
       });
       return;
     }
     this.router.navigate([AppHelper.getRoutePath("order-detail")], {
       queryParams: {
         tab: JSON.stringify(this.activeTab),
-        orderId: orderId
-      }
+        orderId: orderId,
+      },
     });
   }
   private doRefreshTasks() {
@@ -398,7 +504,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.loadDataSub = this.orderService
       .getOrderTasks({
         PageSize: pageSize,
-        PageIndex: this.curTaskPageIndex
+        PageIndex: this.curTaskPageIndex,
       } as any)
       .pipe(
         finalize(() => {
@@ -409,7 +515,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         })
       )
       .subscribe(
-        tasks => {
+        (tasks) => {
           if (tasks) {
             if (tasks.length) {
               this.tasks = this.tasks.concat(tasks);
@@ -421,7 +527,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             }
           }
         },
-        err => {
+        (err) => {
           this.loadMoreErrMsg = err.Message || err;
         }
       );
@@ -433,6 +539,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     return task && task.VariablesJsonObj["TaskUrl"];
   }
   private async doSearchOrderList() {
+    if (!this.tmc) {
+      this.tmc = await this.tmcService.getTmc();
+    }
     try {
       if (this.loadDataSub) {
         this.loadDataSub.unsubscribe();
@@ -466,7 +575,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
           })
         )
         .subscribe(
-          async res => {
+          async (res) => {
             let result: OrderModel = res.Status ? res.Data : null;
             this.orderFlightTicketStatusTypes =
               (res.Data && res.Data.OrderFlightTicketStatusTypes) || [];
@@ -487,14 +596,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
               if (this.orderModel) {
                 this.orderModel.Orders = [
                   ...this.orderModel.Orders,
-                  ...result.Orders
+                  ...result.Orders,
                 ];
               } else {
                 this.orderModel = result;
               }
             }
           },
-          e => {
+          (e) => {
             this.loadMoreErrMsg = e.Message || e;
             console.error(e);
           }
@@ -508,20 +617,21 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (url) {
       const identity: IdentityEntity = await this.identityService
         .getIdentityAsync()
-        .catch(_ => null);
+        .catch((_) => null);
       const sign = this.apiService.getSign({
-        Token: identity && identity.Token
+        Token: identity && identity.Token,
       } as any);
       this.router
         .navigate(["open-url"], {
           queryParams: {
-            url: `${url}?sign=${sign}&taskid=${task.Id}&ticket=${identity &&
-              identity.Ticket}`,
+            url: `${url}?sign=${sign}&taskid=${task.Id}&ticket=${
+              identity && identity.Ticket
+            }`,
             title: task && task.Name,
-            tabId: this.activeTab.value
-          }
+            tabId: this.activeTab.value,
+          },
         })
-        .then(_ => {
+        .then((_) => {
           this.isOpenUrl = true;
         });
     }
@@ -529,7 +639,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   private combineInfo(data: OrderModel) {
     if (data) {
       if (data.Orders) {
-        data.Orders = data.Orders.map(order => {
+        data.Orders = data.Orders.map((order) => {
           if (order.Variables) {
             order.VariablesJsonObj = JSON.parse(order.Variables);
           }
@@ -545,13 +655,13 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             }
           }
           if (order.OrderFlightTickets) {
-            order.OrderFlightTickets = order.OrderFlightTickets.map(t => {
+            order.OrderFlightTickets = order.OrderFlightTickets.map((t) => {
               t.vmTicketAmount = this.getTotalAmount(order, t.Key);
               t.vmInsuranceAmount = this.getInsuranceAmount(order, t);
               // t.vmIsAllowExchange = this.isAllowExchange(order);
               // t.vmIsAllowRefund = this.isAllowRefund(order);
               if (t.OrderFlightTrips) {
-                t.OrderFlightTrips = t.OrderFlightTrips.map(trip => {
+                t.OrderFlightTrips = t.OrderFlightTrips.map((trip) => {
                   if (trip.TakeoffTime) {
                     if (trip.TakeoffTime.includes("T")) {
                       const [date, time] = trip.TakeoffTime.split("T");
@@ -587,6 +697,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             });
           }
           order.vmIsCheckPay = this.checkPay(order);
+          order.TotalAmount = this.orderService.getOrderTotalAmount(
+            order,
+            this.tmc
+          );
           return order;
         });
       }
@@ -602,14 +716,14 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       return 0;
     }
     return order.OrderItems.filter(
-      it => it.Tag == OrderItemHelper.Insurance
+      (it) => it.Tag == OrderItemHelper.Insurance
     ).reduce((acc, item) => (acc = AppHelper.add(acc, +item.Amount)), 0);
   }
   private transformSearchCondition(data: SearchTicketConditionModel) {
     let model = new OrderModel();
     model = {
       ...model,
-      ...data
+      ...data,
     };
     if (data.fromDate) {
       model.StartDate = data.fromDate;
@@ -626,10 +740,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         {
           OrderPassengers: [
             {
-              Name: data.passengerName
-            } as any
-          ]
-        } as any
+              Name: data.passengerName,
+            } as any,
+          ],
+        } as any,
       ];
     }
     if (data.toCity) {
@@ -641,15 +755,15 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (data.fromCityName) {
       model.OrderTrips = [
         {
-          FromName: data.fromCityName
-        } as any
+          FromName: data.fromCityName,
+        } as any,
       ];
     }
     if (data.toCityName) {
       model.OrderTrips = [
         {
-          ToName: data.toCityName
-        } as any
+          ToName: data.toCityName,
+        } as any,
       ];
     }
     console.log("transformSearchCondition", model);
@@ -660,7 +774,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       this.tmc = await this.tmcService.getTmc(true);
       this.doRefresh();
       this.tabs = ORDER_TABS.filter(
-        t => t.value != ProductItemType.more && t.isDisplay
+        (t) => t.value != ProductItemType.more && t.isDisplay
       );
     } catch (e) {
       console.error(e);
@@ -673,13 +787,13 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       return amount;
     }
     if (Tmc.IsShowServiceFee) {
-      amount = order.OrderItems.filter(it => it.Key == key).reduce(
+      amount = order.OrderItems.filter((it) => it.Key == key).reduce(
         (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
         0
       );
     } else {
       amount = order.OrderItems.filter(
-        it => it.Key == key && !(it.Tag || "").endsWith("Fee")
+        (it) => it.Key == key && !(it.Tag || "").endsWith("Fee")
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount;

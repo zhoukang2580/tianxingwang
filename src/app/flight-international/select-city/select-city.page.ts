@@ -9,14 +9,14 @@ import {
   IonRefresher,
   IonHeader,
   ModalController,
-  IonInfiniteScroll
+  IonInfiniteScroll,
 } from "@ionic/angular";
 import {
   Component,
   OnInit,
   ViewChild,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import * as jsPy from "js-pinyin";
 import {
@@ -24,10 +24,11 @@ import {
   state,
   style,
   animate,
-  transition
+  transition,
 } from "@angular/animations";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { InternationalFlightService } from "../international-flight.service";
+import { TmcService } from "src/app/tmc/tmc.service";
 @Component({
   selector: "app-select-international-flight-city",
   templateUrl: "./select-city.page.html",
@@ -36,9 +37,9 @@ import { InternationalFlightService } from "../international-flight.service";
     trigger("openclose", [
       state("true", style({ transform: "scale(1)" })),
       state("false", style({ transform: "scale(0)" })),
-      transition("true<=>false", animate("300ms ease-in-out"))
-    ])
-  ]
+      transition("true<=>false", animate("300ms ease-in-out")),
+    ]),
+  ],
 })
 export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   private cities: TrafficlineEntity[] = [];
@@ -52,32 +53,42 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   isSearching = false;
   isLoading = false;
   activeTab = "";
-  @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
-  @ViewChild(IonContent) content: IonContent;
-  @ViewChild(RefresherComponent) refresher: RefresherComponent;
-  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(BackButtonComponent, { static: true })
+  backBtn: BackButtonComponent;
+  @ViewChild(IonContent, { static: true }) content: IonContent;
+  @ViewChild(RefresherComponent, { static: true })
+  refresher: RefresherComponent;
+  @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   isIos = false;
+  isActiveHot = false;
   constructor(
     plt: Platform,
     route: ActivatedRoute,
     private flightService: InternationalFlightService,
-    private storage: Storage
+    private storage: Storage,
+    private tmcService: TmcService
   ) {
     this.isIos = plt.is("ios");
-    this.subscription = route.queryParamMap.subscribe(q => {
+    this.subscription = route.queryParamMap.subscribe((q) => {
       this.isFromCity = q.get("requestCode") == "select_from_city";
     });
   }
   async onActiveTab(tab: string) {
     this.activeTab = tab;
+    this.vmKeyowrds = "";
+    this.isActiveHot = false;
     if (tab == "hot") {
-      this.cities = this.cities || [];
-      this.textSearchResults = this.cities.filter(
-        it => it.IsHot && !it.IsDeprecated
-      );
+      this.isActiveHot = true;
+      this.textSearchResults = [];
+      this.vmKeyowrds = "";
+      this.scrollToTop();
+      this.loadMore();
     }
     if (tab == "history") {
       this.textSearchResults = this.histories || [];
+      if (this.scroller) {
+        this.scroller.disabled = this.textSearchResults.length < this.pageSize;
+      }
     }
   }
   onSearchByKeywords() {
@@ -89,18 +100,39 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.doRefresh();
   }
   private async initData(forceRefresh: boolean = false) {
-    if (this.isInitData) {
-      return;
+    try {
+      const keys = `Code,Name,Nickname,CityName,Pinyin,AirportCityCode`.split(
+        ","
+      );
+      if (this.isInitData) {
+        return;
+      }
+      const domestics: TrafficlineEntity[] = await this.tmcService
+        .getDomesticAirports(forceRefresh)
+        .catch(() => []);
+      const interCities: TrafficlineEntity[] = await this.flightService
+        .getInternationalAirports(forceRefresh)
+        .catch(() => []);
+      this.cities = domestics.concat(interCities);
+      this.cities.sort((c1, c2) => c1.Sequence - c2.Sequence);
+      this.histories =
+        (await this.storage.get("historyInternationalAirports")) || [];
+      this.cities = this.cities
+        .filter((it) => it.IsHot)
+        .concat(this.cities.filter((it) => !it.IsHot))
+        .map((it) => {
+          it.matchStr = keys
+            .map((k) => it[k])
+            .filter((i) => i && i.length > 0)
+            .join(",")
+            .toLowerCase();
+          return it;
+        });
+      this.isInitData = this.cities.length > 0;
+    } catch (e) {
+      console.log(e);
+      return false;
     }
-    this.cities =
-      (await this.flightService.getInternationalAirports(forceRefresh)) || [];
-    this.cities.sort((c1, c2) => c1.Sequence - c2.Sequence);
-    this.histories =
-      (await this.storage.get("historyInternationalAirports")) || [];
-    this.cities = this.cities
-      .filter(it => it.IsHot)
-      .concat(this.cities.filter(it => !it.IsHot));
-    this.isInitData = this.cities.length > 0;
     return true;
   }
   ngOnDestroy() {
@@ -108,7 +140,9 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.unsubscribe();
   }
   async doRefresh(forceFetch = false) {
-    await this.initData(forceFetch).catch(_ => 0);
+    this.isActiveHot = false;
+    this.activeTab = "";
+    await this.initData(forceFetch).catch((_) => 0);
     if (this.refresher) {
       this.refresher.complete();
     }
@@ -126,14 +160,14 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit() {}
   async onCitySelected(city: TrafficlineEntity) {
-    if (this.histories && !this.histories.find(it => it.Id == city.Id)) {
+    if (this.histories && !this.histories.find((it) => it.Id == city.Id)) {
       this.histories.unshift(city);
       if (this.histories.length > 20) {
         this.histories = this.histories.slice(0, 20);
       }
       await this.storage.set("historyInternationalAirports", this.histories);
     }
-    this.flightService.onCitySelected(city, this.isFromCity);
+    this.flightService.afterCitySelected(city, this.isFromCity);
     if (this.backBtn) {
       this.backBtn.backToPrePage();
     }
@@ -150,22 +184,28 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     }
     let name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
     name = name.toLowerCase();
-    const arr = this.cities.filter(c => {
-      if (!name) {
-        return true;
-      }
-      const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
-      return keys.some(k => {
-        // console.log(`key=${k}`, c[k]);
-        const n: string = ((c[k] && c[k]) || "").toLowerCase();
-        const reg = new RegExp("^[a-zA-Z]*$");
+    let arr = this.cities;
+    const reg = new RegExp("^[a-zA-Z]*$");
+    if (name) {
+      arr = arr.filter((it) => {
         if (reg.test(name) && name.length == 3) {
-          return name == n;
+          return (
+            name == (it.AirportCityCode || "").toLowerCase() ||
+            (it.Code || "").toLowerCase() == name
+          );
         } else {
-          return name == n || n.includes(name);
+          return (
+            it.Name == name ||
+            it.Nickname == name ||
+            it.Pinyin == name ||
+            it.matchStr.includes(name)
+          );
         }
       });
-    });
+    }
+    if (this.isActiveHot) {
+      arr = arr.filter((it) => it.IsHot);
+    }
     this.scroller.complete();
     const temp = arr.slice(
       this.textSearchResults.length,

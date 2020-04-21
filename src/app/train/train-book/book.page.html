@@ -15,7 +15,7 @@
     </app-refresher>
     <ng-container *ngIf='viewModel?.combindInfos?.length'>
       <ion-list *ngFor="let combindInfo of viewModel?.combindInfos" lines='none'>
-        <ion-item-divider color='primary' sticky>
+        <ion-item-divider color='primary' class="sticky">
           {{combindInfo?.credential?.CheckName}}
           【{{tmc?.Name}}】
           [成人]
@@ -60,6 +60,13 @@
               </app-book-illegal-reason-comp>
             </div>
           </ion-item>
+          <ng-container *ngIf='viewModel?.expenseTypes?.length'>
+            <ion-item lines='none'>
+              <app-book-expense-types-comp style="width: 100%;" [expenseTypes]='viewModel.expenseTypes'
+                [(expenseType)]='combindInfo.expenseType'>
+              </app-book-expense-types-comp>
+            </ion-item>
+          </ng-container>
           <ion-item>
             <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
               [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
@@ -105,36 +112,49 @@
             </ion-item>
           </div>
         </ion-item-group>
-        <ion-item-group *ngIf='combindInfo?.insuranceProducts?.length'>
-          <ion-item-divider>
-            保险:
-          </ion-item-divider>
-          <ion-item [disabled]='searchTrainModel?.isExchange'>
-            <div *ngFor='let insurance of combindInfo?.insuranceProducts' style='width: 100%'>
-              <ion-row>
-                <ion-col size='9'>
-                  <ion-item>
-                    <ion-checkbox color="secondary" name='insurance' [(ngModel)]="insurance.checked">
-                    </ion-checkbox>
-                    <ion-label style='margin-left: 0.5em'>
+        <ng-container *ngIf='combindInfo?.insuranceProducts?.length'>
+          <ion-item-group>
+            <ion-item-divider color="primary">
+              保险:
+            </ion-item-divider>
+            <ion-radio-group [disabled]='searchTrainModel?.isExchange' allow-empty-selection='true'
+              [value]='combindInfo.selectedInsuranceProduct' [(ngModel)]='combindInfo.selectedInsuranceProduct'
+              (ionChange)='calcTotalPrice()'>
+              <div *ngFor='let insurance of combindInfo?.insuranceProducts'
+                style="margin-top: 1em;background-color: var(--ion-color-primary);padding-right: 1em;">
+                <ion-buttons>
+                  <ion-item style="--background:transparent;flex: 1;">
+                    <ion-radio [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
+                    <ion-label class="ion-margin-horizontal">
                       {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
                   </ion-item>
-                </ion-col>
-                <ion-col size='3'>
-                  <ion-button fill='clear' (click)='insuranceEle.checked=!insuranceEle.checked' color='secondary'>
+                  <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
                     详情
-                    <ion-icon name='caret-down-outline' *ngIf='insuranceEle.checked'></ion-icon>
-                    <ion-icon name="caret-up-outline" *ngIf='!insuranceEle.checked'></ion-icon>
-                  </ion-button>
-                </ion-col>
-              </ion-row>
-              <input type="checkbox" #insuranceEle class='hidden'>
-              <ion-label class='ion-text-wrap' class='small-font' [@showHide]='insuranceEle.checked'>
-                {{insurance.insuranceResult?.Detail}}
-              </ion-label>
-            </div>
-          </ion-item>
-        </ion-item-group>
+                    <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
+                    </ion-icon>
+                    <ion-icon name="caret-down-outline" *ngIf='!insurance.showDetail'>
+                    </ion-icon>
+                  </ion-label>
+                </ion-buttons>
+                <div [@flyInOut] *ngIf='insurance.showDetail' style='width: 100%;'
+                  (click)='insurance.showDetail=!insurance.showDetail'>
+                  <ion-row>
+                    <ion-col>
+                      <ion-label color='medium' class='small-font ion-text-wrap'>
+                        <div style="user-select: text;"
+                          [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
+                      </ion-label>
+                    </ion-col>
+                  </ion-row>
+                  <ion-item style="--background: transparent;" *ngIf='insurance.insuranceResult?.DetailUrl' detail
+                    button (click)='onShowProductDetail(insurance.insuranceResult,$event)'>
+                    <ion-label color='secondary'>显示更多</ion-label>
+                  </ion-item>
+                </div>
+              </div>
+            </ion-radio-group>
+          </ion-item-group>
+        </ng-container>
         <ion-item-group *ngIf="isShowApprove(combindInfo)">
           <ion-item-divider>
             审批人:
@@ -158,7 +178,7 @@
         </ion-item-group>
         <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item-group>
-            <ion-list-header color='primary' sticky>
+            <ion-list-header color='primary' class='sticky'>
               <ion-label class='ion-text-wrap' *ngIf='getGroupedTitle(combindInfo) as title'>
                 {{title}}
                 【{{tmc?.Name}}】
