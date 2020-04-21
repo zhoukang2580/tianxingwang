@@ -123,6 +123,6 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
         }
         return acc;
       }, 0);
-    return amount > 0 ? amount : 0;
+    return amount;
   }
 }
