@@ -881,6 +881,9 @@ export class InternationalFlightService {
       req.IsShowLoading = true;
       req.LoadingMsg = "正在计算差标信息";
       const result = await this.apiService.getPromiseData<{
+        RuleExplains: {
+          [fareId: string]: string;
+        };
         PolicyDis: {
           [fareId: string]: {
             IsAllowOrder: boolean;
@@ -913,6 +916,17 @@ export class InternationalFlightService {
     }
 
     return true;
+  }
+  getRuleExplain(flightfare: FlightFareEntity) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiInternationalFlightUrl-Home-GetRuleExplain`;
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在计算差标";
+    req.Data = {
+      Flightfare: JSON.stringify(flightfare),
+      FlightRoutes: JSON.stringify(this.flightListResult.FlightRoutes || []),
+    };
+    return this.apiService.getResponse<string>(req);
   }
   private async checkRoutePolicy(result: FlightResultEntity) {
     const req = new RequestEntity();

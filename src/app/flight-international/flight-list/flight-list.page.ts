@@ -32,7 +32,9 @@ interface Iisblue {
 export class FlightListPage implements OnInit, OnDestroy {
   private flightQuery: FlightResultEntity;
   private subscriptions: Subscription[] = [];
+  private explainSubscription = Subscription.EMPTY;
   private pageSize = 12;
+  isLastTrip = false;
   isLoading = false;
   multipassShow = false;
   searchModel: IInternationalFlightSearchModel;
@@ -60,6 +62,7 @@ export class FlightListPage implements OnInit, OnDestroy {
       const isCheckPolicy =
         this.searchModel.trips.findIndex((it) => it == trip) ==
         this.searchModel.trips.length - 1;
+      this.isLastTrip = isCheckPolicy;
       if (isCheckPolicy) {
         if (flightRoute.policy && !flightRoute.policy.IsAllowOrder) {
           AppHelper.alert(flightRoute.policy.Message || "不可预订");
@@ -85,6 +88,21 @@ export class FlightListPage implements OnInit, OnDestroy {
       this.doRefresh();
     }
   }
+  onShowRuleExplain(flightRoute: FlightRouteEntity) {
+    if (
+      flightRoute &&
+      flightRoute.flightFare &&
+      !flightRoute.flightFare.ruleExplain
+    ) {
+      this.explainSubscription.unsubscribe();
+      this.explainSubscription = this.flightService
+        .getRuleExplain(flightRoute.flightFare)
+        .subscribe((r) => {
+          flightRoute.flightFare.ruleExplain = r && r.Data;
+        });
+    } else {
+    }
+  }
   onReselectTrip(trip: ITripInfo) {
     if (this.searchModel && this.searchModel.trips && trip) {
       const index = this.searchModel.trips.findIndex((it) => it.id == trip.id);
@@ -99,12 +117,17 @@ export class FlightListPage implements OnInit, OnDestroy {
     }
   }
   ngOnInit() {
+    this.subscriptions.push(this.explainSubscription);
     this.doRefresh(environment.production);
     this.subscriptions.push(
       this.flightService.getSearchModelSource().subscribe((s) => {
         this.searchModel = s;
         if (s && s.trips) {
           this.curTrip = s.trips.find((it) => !it.bookInfo);
+          const isCheckPolicy =
+            this.searchModel.trips.findIndex((it) => it == this.curTrip) ==
+            this.searchModel.trips.length - 1;
+          this.isLastTrip = isCheckPolicy;
           if (!this.curTrip) {
             this.curTrip = s.trips[s.trips.length - 1];
           }
@@ -147,7 +170,10 @@ export class FlightListPage implements OnInit, OnDestroy {
         });
       console.log("list data", this.flightQuery);
       if (this.flightQuery && this.flightQuery.FlightRoutes) {
-        this.flightRoutes = this.flightQuery.FlightRoutes.slice(0, this.pageSize);
+        this.flightRoutes = this.flightQuery.FlightRoutes.slice(
+          0,
+          this.pageSize
+        );
         this.scroller.disabled = this.flightRoutes.length < this.pageSize;
       }
       this.scrollToTop();

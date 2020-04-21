@@ -60,6 +60,9 @@
     <div *ngFor='let flight of flightRoutes' style="border-bottom: 1px solid rgba(var(--ion-color-dark-rgb),0.13);">
       <app-flight-list-item (click)='onSelectTrip(flight)' [flight]='flight' (transfer)='onTransfer(flight)'>
       </app-flight-list-item>
+      <div *ngIf='isLastTrip' style="font-size: 0.6rem;text-indent: 3em;">
+        <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(flight)'>退改签规则</ion-button>
+      </div>
       <div *ngIf='(flight.policy?.Message||flight.flightFare.ruleMessage) as rule'
         style="font-size: 0.6rem;text-indent: 3em;">
         <ion-text color='danger'>{{rule}}</ion-text>

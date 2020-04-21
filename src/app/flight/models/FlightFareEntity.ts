@@ -126,4 +126,5 @@ export class FlightFareEntity {
   /// </summary>
   Rules: { [key: string]: string };
   ruleMessage?: string;
+  ruleExplain: string;
 }
