@@ -141,6 +141,18 @@ export class OrderItemComponent implements OnInit, OnChanges {
             }
           );
         }
+        if (this.order.OrderTrainTickets){
+          this.order.OrderTrainTickets = this.order.OrderTrainTickets.map(
+            (t)=>{
+              if (t.Variables && !t.VariablesJsonObj) {
+                t.VariablesJsonObj =
+                  t.VariablesJsonObj || JSON.parse(t.Variables) || {};
+              }
+              t.VariablesJsonObj.isShowCancelBtn = this.isShowTrainCancelBtn(t);
+              return t;
+            }
+          )
+        }
         this.initPassengers();
         // this.initInsuranceAmount();
         this.order.OrderFlightTickets = this.orderService.checkIfOrderFlightTicketShow(
@@ -242,6 +254,17 @@ export class OrderItemComponent implements OnInit, OnChanges {
       OrderFlightTicketStatusType.Booked,
       OrderFlightTicketStatusType.BookExchanged,
     ].includes(orderFlightTicket.Status);
+  }
+  private isShowTrainCancelBtn(orderTrainTicket: OrderTrainTicketEntity) {
+    if (
+      !orderTrainTicket
+    ) {
+      return false;
+    }
+    return [
+      OrderTrainTicketStatusType.Booked,
+      OrderTrainTicketStatusType.BookExchanged,
+    ].includes(orderTrainTicket.Status);
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
     if (
