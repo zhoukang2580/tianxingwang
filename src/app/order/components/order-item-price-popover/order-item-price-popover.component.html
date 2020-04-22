@@ -45,17 +45,17 @@
             <ion-col class='price'>{{abs(amount)}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row> -->
-          <ion-row *ngIf="t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchange])">
+          <ion-row *ngIf="(t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchange]))&&t.VariablesJsonObj.OriginalTicketId">
             <ion-col size='7'>改签费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketExchange])}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row>
-          <ion-row *ngIf="t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchangeTax])">
+          <ion-row *ngIf="(t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchangeTax]))&&t.VariablesJsonObj.OriginalTicketId">
             <ion-col size='7'>改签税费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketExchangeTax])}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row>
-          <ion-row *ngIf="t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchangeOfflineFee])">
+          <ion-row *ngIf="(t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchangeOfflineFee]))&&t.VariablesJsonObj.OriginalTicketId">
             <!-- "FlightTicketExchangeOfflineFee" -->
             <ion-col size='7'>改签服务费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketExchangeOfflineFee])}}</ion-col>
