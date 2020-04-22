@@ -21,6 +21,7 @@ import { FlightTransferComponent } from "../components/flight-transfer/flight-tr
 import { environment } from "src/environments/environment";
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
+import { RuleExplainComponent } from "../components/rule-explain/rule-explain.component";
 interface Iisblue {
   isshow: false;
 }
@@ -89,19 +90,28 @@ export class FlightListPage implements OnInit, OnDestroy {
     }
   }
   onShowRuleExplain(flightRoute: FlightRouteEntity) {
-    if (
-      flightRoute &&
-      flightRoute.flightFare &&
-      !flightRoute.flightFare.ruleExplain
-    ) {
-      this.explainSubscription.unsubscribe();
-      this.explainSubscription = this.flightService
-        .getRuleExplain(flightRoute.flightFare)
-        .subscribe((r) => {
-          flightRoute.flightFare.ruleExplain = r && r.Data;
-        });
-    } else {
+    if (flightRoute && flightRoute.flightFare) {
+      if (!flightRoute.flightFare.ruleExplain) {
+        this.explainSubscription.unsubscribe();
+        this.explainSubscription = this.flightService
+          .getRuleExplain(flightRoute.flightFare)
+          .subscribe((r) => {
+            flightRoute.flightFare.ruleExplain = r && r.Data;
+            this.presentRuleExplain(flightRoute.flightFare.ruleExplain);
+          });
+      } else {
+        this.presentRuleExplain(flightRoute.flightFare.ruleExplain);
+      }
     }
+  }
+  private async presentRuleExplain(ruleExplain: string) {
+    const m = await this.popoverController.create({
+      component: RuleExplainComponent,
+      componentProps: {
+        ruleExplain,
+      },
+    });
+    m.present();
   }
   onReselectTrip(trip: ITripInfo) {
     if (this.searchModel && this.searchModel.trips && trip) {

@@ -30,7 +30,7 @@ import { IFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
 import { AppHelper } from "../appHelper";
 import { OrderFlightTicketEntity } from "./models/OrderFlightTicketEntity";
 import { OrderTrainTicketEntity } from "./models/OrderTrainTicketEntity";
-import { TravelModel } from './models/TravelModel';
+import { TravelModel } from "./models/TravelModel";
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -101,6 +101,7 @@ export class OrderService {
       }
       amount += fee;
     }
+    amount = amount < 0 ? 0 : amount;
     return `${amount}`;
   }
   getOrderDetail(id: string) {
