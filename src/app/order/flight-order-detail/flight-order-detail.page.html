@@ -94,9 +94,9 @@
                   <ion-col size='4'>审批截止时间:</ion-col>
                   <ion-col>{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col>
                 </ion-row>
-                <ion-row>
+                <ion-row *ngIf="history.Status==TaskStatusType.Passed||history.Status==TaskStatusType.Rejected">
                   <ion-col size='4'>审批时间:</ion-col>
-                  <ion-col>{{history?.HandleTime?.replace("T"," ")?.substring(0,16)}}</ion-col>
+                  <ion-col>{{history?.UpdateTime?.startsWith("0001")?"":history?.UpdateTime.replace("T"," ")?.substring(0,16)}}</ion-col>
                 </ion-row>
               </div>
             </div>
@@ -246,8 +246,8 @@
                 <ion-row>
                   <ion-col>
                     <p style="margin-top: 0px" class='clip-text ion-no-margin'
-                      (click)='flightTicket["isShowDetail"]=!flightTicket["isShowDetail"]'
-                      [class.show]='flightTicket["isShowDetail"]'>{{flightTicket.Explain?.split("\\n").join("")}}</p>
+                      (click)='isShowDetail(flightTicket,$event)'
+                      [class.show]='flightTicket["isShowExplain"]'>{{flightTicket.Explain?.split("\\n").join("")}}</p>
                   </ion-col>
                 </ion-row>
               </ng-container>
@@ -364,7 +364,7 @@
                 </ion-col>
               </ion-row>
             </div>
-            <div class="getHeight" *ngFor="let ticket of tikectId2OriginalTickets[flightTicket.Id]">
+            <div class="getHeight ion-padding-bottom" *ngFor="let ticket of tikectId2OriginalTickets[flightTicket.Id]">
               <ng-container *ngIf="ticket.isShowOriginalTicket" @flyInOut>
                 <ion-row>
                   <ion-col size='3'>
@@ -458,7 +458,7 @@
                 <ion-row>
                   <ion-col>
                     <p style="margin-top: 0px" class='clip-text ion-no-margin'
-                      (click)='ticket["isShowDetail"]=!ticket["isShowDetail"]' [class.show]='ticket["isShowDetail"]'>
+                      (click)='isShowDetail(ticket,$event)' [class.show]='ticket["isShowExplain"]'>
                       {{ticket.Explain?.split("\\n").join("")}}</p>
                   </ion-col>
                 </ion-row>

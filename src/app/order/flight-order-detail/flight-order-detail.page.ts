@@ -53,6 +53,7 @@ import { OrderHotelType } from "../models/OrderHotelEntity";
 import { MOCK_TMC_DATA } from "../mock-data";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
 import { OrderFlightTicketType } from '../models/OrderFlightTicketType';
+import { TaskStatusType } from 'src/app/workflow/models/TaskStatusType';
 
 export interface TabItem {
   label: string;
@@ -69,6 +70,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
+  TaskStatusType = TaskStatusType;
   ProductItemType = ProductItemType;
   items: { label: string; value: string }[] = [];
   tabs: TabItem[] = [];
@@ -390,9 +392,53 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       this.orderDetail.Order.OrderFlightTickets.forEach((it, idx) => {
         if (it.VariablesJsonObj.isShow) {
 
-          this.tabs.push({ label: typeof it.Id==='string'?it.VariablesJsonObj.selfId:it.Id, value: idx + 1 });
+          this.tabs.push({ label: typeof it.Id === 'string' ? it.VariablesJsonObj.selfId : it.Id, value: idx + 1 });
         }
+        if (it.Variables && !it.VariablesJsonObj) {
+          it.VariablesJsonObj =
+            it.VariablesJsonObj || JSON.parse(it.Variables) || {};
+        }
+        it.VariablesJsonObj.isShowExchange = this.isShowExchange(it);
+        it.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(it);
       });
+    }
+  }
+  private isShowExchange(orderFlightTicket: OrderFlightTicketEntity) {
+    if (
+      !orderFlightTicket
+    ) {
+      return false;
+    }
+    return [
+      OrderFlightTicketStatusType.BookExchanging,
+      OrderFlightTicketStatusType.BookExchanged,
+      OrderFlightTicketStatusType.Exchanging,
+      OrderFlightTicketStatusType.Exchanged,
+      OrderFlightTicketStatusType.ChangeTicket,
+      OrderFlightTicketStatusType.ExchangeUsed,
+      OrderFlightTicketStatusType.ExchangeAbolishing,
+    ].includes(orderFlightTicket.Status);
+  }
+  private isTicketCanRefund(orderFlightTicket: OrderFlightTicketEntity) {
+    if (
+      !orderFlightTicket
+    ) {
+      return false;
+    }
+    return [
+      OrderFlightTicketStatusType.Refunded,
+      OrderFlightTicketStatusType.Refunding,
+    ].includes(orderFlightTicket.Status);
+  }
+  // ticket["isShowDetail"]=!ticket["isShowDetail"]
+  isShowDetail(t: OrderFlightTicketEntity, event: CustomEvent) {
+    t["isShowExplain"] = !t["isShowExplain"];
+    if(t["isShowExplain"]){
+      const height = this.plt.height();
+      setTimeout(() => {
+        const rect = (event.target as HTMLElement).getBoundingClientRect();
+        this.ionContent.scrollToBottom(100)
+      }, 200);
     }
   }
   async ngOnInit() {
@@ -498,7 +544,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     console.log(this.tikectId2OriginalTickets);
-    
+
   }
   private initTicketsTripsInsurance() {
     if (
@@ -770,19 +816,19 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     event: CustomEvent
   ) {
     const originalTicket =
-        this.tikectId2OriginalTickets[t.Id] &&
-        this.tikectId2OriginalTickets[t.Id].find((f) => f.Id == originalid);
-      // console.log(this.tikectId2OriginalTickets, "onShowFlightTicket");
-      t.VariablesJsonObj.isShowOriginalTicket = !t.VariablesJsonObj
-        .isShowOriginalTicket;
-      if (originalTicket) {
-        originalTicket.isShowOriginalTicket = !originalTicket.isShowOriginalTicket;
-        const height = this.plt.height();
-        setTimeout(() => {
-          const rect = (event.target as HTMLElement).getBoundingClientRect();
-          this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
-        }, 100);
-      }
+      this.tikectId2OriginalTickets[t.Id] &&
+      this.tikectId2OriginalTickets[t.Id].find((f) => f.Id == originalid);
+    // console.log(this.tikectId2OriginalTickets, "onShowFlightTicket");
+    t.VariablesJsonObj.isShowOriginalTicket = !t.VariablesJsonObj
+      .isShowOriginalTicket;
+    if (originalTicket) {
+      originalTicket.isShowOriginalTicket = !originalTicket.isShowOriginalTicket;
+      const height = this.plt.height();
+      setTimeout(() => {
+        const rect = (event.target as HTMLElement).getBoundingClientRect();
+        this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
+      }, 100);
+    }
 
   }
   private getTicketOrderInsurances(t: OrderFlightTicketEntity) {
