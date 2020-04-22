@@ -19,6 +19,7 @@ import {
 import { LanguageHelper } from "src/app/languageHelper";
 import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
+import { OverHotelComponent } from '../components/over-hotel/over-hotel.component';
 
 @Component({
   selector: "app-search-international-hotel",
@@ -112,7 +113,14 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
     );
   }
 
-  onSearchHotel() {
+async onSearchHotel() {
+    if(this.totalFlyDays>=15){
+      const popover = await this.popoverCtrl.create({
+        component: OverHotelComponent,
+        translucent: true
+      });
+      return await popover.present();
+    }
     this.router.navigate([AppHelper.getRoutePath("international-hotel-list")]);
   }
   onSelectPassenger() {

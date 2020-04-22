@@ -18,6 +18,7 @@ import { RecommendRankComponent } from './recommend-rank/recommend-rank.componen
 import { HotelFilterComponent } from './hotel-filter/hotel-filter.component';
 import { HotelStarPriceComponent } from './hotel-starprice/hotel-starprice.component';
 import { WarrantyComponent } from './warranty/warranty.component';
+import { OverHotelComponent } from './over-hotel/over-hotel.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { WarrantyComponent } from './warranty/warranty.component';
     RoomShowItemComponent,
     ChangeRoomplanDateComponent,
     ShowMsgComponent,
-    WarrantyComponent
+    WarrantyComponent,
+    OverHotelComponent
   ],
   imports: [
     CommonModule,
@@ -58,7 +60,8 @@ import { WarrantyComponent } from './warranty/warranty.component';
     RoomPlanItemComponent,
     RoomShowItemComponent,
     TmcComponentsModule,
-    ChangeRoomplanDateComponent
+    ChangeRoomplanDateComponent,
+    OverHotelComponent
   ],
   entryComponents: [ShowMsgComponent]
 })
