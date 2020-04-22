@@ -74,6 +74,23 @@ export class SearchInternationalFlightPage
     p.present();
   }
   searchFlight() {
+    const m = this.flightService.getSearchModel();
+    if (m) {
+      if (
+        m.voyageType == FlightVoyageType.GoBack ||
+        m.voyageType == FlightVoyageType.OneWay
+      ) {
+        if (m.trips[0] && m.trips[0].fromCity && m.trips[0].toCity) {
+          if (
+            (m.trips[0].fromCity.CountryCode || "").toLowerCase() == "cn" &&
+            (m.trips[0].toCity.CountryCode || "").toLowerCase() == "cn"
+          ) {
+            AppHelper.toast("出发地和目的地不可全为大陆地区", 1500, "middle");
+            return;
+          }
+        }
+      }
+    }
     this.router.navigate([AppHelper.getRoutePath("international-flight-list")]);
   }
   onSegmentChanged(evt: CustomEvent) {
@@ -102,9 +119,7 @@ export class SearchInternationalFlightPage
   onAddMoreTrip() {
     this.flightService.addMoreTrip();
   }
-  onSelectCabin(){
-
-  }
+  onSelectCabin() {}
   onSelectPassenger() {
     this.isCanleave = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
