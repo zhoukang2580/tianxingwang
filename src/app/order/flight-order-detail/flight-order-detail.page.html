@@ -76,7 +76,7 @@
             </ion-row>
           </div>
           <div>
-            <ion-item-divider *ngIf="orderDetail.Histories.length>0" class="title-divider">审批记录</ion-item-divider>
+            <ion-item-divider *ngIf="orderDetail.Histories?.length>0" class="title-divider">审批记录</ion-item-divider>
           </div>
           <div>
             <div *ngFor='let history of orderDetail.Histories'>

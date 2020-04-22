@@ -103,14 +103,14 @@ export class OrderItemComponent implements OnInit, OnChanges {
       if (this.order) {
         this.order["checkPay"] = this.checkPay();
         this.order.VariablesJsonObj =
-          this.order.VariablesJsonObj || JSON.parse(this.order.Variables);
+          this.order.VariablesJsonObj ||
+          (this.order.Variables ? JSON.parse(this.order.Variables) : {});
         if (this.order.OrderFlightTickets) {
           this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(
             (t) => {
               t.VariablesJsonObj =
-                t.VariablesJsonObj || t.Variables
-                  ? JSON.parse(t.Variables)
-                  : {};
+                t.VariablesJsonObj ||
+                (t.Variables ? JSON.parse(t.Variables) : {});
               if (t.OrderFlightTrips) {
                 t.OrderFlightTrips = t.OrderFlightTrips.map((trip) => {
                   if (
@@ -146,7 +146,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
             (t) => {
               if (t.Variables && !t.VariablesJsonObj) {
                 t.VariablesJsonObj =
-                  t.VariablesJsonObj || JSON.parse(t.Variables) || {};
+                  t.VariablesJsonObj ||
+                  (t.Variables ? JSON.parse(t.Variables) : {});
               }
               t.VariablesJsonObj.isShowCancelBtn = this.isShowTrainCancelBtn(t);
               t.VariablesJsonObj.isShowRefundOrExchangeBtn = this.isShowRefundOrExchangeBtn(
@@ -441,7 +442,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
       return false;
     }
     order.VariablesJsonObj =
-      order.VariablesJsonObj || JSON.parse(order.Variables) || {};
+      order.VariablesJsonObj ||
+      (order.Variables ? JSON.parse(order.Variables) : {});
     if (order.Status == OrderStatusType.WaitHandle) {
       return false;
     }
@@ -503,8 +505,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
   }) {
     orderFlightTicket.VariablesJsonObj =
       orderFlightTicket.VariablesJsonObj ||
-      JSON.parse(orderFlightTicket.Variables) ||
-      {};
+      (orderFlightTicket.Variables
+        ? JSON.parse(orderFlightTicket.Variables)
+        : {});
     return orderFlightTicket && orderFlightTicket.VariablesJsonObj["IsReject"];
   }
   flightInsuranceAmount(orderFlightTicket: OrderFlightTicketEntity) {

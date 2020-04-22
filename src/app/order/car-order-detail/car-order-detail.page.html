@@ -39,7 +39,7 @@
           <ion-col size='4'> 服务费</ion-col>
           <ion-col>{{getServicetip(orderDetail?.Order)}}</ion-col>
         </ion-row>
-        <ion-row *ngIf='orderDetail?.Order.OrderCars?.length'>
+        <ion-row *ngIf='orderDetail?.Order?.OrderCars?.length'>
           <ion-col size='4'>其它费用</ion-col>
           <ion-col> {{getOtherAmount(orderDetail?.Order,orderDetail?.Order.OrderCars[0].Key)}}</ion-col>
         </ion-row>
@@ -54,7 +54,7 @@
         <ion-row>
           <ion-col size='4'> 订单状态</ion-col>
           <ion-col> {{orderDetail?.Order?.StatusName == "等待处理" ? "等待审批" : orderDetail?.Order?.StatusName}}</ion-col>
-          <ion-col *ngIf='true||orderDetail?.Order.Status == OrderStatusType.WaitPay'>
+          <ion-col *ngIf='orderDetail?.Order?.Status == OrderStatusType.WaitPay'>
             <ion-button color='secondary' slot='end' (click)='onPay()'>
               现在去支付</ion-button>
           </ion-col>
@@ -68,23 +68,32 @@
           <ion-col> {{orderDetail?.TravelType}}-{{orderDetail?.TravelPayType}}</ion-col>
         </ion-row>
         <!-- 审批记录 -->
-        <ion-item-divider  *ngIf='orderDetail?.Histories.length>0'>
+        <ion-item-divider  *ngIf='orderDetail?.Histories?.length>0'>
           审批记录
         </ion-item-divider>
-        <div>
-          <app-timeline [hideLastTimeLineTail]='false' *ngIf='orderDetail?.Histories'>
-            <app-timeline-item *ngFor='let history of orderDetail.Histories'>
+          <div>
+            <div *ngFor='let history of orderDetail?.Histories'>
               <div class='approval-info'>
-                <ion-label>审批类型：{{getVariableObj(history,"TypeName")}}</ion-label>
-                <ion-label>审批人：{{history.Account?.RealName}} <span
-                    *ngIf='history.StatusName'>({{history.StatusName}})</span>
-                </ion-label>
-                <ion-label>发起审批时间：{{history?.InsertDateTime}}</ion-label>
-                <ion-label>审批截止时间：{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-label>
+                <ion-row>
+                  <ion-col size='4'>审批人:</ion-col>
+                  <ion-col>{{history.Account?.RealName}} <span
+                      *ngIf='history.StatusName'>({{history.StatusName}})</span></ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='4'>发起审批时间:</ion-col>
+                  <ion-col>{{history?.InsertDateTime}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='4'>审批截止时间:</ion-col>
+                  <ion-col>{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col>
+                </ion-row>
+                <ion-row *ngIf="history.Status==TaskStatusType.Passed||history.Status==TaskStatusType.Rejected">
+                  <ion-col size='4'>审批时间:</ion-col>
+                  <ion-col>{{history?.UpdateTime?.startsWith("0001")?"":history?.UpdateTime?.replace("T"," ")?.substring(0,16)}}</ion-col>
+                </ion-row>
               </div>
-            </app-timeline-item>
-          </app-timeline>
-        </div>
+            </div>
+          </div>
       </div>
     </div>
     <div class="swiper-slide" *ngFor="let orderHotel of orderDetail?.Order?.OrderCars">
@@ -195,7 +204,7 @@
         <ion-item-divider>
           用车信息
         </ion-item-divider>
-        <div *ngFor='let orderCar of orderDetail?.Order.OrderCars'>
+        <div *ngFor='let orderCar of orderDetail?.Order?.OrderCars'>
           <ion-row>
             <ion-col size='4'>实际出发地址</ion-col>
             <ion-col>

@@ -17,6 +17,7 @@ import { OrderPayStatusType } from "../models/OrderInsuranceEntity";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { OrderCarEntity } from "../models/OrderCarEntity";
 import { environment } from "src/environments/environment";
+import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
 interface ITab {
   label: string;
   value: number;
@@ -31,9 +32,10 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private orderId: string;
-  OrderStatusType = OrderStatusType;
   private OrderPayStatusType = OrderPayStatusType;
+  OrderStatusType = OrderStatusType;
   OrderItemHelper = OrderItemHelper;
+  TaskStatusType = TaskStatusType;
   @ViewChild(IonContent) content: IonContent;
   tmc: TmcEntity;
   orderDetail: OrderDetailModel;
@@ -77,7 +79,7 @@ export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     if (it) {
       it.VariablesDictionary =
-        it.VariablesDictionary || JSON.parse(it.Variables) || {};
+        it.VariablesDictionary || (it.Variables ? JSON.parse(it.Variables) : {});
       return it.VariablesDictionary[key];
     }
   }
