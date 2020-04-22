@@ -96,7 +96,9 @@
                 </ion-row>
                 <ion-row *ngIf="history.Status==TaskStatusType.Passed||history.Status==TaskStatusType.Rejected">
                   <ion-col size='4'>审批时间:</ion-col>
-                  <ion-col>{{history?.UpdateTime?.startsWith("0001")?"":history?.UpdateTime.replace("T"," ")?.substring(0,16)}}</ion-col>
+                  <ion-col>
+                    {{history?.UpdateTime?.startsWith("0001")?"":history?.UpdateTime.replace("T"," ")?.substring(0,16)}}
+                  </ion-col>
                 </ion-row>
               </div>
             </div>
@@ -235,6 +237,14 @@
                     <ion-col>
                       {{flightTicket?.FullTicketNo}}
                       {{trip.CabinType}}
+                      <span *ngIf="trip.IsStop">
+                          <ion-text style="color: gainsboro;"> | </ion-text>
+                          <ion-text style="font-size:0.8rem">经停</ion-text>
+                        </span>
+                        <span *ngIf="!trip.IsStop">
+                          <ion-text style="color: gainsboro;"> | </ion-text>
+                          <ion-text style="font-size:0.8rem">直飞</ion-text>
+                        </span>
                     </ion-col>
                   </ion-row>
                 </ng-container>
@@ -246,8 +256,8 @@
                 <ion-row>
                   <ion-col>
                     <p style="margin-top: 0px" class='clip-text ion-no-margin'
-                      (click)='isShowDetail(flightTicket,$event)'
-                      [class.show]='flightTicket["isShowExplain"]'>{{flightTicket.Explain?.split("\\n").join("")}}</p>
+                      (click)='isShowDetail(flightTicket,$event)' [class.show]='flightTicket["isShowExplain"]'>
+                      {{flightTicket.Explain?.split("\\n").join("")}}</p>
                   </ion-col>
                 </ion-row>
               </ng-container>
@@ -423,6 +433,14 @@
                     <ion-col>
                       {{ticket.FullTicketNo}}
                       {{trip.CabinType}}
+                      <span *ngIf="trip.IsStop">
+                          <ion-text style="color: gainsboro;"> | </ion-text>
+                          <ion-text style="font-size:0.8rem">经停</ion-text>
+                        </span>
+                        <span *ngIf="!trip.IsStop">
+                          <ion-text style="color: gainsboro;"> | </ion-text>
+                          <ion-text style="font-size:0.8rem">直飞</ion-text>
+                        </span>
                     </ion-col>
                   </ion-row>
                 </ng-container>
@@ -457,8 +475,8 @@
                 </ion-row>
                 <ion-row>
                   <ion-col>
-                    <p style="margin-top: 0px" class='clip-text ion-no-margin'
-                      (click)='isShowDetail(ticket,$event)' [class.show]='ticket["isShowExplain"]'>
+                    <p style="margin-top: 0px" class='clip-text ion-no-margin' (click)='isShowDetail(ticket,$event)'
+                      [class.show]='ticket["isShowExplain"]'>
                       {{ticket.Explain?.split("\\n").join("")}}</p>
                   </ion-col>
                 </ion-row>
