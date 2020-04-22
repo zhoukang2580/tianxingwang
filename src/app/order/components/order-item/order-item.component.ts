@@ -149,6 +149,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
                   t.VariablesJsonObj || JSON.parse(t.Variables) || {};
               }
               t.VariablesJsonObj.isShowCancelBtn = this.isShowTrainCancelBtn(t);
+              t.VariablesJsonObj.isShowRefundOrExchangeBtn = this.isShowRefundOrExchangeBtn(
+                t
+              );
               return t;
             }
           );
@@ -255,7 +258,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
       OrderFlightTicketStatusType.BookExchanged,
     ].includes(orderFlightTicket.Status);
   }
-  private isShowTrainCancelBtn(orderTrainTicket: OrderTrainTicketEntity) {
+  private isShowRefundOrExchangeBtn(orderTrainTicket: OrderTrainTicketEntity) {
     if (!orderTrainTicket) {
       return false;
     }
@@ -263,6 +266,17 @@ export class OrderItemComponent implements OnInit, OnChanges {
       OrderTrainTicketStatusType.Booked,
       OrderTrainTicketStatusType.BookExchanged,
     ].includes(orderTrainTicket.Status);
+  }
+  private isShowTrainCancelBtn(orderTrainTicket: OrderTrainTicketEntity) {
+    if (!orderTrainTicket || !orderTrainTicket.OrderTrainTrips) {
+      return false;
+    }
+    return orderTrainTicket.OrderTrainTrips.some((trip) => {
+      return (
+        AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
+        30 * 60 * 1000
+      );
+    });
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
     if (

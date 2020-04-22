@@ -12,9 +12,9 @@
       <div class="item">
         <div [style.align-self]='order["checkPay"]?"center":""'>金额</div>
         <div style="display: flex;align-items: center;">
-          <ion-text  color='danger' class="ion-text-nowrap">
-            <ion-text >￥{{order.TotalAmount}}</ion-text>
-            <ion-text  *ngIf='order.OrderInsurances?.length'>(含保险)</ion-text >
+          <ion-text color='danger' class="ion-text-nowrap">
+            <ion-text>￥{{order.TotalAmount}}</ion-text>
+            <ion-text *ngIf='order.OrderInsurances?.length'>(含保险)</ion-text>
           </ion-text>
           <span>
             <ion-text color='secondary' class="ion-text-nowrap">
@@ -157,16 +157,17 @@
                   {{p.CheckName}}
                 </ion-text>
                 <ion-text color='secondary' class="ion-padding-end">({{orderTrainTicket.StatusName}})</ion-text>
-                <!-- <span class='ion-margin-start'>{{p.CredentialsNumber}}</span> -->
-                <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
-                  *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
-                  <span>改签</span>
-                </ion-button>
-                <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
-                  *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
+                <ng-container *ngIf='orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn'>
+                  <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
+                    *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+                    <span>改签</span>
+                  </ion-button>
+                  <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
+                    *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
                     &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
-                  <span>退票</span>
-                </ion-button>
+                    <span>退票</span>
+                  </ion-button>
+                </ng-container>
                 <ion-button size='small' *ngIf='orderTrainTicket.VariablesJsonObj.isShowCancelBtn'
                   (click)='onAbolishTraninOrder($event,orderTrainTicket)' color='secondary'>
                   <ion-text color='light'>取消订单</ion-text>
