@@ -2,8 +2,7 @@
   <ion-item *ngFor='let n of vmTmcOutNumberInfos' [class.hidden]='hints?.length&&!n.hasfocus'
     [disabled]='n.isDisabled||isExchange||!isShowGroupedInfo'>
     <ng-container *ngIf='n.labelDataList?.length else nodatas'>
-      <!--  -->
-        <ion-label style="flex:0.3">RC:</ion-label>
+        <ion-label style="flex:0.3">{{n.label}}</ion-label>
         <ion-select class='travel-number' value='cn' okText="确定" cancelText="取消" [(ngModel)]='n.value' style="flex: 1;
         min-width: 60%;
         text-align: end;

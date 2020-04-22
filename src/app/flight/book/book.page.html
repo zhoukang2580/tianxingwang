@@ -238,9 +238,9 @@
               <ion-label>
                 审批人:
               </ion-label>
-              <ion-text *ngIf='combindInfo?.appovalStaff'>
+              <ion-label style="flex: 4;" *ngIf='combindInfo?.appovalStaff'>
                 {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
-              </ion-text>
+              </ion-label>
             </ion-item>
           </ion-item-group>
           <ion-item-group>

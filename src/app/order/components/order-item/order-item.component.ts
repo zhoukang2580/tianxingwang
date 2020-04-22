@@ -107,10 +107,10 @@ export class OrderItemComponent implements OnInit, OnChanges {
         if (this.order.OrderFlightTickets) {
           this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(
             (t) => {
-              if (t.Variables && !t.VariablesJsonObj) {
-                t.VariablesJsonObj =
-                  t.VariablesJsonObj || JSON.parse(t.Variables) || {};
-              }
+              t.VariablesJsonObj =
+                t.VariablesJsonObj || t.Variables
+                  ? JSON.parse(t.Variables)
+                  : {};
               if (t.OrderFlightTrips) {
                 t.OrderFlightTrips = t.OrderFlightTrips.map((trip) => {
                   if (
@@ -141,9 +141,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
             }
           );
         }
-        if (this.order.OrderTrainTickets){
+        if (this.order.OrderTrainTickets) {
           this.order.OrderTrainTickets = this.order.OrderTrainTickets.map(
-            (t)=>{
+            (t) => {
               if (t.Variables && !t.VariablesJsonObj) {
                 t.VariablesJsonObj =
                   t.VariablesJsonObj || JSON.parse(t.Variables) || {};
@@ -151,7 +151,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
               t.VariablesJsonObj.isShowCancelBtn = this.isShowTrainCancelBtn(t);
               return t;
             }
-          )
+          );
         }
         this.initPassengers();
         // this.initInsuranceAmount();
@@ -256,9 +256,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     ].includes(orderFlightTicket.Status);
   }
   private isShowTrainCancelBtn(orderTrainTicket: OrderTrainTicketEntity) {
-    if (
-      !orderTrainTicket
-    ) {
+    if (!orderTrainTicket) {
       return false;
     }
     return [
