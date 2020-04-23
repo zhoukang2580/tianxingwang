@@ -608,7 +608,7 @@ export class BookPage implements OnInit, AfterViewInit {
         return group[accountId]
           .map(
             (it) =>
-              `${it.modal.credential.CheckName}(${it.modal.credential.Number})`
+              `${it.modal.credential.Surname}${it.modal.credential.Givenname}(${it.modal.credential.Number})`
           )
           .join("、");
       }
@@ -796,8 +796,8 @@ export class BookPage implements OnInit, AfterViewInit {
         `${
         (item.credentialStaff && item.credentialStaff.Name) ||
         (item.modal.credential &&
-          item.modal.credential.CheckFirstName +
-          item.modal.credential.CheckLastName)
+          item.modal.credential.Surname +
+          item.modal.credential.Givenname)
         } 【${
         item.modal.credential && item.modal.credential.Number
         }】 ${msg} 信息不能为空`,
@@ -869,24 +869,8 @@ export class BookPage implements OnInit, AfterViewInit {
         return false;
       }
       p.Credentials.Number = combindInfo.vmCredential.Number;
-      if (!combindInfo.vmCredential.CheckLastName) {
-        showErrorMsg(
-          LanguageHelper.Flight.getCheckLastNameTip(),
-          combindInfo,
-          el
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckLastName;
-      if (!combindInfo.vmCredential.CheckFirstName) {
-        showErrorMsg(
-          LanguageHelper.Flight.getCheckFirstNameTip(),
-          combindInfo,
-          el
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
+      p.Credentials.Surname = combindInfo.vmCredential.Surname;
+      p.Credentials.Givenname = combindInfo.vmCredential.Givenname;
       p.IllegalPolicy =
         (info.flightPolicy &&
           info.flightPolicy.Rules &&
