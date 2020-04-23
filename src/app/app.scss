@@ -243,6 +243,11 @@ input {
     // --height: 40%;
   }
 }
+.vw-70 {
+  .popover-content {
+    width: 70vw;
+  }
+}
 .clip-text {
   display: -webkit-box;
   -webkit-box-orient: vertical;

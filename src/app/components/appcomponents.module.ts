@@ -26,6 +26,7 @@ import { BackButtonComponent } from "./back-button/back-button.component";
 import { AddNumberComponent } from './add-number/add-number.component';
 import { ComboboxComponent } from './combobox/combobox.component';
 import { ComboboxModalComponent } from './combobox-modal/combobox-modal.component';
+import { SelectComponent } from './select/select.component';
 @NgModule({
   declarations: [
     OrComponent,
@@ -48,7 +49,8 @@ import { ComboboxModalComponent } from './combobox-modal/combobox-modal.componen
     BackButtonComponent,
     AddNumberComponent,
     ComboboxComponent,
-    ComboboxModalComponent
+    ComboboxModalComponent,
+    SelectComponent
   ],
   imports: [
     CommonModule,
@@ -59,6 +61,7 @@ import { ComboboxModalComponent } from './combobox-modal/combobox-modal.componen
     RefresherModule
   ],
   exports: [
+    SelectComponent,
     ComboboxComponent,
     AddNumberComponent,
     BackButtonComponent,

@@ -11,7 +11,7 @@ import { BookPage } from "./book.page";
 import { FlightPipesModule } from "../pipes/Pipes.module";
 import { TmcComponentsModule } from 'src/app/tmc/components/tmcComponents.module';
 import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
-import { AppDirectivesModule } from 'src/app/directives/directives.module';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 const routes: Routes = [
   {
@@ -31,7 +31,7 @@ const routes: Routes = [
     MemberPipesModule,
     FlightPipesModule,
     TmcComponentsModule,
-    AppDirectivesModule
+    AppComponentsModule
   ],
   declarations: [BookPage]
 })

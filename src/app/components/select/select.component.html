@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{label}}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<div class="wrapper">
+  <ion-list>
+    <ion-radio-group [value]="value" (ionChange)='onChange()'>
+      <div class='groups-item' *ngFor='let r of data' (click)='value=r.value'>
+        <ion-radio slot="start" [value]="r.value"></ion-radio>
+        <ion-label>{{r.label}}</ion-label>
+      </div>
+    </ion-radio-group>
+  </ion-list>
+</div>
+<ion-footer>
+  <ion-toolbar class="ion-text-end">
+    <ion-button (click)='onCancel()' color='dark' fill='clear'>取消</ion-button>
+    <ion-button (click)='onConfirm()' color='dark' fill='clear'>确定</ion-button>
+  </ion-toolbar>
+</ion-footer>
