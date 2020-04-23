@@ -471,8 +471,8 @@ export class TrainService {
             if (info && !info.isAllowBook) {
               let name: string;
               if (item.credential) {
-                name = `${item.credential.CheckFirstName}${
-                  item.credential.CheckLastName
+                name = `${item.credential.Surname}${
+                  item.credential.Givenname
                 }(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
@@ -531,8 +531,8 @@ export class TrainService {
         if (info && !info.isAllowBook) {
           let name: string;
           if (item.credential) {
-            name = `${item.credential.CheckFirstName}${
-              item.credential.CheckLastName
+            name = `${item.credential.Surname}${
+              item.credential.Givenname
             }(${(item.credential.Number || "").substr(0, 6)}...)`;
           }
           cannotArr.push(name);

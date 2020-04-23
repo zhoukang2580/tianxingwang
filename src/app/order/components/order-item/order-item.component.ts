@@ -263,26 +263,36 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (!orderTrainTicket) {
       return false;
     }
-    return [
-      OrderTrainTicketStatusType.Issued,
-      OrderTrainTicketStatusType.Exchanged,
-    ].includes(orderTrainTicket.Status);
+    return (
+      [
+        OrderTrainTicketStatusType.Issued,
+        OrderTrainTicketStatusType.Exchanged,
+      ].includes(orderTrainTicket.Status) &&
+      orderTrainTicket.OrderTrainTrips.some((trip) => {
+        return (
+          AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
+          30 * 60 * 1000
+        );
+      })
+    );
   }
   private isShowTrainCancelBtn(orderTrainTicket: OrderTrainTicketEntity) {
     if (!orderTrainTicket || !orderTrainTicket.OrderTrainTrips) {
       return false;
     }
-    return orderTrainTicket &&
-    [
-      OrderTrainTicketStatusType.Booked,
-      OrderTrainTicketStatusType.BookExchanged,
-    ].includes(orderTrainTicket.Status)&& 
-    orderTrainTicket.OrderTrainTrips.some((trip) => {
-      return (
-        AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
-        30 * 60 * 1000 
-      );
-    })
+    return (
+      orderTrainTicket &&
+      [
+        OrderTrainTicketStatusType.Booked,
+        OrderTrainTicketStatusType.BookExchanged,
+      ].includes(orderTrainTicket.Status) &&
+      orderTrainTicket.OrderTrainTrips.some((trip) => {
+        return (
+          AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
+          30 * 60 * 1000
+        );
+      })
+    );
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
     if (

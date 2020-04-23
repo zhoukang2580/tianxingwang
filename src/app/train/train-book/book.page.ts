@@ -378,8 +378,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
-          bookInfo.bookInfo.trainEntity &&
-          bookInfo.bookInfo.trainEntity.StartTime
+            bookInfo.bookInfo.trainEntity &&
+            bookInfo.bookInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
@@ -387,11 +387,11 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -407,11 +407,11 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -489,7 +489,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         (this.tmc && this.tmc.Account && this.tmc.Account.Id);
       if (group[accountId]) {
         return group[accountId]
-          .map((it) => `${it.credential.CheckName}(${it.credential.Number})`)
+          .map((it) => `${it.credential.Surname}(${it.credential.Number})`)
           .join("、");
       }
     }
@@ -527,6 +527,19 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         });
       } else {
         res = await this.trainService.bookTrain(bookDto).catch((e) => {
+          const msg: string = e;
+          if (msg && /\d{11}-/.test(msg)) {
+            const tips = msg
+              .split("/")
+              .filter((it) => !!it)
+              .map((it) => {
+                const [phone, code] = it.split("-");
+                return `使用手机号${phone},发送验证码${code}到12306进行手机身份验证(验证码30分钟内有效)`;
+              })
+              .join("\r\n");
+            AppHelper.alert(tips);
+            return;
+          }
           AppHelper.alert(e);
           return null;
         });
@@ -927,9 +940,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     const showErrorMsg = (msg: string, item: ITrainPassengerBookInfo) => {
       AppHelper.alert(
         `${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential &&
-          item.credential.CheckFirstName + item.credential.CheckLastName)
+          (item.credentialStaff && item.credentialStaff.Name) ||
+          (item.credential &&
+            item.credential.Surname + item.credential.Givenname)
         } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空`
       );
     };
@@ -987,16 +1000,16 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         return false;
       }
       p.Credentials.Number = combindInfo.vmCredential.Number;
-      if (!combindInfo.vmCredential.CheckLastName) {
-        showErrorMsg(LanguageHelper.Flight.getCheckLastNameTip(), combindInfo);
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckLastName;
-      if (!combindInfo.vmCredential.CheckFirstName) {
-        showErrorMsg(LanguageHelper.Flight.getCheckFirstNameTip(), combindInfo);
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
+      // if (!combindInfo.vmCredential.Surname) {
+      //   showErrorMsg(LanguageHelper.Flight.getCheckLastNameTip(), combindInfo);
+      //   return false;
+      // }
+      p.Credentials.Surname = combindInfo.vmCredential.Surname;
+      // if (!combindInfo.vmCredential.Surname) {
+      //   showErrorMsg(LanguageHelper.Flight.getCheckFirstNameTip(), combindInfo);
+      //   return false;
+      // }
+      p.Credentials.Givenname = combindInfo.vmCredential.Givenname;
       p.IllegalPolicy =
         (info.trainPolicy &&
           info.trainPolicy.Rules &&
@@ -1014,7 +1027,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1028,7 +1041,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1235,11 +1248,12 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     if (!this.viewModel || !this.viewModel.combindInfos) {
       return false;
     }
-    const outnumbers = this.initialBookDto && this.initialBookDto.OutNumbers || {};
+    const outnumbers =
+      (this.initialBookDto && this.initialBookDto.OutNumbers) || {};
 
     this.viewModel.combindInfos.forEach((item) => {
       item.tmcOutNumberInfos.forEach((it) => {
-        it.labelDataList = outnumbers[it.label] || []
+        it.labelDataList = outnumbers[it.label] || [];
         if (it.isLoadNumber) {
           if (
             it.staffNumber &&
@@ -1263,7 +1277,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     if (result) {
       this.viewModel.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {
-          if ((it => it.label.toLowerCase() == "travelnumber")) {
+          if ((it) => it.label.toLowerCase() == "travelnumber") {
             info.loadTravelUrlErrorMsg =
               result[info.staffNumber] && result[info.staffNumber].Message;
             info.travelUrlInfos =
