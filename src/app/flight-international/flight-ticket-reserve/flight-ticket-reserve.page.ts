@@ -594,7 +594,7 @@ export class FlightTicketReservePage
         return group[accountId]
           .map(
             (it) =>
-              `${it.bookInfo.credential.CheckName}(${it.bookInfo.credential.Number})`
+              `${it.bookInfo.credential.Surname}${it.bookInfo.credential.Givenname}(${it.bookInfo.credential.Number})`
           )
           .join("、");
       }
@@ -782,8 +782,8 @@ export class FlightTicketReservePage
         `${
           (item.credentialStaff && item.credentialStaff.Name) ||
           (item.bookInfo.credential &&
-            item.bookInfo.credential.CheckFirstName +
-              item.bookInfo.credential.CheckLastName)
+            item.bookInfo.credential.Surname +
+              item.bookInfo.credential.Givenname)
         } 【${
           item.bookInfo.credential && item.bookInfo.credential.Number
         }】 ${msg} 信息不能为空`,
@@ -890,24 +890,8 @@ export class FlightTicketReservePage
         return false;
       }
       p.Credentials.Number = combindInfo.vmCredential.Number;
-      if (!combindInfo.vmCredential.CheckLastName) {
-        showErrorMsg(
-          LanguageHelper.Flight.getCheckLastNameTip(),
-          combindInfo,
-          el
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckLastName;
-      if (!combindInfo.vmCredential.CheckFirstName) {
-        showErrorMsg(
-          LanguageHelper.Flight.getCheckFirstNameTip(),
-          combindInfo,
-          el
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
+      p.Credentials.Givenname = combindInfo.vmCredential.Givenname;
+      p.Credentials.Surname = combindInfo.vmCredential.Surname;
       p.Mobile =
         (combindInfo.credentialStaffMobiles &&
           combindInfo.credentialStaffMobiles

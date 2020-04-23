@@ -412,8 +412,8 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     AppHelper.toast(
       `${(item.credentialStaff && item.credentialStaff.Name) ||
       (item.credential &&
-        item.credential.CheckFirstName +
-        item.credential.CheckLastName)} 【${item.credential &&
+        item.credential.Surname +
+        item.credential.Givenname)} 【${item.credential &&
         item.credential.Number}】 ${msg} 信息不能为空`,
       2000,
       "bottom"
@@ -697,24 +697,8 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         return false;
       }
       p.Credentials.Number = combindInfo.vmCredential.Number;
-      if (!combindInfo.vmCredential.CheckLastName) {
-        this.showErrorMsg(
-          LanguageHelper.Flight.getCheckLastNameTip(),
-          combindInfo,
-          this.getEleByAttr("credentialsid", combindInfo.id)
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckLastName;
-      if (!combindInfo.vmCredential.CheckFirstName) {
-        this.showErrorMsg(
-          LanguageHelper.Flight.getCheckFirstNameTip(),
-          combindInfo,
-          this.getEleByAttr("credentialsid", combindInfo.id)
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
+      p.Credentials.Surname = combindInfo.vmCredential.Surname;
+      p.Credentials.Givenname = combindInfo.vmCredential.Givenname;
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalPolicy =
         (info.roomPlan &&

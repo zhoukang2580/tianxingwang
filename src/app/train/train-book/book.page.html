@@ -16,7 +16,7 @@
     <ng-container *ngIf='viewModel?.combindInfos?.length'>
       <ion-list *ngFor="let combindInfo of viewModel?.combindInfos" lines='none'>
         <ion-item-divider color='primary' class="sticky">
-          {{combindInfo?.credential?.CheckName}}
+          {{combindInfo?.credential?.Name}}
           【{{tmc?.Name}}】
           [成人]
           {{combindInfo?.credential?.Number}}

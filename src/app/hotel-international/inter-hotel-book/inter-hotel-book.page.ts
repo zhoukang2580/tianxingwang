@@ -381,8 +381,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combindInfo.checkInPersonInfos = [
           {
             isMain: true,
-            firstName: combindInfo.credential.LastName,
-            lastName: combindInfo.credential.FirstName
+            firstName: combindInfo.credential.Givenname,
+            lastName: combindInfo.credential.Surname
           }
         ];
       } else {
@@ -461,8 +461,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     AppHelper.toast(
       `${(item.credentialStaff && item.credentialStaff.Name) ||
       (item.credential &&
-        item.credential.CheckFirstName +
-        item.credential.CheckLastName)} 【${item.credential &&
+        item.credential.Surname +
+        item.credential.Givenname)} 【${item.credential &&
         item.credential.Number}】 ${msg} 信息不能为空`,
       2000,
       "bottom"
@@ -735,24 +735,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         return false;
       }
       p.Credentials.Number = combindInfo.vmCredential.Number;
-      if (!combindInfo.vmCredential.CheckLastName) {
-        this.showErrorMsg(
-          LanguageHelper.Flight.getCheckLastNameTip(),
-          combindInfo,
-          this.getEleByAttr("credentialsid", combindInfo.id)
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckLastName;
-      if (!combindInfo.vmCredential.CheckFirstName) {
-        this.showErrorMsg(
-          LanguageHelper.Flight.getCheckFirstNameTip(),
-          combindInfo,
-          this.getEleByAttr("credentialsid", combindInfo.id)
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
+      p.Credentials.Surname = combindInfo.vmCredential.Surname;
+      p.Credentials.Givenname = combindInfo.vmCredential.Givenname;
       p.IllegalPolicy =
         (info.roomPlan &&
           info.roomPlan.Rules &&

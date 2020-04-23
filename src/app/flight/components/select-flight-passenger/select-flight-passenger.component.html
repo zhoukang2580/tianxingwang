@@ -72,7 +72,7 @@
                 证件姓名:
               </ion-col>
               <ion-col>
-                {{item?.FirstName}}{{item?.LastName}}
+                {{item?.Surname}}{{item?.Givenname}}
               </ion-col>
             </ion-row>
             <ion-row>
@@ -80,7 +80,7 @@
                 登机名:
               </ion-col>
               <ion-col>
-                {{item?.CheckName}}
+                {{item?.Name}}
               </ion-col>
             </ion-row>
             <ion-row>
@@ -157,31 +157,31 @@
           <ion-row>
             <ion-col>姓：</ion-col>
             <ion-col>
-              <input type="text" [(ngModel)]='vmNewCredential.FirstName'
+              <input type="text" [(ngModel)]='vmNewCredential.Surname'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='FirstName' name='FirstName'>
             </ion-col>
           </ion-row>
           <ion-row>
             <ion-col>名：</ion-col>
             <ion-col>
-              <input type="text" [(ngModel)]='vmNewCredential.LastName'
+              <input type="text" [(ngModel)]='vmNewCredential.Givenname'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='LastName' name='LastName'>
             </ion-col>
           </ion-row>
           <ion-row>
             <ion-col>登机姓：</ion-col>
             <ion-col>
-              <input type="text" [(ngModel)]='vmNewCredential.CheckFirstName'
+              <input type="text" [(ngModel)]='vmNewCredential.Surname'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='CheckFirstName'
-                name='CheckFirstName' value="{{vmNewCredential.FirstName}}">
+                name='CheckFirstName' value="{{vmNewCredential.Surname}}">
             </ion-col>
           </ion-row>
           <ion-row>
             <ion-col>登机名：</ion-col>
             <ion-col>
-              <input type="text" [(ngModel)]='vmNewCredential.CheckLastName'
+              <input type="text" [(ngModel)]='vmNewCredential.Givenname'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='CheckLastName'
-                name='CheckLastName' value="{{vmNewCredential.LastName}}">
+                name='CheckLastName' value="{{vmNewCredential.Givenname}}">
             </ion-col>
           </ion-row>
           <ion-row (click)='selectIdentityNationality()'>
@@ -297,7 +297,7 @@
                 证件姓名:
               </ion-col>
               <ion-col>
-                {{item?.FirstName}}{{item?.LastName}}
+                {{item?.Surname}}{{item?.Givenname}}
               </ion-col>
             </ion-row>
             <ion-row>
@@ -305,7 +305,7 @@
                 登机名:
               </ion-col>
               <ion-col>
-                {{item?.CheckName}}
+                {{item?.Name}}
               </ion-col>
             </ion-row>
             <ion-row>
