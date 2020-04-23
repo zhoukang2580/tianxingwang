@@ -264,20 +264,25 @@ export class OrderItemComponent implements OnInit, OnChanges {
       return false;
     }
     return [
-      OrderTrainTicketStatusType.Booked,
-      OrderTrainTicketStatusType.BookExchanged,
+      OrderTrainTicketStatusType.Issued,
+      OrderTrainTicketStatusType.Exchanged,
     ].includes(orderTrainTicket.Status);
   }
   private isShowTrainCancelBtn(orderTrainTicket: OrderTrainTicketEntity) {
     if (!orderTrainTicket || !orderTrainTicket.OrderTrainTrips) {
       return false;
     }
-    return orderTrainTicket.OrderTrainTrips.some((trip) => {
+    return orderTrainTicket &&
+    [
+      OrderTrainTicketStatusType.Booked,
+      OrderTrainTicketStatusType.BookExchanged,
+    ].includes(orderTrainTicket.Status)&& 
+    orderTrainTicket.OrderTrainTrips.some((trip) => {
       return (
         AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
-        30 * 60 * 1000
+        30 * 60 * 1000 
       );
-    });
+    })
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
     if (
