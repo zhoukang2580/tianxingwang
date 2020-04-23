@@ -531,8 +531,8 @@ export class SelectPassengerPage
       this.vmNewCredential &&
       selectedCredential.Id == this.vmNewCredential.Id
     ) {
-       this.vmNewCredential.Surname;
-       this.vmNewCredential.Givenname;
+      this.vmNewCredential.Name =
+        this.vmNewCredential.Surname + this.vmNewCredential.Givenname;
       const validate = await this.validateCredential(
         selectedCredential,
         this.addForm && this.addForm.last && this.addForm.last["el"]
@@ -550,6 +550,7 @@ export class SelectPassengerPage
         ...selectedCredential,
         Country: this.vmNewCredential.Country.Code,
         IssueCountry: this.vmNewCredential.IssueCountry.Code,
+        Name: `${this.vmNewCredential.Surname}${this.vmNewCredential.Givenname}`,
       };
     }
     if (!selectedCredential.Number) {
@@ -564,15 +565,11 @@ export class SelectPassengerPage
     const passengerBookInfo: PassengerBookInfo<any> = {
       credential: ({
         ...selectedCredential,
-        // CheckName: `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
       } as any) as CredentialsEntity,
       isNotWhitelist: this.selectedPassenger.isNotWhiteList,
       passenger: {
         ...this.selectedPassenger,
-        Name:
-          this.selectedPassenger.Name
-          //  ||
-          // `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
+        Name: this.selectedPassenger.Name,
       },
     };
     const canAdd = await this.onAddPassengerBookInfo(passengerBookInfo);
@@ -688,17 +685,11 @@ export class SelectPassengerPage
       return this.checkProperty(c, "Number", rules, container);
     }
     if (!c.Surname) {
-      return this.checkProperty(c, "FirstName", rules, container);
+      return this.checkProperty(c, "Surname", rules, container);
     }
     if (!c.Givenname) {
-      return this.checkProperty(c, "LastName", rules, container);
+      return this.checkProperty(c, "Givenname", rules, container);
     }
-    // if (!c.CheckFirstName) {
-    //   return this.checkProperty(c, "CheckFirstName", rules, container);
-    // }
-    // if (!c.CheckLastName) {
-    //   return this.checkProperty(c, "CheckLastName", rules, container);
-    // }
     if (!c.Country) {
       return this.checkProperty(c, "Country", rules, container);
     }
@@ -827,11 +818,8 @@ export class SelectPassengerPage
           Number: string;
           CredentialsType: string;
           CredentialsTypeName: string;
-          FirstName: string;
-          LastName: string;
-          CheckName: string;
-          CheckFirstName: string;
-          CheckLastName: string;
+          SureName: string;
+          GivenName: string;
           Country: string;
           IssueCountry: string;
           Birthday: string;

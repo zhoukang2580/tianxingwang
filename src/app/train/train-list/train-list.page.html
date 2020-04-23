@@ -42,7 +42,7 @@
         <ion-row *ngIf='curFilteredBookInfo$|async as bookInfo' class='xs-font-size'>
           <ion-col *ngIf='bookInfo.credential as credential'>
             <ion-text color='secondary'>
-              当前已过滤【{{credential.CheckFirstName}}{{credential.CheckLastName}}】({{credential.Number}})差标
+              当前已过滤【{{credential.Name}}】({{credential.Number}})差标
             </ion-text>
           </ion-col>
         </ion-row>

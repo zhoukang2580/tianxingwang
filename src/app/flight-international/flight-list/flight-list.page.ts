@@ -4,6 +4,7 @@ import {
   IFilterCondition,
   ITripInfo,
   IInternationalFlightSearchModel,
+  FlightVoyageType,
 } from "../international-flight.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { finalize } from "rxjs/operators";
@@ -145,7 +146,7 @@ export class FlightListPage implements OnInit, OnDestroy {
             (it) => it.id == this.curTrip.id
           );
         }
-        if (s && s.voyageType == 3) {
+        if (s && s.voyageType != FlightVoyageType.OneWay) {
           this.multipassShow = true;
         }
       })

@@ -1028,7 +1028,9 @@ export class FlightTicketReservePage
     return true;
   }
   private getEleByAttr(attrName: string, value: string) {
-    return document.querySelector(`[${attrName}='${value}']`) as HTMLElement;
+    return this.cnt["el"].querySelector(
+      `[${attrName}='${value}']`
+    ) as HTMLElement;
   }
   async onModify(item: ICombindInfo) {
     if (!item.credentialsRequested) {
@@ -1068,7 +1070,7 @@ export class FlightTicketReservePage
   }
 
   private moveRequiredEleToViewPort(ele: any) {
-    const el: HTMLElement = ele.nativeElement || ele;
+    const el: HTMLElement = (ele && ele.nativeElement) || ele;
     if (!el) {
       return;
     }
