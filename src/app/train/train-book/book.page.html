@@ -41,13 +41,13 @@
           <ion-item-divider>旅客信息：</ion-item-divider>
           <ion-item [disabled]='searchTrainModel?.isExchange'>
             <div style='width: 100%'>
-              <app-book-credential-comp [credential]='combindInfo?.vmCredential'
+              <app-book-credential-comp [attr.credentialcompid]='combindInfo.id' [credential]='combindInfo?.vmCredential'
                 *ngIf='!searchTrainModel?.isExchange else excredentialTemp'
                 (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'
                 (modify)='onModify(combindInfo)'>
               </app-book-credential-comp>
               <ng-template #excredentialTemp>
-                <app-book-credential-comp [credential]='combindInfo?.vmCredential' [isExchange]='true'
+                <app-book-credential-comp [attr.credentialcompid]='combindInfo.id' [credential]='combindInfo?.vmCredential' [isExchange]='true'
                   (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'>
                 </app-book-credential-comp>
               </ng-template>
@@ -55,7 +55,7 @@
           </ion-item>
           <ion-item *ngIf='combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist'>
             <div style='width: 100%'>
-              <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='viewModel?.illegalReasons'
+              <app-book-illegal-reason-comp   [attr.illegalReasonid]='combindInfo.id' #illegalReasonsEle [illegalReasons]='viewModel?.illegalReasons'
                 [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
               </app-book-illegal-reason-comp>
             </div>
@@ -84,7 +84,7 @@
           <ion-item-divider>
             联系方式:
           </ion-item-divider>
-          <div class='mobiles'>
+          <div class='mobiles' [attr.mobileid]='combindInfo.id'>
             <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'
               [disabled]='searchTrainModel?.isExchange'>
               <ion-checkbox color="secondary" [(ngModel)]="mobile.checked"></ion-checkbox>
@@ -155,7 +155,7 @@
             </ion-radio-group>
           </ion-item-group>
         </ng-container>
-        <ion-item-group *ngIf="isShowApprove(combindInfo)">
+        <ion-item-group *ngIf="isShowApprove(combindInfo)" >
           <ion-item-divider>
             审批人:
           </ion-item-divider>
@@ -178,13 +178,13 @@
         </ion-item-group>
         <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item-group>
-            <ion-list-header color='primary' class='sticky'>
+            <!-- <ion-list-header color='primary' class='sticky'>
               <ion-label class='ion-text-wrap' *ngIf='getGroupedTitle(combindInfo) as title'>
                 {{title}}
                 【{{tmc?.Name}}】
               </ion-label>
-            </ion-list-header>
-            <ion-item class="ion-no-margin">
+            </ion-list-header> -->
+            <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
               <ion-label>通知语言:</ion-label>
               <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
                 <ion-select-option value=''>不发</ion-select-option>
@@ -203,7 +203,7 @@
             </ion-item>
             <ng-container *ngIf='!searchTrainModel?.isExchange else exApproval'>
               <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
-                (click)='openApproverModal(combindInfo)'>
+                (click)='openApproverModal(combindInfo)' [attr.approvalid]='combindInfo.id'>
                 <ion-label>
                   审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
                     {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
@@ -212,7 +212,7 @@
               </ion-item>
             </ng-container>
             <ng-template #exApproval>
-              <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' disabled>
+              <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' disabled [attr.approvalid]='combindInfo.id'>
                 <ion-label>
                   审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
                     {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
@@ -221,7 +221,7 @@
               </ion-item>
             </ng-template>
           </ion-item-group>
-          <ion-item-group>
+          <ion-item-group [attr.outnumber]='combindInfo.id'>
             <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
               [isExchange]='searchTrainModel?.isExchange' [isShowGroupedInfo]='true'
               (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
@@ -238,7 +238,7 @@
           </app-book-addcontacts-comp>
         </ion-item>
       </ion-item-group>
-      <ion-item-group>
+      <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
         <ion-item-divider>
           支付方式：
         </ion-item-divider>

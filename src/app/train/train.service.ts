@@ -1010,7 +1010,7 @@ export class TrainService {
     const info = await this.apiService
       .getPromiseData<{
         Id: string;
-        CheckName: string;
+        Name: string;
         CredentialsNumber: string;
         StartTime: string;
         ArrivalTime: string;
