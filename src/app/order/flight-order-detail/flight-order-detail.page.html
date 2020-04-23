@@ -237,14 +237,6 @@
                     <ion-col>
                       {{flightTicket?.FullTicketNo}}
                       {{trip.CabinType}}
-                      <span *ngIf="trip.IsStop">
-                          <ion-text style="color: gainsboro;"> | </ion-text>
-                          <ion-text style="font-size:0.8rem">经停</ion-text>
-                        </span>
-                        <span *ngIf="!trip.IsStop">
-                          <ion-text style="color: gainsboro;"> | </ion-text>
-                          <ion-text style="font-size:0.8rem">直飞</ion-text>
-                        </span>
                     </ion-col>
                   </ion-row>
                 </ng-container>
@@ -433,14 +425,6 @@
                     <ion-col>
                       {{ticket.FullTicketNo}}
                       {{trip.CabinType}}
-                      <span *ngIf="trip.IsStop">
-                          <ion-text style="color: gainsboro;"> | </ion-text>
-                          <ion-text style="font-size:0.8rem">经停</ion-text>
-                        </span>
-                        <span *ngIf="!trip.IsStop">
-                          <ion-text style="color: gainsboro;"> | </ion-text>
-                          <ion-text style="font-size:0.8rem">直飞</ion-text>
-                        </span>
                     </ion-col>
                   </ion-row>
                 </ng-container>

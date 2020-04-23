@@ -37,6 +37,7 @@ import { ActivatedRoute } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { OrderNumberEntity } from "../models/OrderNumberEntity";
 import { flyInOut } from "src/app/animations/flyInOut";
+import { TaskStatusType } from 'src/app/workflow/models/TaskStatusType';
 interface ITab {
   label: string;
   value: number;
@@ -52,6 +53,7 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
+  TaskStatusType:TaskStatusType;
   ProductItemType = ProductItemType;
   items: { label: string; value: string }[] = [];
   tabs: ITab[] = [];

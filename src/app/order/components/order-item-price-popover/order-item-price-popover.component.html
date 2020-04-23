@@ -4,12 +4,12 @@
       <ion-grid>
         <ion-row *ngIf='getPassenger(t) as p'>
           <ion-col>
-            <span>{{p.CheckName}}</span>
+            <span>{{p.Name}}</span>
           </ion-col>
         </ion-row>
         <div style="font-size:0.9rem">
           <ion-row *ngIf="t.Id">
-            <ion-col>
+            <ion-col class="ion-text-nowrap">
               事务号
               <span>{{t.Id}}</span>
               <span> ({{t.StatusName}})</span>
@@ -45,17 +45,17 @@
             <ion-col class='price'>{{abs(amount)}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row> -->
-          <ion-row *ngIf="(t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchange]))&&t.VariablesJsonObj.OriginalTicketId">
+          <ion-row *ngIf="(t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchange])||t.VariablesJsonObj.IsFromOfflineExchange)&&t.VariablesJsonObj.OriginalTicketId">
             <ion-col size='7'>改签费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketExchange])}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row>
-          <ion-row *ngIf="(t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchangeTax]))&&t.VariablesJsonObj.OriginalTicketId">
+          <ion-row *ngIf="(t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchangeTax])||t.VariablesJsonObj.IsFromOfflineExchange)&&t.VariablesJsonObj.OriginalTicketId">
             <ion-col size='7'>改签税费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketExchangeTax])}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row>
-          <ion-row *ngIf="(t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchangeOfflineFee]))&&t.VariablesJsonObj.OriginalTicketId">
+          <ion-row *ngIf="(t.VariablesJsonObj.isShowExchange||getAmount(t,[OrderItemHelper.FlightTicketExchangeOfflineFee])||t.VariablesJsonObj.IsFromOfflineExchange)&&t.VariablesJsonObj.OriginalTicketId">
             <!-- "FlightTicketExchangeOfflineFee" -->
             <ion-col size='7'>改签服务费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketExchangeOfflineFee])}}</ion-col>
@@ -75,34 +75,34 @@
             <ion-col class='price'>{{abs(amount)}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row> -->
-          <ion-row *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefund])">
+          <ion-row *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefund])||t.VariablesJsonObj.IsFromOfflineRefund">
             <ion-col size='7'>退票票面价</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketRefund])}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row>
-          <ion-row *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefundTax])">
+          <ion-row *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefundTax])||t.VariablesJsonObj.IsFromOfflineRefund">
             <ion-col size='7'>退票税费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketRefundTax])}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row>
-          <ion-row  *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefundUsedTicket])">
+          <ion-row  *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefundUsedTicket])||t.VariablesJsonObj.IsFromOfflineRefund">
             <ion-col size='7'>退票已用票价</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketRefundUsedTicket])}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row>
-          <ion-row  *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefundUsedTax])">
+          <ion-row  *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefundUsedTax])||t.VariablesJsonObj.IsFromOfflineRefund">
             <ion-col size='7'>退票已用税费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketRefundUsedTax])}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row>
-          <ion-row  *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefundDeduction])">
+          <ion-row  *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefundDeduction])||t.VariablesJsonObj.IsFromOfflineRefund">
             <ion-col size='7'>退票手续费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketRefundDeduction])}}</ion-col>
             <ion-col size='1'>元</ion-col>
           </ion-row>
           <ion-row  *ngIf="t.VariablesJsonObj.isTicketCanRefund||getAmount(t,[OrderItemHelper.FlightTicketRefundApiFee,
           OrderItemHelper.FlightTicketRefundOfflineFee,
-          OrderItemHelper.FlightTicketRefundOnlineFee])">
+          OrderItemHelper.FlightTicketRefundOnlineFee])||t.VariablesJsonObj.IsFromOfflineRefund">
             <ion-col size='7'>退票服务费</ion-col>
             <ion-col class='price'>{{getAmount(t,[OrderItemHelper.FlightTicketRefundApiFee,
                 OrderItemHelper.FlightTicketRefundOfflineFee,

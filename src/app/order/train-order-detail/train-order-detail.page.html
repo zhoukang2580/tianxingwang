@@ -82,10 +82,10 @@
             <div>
               <div *ngFor='let history of orderDetail.Histories'>
                 <div class='approval-info'>
-                  <ion-row class="ion-padding-top">
+                  <!-- <ion-row class="ion-padding-top">
                     <ion-col size='4'>审批类型:</ion-col>
                     <ion-col>{{getVariableObj(history,"TypeName")}}</ion-col>
-                  </ion-row>
+                  </ion-row> -->
                   <ion-row>
                     <ion-col size='4'>审批人:</ion-col>
                     <ion-col>{{history.Account?.RealName}} <span
@@ -99,6 +99,12 @@
                     <ion-col size='4'>审批截止时间:</ion-col>
                     <ion-col>{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col>
                   </ion-row>
+                  <!-- <ion-row *ngIf="history.Status==TaskStatusType.Passed||history.Status==TaskStatusType.Rejected">
+                    <ion-col size='4'>审批时间:</ion-col>
+                    <ion-col>
+                      {{history?.UpdateTime?.startsWith("0001")?"":history?.UpdateTime.replace("T"," ")?.substring(0,16)}}
+                    </ion-col>
+                  </ion-row> -->
                 </div>
               </div>
             </div>
