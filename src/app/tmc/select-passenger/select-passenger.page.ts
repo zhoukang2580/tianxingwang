@@ -531,10 +531,8 @@ export class SelectPassengerPage
       this.vmNewCredential &&
       selectedCredential.Id == this.vmNewCredential.Id
     ) {
-      selectedCredential.CheckFirstName =
-        selectedCredential.CheckFirstName || this.vmNewCredential.FirstName;
-      selectedCredential.CheckLastName =
-        selectedCredential.CheckLastName || this.vmNewCredential.LastName;
+       this.vmNewCredential.Surname;
+       this.vmNewCredential.Givenname;
       const validate = await this.validateCredential(
         selectedCredential,
         this.addForm && this.addForm.last && this.addForm.last["el"]
@@ -566,14 +564,15 @@ export class SelectPassengerPage
     const passengerBookInfo: PassengerBookInfo<any> = {
       credential: ({
         ...selectedCredential,
-        CheckName: `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
+        // CheckName: `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
       } as any) as CredentialsEntity,
       isNotWhitelist: this.selectedPassenger.isNotWhiteList,
       passenger: {
         ...this.selectedPassenger,
         Name:
-          this.selectedPassenger.Name ||
-          `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
+          this.selectedPassenger.Name
+          //  ||
+          // `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
       },
     };
     const canAdd = await this.onAddPassengerBookInfo(passengerBookInfo);
@@ -688,18 +687,18 @@ export class SelectPassengerPage
     if (!c.Number) {
       return this.checkProperty(c, "Number", rules, container);
     }
-    if (!c.FirstName) {
+    if (!c.Surname) {
       return this.checkProperty(c, "FirstName", rules, container);
     }
-    if (!c.LastName) {
+    if (!c.Givenname) {
       return this.checkProperty(c, "LastName", rules, container);
     }
-    if (!c.CheckFirstName) {
-      return this.checkProperty(c, "CheckFirstName", rules, container);
-    }
-    if (!c.CheckLastName) {
-      return this.checkProperty(c, "CheckLastName", rules, container);
-    }
+    // if (!c.CheckFirstName) {
+    //   return this.checkProperty(c, "CheckFirstName", rules, container);
+    // }
+    // if (!c.CheckLastName) {
+    //   return this.checkProperty(c, "CheckLastName", rules, container);
+    // }
     if (!c.Country) {
       return this.checkProperty(c, "Country", rules, container);
     }

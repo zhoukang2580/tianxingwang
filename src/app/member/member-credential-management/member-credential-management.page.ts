@@ -431,7 +431,7 @@ export class MemberCredentialManagementPage
     if (credential) {
       if (inputFirstNameEle) {
         inputFirstNameEle.oninput = (_) => {
-          credential.CheckFirstName = inputFirstNameEle.value as string;
+          // credential.CheckFirstName = inputFirstNameEle.value as string;
           this.onFirstLastNameChange();
         };
         inputFirstNameEle.onblur = () => {
@@ -440,7 +440,7 @@ export class MemberCredentialManagementPage
       }
       if (inputLastNameEle) {
         inputLastNameEle.oninput = (_) => {
-          credential.CheckLastName = inputLastNameEle.value as string;
+          // credential.CheckLastName = inputLastNameEle.value as string;
           this.onFirstLastNameChange();
         };
         inputLastNameEle.onblur = () => {
@@ -532,13 +532,13 @@ export class MemberCredentialManagementPage
     }
   }
   private async confirmTipMessage(c: MemberCredential) {
-    c.FirstName = c.FirstName && c.FirstName.toUpperCase();
-    c.LastName = c.LastName && c.LastName.toUpperCase();
-    c.CheckFirstName = c.CheckFirstName && c.CheckFirstName.toUpperCase();
-    c.CheckLastName = c.CheckLastName && c.CheckLastName.toUpperCase();
+    c.Surname = c.Surname && c.Surname.toUpperCase();
+    c.Givenname = c.Givenname && c.Givenname.toUpperCase();
+    // c.CheckFirstName = c.CheckFirstName && c.CheckFirstName.toUpperCase();
+    // c.CheckLastName = c.CheckLastName && c.CheckLastName.toUpperCase();
     c.Number = c.Number && c.Number.toUpperCase();
     const ok = await AppHelper.alert(
-      `请确认您的证件姓名：${c.FirstName}${c.LastName},证件号码：${c.Number}`,
+      `请确认您的证件姓名：${c.Surname}${c.Givenname},证件号码：${c.Number}`,
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
@@ -711,27 +711,27 @@ export class MemberCredentialManagementPage
       return true;
     }
     const rules = info.rule;
-    if (!c.FirstName) {
+    if (!c.Surname) {
       return this.checkProperty(c, "FirstName", rules, container);
     }
-    if (!c.LastName) {
+    if (!c.Givenname) {
       return this.checkProperty(c, "LastName", rules, container);
     }
     if (
       c.Type != CredentialsType.IdCard &&
-      AppHelper.includeHanz(c.FirstName + c.LastName)
+      AppHelper.includeHanz(c.Surname + c.Givenname)
     ) {
       AppHelper.alert("证件姓名，请输入英文或者拼音");
       return false;
     }
-    c.CheckFirstName = c.CheckFirstName || c.FirstName;
-    if (!c.CheckFirstName) {
-      return this.checkProperty(c, "CheckFirstName", rules, container);
-    }
-    c.CheckLastName = c.CheckLastName || c.LastName;
-    if (!c.CheckLastName) {
-      return this.checkProperty(c, "CheckLastName", rules, container);
-    }
+    // c.CheckFirstName = c.CheckFirstName || c.FirstName;
+    // if (!c.CheckFirstName) {
+    //   return this.checkProperty(c, "CheckFirstName", rules, container);
+    // }
+    // c.CheckLastName = c.CheckLastName || c.LastName;
+    // if (!c.CheckLastName) {
+    //   return this.checkProperty(c, "CheckLastName", rules, container);
+    // }
 
     if (!c.Gender) {
       return this.checkProperty(c, "Gender", rules, container);

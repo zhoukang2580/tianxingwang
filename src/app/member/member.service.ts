@@ -24,23 +24,24 @@ export class MemberCredential {
   /// <summary>
   /// 姓
   /// </summary>
-  FirstName: string; //
+  Surname: string; //
   /// <summary>
   /// 名
   /// </summary>
-  LastName: string; //
+  Givenname: string; //
+  Name: string; //
   /// <summary>
   /// 登机名
   /// </summary>
-  CheckName: string; //
+  // CheckName: string; //
   /// <summary>
   /// 登机姓
   /// </summary>
-  CheckFirstName: string; //
+  // CheckFirstName: string; //
   /// <summary>
   /// 登机名
   /// </summary>
-  CheckLastName: string; //
+  // CheckLastName: string; //
   /// <summary>
   /// 到期时间
   /// </summary>
