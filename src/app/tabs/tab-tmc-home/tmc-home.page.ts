@@ -10,6 +10,7 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
+import Swiper from "swiper";
 import {
   Component,
   OnInit,
@@ -46,6 +47,9 @@ export class TmcHomePage implements OnInit, OnDestroy {
   private staffCredentials: MemberCredential[];
   private subscription = Subscription.EMPTY;
   @ViewChild(IonSlides) slidesEle: IonSlides;
+  @ViewChild("container", { static: true }) containerEl: ElementRef<
+  HTMLElement
+>;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   identity: IdentityEntity;
   isLoadingNotice = false;
@@ -53,6 +57,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
   wxPayResult$: Observable<any>;
   selectedCompany$: Observable<string>;
   companies: any[];
+  private swiper: any;
   agentNotices: { text: string; active?: boolean; id: number }[];
   canSelectCompany$ = of(false);
   staff: StaffEntity;
@@ -158,6 +163,15 @@ export class TmcHomePage implements OnInit, OnDestroy {
     }
 
     this.initializeSelfBookInfos();
+    this.swiper = new Swiper(this.containerEl.nativeElement, {
+      loop : true,
+      // autoplay:true,//等同于以下设置
+      autoplay: {
+        delay: 3000,
+        stopOnLastSlide: false,
+        disableOnInteraction: true,
+        },
+    });
   }
   private async getAgentNotices() {
     const agentNotices = await this.cmsService
