@@ -207,12 +207,10 @@
                   </ion-row>
                   <ion-row>
                     <ion-col size='3'>
-                      座位
+                      座位信息
                     </ion-col>
                     <ion-col>
-                      {{ticket.SeatTypeName}}
-                      <ng-container *ngIf='ticket.VariablesJsonObj?.SeatLocation'>
-                        {{ticket.VariablesJsonObj.SeatLocation}} </ng-container>
+                      {{ticket.Detail}}
                     </ion-col>
                   </ion-row>
                   <ion-row>

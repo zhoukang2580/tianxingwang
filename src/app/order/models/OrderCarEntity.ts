@@ -24,7 +24,7 @@ export class OrderCarEntity extends BaseVariablesEntity {
   /// </summary>
   Status: OrderCarStatusType;
   /// <summary>
-  /// 预定类型
+  /// 预订类型
   /// </summary>
   BookType: CarBookType;
 

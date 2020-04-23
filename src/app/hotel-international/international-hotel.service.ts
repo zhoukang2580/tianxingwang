@@ -148,7 +148,7 @@ export class InternationalHotelService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    this.apiService.showLoadingView({ msg: "正在预定，请稍后..." });
+    this.apiService.showLoadingView({ msg: "正在预定，请稍候" });
     return this.apiService.getPromiseData<IBookOrderResult>(req).finally(() => {
       this.apiService.hideLoadingView();
     });
