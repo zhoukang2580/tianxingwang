@@ -48,8 +48,8 @@ export class TmcHomePage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   @ViewChild(IonSlides) slidesEle: IonSlides;
   @ViewChild("container", { static: true }) containerEl: ElementRef<
-  HTMLElement
->;
+    HTMLElement
+  >;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   identity: IdentityEntity;
   isLoadingNotice = false;
@@ -63,6 +63,15 @@ export class TmcHomePage implements OnInit, OnDestroy {
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   options = {};
+  swiperOption: {
+    loop: true,
+    // autoplay:true,//等同于以下设置
+    autoplay: {
+      delay: 3000,
+      stopOnLastSlide: false,
+      disableOnInteraction: true,
+    },
+  }
   isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaHotel = environment.mockProBuild || !environment.production;
   constructor(
@@ -104,6 +113,12 @@ export class TmcHomePage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.destroySwiper();
+  }
+  private destroySwiper() {
+    if (this.swiper) {
+      this.swiper.destroy();
+    }
   }
   private clearIntervalIds() {
     this.intervalIds.forEach((i) => {
@@ -127,7 +142,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) {}
+    } catch (e) { }
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
@@ -163,16 +178,31 @@ export class TmcHomePage implements OnInit, OnDestroy {
     }
 
     this.initializeSelfBookInfos();
-    this.swiper = new Swiper(this.containerEl.nativeElement, {
-      loop : true,
-      // autoplay:true,//等同于以下设置
-      autoplay: {
-        delay: 3000,
-        stopOnLastSlide: false,
-        disableOnInteraction: true,
-        },
-    });
+    if (this.containerEl && this.containerEl.nativeElement) {
+      this.swiper = new Swiper(this.containerEl.nativeElement, {
+        loop: true,
+        // autoplay:true,//等同于以下设置
+        autoplay: {
+          delay: 3000,
+          stopOnLastSlide: false,
+          disableOnInteraction: true,
+        }
+      });
+      this.swiper.on("touchEnd", () => {
+        this.onTouchEnd();
+      });
+    }
   }
+  private onTouchEnd() {
+    // console.log("touchEnd");
+    setTimeout(() => {
+      this.startAutoPlay();
+    }, 1000);
+  }
+  private startAutoPlay() {
+        this.swiper.autoplay.start();
+  }
+
   private async getAgentNotices() {
     const agentNotices = await this.cmsService
       .getAgentNotices(0)
