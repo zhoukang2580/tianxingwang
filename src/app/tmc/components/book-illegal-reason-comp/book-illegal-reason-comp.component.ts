@@ -37,6 +37,7 @@ export class BookIllegalReasonCompComponent implements OnInit {
     const data = await p.onDidDismiss();
     if (data && data.data) {
       this.illegalReason = data.data;
+      this.onValueChange();
     }
   }
   onValueChange() {

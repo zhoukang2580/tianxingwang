@@ -37,7 +37,7 @@
                   旅客
                 </div>
                 <div>
-                  <span>{{trip.OrderFlightTicket.Passenger.CheckName}}</span>
+                  <span>{{trip.OrderFlightTicket.Passenger.Name}}</span>
                   <span>
                     <ion-text color='secondary'>({{t.StatusName}})</ion-text>
                   </span>
@@ -154,7 +154,7 @@
             <ion-col style="align-items: center;display: flex;">
               <ng-container *ngIf='orderTrainTicket.Passenger as p'>
                 <ion-text>
-                  {{p.CheckName}}
+                  {{p.Name}}
                 </ion-text>
                 <ion-text color='secondary' class="ion-padding-end">({{orderTrainTicket.StatusName}})</ion-text>
                 <ng-container *ngIf='orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn'>
@@ -239,7 +239,7 @@
             <ng-container *ngIf='orderHotel.Passenger as p'>
               <div>
                 <span>
-                  {{p.CheckName}}
+                  {{p.Name}}
                 </span>
                 <ion-text color="secondary">
                   （{{orderHotel.StatusName}}）

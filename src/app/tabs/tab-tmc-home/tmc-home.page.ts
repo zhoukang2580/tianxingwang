@@ -324,7 +324,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
         const intervalId = setInterval(async () => {
           this.staff = await this.staffService.getStaff();
           if (!this.staff) {
-            this.apiService.showLoadingView({ msg: "正在初始化，请稍后..." });
+            this.apiService.showLoadingView({ msg: "正在初始化，请稍候" });
           } else {
             this.apiService.hideLoadingView();
             this.clearIntervalIds();

@@ -13,7 +13,7 @@ export class TrainRefundComponent implements OnInit {
   train: TrainEntity;
   order: OrderEntity;
   Id: string;
-  CheckName: string;
+  Name: string;
   CredentialsNumber: string;
   StartTime: string;
   ArrivalTime: string;
@@ -39,7 +39,7 @@ export class TrainRefundComponent implements OnInit {
     this.train.StartTime = this.StartTime;
     this.train.TrainCode = this.TrainCode;
     this.passenger.CredentialsInfo = this.CredentialsNumber;
-    this.passenger.Name = this.CheckName;
+    this.passenger.Name = this.Name;
   }
 
 }

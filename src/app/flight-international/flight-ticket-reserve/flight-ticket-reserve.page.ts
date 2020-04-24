@@ -307,10 +307,15 @@ export class FlightTicketReservePage
           );
         } else if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
           this.flightService.setBookInfoSource(
-            this.flightService.getBookInfos().map((it, idx) => {
-              it.bookInfo = this.searchModel.trips[idx].bookInfo;
-              return it;
-            })
+            this.flightService
+              .getBookInfos()
+              .map((it, idx) => {
+                if (idx == 0) {
+                  it.bookInfo = this.searchModel.trips[idx].bookInfo;
+                }
+                return it;
+              })
+              .filter((it) => !!it.bookInfo)
           );
         } else if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
           const trips = this.searchModel.trips;
@@ -985,7 +990,7 @@ export class FlightTicketReservePage
           p.OutNumbers = {};
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
-              const el = this.getEleByAttr("outnumber", combindInfo.id);
+              const el = this.getEleByAttr("outnumber", "outnumber");
               showErrorMsg(it.label + "必填", combindInfo, el);
               return;
             }

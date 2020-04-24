@@ -101,7 +101,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       this.iframes.changes.subscribe(async _ => {
         const iframe = this.iframes.first;
         if (iframe) {
-          const l = await this.loadingCtrl.create({ message: "请稍后..." });
+          const l = await this.loadingCtrl.create({ message: "请稍候" });
           l.backdropDismiss = true;
           l.present();
           iframe.nativeElement.onload = _ => {
