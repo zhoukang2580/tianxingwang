@@ -31,6 +31,7 @@ import { AppHelper } from "../appHelper";
 import { OrderFlightTicketEntity } from "./models/OrderFlightTicketEntity";
 import { OrderTrainTicketEntity } from "./models/OrderTrainTicketEntity";
 import { TravelModel } from "./models/TravelModel";
+import { StaffEntity } from "../hr/staff.service";
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -247,6 +248,8 @@ export class OrderService {
       trip: OrderFlightTripEntity;
       fromCity: TrafficlineEntity;
       toCity: TrafficlineEntity;
+      order: OrderEntity;
+      staff: StaffEntity;
     }>(req);
   }
 

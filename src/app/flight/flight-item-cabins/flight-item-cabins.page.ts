@@ -5,7 +5,7 @@ import { IdentityService } from "./../../services/identity/identity.service";
 import {
   StaffService,
   StaffEntity,
-  StaffBookType
+  StaffBookType,
 } from "../../hr/staff.service";
 import { DayModel } from "../../tmc/models/DayModel";
 import { CalendarService } from "../../tmc/calendar.service";
@@ -17,14 +17,14 @@ import {
   ModalController,
   AlertController,
   NavController,
-  PopoverController
+  PopoverController,
 } from "@ionic/angular";
 import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
 import * as moment from "moment";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import {
   FlightPolicy,
-  IFlightSegmentInfo
+  IFlightSegmentInfo,
 } from "../models/PassengerFlightInfo";
 import { of, Observable, Subscription } from "rxjs";
 import { map, tap, filter } from "rxjs/operators";
@@ -36,11 +36,12 @@ import { SearchTypeModel } from "../models/flight/advanced-search-cond/SearchTyp
 import { FlightCabinType } from "../models/flight/FlightCabinType";
 import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntity";
 import { OrderService } from "src/app/order/order.service";
+import { TripType } from "src/app/tmc/models/TripType";
 
 @Component({
   selector: "app-flight-item-cabins",
   templateUrl: "./flight-item-cabins.page.html",
-  styleUrls: ["./flight-item-cabins.page.scss"]
+  styleUrls: ["./flight-item-cabins.page.scss"],
 })
 export class FlightItemCabinsPage implements OnInit {
   private cabins: FlightPolicy[] = [];
@@ -71,13 +72,13 @@ export class FlightItemCabinsPage implements OnInit {
     private orderService: OrderService,
     private navCtrl: NavController
   ) {
-    activatedRoute.queryParamMap.subscribe(async p => {
+    activatedRoute.queryParamMap.subscribe(async (p) => {
       this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
       this.isSelf = await this.staffService.isSelfBookType();
       this.cabinTypes = this.getCabinTypes();
       const identity = await this.identityService
         .getIdentityAsync()
-        .catch(_ => null);
+        .catch((_) => null);
       this.identity = identity;
       this.staff = await this.staffService.getStaff();
       if (
@@ -100,12 +101,12 @@ export class FlightItemCabinsPage implements OnInit {
   private getCabinTypes() {
     let cts: SearchTypeModel[] = [];
     if (this.vmFlightSegment && this.vmFlightSegment.Cabins) {
-      this.vmFlightSegment.Cabins.forEach(c => {
-        if (!cts.find(it => it.id == c.Type)) {
+      this.vmFlightSegment.Cabins.forEach((c) => {
+        if (!cts.find((it) => it.id == c.Type)) {
           cts.push({
             id: c.Type,
             label: c.TypeName,
-            isChecked: false
+            isChecked: false,
           });
         }
       });
@@ -125,7 +126,7 @@ export class FlightItemCabinsPage implements OnInit {
   }
   getFlightIllegalTip() {
     const bookInfos = this.flightService.getPassengerBookInfos();
-    const info = bookInfos.find(it => it.isFilterPolicy);
+    const info = bookInfos.find((it) => it.isFilterPolicy);
     return (
       info &&
       info.passenger &&
@@ -135,7 +136,7 @@ export class FlightItemCabinsPage implements OnInit {
   }
   getFlightlegalTip() {
     const bookInfos = this.flightService.getPassengerBookInfos();
-    const info = bookInfos.find(it => it.isFilterPolicy);
+    const info = bookInfos.find((it) => it.isFilterPolicy);
     return (
       info &&
       info.passenger &&
@@ -144,58 +145,76 @@ export class FlightItemCabinsPage implements OnInit {
     );
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
-    if (
-      !this.flightService.policyFlights ||
-      !this.flightService.policyFlights.length
-    ) {
-      await this.flightService.loadPolicyedFlightsAsync(
-        this.flightService.flightJourneyList
-      );
-      if (
-        !this.flightService.policyFlights ||
-        !this.flightService.policyFlights.length
-      ) {
-        AppHelper.alert("差标获取失败");
-        return;
-      }
-    }
-    const isSelf = await this.staffService.isSelfBookType();
     const bookInfos = this.flightService.getPassengerBookInfos();
-    if (isSelf) {
-      const bookInfo = bookInfos[0];
-      const info = this.flightService.getPolicyCabinBookInfo(
-        bookInfo,
-        flightCabin,
-        this.vmFlightSegment
-      );
-      const rules = (info.flightPolicy && info.flightPolicy.Rules) || [];
-      if (info && info.isDontAllowBook) {
-        let msg = rules.join(";");
-        if (rules.length) {
-          msg += ",不可预订";
+    if (bookInfos[0]) {
+      if (!bookInfos[0].exchangeInfo) {
+        if (
+          !this.flightService.policyFlights ||
+          !this.flightService.policyFlights.length
+        ) {
+          await this.flightService.loadPolicyedFlightsAsync(
+            this.flightService.flightJourneyList
+          );
+          if (
+            !this.flightService.policyFlights ||
+            !this.flightService.policyFlights.length
+          ) {
+            AppHelper.alert("差标获取失败");
+            return;
+          }
         }
-        AppHelper.alert(
-          msg,
-          true,
-          LanguageHelper.getConfirmTip(),
-          LanguageHelper.getCancelTip()
+        const isSelf = await this.staffService.isSelfBookType();
+        if (isSelf) {
+          const bookInfo = bookInfos[0];
+          const info = this.flightService.getPolicyCabinBookInfo(
+            bookInfo,
+            flightCabin,
+            this.vmFlightSegment
+          );
+          const rules =
+            (info && info.flightPolicy && info.flightPolicy.Rules) || [];
+          if (info && info.isDontAllowBook) {
+            let msg = rules.join(";");
+            if (rules.length) {
+              msg += ",不可预订";
+            }
+            AppHelper.alert(
+              msg,
+              true,
+              LanguageHelper.getConfirmTip(),
+              LanguageHelper.getCancelTip()
+            );
+            return;
+          }
+        }
+        await this.flightService.addOrReplaceSegmentInfo(
+          flightCabin,
+          this.vmFlightSegment
         );
-        return;
+      } else {
+        const info = {
+          flightSegment: this.vmFlightSegment,
+          flightPolicy: {
+            Cabin: flightCabin,
+            CabinCode: flightCabin.Code,
+            IsAllowBook: true,
+          },
+          tripType: TripType.departureTrip,
+          id: AppHelper.uuid(),
+        } as IFlightSegmentInfo;
+        bookInfos[0].bookInfo = info;
+        this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
       }
+      await this.onShowSelectedInfosPage();
     }
-    await this.flightService.addOrReplaceSegmentInfo(
-      flightCabin,
-      this.vmFlightSegment
-    );
-    await this.onShowSelectedInfosPage();
   }
   async filterPolicyFlights() {
     const popover = await this.popoverController.create({
       component: FilterPassengersPolicyComponent,
       translucent: true,
       componentProps: {
-        bookInfos$: this.flightService.getPassengerBookInfoSource()
-      }
+        bookInfos$: this.flightService.getPassengerBookInfoSource(),
+      },
       // backdropDismiss: false
     });
     await popover.present();
@@ -206,7 +225,7 @@ export class FlightItemCabinsPage implements OnInit {
     if (!data) {
       return;
     }
-    const arr = this.flightService.getPassengerBookInfos().map(it => {
+    const arr = this.flightService.getPassengerBookInfos().map((it) => {
       it.isFilterPolicy =
         data != "isUnFilterPolicy"
           ? it.id == data.id && data.isFilterPolicy
@@ -221,19 +240,21 @@ export class FlightItemCabinsPage implements OnInit {
     this.vmCabins = this.economyClassCabins.concat(this.moreCabins);
     this.moreCabins = [];
     this.economyClassCabins = [];
-    const BusinessCabins = [];//公务舱
+    const BusinessCabins = []; //公务舱
     const DiscountCabins = []; //头等舱
-    this.vmCabins.forEach(it => {
+    this.vmCabins.forEach((it) => {
       if (it.Cabin) {
         if (it.Cabin.Type == FlightCabinType.Y) {
           this.economyClassCabins.push(it);
         } else if (it.Cabin.Type == FlightCabinType.SeniorY) {
-          BusinessCabins.push(it)
-        }
-        else if (it.Cabin.Type == FlightCabinType.C || it.Cabin.Type == FlightCabinType.DiscountC || it.Cabin.Type == FlightCabinType.BusinessPremier) {
-          DiscountCabins.push(it)
-        }
-        else {
+          BusinessCabins.push(it);
+        } else if (
+          it.Cabin.Type == FlightCabinType.C ||
+          it.Cabin.Type == FlightCabinType.DiscountC ||
+          it.Cabin.Type == FlightCabinType.BusinessPremier
+        ) {
+          DiscountCabins.push(it);
+        } else {
           this.moreCabins.push(it);
         }
       }
@@ -250,7 +271,10 @@ export class FlightItemCabinsPage implements OnInit {
     DiscountCabins.sort((a, b) =>
       a.Cabin && b.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
     );
-    this.vmCabins = this.economyClassCabins.concat(BusinessCabins).concat(DiscountCabins).concat(this.moreCabins);
+    this.vmCabins = this.economyClassCabins
+      .concat(BusinessCabins)
+      .concat(DiscountCabins)
+      .concat(this.moreCabins);
     this.hasMoreCabins = false;
   }
   private initVmCabins(cabins: FlightPolicy[]) {
@@ -261,14 +285,14 @@ export class FlightItemCabinsPage implements OnInit {
     this.economyClassCabins = [];
     let lowestPrice = Infinity;
     if (this.vmFlightSegment && this.vmFlightSegment.Cabins) {
-      this.vmFlightSegment.Cabins.forEach(it => {
+      this.vmFlightSegment.Cabins.forEach((it) => {
         lowestPrice = Math.min(+it.SalesPrice, lowestPrice);
       });
     }
     const isfirstAgreementCabin = cabins.find(
-      it => it.Cabin && +it.Cabin.FareType == FlightFareType.Agreement
+      (it) => it.Cabin && +it.Cabin.FareType == FlightFareType.Agreement
     );
-    cabins.forEach(it => {
+    cabins.forEach((it) => {
       if (
         it.Cabin &&
         it.Cabin.Type == FlightCabinType.Y &&
@@ -315,7 +339,7 @@ export class FlightItemCabinsPage implements OnInit {
       component: TicketchangingComponent,
       componentProps: { cabin: cabin },
       showBackdrop: true,
-      cssClass: "ticket-changing"
+      cssClass: "ticket-changing",
       // animated: false
     });
     m.backdropDismiss = false;
@@ -324,10 +348,10 @@ export class FlightItemCabinsPage implements OnInit {
   async onFilterCabinType(evt: CustomEvent) {
     console.log(evt, this.cabinTypes);
     if (evt && evt.detail) {
-      const cabins = this.cabinTypes.filter(it => it.isChecked);
+      const cabins = this.cabinTypes.filter((it) => it.isChecked);
       this.flightService.setFilterConditionSource({
         ...this.flightService.getFilterCondition(),
-        cabins
+        cabins,
       });
       this.cabins = this.getPolicyCabins();
       this.initVmCabins(this.cabins);
@@ -335,7 +359,7 @@ export class FlightItemCabinsPage implements OnInit {
   }
   onionChange(c: { id: string }) {
     if (this.isSelf) {
-      this.cabinTypes = this.cabinTypes.map(it => {
+      this.cabinTypes = this.cabinTypes.map((it) => {
         it.isChecked = it.id == c.id;
         return it;
       });
@@ -344,19 +368,21 @@ export class FlightItemCabinsPage implements OnInit {
   async ngOnInit() {
     this.filterConditionSub = this.flightService
       .getFilterConditionSource()
-      .subscribe(c => {
+      .subscribe((c) => {
         this.filterConditions = c;
-        const cabin = c && c.cabins.find(it => it.isChecked);
+        const cabin = c && c.cabins.find((it) => it.isChecked);
         if (cabin) {
           this.selectedCabinType = +cabin.id;
         }
       });
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map(infos => infos.find(it => it.isFilterPolicy)));
+      .pipe(map((infos) => infos.find((it) => it.isFilterPolicy)));
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map(infos => infos && infos.filter(it => !!it.bookInfo).length));
+      .pipe(
+        map((infos) => infos && infos.filter((it) => !!it.bookInfo).length)
+      );
     this.cabins = this.getPolicyCabins();
     this.initVmCabins(this.cabins);
   }
@@ -364,11 +390,11 @@ export class FlightItemCabinsPage implements OnInit {
   private getPolicyCabins() {
     const isfilteredBookInfo = this.flightService
       .getPassengerBookInfos()
-      .find(it => it.isFilterPolicy);
+      .find((it) => it.isFilterPolicy);
     const bookInfo = isfilteredBookInfo;
     let policyCabins = this.flightService.filterPassengerPolicyCabins({
       data: bookInfo,
-      flightSegment: { ...this.vmFlightSegment }
+      flightSegment: { ...this.vmFlightSegment },
     });
     if (
       this.filterConditions &&
@@ -376,9 +402,9 @@ export class FlightItemCabinsPage implements OnInit {
       this.filterConditions.cabins.length
     ) {
       policyCabins = policyCabins.filter(
-        c =>
+        (c) =>
           c.Cabin &&
-          this.filterConditions.cabins.some(it => it.id == c.Cabin.Type)
+          this.filterConditions.cabins.some((it) => it.id == c.Cabin.Type)
       );
     }
     console.log("showPolicyCabins ", policyCabins);
