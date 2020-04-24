@@ -239,13 +239,9 @@ export class SelectPassengerPage
       this.bookInfos$ = this.interFlightService.getBookInfoSource().pipe(
         tap((it) => {
           if (it && it.length) {
-            const one = it[0];
-            if (
-              one.passenger &&
-              !one.passenger.isNotWhiteList &&
-              one.passenger.Policy
-            ) {
-              this.selectedPassengerPolicy = one.passenger.Policy;
+            const p = it.filter((o) => o.passenger && !!o.passenger.Policy)[0];
+            if (p) {
+              this.selectedPassengerPolicy = p.passenger.Policy;
             }
           } else {
             this.selectedPassengerPolicy = null;
