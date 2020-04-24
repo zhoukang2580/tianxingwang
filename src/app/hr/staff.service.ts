@@ -22,7 +22,7 @@ export enum StaffBookType {
   /// <summary>
   /// 全部
   /// </summary>
-  All = "All",
+  All = "All",// 特殊型
 }
 @Injectable({
   providedIn: "root",

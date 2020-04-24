@@ -1262,6 +1262,9 @@ export class FlightTicketReservePage
       const accountIdTmcOutNumberInfosMap: {
         [accountId: string]: ITmcOutNumberInfo[];
       } = {} as any;
+      const isSelfOrisSecretary =
+        (await this.staffService.isSecretaryBookType()) ||
+        (await this.staffService.isSelfBookType());
       const pfs = this.flightService.getBookInfos();
       for (const item of pfs) {
         const cs = this.initialBookDtoModel.Staffs.find(
@@ -1394,6 +1397,7 @@ export class FlightTicketReservePage
               key: n,
               isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
               required:
+                isSelfOrisSecretary &&
                 this.tmc &&
                 this.tmc.OutNumberRequiryNameArray &&
                 this.tmc.OutNumberRequiryNameArray.some((name) => name == n),

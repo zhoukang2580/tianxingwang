@@ -1251,6 +1251,9 @@ export class BookPage implements OnInit, AfterViewInit {
       const accountIdTmcOutNumberInfosMap: {
         [accountId: string]: ITmcOutNumberInfo[];
       } = {} as any;
+      const isSelfOrisSecretary =
+        (await this.staffService.isSelfBookType()) ||
+        (await this.staffService.isSecretaryBookType());
       const pfs = this.flightService
         .getPassengerBookInfos()
         .filter((it) => !!it.bookInfo);
@@ -1392,6 +1395,7 @@ export class BookPage implements OnInit, AfterViewInit {
               key: n,
               isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
               required:
+                isSelfOrisSecretary &&
                 this.tmc &&
                 this.tmc.OutNumberRequiryNameArray &&
                 this.tmc.OutNumberRequiryNameArray.some((name) => name == n),

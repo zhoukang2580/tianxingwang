@@ -284,6 +284,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   private async initCombindInfos() {
     try {
       this.viewModel.combindInfos = [];
+      const isSelfOrisSecretary =
+        (await this.staffService.isSecretaryBookType()) ||
+        (await this.staffService.isSelfBookType());
       const bookInfos = this.trainService.getBookInfos();
       const exchangeInfo = bookInfos.find((it) => !!it.exchangeInfo);
       const exchange = exchangeInfo && exchangeInfo.exchangeInfo;
@@ -451,6 +454,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
                 key: n,
                 isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
                 required:
+                  (!this.searchTrainModel ||
+                    !this.searchTrainModel.isExchange) &&
+                  isSelfOrisSecretary &&
                   this.tmc &&
                   this.tmc.OutNumberRequiryNameArray &&
                   this.tmc.OutNumberRequiryNameArray.some((name) => name == n),
