@@ -5,14 +5,14 @@ import {
   RouterStateSnapshot,
   Router,
   CanActivateChild,
-  UrlTree
+  UrlTree,
 } from "@angular/router";
 import { Observable } from "rxjs";
-import { StaffService } from "../hr/staff.service";
+import { StaffService, StaffBookType } from "../hr/staff.service";
 import { AppHelper } from "../appHelper";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class ConfirmCredentialInfoGuard
   implements CanActivate, CanActivateChild {
@@ -26,17 +26,19 @@ export class ConfirmCredentialInfoGuard
     | Promise<boolean | UrlTree> {
     return this.canActivate(childRoute, state);
   }
-  constructor(private staffService: StaffService, private router: Router) { }
+  constructor(private staffService: StaffService, private router: Router) {}
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     return this.staffService
       .getStaff()
-      .then(staff => {
+      .then((staff) => {
         // console.log("ConfirmCredentialInfoGuard", staff,this.staffService.staffCredentials);
         if (
           staff &&
+          (staff.BookType == StaffBookType.Secretary ||
+            staff.BookType == StaffBookType.Self) &&
           staff.IsConfirmInfo != undefined &&
           staff.IsModifyPassword != undefined
         ) {
@@ -52,7 +54,7 @@ export class ConfirmCredentialInfoGuard
         }
         return true;
       })
-      .catch(_ => {
+      .catch((_) => {
         // console.log("ConfirmCredentialInfoGuard", _);
         return true;
       });
