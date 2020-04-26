@@ -262,7 +262,7 @@ export class LoginService {
   }
   async check() {
     const ticket = AppHelper.getTicket();
-    if (!this.identity || !ticket || !environment.mockProBuild) {
+    if (!this.identity || !ticket || environment.mockProBuild) {
       return;
     }
     const req = new RequestEntity();
