@@ -11,13 +11,13 @@ import { AppHelper } from "src/app/appHelper";
 import { IResponse } from "../api/IResponse";
 import { LanguageHelper } from "src/app/languageHelper";
 import { Storage } from "@ionic/storage";
-import { environment } from "src/environments/environment";
 @Injectable({
   providedIn: "root"
 })
 export class LoginService {
   identity: IdentityEntity;
   private imageValue: string;
+  private preventAutoLogin = false;
   set ImageValue(value: string) {
     this.imageValue = value;
   }
@@ -85,12 +85,11 @@ export class LoginService {
       });
   }
 
-  checkIsWechatBind(mock = false) {
+  checkIsWechatBind() {
     if (this.checkPathIsWechatOrDingtalk()) {
       return;
     }
     if (
-      mock ||
       AppHelper.isWechatH5() ||
       AppHelper.isWechatMini() ||
       AppHelper.isApp()
@@ -98,10 +97,10 @@ export class LoginService {
       const sdkType = AppHelper.isWechatH5()
         ? ""
         : AppHelper.isWechatMini()
-        ? "Mini"
-        : AppHelper.isApp()
-        ? "App"
-        : "";
+          ? "Mini"
+          : AppHelper.isApp()
+            ? "App"
+            : "";
       const req = new RequestEntity();
       req.Method = `ApiPasswordUrl-Wechat-Check`;
       req.Data = {
@@ -120,7 +119,7 @@ export class LoginService {
       path.toLowerCase() == "account-dingtalk"
     );
   }
-  checkIsDingtalkBind(mock = false) {
+  checkIsDingtalkBind() {
     const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-DingTalk-Check`;
     req.Data = {
@@ -129,7 +128,7 @@ export class LoginService {
     if (this.checkPathIsWechatOrDingtalk()) {
       return;
     }
-    if (mock || AppHelper.isDingtalkH5()) {
+    if (AppHelper.isDingtalkH5()) {
       const sub = this.apiService
         .getResponse<any>(req)
         .pipe(
@@ -211,11 +210,14 @@ export class LoginService {
           }
           return of(r.Data);
         }),
-        tap(rid => {})
+        tap(() => {
+          this.preventAutoLogin = false;
+        })
       );
   }
   logout() {
     const ticket = AppHelper.getTicket();
+    this.preventAutoLogin = true;
     if (ticket) {
       AppHelper.setStorage("loginToken", null);
       const req = new RequestEntity();
@@ -259,7 +261,7 @@ export class LoginService {
   }
   async check() {
     const ticket = AppHelper.getTicket();
-    if (!this.identity || !ticket || environment.mockProBuild) {
+    if (!this.identity || !ticket) {
       return;
     }
     const req = new RequestEntity();
@@ -284,11 +286,12 @@ export class LoginService {
       })
       .pipe(
         map((r: IResponse<IdentityEntity>) => r),
-        finalize(() => {})
+        finalize(() => { })
       )
       .subscribe(r => {
         if (r.Status) {
           AppHelper.alert(r.Message, true, "确定").then(s => {
+            this.preventAutoLogin = true;
             this.identityService.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")]);
           });
@@ -324,6 +327,9 @@ export class LoginService {
     }
   }
   async autoLogin() {
+    if (this.preventAutoLogin) {
+      return;
+    }
     if (AppHelper.getStorage<string>("loginToken")) {
       const req = new RequestEntity();
       req.Method = "ApiLoginUrl-Home-TokenLogin";
@@ -372,6 +378,9 @@ export class LoginService {
     return false;
   }
   getLoginType() {
+    if (AppHelper.isPDA()) {
+      return "PDA";
+    }
     if (AppHelper.isApp()) {
       return "App";
     }

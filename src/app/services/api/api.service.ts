@@ -48,6 +48,7 @@ export class ApiService {
     isFetching: boolean;
     promise: Promise<any>;
   } = {} as any;
+  private tryAutoLoginPromise: Promise<IResponse<any>>;
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -205,9 +206,22 @@ export class ApiService {
     }
     return req.Url;
   }
-  async tryAutoLogin(orgReq: RequestEntity) {
-    let req = this.createRequest();
-    req = { ...orgReq, ...req };
+  async tryAutoLogin(res:IResponse<any>) {
+    if(AppHelper.isH5()){
+      let tip="登陆超时，请重新登陆";
+      if(res){
+        if(res.Message){
+          tip=res.Message;
+        }else if(res.Code){
+          
+        }
+      }
+      if(this.router.url!='login'){
+        this.router.navigate(['login'])
+      }
+      return Promise.reject(tip)
+    }
+    const req = this.createRequest();
     if (AppHelper.isApp()) {
       const device = await AppHelper.getDeviceId();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
@@ -235,16 +249,15 @@ export class ApiService {
         Code: code,
       });
     }
-    if (!req.Method) {
-      req.Method = orgReq.Method;
-    }
     const formObj = Object.keys(req)
       .filter((it) => it != "Url" && it != "IsShowLoading")
       .map((k) => `${k}=${req[k]}`)
       .join("&");
-
     const url = await this.getUrl(req);
-    return new Promise((resolve, reject) => {
+    if (this.tryAutoLoginPromise) {
+      return this.tryAutoLoginPromise;
+    }
+    this.tryAutoLoginPromise = new Promise<IResponse<any>>((resolve, reject) => {
       const subscribtion = this.http
         .post(
           url,
@@ -256,34 +269,8 @@ export class ApiService {
             observe: "body",
           }
         )
-        .pipe(
-          map((r) => r as any),
-          switchMap((r: IResponse<any>) => {
-            if (r && r.Status && !r.Data) {
-              const id: IdentityEntity = new IdentityEntity();
-              id.Name = r.Data.Name;
-              id.Ticket = r.Data.Ticket;
-              id.IsShareTicket = r.Data.IsShareTicket;
-              id.Numbers = r.Data.Numbers;
-              id.Id = r.Data.Id;
-              this.identityService.setIdentity(id);
-              return this.sendRequest(orgReq, false);
-            }
-            this.identityService.removeIdentity();
-            if (orgReq.IsRedirctLogin == false) {
-              if (r.Message) {
-                if (!req.IsForbidShowMessage) {
-                  AppHelper.alert(r.Message);
-                }
-              }
-            } else {
-              this.router.navigate([AppHelper.getRoutePath("login")]);
-            }
-            return of(r);
-          })
-        )
         .subscribe(
-          (r) => {
+          (r: IResponse<any>) => {
             resolve(r);
           },
           (e) => {
@@ -294,9 +281,25 @@ export class ApiService {
               if (subscribtion) {
                 subscribtion.unsubscribe();
               }
-            }, 10);
+            }, 1000);
           }
         );
+    }).then(r=>{
+      if(r&&r.Data){
+        const id: IdentityEntity = new IdentityEntity();
+        id.Name = r.Data.Name;
+        id.Ticket = r.Data.Ticket;
+        id.IsShareTicket = r.Data.IsShareTicket;
+        id.Numbers = r.Data.Numbers;
+        id.Id = r.Data.Id;
+        id.Token=r.Data.Token;
+        this.identityService.setIdentity(id);
+        AppHelper.setStorage("loginToken",id.Token);
+      }
+      return r;
+    });
+    return this.tryAutoLoginPromise.finally(() => {
+      this.tryAutoLoginPromise = null;
     });
   }
   private post(url: string, req: RequestEntity) {
@@ -305,7 +308,6 @@ export class ApiService {
       .filter((it) => it != "Url" && it != "IsShowLoading")
       .map((k) => `${k}=${encodeURIComponent(req[k])}`)
       .join("&");
-    // console.log(`${formObj}&Sign=${this.getSign(req)}`);
     return this.http
       .post(
         url,
@@ -319,7 +321,7 @@ export class ApiService {
       )
       .pipe(
         finalize(() => {
-          console.log("reqMethod =" + req.Method);
+          console.log("reqMethod =" + req.Method,this.reqLoadingStatus);
           this.setLoading({
             isShowLoading: false,
             reqMethod: req.Method,
@@ -341,7 +343,25 @@ export class ApiService {
       map((r) => r as any),
       switchMap((r: IResponse<any>) => {
         if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
-          return from(this.tryAutoLogin(req));
+          return from(this.tryAutoLogin(r)).pipe(
+            map((r) => r as any),
+            switchMap((r: IResponse<any>) => {
+              if (r && r.Status && r.Data) {
+                return this.sendRequest(req, false);
+              }
+              this.identityService.removeIdentity();
+              if (req.IsRedirctLogin == false) {
+                if (r.Message) {
+                  if (!req.IsForbidShowMessage) {
+                    AppHelper.alert(r.Message);
+                  }
+                }
+              } else {
+                this.router.navigate([AppHelper.getRoutePath("login")]);
+              }
+              return of(r);
+            })
+          )
         } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
           this.identityService.removeIdentity();
           if (req.IsRedirctLogin == false) {
@@ -363,6 +383,11 @@ export class ApiService {
         return of(r);
       }),
       catchError((error: Error | any) => {
+        this.setLoading({
+          isShowLoading: false,
+          reqMethod: req.Method,
+          msg: "",
+        });
         const entity = new ExceptionEntity();
         entity.Error = error;
         entity.Method = req.Method;
