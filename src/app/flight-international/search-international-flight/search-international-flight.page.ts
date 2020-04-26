@@ -61,13 +61,13 @@ export class SearchInternationalFlightPage
     if (!s) {
       s = await this.staffService.getStaff(true);
     }
-    if (!s || !s.Policy || !s.Policy.FlightDescription) {
+    if (!s || !s.Policy || !s.Policy.InternationalFlightDescription) {
       return;
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
       componentProps: {
-        details: s.Policy.FlightDescription.split(","),
+        details: s.Policy.InternationalFlightDescription.split(","),
       },
       cssClass: "ticket-changing",
     });

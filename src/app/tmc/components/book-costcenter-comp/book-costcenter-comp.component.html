@@ -6,10 +6,10 @@
   <ion-checkbox class="ion-margin-end" color="secondary" (ionChange)='onCheckboxValueChange($event)' [(ngModel)]='isOtherCostCenter'>
   </ion-checkbox>
   <ion-label style='margin-right: 0.5em'>其他</ion-label>
-  <ion-input [disabled]='false&&!isOtherCostCenter' [(ngModel)]='otherCostCenterName' placeholder='名称'
+  <ion-input *ngIf="isOtherCostCenter" [disabled]='false&&!isOtherCostCenter' [(ngModel)]='otherCostCenterName' placeholder='名称'
     (ionChange)='onValueChange()'>
   </ion-input>
-  <ion-input [disabled]='false&&!isOtherCostCenter' [(ngModel)]='otherCostCenterCode' placeholder='代码'
+  <ion-input *ngIf="isOtherCostCenter" [disabled]='false&&!isOtherCostCenter' [(ngModel)]='otherCostCenterCode' placeholder='代码'
     (ionChange)='onValueChange()'>
   </ion-input>
 </ion-item>
