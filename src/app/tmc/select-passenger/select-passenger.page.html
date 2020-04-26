@@ -168,22 +168,6 @@
                   [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='Givenname' name='Givenname'>
               </ion-col>
             </ion-row>
-            <!-- <ion-row>
-              <ion-col>登机姓：</ion-col>
-              <ion-col>
-                <input type="text" [(ngModel)]='vmNewCredential.Surname'
-                  [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='Surname' name='Surname'
-                  value="{{vmNewCredential.Surname}}">
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col>登机名：</ion-col>
-              <ion-col>
-                <input type="text" [(ngModel)]='vmNewCredential.Givenname'
-                  [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='Givenname' name='Givenname'
-                  value="{{vmNewCredential.Givenname}}">
-              </ion-col>
-            </ion-row> -->
             <ion-row (click)='selectIdentityNationality()'>
               <ion-col>
                 <ion-label>国籍：</ion-label>

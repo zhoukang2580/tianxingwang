@@ -162,7 +162,7 @@ export class MemberCredentialManagementPage
       ) as HTMLInputElement;
       this.changeBirthByIdNumber(idInputEle);
       setTimeout(() => {
-        this.onFirstLastNameChange();
+        this.onNameChange();
       }, 100);
     }
   }
@@ -198,7 +198,7 @@ export class MemberCredentialManagementPage
     ele.open();
     this.subscription = ele.ionChange.subscribe((_) => {
       this.onIdTypeChange();
-      this.onFirstLastNameChange();
+      this.onNameChange();
       if (this.modifyCredential) {
         if (this.modifyCredential.Type != CredentialsType.IdCard) {
           this.modifyCredential.isLongPeriodOfTime = false;
@@ -249,16 +249,6 @@ export class MemberCredentialManagementPage
     }
   }
   async onSelectExpireDate() {
-    // const d = await this.onSelectDate();
-    // if (d) {
-    //   this.modifyCredential.ExpirationDate = d.date;
-    // }
-    // this.isCanDeactive = true;
-    // const path = this.getCurUrl();
-    // this.requestCode = "expireDate";
-    // this.router.navigate(["open-my-calendar"], {
-    //   queryParams: { backRouteUrl: path }
-    // });
     if (this.datetimeComp) {
       this.datetimeComp.value = "";
       this.datetimeComp.open();
@@ -275,12 +265,6 @@ export class MemberCredentialManagementPage
         }, 100);
       });
     }
-  }
-  private getCurUrl() {
-    const path = this.router.url.includes("#")
-      ? this.router.url.substr(0, this.router.url.indexOf("#"))
-      : this.router.url;
-    return path;
   }
   private changeBirthByIdNumber(idInputEle: HTMLInputElement) {
     if (!idInputEle) {
@@ -314,7 +298,7 @@ export class MemberCredentialManagementPage
       (evt) => {
         setTimeout(() => {
           this.validateIdNumber(idInputEle);
-          this.onFirstLastNameChange();
+          this.onNameChange();
           this.changeBirthByIdNumber(idInputEle);
         }, 0);
       }
@@ -341,7 +325,7 @@ export class MemberCredentialManagementPage
       );
     }
   }
-  private onFirstLastNameChange() {
+  private onNameChange() {
     let container: HTMLElement = this.formEle && this.formEle.nativeElement;
     if (this.modifyCredential) {
       container =
@@ -349,40 +333,40 @@ export class MemberCredentialManagementPage
         this.addFormEles.last &&
         this.addFormEles.last.nativeElement;
     }
-    const firstNameEl: HTMLInputElement = container.querySelector(
-      "input[name='FirstName']"
+    const surnameEl: HTMLInputElement = container.querySelector(
+      "input[name='Surname']"
     );
-    const larstNameEl: HTMLInputElement = container.querySelector(
-      "input[name='LastName']"
+    const givennameEl: HTMLInputElement = container.querySelector(
+      "input[name='Givenname']"
     );
     if (this.modifyCredential) {
       console.log(
-        !AppHelper.includeHanz(firstNameEl && firstNameEl.value),
-        firstNameEl.value,
-        firstNameEl.placeholder,
+        !AppHelper.includeHanz(surnameEl && surnameEl.value),
+        surnameEl.value,
+        surnameEl.placeholder,
         "222222222"
       );
       if (this.modifyCredential.Type == CredentialsType.IdCard) {
         this.addMessageTipEl(
-          firstNameEl,
-          !AppHelper.includeHanz(firstNameEl && firstNameEl.value),
-          firstNameEl.placeholder
+          surnameEl,
+          !AppHelper.includeHanz(surnameEl && surnameEl.value),
+          surnameEl.placeholder
         );
         this.addMessageTipEl(
-          larstNameEl,
-          !AppHelper.includeHanz(larstNameEl && larstNameEl.value),
-          larstNameEl.placeholder
+          givennameEl,
+          !AppHelper.includeHanz(givennameEl && givennameEl.value),
+          givennameEl.placeholder
         );
       } else {
         this.addMessageTipEl(
-          firstNameEl,
-          AppHelper.includeHanz(firstNameEl && firstNameEl.value),
-          firstNameEl.placeholder
+          surnameEl,
+          AppHelper.includeHanz(surnameEl && surnameEl.value),
+          surnameEl.placeholder
         );
         this.addMessageTipEl(
-          larstNameEl,
-          AppHelper.includeHanz(larstNameEl && larstNameEl.value),
-          larstNameEl.placeholder
+          givennameEl,
+          AppHelper.includeHanz(givennameEl && givennameEl.value),
+          givennameEl.placeholder
         );
       }
     }
@@ -418,33 +402,33 @@ export class MemberCredentialManagementPage
       container &&
       (container.querySelector("input[name='Number']") as HTMLInputElement);
     this.onIdNumberInputChange(idInputEle);
-    const inputFirstNameEle =
+    const inputSurnameEle =
       container &&
       (container.querySelector(
-        "input[name='FirstName']"
+        "input[name='Surname']"
       ) as HTMLIonInputElement);
-    const inputLastNameEle =
+    const inputGivennameEle =
       container &&
       (container.querySelector(
-        "input[name='LastName']"
+        "input[name='Givenname']"
       ) as HTMLIonInputElement);
     if (credential) {
-      if (inputFirstNameEle) {
-        inputFirstNameEle.oninput = (_) => {
+      if (inputSurnameEle) {
+        inputSurnameEle.oninput = (_) => {
           // credential.CheckFirstName = inputFirstNameEle.value as string;
-          this.onFirstLastNameChange();
+          this.onNameChange();
         };
-        inputFirstNameEle.onblur = () => {
-          this.onFirstLastNameChange();
+        inputSurnameEle.onblur = () => {
+          this.onNameChange();
         };
       }
-      if (inputLastNameEle) {
-        inputLastNameEle.oninput = (_) => {
+      if (inputGivennameEle) {
+        inputGivennameEle.oninput = (_) => {
           // credential.CheckLastName = inputLastNameEle.value as string;
-          this.onFirstLastNameChange();
+          this.onNameChange();
         };
-        inputLastNameEle.onblur = () => {
-          this.onFirstLastNameChange();
+        inputGivennameEle.onblur = () => {
+          this.onNameChange();
         };
       }
     }
@@ -712,10 +696,10 @@ export class MemberCredentialManagementPage
     }
     const rules = info.rule;
     if (!c.Surname) {
-      return this.checkProperty(c, "FirstName", rules, container);
+      return this.checkProperty(c, "Surname", rules, container);
     }
     if (!c.Givenname) {
-      return this.checkProperty(c, "LastName", rules, container);
+      return this.checkProperty(c, "Givenname", rules, container);
     }
     if (
       c.Type != CredentialsType.IdCard &&
