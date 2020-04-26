@@ -79,13 +79,13 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
     if (!s) {
       s = await this.staffService.getStaff(true);
     }
-    if (!s || !s.Policy || !s.Policy.HotelDescription) {
+    if (!s || !s.Policy || !s.Policy.InternationalHotelDescription) {
       return;
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
       componentProps: {
-        details: s.Policy.HotelDescription.split("。")
+        details: s.Policy.InternationalHotelDescription.split("。")
       },
       cssClass: "ticket-changing"
     });

@@ -409,6 +409,8 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     item: IPassengerHotelBookInfo,
     ele: HTMLElement
   ) {
+    console.log(msg,"msgmsg");
+    
     AppHelper.toast(
       `${
         (item.credentialStaff && item.credentialStaff.Name) ||
@@ -522,7 +524,6 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         (item.credentialStaff && item.credentialStaff.Name) ||
         (item.credential && item.credential.Number)
       }信息${msg}不能为空`;
-
     for (let i = 0; i < this.combindInfos.length; i++) {
       const item = this.combindInfos[i];
       if (item.addContacts) {
@@ -589,6 +590,9 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   private fillBookPassengers(bookDto: OrderBookDto) {
     bookDto.Passengers = [];
     for (const combindInfo of this.combindInfos) {
+      const accountId =
+        combindInfo.bookInfo.passenger.AccountId ||
+        (this.tmc && this.tmc.Account && this.tmc.Account.Id);
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
@@ -781,35 +785,22 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       p.OrganizationCode = combindInfo.otherOrganizationName
         ? ""
         : (combindInfo.organization && combindInfo.organization.Code) || "";
-      if (
-        this.tmc &&
-        this.tmc.OutNumberRequiryNameArray &&
-        this.tmc.OutNumberRequiryNameArray.length
-      ) {
-        if (
-          !combindInfo.tmcOutNumberInfos ||
-          combindInfo.tmcOutNumberInfos.some((it) =>
-            this.tmc.OutNumberRequiryNameArray.some(
-              (k) => it.key == k && !it.value
-            )
-          )
-        ) {
-          this.showErrorMsg(
-            "外部编号",
-            combindInfo,
-            this.getEleByAttr("tmcoutnumberid", combindInfo.id)
-          );
-          return false;
-        }
-      }
-      if (combindInfo.tmcOutNumberInfos) {
-        p.OutNumbers = {};
-        combindInfo.tmcOutNumberInfos.forEach((it) => {
-          if (it.value) {
-            p.OutNumbers[it.key] = it.value;
+        const exists = bookDto.Passengers.find((it) => it.ClientId == accountId);
+        if (combindInfo.tmcOutNumberInfos) {
+          if (!exists || !exists.OutNumbers) {
+            p.OutNumbers = {};
+            for (const it of combindInfo.tmcOutNumberInfos) {
+              if (it.required && !it.value) {
+                const el = this.getEleByAttr("outnumber", "outnumber");
+                this.showErrorMsg(it.label + "必填", combindInfo, el);
+                return;
+              }
+              if (it.value) {
+                p.OutNumbers[it.key] = it.value;
+              }
+            }
           }
-        });
-      }
+        }
       if (!combindInfo.travelType) {
         this.showErrorMsg(
           LanguageHelper.Flight.getTravelTypeTip(),
