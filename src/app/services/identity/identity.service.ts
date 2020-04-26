@@ -45,12 +45,12 @@ export class IdentityService {
   }
   setIdentity(info: IdentityEntity) {
     this.identityEntity = info;
-    AppHelper.setStorage("ticket", info.Ticket);
+    AppHelper.setStorage("ticket", info && info.Ticket || "");
     this.identitySource.next(this.identityEntity);
   }
   getStatus(): Observable<boolean> {
     const rev = !!(this.identityEntity && this.identityEntity.Ticket);
-    if (rev&&!this.identityEntity.Id) {
+    if (rev && !this.identityEntity.Id) {
       return this.checkTicket(this.identityEntity.Ticket).pipe(
         map(it => it && it.Ticket && !!it.Id)
       );
@@ -64,7 +64,7 @@ export class IdentityService {
     this.setIdentity(this.identityEntity);
   }
   getIdentityAsync(): Promise<IdentityEntity> {
-    if (this.identityEntity && this.identityEntity.Ticket&&this.identityEntity.Id) {
+    if (this.identityEntity && this.identityEntity.Ticket && this.identityEntity.Id) {
       return Promise.resolve(this.identityEntity);
     }
     if (!this.fetchingIdentityPromise) {
@@ -149,13 +149,8 @@ export class IdentityService {
       .pipe(
         map((r: IResponse<IdentityEntity>) => r),
         switchMap(r => {
-          if (r.Status) {
-            this.identityEntity = {
-              ...this.identityEntity,
-              ...r.Data
-            };
-            this.setIdentity(this.identityEntity);
-          }
+          this.identityEntity = r && r.Data;
+          this.setIdentity(this.identityEntity);
           return of(this.identityEntity);
         }),
         timeout(due),
@@ -182,9 +177,7 @@ export class IdentityService {
     if (ticket) {
       return this.checkTicket(ticket);
     }
-    this.identityEntity = this.identityEntity||new IdentityEntity();
-    this.identityEntity.Ticket = null;
-    this.identityEntity.Id = null;
+    this.identityEntity =null;
     return of(this.identityEntity);
   }
 }
