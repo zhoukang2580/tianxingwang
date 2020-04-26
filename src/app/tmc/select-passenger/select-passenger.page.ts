@@ -35,10 +35,11 @@ import {
   ModalController,
   IonGrid,
   DomController,
+  Platform,
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { StaffEntity } from "src/app/hr/staff.service";
-import { Observable, Subscription, of } from "rxjs";
+import { Observable, Subscription, of, fromEvent } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
@@ -74,6 +75,8 @@ export class SelectPassengerPage
   private keyword: string;
   private isOpenPageAsModal = false; // 设置是否通过modalcontroller打开
   private bookInfos: PassengerBookInfo<any>[];
+  private removeitemSubscription = Subscription.EMPTY;
+  private idInputEleSubscription = Subscription.EMPTY;
   forType: FlightHotelTrainType; // isOpenPageAsModal 传入参数
   FlightHotelTrainType = FlightHotelTrainType;
   removeitem: EventEmitter<PassengerBookInfo<any>>; // isOpenPageAsModal 传入参数
@@ -87,7 +90,6 @@ export class SelectPassengerPage
   pageSize = 15;
   vmStaffs: StaffEntity[];
   selectedPassenger: StaffEntity;
-  removeitemSubscription = Subscription.EMPTY;
   subscriptions: Subscription[] = [];
   vmNewCredential: MemberCredential;
   loading = false;
@@ -121,7 +123,8 @@ export class SelectPassengerPage
     private hotelService: HotelService,
     private interHotelService: InternationalHotelService,
     private interFlightService: InternationalFlightService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private plt: Platform
   ) {
     this.removeitem = new EventEmitter();
   }
@@ -151,6 +154,7 @@ export class SelectPassengerPage
   ngOnDestroy() {
     this.removeitemSubscription.unsubscribe();
     this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.idInputEleSubscription.unsubscribe();
   }
   async ngOnInit() {
     this.subscriptions.push(
@@ -174,6 +178,47 @@ export class SelectPassengerPage
         this.isCanDeactive = false;
       })
     );
+  }
+  private onIdNumberInputChange(idInputEle: HTMLInputElement) {
+    if (!idInputEle) {
+      return;
+    }
+    this.idInputEleSubscription.unsubscribe();
+    idInputEle.onfocus = () => {
+      if (idInputEle.classList.contains("validctrlerror")) {
+        idInputEle.value = "";
+      }
+    };
+    this.idInputEleSubscription = fromEvent(idInputEle, "blur").subscribe(
+      (evt) => {
+        setTimeout(() => {
+          this.validateIdNumber(idInputEle);
+          this.onNameChange();
+          this.changeBirthByIdNumber(idInputEle);
+        }, 0);
+      }
+    );
+    this.subscriptions.push(this.idInputEleSubscription);
+  }
+  private isIdNubmerValidate(value: string) {
+    if (!value) {
+      return false;
+    }
+    return value.length == 18 && !AppHelper.includeHanz(value);
+  }
+  private validateIdNumber(inputEl: HTMLInputElement) {
+    if (
+      inputEl &&
+      this.vmNewCredential &&
+      this.vmNewCredential.Type == CredentialsType.IdCard
+    ) {
+      const value = inputEl.value;
+      this.addMessageTipEl(
+        inputEl,
+        !this.isIdNubmerValidate(value),
+        "请填写正确的18位身份证号码"
+      );
+    }
   }
   private initRemoveitem() {
     this.removeitemSubscription = this.removeitem.subscribe(async (info) => {
@@ -264,6 +309,107 @@ export class SelectPassengerPage
         })
       );
     }
+  }
+  onTypeChange() {
+    if (this.addForm && this.addForm.last && this.addForm.last["el"]) {
+      const idInputEle = this.addForm.last["el"].querySelector(
+        "input[name='Number']"
+      ) as HTMLInputElement;
+      this.changeBirthByIdNumber(idInputEle);
+      setTimeout(() => {
+        this.onNameChange();
+      }, 100);
+    }
+  }
+  private changeBirthByIdNumber(idInputEle: HTMLInputElement) {
+    if (!idInputEle) {
+      return;
+    }
+    const value = idInputEle.value.trim();
+    if (value) {
+      const one = this.vmNewCredential;
+      if (one && one.Type == CredentialsType.IdCard) {
+        const b = this.getBirthByIdNumber(value);
+        if (b) {
+          const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
+          one.Birthday = this.plt.is("ios") ? str.replace(/-/g, "/") : str;
+        } else {
+          // one.Birthday = null;
+        }
+      }
+    }
+  }
+  private getBirthByIdNumber(idNumber: string = "") {
+    if (idNumber && idNumber.length == 18) {
+      return idNumber.substr(6, 8);
+    }
+    return "";
+  }
+  private onNameChange() {
+    let container: HTMLElement =
+      this.addForm && this.addForm.last && this.addForm.last["el"];
+    if (this.vmNewCredential) {
+      container = this.addForm && this.addForm.last && this.addForm.last["el"];
+    }
+    const surnameEl: HTMLInputElement = container.querySelector(
+      "input[name='Surname']"
+    );
+    const givennameEl: HTMLInputElement = container.querySelector(
+      "input[name='Givenname']"
+    );
+    if (this.vmNewCredential) {
+      console.log(
+        !AppHelper.includeHanz(surnameEl && surnameEl.value),
+        surnameEl.value,
+        surnameEl.placeholder,
+        "222222222"
+      );
+      if (this.vmNewCredential.Type == CredentialsType.IdCard) {
+        this.addMessageTipEl(
+          surnameEl,
+          !AppHelper.includeHanz(surnameEl && surnameEl.value),
+          surnameEl.placeholder
+        );
+        this.addMessageTipEl(
+          givennameEl,
+          !AppHelper.includeHanz(givennameEl && givennameEl.value),
+          givennameEl.placeholder
+        );
+      } else {
+        this.addMessageTipEl(
+          surnameEl,
+          AppHelper.includeHanz(surnameEl && surnameEl.value),
+          surnameEl.placeholder
+        );
+        this.addMessageTipEl(
+          givennameEl,
+          AppHelper.includeHanz(givennameEl && givennameEl.value),
+          givennameEl.placeholder
+        );
+      }
+    }
+  }
+  private addMessageTipEl(el: HTMLElement, isShow: boolean, msg = "") {
+    requestAnimationFrame(() => {
+      let errorTipEl = el.parentElement.querySelector(".idnumbervalidate");
+      if (!errorTipEl) {
+        errorTipEl = document.createElement("span");
+        errorTipEl.classList.add("idnumbervalidate");
+        el.insertAdjacentElement("afterend", errorTipEl);
+      }
+      if (isShow) {
+        el.classList.remove("validctrlsucess");
+        el.classList.add("validctrlerror");
+        errorTipEl.classList.remove("validsucessmess");
+        errorTipEl.classList.add("validerrormess");
+        errorTipEl.textContent = msg;
+      } else {
+        el.classList.remove("validctrlerror");
+        errorTipEl.textContent = "";
+        errorTipEl.classList.remove("validerrormess");
+        errorTipEl.classList.add("validsucessmess");
+      }
+    });
   }
   private initCredentialsRemarks() {
     this.credentialsRemarks = [

@@ -49,11 +49,17 @@ export class MemberCredential {
   /// <summary>
   /// 国家
   /// </summary>
-  Country: any; //
+  Country?: {
+    Code: string;
+    Name: string;
+  }; //
   /// <summary>
   /// 发证国家
   /// </summary>
-  IssueCountry: any; //
+  IssueCountry?: {
+    Code: string;
+    Name: string;
+  }; //
   /// <summary>
   /// 出生日期
   /// </summary>
