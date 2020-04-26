@@ -1208,7 +1208,12 @@ export class InternationalFlightService {
           );
           flightRoute.transferSegments = data.FlightSegments.filter((s) =>
             flightRoute.FlightSegmentIds.some((id) => id == s.Id)
-          );
+          ).map(it=>{
+            return {
+              ...it,
+              FlyTime:this.getFlyTime(it.Duration)
+            }
+          });
           flightRoute.fromSegment = flightRoute.FlightSegments[0];
           if (flightRoute.fromSegment) {
             flightRoute.fromSegment.TakeoffTimeStamp = new Date(
@@ -1249,12 +1254,7 @@ export class InternationalFlightService {
     // tslint:disable-next-line: no-bitwise
     const h = ~~(duration / 60);
     const m = duration - h * 60;
-    if (h) {
-      flyTime = `${h}h`;
-    }
-    if (m && m > 0) {
-      flyTime = `${flyTime || ""}${m}m`;
-    }
+    flyTime = `${h}H${m}M`;
     return flyTime;
   }
   private getFlightFare(flightFares: FlightFareEntity[], routeIds: string[]) {

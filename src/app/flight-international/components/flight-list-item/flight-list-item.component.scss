@@ -39,11 +39,12 @@
 }
 
 .flihtCompany {
-  padding: 0.1em 0em 0.5em 2.8em;
+  // padding: 0.1em 0em 0.5em 2.8em;
   font-size: 0.8em;
   display: flex;
   align-items: center;
   color: var(--ion-color-medium);
+  flex-flow: wrap;
 }
 
 .height {
@@ -66,6 +67,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-left: 3em;
 }
 
 .addDay {

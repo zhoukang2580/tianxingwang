@@ -30,7 +30,7 @@
               {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(10,16)}}
             </ion-col>
             <ion-col class="border-left">
-              {{trip.fromCity.Code}} {{trip.bookInfo.fromSegment?.FromAirportName}}
+              {{trip.fromCity?.Code}} {{trip.bookInfo.fromSegment?.FromAirportName}}
               {{trip.bookInfo.fromSegment.FromTerminal}}
             </ion-col>
           </ion-row>
@@ -41,22 +41,20 @@
                 +{{trip.bookInfo.flightRoute.addDays}}天</div>
             </ion-col>
             <ion-col class="border-left">
-              {{trip.fromCity?.CityCode}} {{trip.bookInfo?.toSegment?.ToAirportName}}
+              {{trip.toCity?.Code}} {{trip.bookInfo?.toSegment?.ToAirportName}}
               {{trip.bookInfo?.toSegment?.ToTerminal}}
             </ion-col>
           </ion-row>
-          <ion-row>
+          <ion-row *ngFor="let air of trip.bookInfo?.flightRoute?.transferSegments">
             <ion-col size="2">
-
             </ion-col>
-
             <ion-col style="display: flex;align-items: flex-end;">
               <div class="padding-s">
-                <img [src]="trip.bookInfo?.fromSegment?.AirlineSrc">
+                <img [src]="air?.AirlineSrc">
               </div>
               <ion-text class="carriername" color="medium">
-                {{trip.bookInfo?.fromSegment?.CarrierName}}
-                {{trip.bookInfo?.fromSegment?.Number}}
+                {{air?.CarrierName}}
+                {{air?.Number}}
               </ion-text>
             </ion-col>
           </ion-row>
