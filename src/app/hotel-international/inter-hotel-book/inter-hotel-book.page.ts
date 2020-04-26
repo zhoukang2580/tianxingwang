@@ -597,6 +597,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     bookDto.Passengers = [];
     for (let i = 0; i < this.combindInfos.length; i++) {
       const combindInfo = this.combindInfos[i];
+      const accountId =
+      combindInfo.bookInfo.passenger.AccountId ||
+      (this.tmc && this.tmc.Account && this.tmc.Account.Id);
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
@@ -817,11 +820,28 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       p.OrganizationCode = combindInfo.otherOrganizationName
         ? ""
         : (combindInfo.organization && combindInfo.organization.Code) || "";
+
       if (
         this.tmc &&
         this.tmc.OutNumberRequiryNameArray &&
         this.tmc.OutNumberRequiryNameArray.length
       ) {
+        const exists = bookDto.Passengers.find((it) => it.ClientId == accountId);
+        if (combindInfo.tmcOutNumberInfos) {
+          if (!exists || !exists.OutNumbers) {
+            p.OutNumbers = {};
+            for (const it of combindInfo.tmcOutNumberInfos) {
+              if (it.required && !it.value) {
+                const el = this.getEleByAttr("outnumber", "outnumber");
+                this.showErrorMsg(it.label + "必填", combindInfo, el);
+                return;
+              }
+              if (it.value) {
+                p.OutNumbers[it.key] = it.value;
+              }
+            }
+          }
+        }
         if (
           !combindInfo.tmcOutNumberInfos ||
           combindInfo.tmcOutNumberInfos.some((it) =>
@@ -1278,7 +1298,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       const popover = await this.popoverCtrl.create({
         component: InterHotelWarrantyComponent,
         // event: ev,
-        translucent: true,
+        // translucent: true,
         cssClass: "warranty",
         componentProps: {
           title: this.getRoomPlanRulesDesc(
