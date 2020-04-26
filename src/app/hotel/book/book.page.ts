@@ -1205,7 +1205,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       const popover = await this.popoverCtrl.create({
         component: WarrantyComponent,
         // event: ev,
-        translucent: true,
+        // translucent: true,
         cssClass: "warranty",
         componentProps: {
           title: this.getRoomPlanRulesDesc(
