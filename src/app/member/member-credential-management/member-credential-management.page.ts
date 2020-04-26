@@ -708,15 +708,6 @@ export class MemberCredentialManagementPage
       AppHelper.alert("证件姓名，请输入英文或者拼音");
       return false;
     }
-    // c.CheckFirstName = c.CheckFirstName || c.FirstName;
-    // if (!c.CheckFirstName) {
-    //   return this.checkProperty(c, "CheckFirstName", rules, container);
-    // }
-    // c.CheckLastName = c.CheckLastName || c.LastName;
-    // if (!c.CheckLastName) {
-    //   return this.checkProperty(c, "CheckLastName", rules, container);
-    // }
-
     if (!c.Gender) {
       return this.checkProperty(c, "Gender", rules, container);
     }

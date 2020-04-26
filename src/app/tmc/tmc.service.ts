@@ -665,15 +665,11 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Tmc-GetTmc";
-    this.fetchingTmcPromise = await this.apiService
+    this.fetchingTmcPromise = this.apiService
       .getPromiseData<TmcEntity>(req)
       .then((tmc) => {
         this.tmc = tmc;
         return tmc;
-      })
-      .catch((_) => {
-        AppHelper.alert(_);
-        return null;
       })
       .finally(() => {
         this.fetchingTmcPromise = null;

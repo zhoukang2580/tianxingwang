@@ -56,19 +56,26 @@
   <app-refresher slot="fixed" (ionRefresh)='doRefresh(true)'>
     <ion-refresher-content>正在刷新...</ion-refresher-content>
   </app-refresher>
-  <ion-list>
-    <div *ngFor='let flight of flightRoutes' style="border-bottom: 1px solid rgba(var(--ion-color-dark-rgb),0.13);">
-      <app-flight-list-item (click)='onSelectTrip(flight)' [flight]='flight' (transfer)='onTransfer(flight)'>
-      </app-flight-list-item>
-      <div *ngIf='isLastTrip' style="font-size: 0.6rem;text-indent: 3em;">
-        <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(flight)'>退改签规则</ion-button>
+  <ion-list *ngIf='!isLoading'>
+    <ng-container *ngIf='flightRoutes?.length else nodata'>
+      <div *ngFor='let flight of flightRoutes' style="border-bottom: 1px solid rgba(var(--ion-color-dark-rgb),0.13);">
+        <app-flight-list-item (click)='onSelectTrip(flight)' [flight]='flight' (transfer)='onTransfer(flight)'>
+        </app-flight-list-item>
+        <div *ngIf='isLastTrip' style="font-size: 0.6rem;text-indent: 3em;">
+          <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(flight)'>退改签规则</ion-button>
+        </div>
+        <div *ngIf='(flight.policy?.Message||flight.flightFare.ruleMessage) as rule'
+          style="font-size: 0.6rem;text-indent: 3em;">
+          <ion-text color='danger'>{{rule}}</ion-text>
+        </div>
       </div>
-      <div *ngIf='(flight.policy?.Message||flight.flightFare.ruleMessage) as rule'
-        style="font-size: 0.6rem;text-indent: 3em;">
-        <ion-text color='danger'>{{rule}}</ion-text>
-      </div>
-    </div>
+    </ng-container>
   </ion-list>
+  <ng-template #nodata>
+    <ion-item lines="none">
+      <app-or-comp>未查到符合条件的航班信息，请更改查询条件重新查询</app-or-comp>
+    </ion-item>
+  </ng-template>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
     <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
   </ion-infinite-scroll>

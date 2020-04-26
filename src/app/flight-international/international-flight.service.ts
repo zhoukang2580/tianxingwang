@@ -952,9 +952,58 @@ export class InternationalFlightService {
     }
     if (whitelist.length) {
       req.Data = {
-        FlightRoutes: JSON.stringify(result.FlightRoutes),
-        FlightSegments: JSON.stringify(result.FlightSegments),
-        FlightFares: JSON.stringify(result.FlightFares),
+        FlightRoutes: JSON.stringify(
+          result.FlightRoutes.map((it) => {
+            const r = new FlightRouteEntity();
+            r.Rules = it.Rules;
+            r.FlightRouteIds = it.FlightRouteIds;
+            r.Id = it.Id;
+            r.Type = it.Type;
+            r.FirstTime = it.FirstTime;
+            r.FlightSegmentIds = it.FlightSegmentIds;
+            return r;
+          })
+        ),
+        FlightSegments: JSON.stringify(
+          result.FlightSegments.map((it) => {
+            const seg = new FlightSegmentEntity();
+            seg.FromAirport = it.FromAirport;
+            seg.FromAirportName = it.FromAirportName;
+            seg.ToAirport = it.ToAirport;
+            seg.ToAirportName = it.ToAirportName;
+            seg.TakeoffTime = it.TakeoffTime;
+            seg.Tax = it.Tax;
+            seg.ArrivalTime = it.ArrivalTime;
+            seg.CabinCode = it.CabinCode;
+            seg.Cabins = it.Cabins;
+            seg.Carrier = it.Carrier;
+            seg.Distance = it.Distance;
+            seg.Id = it.Id;
+            seg.Duration = it.Duration;
+            return seg;
+          })
+        ),
+        FlightFares: JSON.stringify(
+          result.FlightFares.map((it) => {
+            const f = new FlightFareEntity();
+            f.Id = it.Id;
+            f.Tax = it.Tax;
+            f.SalesPrice = it.SalesPrice;
+            f.Rules = it.Rules;
+            f.FlightNumber = it.FlightNumber;
+            f.FlightRouteIds = it.FlightRouteIds;
+            f.Type = it.Type;
+            f.SettlePrice = it.SettlePrice;
+            f.SettleTax = it.SettleTax;
+            f.SupplierType = it.SupplierType;
+            f.TicketPrice = it.TicketPrice;
+            f.Code = it.Code;
+            f.Discount = it.Discount;
+            f.FareType = it.FareType;
+
+            return f;
+          })
+        ),
         PolicyIds: whitelist[0].passenger.Policy.Id,
       };
       result = await this.apiService.getPromiseData<FlightResultEntity>(req);

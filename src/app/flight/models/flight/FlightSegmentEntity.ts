@@ -217,4 +217,5 @@ export class FlightSegmentEntity {
 
   ArrivalShortTime: string;
   TrackById: number;
+  Duration: number;
 }
