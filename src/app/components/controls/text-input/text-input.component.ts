@@ -7,8 +7,6 @@ import {
   ViewChild,
   ElementRef,
   OnDestroy,
-  SimpleChanges,
-  OnChanges,
 } from "@angular/core";
 import { Subscription, fromEvent } from "rxjs";
 
@@ -17,7 +15,7 @@ import { Subscription, fromEvent } from "rxjs";
   templateUrl: "./text-input.component.html",
   styleUrls: ["./text-input.component.scss"],
 })
-export class TextInputComponent implements OnInit, OnDestroy,OnChanges {
+export class TextInputComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   @Input() validateName: string;
   @Input() label: string;
@@ -31,11 +29,6 @@ export class TextInputComponent implements OnInit, OnDestroy,OnChanges {
   constructor() {
     this.textChange = new EventEmitter();
     this.barModelChange = new EventEmitter();
-  }
-  ngOnChanges(c: SimpleChanges) {
-    if (c && c.barModel && this.inputEl && this.inputEl.nativeElement) {
-      this.inputEl.nativeElement.value = this.barModel;
-    }
   }
   ngOnInit() {
     let flag = true;

@@ -10,6 +10,7 @@ import { IonicModule } from "@ionic/angular";
 import { AuthorityGuard } from "src/app/guards/authority.guard";
 import { MemberCredentialManagementPage } from "./member-credential-management.page";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
+import { MemberComponentsModule } from '../components/components.module';
 
 const routes: Routes = [
   {
@@ -27,7 +28,8 @@ const routes: Routes = [
     IonicModule,
     MemberPipesModule,
     RouterModule.forChild(routes),
-    AppComponentsModule
+    AppComponentsModule,
+    MemberComponentsModule
   ],
   declarations: [MemberCredentialManagementPage]
 })

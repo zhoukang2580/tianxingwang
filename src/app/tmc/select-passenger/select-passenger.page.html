@@ -139,7 +139,8 @@
                 <ion-item lines='none' class='ion-no-margin ion-no-padding'>
                   <ion-label style="opacity: 1">证件类型：</ion-label>
                   <ion-select [(ngModel)]='vmNewCredential.Type' name='Type' okText="确定" cancelText="取消"
-                    [disabled]='vmNewCredential?.Id !=selectedCredentialId' [compareWith]='compareFn'>
+                    (ionChange)='onTypeChange()' [disabled]='vmNewCredential?.Id !=selectedCredentialId'
+                    [compareWith]='compareFn'>
                     <ion-select-option [value]="opt.key" *ngFor='let opt of identityTypes'>{{opt.key|credential}}
                     </ion-select-option>
                   </ion-select>
@@ -155,14 +156,14 @@
               </ion-col>
             </ion-row>
             <ion-row>
-              <ion-col>姓：</ion-col>
+              <ion-col>证件姓：</ion-col>
               <ion-col>
                 <input type="text" [(ngModel)]='vmNewCredential.Surname'
                   [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='Surname' name='Surname'>
               </ion-col>
             </ion-row>
             <ion-row>
-              <ion-col>名：</ion-col>
+              <ion-col>证件名：</ion-col>
               <ion-col>
                 <input type="text" [(ngModel)]='vmNewCredential.Givenname'
                   [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='Givenname' name='Givenname'>
