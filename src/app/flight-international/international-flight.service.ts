@@ -1228,7 +1228,7 @@ export class InternationalFlightService {
           ]);
 
           flightRoute.addDays = this.getDays(
-            +flightRoute.Duration,
+            flightRoute.ArrivalTime,
             flightRoute.FirstTime
           );
           flightRoute.flyTime = this.getFlyTime(+flightRoute.Duration);
@@ -1238,8 +1238,8 @@ export class InternationalFlightService {
     }
     return data;
   }
-  private getDays(duration:number,firstTime: string) {
-    const endTime=this.calendarService.getMoment(0,firstTime).add(duration,'minutes');
+  private getDays(arrivalTime:string,firstTime: string) {
+    const endTime=this.calendarService.getMoment(0,arrivalTime);
     const addDays = this.calendarService.diff(endTime.format("YYYY-MM-DD"),firstTime.substr(0,10),'days');
     return addDays;
   }

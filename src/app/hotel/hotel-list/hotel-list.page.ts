@@ -296,6 +296,8 @@ export class HotelListPage
     if (days.length) {
       this.hotelQueryModel.BeginDate = days[0].date;
       this.hotelQueryModel.EndDate = days[days.length - 1].date;
+      console.log(this.hotelQueryModel.EndDate,"this.hotelQueryModel.EndDate");
+      
       this.doRefresh();
     }
   }
