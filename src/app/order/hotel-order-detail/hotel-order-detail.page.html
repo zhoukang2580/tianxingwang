@@ -248,6 +248,22 @@
             </ion-row>
             <ion-row>
               <ion-col size='3'>
+                实际入住
+              </ion-col>
+              <ion-col>
+                {{orderHotel.CheckinTime?.replace("T"," ")?.substring(0,16)}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
+                实际离店
+              </ion-col>
+              <ion-col>
+                {{orderHotel.CheckoutTime?.replace("T"," ")?.substring(0,16)}}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size='3'>
                 酒店名称
               </ion-col>
               <ion-col>

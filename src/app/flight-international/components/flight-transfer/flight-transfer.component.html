@@ -7,7 +7,7 @@
           <ion-col style="display: flex;align-items: center;">
             <img [src]="seg.AirlineSrc">
             <ion-text>
-              {{seg.AirlineName}}{{seg.Number}}<ion-text color='secondary' *ngIf="flight.fromSegment.CodeShareNumber">({{flight?.fromSegment?.CodeShareNumber}})</ion-text>
+              {{seg.AirlineName}}{{seg.Number}}<ion-text color='secondary' *ngIf="seg.CodeShareNumber">({{seg?.CodeShareNumber}})</ion-text>
             </ion-text>
           </ion-col>
         </ion-row>
@@ -18,7 +18,7 @@
           <ion-col class="font-size">
             {{seg?.TakeoffTime.replace("T"," ")}}
             <div>
-            {{flight.fromSegment.FromCityName}} {{flight.fromSegment.FromAirport}} {{seg.FromAirportName}}
+            {{seg.FromCityName}} {{seg.FromAirport}} {{seg.FromAirportName}}
             </div>
           </ion-col>
         </ion-row>
@@ -38,7 +38,7 @@
           </ion-col>
           <ion-col class="font-size">
             {{seg?.ArrivalTime.replace("T"," ")}}
-            <div>{{flight.toSegment.FromCityName}} {{flight.toSegment.FromAirport}} {{seg.ToAirportName}}</div>
+            <div>{{seg.ToCityName}} {{seg.ToAirport}} {{seg.ToAirportName}}</div>
           </ion-col>
         </ion-row>
       </div>

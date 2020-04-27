@@ -1240,15 +1240,9 @@ export class InternationalFlightService {
     }
     return data;
   }
-  private getDays(arrivalTime: string, firstTime: string) {
-    const delta =
-      new Date(arrivalTime).getTime() - new Date(firstTime).getTime();
-    let addDays = Math.floor(delta / (1000 * 24 * 3600));
-    if (addDays <= 0) {
-      const [y1, m1, d1] = arrivalTime.substr(0, 10).split("-");
-      const [y2, m2, d2] = firstTime.substr(0, 10).split("-");
-      addDays = +d1 - +d2;
-    }
+  private getDays(arrivalTime:string,firstTime: string) {
+    const endTime=this.calendarService.getMoment(0,arrivalTime);
+    const addDays = this.calendarService.diff(endTime.format("YYYY-MM-DD"),firstTime.substr(0,10),'days');
     return addDays;
   }
   getFlyTime(duration: number) {

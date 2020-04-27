@@ -368,7 +368,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (
       Tmc.InternationalHotelApprovalType ==
-        TmcApprovalType.ExceedPolicyApprover &&
+      TmcApprovalType.ExceedPolicyApprover &&
       this.getRuleMessage(item.bookInfo.bookInfo.roomPlan)
     ) {
       return true;
@@ -460,8 +460,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     AppHelper.toast(
       `${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Surname + item.credential.Givenname)
+      (item.credentialStaff && item.credentialStaff.Name) ||
+      (item.credential && item.credential.Surname + item.credential.Givenname)
       } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空`,
       2000,
       "bottom"
@@ -598,8 +598,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     for (let i = 0; i < this.combindInfos.length; i++) {
       const combindInfo = this.combindInfos[i];
       const accountId =
-      combindInfo.bookInfo.passenger.AccountId ||
-      (this.tmc && this.tmc.Account && this.tmc.Account.Id);
+        combindInfo.bookInfo.passenger.AccountId ||
+        (this.tmc && this.tmc.Account && this.tmc.Account.Id);
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
@@ -632,17 +632,17 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.name
+          combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialNumber
+          combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialType
+          combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -758,7 +758,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -772,7 +772,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
@@ -820,52 +820,21 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       p.OrganizationCode = combindInfo.otherOrganizationName
         ? ""
         : (combindInfo.organization && combindInfo.organization.Code) || "";
-
-      if (
-        this.tmc &&
-        this.tmc.OutNumberRequiryNameArray &&
-        this.tmc.OutNumberRequiryNameArray.length
-      ) {
-        const exists = bookDto.Passengers.find((it) => it.ClientId == accountId);
-        if (combindInfo.tmcOutNumberInfos) {
-          if (!exists || !exists.OutNumbers) {
-            p.OutNumbers = {};
-            for (const it of combindInfo.tmcOutNumberInfos) {
-              if (it.required && !it.value) {
-                const el = this.getEleByAttr("outnumber", "outnumber");
-                this.showErrorMsg(it.label + "必填", combindInfo, el);
-                return;
-              }
-              if (it.value) {
-                p.OutNumbers[it.key] = it.value;
-              }
+      const exists = bookDto.Passengers.find((it) => it.ClientId == accountId);
+      if (combindInfo.tmcOutNumberInfos) {
+        if (!exists || !exists.OutNumbers) {
+          p.OutNumbers = {};
+          for (const it of combindInfo.tmcOutNumberInfos) {
+            if (it.required && !it.value) {
+              const el = this.getEleByAttr("outnumber", "outnumber");
+              this.showErrorMsg(it.label + "必填", combindInfo, el);
+              return;
+            }
+            if (it.value) {
+              p.OutNumbers[it.key] = it.value;
             }
           }
         }
-        if (
-          !combindInfo.tmcOutNumberInfos ||
-          combindInfo.tmcOutNumberInfos.some((it) =>
-            this.tmc.OutNumberRequiryNameArray.some(
-              (k) => it.key == k && !it.value
-            )
-          )
-        ) {
-          this.showErrorMsg(
-            "外部编号",
-            combindInfo,
-            this.getEleByAttr("tmcOutNumber", combindInfo.id)
-          );
-          console.log(this.outnumberEles.first);
-          return false;
-        }
-      }
-      if (combindInfo.tmcOutNumberInfos) {
-        p.OutNumbers = {};
-        combindInfo.tmcOutNumberInfos.forEach((it) => {
-          if (it.value) {
-            p.OutNumbers[it.key] = it.value;
-          }
-        });
       }
       if (!combindInfo.travelType) {
         this.showErrorMsg(
@@ -973,10 +942,10 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   private async initCombindInfos() {
     try {
       this.combindInfos = [];
-      const bookInfos = this.hotelService.getBookInfos();
       const isSelfOrisSecretary =
         (await this.staffService.isSecretaryBookType()) ||
         (await this.staffService.isSelfBookType());
+      const bookInfos = this.hotelService.getBookInfos();
       for (const bookInfo of bookInfos) {
         const cs = (
           (this.initialBookDto && this.initialBookDto.Staffs) ||
@@ -1065,20 +1034,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
