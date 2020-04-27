@@ -690,8 +690,12 @@ export class SelectPassengerPage
     ) {
       selectedCredential = {
         ...selectedCredential,
-        Country: this.vmNewCredential.Country.Code,
-        IssueCountry: this.vmNewCredential.IssueCountry.Code,
+        Country: {
+          ...this.vmNewCredential.Country,
+        },
+        IssueCountry: {
+          ...this.vmNewCredential.IssueCountry,
+        },
         Name: `${this.vmNewCredential.Surname}${this.vmNewCredential.Givenname}`,
       };
     }
