@@ -1206,12 +1206,14 @@ export class InternationalFlightService {
           flightRoute.FlightSegments = flightRoute.FlightSegmentIds.map((it) =>
             data.FlightSegments.find((s) => s.Id == it)
           );
-          flightRoute.transferSegments = data.FlightSegments.filter((s) =>
-            flightRoute.FlightSegmentIds.some((id) => id == s.Id)
-          ).map(it=>{
-            return {
-              ...it,
-              FlyTime:this.getFlyTime(it.Duration)
+          flightRoute.transferSegments = [];
+          flightRoute.FlightSegmentIds.forEach((id) => {
+            const seg = data.FlightSegments.find((it) => it.Id == id);
+            if (seg) {
+              flightRoute.transferSegments.push({
+                ...seg,
+                FlyTime: this.getFlyTime(seg.Duration),
+              });
             }
           });
           flightRoute.fromSegment = flightRoute.FlightSegments[0];
