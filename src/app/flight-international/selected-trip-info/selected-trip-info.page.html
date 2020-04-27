@@ -30,8 +30,8 @@
               {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(10,16)}}
             </ion-col>
             <ion-col class="border-left">
-              {{trip.fromCity?.Code}} {{trip.bookInfo.fromSegment?.FromAirportName}}
-              {{trip.bookInfo.fromSegment.FromTerminal}}
+              {{trip.fromCity?.Code}} {{trip.bookInfo?.fromSegment?.FromAirportName}}
+              {{trip.bookInfo?.fromSegment?.FromTerminal}}
             </ion-col>
           </ion-row>
           <ion-row style="margin-top:1em">
@@ -39,8 +39,11 @@
               <div style='font-size: 0.6rem;
               text-align: center;
               color: sandybrown;
-              position: absolute;bottom: 2.3em;left: 2.7em;' *ngIf='trip.bookInfo?.flightRoute?.addDays'>
-                +{{trip.bookInfo.flightRoute.addDays}}天</div>
+              position: absolute;
+              bottom: 2.3em;
+              right: 0em;
+              white-space: nowrap;' *ngIf='trip.bookInfo?.flightRoute?.addDays'>
+                +{{trip.bookInfo?.flightRoute?.addDays}}天</div>
               {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
             </ion-col>
             <ion-col class="border-left">
@@ -83,7 +86,7 @@
         <h2>
           {{item.passenger?.Name}}
         </h2>
-        <p>{{item.credential.TypeName}}:{{item.credential?.Number}}</p>
+        <p>{{item.credential?.TypeName}}:{{item.credential?.Number}}</p>
       </ion-label>
     </ion-item>
   </ion-list>

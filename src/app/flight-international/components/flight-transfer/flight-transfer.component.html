@@ -18,7 +18,7 @@
           <ion-col class="font-size">
             {{seg?.TakeoffTime.replace("T"," ")}}
             <div>
-            {{seg.FromCityName}} {{seg.FromAirport}} {{seg.FromAirportName}}
+            {{seg.FromCityName}} {{seg.FromAirport}} {{seg.FromAirportName}}{{seg.FromTerminal}}
             </div>
           </ion-col>
         </ion-row>
@@ -38,7 +38,7 @@
           </ion-col>
           <ion-col class="font-size">
             {{seg?.ArrivalTime.replace("T"," ")}}
-            <div>{{seg.ToCityName}} {{seg.ToAirport}} {{seg.ToAirportName}}</div>
+          <div>{{seg.ToCityName}} {{seg.ToAirport}} {{seg.ToAirportName}}{{seg.ToTerminal}}</div>
           </ion-col>
         </ion-row>
       </div>
