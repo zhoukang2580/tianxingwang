@@ -234,6 +234,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
   ) {
     return (
       orderFlightTicket &&
+      orderFlightTicket.OrderFlightTrips&&
       orderFlightTicket.TicketType == OrderFlightTicketType.Domestic &&
       orderFlightTicket.OrderFlightTrips.some((trip) =>
         this.isAfterTomorrow(trip.TakeoffTime)
