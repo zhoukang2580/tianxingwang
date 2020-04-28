@@ -11,14 +11,15 @@ import { SelectPassengerPage } from "./select-passenger.page";
 import { TmcGuard } from "src/app/guards/tmc.guard";
 import { AuthorityGuard } from "src/app/guards/authority.guard";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
+import { MemberComponentsModule } from 'src/app/member/components/components.module';
 
 const routes: Routes = [
   {
     path: "",
     component: SelectPassengerPage,
     canActivate: [AuthorityGuard, TmcGuard],
-    canDeactivate: [CandeactivateGuard]
-  }
+    canDeactivate: [CandeactivateGuard],
+  },
 ];
 
 @NgModule({
@@ -27,10 +28,11 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     AppComponentsModule,
+    MemberComponentsModule,
     RouterModule.forChild(routes),
-    MemberPipesModule
+    MemberPipesModule,
   ],
   declarations: [SelectPassengerPage],
-  entryComponents: [SelectPassengerPage]
+  entryComponents: [SelectPassengerPage],
 })
 export class SelectPassengerPageModule {}
