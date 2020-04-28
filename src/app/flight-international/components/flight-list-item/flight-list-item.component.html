@@ -44,7 +44,7 @@
     </div>
   </ion-col>
   <ion-col size="3.1">
-    <div [class.margin-t11]="flight?.toSegment?.Variables?.AddDaysTip&&flight.toSegment?.Variables?.AddDaysTip>'0'">
+    <div [class.margin-t11]="flight?.toSegment?.Variables?.AddDaysTip&&flight.toSegment?.Variables?.AddDaysTip>'0'" style="padding-top: 0.4em;">
       <ion-text color="secondary" class="flightMoney">
         <span style="font-weight:bold">¥</span>{{flight.flightFare.SalesPrice}}
       </ion-text>
@@ -53,10 +53,10 @@
   </ion-col>
   <div class="flihtCompany">
     <ion-text class="whiteSpece">{{flight.fromSegment.AirlineName}}</ion-text>
-    <div class="height"></div>
-    <span>{{flight.fromSegment.Number}}</span>
-    <ion-text color='secondary' *ngIf="flight.fromSegment.CodeShareNumber">(共享
-      {{flight?.fromSegment?.CodeShareNumber}})</ion-text>
+    <!-- <div class="height"></div> -->
+    <!-- <span>{{flight.fromSegment.Number}}</span> -->
+    <!-- <ion-text color='secondary' *ngIf="flight.fromSegment.CodeShareNumber">(共享
+      {{flight?.fromSegment?.CodeShareNumber}})</ion-text> -->
     <div class="height"></div>
     <ion-text>{{flight.flyTime}}</ion-text>
   </div>

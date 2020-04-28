@@ -12,6 +12,8 @@ import { TrainEntity } from "src/app/train/models/TrainEntity";
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 import { FlightFareEntity } from "src/app/flight/models/FlightFareEntity";
+import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntity";
+import { OrderFlightTicketType } from 'src/app/order/models/OrderFlightTicketType';
 export enum PassengerType {
   /// <summary>
   /// 成人
@@ -35,6 +37,8 @@ export enum PassengerType {
   Soldier = 5,
 }
 export class PassengerDto {
+  FlightRoutes: FlightRouteEntity[]; // 国际票
+  FlightSegments: FlightSegmentEntity[]; // 国际票
   PassengerType: PassengerType;
   /// <summary>
   /// 证件
@@ -172,4 +176,5 @@ export class PassengerDto {
   /// </summary>
   IsSkipApprove: boolean;
   OrderHotelType: OrderHotelType;
+  OrderFlightTicketType: OrderFlightTicketType;
 }

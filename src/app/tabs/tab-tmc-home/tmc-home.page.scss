@@ -21,11 +21,11 @@ ion-header ion-title {
 }
 
 .announcement-container {
-  height         : 100%;
-  list-style-type: none;
-  height         : 1.2em;
+  height            : 100%;
+  list-style-type   : none;
+  height            : 1.2em;
   // overflow       : auto;
-  transition     : all 200ms ease-in-out;
+  transition        : all 200ms ease-in-out;
 
   li,
   & {
@@ -34,12 +34,12 @@ ion-header ion-title {
   }
 
   .announcement {
-    display    : flex;
-    align-items: center;
+    display        : flex;
+    align-items    : center;
     justify-content: center;
-    width      : 100%;
-    height     : 100%;
-    font-size  : 0.9rem;
+    width          : 100%;
+    height         : 100%;
+    font-size      : 0.9rem;
 
     .text {
       overflow     : hidden;
@@ -152,3 +152,21 @@ ion-grid ion-row ion-col {
   align-items     : center;
 }
 
+.products {
+  ion-row {
+    &.md {
+      border-radius   : 5px;
+      margin-top      : 2%;
+      margin-bottom   : 10%;
+      padding         : 0.5em;
+      background-color: rgba(var(--ion-color-secondary-rgb), .1);
+    }
+    &.ios {
+      border-radius   : 5px;
+      margin-top      : 6%;
+      margin-bottom   : 10%;
+      padding         : 0.5em;
+      background-color: rgba(var(--ion-color-secondary-rgb), .1);
+    }
+  }
+}

@@ -6,7 +6,11 @@ import { OrderService } from "./../order.service";
 import { ApiService } from "./../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
 import { OrderModel } from "src/app/order/models/OrderModel";
-import { TmcEntity, TmcService } from "../../tmc/tmc.service";
+import {
+  TmcEntity,
+  TmcService,
+  PassengerBookInfo,
+} from "../../tmc/tmc.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   ModalController,
@@ -39,10 +43,12 @@ import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ORDER_TABS } from "../product-list/product-list.page";
 import { PayService } from "src/app/services/pay/pay.service";
-import { StaffService } from "src/app/hr/staff.service";
+import { StaffService, StaffEntity } from "src/app/hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
+import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
+import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 
 @Component({
   selector: "app-product-tabs",
@@ -206,6 +212,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.isShowMyTrips = true;
     this.myTrips = [];
     this.loadMoreMyTrips();
+    this.ionContent.scrollToTop();
   }
   loadMoreMyTrips() {
     if (!this.isShowMyTrips) {
@@ -239,7 +246,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             this.condition.LastTrainId = res.Data.LastTrainId;
           }
           if (res && res.Data && res.Data.Trips) {
-            if (this.condition.pageIndex <=1  && res.Data.Trips.length) {
+            if (this.condition.pageIndex <= 1 && res.Data.Trips.length) {
               this.myTripsTotalCount = res.Data.DataCount;
             }
             if (this.infiniteScroll) {
@@ -248,9 +255,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             }
             if (res.Data.Trips.length) {
               this.myTrips = [...this.myTrips, ...res.Data.Trips];
-              this.myTrips = this.myTrips.map(trip => {
+              this.myTrips = this.myTrips.map((trip) => {
                 trip = this.getVariablesJsonObj(trip);
-                return trip
+                return trip;
               });
               this.condition.pageIndex++;
             }
@@ -265,7 +272,9 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.backbtn.backToPrePage();
   }
   private getVariablesJsonObj(trip: OrderTripModel) {
-    if (!trip) { return trip }
+    if (!trip) {
+      return trip;
+    }
     // <ng-container *ngIf="trip.VariablesJsonObj.IsCustomApplyRefund||trip.VariablesJsonObj.IsCustomApplyExchange||trip.Status!= OrderFlightTicketStatusType.Refunded">
     trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables);
     return trip;
@@ -360,19 +369,59 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         new Date().getFullYear(),
         new Date().getFullYear() + 1,
       ];
-      const date = await this.getExchangeDate(data.trip.TakeoffDate);
-      console.log("改签日期", date);
       if (!data) {
-        AppHelper.alert("请选择改签日期");
+        AppHelper.alert("改签失败，请重试");
         return;
       }
+      const date = await this.getExchangeDate(data.trip.TakeoffDate);
+      if (!date) {
+        AppHelper.alert("请选择改签日期");
+      }
+      console.log("改签日期", date);
       const res = await this.orderService.getExchangeFlightTrip({
         OrderId: data.orderId,
         TicketId: data.ticketId,
         ExchangeDate: date,
       });
+      if (
+        !res ||
+        !res.trip ||
+        !res.order ||
+        !res.order.OrderPassengers ||
+        !res.order.OrderPassengers[0]
+      ) {
+        AppHelper.alert("改签失败，请重试");
+        return;
+      }
       this.flightService.removeAllBookInfos();
-      await this.flightService.initSelfBookTypeBookInfos();
+      let passenger: StaffEntity = {
+        Account: {
+          Id: res.order.OrderPassengers[0].Id,
+        },
+        AccountId: res.order.OrderPassengers[0].Id,
+        Name: res.order.OrderPassengers[0].Name,
+        Number: res.order.OrderPassengers[0].CredentialsNumber,
+        // isNotWhiteList: !res.staff,
+      } as StaffEntity;
+      if (res.staff) {
+        passenger = {
+          ...passenger,
+          ...res.staff,
+        };
+      }
+      const credential: CredentialsEntity = {
+        Name: res.order.OrderPassengers[0].Name,
+        Type: res.order.OrderPassengers[0].CredentialsType,
+        TypeName: res.order.OrderPassengers[0].PassengerTypeName,
+        Number: res.order.OrderPassengers[0].CredentialsNumber,
+      } as CredentialsEntity;
+      const info: PassengerBookInfo<IFlightSegmentInfo> = {
+        passenger,
+        credential,
+        isFilterPolicy: false,
+        // isNotWhitelist: !res.staff,
+      };
+      this.flightService.addPassengerBookInfo(info);
       const bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
         AppHelper.alert("改签失败，请重试");

@@ -62,7 +62,7 @@ export class MessageDetailPage implements OnInit, AfterViewInit {
       this.iframEles.changes.subscribe(async _ => {
         // console.log(this.iframEles.first);
         const l = await this.loadingController.create({
-          message: "请稍后..."
+          message: "请稍候"
         });
         l.backdropDismiss = true;
         if (this.iframEles.first && this.iframEles.first.nativeElement) {

@@ -68,9 +68,9 @@
       </ion-button>
       <section class='register-forgetpassword'>
         <ion-button fill='clear' color='secondary' strong='true' (click)="forgetPassword()">忘记密码</ion-button>
-        <ng-container *ngIf='environment.mockProBuild'>
+        <ng-container>
           <span class='line'></span>
-          <ion-button fill='clear' *ngIf='environment.mockProBuild' color='secondary' strong='true'
+          <ion-button fill='clear'  color='secondary' strong='true'
             (click)="register()">
             注册账号</ion-button>
         </ng-container>
@@ -90,4 +90,4 @@
 </ion-content>
 <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
 <!-- <div class='shade' *ngIf='isLogining'></div>
-<div  *ngIf='isLogining' class='login-loading isloading'>正在登录,请稍后...</div> -->
+<div  *ngIf='isLogining' class='login-loading isloading'>正在登录,请稍候</div> -->

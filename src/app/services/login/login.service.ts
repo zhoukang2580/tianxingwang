@@ -13,11 +13,12 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { Storage } from "@ionic/storage";
 import { environment } from "src/environments/environment";
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class LoginService {
   identity: IdentityEntity;
   private imageValue: string;
+  private preventAutoLogin = false;
   set ImageValue(value: string) {
     this.imageValue = value;
   }
@@ -32,7 +33,7 @@ export class LoginService {
     private http: HttpClient,
     private storage: Storage
   ) {
-    this.identityService.getIdentitySource().subscribe(id => {
+    this.identityService.getIdentitySource().subscribe((id) => {
       this.identity = id;
       setTimeout(() => {
         this.check();
@@ -52,7 +53,7 @@ export class LoginService {
     // req.IsShowLoading = true;
     req.Method = "ApiPasswordUrl-Device-Check";
     req.Data = {
-      DeviceNumber: deviceNumber
+      DeviceNumber: deviceNumber,
     };
     const sub = this.apiService
       .getResponse<{
@@ -66,7 +67,7 @@ export class LoginService {
           }, 1000);
         })
       )
-      .subscribe(res => {
+      .subscribe((res) => {
         console.log("checkIsDeviceBinded " + JSON.stringify(res, null, 2));
         if (res.Status && res.Data) {
           // 需要绑定
@@ -75,8 +76,8 @@ export class LoginService {
             {
               IsActiveMobile: res.Data.IsActiveMobile,
               Mobile: res.Data.Mobile,
-              Path: this.getToPageRouter()
-            }
+              Path: this.getToPageRouter(),
+            },
           ]);
         }
         // else if (res.Message) {
@@ -85,12 +86,11 @@ export class LoginService {
       });
   }
 
-  checkIsWechatBind(mock = false) {
+  checkIsWechatBind() {
     if (this.checkPathIsWechatOrDingtalk()) {
       return;
     }
     if (
-      mock ||
       AppHelper.isWechatH5() ||
       AppHelper.isWechatMini() ||
       AppHelper.isApp()
@@ -105,10 +105,10 @@ export class LoginService {
       const req = new RequestEntity();
       req.Method = `ApiPasswordUrl-Wechat-Check`;
       req.Data = {
-        SdkType: sdkType
+        SdkType: sdkType,
       };
       const toRoute = "account-wechat";
-      this.apiService.getResponse<any>(req).subscribe(res => {
+      this.apiService.getResponse<any>(req).subscribe((res) => {
         this.processCheckResult(res, toRoute);
       });
     }
@@ -120,16 +120,16 @@ export class LoginService {
       path.toLowerCase() == "account-dingtalk"
     );
   }
-  checkIsDingtalkBind(mock = false) {
+  checkIsDingtalkBind() {
     const req = new RequestEntity();
     req.Method = `ApiPasswordUrl-DingTalk-Check`;
     req.Data = {
-      SdkType: "DingTalk"
+      SdkType: "DingTalk",
     };
     if (this.checkPathIsWechatOrDingtalk()) {
       return;
     }
-    if (mock || AppHelper.isDingtalkH5()) {
+    if (AppHelper.isDingtalkH5()) {
       const sub = this.apiService
         .getResponse<any>(req)
         .pipe(
@@ -139,7 +139,7 @@ export class LoginService {
             }, 1000);
           })
         )
-        .subscribe(res => {
+        .subscribe((res) => {
           this.processCheckResult(res, "account-dingtalk");
         });
     }
@@ -200,8 +200,8 @@ export class LoginService {
         Numbers: { [key: string]: string };
       }>(req)
       .pipe(
-        tap(r => console.log("Login", r)),
-        switchMap(r => {
+        tap((r) => console.log("Login", r)),
+        switchMap((r) => {
           if (!r.Status) {
             return throwError(r.Message);
           }
@@ -211,11 +211,14 @@ export class LoginService {
           }
           return of(r.Data);
         }),
-        tap(rid => {})
+        tap(() => {
+          this.preventAutoLogin = false;
+        })
       );
   }
   logout() {
     const ticket = AppHelper.getTicket();
+    this.preventAutoLogin = true;
     if (ticket) {
       AppHelper.setStorage("loginToken", null);
       const req = new RequestEntity();
@@ -228,13 +231,13 @@ export class LoginService {
       req.Domain = AppHelper.getDomain();
       this.apiService.showLoadingView({ msg: "正在退出账号..." });
       const formObj = Object.keys(req)
-        .map(k => `${k}=${req[k]}`)
+        .map((k) => `${k}=${req[k]}`)
         .join("&");
       const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
       return this.http
         .post(url, formObj, {
           headers: { "content-type": "application/x-www-form-urlencoded" },
-          observe: "body"
+          observe: "body",
         })
         .pipe(
           map((r: IResponse<IdentityEntity>) => r),
@@ -243,11 +246,11 @@ export class LoginService {
           })
         )
         .subscribe(
-          r => {
+          (r) => {
             this.identityService.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")]);
           },
-          _ => {
+          (_) => {
             this.identityService.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
@@ -267,7 +270,7 @@ export class LoginService {
     req.Method = "ApiHomeUrl-Identity-Check";
     req.Data = JSON.stringify({
       Ticket: ticket,
-      LoginType: this.getLoginType()
+      LoginType: this.getLoginType(),
     });
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
@@ -275,20 +278,21 @@ export class LoginService {
     req.Domain = AppHelper.getDomain();
     const url = await this.getUrl(req);
     const formObj = Object.keys(req)
-      .map(k => `${k}=${req[k]}`)
+      .map((k) => `${k}=${req[k]}`)
       .join("&");
     return this.http
       .post(url, formObj, {
         headers: { "content-type": "application/x-www-form-urlencoded" },
-        observe: "body"
+        observe: "body",
       })
       .pipe(
         map((r: IResponse<IdentityEntity>) => r),
         finalize(() => {})
       )
-      .subscribe(r => {
+      .subscribe((r) => {
         if (r.Status) {
-          AppHelper.alert(r.Message, true, "确定").then(s => {
+          AppHelper.alert(r.Message, true, "确定").then((s) => {
+            this.preventAutoLogin = true;
             this.identityService.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")]);
           });
@@ -324,12 +328,15 @@ export class LoginService {
     }
   }
   async autoLogin() {
+    if (this.preventAutoLogin) {
+      return;
+    }
     if (AppHelper.getStorage<string>("loginToken")) {
       const req = new RequestEntity();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
         UUID: await AppHelper.getDeviceId(),
-        Token: AppHelper.getStorage("loginToken")
+        Token: AppHelper.getStorage("loginToken"),
       });
 
       return new Promise<boolean>((resolve, reject) => {
@@ -351,7 +358,7 @@ export class LoginService {
             })
           )
           .subscribe(
-            rid => {
+            (rid) => {
               if (!rid) {
                 return resolve(false);
               }
@@ -363,7 +370,7 @@ export class LoginService {
               this.identityService.setIdentity(id);
               return resolve(true);
             },
-            e => {
+            (e) => {
               reject(e);
             }
           );
@@ -372,6 +379,9 @@ export class LoginService {
     return false;
   }
   getLoginType() {
+    if (AppHelper.isPDA()) {
+      return "PDA";
+    }
     if (AppHelper.isApp()) {
       return "App";
     }

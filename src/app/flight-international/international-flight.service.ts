@@ -165,8 +165,8 @@ export class InternationalFlightService {
   private bookInfoSource: Subject<
     PassengerBookInfo<IInternationalFlightSegmentInfo>[]
   >;
-  private flightListResult: FlightResultEntity;
   private flightPolicyResult: FlightResultEntity;
+  flightListResult: FlightResultEntity;
   constructor(
     private apiService: ApiService,
     private identityService: IdentityService,
@@ -438,7 +438,6 @@ export class InternationalFlightService {
               return it;
             });
           }
-          this.checkTripsDate();
         }
         if (this.searchModel.voyageType == FlightVoyageType.OneWay) {
           this.searchModel.trips[0].date = dates[0].date;
@@ -450,6 +449,7 @@ export class InternationalFlightService {
             this.searchModel.trips[1].date = dates[0].date;
           }
         }
+        this.checkTripsDate();
       }
     }
     this.setSearchModelSource(this.searchModel);
@@ -689,6 +689,21 @@ export class InternationalFlightService {
     const m = this.searchModel;
     const { forceFetch, keepFilterCondition } = query;
     await this.initSelfBookTypeBookInfos(forceFetch);
+    const isSelf = await this.staffService.isSelfBookType();
+    if (this.searchModel && isSelf) {
+      if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
+        if (this.getBookInfos().length == 1) {
+          this.addPassengerBookInfo({
+            ...this.bookInfos[0],
+            id: AppHelper.uuid(),
+          });
+        }
+      } else if (this.searchModel.voyageType == FlightVoyageType.OneWay) {
+        if (this.getBookInfos().length > 1) {
+          this.setBookInfoSource([this.getBookInfos()[0]]);
+        }
+      }
+    }
     if (!environment.production && !forceFetch) {
       let result = this.flightListResult;
       if (!result || !result.FlightRoutes || !result.FlightRoutes.length) {
@@ -756,7 +771,7 @@ export class InternationalFlightService {
       days = [goTrip.date, backTrip.date];
       date = days.join(",");
       fromAirports = [goTrip.fromCity.Code];
-      toAirports = [backTrip.toCity.Code];
+      toAirports = [goTrip.toCity.Code];
     }
     if (m.voyageType == FlightVoyageType.MultiCity) {
       date = m.trips.map((it) => it.date).join(",");
@@ -833,17 +848,25 @@ export class InternationalFlightService {
             it.bookInfo && it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id
         )
         .map((it) => it.bookInfo.flightRoute.Id);
-      const flightFares = this.flightListResult.FlightFares.filter(
-        (it) =>
-          it.FlightRouteIds.slice(0, selectedRids.length).join(",") ==
-          selectedRids.join(",")
+      const flightFares = this.flightListResult.FlightFares.filter((it) =>
+        selectedRids.length
+          ? it.FlightRouteIds.slice(0, selectedRids.length).join(",") ==
+            selectedRids.join(",")
+          : true
+      );
+      const flightRouteInfos = (
+        this.flightListResult.FlightRoutes || []
+      ).filter((r) =>
+        flightFares.some((f) => f.FlightRouteIds.some((ffrid) => ffrid == r.Id))
       );
       req.Data = {
-        FlightRouteInfos: JSON.stringify(
-          this.flightListResult.FlightRoutes || []
-        ),
+        FlightRouteInfos: JSON.stringify(flightRouteInfos),
         FlightSegmentInfos: JSON.stringify(
-          this.flightListResult.FlightSegments || []
+          (this.flightListResult.FlightSegments || []).filter((s) => {
+            return flightRouteInfos.some((info) =>
+              info.FlightSegmentIds.some((segId) => segId == s.Id)
+            );
+          })
         ),
         FlightFares: JSON.stringify(flightFares),
         PolicyIds: bookInfos
@@ -852,28 +875,58 @@ export class InternationalFlightService {
               it.passenger && it.passenger.Policy && it.passenger.Policy.Id
           )
           .filter((it) => !!it)
+          .slice(0, 1)
           .join(","),
       };
       req.IsShowLoading = true;
       req.LoadingMsg = "正在计算差标信息";
       const result = await this.apiService.getPromiseData<{
-        [fareId: string]: {
-          IsAllowOrder: boolean;
-          IsIllegal: boolean;
-          Message: string;
+        RuleExplains: {
+          [fareId: string]: string;
         };
+        PolicyDis: {
+          [fareId: string]: {
+            IsAllowOrder: boolean;
+            IsIllegal: boolean;
+            Message: string;
+          };
+        };
+        flightCabinCodeDis: { [flightSegmentId: string]: string };
       }>(req);
-      this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
-        (r) => {
-          r.policy = result[r.Id];
-          return r;
-        }
-      );
+      if (result.PolicyDis) {
+        this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
+          (r) => {
+            return { ...r, policy: result.PolicyDis[r.flightFare.Id] };
+          }
+        );
+      }
+      if (result.flightCabinCodeDis) {
+        this.flightListResult.FlightSegments = this.flightListResult.FlightSegments.map(
+          (seg) => {
+            const cabinCode = result.flightCabinCodeDis[seg.Id];
+            if (cabinCode) {
+              seg.CabinCode = cabinCode;
+            }
+            return seg;
+          }
+        );
+      }
     } catch (e) {
       AppHelper.alert(e);
     }
 
     return true;
+  }
+  getRuleExplain(flightfare: FlightFareEntity) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiInternationalFlightUrl-Home-GetRuleExplain`;
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在计算差标";
+    req.Data = {
+      Flightfare: JSON.stringify(flightfare),
+      FlightRoutes: JSON.stringify(this.flightListResult.FlightRoutes || []),
+    };
+    return this.apiService.getResponse<string>(req);
   }
   private async checkRoutePolicy(result: FlightResultEntity) {
     const req = new RequestEntity();
@@ -899,9 +952,58 @@ export class InternationalFlightService {
     }
     if (whitelist.length) {
       req.Data = {
-        FlightRoutes: JSON.stringify(result.FlightRoutes),
-        FlightSegments: JSON.stringify(result.FlightSegments),
-        FlightFares: JSON.stringify(result.FlightFares),
+        FlightRoutes: JSON.stringify(
+          result.FlightRoutes.map((it) => {
+            const r = new FlightRouteEntity();
+            r.Rules = it.Rules;
+            r.FlightRouteIds = it.FlightRouteIds;
+            r.Id = it.Id;
+            r.Type = it.Type;
+            r.FirstTime = it.FirstTime;
+            r.FlightSegmentIds = it.FlightSegmentIds;
+            return r;
+          })
+        ),
+        FlightSegments: JSON.stringify(
+          result.FlightSegments.map((it) => {
+            const seg = new FlightSegmentEntity();
+            seg.FromAirport = it.FromAirport;
+            seg.FromAirportName = it.FromAirportName;
+            seg.ToAirport = it.ToAirport;
+            seg.ToAirportName = it.ToAirportName;
+            seg.TakeoffTime = it.TakeoffTime;
+            seg.Tax = it.Tax;
+            seg.ArrivalTime = it.ArrivalTime;
+            seg.CabinCode = it.CabinCode;
+            seg.Cabins = it.Cabins;
+            seg.Carrier = it.Carrier;
+            seg.Distance = it.Distance;
+            seg.Id = it.Id;
+            seg.Duration = it.Duration;
+            return seg;
+          })
+        ),
+        FlightFares: JSON.stringify(
+          result.FlightFares.map((it) => {
+            const f = new FlightFareEntity();
+            f.Id = it.Id;
+            f.Tax = it.Tax;
+            f.SalesPrice = it.SalesPrice;
+            f.Rules = it.Rules;
+            f.FlightNumber = it.FlightNumber;
+            f.FlightRouteIds = it.FlightRouteIds;
+            f.Type = it.Type;
+            f.SettlePrice = it.SettlePrice;
+            f.SettleTax = it.SettleTax;
+            f.SupplierType = it.SupplierType;
+            f.TicketPrice = it.TicketPrice;
+            f.Code = it.Code;
+            f.Discount = it.Discount;
+            f.FareType = it.FareType;
+
+            return f;
+          })
+        ),
         PolicyIds: whitelist[0].passenger.Policy.Id,
       };
       result = await this.apiService.getPromiseData<FlightResultEntity>(req);
@@ -1104,9 +1206,16 @@ export class InternationalFlightService {
           flightRoute.FlightSegments = flightRoute.FlightSegmentIds.map((it) =>
             data.FlightSegments.find((s) => s.Id == it)
           );
-          flightRoute.transferSegments = data.FlightSegments.filter((s) =>
-            flightRoute.FlightSegmentIds.some((id) => id == s.Id)
-          );
+          flightRoute.transferSegments = [];
+          flightRoute.FlightSegmentIds.forEach((id) => {
+            const seg = data.FlightSegments.find((it) => it.Id == id);
+            if (seg) {
+              flightRoute.transferSegments.push({
+                ...seg,
+                FlyTime: this.getFlyTime(seg.Duration),
+              });
+            }
+          });
           flightRoute.fromSegment = flightRoute.FlightSegments[0];
           if (flightRoute.fromSegment) {
             flightRoute.fromSegment.TakeoffTimeStamp = new Date(
@@ -1131,15 +1240,9 @@ export class InternationalFlightService {
     }
     return data;
   }
-  private getDays(arrivalTime: string, firstTime: string) {
-    const delta =
-      new Date(arrivalTime).getTime() - new Date(firstTime).getTime();
-    let addDays = Math.floor(delta / (1000 * 24 * 3600));
-    if (addDays <= 0) {
-      const [y1, m1, d1] = arrivalTime.substr(0, 10).split("-");
-      const [y2, m2, d2] = firstTime.substr(0, 10).split("-");
-      addDays = +d1 - +d2;
-    }
+  private getDays(arrivalTime:string,firstTime: string) {
+    const endTime=this.calendarService.getMoment(0,arrivalTime);
+    const addDays = this.calendarService.diff(endTime.format("YYYY-MM-DD"),firstTime.substr(0,10),'days');
     return addDays;
   }
   getFlyTime(duration: number) {
@@ -1147,12 +1250,7 @@ export class InternationalFlightService {
     // tslint:disable-next-line: no-bitwise
     const h = ~~(duration / 60);
     const m = duration - h * 60;
-    if (h) {
-      flyTime = `${h}h`;
-    }
-    if (m && m > 0) {
-      flyTime = `${flyTime || ""}${m}m`;
-    }
+    flyTime = `${h}H${m}M`;
     return flyTime;
   }
   private getFlightFare(flightFares: FlightFareEntity[], routeIds: string[]) {

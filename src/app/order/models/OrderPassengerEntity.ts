@@ -17,11 +17,6 @@ export class OrderPassengerEntity extends BaseVariablesEntity {
   /// 登机名
   /// </summary>
   Name: string;
-
-  /// <summary>
-  /// 登机名
-  /// </summary>
-  CheckName: string;
   /// <summary>
   /// 乘客类型
   /// </summary>

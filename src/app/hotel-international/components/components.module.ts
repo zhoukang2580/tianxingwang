@@ -14,6 +14,7 @@ import { InterHotelStarPriceComponent } from "./inter-hotel-starprice/inter-hote
 import { InterRecommendRankComponent } from "./inter-recommend-rank/inter-recommend-rank.component";
 import { InterHotelWarrantyComponent } from "./inter-hotel-warranty/inter-hotel-warranty.component";
 import { AmapComponent } from "./amap/amap.component";
+import { OverHotelComponent } from './over-hotel/over-hotel.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { AmapComponent } from "./amap/amap.component";
     InterHotelQueryComponent,
     InterHotelStarPriceComponent,
     InterRecommendRankComponent,
-    AmapComponent
+    AmapComponent,
+    OverHotelComponent
   ],
   imports: [
     CommonModule,
@@ -45,7 +47,8 @@ import { AmapComponent } from "./amap/amap.component";
     InterRoomShowItemComponent,
     ChangeInterRoomPlanDateComponent,
     InterHotelStarPriceComponent,
-    InterRecommendRankComponent
+    InterRecommendRankComponent,
+    OverHotelComponent
   ]
 })
 export class HotelInternationalComponentsModule {}

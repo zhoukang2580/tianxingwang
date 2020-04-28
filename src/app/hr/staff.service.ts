@@ -22,7 +22,7 @@ export enum StaffBookType {
   /// <summary>
   /// 全部
   /// </summary>
-  All = "All",
+  All = "All",// 特殊型
 }
 @Injectable({
   providedIn: "root",
@@ -418,7 +418,9 @@ export class PolicyEntity extends BaseSettingEntity {
   TrainUpperSeatTypeName: string;
   TrainUpperSeatTypeArray: string[];
   //
+  InternationalHotelDescription:string;
   HotelIllegalTip: string;
+  InternationalFlightDescription:string
   HotelDescription: string;
   InternationalFlightIllegalTip: string;
 }

@@ -202,7 +202,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
       const name =
         (one.credential &&
           (one.credential.Name ||
-            `${one.credential.FirstName} ${one.credential.LastName} `)) ||
+            `${one.credential.Surname} ${one.credential.Givenname} `)) ||
         "";
       const cnumber = (one.credential && one.credential.Number) || "";
       const ok = await AppHelper.alert(`请您先维护护照或者港澳台通行证`,true);

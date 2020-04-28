@@ -11,81 +11,48 @@
   <ng-container *ngIf='!errors else errorTemp'>
     <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ng-container *ngIf='vmCombindInfos?.length'>
-      <ion-list *ngFor='let combindInfo of vmCombindInfos;let idx=index;' lines='none'>
+      <ion-list *ngFor='let combindInfo of vmCombindInfos;let idx=index;let first=first;' lines='none'>
         <ion-item-divider color='primary' class="backg_w sticky" [class.not-sticky]='isDingTalk' style="z-index: 200;
         box-shadow: 0.1em 0.2em 0.6em rgba(0,0,0,.1);
         padding-bottom: 0.5em;">
           <div style="width: 100%">
-            {{combindInfo?.bookInfo?.credential?.CheckName}}
+            {{combindInfo?.bookInfo?.credential?.Name}}
             【{{tmc?.Name}}】
             {{combindInfo?.bookInfo?.credential?.Number}}
-            <ion-label style="text-align:center;font-weight: bold">
-              <ng-container *ngIf='isRoundTrip'>第{{idx+1}}程</ng-container>
-              航班预订信息
-            </ion-label>
           </div>
         </ion-item-divider>
-        <ng-container *ngIf='combindInfo.isShowTrip'>
-          <ion-item-group *ngIf='combindInfo?.bookInfo?.bookInfo as s'>
-            <ion-item-divider color="primary">航班信息:</ion-item-divider>
-            <div style='width: 100%' class='detail'>
-              <ion-item>
-                <div class='date'>
-                  <strong>{{s.flightRoute?.FirstTime?.substr(0,10)}} <ion-text color='secondary'>
-                      {{s?.fromSegment?.FromCityName}}
-                      <ion-text color='dark' style="font-size: 0.7rem;">到</ion-text>
-                      {{s?.toSegment?.ToCityName}}
-                      <span></span>
-                    </ion-text>
-                  </strong>
-                </div>
-              </ion-item>
-              <ion-item>
-                <div style='width: 100%'>
-                  <app-flight-list-item [flight]='s.flightRoute'>
-                  </app-flight-list-item>
-                  <div class='price'>
-                    <ion-label color='danger'>机票票价:￥{{s.flightPolicy?.Cabin?.TicketPrice}}</ion-label>
-                    <ion-label color='danger' class='ion-margin-start'>税费:￥{{s.flightRoute?.flightFare?.Tax}}
-                    </ion-label>
+        <ion-item lines='none' *ngIf="searchModel?.trips?.length&&first">
+          <div style="width: 100%; margin: 1em 0 0.5em;">
+            <ion-label style="text-align:center;font-weight: bold">
+              航班预订信息
+            </ion-label>
+            <ng-container *ngFor='let trip of searchModel?.trips;let i=index;'>
+              <ion-row *ngIf='trip?.bookInfo' class="back_white ">
+                <ion-col style="display: flex;">
+                  <div class="padding-s">
+                    <img [src]="trip.bookInfo.fromSegment?.AirlineSrc">
                   </div>
-                </div>
-              </ion-item>
-              <ion-item>
-                <div style='width: 100%'>
-                  <ion-button fill='clear' class='change-policy-btn' (click)='onShowFriendlyReminder(combindInfo)'
-                    color='secondary'>
-                    温馨提醒
-                    <ion-icon name='caret-down-outline' *ngIf='combindInfo?.showFriendlyReminder'></ion-icon>
-                    <ion-icon name="caret-up-outline" *ngIf='!combindInfo?.showFriendlyReminder'></ion-icon>
-                  </ion-button>
-                  <div [@flyInOut] *ngIf='combindInfo?.showFriendlyReminder'>
-                    <ion-label color='success' class='small-font ion-text-wrap'>
-                      温馨提醒: 国内廉价航司机票部分舱位不包含免费托运行李服务，免费托运行李相关事宜可以拨打我们客服电话咨询。（例如： 中联航:
-                      每位旅客可携带1件免费随身行李，重量不能超过10千克且体积不超过20×30×40厘米。托运行李收费标准：X ≤ 5KG 柜台价格30元； 5KG &lt; X ≤ 10KG 柜台价格60元；
-                      10KG
-                      &lt;
-                      X
-                      ≤
-                      15KG
-                      柜台价格90元； 15KG &lt; X ≤ 20KG 柜台价格120元；等） </ion-label>
+                  <div style="font-size: 0.6rem;">
+                    <span class="back-border">第{{i+1}}程</span>
+                    {{trip?.fromCity?.CityName}} -- {{trip?.toCity?.CityName}}
+                    ({{trip.bookInfo.fromSegment?.AirlineName}})
+                    <div class="font-size">
+                      {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,16)}} --
+                      {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
+                      <span *ngIf="trip?.bookInfo?.toSegment?.Variables?.AddDaysTip>'0'">
+                        (+{{trip?.bookInfo?.toSegment?.Variables?.AddDaysTip}}天)</span>
+                    </div>
                   </div>
-                  <ion-label color='danger' class='small-font ion-text-wrap' *ngIf='s?.flightPolicy?.Rules?.length'>
-                    超标：{{s?.flightPolicy?.Rules?.join(",")}}
-                  </ion-label>
-                  <div>
-                    <ion-button fill='clear' class='change-policy-btn' (click)='onOpenrules(combindInfo)'
-                      color='secondary'>
-                      退改签政策
-                      <ion-icon name='caret-down-outline' *ngIf='combindInfo?.openrules'></ion-icon>
-                      <ion-icon name="caret-up-outline" *ngIf='!combindInfo?.openrules'></ion-icon>
-                    </ion-button>
-                  </div>
-                </div>
-              </ion-item>
-            </div>
-          </ion-item-group>
-        </ng-container>
+                </ion-col>
+              </ion-row>
+              <div style="font-size: 0.8rem;" *ngIf='trip.bookInfo?.flightRoute?.policy?.Message'>
+                <ion-text color='danger'>
+                  超标：{{trip.bookInfo.flightRoute.policy.Message}}
+                </ion-text>
+              </div>
+            </ng-container>
+          </div>
+        </ion-item>
         <ion-item-group *ngIf='combindInfo?.bookInfo as s'>
           <ion-item-divider color="primary">旅客信息:</ion-item-divider>
           <app-book-credential-comp [credential]='combindInfo.vmCredential' [canEdit]='false'
@@ -195,17 +162,18 @@
             </ion-item>
             <ion-item [attr.approvalid]='combindInfo?.id' class="ion-no-margin" detail
               *ngIf='isAllowSelectApprove(combindInfo)' (click)='openApproverModal(combindInfo)'>
-              <ion-label>
+              <ion-label style="flex: 1;">
                 审批人:
               </ion-label>
-              <ion-text *ngIf='combindInfo?.appovalStaff'>
+              <ion-label *ngIf='combindInfo?.appovalStaff' style="flex: 4;text-align: end;">
                 {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
-              </ion-text>
+              </ion-label>
             </ion-item>
           </ion-item-group>
           <ion-item-group>
-            <app-book-tmc-outnumber [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true"
-              (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+            <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
+              [isShowGroupedInfo]="true" (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+            </app-book-tmc-outnumber>
           </ion-item-group>
         </ng-container>
       </ion-list>
@@ -263,4 +231,4 @@
     </ion-button>
   </ion-toolbar>
 </ion-footer>
-<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预定中，请稍后...</app-waiting-check-pay>
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍候</app-waiting-check-pay>

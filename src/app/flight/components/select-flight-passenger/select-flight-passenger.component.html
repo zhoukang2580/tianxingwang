@@ -9,7 +9,7 @@
       <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
         已选乘客
         <ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPasengersNumber$|async}}</ion-text>
+          <ion-text color='light'>{{(bookInfos$|async)?.length}}</ion-text>
         </ion-badge>
       </ion-button>
     </ion-buttons>
@@ -18,8 +18,7 @@
 
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh(null)">
-    <ion-refresher-content 
-      refreshingText="正在加载...">
+    <ion-refresher-content refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
   <ion-toolbar #toolbar>
@@ -72,7 +71,7 @@
                 证件姓名:
               </ion-col>
               <ion-col>
-                {{item?.FirstName}}{{item?.LastName}}
+                {{item?.Surname}}{{item?.Givenname}}
               </ion-col>
             </ion-row>
             <ion-row>
@@ -80,7 +79,7 @@
                 登机名:
               </ion-col>
               <ion-col>
-                {{item?.CheckName}}
+                {{item?.Name}}
               </ion-col>
             </ion-row>
             <ion-row>
@@ -157,31 +156,31 @@
           <ion-row>
             <ion-col>姓：</ion-col>
             <ion-col>
-              <input type="text" [(ngModel)]='vmNewCredential.FirstName'
+              <input type="text" [(ngModel)]='vmNewCredential.Surname'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='FirstName' name='FirstName'>
             </ion-col>
           </ion-row>
           <ion-row>
             <ion-col>名：</ion-col>
             <ion-col>
-              <input type="text" [(ngModel)]='vmNewCredential.LastName'
+              <input type="text" [(ngModel)]='vmNewCredential.Givenname'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='LastName' name='LastName'>
             </ion-col>
           </ion-row>
           <ion-row>
             <ion-col>登机姓：</ion-col>
             <ion-col>
-              <input type="text" [(ngModel)]='vmNewCredential.CheckFirstName'
+              <input type="text" [(ngModel)]='vmNewCredential.Surname'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='CheckFirstName'
-                name='CheckFirstName' value="{{vmNewCredential.FirstName}}">
+                name='CheckFirstName' value="{{vmNewCredential.Surname}}">
             </ion-col>
           </ion-row>
           <ion-row>
             <ion-col>登机名：</ion-col>
             <ion-col>
-              <input type="text" [(ngModel)]='vmNewCredential.CheckLastName'
+              <input type="text" [(ngModel)]='vmNewCredential.Givenname'
                 [disabled]='vmNewCredential?.Id !=selectedCredentialId' ValidateName='CheckLastName'
-                name='CheckLastName' value="{{vmNewCredential.LastName}}">
+                name='CheckLastName' value="{{vmNewCredential.Givenname}}">
             </ion-col>
           </ion-row>
           <ion-row (click)='selectIdentityNationality()'>
@@ -193,7 +192,7 @@
                 [class.validctrlsucess]='!!vmNewCredential.Country' [class.validerrormess]='!vmNewCredential.Country'
                 [class.validctrlerror]='!vmNewCredential.Country' [disabled]='true'
                 [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'
-                value="{{vmNewCredential.Country?.Name}}({{vmNewCredential.Country?.Code}})" name='Country'
+                value="{{vmNewCredential.showCountry?.Name}}({{vmNewCredential.showCountry?.Code}})" name='Country'
                 ValidateName="Country">
             </ion-col>
             <ion-col size='1' class='arrow-forward' class='ion-text-end'
@@ -210,7 +209,7 @@
                 [class.validctrlsucess]="!!vmNewCredential.IssueCountry"
                 [class.validctrlerror]='!vmNewCredential.IssueCountry'
                 [class.disabled]='vmNewCredential?.Id !=selectedCredentialId' [disabled]='true'
-                value="{{vmNewCredential.IssueCountry?.Name}}({{vmNewCredential.IssueCountry?.Code}})"
+                value="{{vmNewCredential.showIssueCountry?.Name}}({{vmNewCredential.showIssueCountry?.Code}})"
                 name='IssueCountry' style='border: none' ValidateName="IssueCountry">
             </ion-col>
             <ion-col size='1' class='arrow-forward ion-text-end'
@@ -297,7 +296,7 @@
                 证件姓名:
               </ion-col>
               <ion-col>
-                {{item?.FirstName}}{{item?.LastName}}
+                {{item?.Surname}}{{item?.Givenname}}
               </ion-col>
             </ion-row>
             <ion-row>
@@ -305,7 +304,7 @@
                 登机名:
               </ion-col>
               <ion-col>
-                {{item?.CheckName}}
+                {{item?.Name}}
               </ion-col>
             </ion-row>
             <ion-row>

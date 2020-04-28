@@ -19,7 +19,7 @@
           <ion-item-divider>
             <div style="width: 100%;">
               <div style="padding: 0.5em 0;">
-                {{combindInfo?.credential?.CheckName}}
+                {{combindInfo?.credential?.Name}}
                 【成人】
                 <span style="color:var(--ion-color-medium)">{{combindInfo?.credential?.Number}}</span>
               </div>
@@ -236,7 +236,7 @@
             </div>
           </ion-item>
         </ion-list>
-        <ion-list>
+        <ion-list [attr.outnumberid]='combindInfo.id'>
           <app-book-tmc-outnumber [attr.tmcOutNumber]='combindInfo.id' [isShowGroupedInfo]="true"
             [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
             (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
@@ -328,4 +328,4 @@
     </li>
   </ul>
 </div>
-<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍后...</app-waiting-check-pay>
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍候</app-waiting-check-pay>

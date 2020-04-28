@@ -39,7 +39,7 @@ import { ProductItemType } from "src/app/tmc/models/ProductItems";
 @Component({
   selector: "app-selected-flight-bookinfos",
   templateUrl: "./selected-flight-bookinfos.page.html",
-  styleUrls: ["./selected-flight-bookinfos.page.scss"]
+  styleUrls: ["./selected-flight-bookinfos.page.scss"],
 })
 export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
   private subscritions: Subscription[] = [];
@@ -63,7 +63,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     private orderService: OrderService
   ) {}
   ngOnDestroy() {
-    this.subscritions.forEach(sub => sub.unsubscribe());
+    this.subscritions.forEach((sub) => sub.unsubscribe());
   }
   async ngOnInit() {
     this.subscritions.push(
@@ -72,24 +72,24 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       })
     );
     this.subscritions.push(
-      this.flightService.getSearchFlightModelSource().subscribe(m => {
+      this.flightService.getSearchFlightModelSource().subscribe((m) => {
         this.searchModel = m;
       })
     );
     this.passengerAndBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(
-        tap(async infos => {
-          this.bookInfos = infos.filter(it => !!it.bookInfo);
+        tap(async (infos) => {
+          this.bookInfos = infos.filter((it) => !!it.bookInfo);
           this.isSelf = await this.staffService.isSelfBookType();
           if (this.isSelf) {
             const goinfo = infos.find(
-              item =>
+              (item) =>
                 item.bookInfo &&
                 item.bookInfo.tripType == TripType.departureTrip
             );
             const backInfo = infos.find(
-              item =>
+              (item) =>
                 item.bookInfo && item.bookInfo.tripType == TripType.returnTrip
             );
             const m = this.flightService.getSearchFlightModel();
@@ -102,7 +102,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
         })
       );
     this.subscritions.push(
-      this.identityService.getIdentitySource().subscribe(identity => {
+      this.identityService.getIdentitySource().subscribe((identity) => {
         this.identity = identity;
       })
     );
@@ -112,10 +112,10 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     this.flightService.setSearchFlightModelSource({
       ...this.flightService.getSearchFlightModel(),
       isExchange: false,
-      isLocked: false
+      isLocked: false,
     });
     this.flightService.setPassengerBookInfosSource(
-      this.flightService.getPassengerBookInfos().map(it => {
+      this.flightService.getPassengerBookInfos().map((it) => {
         it.exchangeInfo = null;
         it.bookInfo = null;
         return it;
@@ -124,7 +124,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     this.navCtrl.navigateRoot(
       `product-tabs?tabId=${ProductItemType.plane}&doRefresh=${result}`,
       {
-        animated: true
+        animated: true,
       }
     );
   }
@@ -132,65 +132,71 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     return this.calendarService.getHHmm(takofftime);
   }
   private async processExchange() {
-    const infos = this.flightService.getPassengerBookInfos();
-    const info: PassengerBookInfo<IFlightSegmentInfo> = infos && infos[0];
-    if (
-      !info ||
-      !info.exchangeInfo ||
-      !info.exchangeInfo.trip ||
-      !info.bookInfo.flightSegment
-    ) {
-      AppHelper.alert("改签失败，请重试");
-      return false;
-    }
-    const trip: OrderFlightTripEntity = info.exchangeInfo
-      .trip as OrderFlightTripEntity;
-    const tips = [];
-    const carrier = info.bookInfo.flightSegment.Number.substr(0, 2);
-    if (trip.Carrier.toLowerCase() != carrier.toLowerCase()) {
-      tips.push(
-        `所选航班承运人与旅客所持机票承运人不同，无法直接更改。需将所持机票退票（或将产生退票费），重新购买机票。`
-      );
-    } else if (trip.TicketPrice > info.bookInfo.flightPolicy.Cabin.SalesPrice) {
-      tips.push(
-        `所选航班票价低于旅客所持机票票价，无法直接更改。需将所持机票退票（或将产生退票费），重新购买机票。`
-      );
-    }
-    let tip = "是否确认更改？";
-    if (tips.length) {
-      const msg = tips.join(",");
-      tip = msg + (msg.includes("。") ? "" : " 。") + tip;
-    }
-    const ok = await AppHelper.alert(
-      tip,
-      true,
-      LanguageHelper.getConfirmTip(),
-      LanguageHelper.getCancelTip()
-    );
     let result = false;
-    if (ok) {
-      result = await this.orderService
-        .exchangeInfoFlightTrip(this.flightService.getPassengerBookInfos()[0])
-        .then(() => true)
-        .catch(e => {
-          AppHelper.alert(e);
-          return false;
-        });
-      if (result) {
-        AppHelper.toast("改签申请中", 2000, "middle");
+    try {
+      const infos = this.flightService.getPassengerBookInfos();
+      const info: PassengerBookInfo<IFlightSegmentInfo> = infos && infos[0];
+      if (
+        !info ||
+        !info.exchangeInfo ||
+        !info.exchangeInfo.trip ||
+        !info.bookInfo.flightSegment
+      ) {
+        AppHelper.alert("改签失败，请重试");
+        return false;
       }
+      const trip: OrderFlightTripEntity = info.exchangeInfo
+        .trip as OrderFlightTripEntity;
+      const tips = [];
+      const carrier = info.bookInfo.flightSegment.Number.substr(0, 2);
+      if (trip.Carrier.toLowerCase() != carrier.toLowerCase()) {
+        tips.push(
+          `所选航班承运人与旅客所持机票承运人不同，无法直接更改。需将所持机票退票（或将产生退票费），重新购买机票。`
+        );
+      } else if (
+        trip.TicketPrice > info.bookInfo.flightPolicy.Cabin.SalesPrice
+      ) {
+        tips.push(
+          `所选航班票价低于旅客所持机票票价，无法直接更改。需将所持机票退票（或将产生退票费），重新购买机票。`
+        );
+      }
+      let tip = "是否确认更改？";
+      if (tips.length) {
+        const msg = tips.join(",");
+        tip = msg + (msg.includes("。") ? "" : " 。") + tip;
+      }
+      const ok = await AppHelper.alert(
+        tip,
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
+      if (ok) {
+        result = await this.orderService
+          .exchangeInfoFlightTrip(this.flightService.getPassengerBookInfos()[0])
+          .then(() => true)
+          .catch((e) => {
+            AppHelper.alert(e);
+            return false;
+          });
+        if (result) {
+          AppHelper.toast("改签申请中", 2000, "middle");
+        }
+      }
+    } catch (e) {
+      console.error(e);
     }
     return result;
   }
   async nextStep() {
     const bookInfos = this.flightService
       .getPassengerBookInfos()
-      .filter(it => !!it.bookInfo);
+      .filter((it) => !!it.bookInfo);
     const isSelf = await this.staffService.isSelfBookType();
     const s = this.flightService.getSearchFlightModel();
     if (isSelf && s.isRoundTrip && bookInfos.length == 1) {
       const back = bookInfos.find(
-        it => it.bookInfo.tripType == TripType.returnTrip
+        (it) => it.bookInfo.tripType == TripType.returnTrip
       );
       if (!back) {
         const ok = await AppHelper.alert(
@@ -228,7 +234,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     ) {
       const bookInfos = this.flightService.getPassengerBookInfos();
       const goInfo = bookInfos.find(
-        it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
+        (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
       );
       const goFlight =
         goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment;
@@ -322,8 +328,8 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
         isAgent:
           this.identity &&
           this.identity.Numbers &&
-          this.identity.Numbers["AgentId"]
-      }
+          this.identity.Numbers["AgentId"],
+      },
     });
     m.backdropDismiss = false;
     await this.flightService.dismissTopOverlay();
@@ -347,9 +353,9 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
             ...info,
             bookInfo: {
               ...info.bookInfo,
-              lowerSegmentInfo: null
-            }
-          }
+              lowerSegmentInfo: null,
+            },
+          },
         };
         bookInfo.flightPolicy.LowerSegment = null; // 更低价仅能选择一次.
         const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
@@ -358,7 +364,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
           credential: info.credential,
           isNotWhitelist: info.isNotWhitelist,
           bookInfo,
-          exchangeInfo: info.exchangeInfo
+          exchangeInfo: info.exchangeInfo,
         };
         this.flightService.replacePassengerBookInfo(info, newInfo);
       }

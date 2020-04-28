@@ -15,7 +15,6 @@ import { AppComponentsModule } from "src/app/components/appcomponents.module";
     CommonModule,
     FormsModule,
     AppComponentsModule,
-    AppDirectivesModule,
     RouterModule.forChild([
       {
         path: "",

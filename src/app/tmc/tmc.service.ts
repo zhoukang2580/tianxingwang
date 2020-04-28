@@ -665,15 +665,11 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Tmc-GetTmc";
-    this.fetchingTmcPromise = await this.apiService
+    this.fetchingTmcPromise = this.apiService
       .getPromiseData<TmcEntity>(req)
       .then((tmc) => {
         this.tmc = tmc;
         return tmc;
-      })
-      .catch((_) => {
-        AppHelper.alert(_);
-        return null;
       })
       .finally(() => {
         this.fetchingTmcPromise = null;
@@ -718,12 +714,21 @@ export interface ITravelUrlResult {
   Message: string;
 }
 export interface TravelUrlInfo {
-  CostCenterCode: string;
-  CostCenterName: string;
   OrganizationCode: string;
   OrganizationName: string;
-  TravelNumber: string; // TR20190703763
   Trips: string[]; // 火车行程: 07-26 至 07-26 苏州 至 南京"
+  CostCenterCode: string; // "产品技术部"
+  CostCenterName: string; // "产品技术部"
+  Detail: string; // null
+  ExpiryTime: string; // "2020-04-30 12:00:00"
+  LastUpdateTime: string; // "2020-04-24 03:45:33"
+  StaffNumber: string; // "8888"
+  Status: string; // "待审核"
+  StatusType: string; // 3
+  Subject: string; // "客户公司出差"
+  TravelInfo: string; // null
+  TravelNumber: string; // "630000000122"
+  Type: string; // null
 }
 export interface IBookOrderResult {
   TradeNo: string;
@@ -1113,6 +1118,7 @@ export class TmcEntity extends BaseEntity {
   Code: string;
   FlightApprovalType: TmcApprovalType;
   FlightPayType: OrderTravelPayType;
+  IntFlightPayType: OrderTravelPayType;
   FlightOrderType: string;
   FlightOrderPayType: string;
   FlightFeeType: TmcFlightFeeType;
@@ -1260,6 +1266,7 @@ export class TmcEntity extends BaseEntity {
   WechatMiniId: string;
   WechatMiniSecret: string;
   RegionTypeValue: string;
+  IntFlightApprovalType: TmcApprovalType;
   // =============== 微信支付配置 end ======
 }
 export interface PassengerBookInfo<T> {

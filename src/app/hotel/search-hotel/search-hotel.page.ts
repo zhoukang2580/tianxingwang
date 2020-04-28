@@ -24,6 +24,7 @@ import * as moment from "moment";
 import { TripType } from "src/app/tmc/models/TripType";
 import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
+import { OverHotelComponent } from '../components/over-hotel/over-hotel.component';
 @Component({
   selector: "app-search-hotel",
   templateUrl: "./search-hotel.page.html",
@@ -58,6 +59,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
           "days"
         )
       );
+
       return nums <= 0 ? 1 : nums;
     }
     return 0;
@@ -233,6 +235,13 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     }
   }
   async onSearchHotel() {
+    if(this.totalFlyDays>=15){
+      const popover = await this.popoverCtrl.create({
+        component: OverHotelComponent,
+        translucent: true
+      });
+      return await popover.present();
+    }
     if (this.isDomestic) {
       this.hotelService.setHotelQuerySource({
         ...this.hotelService.getHotelQueryModel(),
@@ -250,7 +259,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       this.router.navigate([
         AppHelper.getRoutePath("international-hotel-list")
       ]);
-    }
+    } 
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("")]);

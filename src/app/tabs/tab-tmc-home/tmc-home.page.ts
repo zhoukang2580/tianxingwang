@@ -10,6 +10,7 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
+import Swiper from "swiper";
 import {
   Component,
   OnInit,
@@ -46,6 +47,9 @@ export class TmcHomePage implements OnInit, OnDestroy {
   private staffCredentials: MemberCredential[];
   private subscription = Subscription.EMPTY;
   @ViewChild(IonSlides) slidesEle: IonSlides;
+  @ViewChild("container", { static: true }) containerEl: ElementRef<
+    HTMLElement
+  >;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   identity: IdentityEntity;
   isLoadingNotice = false;
@@ -53,11 +57,21 @@ export class TmcHomePage implements OnInit, OnDestroy {
   wxPayResult$: Observable<any>;
   selectedCompany$: Observable<string>;
   companies: any[];
+  private swiper: any;
   agentNotices: { text: string; active?: boolean; id: number }[];
   canSelectCompany$ = of(false);
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   options = {};
+  swiperOption: {
+    loop: true,
+    // autoplay:true,//等同于以下设置
+    autoplay: {
+      delay: 3000,
+      stopOnLastSlide: false,
+      disableOnInteraction: true,
+    },
+  }
   isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaHotel = environment.mockProBuild || !environment.production;
   constructor(
@@ -99,6 +113,12 @@ export class TmcHomePage implements OnInit, OnDestroy {
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.destroySwiper();
+  }
+  private destroySwiper() {
+    if (this.swiper) {
+      this.swiper.destroy();
+    }
   }
   private clearIntervalIds() {
     this.intervalIds.forEach((i) => {
@@ -122,7 +142,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) {}
+    } catch (e) { }
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
@@ -158,7 +178,31 @@ export class TmcHomePage implements OnInit, OnDestroy {
     }
 
     this.initializeSelfBookInfos();
+    if (this.containerEl && this.containerEl.nativeElement) {
+      this.swiper = new Swiper(this.containerEl.nativeElement, {
+        loop: true,
+        // autoplay:true,//等同于以下设置
+        autoplay: {
+          delay: 3000,
+          stopOnLastSlide: false,
+          disableOnInteraction: true,
+        }
+      });
+      this.swiper.on("touchEnd", () => {
+        this.onTouchEnd();
+      });
+    }
   }
+  private onTouchEnd() {
+    // console.log("touchEnd");
+    setTimeout(() => {
+      this.startAutoPlay();
+    }, 1000);
+  }
+  private startAutoPlay() {
+        this.swiper.autoplay.start();
+  }
+
   private async getAgentNotices() {
     const agentNotices = await this.cmsService
       .getAgentNotices(0)
@@ -280,7 +324,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
         const intervalId = setInterval(async () => {
           this.staff = await this.staffService.getStaff();
           if (!this.staff) {
-            this.apiService.showLoadingView({ msg: "正在初始化，请稍后..." });
+            this.apiService.showLoadingView({ msg: "正在初始化，请稍候" });
           } else {
             this.apiService.hideLoadingView();
             this.clearIntervalIds();

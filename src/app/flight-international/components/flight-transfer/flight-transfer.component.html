@@ -1,25 +1,35 @@
 <!-- <app-flight-list-item [flight]='flight'   *ngFor='let seg of flight?.transferSegments'></app-flight-list-item> -->
 <div>
   <ion-list class="ion-padding">
-    <ion-item *ngFor="let seg of flight?.transferSegments" class="padding1em" lines="none">
+    <ion-item *ngFor="let seg of flight?.transferSegments" class="padding1em" lines="none" style="font-size: 0.9rem;">
       <div style="width:100%">
         <ion-row>
           <ion-col style="display: flex;align-items: center;">
             <img [src]="seg.AirlineSrc">
             <ion-text>
-              {{seg.AirlineName}}{{seg.Number}}
+              {{seg.AirlineName}}{{seg.Number}}<ion-text color='secondary' *ngIf="seg.CodeShareNumber">({{seg?.CodeShareNumber}})</ion-text>
             </ion-text>
           </ion-col>
         </ion-row>
-        <ion-row style="margin-bottom: 1em;">
+        <ion-row>
           <ion-col size="3">
             起飞
           </ion-col>
           <ion-col class="font-size">
             {{seg?.TakeoffTime.replace("T"," ")}}
             <div>
-              {{seg.FromAirportName}}
+            {{seg.FromCityName}} {{seg.FromAirport}} {{seg.FromAirportName}}{{seg.FromTerminal}}
             </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size="3">
+
+          </ion-col>
+          <ion-col>
+            <ion-text style="font-size: 0.6rem;" color="medium">
+              飞行时长 {{seg.FlyTime}}
+            </ion-text>
           </ion-col>
         </ion-row>
         <ion-row>
@@ -28,8 +38,7 @@
           </ion-col>
           <ion-col class="font-size">
             {{seg?.ArrivalTime.replace("T"," ")}}
-            <div> {{seg.ToAirportName}}</div>
-
+          <div>{{seg.ToCityName}} {{seg.ToAirport}} {{seg.ToAirportName}}{{seg.ToTerminal}}</div>
           </ion-col>
         </ion-row>
       </div>

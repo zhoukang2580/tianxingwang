@@ -218,7 +218,9 @@ export class BookPage implements OnInit, AfterViewInit {
     });
     if (cabinPaytypes.length) {
       this.orderTravelPayTypes = this.orderTravelPayTypes.filter((it) =>
-        cabinPaytypes.some((cbt) => cbt == it.label)
+        cabinPaytypes.some(
+          (cbt) => cbt == it.label || it.value == OrderTravelPayType[cbt]
+        )
       );
     }
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
@@ -389,11 +391,12 @@ export class BookPage implements OnInit, AfterViewInit {
     if (!this.vmCombindInfos) {
       return false;
     }
-    const outnumbers = this.initialBookDtoModel && this.initialBookDtoModel.OutNumbers || {};
-    this.vmCombindInfos.forEach((item) => {
-      if (item.tmcOutNumberInfos) {
-        item.tmcOutNumberInfos.forEach((it) => {
-          it.labelDataList = outnumbers[it.label] || []
+    const outnumbers =
+      (this.initialBookDtoModel && this.initialBookDtoModel.OutNumbers) || {};
+    this.vmCombindInfos.forEach((combindInfo) => {
+      if (combindInfo.tmcOutNumberInfos) {
+        combindInfo.tmcOutNumberInfos.forEach((it) => {
+          it.labelDataList = outnumbers[it.label] || [];
           if (it.isLoadNumber) {
             if (
               it.staffNumber &&
@@ -411,10 +414,10 @@ export class BookPage implements OnInit, AfterViewInit {
     });
     const result = await this.tmcService.getTravelUrls(args);
     if (result) {
-      this.vmCombindInfos.forEach((item) => {
-        if (item.tmcOutNumberInfos) {
-          item.tmcOutNumberInfos.forEach((info) => {
-            if ((it => it.label.toLowerCase() == "travelnumber")) {
+      this.vmCombindInfos.forEach((combindInfo) => {
+        if (combindInfo.tmcOutNumberInfos) {
+          combindInfo.tmcOutNumberInfos.forEach((info) => {
+            if (info.label.toLowerCase() == "travelnumber") {
               info.loadTravelUrlErrorMsg =
                 result[info.staffNumber] && result[info.staffNumber].Message;
               info.travelUrlInfos =
@@ -575,7 +578,7 @@ export class BookPage implements OnInit, AfterViewInit {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-      }]`;
+    }]`;
   }
   back() {
     this.natCtrl.back();
@@ -608,7 +611,7 @@ export class BookPage implements OnInit, AfterViewInit {
         return group[accountId]
           .map(
             (it) =>
-              `${it.modal.credential.CheckName}(${it.modal.credential.Number})`
+              `${it.modal.credential.Surname}${it.modal.credential.Givenname}(${it.modal.credential.Number})`
           )
           .join("、");
       }
@@ -793,13 +796,8 @@ export class BookPage implements OnInit, AfterViewInit {
       ele: HTMLElement
     ) => {
       AppHelper.toast(
-        `${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.modal.credential &&
-          item.modal.credential.CheckFirstName +
-          item.modal.credential.CheckLastName)
-        } 【${
-        item.modal.credential && item.modal.credential.Number
+        `${item.credentialStaff && item.credentialStaff.Name} 【${
+          item.modal.credential && item.modal.credential.Number
         }】 ${msg} 信息不能为空`,
         2000,
         "bottom"
@@ -869,24 +867,8 @@ export class BookPage implements OnInit, AfterViewInit {
         return false;
       }
       p.Credentials.Number = combindInfo.vmCredential.Number;
-      if (!combindInfo.vmCredential.CheckLastName) {
-        showErrorMsg(
-          LanguageHelper.Flight.getCheckLastNameTip(),
-          combindInfo,
-          el
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckLastName;
-      if (!combindInfo.vmCredential.CheckFirstName) {
-        showErrorMsg(
-          LanguageHelper.Flight.getCheckFirstNameTip(),
-          combindInfo,
-          el
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
+      p.Credentials.Surname = combindInfo.vmCredential.Surname;
+      p.Credentials.Givenname = combindInfo.vmCredential.Givenname;
       p.IllegalPolicy =
         (info.flightPolicy &&
           info.flightPolicy.Rules &&
@@ -904,7 +886,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -918,7 +900,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -982,11 +964,16 @@ export class BookPage implements OnInit, AfterViewInit {
       if (combindInfo.tmcOutNumberInfos) {
         if (!exists || !exists.OutNumbers) {
           p.OutNumbers = {};
-          combindInfo.tmcOutNumberInfos.forEach((it) => {
+          for (const it of combindInfo.tmcOutNumberInfos) {
+            if (it.required && !it.value) {
+              const el = this.getEleByAttr("outnumber", "outnumber");
+              showErrorMsg(it.label + "必填", combindInfo, el);
+              return;
+            }
             if (it.value) {
               p.OutNumbers[it.key] = it.value;
             }
-          });
+          }
         }
       }
       if (!combindInfo.travelType) {
@@ -1028,7 +1015,9 @@ export class BookPage implements OnInit, AfterViewInit {
     return true;
   }
   private getEleByAttr(attrName: string, value: string) {
-    return document.querySelector(`[${attrName}='${value}']`) as HTMLElement;
+    return this.cnt["el"].querySelector(
+      `[${attrName}='${value}']`
+    ) as HTMLElement;
   }
   async onModify(item: ICombindInfo) {
     if (!item.credentialsRequested) {
@@ -1068,7 +1057,7 @@ export class BookPage implements OnInit, AfterViewInit {
   }
 
   private moveRequiredEleToViewPort(ele: any) {
-    const el: HTMLElement = ele.nativeElement || ele;
+    const el: HTMLElement = (ele && ele.nativeElement) || ele;
     if (!el) {
       return;
     }
@@ -1264,6 +1253,9 @@ export class BookPage implements OnInit, AfterViewInit {
       const accountIdTmcOutNumberInfosMap: {
         [accountId: string]: ITmcOutNumberInfo[];
       } = {} as any;
+      const isSelfOrisSecretary =
+        (await this.staffService.isSelfBookType()) ||
+        (await this.staffService.isSecretaryBookType());
       const pfs = this.flightService
         .getPassengerBookInfos()
         .filter((it) => !!it.bookInfo);
@@ -1353,28 +1345,28 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
-          item.bookInfo.flightSegment &&
-          item.bookInfo.flightSegment.TakeoffTime
+            item.bookInfo.flightSegment &&
+            item.bookInfo.flightSegment.TakeoffTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1405,6 +1397,7 @@ export class BookPage implements OnInit, AfterViewInit {
               key: n,
               isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
               required:
+                isSelfOrisSecretary &&
                 this.tmc &&
                 this.tmc.OutNumberRequiryNameArray &&
                 this.tmc.OutNumberRequiryNameArray.some((name) => name == n),

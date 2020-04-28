@@ -4,7 +4,7 @@ import { flyInOut } from "./../../animations/flyInOut";
 import { environment } from "./../../../environments/environment";
 import {
   InternationalHotelService,
-  IInterHotelInfo
+  IInterHotelInfo,
 } from "./../international-hotel.service";
 import {
   Component,
@@ -16,7 +16,7 @@ import {
   HostBinding,
   HostListener,
   OnDestroy,
-  AfterViewInit
+  AfterViewInit,
 } from "@angular/core";
 import {
   PassengerBookInfo,
@@ -26,7 +26,7 @@ import {
   TravelFormEntity,
   TmcApprovalType,
   IllegalReasonEntity,
-  TravelUrlInfo
+  TravelUrlInfo,
 } from "src/app/tmc/tmc.service";
 import {
   NavController,
@@ -34,14 +34,14 @@ import {
   ModalController,
   IonRefresher,
   IonContent,
-  Platform
+  Platform,
 } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import {
   StaffService,
   StaffApprover,
   OrganizationEntity,
-  StaffEntity
+  StaffEntity,
 } from "src/app/hr/staff.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
@@ -51,11 +51,11 @@ import { HotelPaymentType } from "src/app/hotel/models/HotelPaymentType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import {
   OrderTravelPayType,
-  OrderTravelType
+  OrderTravelType,
 } from "src/app/order/models/OrderTravelEntity";
 import {
   BookTmcOutnumberComponent,
-  ITmcOutNumberInfo
+  ITmcOutNumberInfo,
 } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { of, combineLatest, from, Subscription, fromEvent } from "rxjs";
@@ -79,12 +79,13 @@ import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 import { RefresherComponent } from "src/app/components/refresher";
 import { WarrantyComponent } from "src/app/hotel/components/warranty/warranty.component";
 import { InterHotelWarrantyComponent } from "../components/inter-hotel-warranty/inter-hotel-warranty.component";
+import { CHINESE_REG } from "src/app/member/member.service";
 
 @Component({
   selector: "app-inter-hotel-book",
   templateUrl: "./inter-hotel-book.page.html",
   styleUrls: ["./inter-hotel-book.page.scss"],
-  animations: [flyInOut]
+  animations: [flyInOut],
 })
 export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   private initialBookDto: InitialBookDtoModel;
@@ -149,7 +150,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private initCheckingInPersonInfos() {
     this.subscriptions.push(
-      this.hotelService.getSearchConditionSource().subscribe(c => {
+      this.hotelService.getSearchConditionSource().subscribe((c) => {
         this.checkInPersionCount = (c && c.adultCount) || 1;
       })
     );
@@ -174,7 +175,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       item.arrivalHotelTime = arrivalTime;
       if (this.initialBookDto && this.initialBookDto.RoomPlans) {
         const plan = this.initialBookDto.RoomPlans.find(
-          it => it.PassengerClientId == item.id
+          (it) => it.PassengerClientId == item.id
         );
         if (plan && plan.GuaranteeStartTime && plan.GuaranteeEndTime) {
           const date = this.calendarService.getMoment(0, item.arrivalHotelTime);
@@ -219,7 +220,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
               .format("YYYY-MM-DD"),
             price: this.hotelService.getAvgPrice(
               this.curSelectedBookInfo.bookInfo.roomPlan
-            )
+            ),
           });
         }
       }
@@ -260,7 +261,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       this.identity = await this.identityService.getIdentityAsync();
       this.bookInfos = this.hotelService
         .getBookInfos()
-        .filter(it => !!it.bookInfo);
+        .filter((it) => !!it.bookInfo);
       this.initialBookDto = await this.getInitializeBookDto();
       if (!this.initialBookDto) {
         this.error = "初始化失败";
@@ -315,7 +316,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     return totalPrice;
   }
   onOrderTravelPayTypeSelect(pt: { value: number }) {
-    this.orderTravelPayTypes = this.orderTravelPayTypes.map(it => {
+    this.orderTravelPayTypes = this.orderTravelPayTypes.map((it) => {
       it.checked = +it.value == pt.value;
       return it;
     });
@@ -325,18 +326,18 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     this.tmc = this.tmc || (await this.tmcService.getTmc());
     this.identity = await this.identityService
       .getIdentityAsync()
-      .catch(_ => ({} as any));
+      .catch((_) => ({} as any));
     if (!this.initialBookDto || !this.initialBookDto.PayTypes) {
       return;
     }
     this.orderTravelPayType = this.tmc && this.tmc.InternationalHotelPayType;
     const arr = Object.keys(this.initialBookDto.PayTypes);
     this.orderTravelPayTypes = [];
-    arr.forEach(it => {
-      if (!this.orderTravelPayTypes.find(item => item.value == +it)) {
+    arr.forEach((it) => {
+      if (!this.orderTravelPayTypes.find((item) => item.value == +it)) {
         this.orderTravelPayTypes.push({
           label: this.initialBookDto.PayTypes[it],
-          value: +it
+          value: +it,
         });
       }
     });
@@ -368,7 +369,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (
       Tmc.InternationalHotelApprovalType ==
-      TmcApprovalType.ExceedPolicyApprover &&
+        TmcApprovalType.ExceedPolicyApprover &&
       this.getRuleMessage(item.bookInfo.bookInfo.roomPlan)
     ) {
       return true;
@@ -381,9 +382,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combindInfo.checkInPersonInfos = [
           {
             isMain: true,
-            firstName: combindInfo.credential.LastName,
-            lastName: combindInfo.credential.FirstName
-          }
+            firstName: combindInfo.credential.Givenname,
+            lastName: combindInfo.credential.Surname,
+          },
         ];
       } else {
         if (combindInfo.checkInPersonInfos.length < this.checkInPersionCount) {
@@ -400,7 +401,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onRemoveCheckInPersion(c, combindInfo: IPassengerHotelBookInfo) {
     combindInfo.checkInPersonInfos = combindInfo.checkInPersonInfos.filter(
-      it => it != c
+      (it) => it != c
     );
   }
   isAllowSelectApprove(info: IPassengerHotelBookInfo) {
@@ -459,11 +460,10 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     ele: HTMLElement
   ) {
     AppHelper.toast(
-      `${(item.credentialStaff && item.credentialStaff.Name) ||
-      (item.credential &&
-        item.credential.CheckFirstName +
-        item.credential.CheckLastName)} 【${item.credential &&
-        item.credential.Number}】 ${msg} 信息不能为空`,
+      `${
+        (item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential && item.credential.Surname + item.credential.Givenname)
+      } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空`,
       2000,
       "bottom"
     );
@@ -598,6 +598,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     bookDto.Passengers = [];
     for (let i = 0; i < this.combindInfos.length; i++) {
       const combindInfo = this.combindInfos[i];
+      const accountId =
+        combindInfo.bookInfo.passenger.AccountId ||
+        (this.tmc && this.tmc.Account && this.tmc.Account.Id);
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
@@ -630,17 +633,17 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.name
+            combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.credentialNumber
+            combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.credentialType
+            combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -690,8 +693,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       p.Credentials = new CredentialsEntity();
       p.Credentials = { ...combindInfo.vmCredential };
       if (combindInfo.checkInPersonInfos) {
-        const cp = combindInfo.checkInPersonInfos.find(it =>
-          AppHelper.includeHanz(`${it.lastName}${it.firstName}`)
+        const cp = combindInfo.checkInPersonInfos.find((it) =>
+          CHINESE_REG.test(`${it.lastName}${it.firstName}`)
         );
         if (cp) {
           this.showErrorMsg(
@@ -702,12 +705,23 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           return;
         }
         p.CustomerName = combindInfo.checkInPersonInfos
-          .filter(it => !it.isChild && it.firstName && it.lastName)
-          .map(it => `${it.lastName},${it.firstName}`)
+          .filter(
+            (it) => !it.isMain && !it.isChild && it.firstName && it.lastName
+          )
+          .map((it) => `${it.lastName},${it.firstName}`)
           .join("/");
+        if (p.CustomerName) {
+          const main = combindInfo.checkInPersonInfos
+            .filter(
+              (it) => it.isMain && !it.isChild && it.firstName && it.lastName
+            )
+            .map((it) => `${it.lastName},${it.firstName}`)
+            .join("/");
+          p.CustomerName = `${main}/${p.CustomerName}`;
+        }
         p.ChildrenName = combindInfo.checkInPersonInfos
-          .filter(it => it.isChild && it.firstName && it.lastName)
-          .map(it => `${it.lastName},${it.firstName}`)
+          .filter((it) => it.isChild && it.firstName && it.lastName)
+          .map((it) => `${it.lastName},${it.firstName}`)
           .join("/");
       }
       if (
@@ -735,36 +749,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         return false;
       }
       p.Credentials.Number = combindInfo.vmCredential.Number;
-      if (!combindInfo.vmCredential.CheckLastName) {
-        this.showErrorMsg(
-          LanguageHelper.Flight.getCheckLastNameTip(),
-          combindInfo,
-          this.getEleByAttr("credentialsid", combindInfo.id)
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckLastName;
-      if (!combindInfo.vmCredential.CheckFirstName) {
-        this.showErrorMsg(
-          LanguageHelper.Flight.getCheckFirstNameTip(),
-          combindInfo,
-          this.getEleByAttr("credentialsid", combindInfo.id)
-        );
-        return false;
-      }
-      p.Credentials.CheckFirstName = combindInfo.vmCredential.CheckFirstName;
+      p.Credentials.Surname = combindInfo.vmCredential.Surname;
+      p.Credentials.Givenname = combindInfo.vmCredential.Givenname;
       p.IllegalPolicy =
         (info.roomPlan &&
           info.roomPlan.Rules &&
           Object.keys(info.roomPlan.Rules)
-            .map(key => info.roomPlan.Rules[key])
+            .map((key) => info.roomPlan.Rules[key])
             .join(",")) ||
         "";
       p.Mobile =
         (combindInfo.credentialStaffMobiles &&
           combindInfo.credentialStaffMobiles
-            .filter(m => m.checked)
-            .map(m => m.mobile)
+            .filter((m) => m.checked)
+            .map((m) => m.mobile)
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
@@ -772,13 +770,13 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
           combindInfo.credentialStaffEmails
-            .filter(e => e.checked)
-            .map(m => m.email)
+            .filter((e) => e.checked)
+            .map((m) => m.email)
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
@@ -786,7 +784,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
@@ -834,35 +832,21 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       p.OrganizationCode = combindInfo.otherOrganizationName
         ? ""
         : (combindInfo.organization && combindInfo.organization.Code) || "";
-      if (
-        this.tmc &&
-        this.tmc.OutNumberRequiryNameArray &&
-        this.tmc.OutNumberRequiryNameArray.length
-      ) {
-        if (
-          !combindInfo.tmcOutNumberInfos ||
-          combindInfo.tmcOutNumberInfos.some(it =>
-            this.tmc.OutNumberRequiryNameArray.some(
-              k => it.key == k && !it.value
-            )
-          )
-        ) {
-          this.showErrorMsg(
-            "外部编号",
-            combindInfo,
-            this.getEleByAttr("tmcOutNumber", combindInfo.id)
-          );
-          console.log(this.outnumberEles.first);
-          return false;
-        }
-      }
+      const exists = bookDto.Passengers.find((it) => it.ClientId == accountId);
       if (combindInfo.tmcOutNumberInfos) {
-        p.OutNumbers = {};
-        combindInfo.tmcOutNumberInfos.forEach(it => {
-          if (it.value) {
-            p.OutNumbers[it.key] = it.value;
+        if (!exists || !exists.OutNumbers) {
+          p.OutNumbers = {};
+          for (const it of combindInfo.tmcOutNumberInfos) {
+            if (it.required && !it.value) {
+              const el = this.getEleByAttr("outnumberid", combindInfo.id);
+              this.showErrorMsg(it.label + "必填", combindInfo, el);
+              return;
+            }
+            if (it.value) {
+              p.OutNumbers[it.key] = it.value;
+            }
           }
-        });
+        }
       }
       if (!combindInfo.travelType) {
         this.showErrorMsg(
@@ -897,7 +881,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         const room =
           combindInfo.bookInfo.bookInfo.hotelEntity.Rooms &&
           combindInfo.bookInfo.bookInfo.hotelEntity.Rooms.find(
-            it => it.Id == (p.RoomPlan.Room && p.RoomPlan.Room.Id)
+            (it) => it.Id == (p.RoomPlan.Room && p.RoomPlan.Room.Id)
           );
         p.RoomPlan.Room = {
           ...p.RoomPlan.Room,
@@ -906,8 +890,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
             Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id,
             Name: combindInfo.bookInfo.bookInfo.hotelEntity.Name,
             Address: combindInfo.bookInfo.bookInfo.hotelEntity.Address,
-            Phone: combindInfo.bookInfo.bookInfo.hotelEntity.Phone
-          }
+            Phone: combindInfo.bookInfo.bookInfo.hotelEntity.Phone,
+          },
         } as RoomEntity;
       }
       if (combindInfo.bookInfo) {
@@ -937,7 +921,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     this.isCanSkipApproval$ = combineLatest([
       from(this.tmcService.getTmc()),
       from(this.staffService.isSelfBookType()),
-      this.identityService.getIdentitySource()
+      this.identityService.getIdentitySource(),
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
@@ -947,17 +931,19 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           !(identity && identity.Numbers && identity.Numbers.AgentId)
         );
       }),
-      tap(can => {
+      tap((can) => {
         console.log("是否可以跳过审批", can);
       })
     );
     this.travelForm = this.initialBookDto.TravelFrom;
     this.expenseTypes = this.initialBookDto.ExpenseTypes;
-    this.illegalReasons = (this.initialBookDto.IllegalReasons || []).map(it => {
-      return {
-        Name: it
-      } as IllegalReasonEntity;
-    });
+    this.illegalReasons = (this.initialBookDto.IllegalReasons || []).map(
+      (it) => {
+        return {
+          Name: it,
+        } as IllegalReasonEntity;
+      }
+    );
     await this.initCombindInfos();
     await this.initCombineInfosShowApproveInfo();
     await this.initSelfBookTypeCredentials();
@@ -968,12 +954,15 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   private async initCombindInfos() {
     try {
       this.combindInfos = [];
+      const isSelfOrisSecretary =
+        (await this.staffService.isSecretaryBookType()) ||
+        (await this.staffService.isSelfBookType());
       const bookInfos = this.hotelService.getBookInfos();
       for (const bookInfo of bookInfos) {
         const cs = (
           (this.initialBookDto && this.initialBookDto.Staffs) ||
           []
-        ).find(it => it.Account.Id == bookInfo.passenger.AccountId);
+        ).find((it) => it.Account.Id == bookInfo.passenger.AccountId);
         const cstaff = cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
@@ -992,12 +981,12 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
             }
             return obj;
           }, {} as { [Tag: string]: StaffApprover[] });
-          credentialStaffApprovers = Object.keys(tempObj).map(key => {
+          credentialStaffApprovers = Object.keys(tempObj).map((key) => {
             const it = tempObj[key][0];
             return {
               Tag: it && it.Tag,
               Type: it && it.Type,
-              approvers: tempObj[key]
+              approvers: tempObj[key],
             };
           });
           console.log("credentialStaffApprovers", credentialStaffApprovers);
@@ -1006,7 +995,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         if (
           bookInfo.credential &&
           !credentials.find(
-            it =>
+            (it) =>
               it.Number == bookInfo.credential.Number &&
               it.Type == bookInfo.credential.Type
           )
@@ -1031,7 +1020,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           creditCardExpirationDate: `${this.calendarService
             .getMoment()
             .startOf("year")
-            .format("YYYY-MM-DD")}`
+            .format("YYYY-MM-DD")}`,
         } as any;
         if (this.expenseTypes && this.expenseTypes.length) {
           combineInfo.expenseType = this.expenseTypes[0];
@@ -1045,7 +1034,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.isSkipApprove = false;
         combineInfo.credentials = credentials || [];
         combineInfo.credentials = combineInfo.credentials.filter(
-          c => c.Type != CredentialsType.IdCard
+          (c) => c.Type != CredentialsType.IdCard
         );
         combineInfo.isOpenrules = false;
         combineInfo.credentialStaff = cstaff;
@@ -1057,49 +1046,52 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
           Code: cstaff && cstaff.Organization && cstaff.Organization.Code,
-          Name: cstaff && cstaff.Organization && cstaff.Organization.Name
+          Name: cstaff && cstaff.Organization && cstaff.Organization.Name,
         } as any;
         combineInfo.costCenter = {
           code: cstaff && cstaff.CostCenter && cstaff.CostCenter.Code,
-          name: cstaff && cstaff.CostCenter && cstaff.CostCenter.Name
+          name: cstaff && cstaff.CostCenter && cstaff.CostCenter.Name,
         };
         combineInfo.appovalStaff = cs && cs.DefaultApprover;
         combineInfo.tmcOutNumberInfos = (
           (this.tmc && this.tmc.OutNumberNameArray) ||
           []
-        ).map(n => {
+        ).map((n) => {
           return {
             label: n,
             key: n,
             isLoadNumber: !!(this.tmc && this.tmc.GetTravelNumberUrl),
             required:
+              isSelfOrisSecretary &&
               this.tmc &&
               this.tmc.OutNumberRequiryNameArray &&
-              this.tmc.OutNumberRequiryNameArray.some(name => name == n),
+              this.tmc.OutNumberRequiryNameArray.some((name) => name == n),
             value: this.getTravelFormNumber(n),
             staffNumber: cstaff && cstaff.Number,
             staffOutNumber: cstaff && cstaff.OutNumber,
             isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
             canSelect: n.toLowerCase() == "TravelNumber".toLowerCase(),
-            isDisabled: !!(this.travelForm && n == "TravelNumber".toLowerCase())
+            isDisabled: !!(
+              this.travelForm && n == "TravelNumber".toLowerCase()
+            ),
           } as ITmcOutNumberInfo;
         });
 
@@ -1121,7 +1113,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.travelForm.Numbers == null) {
       return "";
     }
-    const one = this.travelForm.Numbers.find(n => n.Name == name);
+    const one = this.travelForm.Numbers.find((n) => n.Name == name);
     if (one) {
       return one.Code;
     }
@@ -1139,7 +1131,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       if (res && res[id] && res[id].length) {
         credential = res[id][0];
       }
-      this.combindInfos = this.combindInfos.map(item => {
+      this.combindInfos = this.combindInfos.map((item) => {
         if (!item.credential || !item.credential.Number) {
           item.credential = credential;
         }
@@ -1156,7 +1148,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.hotelService.getBookInfos();
     bookDto.Passengers = [];
-    infos.forEach(bookInfo => {
+    infos.forEach((bookInfo) => {
       if (bookInfo.passenger && bookInfo.bookInfo) {
         const p = new PassengerDto();
         p.ClientId = bookInfo.id;
@@ -1179,11 +1171,11 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.initCheckingInPersonInfos();
     this.hotelService.setBookInfos(
-      this.hotelService.getBookInfos().filter(it => !!it.bookInfo)
+      this.hotelService.getBookInfos().filter((it) => !!it.bookInfo)
     );
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   get hotelPaymentType(): HotelPaymentType {
     if (
@@ -1203,7 +1195,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   notShowServiceFee() {
     let totalFee = 0;
     if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-      Object.keys(this.initialBookDto.ServiceFees).forEach(k => {
+      Object.keys(this.initialBookDto.ServiceFees).forEach((k) => {
         totalFee = AppHelper.add(+this.initialBookDto.ServiceFees[k], totalFee);
       });
     }
@@ -1287,13 +1279,13 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       const popover = await this.popoverCtrl.create({
         component: InterHotelWarrantyComponent,
         // event: ev,
-        translucent: true,
+        // translucent: true,
         cssClass: "warranty",
         componentProps: {
           title: this.getRoomPlanRulesDesc(
             this.combindInfos[0].bookInfo.bookInfo.roomPlan
-          )
-        }
+          ),
+        },
       });
       await popover.present();
       const warranty = await popover.onDidDismiss();
@@ -1302,7 +1294,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
       this.isSubmitDisabled = true;
-      const res = await this.hotelService.onBook(bookDto).catch(e => {
+      const res = await this.hotelService.onBook(bookDto).catch((e) => {
         AppHelper.alert(e);
         return { TradeNo: "", HasTasks: true };
       });
@@ -1356,11 +1348,11 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private goToMyOrders(tab: ProductItemType) {
     this.router.navigate(["product-tabs"], {
-      queryParams: { tabId: tab }
+      queryParams: { tabId: tab },
     });
   }
   private async checkPay(tradeNo: string) {
-    return new Promise<boolean>(s => {
+    return new Promise<boolean>((s) => {
       let loading = false;
       if (this.checkPayCountIntervalId) {
         clearInterval(this.checkPayCountIntervalId);
@@ -1412,7 +1404,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.combindInfos) {
       const group = this.getGroupedCombindInfo(this.combindInfos, this.tmc);
       this.combindInfos = [];
-      Object.keys(group).forEach(key => {
+      Object.keys(group).forEach((key) => {
         if (group[key].length) {
           group[key][0].isShowApprovalInfo = true;
         }
@@ -1424,11 +1416,11 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     const group = this.getGroupedCombindInfo(arr, this.tmc);
     let result = arr;
     result = [];
-    Object.keys(group).forEach(key => {
+    Object.keys(group).forEach((key) => {
       if (group[key].length) {
         const first = group[key][0];
         result = result.concat(
-          group[key].map(it => {
+          group[key].map((it) => {
             it.appovalStaff = first.appovalStaff;
             it.notifyLanguage = first.notifyLanguage;
             it.isSkipApprove = first.isSkipApprove;
@@ -1441,7 +1433,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async openApproverModal(item: IPassengerHotelBookInfo) {
     const modal = await this.modalCtrl.create({
-      component: SearchApprovalComponent
+      component: SearchApprovalComponent,
     });
     modal.backdropDismiss = false;
     await modal.present();
@@ -1452,7 +1444,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       item.appovalStaff =
         item.appovalStaff ||
         ({
-          Account: new AccountEntity()
+          Account: new AccountEntity(),
         } as any);
       item.appovalStaff.AccountId = item.appovalStaff.Account.Id = res.Value;
       item.appovalStaff.Email = item.appovalStaff.Account.Email = emmail;
@@ -1469,19 +1461,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     if (!this.combindInfos) {
       return false;
     }
-    const outnumbers = this.initialBookDto && this.initialBookDto.OutNumbers || {};
-    this.combindInfos.forEach(item => {
-      item.tmcOutNumberInfos.forEach(it => {
+    const outnumbers =
+      (this.initialBookDto && this.initialBookDto.OutNumbers) || {};
+    this.combindInfos.forEach((item) => {
+      item.tmcOutNumberInfos.forEach((it) => {
         it.labelDataList = outnumbers[it.label] || [];
         if (it.isLoadNumber) {
           if (
             it.staffNumber &&
-            !args.find(n => n.staffNumber == it.staffNumber)
+            !args.find((n) => n.staffNumber == it.staffNumber)
           ) {
             args.push({
               staffNumber: it.staffNumber,
               staffOutNumber: it.staffOutNumber,
-              name: it.value
+              name: it.value,
             });
           }
         }
@@ -1489,9 +1482,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     });
     const result = await this.tmcService.getTravelUrls(args);
     if (result) {
-      this.combindInfos.forEach(item =>
-        item.tmcOutNumberInfos.forEach(info => {
-          if ((it => it.label.toLowerCase() == "travelnumber")) {
+      this.combindInfos.forEach((item) =>
+        item.tmcOutNumberInfos.forEach((info) => {
+          if (info.label.toLowerCase() == "travelnumber") {
             info.loadTravelUrlErrorMsg =
               result[info.staffNumber] && result[info.staffNumber].Message;
             info.travelUrlInfos =
@@ -1527,7 +1520,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         [accountId: string]: CredentialsEntity[];
       } = await this.tmcService
         .getPassengerCredentials([item.bookInfo.passenger.AccountId])
-        .catch(_ => ({ [item.bookInfo.passenger.AccountId]: [] }));
+        .catch((_) => ({ [item.bookInfo.passenger.AccountId]: [] }));
       if (item.credentials.length) {
         const exist = item.credentials[0];
         const credentials = res && res[item.bookInfo.passenger.AccountId];
@@ -1535,10 +1528,13 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         if (credentials) {
           if (credentials.length) {
             const one = credentials.find(
-              it => it.Number == exist.Number && exist.Type == it.Type
+              (it) => it.Number == exist.Number && exist.Type == it.Type
             );
             if (one) {
-              item.credentials = [one, ...credentials.filter(it => it != one)];
+              item.credentials = [
+                one,
+                ...credentials.filter((it) => it != one),
+              ];
             } else {
               if (item.credentialsRequested) {
                 item.credentials = credentials;
@@ -1552,12 +1548,12 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     if (item.credentials) {
       const isSelf = await this.staffService.isSelfBookType();
       item.credentials = item.credentials.filter(
-        it => !!it.Number && it.Type != CredentialsType.IdCard
+        (it) => !!it.Number && it.Type != CredentialsType.IdCard
       );
       item.isCanEditCrendentails =
         isSelf &&
         !item.credentials.find(
-          it =>
+          (it) =>
             it.Type == CredentialsType.Passport ||
             it.Type == CredentialsType.HmPass
         );
@@ -1616,7 +1612,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       roomPlan &&
       roomPlan.Rules &&
       Object.keys(roomPlan.Rules)
-        .map(k => roomPlan.Rules[k])
+        .map((k) => roomPlan.Rules[k])
         .join(",")
     );
   }

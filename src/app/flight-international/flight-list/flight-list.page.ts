@@ -4,6 +4,7 @@ import {
   IFilterCondition,
   ITripInfo,
   IInternationalFlightSearchModel,
+  FlightVoyageType,
 } from "../international-flight.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { finalize } from "rxjs/operators";
@@ -21,6 +22,7 @@ import { FlightTransferComponent } from "../components/flight-transfer/flight-tr
 import { environment } from "src/environments/environment";
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
+import { RuleExplainComponent } from "../components/rule-explain/rule-explain.component";
 interface Iisblue {
   isshow: false;
 }
@@ -32,7 +34,9 @@ interface Iisblue {
 export class FlightListPage implements OnInit, OnDestroy {
   private flightQuery: FlightResultEntity;
   private subscriptions: Subscription[] = [];
+  private explainSubscription = Subscription.EMPTY;
   private pageSize = 12;
+  isLastTrip = false;
   isLoading = false;
   multipassShow = false;
   searchModel: IInternationalFlightSearchModel;
@@ -57,11 +61,12 @@ export class FlightListPage implements OnInit, OnDestroy {
     console.log(this.searchModel, "this.searchModel");
     if (this.searchModel && this.searchModel.trips) {
       let trip = this.searchModel.trips.find((it) => !it.bookInfo);
-      const isCheckPolicy = this.searchModel.trips.findIndex(
-        (it) => it == trip
-      );
+      const isCheckPolicy =
+        this.searchModel.trips.findIndex((it) => it == trip) ==
+        this.searchModel.trips.length - 1;
+      this.isLastTrip = isCheckPolicy;
       if (isCheckPolicy) {
-        if (flightRoute.policy) {
+        if (flightRoute.policy && !flightRoute.policy.IsAllowOrder) {
           AppHelper.alert(flightRoute.policy.Message || "不可预订");
           return;
         }
@@ -85,6 +90,30 @@ export class FlightListPage implements OnInit, OnDestroy {
       this.doRefresh();
     }
   }
+  onShowRuleExplain(flightRoute: FlightRouteEntity) {
+    if (flightRoute && flightRoute.flightFare) {
+      if (!flightRoute.flightFare.ruleExplain) {
+        this.explainSubscription.unsubscribe();
+        this.explainSubscription = this.flightService
+          .getRuleExplain(flightRoute.flightFare)
+          .subscribe((r) => {
+            flightRoute.flightFare.ruleExplain = r && r.Data;
+            this.presentRuleExplain(flightRoute.flightFare.ruleExplain);
+          });
+      } else {
+        this.presentRuleExplain(flightRoute.flightFare.ruleExplain);
+      }
+    }
+  }
+  private async presentRuleExplain(ruleExplain: string) {
+    const m = await this.popoverController.create({
+      component: RuleExplainComponent,
+      componentProps: {
+        ruleExplain,
+      },
+    });
+    m.present();
+  }
   onReselectTrip(trip: ITripInfo) {
     if (this.searchModel && this.searchModel.trips && trip) {
       const index = this.searchModel.trips.findIndex((it) => it.id == trip.id);
@@ -99,12 +128,17 @@ export class FlightListPage implements OnInit, OnDestroy {
     }
   }
   ngOnInit() {
+    this.subscriptions.push(this.explainSubscription);
     this.doRefresh(environment.production);
     this.subscriptions.push(
       this.flightService.getSearchModelSource().subscribe((s) => {
         this.searchModel = s;
         if (s && s.trips) {
           this.curTrip = s.trips.find((it) => !it.bookInfo);
+          const isCheckPolicy =
+            this.searchModel.trips.findIndex((it) => it == this.curTrip) ==
+            this.searchModel.trips.length - 1;
+          this.isLastTrip = isCheckPolicy;
           if (!this.curTrip) {
             this.curTrip = s.trips[s.trips.length - 1];
           }
@@ -112,7 +146,7 @@ export class FlightListPage implements OnInit, OnDestroy {
             (it) => it.id == this.curTrip.id
           );
         }
-        if (s && s.voyageType == 3) {
+        if (s && s.voyageType != FlightVoyageType.OneWay) {
           this.multipassShow = true;
         }
       })
@@ -127,30 +161,33 @@ export class FlightListPage implements OnInit, OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   async doRefresh(loadFromServer = false, keepFilterCondition = false) {
-    this.flightRoutes = [];
-    this.scroller.disabled = true;
-    this.flightService.setFilterConditionSource({
-      ...this.flightService.getFilterCondition(),
-      time: "none",
-      price: "none",
-    });
-    if (this.isLoading) {
-      return;
-    }
-    this.isLoading = true;
-    this.flightQuery = await this.flightService
-      .getFlightList({ forceFetch: loadFromServer, keepFilterCondition })
-      .finally(() => {
-        this.refresher.complete();
-        this.isLoading = false;
-      });
-    console.log("list data", this.flightQuery);
-    if (this.flightQuery && this.flightQuery.FlightRoutes) {
-      this.flightRoutes = this.flightQuery.FlightRoutes.slice(0, this.pageSize);
-      this.scroller.disabled = this.flightRoutes.length < this.pageSize;
-    }
-    this.scrollToTop();
     try {
+      this.flightRoutes = [];
+      this.scroller.disabled = true;
+      this.flightService.setFilterConditionSource({
+        ...this.flightService.getFilterCondition(),
+        time: "none",
+        price: "none",
+      });
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
+      this.flightQuery = await this.flightService
+        .getFlightList({ forceFetch: loadFromServer, keepFilterCondition })
+        .finally(() => {
+          this.refresher.complete();
+          this.isLoading = false;
+        });
+      console.log("list data", this.flightQuery);
+      if (this.flightQuery && this.flightQuery.FlightRoutes) {
+        this.flightRoutes = this.flightQuery.FlightRoutes.slice(
+          0,
+          this.pageSize
+        );
+        this.scroller.disabled = this.flightRoutes.length < this.pageSize;
+      }
+      this.scrollToTop();
     } catch (e) {
       AppHelper.alert(e);
     }

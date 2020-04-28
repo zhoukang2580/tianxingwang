@@ -35,45 +35,43 @@ import {
   ModalController,
   IonGrid,
   DomController,
+  Platform,
+  IonContent,
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { StaffEntity } from "src/app/hr/staff.service";
-import { Observable, Subscription, of } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { Observable, Subscription, fromEvent } from "rxjs";
+import { tap, finalize } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
-import * as moment from "moment";
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from "@angular/animations";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { CountryEntity } from "../models/CountryEntity";
 import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
+import { RefresherComponent } from "src/app/components/refresher";
+import { CredentialsComponent } from "src/app/member/components/credentials/credentials.component";
 export const NOT_WHITE_LIST = "notwhitelist";
 @Component({
   selector: "app-select-passenger",
   templateUrl: "./select-passenger.page.html",
   styleUrls: ["./select-passenger.page.scss"],
-  animations: [
-    flyInOut,
-    trigger("openclose", [
-      state("true", style({ height: "*", opacity: "1" })),
-      state("false", style({ height: "0", opacity: "0" })),
-      transition("true<=>false", animate("200ms")),
-    ]),
-  ],
+  animations: [flyInOut],
 })
 export class SelectPassengerPage
   implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
   private keyword: string;
   private isOpenPageAsModal = false; // 设置是否通过modalcontroller打开
   private bookInfos: PassengerBookInfo<any>[];
+  private removeitemSubscription = Subscription.EMPTY;
+  private idInputEleSubscription = Subscription.EMPTY;
+  private subscription = Subscription.EMPTY;
+  @ViewChild(CredentialsComponent) credentialsComp: CredentialsComponent;
+  @ViewChild(IonContent, { static: true }) content: IonContent;
+  @ViewChild(RefresherComponent, { static: true })
+  refresher: RefresherComponent;
+  @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
+  @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   forType: FlightHotelTrainType; // isOpenPageAsModal 传入参数
   FlightHotelTrainType = FlightHotelTrainType;
   removeitem: EventEmitter<PassengerBookInfo<any>>; // isOpenPageAsModal 传入参数
@@ -82,16 +80,13 @@ export class SelectPassengerPage
   isShowNewCredential = false;
   credentialsRemarks: { key: string; value: string }[];
   selectedCredentialId: string;
-  selectedPasengersNumber$: Observable<number> = of(0);
-  currentPage = 1;
+  pageIndex = 1;
   pageSize = 15;
   vmStaffs: StaffEntity[];
   selectedPassenger: StaffEntity;
-  removeitemSubscription = Subscription.EMPTY;
   subscriptions: Subscription[] = [];
   vmNewCredential: MemberCredential;
   loading = false;
-  openclose = true;
   isCanDeactive = true;
   staffCredentails: MemberCredential[] = [];
   frqPassengerCredentials: MemberCredential[];
@@ -102,9 +97,6 @@ export class SelectPassengerPage
   }[];
   bookInfos$: Observable<PassengerBookInfo<any>[]>;
   requestCode: "issueNationality" | "identityNationality";
-  @ViewChild(IonRefresher) ionrefresher: IonRefresher;
-  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
-  @ViewChildren("addForm") addForm: QueryList<IonGrid>;
   title = "选择旅客";
   selectedPassengerPolicy: PolicyEntity;
   constructor(
@@ -121,7 +113,8 @@ export class SelectPassengerPage
     private hotelService: HotelService,
     private interHotelService: InternationalHotelService,
     private interFlightService: InternationalFlightService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private plt: Platform
   ) {
     this.removeitem = new EventEmitter();
   }
@@ -151,8 +144,9 @@ export class SelectPassengerPage
   ngOnDestroy() {
     this.removeitemSubscription.unsubscribe();
     this.subscriptions.forEach((sub) => sub.unsubscribe());
+    this.idInputEleSubscription.unsubscribe();
   }
-  async ngOnInit() {
+  ngOnInit() {
     this.subscriptions.push(
       this.route.queryParamMap.subscribe((q) => {
         if (q.get("forType")) {
@@ -163,18 +157,12 @@ export class SelectPassengerPage
         this.initCredentialsRemarks();
         this.initRemoveitem();
         this.initBookInfos();
-        if (this.bookInfos$) {
-          this.selectedPasengersNumber$ = this.bookInfos$.pipe(
-            tap((infos) => {
-              this.bookInfos = infos;
-            }),
-            map((infos) => infos.length)
-          );
-        }
         this.isCanDeactive = false;
       })
     );
+    this.doRefresh(null);
   }
+
   private initRemoveitem() {
     this.removeitemSubscription = this.removeitem.subscribe(async (info) => {
       let ok = false;
@@ -239,13 +227,9 @@ export class SelectPassengerPage
       this.bookInfos$ = this.interFlightService.getBookInfoSource().pipe(
         tap((it) => {
           if (it && it.length) {
-            const one = it[0];
-            if (
-              one.passenger &&
-              !one.passenger.isNotWhiteList &&
-              one.passenger.Policy
-            ) {
-              this.selectedPassengerPolicy = one.passenger.Policy;
+            const p = it.filter((o) => o.passenger && !!o.passenger.Policy)[0];
+            if (p) {
+              this.selectedPassengerPolicy = p.passenger.Policy;
             }
           } else {
             this.selectedPassengerPolicy = null;
@@ -257,14 +241,6 @@ export class SelectPassengerPage
       this.bookInfos$ = this.bookInfos$.pipe(
         tap((infos) => {
           this.bookInfos = infos;
-          console.log(
-            "bookinfos",
-            this.bookInfos &&
-              this.bookInfos.map(
-                (it) =>
-                  it.passenger && it.passenger.Policy && it.passenger.Policy
-              )
-          );
         })
       );
     }
@@ -337,56 +313,94 @@ export class SelectPassengerPage
     await m.onDidDismiss();
   }
   doRefresh(keyword) {
-    this.domCtrl.write((_) => {
-      this.openclose = true;
-    });
-    this.currentPage = 1;
+    this.pageIndex = 0;
     this.vmStaffs = [];
     this.keyword = keyword || "";
     if (this.scroller) {
-      this.scroller.disabled = false;
+      this.scroller.disabled = true;
     }
     this.selectedPassenger = null;
     this.isShowNewCredential = false; // 页面上显示新增此人其他证件,或者是非白名单的证件
     this.vmNewCredential = null;
     this.selectedCredentialId = null; // 所选择的证件Id
+    this.subscription.unsubscribe();
     this.loadMore();
   }
   onSearch(event: any) {
-    // console.log("onSearch", event);
-    this.loading = true;
     this.staffCredentails = [];
     this.doRefresh((this.vmKeyword || "").trim());
   }
-  private async loadMore() {
-    this.loading = true;
+  loadMore() {
+    this.loading = this.pageIndex == 0;
+    if (this.scroller) {
+      this.scroller.disabled = true;
+    }
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Staff-List";
     req.Data = {
       Name: this.keyword.trim(),
+      PageSize: 20,
+      PageIndex: this.pageIndex,
     };
-    const staffs: StaffEntity[] = await this.apiService
-      .getPromiseData<StaffEntity[]>(req)
-      .then((res) => res || [])
-      .catch((_) => []);
-    if (this.ionrefresher && this.currentPage <= 1) {
-      this.ionrefresher.complete();
-    }
-    // 代理或者特殊，显示可以选择非白名单
-    if (await this.canAddNotWhiteListCredential()) {
-      const passenger = new StaffEntity();
-      passenger.isNotWhiteList = true;
-      const tmc = await this.tmcService.getTmc(false).catch((_) => null);
-      passenger.Account = new AccountEntity();
-      passenger.Account.Id = tmc && tmc.Account.Id; // 所选的tmcId
-      passenger.AccountId = passenger.Account.Id;
-      passenger.CredentialsInfo = LanguageHelper.Flight.getNotWhitelistingTip(); // 非白名单
-      staffs.unshift(passenger);
-    }
-    this.vmStaffs = staffs;
-    this.loading = false;
+    this.subscription = this.apiService
+      .getResponse<StaffEntity[]>(req)
+      .pipe(
+        finalize(() => {
+          setTimeout(() => {
+            this.loading = false;
+            if (this.refresher && this.pageIndex <= 1) {
+              this.refresher.complete();
+              this.content.scrollToTop();
+            }
+          }, 200);
+        })
+      )
+      .subscribe(
+        async (r) => {
+          const staffs = (r && r.Data) || [];
+          if (staffs.length) {
+            this.pageIndex++;
+          }
+          if (this.scroller) {
+            this.scroller.disabled = staffs.length < 20;
+          }
+          // 代理或者特殊，显示可以选择非白名单
+          if (this.pageIndex <= 1) {
+            if (await this.canAddNotWhiteListCredential()) {
+              const passenger = new StaffEntity();
+              passenger.isNotWhiteList = true;
+              const tmc = await this.tmcService
+                .getTmc(false)
+                .catch((_) => null);
+              passenger.Account = new AccountEntity();
+              passenger.Account.Id = tmc && tmc.Account.Id; // 所选的tmcId
+              passenger.AccountId = passenger.Account.Id;
+              passenger.CredentialsInfo = LanguageHelper.Flight.getNotWhitelistingTip(); // 非白名单
+              staffs.unshift(passenger);
+            }
+          }
+          if (staffs.length) {
+            this.vmStaffs = this.vmStaffs || [];
+            this.vmStaffs = this.vmStaffs.concat(staffs);
+          }
+        },
+        () => {}
+      );
   }
   async onSelect(s: StaffEntity) {
+    const exists =
+      this.bookInfos &&
+      this.bookInfos.filter(
+        (it) => it.passenger && it.passenger.Number == s.Number
+      );
+    if (exists && exists.length) {
+      AppHelper.toast(
+        "输入的证件号和已选人员的证件号重复，请核实！",
+        2000,
+        "middle"
+      );
+      return;
+    }
     if (this.forType == FlightHotelTrainType.InternationalFlight) {
       if (s.Policy && s.Policy.Id) {
         const one = this.interFlightService.getBookInfos()[0];
@@ -440,8 +454,8 @@ export class SelectPassengerPage
         this.forType == FlightHotelTrainType.HotelInternational ||
         this.forType == FlightHotelTrainType.InternationalFlight
       ) {
-        first = this.staffCredentails.find(
-          (it) => it.Type == CredentialsType.Passport
+        first = this.staffCredentails.find((it) =>
+          this.interFlightService.isPassportHmTwPass(it.Type)
         );
       }
       if (first) {
@@ -455,6 +469,10 @@ export class SelectPassengerPage
     if (await this.canAddNotWhiteListCredential()) {
       this.initNewCredential(s);
     }
+    if (this.scroller) {
+      this.scroller.disabled = true;
+    }
+    this.content.scrollToTop();
   }
   private initNewCredential(s: StaffEntity) {
     this.vmNewCredential = new MemberCredential();
@@ -469,8 +487,10 @@ export class SelectPassengerPage
     this.vmNewCredential.CredentialsRemark = "客户";
     this.vmNewCredential.Type = CredentialsType.IdCard;
     this.vmNewCredential.Gender = "M";
-    this.vmNewCredential.IssueCountry = { Code: "CN", Name: "中国" };
-    this.vmNewCredential.Country = { Code: "CN", Name: "中国" };
+    this.vmNewCredential.showIssueCountry = { Code: "CN", Name: "中国" };
+    this.vmNewCredential.IssueCountry = "CN";
+    this.vmNewCredential.showCountry = { Code: "CN", Name: "中国" };
+    this.vmNewCredential.Country = "CN";
     this.isShowNewCredential = true;
   }
   private getNewCredentialId() {
@@ -531,14 +551,10 @@ export class SelectPassengerPage
       this.vmNewCredential &&
       selectedCredential.Id == this.vmNewCredential.Id
     ) {
-      selectedCredential.CheckFirstName =
-        selectedCredential.CheckFirstName || this.vmNewCredential.FirstName;
-      selectedCredential.CheckLastName =
-        selectedCredential.CheckLastName || this.vmNewCredential.LastName;
-      const validate = await this.validateCredential(
-        selectedCredential,
-        this.addForm && this.addForm.last && this.addForm.last["el"]
-      );
+      this.vmNewCredential.Name =
+        this.vmNewCredential.Surname + this.vmNewCredential.Givenname;
+      const validate =
+        this.credentialsComp && (await this.credentialsComp.saveAdd());
       if (!validate) {
         return;
       }
@@ -550,8 +566,16 @@ export class SelectPassengerPage
     ) {
       selectedCredential = {
         ...selectedCredential,
-        Country: this.vmNewCredential.Country.Code,
-        IssueCountry: this.vmNewCredential.IssueCountry.Code,
+        showCountry: {
+          ...this.vmNewCredential.showCountry,
+        },
+        Country: this.vmNewCredential.showCountry.Code,
+        showIssueCountry: {
+          ...this.vmNewCredential.showIssueCountry,
+        },
+        IssueCountry: this.vmNewCredential.showIssueCountry.Code,
+
+        Name: `${this.vmNewCredential.Surname}${this.vmNewCredential.Givenname}`,
       };
     }
     if (!selectedCredential.Number) {
@@ -566,14 +590,11 @@ export class SelectPassengerPage
     const passengerBookInfo: PassengerBookInfo<any> = {
       credential: ({
         ...selectedCredential,
-        CheckName: `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
       } as any) as CredentialsEntity,
       isNotWhitelist: this.selectedPassenger.isNotWhiteList,
       passenger: {
         ...this.selectedPassenger,
-        Name:
-          this.selectedPassenger.Name ||
-          `${selectedCredential.CheckFirstName}${selectedCredential.CheckLastName}`,
+        Name: this.selectedPassenger.Name,
       },
     };
     const canAdd = await this.onAddPassengerBookInfo(passengerBookInfo);
@@ -666,108 +687,6 @@ export class SelectPassengerPage
     }
     return true;
   }
-  async validateCredential(c: MemberCredential, container: HTMLElement) {
-    if (!c || !container) {
-      return Promise.resolve(false);
-    }
-    const info = await this.validatorService
-      .get("Beeant.Domain.Entities.Member.CredentialsEntity", "Add")
-      .catch((e) => {
-        AppHelper.alert(e);
-        return { rule: [] };
-      });
-    console.log(info);
-    if (!info || !info.rule) {
-      AppHelper.alert(LanguageHelper.getValidateRulesEmptyTip());
-      return true;
-    }
-    const rules = info.rule;
-    if (!c.Type) {
-      return this.checkProperty(c, "Type", rules, container);
-    }
-    if (!c.Number) {
-      return this.checkProperty(c, "Number", rules, container);
-    }
-    if (!c.FirstName) {
-      return this.checkProperty(c, "FirstName", rules, container);
-    }
-    if (!c.LastName) {
-      return this.checkProperty(c, "LastName", rules, container);
-    }
-    if (!c.CheckFirstName) {
-      return this.checkProperty(c, "CheckFirstName", rules, container);
-    }
-    if (!c.CheckLastName) {
-      return this.checkProperty(c, "CheckLastName", rules, container);
-    }
-    if (!c.Country) {
-      return this.checkProperty(c, "Country", rules, container);
-    }
-    if (!c.IssueCountry) {
-      return this.checkProperty(c, "IssueCountry", rules, container);
-    }
-    if (!c.Gender) {
-      return this.checkProperty(c, "Gender", rules, container);
-    }
-
-    // if (!c.Birthday) {
-    //   return this.checkProperty(c, "Birthday", rules, container);
-    // }
-    // c.Birthday = moment(c.Birthday).format("YYYY-MM-DD");
-    // console.log(c.Birthday);
-    // if (!c.ExpirationDate) {
-    //   return this.checkProperty(c, "ExpirationDate", rules, container);
-    // }
-    // c.ExpirationDate = moment(c.ExpirationDate).format("YYYY-MM-DD");
-    // console.log(c.ExpirationDate);
-    if (!c.CredentialsRemark) {
-      return this.checkProperty(c, "CredentialsRemark", rules, container);
-    }
-    return true;
-  }
-  private checkProperty(
-    obj: any,
-    pro: string,
-    rules: { Name: string; Message }[],
-    container: HTMLElement
-  ) {
-    try {
-      if (!obj) {
-        return false;
-      }
-      if (pro == "CredentialsRemark" && !obj[pro]) {
-        AppHelper.alert(
-          LanguageHelper.Flight.getMustSelectPassengerTypeTip(),
-          true
-        );
-        return false;
-      }
-      if (!obj[pro]) {
-        const rule = rules.find(
-          (it) => it.Name.toLowerCase() == pro.toLowerCase()
-        );
-        const input = container.querySelector(
-          `input[ValidateName=${pro}]`
-        ) as HTMLInputElement;
-        console.log(`input[ValidateName=${pro}]`, input);
-
-        if (rule) {
-          AppHelper.alert(rule.Message, true).then((_) => {
-            if (input) {
-              setTimeout(() => {
-                input.focus();
-              }, 300);
-            }
-          });
-        }
-        return false;
-      }
-      return true;
-    } catch (e) {
-      AppHelper.alert(e);
-      return false;
-    }
-  }
   back(evt?: CustomEvent) {
     if (evt) {
       evt.preventDefault();
@@ -828,11 +747,8 @@ export class SelectPassengerPage
           Number: string;
           CredentialsType: string;
           CredentialsTypeName: string;
-          FirstName: string;
-          LastName: string;
-          CheckName: string;
-          CheckFirstName: string;
-          CheckLastName: string;
+          SureName: string;
+          GivenName: string;
           Country: string;
           IssueCountry: string;
           Birthday: string;
@@ -888,10 +804,12 @@ export class SelectPassengerPage
       };
       if (data.selectedItem) {
         if (data.requestCode == "issueNationality") {
-          this.vmNewCredential.IssueCountry = data.selectedItem;
+          this.vmNewCredential.showIssueCountry = data.selectedItem;
+          this.vmNewCredential.IssueCountry = data.selectedItem.Code;
         }
         if (data.requestCode == "identityNationality") {
-          this.vmNewCredential.Country = data.selectedItem;
+          this.vmNewCredential.Country = data.selectedItem.Code;
+          this.vmNewCredential.showCountry = data.selectedItem;
         }
       }
     }

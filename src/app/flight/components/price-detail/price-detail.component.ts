@@ -1,17 +1,19 @@
 import { Component, OnInit } from "@angular/core";
-import { CredentialsEntity } from 'src/app/tmc/models/CredentialsEntity';
+import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
+import { FlightRouteEntity } from '../../models/flight/FlightRouteEntity';
 
 @Component({
   selector: "app-price-detail",
   templateUrl: "./price-detail.component.html",
-  styleUrls: ["./price-detail.component.scss"]
+  styleUrls: ["./price-detail.component.scss"],
 })
 export class PriceDetailComponent implements OnInit {
   isSelf: boolean;
-  fees: {[id:string]:number};
+  fees: { [id: string]: number };
   priceInfos: {
-    id:string;
-    passengerCredential: CredentialsEntity,
+    flightRoutes: FlightRouteEntity[];
+    id: string;
+    passengerCredential: CredentialsEntity;
     from: string;
     to: string;
     price: number;
@@ -21,9 +23,9 @@ export class PriceDetailComponent implements OnInit {
       price: number;
     };
   }[];
-  constructor() { }
+  constructor() {}
 
   ngOnInit() {
-    console.log("priceInfos", this.priceInfos,this.fees);
+    console.log("priceInfos", this.priceInfos, this.fees);
   }
 }

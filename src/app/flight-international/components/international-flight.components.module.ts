@@ -11,6 +11,7 @@ import { TakeoffTimeComponent } from './flight-dialog/takeoff-time/takeoff-time.
 import { FormsModule } from '@angular/forms';
 import { FlightListItemComponent } from './flight-list-item/flight-list-item.component';
 import { FlightTransferComponent } from './flight-transfer/flight-transfer.component';
+import { RuleExplainComponent } from './rule-explain/rule-explain.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { FlightTransferComponent } from './flight-transfer/flight-transfer.compo
     TakeoffLandingAirportComponent,
     TakeoffTimeComponent,
     FlightListItemComponent,
-    FlightTransferComponent
+    FlightTransferComponent,
+    RuleExplainComponent
   ],
   imports: [CommonModule, IonicModule, TmcComponentsModule,FormsModule],
   exports: [

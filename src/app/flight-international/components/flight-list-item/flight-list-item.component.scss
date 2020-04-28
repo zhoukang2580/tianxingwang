@@ -1,6 +1,6 @@
 .logo {
-  width: 24px;
-  height: 24px;
+  width: 2em;
+  height: 1em;
   // border: 1px solid var(--ion-color-dark);
 }
 
@@ -16,7 +16,7 @@
   font-size: 0.8em;
   width: 5.08em;
   // text-align: center;
-  white-space: nowrap;
+  // white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -39,11 +39,12 @@
 }
 
 .flihtCompany {
-  padding: 0.1em 0em 0.5em 2.8em;
+  // padding: 0.1em 0em 0.5em 2.8em;
   font-size: 0.8em;
   display: flex;
   align-items: center;
   color: var(--ion-color-medium);
+  flex-flow: wrap;
 }
 
 .height {
@@ -66,6 +67,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-left: 3em;
 }
 
 .addDay {

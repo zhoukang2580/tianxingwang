@@ -103,14 +103,14 @@ export class OrderItemComponent implements OnInit, OnChanges {
       if (this.order) {
         this.order["checkPay"] = this.checkPay();
         this.order.VariablesJsonObj =
-          this.order.VariablesJsonObj || JSON.parse(this.order.Variables);
+          this.order.VariablesJsonObj ||
+          (this.order.Variables ? JSON.parse(this.order.Variables) : {});
         if (this.order.OrderFlightTickets) {
           this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(
             (t) => {
-              if (t.Variables && !t.VariablesJsonObj) {
-                t.VariablesJsonObj =
-                  t.VariablesJsonObj || JSON.parse(t.Variables) || {};
-              }
+              t.VariablesJsonObj =
+                t.VariablesJsonObj ||
+                (t.Variables ? JSON.parse(t.Variables) : {});
               if (t.OrderFlightTrips) {
                 t.OrderFlightTrips = t.OrderFlightTrips.map((trip) => {
                   if (
@@ -137,6 +137,22 @@ export class OrderItemComponent implements OnInit, OnChanges {
               t.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(t);
               t.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(t);
               t.VariablesJsonObj.isShowCancelBtn = this.isShowCancelBtn(t);
+              return t;
+            }
+          );
+        }
+        if (this.order.OrderTrainTickets) {
+          this.order.OrderTrainTickets = this.order.OrderTrainTickets.map(
+            (t) => {
+              if (t.Variables && !t.VariablesJsonObj) {
+                t.VariablesJsonObj =
+                  t.VariablesJsonObj ||
+                  (t.Variables ? JSON.parse(t.Variables) : {});
+              }
+              t.VariablesJsonObj.isShowCancelBtn = this.isShowTrainCancelBtn(t);
+              t.VariablesJsonObj.isShowRefundOrExchangeBtn = this.isShowRefundOrExchangeBtn(
+                t
+              );
               return t;
             }
           );
@@ -218,6 +234,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
   ) {
     return (
       orderFlightTicket &&
+      orderFlightTicket.OrderFlightTrips&&
       orderFlightTicket.TicketType == OrderFlightTicketType.Domestic &&
       orderFlightTicket.OrderFlightTrips.some((trip) =>
         this.isAfterTomorrow(trip.TakeoffTime)
@@ -242,6 +259,41 @@ export class OrderItemComponent implements OnInit, OnChanges {
       OrderFlightTicketStatusType.Booked,
       OrderFlightTicketStatusType.BookExchanged,
     ].includes(orderFlightTicket.Status);
+  }
+  private isShowRefundOrExchangeBtn(orderTrainTicket: OrderTrainTicketEntity) {
+    if (!orderTrainTicket) {
+      return false;
+    }
+    return (
+      [
+        OrderTrainTicketStatusType.Issued,
+        OrderTrainTicketStatusType.Exchanged,
+      ].includes(orderTrainTicket.Status) &&
+      orderTrainTicket.OrderTrainTrips.some((trip) => {
+        return (
+          AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
+          30 * 60 * 1000
+        );
+      })
+    );
+  }
+  private isShowTrainCancelBtn(orderTrainTicket: OrderTrainTicketEntity) {
+    if (!orderTrainTicket || !orderTrainTicket.OrderTrainTrips) {
+      return false;
+    }
+    return (
+      orderTrainTicket &&
+      [
+        OrderTrainTicketStatusType.Booked,
+        OrderTrainTicketStatusType.BookExchanged,
+      ].includes(orderTrainTicket.Status) &&
+      orderTrainTicket.OrderTrainTrips.some((trip) => {
+        return (
+          AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
+          30 * 60 * 1000
+        );
+      })
+    );
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
     if (
@@ -406,7 +458,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
       return false;
     }
     order.VariablesJsonObj =
-      order.VariablesJsonObj || JSON.parse(order.Variables) || {};
+      order.VariablesJsonObj ||
+      (order.Variables ? JSON.parse(order.Variables) : {});
     if (order.Status == OrderStatusType.WaitHandle) {
       return false;
     }
@@ -468,8 +521,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
   }) {
     orderFlightTicket.VariablesJsonObj =
       orderFlightTicket.VariablesJsonObj ||
-      JSON.parse(orderFlightTicket.Variables) ||
-      {};
+      (orderFlightTicket.Variables
+        ? JSON.parse(orderFlightTicket.Variables)
+        : {});
     return orderFlightTicket && orderFlightTicket.VariablesJsonObj["IsReject"];
   }
   flightInsuranceAmount(orderFlightTicket: OrderFlightTicketEntity) {
