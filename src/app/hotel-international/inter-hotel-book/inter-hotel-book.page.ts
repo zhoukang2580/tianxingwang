@@ -1484,7 +1484,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     if (result) {
       this.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {
-          if ((it) => it.label.toLowerCase() == "travelnumber") {
+          if (info.label.toLowerCase() == "travelnumber") {
             info.loadTravelUrlErrorMsg =
               result[info.staffNumber] && result[info.staffNumber].Message;
             info.travelUrlInfos =

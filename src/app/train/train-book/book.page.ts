@@ -1349,7 +1349,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     if (result) {
       this.viewModel.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {
-          if ((it) => it.label.toLowerCase() == "travelnumber") {
+          if (info.label.toLowerCase() == "travelnumber") {
             info.loadTravelUrlErrorMsg =
               result[info.staffNumber] && result[info.staffNumber].Message;
             info.travelUrlInfos =
