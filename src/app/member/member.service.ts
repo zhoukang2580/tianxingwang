@@ -6,6 +6,9 @@ import { AccountEntity } from "../account/models/AccountEntity";
 import { Subject, BehaviorSubject } from "rxjs";
 import { filter } from "rxjs/operators";
 import { ValidatorService } from "../services/validator/validator.service";
+import { AppHelper } from '../appHelper';
+import { LanguageHelper } from '../languageHelper';
+import { Platform } from '@ionic/angular';
 export const CHINESE_REG = /^[\u4e00-\u9fa5]+$/; // 只能输入中文
 export const ENGLISH_SURNAME_REG = /^[A-Za-z]+$/; // 英文姓的正则，匹配由26个英文字母组成的字符串
 export const ENGLISH_GIVEN_NAME_REG = /(^[A-Za-z]{1,}\s{0,}[A-Za-z]{1,}$)/; // 英文名的正则，匹配首尾空格的正则表达式
@@ -87,7 +90,8 @@ export class MemberService {
   }>;
   constructor(
     private apiService: ApiService,
-    private validatorService: ValidatorService
+    private validatorService: ValidatorService,
+    private plt:Platform
   ) {
     this.credentialsChanges = new BehaviorSubject(undefined);
   }
@@ -161,11 +165,131 @@ export class MemberService {
       container
     );
   }
+  async confirmTipMessage(c: MemberCredential) {
+    c.Surname = c.Surname && c.Surname.toUpperCase();
+    c.Givenname = c.Givenname && c.Givenname.toUpperCase();
+    c.Number = c.Number && c.Number.toUpperCase();
+    const ok = await AppHelper.alert(
+      `请确认您的证件姓名：${c.Surname}${c.Givenname},证件号码：${c.Number}`,
+      true,
+      LanguageHelper.getConfirmTip(),
+      LanguageHelper.getCancelTip()
+    );
+    return ok;
+  }
+  onNameChange(container: HTMLElement,credential:MemberCredential) {
+    const surnameEl: HTMLInputElement = container.querySelector(
+      "input[name='Surname']"
+    );
+    const givennameEl: HTMLInputElement = container.querySelector(
+      "input[name='Givenname']"
+    );
+    if (credential) {
+      if (credential.Type == CredentialsType.IdCard) {
+        this.addMessageTipEl(
+          surnameEl,
+          !CHINESE_REG.test(surnameEl && surnameEl.value),
+          surnameEl.placeholder
+        );
+        this.addMessageTipEl(
+          givennameEl,
+          !CHINESE_REG.test(givennameEl && givennameEl.value),
+          givennameEl.placeholder
+        );
+      } else {
+        this.addMessageTipEl(
+          surnameEl,
+          !ENGLISH_SURNAME_REG.test(surnameEl && surnameEl.value),
+          surnameEl.placeholder
+        );
+        this.addMessageTipEl(
+          givennameEl,
+          !ENGLISH_GIVEN_NAME_REG.test(givennameEl && givennameEl.value),
+          givennameEl.placeholder
+        );
+      }
+    }
+  }
+  addMessageTipEl(el: HTMLElement, isShow: boolean, msg = "") {
+    requestAnimationFrame(() => {
+      let errorTipEl = el.parentElement.querySelector(".idnumbervalidate");
+      if (!errorTipEl) {
+        errorTipEl = document.createElement("span");
+        errorTipEl.classList.add("idnumbervalidate");
+        el.insertAdjacentElement("afterend", errorTipEl);
+      }
+      if (isShow) {
+        el.classList.remove("validctrlsucess");
+        el.classList.add("validctrlerror");
+        errorTipEl.classList.remove("validsucessmess");
+        errorTipEl.classList.add("validerrormess");
+        errorTipEl.textContent = msg;
+      } else {
+        el.classList.remove("validctrlerror");
+        errorTipEl.textContent = "";
+        errorTipEl.classList.remove("validerrormess");
+        errorTipEl.classList.add("validsucessmess");
+      }
+    });
+  }
    getBirthByIdNumber(idNumber: string = "") {
     if (idNumber && idNumber.length == 18) {
       return idNumber.substr(6, 8);
     }
     return "";
+  }
+  isIdNubmerValidate(id:string){
+    return IDCARDRULE_REG.test(id);
+  }
+  private onIdNumberInputChange(
+    container: HTMLElement
+  ) {
+    const idInputEle = container.querySelector(
+      "input[name='Number']"
+    ) as HTMLInputElement;
+    if (!idInputEle) {
+      return ;
+    }
+    idInputEle.onfocus = () => {
+      if (idInputEle.classList.contains("validctrlerror")) {
+        idInputEle.value = "";
+      }
+    };
+    idInputEle.onblur = () => {
+      setTimeout(() => {
+        this.validateIdNumber(idInputEle,credential);
+        this.onNameChange(container,credential);
+        this.changeBirthByIdNumber(idInputEle, credential);
+      }, 100);
+    }
+  }
+  initInputChanges(container: HTMLElement,credential:MemberCredential) {
+    if (!container) {
+      return;
+    }
+    this.onIdNumberInputChange(container);
+    const inputSurnameEle = container.querySelector(
+      "input[name='Surname']"
+    ) as HTMLIonInputElement;
+    const inputGivennameEle = container.querySelector(
+      "input[name='Givenname']"
+    ) as HTMLIonInputElement;
+    if (inputSurnameEle) {
+      inputSurnameEle.oninput = (_) => {
+        this.onNameChange(container,credential);
+      };
+      inputSurnameEle.onblur = () => {
+        this.onNameChange(container,credential);
+      };
+    }
+    if (inputGivennameEle) {
+      inputGivennameEle.oninput = (_) => {
+        this.onNameChange(container,credential);
+      };
+      inputGivennameEle.onblur = () => {
+        this.onNameChange(container,credential);
+      };
+    }
   }
    changeBirthByIdNumber(
     container: HTMLElement,

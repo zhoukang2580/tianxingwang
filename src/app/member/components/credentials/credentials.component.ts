@@ -23,7 +23,7 @@ import {
   IonDatetime,
   ModalController,
 } from "@ionic/angular";
-import { Subscription, fromEvent } from "rxjs";
+import { Subscription, fromEvent, of } from "rxjs";
 import { ValidatorService } from "src/app/services/validator/validator.service";
 import { AppHelper } from "src/app/appHelper";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -75,7 +75,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
           this.memberService.initializeValidateModify(container);
         }
         if (this.credential) {
-          this.initInputChanges(container);
+          this.initInputChanges(container,this.credential);
         }
       }
     }, 200);
@@ -96,16 +96,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private async confirmTipMessage(c: MemberCredential) {
-    c.Surname = c.Surname && c.Surname.toUpperCase();
-    c.Givenname = c.Givenname && c.Givenname.toUpperCase();
-    c.Number = c.Number && c.Number.toUpperCase();
-    const ok = await AppHelper.alert(
-      `请确认您的证件姓名：${c.Surname}${c.Givenname},证件号码：${c.Number}`,
-      true,
-      LanguageHelper.getConfirmTip(),
-      LanguageHelper.getCancelTip()
-    );
-    return ok;
+    return this.memberService.confirmTipMessage(c);
   }
   async saveModify() {
     const c: MemberCredential = this.credential;
@@ -122,63 +113,11 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.credentialChange.emit(this.credential);
     return true;
   }
-  private onNameChange(container: HTMLElement) {
-    const surnameEl: HTMLInputElement = container.querySelector(
-      "input[name='Surname']"
-    );
-    const givennameEl: HTMLInputElement = container.querySelector(
-      "input[name='Givenname']"
-    );
-    if (this.credential) {
-      if (this.credential.Type == CredentialsType.IdCard) {
-        this.addMessageTipEl(
-          surnameEl,
-          !CHINESE_REG.test(surnameEl && surnameEl.value),
-          surnameEl.placeholder
-        );
-        this.addMessageTipEl(
-          givennameEl,
-          !CHINESE_REG.test(givennameEl && givennameEl.value),
-          givennameEl.placeholder
-        );
-      } else {
-        this.addMessageTipEl(
-          surnameEl,
-          !ENGLISH_SURNAME_REG.test(surnameEl && surnameEl.value),
-          surnameEl.placeholder
-        );
-        this.addMessageTipEl(
-          givennameEl,
-          !ENGLISH_GIVEN_NAME_REG.test(givennameEl && givennameEl.value),
-          givennameEl.placeholder
-        );
-      }
-    }
+  private onNameChange(container: HTMLElement,credential:MemberCredential) {
+    this.memberService.onNameChange(container, credential);
   }
   private addMessageTipEl(el: HTMLElement, isShow: boolean, msg = "") {
-    requestAnimationFrame(() => {
-      let errorTipEl = el.parentElement.querySelector(".idnumbervalidate");
-      if (!errorTipEl) {
-        errorTipEl = document.createElement("span");
-        errorTipEl.classList.add("idnumbervalidate");
-        el.insertAdjacentElement("afterend", errorTipEl);
-      }
-      if (isShow) {
-        el.classList.remove("validctrlsucess");
-        el.classList.add("validctrlerror");
-        errorTipEl.classList.remove("validsucessmess");
-        errorTipEl.classList.add("validerrormess");
-        errorTipEl.textContent = msg;
-      } else {
-        el.classList.remove("validctrlerror");
-        errorTipEl.textContent = "";
-        errorTipEl.classList.remove("validerrormess");
-        errorTipEl.classList.add("validsucessmess");
-      }
-    });
-  }
-  private getBirthByIdNumber(idNumber: string = "") {
-    return this.memberService.getBirthByIdNumber(idNumber);
+    this.memberService.addMessageTipEl(el, isShow, msg);
   }
   private changeBirthByIdNumber(
     container: HTMLElement,
@@ -187,26 +126,26 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.memberService.changeBirthByIdNumber(container, credential);
   }
   private onIdNumberInputChange(
-    idInputEle: HTMLInputElement,
     container: HTMLElement
   ) {
+    const idInputEle = container.querySelector(
+      "input[name='Number']"
+    ) as HTMLInputElement;
     if (!idInputEle) {
-      return;
+      return ;
     }
     idInputEle.onfocus = () => {
       if (idInputEle.classList.contains("validctrlerror")) {
         idInputEle.value = "";
       }
     };
-    this.subscriptions.push(
-      fromEvent(idInputEle, "blur").subscribe((evt) => {
-        setTimeout(() => {
-          this.validateIdNumber(idInputEle);
-          this.onNameChange(container);
-          this.changeBirthByIdNumber(idInputEle, this.credential);
-        }, 100);
-      })
-    );
+    idInputEle.onblur = () => {
+      setTimeout(() => {
+        this.validateIdNumber(idInputEle,this.credential);
+        this.onNameChange(container,this.credential);
+        this.changeBirthByIdNumber(idInputEle, this.credential);
+      }, 100);
+    }
   }
   onSetLongTime(c: MemberCredential, evt: CustomEvent) {
     evt.stopPropagation();
@@ -336,13 +275,13 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!value) {
       return false;
     }
-    return value.length == 18 && !CHINESE_REG.test(value);
+    return this.memberService.isIdNubmerValidate(value);
   }
-  private validateIdNumber(inputEl: HTMLInputElement) {
+  private validateIdNumber(inputEl: HTMLInputElement,credential:MemberCredential) {
     if (
       inputEl &&
-      this.credential &&
-      this.credential.Type == CredentialsType.IdCard
+      credential &&
+      credential.Type == CredentialsType.IdCard
     ) {
       const value = inputEl.value;
       this.addMessageTipEl(
@@ -434,42 +373,15 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     }
   }
-  private initInputChanges(container: HTMLElement) {
-    if (!container) {
-      return;
-    }
-    const idInputEle = container.querySelector(
-      "input[name='Number']"
-    ) as HTMLInputElement;
-    this.onIdNumberInputChange(idInputEle, container);
-    const inputSurnameEle = container.querySelector(
-      "input[name='Surname']"
-    ) as HTMLIonInputElement;
-    const inputGivennameEle = container.querySelector(
-      "input[name='Givenname']"
-    ) as HTMLIonInputElement;
-    if (inputSurnameEle) {
-      inputSurnameEle.oninput = (_) => {
-        this.onNameChange(container);
-      };
-      inputSurnameEle.onblur = () => {
-        this.onNameChange(container);
-      };
-    }
-    if (inputGivennameEle) {
-      inputGivennameEle.oninput = (_) => {
-        this.onNameChange(container);
-      };
-      inputGivennameEle.onblur = () => {
-        this.onNameChange(container);
-      };
-    }
+  private initInputChanges(container: HTMLElement,credential:MemberCredential) {
+   return this.memberService.initInputChanges(container,credential);
   }
+  
   onSelectIdType(ele: IonSelect) {
     ele.open();
     ele.ionChange.subscribe((_) => {
       this.onIdTypeChange(this.el.nativeElement);
-      this.onNameChange(this.el.nativeElement);
+      this.onNameChange(this.el.nativeElement,this.credential);
       if (this.credential) {
         if (this.credential.Type != CredentialsType.IdCard) {
           this.credential.isLongPeriodOfTime = false;
@@ -483,7 +395,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     if (container) {
       this.changeBirthByIdNumber(container, this.credential);
       setTimeout(() => {
-        this.onNameChange(container);
+        this.onNameChange(container,this.credential);
       }, 200);
     }
   }
