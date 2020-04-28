@@ -32,7 +32,10 @@
         <ion-item *ngFor='let item of vmStaffs' @flyInOut detail (click)='onSelect(item)'>
           <ion-label color='medium' *ngIf='forType != FlightHotelTrainType.InternationalFlight'>
             <ion-text color='dark'>{{item?.Name}}</ion-text>
-            {{item.Number}}<span *ngIf='item.CredentialsInfo'> | {{item?.CredentialsInfo}} </span>
+            {{item.Number}}<span *ngIf='item.CredentialsInfo'>
+              <ng-container *ngIf='item.Number&&item?.CredentialsInfo'> | </ng-container>
+              {{item?.CredentialsInfo}}
+            </span>
           </ion-label>
           <ion-label color='{{selectedPassengerPolicy?.Id==item.Policy?.Id?"secondary":"medium"}}' class='ion-text-wrap'
             *ngIf='forType == FlightHotelTrainType.InternationalFlight'>
