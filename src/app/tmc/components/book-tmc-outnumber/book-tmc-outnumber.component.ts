@@ -100,8 +100,8 @@ export class BookTmcOutnumberComponent
       }
     }, 300);
   }
-  compareWithFn(o1: ITmcOutNumberInfo, o2: ITmcOutNumberInfo) {
-    return o1 && o2 ? o1.value === o2.value : o1 === o2;
+  compareWithFn(o1: string, o2: string) {
+    return o1 == o2;
   }
   ngAfterViewInit() {}
   ngOnDestroy() {
