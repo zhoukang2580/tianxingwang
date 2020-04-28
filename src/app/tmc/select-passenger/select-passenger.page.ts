@@ -50,6 +50,7 @@ import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { CountryEntity } from "../models/CountryEntity";
 import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
 import { RefresherComponent } from "src/app/components/refresher";
+import { CredentialsComponent } from "src/app/member/components/credentials/credentials.component";
 export const NOT_WHITE_LIST = "notwhitelist";
 @Component({
   selector: "app-select-passenger",
@@ -65,6 +66,7 @@ export class SelectPassengerPage
   private removeitemSubscription = Subscription.EMPTY;
   private idInputEleSubscription = Subscription.EMPTY;
   private subscription = Subscription.EMPTY;
+  @ViewChild(CredentialsComponent) credentialsComp: CredentialsComponent;
   @ViewChild(IonContent, { static: true }) content: IonContent;
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
@@ -348,6 +350,7 @@ export class SelectPassengerPage
             this.loading = false;
             if (this.refresher && this.pageIndex <= 1) {
               this.refresher.complete();
+              this.content.scrollToTop();
             }
           }, 200);
         })
@@ -377,6 +380,7 @@ export class SelectPassengerPage
             }
           }
           if (staffs.length) {
+            this.vmStaffs = this.vmStaffs || [];
             this.vmStaffs = this.vmStaffs.concat(staffs);
           }
         },
@@ -465,6 +469,9 @@ export class SelectPassengerPage
     if (await this.canAddNotWhiteListCredential()) {
       this.initNewCredential(s);
     }
+    if (this.scroller) {
+      this.scroller.disabled = true;
+    }
     this.content.scrollToTop();
   }
   private initNewCredential(s: StaffEntity) {
@@ -546,10 +553,8 @@ export class SelectPassengerPage
     ) {
       this.vmNewCredential.Name =
         this.vmNewCredential.Surname + this.vmNewCredential.Givenname;
-      const validate = await this.validateCredential(
-        selectedCredential,
-        this.addForm && this.addForm.last && this.addForm.last["el"]
-      );
+      const validate =
+        this.credentialsComp && (await this.credentialsComp.saveAdd());
       if (!validate) {
         return;
       }
@@ -681,102 +686,6 @@ export class SelectPassengerPage
       this.trainService.addBookInfo(passengerBookInfo);
     }
     return true;
-  }
-  async validateCredential(c: MemberCredential, container: HTMLElement) {
-    if (!c || !container) {
-      return Promise.resolve(false);
-    }
-    const info = await this.validatorService
-      .get("Beeant.Domain.Entities.Member.CredentialsEntity", "Add")
-      .catch((e) => {
-        AppHelper.alert(e);
-        return { rule: [] };
-      });
-    console.log(info);
-    if (!info || !info.rule) {
-      AppHelper.alert(LanguageHelper.getValidateRulesEmptyTip());
-      return true;
-    }
-    const rules = info.rule;
-    if (!c.Type) {
-      return this.checkProperty(c, "Type", rules, container);
-    }
-    if (!c.Number) {
-      return this.checkProperty(c, "Number", rules, container);
-    }
-    if (!c.Surname) {
-      return this.checkProperty(c, "Surname", rules, container);
-    }
-    if (!c.Givenname) {
-      return this.checkProperty(c, "Givenname", rules, container);
-    }
-    if (!c.Country) {
-      return this.checkProperty(c, "Country", rules, container);
-    }
-    if (!c.IssueCountry) {
-      return this.checkProperty(c, "IssueCountry", rules, container);
-    }
-    if (!c.Gender) {
-      return this.checkProperty(c, "Gender", rules, container);
-    }
-
-    // if (!c.Birthday) {
-    //   return this.checkProperty(c, "Birthday", rules, container);
-    // }
-    // c.Birthday = moment(c.Birthday).format("YYYY-MM-DD");
-    // console.log(c.Birthday);
-    // if (!c.ExpirationDate) {
-    //   return this.checkProperty(c, "ExpirationDate", rules, container);
-    // }
-    // c.ExpirationDate = moment(c.ExpirationDate).format("YYYY-MM-DD");
-    // console.log(c.ExpirationDate);
-    if (!c.CredentialsRemark) {
-      return this.checkProperty(c, "CredentialsRemark", rules, container);
-    }
-    return true;
-  }
-  private checkProperty(
-    obj: any,
-    pro: string,
-    rules: { Name: string; Message }[],
-    container: HTMLElement
-  ) {
-    try {
-      if (!obj) {
-        return false;
-      }
-      if (pro == "CredentialsRemark" && !obj[pro]) {
-        AppHelper.alert(
-          LanguageHelper.Flight.getMustSelectPassengerTypeTip(),
-          true
-        );
-        return false;
-      }
-      if (!obj[pro]) {
-        const rule = rules.find(
-          (it) => it.Name.toLowerCase() == pro.toLowerCase()
-        );
-        const input = container.querySelector(
-          `input[ValidateName=${pro}]`
-        ) as HTMLInputElement;
-        console.log(`input[ValidateName=${pro}]`, input);
-
-        if (rule) {
-          AppHelper.alert(rule.Message, true).then((_) => {
-            if (input) {
-              setTimeout(() => {
-                input.focus();
-              }, 300);
-            }
-          });
-        }
-        return false;
-      }
-      return true;
-    } catch (e) {
-      AppHelper.alert(e);
-      return false;
-    }
   }
   back(evt?: CustomEvent) {
     if (evt) {
