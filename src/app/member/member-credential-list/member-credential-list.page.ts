@@ -83,13 +83,15 @@ export class MemberCredentialListPage implements OnInit, OnDestroy {
     this.credentials = credentials.map((c) => {
       return {
         ...c,
-        Country: {
-          Code: c.Country as any,
-          Name: this.getCountryName(c.Country as any),
+        Country: c.Country,
+        showCountry: {
+          Code: c.Country,
+          Name: this.getCountryName(c.Country),
         },
-        IssueCountry: {
-          Code: c.IssueCountry as any,
-          Name: this.getCountryName(c.IssueCountry as any),
+        IssueCountry: c.IssueCountry,
+        showIssueCountry: {
+          Code: c.IssueCountry,
+          Name: this.getCountryName(c.IssueCountry),
         },
         isModified: false,
         Birthday: c.Birthday.indexOf("T")

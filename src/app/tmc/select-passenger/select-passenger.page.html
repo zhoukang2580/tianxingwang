@@ -5,11 +5,11 @@
       <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title>{{title}}</ion-title>
-    <ion-buttons slot='end'>
+    <ion-buttons slot='end' *ngIf='bookInfos$'>
       <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
         已选旅客
         <ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPasengersNumber$|async}}</ion-text>
+          <ion-text color='light'>{{(bookInfos$|async).length}}</ion-text>
         </ion-badge>
       </ion-button>
     </ion-buttons>
@@ -17,10 +17,10 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh(null)">
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh(null)">
     <ion-refresher-content refreshingText="正在加载...">
     </ion-refresher-content>
-  </ion-refresher>
+  </app-refresher>
   <ion-toolbar #toolbar class="search">
     <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" animated placeholder="员工号、姓名、手机号、空格键 开始查询"
       (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
@@ -47,7 +47,11 @@
       </ng-template>
     </ion-list>
     <ng-template #loadingTemp>
-      正在加载...
+      <ion-list>
+        <ion-item *ngFor='let it of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];let odd=odd;'>
+          <ion-skeleton-text style="width: 80%;height: 1em;" [animated]='odd'></ion-skeleton-text>
+        </ion-item>
+      </ion-list>
     </ng-template>
   </ng-container>
   <ng-template #addTempl>
@@ -178,7 +182,7 @@
                   [class.validctrlsucess]='!!vmNewCredential.Country' [class.validerrormess]='!vmNewCredential.Country'
                   [class.validctrlerror]='!vmNewCredential.Country' [disabled]='true'
                   [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'
-                  value="{{vmNewCredential.Country?.Name}}({{vmNewCredential.Country?.Code}})" name='Country'
+                  value="{{vmNewCredential.showCountry?.Name}}({{vmNewCredential.showCountry?.Code}})" name='Country'
                   ValidateName="Country">
               </ion-col>
               <ion-col size='1' class='arrow-forward ion-text-end'
@@ -195,7 +199,7 @@
                   [class.validctrlsucess]="!!vmNewCredential.IssueCountry"
                   [class.validctrlerror]='!vmNewCredential.IssueCountry'
                   [class.disabled]='vmNewCredential?.Id !=selectedCredentialId' [disabled]='true'
-                  value="{{vmNewCredential.IssueCountry?.Name}}({{vmNewCredential.IssueCountry?.Code}})"
+                  value="{{vmNewCredential.showIssueCountry?.Name}}({{vmNewCredential.showIssueCountry?.Code}})"
                   name='IssueCountry' style='border: none' ValidateName="IssueCountry">
               </ion-col>
               <ion-col size='1' class='arrow-forward ion-text-end'
@@ -330,6 +334,11 @@
       </ion-list>
     </ion-radio-group>
   </ng-template>
+  <ion-infinite-scroll (ionInfinite)="loadMore()">
+    <ion-infinite-scroll-content>
+      正在加载...
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
 <ion-footer>
   <ion-toolbar>

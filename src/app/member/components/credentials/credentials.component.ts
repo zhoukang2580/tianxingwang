@@ -9,7 +9,13 @@ import {
   ViewChild,
   AfterViewInit,
 } from "@angular/core";
-import { MemberCredential, MemberService } from "../../member.service";
+import {
+  MemberCredential,
+  CHINESE_REG,
+  ENGLISH_SURNAME_REG,
+  ENGLISH_GIVEN_NAME_REG,
+  MemberService,
+} from "../../member.service";
 import { CredentialsType } from "../../pipe/credential.pipe";
 import {
   IonSelect,
@@ -24,9 +30,6 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { CountryEntity } from "src/app/tmc/models/CountryEntity";
 import { SelectCountryModalComponent } from "src/app/tmc/components/select-country/select-countrymodal.component";
-import { TmcService } from "src/app/tmc/tmc.service";
-import { MyCalendarComponent } from "src/app/components/my-calendar/my-calendar.component";
-
 @Component({
   selector: "app-credentials-comp",
   templateUrl: "./credentials.component.html",
@@ -50,7 +53,8 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     private el: ElementRef<HTMLElement>,
     private plt: Platform,
     private calendarService: CalendarService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private memberService: MemberService
   ) {
     this.credentialChange = new EventEmitter();
   }
@@ -64,11 +68,15 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => {
       const container = this.el.nativeElement;
       if (container) {
-        this.validatorService.initialize(
-          "Beeant.Domain.Entities.Member.CredentialsEntity",
-          "Modify",
-          container
-        );
+        if (this.credential && this.credential.isAdd) {
+          this.memberService.initializeValidateAdd(this.el.nativeElement);
+        }
+        if (this.credential && this.credential.isModified) {
+          this.memberService.initializeValidateModify(container);
+        }
+        if (this.credential) {
+          this.initInputChanges(container);
+        }
       }
     }, 200);
   }
@@ -86,18 +94,10 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.getIdentityTypes();
   }
-  private initializeValidateAdd(el: HTMLElement) {
-    this.validatorService.initialize(
-      "Beeant.Domain.Entities.Member.CredentialsEntity",
-      "Add",
-      el
-    );
-  }
+
   private async confirmTipMessage(c: MemberCredential) {
     c.Surname = c.Surname && c.Surname.toUpperCase();
     c.Givenname = c.Givenname && c.Givenname.toUpperCase();
-    // c.CheckFirstName = c.CheckFirstName && c.CheckFirstName.toUpperCase();
-    // c.CheckLastName = c.CheckLastName && c.CheckLastName.toUpperCase();
     c.Number = c.Number && c.Number.toUpperCase();
     const ok = await AppHelper.alert(
       `请确认您的证件姓名：${c.Surname}${c.Givenname},证件号码：${c.Number}`,
@@ -107,39 +107,22 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     );
     return ok;
   }
-  private initializeValidate() {
-    this.validatorService.initialize(
-      "Beeant.Domain.Entities.Member.CredentialsEntity",
-      "Modify",
-      this.el.nativeElement
-    );
-  }
-  async saveModify(c: MemberCredential, el: HTMLElement) {
+  async saveModify() {
+    const c: MemberCredential = this.credential;
+    const el: HTMLElement = this.el.nativeElement;
     const valid = await this.validateCredential(c, el);
     if (!valid) {
-      return;
+      return false;
     }
     const ok = await this.confirmTipMessage(c);
     if (!ok) {
-      return;
+      return false;
     }
     this.credential.isModified = true;
     this.credentialChange.emit(this.credential);
+    return true;
   }
-  private async onSelectDate() {
-    let d: { date: string };
-    const m = await this.modalController.create({
-      component: MyCalendarComponent,
-    });
-    m.present();
-    const data = await m.onDidDismiss();
-    if (data && data.data) {
-      d = data.data;
-    }
-    return d;
-  }
-  private onNameChange() {
-    const container: HTMLElement = this.el.nativeElement;
+  private onNameChange(container: HTMLElement) {
     const surnameEl: HTMLInputElement = container.querySelector(
       "input[name='Surname']"
     );
@@ -147,32 +130,26 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       "input[name='Givenname']"
     );
     if (this.credential) {
-      console.log(
-        !AppHelper.includeHanz(surnameEl && surnameEl.value),
-        surnameEl.value,
-        surnameEl.placeholder,
-        "222222222"
-      );
       if (this.credential.Type == CredentialsType.IdCard) {
         this.addMessageTipEl(
           surnameEl,
-          !AppHelper.includeHanz(surnameEl && surnameEl.value),
+          !CHINESE_REG.test(surnameEl && surnameEl.value),
           surnameEl.placeholder
         );
         this.addMessageTipEl(
           givennameEl,
-          !AppHelper.includeHanz(givennameEl && givennameEl.value),
+          !CHINESE_REG.test(givennameEl && givennameEl.value),
           givennameEl.placeholder
         );
       } else {
         this.addMessageTipEl(
           surnameEl,
-          AppHelper.includeHanz(surnameEl && surnameEl.value),
+          !ENGLISH_SURNAME_REG.test(surnameEl && surnameEl.value),
           surnameEl.placeholder
         );
         this.addMessageTipEl(
           givennameEl,
-          AppHelper.includeHanz(givennameEl && givennameEl.value),
+          !ENGLISH_GIVEN_NAME_REG.test(givennameEl && givennameEl.value),
           givennameEl.placeholder
         );
       }
@@ -201,30 +178,18 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   private getBirthByIdNumber(idNumber: string = "") {
-    if (idNumber && idNumber.length == 18) {
-      return idNumber.substr(6, 8);
-    }
-    return "";
+    return this.memberService.getBirthByIdNumber(idNumber);
   }
-  private changeBirthByIdNumber(idInputEle: HTMLInputElement) {
-    if (!idInputEle) {
-      return;
-    }
-    const value = idInputEle.value.trim();
-    if (value) {
-      const one = this.credential;
-      if (one && one.Type == CredentialsType.IdCard) {
-        const b = this.getBirthByIdNumber(value);
-        if (b) {
-          const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
-          one.Birthday = this.plt.is("ios") ? str.replace(/-/g, "/") : str;
-        } else {
-          // one.Birthday = null;
-        }
-      }
-    }
+  private changeBirthByIdNumber(
+    container: HTMLElement,
+    credential: MemberCredential
+  ) {
+    return this.memberService.changeBirthByIdNumber(container, credential);
   }
-  private onIdNumberInputChange(idInputEle: HTMLInputElement) {
+  private onIdNumberInputChange(
+    idInputEle: HTMLInputElement,
+    container: HTMLElement
+  ) {
     if (!idInputEle) {
       return;
     }
@@ -237,9 +202,9 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       fromEvent(idInputEle, "blur").subscribe((evt) => {
         setTimeout(() => {
           this.validateIdNumber(idInputEle);
-          this.onNameChange();
-          this.changeBirthByIdNumber(idInputEle);
-        }, 0);
+          this.onNameChange(container);
+          this.changeBirthByIdNumber(idInputEle, this.credential);
+        }, 100);
       })
     );
   }
@@ -251,24 +216,27 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       this.calendarService.getMoment(100 * 365, c.Birthday).format("YYYY-MM-DD")
     );
   }
-  async saveAdd(c: MemberCredential, container: HTMLElement) {
+  async saveAdd() {
+    const c: MemberCredential = this.credential;
+    const container: HTMLElement = this.el.nativeElement;
     let ok = await this.validateCredential(c, container);
     if (!ok) {
-      return;
+      return false;
     }
     ok = await this.confirmTipMessage(c);
     console.log("validateCredential", ok);
     if (!ok) {
-      return;
+      return false;
     }
     c.Id = "0";
+    this.credential.isAdd = true;
     this.credentialChange.emit(c);
+    return true;
   }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c) {
-      return Promise.resolve(false);
+      return false;
     }
-
     const info = await this.validatorService
       .get("Beeant.Domain.Entities.Member.CredentialsEntity", "Add")
       .catch((e) => {
@@ -289,7 +257,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     if (
       c.Type != CredentialsType.IdCard &&
-      AppHelper.includeHanz(c.Surname + c.Givenname)
+      CHINESE_REG.test(c.Surname + c.Givenname)
     ) {
       AppHelper.alert("证件姓名，请输入英文或者拼音");
       return false;
@@ -327,6 +295,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
 
     return true;
   }
+
   private checkProperty(
     obj: any,
     pro: string,
@@ -367,7 +336,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!value) {
       return false;
     }
-    return value.length == 18 && !AppHelper.includeHanz(value);
+    return value.length == 18 && !CHINESE_REG.test(value);
   }
   private validateIdNumber(inputEl: HTMLInputElement) {
     if (
@@ -427,10 +396,12 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       };
       if (data.selectedItem) {
         if (data.requestCode == "issueNationality") {
-          this.credential.IssueCountry = data.selectedItem;
+          this.credential.IssueCountry = data.selectedItem.Code;
+          this.credential.showIssueCountry = data.selectedItem;
         }
         if (data.requestCode == "identityNationality") {
-          this.credential.Country = data.selectedItem;
+          this.credential.Country = data.selectedItem.Code;
+          this.credential.showCountry = data.selectedItem;
         }
       }
     }
@@ -450,7 +421,8 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       this.datetimeComp.open();
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value: string = d.detail.value;
-        if (value) {
+        if (value && this.credential) {
+          this.credential.isLongPeriodOfTime = !true;
           this.credential.ExpirationDate = this.calendarService.getFormatedDate(
             value.substr(0, 10)
           );
@@ -458,53 +430,46 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         setTimeout(() => {
           sub.unsubscribe();
-        }, 100);
+        }, 1000);
       });
     }
   }
-  private initInputChanges(
-    container: HTMLElement,
-    credential: MemberCredential
-  ) {
-    console.log("newCredentials 找到当前要修改的某个", credential);
-    const idInputEle =
-      container &&
-      (container.querySelector("input[name='Number']") as HTMLInputElement);
-    this.onIdNumberInputChange(idInputEle);
-    const inputSurnameEle =
-      container &&
-      (container.querySelector("input[name='Surname']") as HTMLIonInputElement);
-    const inputGivennameEle =
-      container &&
-      (container.querySelector(
-        "input[name='Givenname']"
-      ) as HTMLIonInputElement);
-    if (credential) {
-      if (inputSurnameEle) {
-        inputSurnameEle.oninput = (_) => {
-          // credential.CheckFirstName = inputFirstNameEle.value as string;
-          this.onNameChange();
-        };
-        inputSurnameEle.onblur = () => {
-          this.onNameChange();
-        };
-      }
-      if (inputGivennameEle) {
-        inputGivennameEle.oninput = (_) => {
-          // credential.CheckLastName = inputLastNameEle.value as string;
-          this.onNameChange();
-        };
-        inputGivennameEle.onblur = () => {
-          this.onNameChange();
-        };
-      }
+  private initInputChanges(container: HTMLElement) {
+    if (!container) {
+      return;
+    }
+    const idInputEle = container.querySelector(
+      "input[name='Number']"
+    ) as HTMLInputElement;
+    this.onIdNumberInputChange(idInputEle, container);
+    const inputSurnameEle = container.querySelector(
+      "input[name='Surname']"
+    ) as HTMLIonInputElement;
+    const inputGivennameEle = container.querySelector(
+      "input[name='Givenname']"
+    ) as HTMLIonInputElement;
+    if (inputSurnameEle) {
+      inputSurnameEle.oninput = (_) => {
+        this.onNameChange(container);
+      };
+      inputSurnameEle.onblur = () => {
+        this.onNameChange(container);
+      };
+    }
+    if (inputGivennameEle) {
+      inputGivennameEle.oninput = (_) => {
+        this.onNameChange(container);
+      };
+      inputGivennameEle.onblur = () => {
+        this.onNameChange(container);
+      };
     }
   }
   onSelectIdType(ele: IonSelect) {
     ele.open();
     ele.ionChange.subscribe((_) => {
-      this.onIdTypeChange();
-      this.onNameChange();
+      this.onIdTypeChange(this.el.nativeElement);
+      this.onNameChange(this.el.nativeElement);
       if (this.credential) {
         if (this.credential.Type != CredentialsType.IdCard) {
           this.credential.isLongPeriodOfTime = false;
@@ -514,14 +479,11 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onIdTypeChange() {
-    if (this.el.nativeElement) {
-      const idInputEle = this.el.nativeElement.querySelector(
-        "input[name='Number']"
-      ) as HTMLInputElement;
-      this.changeBirthByIdNumber(idInputEle);
+  onIdTypeChange(container: HTMLElement) {
+    if (container) {
+      this.changeBirthByIdNumber(container, this.credential);
       setTimeout(() => {
-        this.onNameChange();
+        this.onNameChange(container);
       }, 200);
     }
   }

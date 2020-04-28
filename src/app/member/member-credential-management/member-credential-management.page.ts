@@ -1,37 +1,19 @@
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
-import { MyCalendarComponent } from "./../../components/my-calendar/my-calendar.component";
-import { Subscription, fromEvent } from "rxjs";
-import { SelectCountryModalComponent } from "../../tmc/components/select-country/select-countrymodal.component";
+import { Subscription } from "rxjs";
 import { LanguageHelper } from "./../../languageHelper";
-import {
-  IonRefresher,
-  IonGrid,
-  NavController,
-  ModalController,
-  Platform,
-  IonSelect,
-  IonDatetime,
-} from "@ionic/angular";
 import {
   Component,
   OnInit,
   ViewChild,
-  ElementRef,
   AfterViewInit,
-  ViewChildren,
-  QueryList,
-  NgZone,
   OnDestroy,
 } from "@angular/core";
-import { Router, ActivatedRoute } from "@angular/router";
+import {  ActivatedRoute } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
-import { ValidatorService } from "src/app/services/validator/validator.service";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { MemberCredential, MemberService } from "../member.service";
-import { CalendarService } from "src/app/tmc/calendar.service";
-import { TmcService } from "src/app/tmc/tmc.service";
-import { CountryEntity } from "src/app/tmc/models/CountryEntity";
+import { CredentialsComponent } from "../components/credentials/credentials.component";
 @Component({
   selector: "app-member-credential-management",
   templateUrl: "./member-credential-management.page.html",
@@ -39,6 +21,7 @@ import { CountryEntity } from "src/app/tmc/models/CountryEntity";
 })
 export class MemberCredentialManagementPage
   implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
+  @ViewChild(CredentialsComponent) credentialsCom: CredentialsComponent;
   private subscriptions: Subscription[] = [];
   CredentialsType = CredentialsType;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
@@ -47,11 +30,7 @@ export class MemberCredentialManagementPage
   loading = false;
   isCanDeactive = false;
   isModify = false;
-  constructor(
-    private memberService: MemberService,
-    route: ActivatedRoute,
-    private modalController: ModalController
-  ) {
+  constructor(private memberService: MemberService, route: ActivatedRoute) {
     this.subscriptions.push(
       route.queryParamMap.subscribe((p) => {
         this.isCanDeactive = false;
@@ -59,6 +38,12 @@ export class MemberCredentialManagementPage
           const isAddNew = p.get("addNew") == "true";
           if (isAddNew) {
             this.onAddCredential();
+          }
+        }
+        if (p.get("data")) {
+          this.modifyCredential = JSON.parse(p.get("data"));
+          if (this.modifyCredential) {
+            this.credentials = [this.modifyCredential];
           }
         }
       })
@@ -77,6 +62,10 @@ export class MemberCredentialManagementPage
     }
   }
   async saveAdd(c: MemberCredential) {
+    const ok = this.credentialsCom && (await this.credentialsCom.saveAdd());
+    if (!ok) {
+      return;
+    }
     const result = await this.memberService
       .addCredentials(c)
       .then((_) => true)
@@ -89,6 +78,10 @@ export class MemberCredentialManagementPage
     }
   }
   async saveModify(c: MemberCredential) {
+    const ok = this.credentialsCom && (await this.credentialsCom.saveModify());
+    if (!ok) {
+      return;
+    }
     const res = await this.memberService
       .modifyCredentials(c)
       .then((_) => {
@@ -114,7 +107,6 @@ export class MemberCredentialManagementPage
     }
   }
 
-  
   ngAfterViewInit() {}
   async onRemoveExistCredential(c: MemberCredential) {
     const comfirmDel = await AppHelper.alert(
@@ -143,11 +135,13 @@ export class MemberCredentialManagementPage
       Type: CredentialsType.IdCard,
       Id: AppHelper.uuid(),
       isAdd: true,
-      IssueCountry: {
+      IssueCountry: "CN",
+      showIssueCountry: {
         Code: "CN",
         Name: "中国",
       },
-      Country: {
+      Country: "CN",
+      showCountry: {
         Code: "CN",
         Name: "中国",
       },
@@ -188,8 +182,8 @@ export class MemberCredentialManagementPage
       return true;
     }
     if (
-      this.modifyCredential ||
-      (this.credentials && this.credentials.some((ite) => !!ite["isModified"]))
+      this.credentials &&
+      this.credentials.some((ite) => ite.isModified || ite.isAdd)
     ) {
       return AppHelper.alert(
         LanguageHelper.getModifyUnSavedTip(),
@@ -200,5 +194,4 @@ export class MemberCredentialManagementPage
     }
     return true;
   }
-  private loadCountries() {}
 }
