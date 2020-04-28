@@ -9,7 +9,7 @@
       <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
         已选乘客
         <ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPasengersNumber$|async}}</ion-text>
+          <ion-text color='light'>{{(bookInfos$|async)?.length}}</ion-text>
         </ion-badge>
       </ion-button>
     </ion-buttons>
@@ -18,8 +18,7 @@
 
 <ion-content>
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh(null)">
-    <ion-refresher-content 
-      refreshingText="正在加载...">
+    <ion-refresher-content refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
   <ion-toolbar #toolbar>
@@ -193,7 +192,7 @@
                 [class.validctrlsucess]='!!vmNewCredential.Country' [class.validerrormess]='!vmNewCredential.Country'
                 [class.validctrlerror]='!vmNewCredential.Country' [disabled]='true'
                 [class.disabled]='vmNewCredential?.Id !=selectedCredentialId'
-                value="{{vmNewCredential.Country?.Name}}({{vmNewCredential.Country?.Code}})" name='Country'
+                value="{{vmNewCredential.showCountry?.Name}}({{vmNewCredential.showCountry?.Code}})" name='Country'
                 ValidateName="Country">
             </ion-col>
             <ion-col size='1' class='arrow-forward' class='ion-text-end'
@@ -210,7 +209,7 @@
                 [class.validctrlsucess]="!!vmNewCredential.IssueCountry"
                 [class.validctrlerror]='!vmNewCredential.IssueCountry'
                 [class.disabled]='vmNewCredential?.Id !=selectedCredentialId' [disabled]='true'
-                value="{{vmNewCredential.IssueCountry?.Name}}({{vmNewCredential.IssueCountry?.Code}})"
+                value="{{vmNewCredential.showIssueCountry?.Name}}({{vmNewCredential.showIssueCountry?.Code}})"
                 name='IssueCountry' style='border: none' ValidateName="IssueCountry">
             </ion-col>
             <ion-col size='1' class='arrow-forward ion-text-end'
