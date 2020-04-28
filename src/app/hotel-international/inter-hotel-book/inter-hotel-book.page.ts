@@ -79,6 +79,7 @@ import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 import { RefresherComponent } from "src/app/components/refresher";
 import { WarrantyComponent } from "src/app/hotel/components/warranty/warranty.component";
 import { InterHotelWarrantyComponent } from "../components/inter-hotel-warranty/inter-hotel-warranty.component";
+import { CHINESE_REG } from "src/app/member/member.service";
 
 @Component({
   selector: "app-inter-hotel-book",
@@ -368,7 +369,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (
       Tmc.InternationalHotelApprovalType ==
-      TmcApprovalType.ExceedPolicyApprover &&
+        TmcApprovalType.ExceedPolicyApprover &&
       this.getRuleMessage(item.bookInfo.bookInfo.roomPlan)
     ) {
       return true;
@@ -460,8 +461,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     AppHelper.toast(
       `${
-      (item.credentialStaff && item.credentialStaff.Name) ||
-      (item.credential && item.credential.Surname + item.credential.Givenname)
+        (item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential && item.credential.Surname + item.credential.Givenname)
       } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空`,
       2000,
       "bottom"
@@ -632,17 +633,17 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.name
+            combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.credentialNumber
+            combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.credentialType
+            combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -693,7 +694,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       p.Credentials = { ...combindInfo.vmCredential };
       if (combindInfo.checkInPersonInfos) {
         const cp = combindInfo.checkInPersonInfos.find((it) =>
-          AppHelper.includeHanz(`${it.lastName}${it.firstName}`)
+          CHINESE_REG.test(`${it.lastName}${it.firstName}`)
         );
         if (cp) {
           this.showErrorMsg(
@@ -704,9 +705,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           return;
         }
         p.CustomerName = combindInfo.checkInPersonInfos
-          .filter((it) => !it.isChild && it.firstName && it.lastName)
+          .filter(
+            (it) => !it.isMain && !it.isChild && it.firstName && it.lastName
+          )
           .map((it) => `${it.lastName},${it.firstName}`)
           .join("/");
+        if (p.CustomerName) {
+          const main = combindInfo.checkInPersonInfos
+            .filter(
+              (it) => it.isMain && !it.isChild && it.firstName && it.lastName
+            )
+            .map((it) => `${it.lastName},${it.firstName}`)
+            .join("/");
+          p.CustomerName = `${main}/${p.CustomerName}`;
+        }
         p.ChildrenName = combindInfo.checkInPersonInfos
           .filter((it) => it.isChild && it.firstName && it.lastName)
           .map((it) => `${it.lastName},${it.firstName}`)
@@ -758,7 +770,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -772,7 +784,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
@@ -1034,20 +1046,20 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {

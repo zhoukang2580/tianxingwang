@@ -1,14 +1,21 @@
 import { LanguageHelper } from "./../../../languageHelper";
 import { AppHelper } from "./../../../appHelper";
 import { ModalController } from "@ionic/angular";
-import { Component, OnInit, Input, Output, EventEmitter, HostBinding } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  HostBinding,
+} from "@angular/core";
 import { AddcontactsModalComponent } from "../addcontacts-modal/addcontacts-modal.component";
 import { AddContact } from "../../models/AddContact";
 
 @Component({
   selector: "app-book-addcontacts-comp",
   templateUrl: "./book-addcontacts-comp.component.html",
-  styleUrls: ["./book-addcontacts-comp.component.scss"]
+  styleUrls: ["./book-addcontacts-comp.component.scss"],
 })
 export class BookAddcontactsCompComponent implements OnInit {
   @Input() contacts: AddContact[];
@@ -26,15 +33,18 @@ export class BookAddcontactsCompComponent implements OnInit {
       LanguageHelper.getCancelTip()
     );
     if (ok && man && this.contacts) {
-      this.contacts = this.contacts.filter(it => it.accountId != man.accountId);
+      this.contacts = this.contacts.filter(
+        (it) => it.accountId != man.accountId
+      );
     }
+    this.onChange();
   }
   async onAddContacts() {
     if (!this.contacts) {
       this.contacts = [];
     }
     const m = await this.modalCtrl.create({
-      component: AddcontactsModalComponent
+      component: AddcontactsModalComponent,
     });
     if (m) {
       m.backdropDismiss = false;
