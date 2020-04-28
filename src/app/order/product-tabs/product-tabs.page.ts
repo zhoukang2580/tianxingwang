@@ -212,6 +212,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.isShowMyTrips = true;
     this.myTrips = [];
     this.loadMoreMyTrips();
+    this.ionContent.scrollToTop();
   }
   loadMoreMyTrips() {
     if (!this.isShowMyTrips) {
