@@ -75,7 +75,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
           this.memberService.initializeValidateModify(container);
         }
         if (this.credential) {
-          this.initInputChanges(container,this.credential);
+          this.initInputChanges(container, this.credential);
         }
       }
     }, 200);
@@ -101,7 +101,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   async saveModify() {
     const c: MemberCredential = this.credential;
     const el: HTMLElement = this.el.nativeElement;
-    const valid = await this.validateCredential(c, el);
+    const valid = await this.memberService.validateCredential(c, el);
     if (!valid) {
       return false;
     }
@@ -112,40 +112,6 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.credential.isModified = true;
     this.credentialChange.emit(this.credential);
     return true;
-  }
-  private onNameChange(container: HTMLElement,credential:MemberCredential) {
-    this.memberService.onNameChange(container, credential);
-  }
-  private addMessageTipEl(el: HTMLElement, isShow: boolean, msg = "") {
-    this.memberService.addMessageTipEl(el, isShow, msg);
-  }
-  private changeBirthByIdNumber(
-    container: HTMLElement,
-    credential: MemberCredential
-  ) {
-    return this.memberService.changeBirthByIdNumber(container, credential);
-  }
-  private onIdNumberInputChange(
-    container: HTMLElement
-  ) {
-    const idInputEle = container.querySelector(
-      "input[name='Number']"
-    ) as HTMLInputElement;
-    if (!idInputEle) {
-      return ;
-    }
-    idInputEle.onfocus = () => {
-      if (idInputEle.classList.contains("validctrlerror")) {
-        idInputEle.value = "";
-      }
-    };
-    idInputEle.onblur = () => {
-      setTimeout(() => {
-        this.validateIdNumber(idInputEle,this.credential);
-        this.onNameChange(container,this.credential);
-        this.changeBirthByIdNumber(idInputEle, this.credential);
-      }, 100);
-    }
   }
   onSetLongTime(c: MemberCredential, evt: CustomEvent) {
     evt.stopPropagation();
@@ -158,7 +124,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   async saveAdd() {
     const c: MemberCredential = this.credential;
     const container: HTMLElement = this.el.nativeElement;
-    let ok = await this.validateCredential(c, container);
+    let ok = await this.memberService.validateCredential(c, container);
     if (!ok) {
       return false;
     }
@@ -171,125 +137,6 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.credential.isAdd = true;
     this.credentialChange.emit(c);
     return true;
-  }
-  async validateCredential(c: MemberCredential, container: HTMLElement) {
-    if (!c) {
-      return false;
-    }
-    const info = await this.validatorService
-      .get("Beeant.Domain.Entities.Member.CredentialsEntity", "Add")
-      .catch((e) => {
-        AppHelper.alert(e);
-        return { rule: [] };
-      });
-    console.log(info);
-    if (!info || !info.rule) {
-      AppHelper.alert(LanguageHelper.getValidateRulesEmptyTip());
-      return true;
-    }
-    const rules = info.rule;
-    if (!c.Surname) {
-      return this.checkProperty(c, "Surname", rules, container);
-    }
-    if (!c.Givenname) {
-      return this.checkProperty(c, "Givenname", rules, container);
-    }
-    if (
-      c.Type != CredentialsType.IdCard &&
-      CHINESE_REG.test(c.Surname + c.Givenname)
-    ) {
-      AppHelper.alert("证件姓名，请输入英文或者拼音");
-      return false;
-    }
-    if (!c.Gender) {
-      return this.checkProperty(c, "Gender", rules, container);
-    }
-    if (!c.Type) {
-      return this.checkProperty(c, "Type", rules, container);
-    }
-    if (!c.Number) {
-      return this.checkProperty(c, "Number", rules, container);
-    } else if (
-      c.Type == CredentialsType.IdCard &&
-      !this.isIdNubmerValidate(c.Number)
-    ) {
-      AppHelper.alert("请输入正确的18位身份证号");
-      return false;
-    }
-    if (!c.Birthday) {
-      return this.checkProperty(c, "Birthday", rules, container);
-    }
-    c.Birthday = this.calendarService.getFormatedDate(c.Birthday);
-    console.log(c.Birthday);
-    if (!c.ExpirationDate) {
-      return this.checkProperty(c, "ExpirationDate", rules, container);
-    }
-    c.ExpirationDate = this.calendarService.getFormatedDate(c.ExpirationDate);
-    if (!c.Country) {
-      return this.checkProperty(c, "Country", rules, container);
-    }
-    if (!c.IssueCountry) {
-      return this.checkProperty(c, "IssueCountry", rules, container);
-    }
-
-    return true;
-  }
-
-  private checkProperty(
-    obj: any,
-    pro: string,
-    rules: { Name: string; Message }[],
-    container: HTMLElement
-  ) {
-    try {
-      if (!obj) {
-        return false;
-      }
-      if (!obj[pro]) {
-        const rule = rules.find(
-          (it) => it.Name.toLowerCase() == pro.toLowerCase()
-        );
-        const input = container.querySelector(
-          `input[ValidateName=${pro}]`
-        ) as HTMLInputElement;
-        console.log(`input[ValidateName=${pro}]`, input);
-
-        if (rule) {
-          AppHelper.alert(rule.Message, true).then((_) => {
-            if (input) {
-              setTimeout(() => {
-                input.focus();
-              }, 300);
-            }
-          });
-        }
-        return false;
-      }
-      return true;
-    } catch (e) {
-      AppHelper.alert(e);
-      return false;
-    }
-  }
-  private isIdNubmerValidate(value: string) {
-    if (!value) {
-      return false;
-    }
-    return this.memberService.isIdNubmerValidate(value);
-  }
-  private validateIdNumber(inputEl: HTMLInputElement,credential:MemberCredential) {
-    if (
-      inputEl &&
-      credential &&
-      credential.Type == CredentialsType.IdCard
-    ) {
-      const value = inputEl.value;
-      this.addMessageTipEl(
-        inputEl,
-        !this.isIdNubmerValidate(value),
-        "请填写正确的18位身份证号码"
-      );
-    }
   }
   async onSelectBirthDate() {
     if (this.datetimeComp) {
@@ -373,15 +220,18 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     }
   }
-  private initInputChanges(container: HTMLElement,credential:MemberCredential) {
-   return this.memberService.initInputChanges(container,credential);
+  private initInputChanges(
+    container: HTMLElement,
+    credential: MemberCredential
+  ) {
+    return this.memberService.initInputChanges(container, credential);
   }
-  
+
   onSelectIdType(ele: IonSelect) {
     ele.open();
     ele.ionChange.subscribe((_) => {
       this.onIdTypeChange(this.el.nativeElement);
-      this.onNameChange(this.el.nativeElement,this.credential);
+      this.memberService.onNameChange(this.el.nativeElement, this.credential);
       if (this.credential) {
         if (this.credential.Type != CredentialsType.IdCard) {
           this.credential.isLongPeriodOfTime = false;
@@ -393,9 +243,9 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onIdTypeChange(container: HTMLElement) {
     if (container) {
-      this.changeBirthByIdNumber(container, this.credential);
+      this.memberService.changeBirthByIdNumber(container, this.credential);
       setTimeout(() => {
-        this.onNameChange(container,this.credential);
+        this.memberService.onNameChange(container, this.credential);
       }, 200);
     }
   }
