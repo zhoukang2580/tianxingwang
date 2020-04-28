@@ -218,7 +218,9 @@ export class BookPage implements OnInit, AfterViewInit {
     });
     if (cabinPaytypes.length) {
       this.orderTravelPayTypes = this.orderTravelPayTypes.filter((it) =>
-        cabinPaytypes.some((cbt) => cbt == it.label)
+        cabinPaytypes.some(
+          (cbt) => cbt == it.label || it.value == OrderTravelPayType[cbt]
+        )
       );
     }
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
