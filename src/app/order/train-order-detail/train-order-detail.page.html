@@ -205,12 +205,21 @@
                       {{trip.TrainCode}}
                     </ion-col>
                   </ion-row>
-                  <ion-row>
+                  <ion-row *ngIf="ticket.Detail">
                     <ion-col size='3'>
                       座位信息
                     </ion-col>
-                    <ion-col>
-                      {{ticket.Detail}}
+                    <ion-col style="display: flex;align-items: center;">
+                      {{ticket.Detail}}  
+                      <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='ticket?.VariablesJsonObj.IsAccessByIdCard' alt="" style="width: 1.5em;margin-left: 0.5em;">
+                    </ion-col>
+                  </ion-row>
+                  <ion-row *ngIf="ticket.VariablesJsonObj.TicketEntrance">
+                    <ion-col size='3'>
+                      检票口
+                    </ion-col>
+                    <ion-col style="display: flex;align-items: center;">
+                      {{ticket.VariablesJsonObj.TicketEntrance}}  
                     </ion-col>
                   </ion-row>
                   <ion-row>
@@ -385,14 +394,23 @@
                         {{trip.TrainCode}}
                       </ion-col>
                     </ion-row>
-                    <ion-row>
+                    <ion-row *ngIf="ticket.Detail">
                       <ion-col size='3'>
-                        座位
+                        座位信息
                       </ion-col>
-                      <ion-col>
-                        {{ticket.SeatTypeName}}
+                      <ion-col style="display: flex;align-items: center;">
+                        {{ticket.Detail}}  
                         <ng-container *ngIf='ticket.VariablesJsonObj?.SeatLocation'>
                           {{ticket.VariablesJsonObj.SeatLocation}} </ng-container>
+                          <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='ticket?.VariablesJsonObj.IsAccessByIdCard' alt="" style="width: 1.5em;margin-left: 0.5em;">
+                      </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="ticket.VariablesJsonObj.TicketEntrance">
+                      <ion-col size='3'>
+                        检票口
+                      </ion-col>
+                      <ion-col style="display: flex;align-items: center;">
+                        {{ticket.VariablesJsonObj.TicketEntrance}}  
                       </ion-col>
                     </ion-row>
                     <ion-row>
