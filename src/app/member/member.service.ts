@@ -19,7 +19,6 @@ export const IDCARDRULE_REG = /(^$)|(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0
 export class MemberCredential {
   isAdd?: boolean;
   isLongPeriodOfTime?: boolean;
-  longPeriodOfTime?: string;
   isModified?: boolean;
   isNotWhiteList: boolean;
   variables: any;
@@ -179,40 +178,112 @@ export class MemberService {
     );
     return ok;
   }
-  onNameChange(container: HTMLElement, credential: MemberCredential) {
+  idTypeChange(container: HTMLElement, credential: MemberCredential) {
+    console.log("idTypeChange", credential);
     const surnameEl: HTMLInputElement = container.querySelector(
       "input[name='Surname']"
     );
     const givennameEl: HTMLInputElement = container.querySelector(
       "input[name='Givenname']"
     );
+    const idInputEle: HTMLInputElement = container.querySelector(
+      "input[name='Number']"
+    );
+    if (idInputEle) {
+      setTimeout(() => {
+        const value = idInputEle.value;
+        if (value && credential) {
+          if (credential.Type == CredentialsType.IdCard) {
+            this.idNumberTip(idInputEle, credential);
+          } else {
+            this.addMessageTipEl(idInputEle, false, "");
+          }
+        }
+        this.changeBirthByIdNumber(idInputEle.value, credential);
+      }, 100);
+    }
     if (credential) {
-      if (credential.Type == CredentialsType.IdCard) {
-        this.addMessageTipEl(
-          surnameEl,
-          !CHINESE_REG.test(surnameEl && surnameEl.value),
-          surnameEl.placeholder
-        );
-        this.addMessageTipEl(
-          givennameEl,
-          !CHINESE_REG.test(givennameEl && givennameEl.value),
-          givennameEl.placeholder
-        );
-      } else {
-        this.addMessageTipEl(
-          surnameEl,
-          !ENGLISH_SURNAME_REG.test(surnameEl && surnameEl.value),
-          surnameEl.placeholder
-        );
-        this.addMessageTipEl(
-          givennameEl,
-          !ENGLISH_GIVEN_NAME_REG.test(givennameEl && givennameEl.value),
-          givennameEl.placeholder
-        );
-      }
+      setTimeout(() => {
+        this.changeName(credential, surnameEl, givennameEl);
+      }, 100);
     }
   }
-  addMessageTipEl(el: HTMLElement, isShow: boolean, msg = "") {
+  private idNumberTip(el: HTMLInputElement, credential: MemberCredential) {
+    setTimeout(() => {
+      const value = el.value;
+      this.addMessageTipEl(
+        el,
+        !this.isIdNubmerValidate(value) &&
+          credential.Type == CredentialsType.IdCard,
+        "请填写正确的18位身份证号码"
+      );
+      this.changeBirthByIdNumber(el.value, credential);
+    }, 100);
+  }
+  listenInputChange(container: HTMLElement, credential: MemberCredential) {
+    const surnameEl: HTMLInputElement = container.querySelector(
+      "input[name='Surname']"
+    );
+    const givennameEl: HTMLInputElement = container.querySelector(
+      "input[name='Givenname']"
+    );
+    const idInputEle: HTMLInputElement = container.querySelector(
+      "input[name='Number']"
+    );
+    if (idInputEle) {
+      idInputEle.onfocus = () => {
+        if (idInputEle.classList.contains("validctrlerror")) {
+          idInputEle.value = "";
+        }
+      };
+      idInputEle.onblur = () => {
+        this.idNumberTip(idInputEle, credential);
+      };
+    }
+    if (givennameEl) {
+      givennameEl.onblur = () => {
+        this.changeName(credential, surnameEl, givennameEl);
+      };
+    }
+    if (surnameEl) {
+      surnameEl.onblur = () => {
+        this.changeName(credential, surnameEl, givennameEl);
+      };
+    }
+  }
+  private changeName(
+    credential: MemberCredential,
+    surnameEl: HTMLInputElement,
+    givennameEl: HTMLInputElement
+  ) {
+    if (credential.Type == CredentialsType.IdCard) {
+      this.addMessageTipEl(
+        surnameEl,
+        !CHINESE_REG.test(surnameEl && surnameEl.value),
+        surnameEl.placeholder
+      );
+      this.addMessageTipEl(
+        givennameEl,
+        !CHINESE_REG.test(givennameEl && givennameEl.value),
+        givennameEl.placeholder
+      );
+    } else {
+      this.addMessageTipEl(
+        surnameEl,
+        !ENGLISH_SURNAME_REG.test(surnameEl && surnameEl.value),
+        surnameEl.placeholder
+      );
+      this.addMessageTipEl(
+        givennameEl,
+        !ENGLISH_GIVEN_NAME_REG.test(givennameEl && givennameEl.value),
+        givennameEl.placeholder
+      );
+    }
+  }
+  private addMessageTipEl(el: HTMLElement, isShow: boolean, msg = "") {
+    if (!el) {
+      return;
+    }
     requestAnimationFrame(() => {
       let errorTipEl = el.parentElement.querySelector(".idnumbervalidate");
       if (!errorTipEl) {
@@ -234,7 +305,7 @@ export class MemberService {
       }
     });
   }
-  getBirthByIdNumber(idNumber: string = "") {
+  private getBirthByIdNumber(idNumber: string = "") {
     if (idNumber && idNumber.length == 18) {
       return idNumber.substr(6, 8);
     }
@@ -242,29 +313,6 @@ export class MemberService {
   }
   isIdNubmerValidate(id: string) {
     return IDCARDRULE_REG.test(id);
-  }
-  private onIdNumberInputChange(
-    container: HTMLElement,
-    credential: MemberCredential
-  ) {
-    const idInputEle = container.querySelector(
-      "input[name='Number']"
-    ) as HTMLInputElement;
-    if (!idInputEle) {
-      return;
-    }
-    idInputEle.onfocus = () => {
-      if (idInputEle.classList.contains("validctrlerror")) {
-        idInputEle.value = "";
-      }
-    };
-    idInputEle.onblur = () => {
-      setTimeout(() => {
-        this.validateIdNumber(idInputEle, credential);
-        this.onNameChange(container, credential);
-        this.changeBirthByIdNumber(idInputEle, credential);
-      }, 100);
-    };
   }
   private checkProperty(
     obj: any,
@@ -305,6 +353,13 @@ export class MemberService {
   async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c) {
       return false;
+    }
+    if (c.isLongPeriodOfTime) {
+      c.ExpirationDate = this.calendarService.getFormatedDate(
+        this.calendarService
+          .getMoment(100 * 365, c.Birthday)
+          .format("YYYY-MM-DD")
+      );
     }
     const info = await this.validatorService
       .get("Beeant.Domain.Entities.Member.CredentialsEntity", "Add")
@@ -364,55 +419,8 @@ export class MemberService {
 
     return true;
   }
-  private validateIdNumber(
-    inputEl: HTMLInputElement,
-    credential: MemberCredential
-  ) {
-    if (inputEl && credential && credential.Type == CredentialsType.IdCard) {
-      const value = inputEl.value;
-      this.addMessageTipEl(
-        inputEl,
-        !this.isIdNubmerValidate(value),
-        "请填写正确的18位身份证号码"
-      );
-    }
-  }
-  initInputChanges(container: HTMLElement, credential: MemberCredential) {
-    if (!container) {
-      return;
-    }
-    this.onIdNumberInputChange(container, credential);
-    const inputSurnameEle = container.querySelector(
-      "input[name='Surname']"
-    ) as HTMLIonInputElement;
-    const inputGivennameEle = container.querySelector(
-      "input[name='Givenname']"
-    ) as HTMLIonInputElement;
-    if (inputSurnameEle) {
-      inputSurnameEle.oninput = (_) => {
-        this.onNameChange(container, credential);
-      };
-      inputSurnameEle.onblur = () => {
-        this.onNameChange(container, credential);
-      };
-    }
-    if (inputGivennameEle) {
-      inputGivennameEle.oninput = (_) => {
-        this.onNameChange(container, credential);
-      };
-      inputGivennameEle.onblur = () => {
-        this.onNameChange(container, credential);
-      };
-    }
-  }
-  changeBirthByIdNumber(container: HTMLElement, credential: MemberCredential) {
-    const idInputEle =
-      container &&
-      (container.querySelector("input[name='Number']") as HTMLInputElement);
-    if (!idInputEle) {
-      return;
-    }
-    const value = idInputEle.value.trim();
+  private changeBirthByIdNumber(id: string, credential: MemberCredential) {
+    const value = (id || "").trim();
     if (value && credential) {
       if (credential.Type == CredentialsType.IdCard) {
         const b = this.getBirthByIdNumber(value);

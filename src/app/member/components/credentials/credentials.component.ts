@@ -30,6 +30,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { CountryEntity } from "src/app/tmc/models/CountryEntity";
 import { SelectCountryModalComponent } from "src/app/tmc/components/select-country/select-countrymodal.component";
+import { finalize } from "rxjs/operators";
 @Component({
   selector: "app-credentials-comp",
   templateUrl: "./credentials.component.html",
@@ -75,7 +76,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
           this.memberService.initializeValidateModify(container);
         }
         if (this.credential) {
-          this.initInputChanges(container, this.credential);
+          this.memberService.listenInputChange(container, this.credential);
         }
       }
     }, 200);
@@ -114,12 +115,8 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     return true;
   }
   onSetLongTime(c: MemberCredential, evt: CustomEvent) {
-    evt.stopPropagation();
     c.isLongPeriodOfTime = true;
-    c.longPeriodOfTime = "长期有效";
-    c.ExpirationDate = this.calendarService.getFormatedDate(
-      this.calendarService.getMoment(100 * 365, c.Birthday).format("YYYY-MM-DD")
-    );
+    evt.stopPropagation();
   }
   async saveAdd() {
     const c: MemberCredential = this.credential;
@@ -208,7 +205,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value: string = d.detail.value;
         if (value && this.credential) {
-          this.credential.isLongPeriodOfTime = !true;
+          this.credential.isLongPeriodOfTime = false;
           this.credential.ExpirationDate = this.calendarService.getFormatedDate(
             value.substr(0, 10)
           );
@@ -220,33 +217,25 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       });
     }
   }
-  private initInputChanges(
-    container: HTMLElement,
-    credential: MemberCredential
-  ) {
-    return this.memberService.initInputChanges(container, credential);
-  }
 
   onSelectIdType(ele: IonSelect) {
     ele.open();
-    ele.ionChange.subscribe((_) => {
-      this.onIdTypeChange(this.el.nativeElement);
-      this.memberService.onNameChange(this.el.nativeElement, this.credential);
-      if (this.credential) {
-        if (this.credential.Type != CredentialsType.IdCard) {
-          this.credential.isLongPeriodOfTime = false;
-          this.credential.longPeriodOfTime = "";
+    const sub = ele.ionChange
+      .pipe(
+        finalize(() => {
+          sub.unsubscribe();
+        })
+      )
+      .subscribe((_) => {
+        if (this.credential) {
+          if (this.credential.Type != CredentialsType.IdCard) {
+            this.credential.isLongPeriodOfTime = false;
+          }
+          this.memberService.idTypeChange(
+            this.el.nativeElement,
+            this.credential
+          );
         }
-      }
-    });
-  }
-
-  onIdTypeChange(container: HTMLElement) {
-    if (container) {
-      this.memberService.changeBirthByIdNumber(container, this.credential);
-      setTimeout(() => {
-        this.memberService.onNameChange(container, this.credential);
-      }, 200);
-    }
+      });
   }
 }
