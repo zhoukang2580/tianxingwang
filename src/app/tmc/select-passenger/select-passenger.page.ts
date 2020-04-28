@@ -390,7 +390,11 @@ export class SelectPassengerPage
         (it) => it.passenger && it.passenger.Number == s.Number
       );
     if (exists && exists.length) {
-      AppHelper.toast("输入的证件号和已选人员的证件号重复，请核实！");
+      AppHelper.toast(
+        "输入的证件号和已选人员的证件号重复，请核实！",
+        2000,
+        "middle"
+      );
       return;
     }
     if (this.forType == FlightHotelTrainType.InternationalFlight) {
