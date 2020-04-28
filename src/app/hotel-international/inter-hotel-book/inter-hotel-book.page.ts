@@ -826,7 +826,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           p.OutNumbers = {};
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
-              const el = this.getEleByAttr("outnumber", "outnumber");
+              const el = this.getEleByAttr("outnumberid", combindInfo.id);
               this.showErrorMsg(it.label + "必填", combindInfo, el);
               return;
             }
