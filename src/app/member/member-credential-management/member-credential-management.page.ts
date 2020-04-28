@@ -8,7 +8,7 @@ import {
   AfterViewInit,
   OnDestroy,
 } from "@angular/core";
-import {  ActivatedRoute } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
@@ -68,7 +68,10 @@ export class MemberCredentialManagementPage
     }
     const result = await this.memberService
       .addCredentials(c)
-      .then((_) => true)
+      .then((id) => {
+        this.modifyCredential.Id = id;
+        return true;
+      })
       .catch((e) => {
         AppHelper.alert(e);
         return false;
@@ -76,6 +79,9 @@ export class MemberCredentialManagementPage
     if (!result) {
       return;
     }
+    this.modifyCredential.isAdd = false;
+    this.modifyCredential.isModified = false;
+    this.credentials = [this.modifyCredential];
   }
   async saveModify(c: MemberCredential) {
     const ok = this.credentialsCom && (await this.credentialsCom.saveModify());
@@ -93,6 +99,11 @@ export class MemberCredentialManagementPage
       .catch((e) => {
         AppHelper.alert(e);
       });
+    if (res) {
+      this.modifyCredential.isAdd = false;
+      this.modifyCredential.isModified = false;
+      this.credentials = [this.modifyCredential];
+    }
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());

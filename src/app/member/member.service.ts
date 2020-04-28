@@ -116,7 +116,7 @@ export class MemberService {
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Add";
     req.Data = c;
-    return this.apiService.getPromiseData<any>(req).then((r) => {
+    return this.apiService.getPromiseData<string>(req).then((r) => {
       this.credentialsChanges.next({
         action: "add",
       });
