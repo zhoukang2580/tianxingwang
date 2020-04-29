@@ -11,7 +11,7 @@
   <ng-container *ngIf='!errors else errorTemp'>
     <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ng-container *ngIf='vmCombindInfos?.length'>
-      <ion-list *ngFor='let combindInfo of vmCombindInfos;let idx=index;' lines='none'>
+      <ion-list *ngFor='let combindInfo of vmCombindInfos;let last=last;let idx=index;' lines='none'>
         <ion-item-divider color='primary' class="backg_w sticky" [class.not-sticky]='isDingTalk' style="    z-index: 200;
         box-shadow: 0.1em 0.2em 0.6em rgba(0,0,0,.1);
         padding-bottom: 0.5em;">
@@ -93,9 +93,8 @@
             (modify)='onModify(combindInfo)' [attr.credentialcompid]='combindInfo.id'>
           </app-book-credential-comp>
           <ng-container *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
-            <app-book-illegal-reason-comp  [illegalReasons]='illegalReasons'
-              [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
-              (ionchange)='onIllegalReason($event,combindInfo)'>
+            <app-book-illegal-reason-comp [illegalReasons]='illegalReasons' [attr.illegalReasonid]='combindInfo.id'
+              [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
             </app-book-illegal-reason-comp>
           </ng-container>
           <ng-container *ngIf='expenseTypes?.length'>
@@ -243,9 +242,10 @@
               </ion-label>
             </ion-item>
           </ion-item-group>
-          <ion-item-group >
-            <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true"
-              (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+          <ion-item-group *ngIf='isRoundTrip&&last'>
+            <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
+              [isShowGroupedInfo]="true" (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+            </app-book-tmc-outnumber>
           </ion-item-group>
         </ng-container>
       </ion-list>
