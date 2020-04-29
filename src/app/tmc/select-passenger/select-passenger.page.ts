@@ -388,19 +388,6 @@ export class SelectPassengerPage
       );
   }
   async onSelect(s: StaffEntity) {
-    const exists =
-      this.bookInfos &&
-      this.bookInfos.filter(
-        (it) => it.passenger && it.passenger.Number == s.Number
-      );
-    if (exists && exists.length) {
-      AppHelper.toast(
-        "输入的证件号和已选人员的证件号重复，请核实！",
-        2000,
-        "middle"
-      );
-      return;
-    }
     if (this.forType == FlightHotelTrainType.InternationalFlight) {
       if (s.Policy && s.Policy.Id) {
         const one = this.interFlightService.getBookInfos()[0];
@@ -551,8 +538,23 @@ export class SelectPassengerPage
       this.vmNewCredential &&
       selectedCredential.Id == this.vmNewCredential.Id
     ) {
+      const exists =
+        this.bookInfos &&
+        this.bookInfos.filter(
+          (it) =>
+            it.isNotWhitelist &&
+            it.credential &&
+            it.credential.Number == this.vmNewCredential.Number
+        );
+      if (exists && exists.length) {
+        AppHelper.alert("输入的证件号和已选人员的证件号重复，请核实！");
+        return;
+      }
       this.vmNewCredential.Name =
-        this.vmNewCredential.Surname + this.vmNewCredential.Givenname;
+        this.vmNewCredential.Surname.replace(/\s/g, "") +
+        ((this.vmNewCredential.Givenname &&
+          this.vmNewCredential.Givenname.trim()) ||
+          "");
       const validate =
         this.credentialsComp && (await this.credentialsComp.saveAdd());
       if (!validate) {

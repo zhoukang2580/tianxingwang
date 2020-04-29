@@ -275,12 +275,14 @@ export class MemberService {
     } else {
       this.addMessageTipEl(
         surnameEl,
-        !ENGLISH_SURNAME_REG.test(surnameEl && surnameEl.value),
+        CHINESE_REG.test(surnameEl.value) ||
+          AppHelper.includeHanz(surnameEl.value),
         surnameEl.placeholder
       );
       this.addMessageTipEl(
         givennameEl,
-        !ENGLISH_GIVEN_NAME_REG.test(givennameEl && givennameEl.value),
+        CHINESE_REG.test(givennameEl.value) ||
+          AppHelper.includeHanz(givennameEl.value),
         givennameEl.placeholder
       );
     }
@@ -384,6 +386,8 @@ export class MemberService {
     if (!c.Givenname) {
       return this.checkProperty(c, "Givenname", rules, container);
     }
+    c.Surname = c.Surname.replace(/\s/g, "");
+    c.Givenname = c.Givenname.trim();
     if (
       c.Type != CredentialsType.IdCard &&
       CHINESE_REG.test(c.Surname + c.Givenname)
@@ -425,20 +429,22 @@ export class MemberService {
     return true;
   }
   private changeBirthByIdNumber(id: string, credential: MemberCredential) {
-    const value = (id || "").trim();
-    if (value && credential) {
-      if (credential.Type == CredentialsType.IdCard) {
-        const b = this.getBirthByIdNumber(value);
-        if (b) {
-          const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
-          credential.Birthday = this.plt.is("ios")
-            ? str.replace(/-/g, "/")
-            : str;
-        } else {
-          // one.Birthday = null;
+    requestAnimationFrame(() => {
+      const value = (id || "").trim();
+      if (value && credential) {
+        if (credential.Type == CredentialsType.IdCard) {
+          const b = this.getBirthByIdNumber(value);
+          if (b) {
+            const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
+            credential.Birthday = this.plt.is("ios")
+              ? str.replace(/-/g, "/")
+              : str;
+          } else {
+            // one.Birthday = null;
+          }
         }
       }
-    }
+    });
   }
 }
 export interface PageModel {
