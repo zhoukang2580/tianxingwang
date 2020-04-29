@@ -1,11 +1,16 @@
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
-import { CostCenterEntity, StaffEntity, OrganizationEntity } from "../hr/staff.service";
+import {
+  CostCenterEntity,
+  StaffEntity,
+  OrganizationEntity,
+} from "../hr/staff.service";
 import { CityEntity } from "../tmc/models/CityEntity";
 import { HistoryEntity } from "../order/models/HistoryEntity";
-import { TmcEntity } from "../tmc/tmc.service";
+import { TmcEntity, TravelFormEntity } from "../tmc/tmc.service";
 import { RequestEntity } from "../services/api/Request.entity";
 import { BaseEntity } from "../models/BaseEntity";
+import { AccountEntity } from "../account/models/AccountEntity";
 
 @Injectable({
   providedIn: "root",
@@ -23,12 +28,12 @@ export class TravelService {
     };
     return this.apiService.getResponse<SearchModel>(req);
   }
-  getTravelDetail(id:string) {
+  getTravelDetail(id: string) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Detail`;
     req.Data = {
-      Id:id
+      Id: id,
     };
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
@@ -37,7 +42,7 @@ export class TravelService {
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Save`;
     req.Data = {
-      ...dto
+      ...dto,
     };
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
@@ -46,16 +51,16 @@ export class TravelService {
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Submit`;
     req.Data = {
-      ...dto
+      ...dto,
     };
     return this.apiService.getResponse<any>(req);
   }
-  travelCancel(id:string) {
+  travelCancel(id: string) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Cancel`;
     req.Data = {
-      Id:id
+      Id: id,
     };
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
@@ -200,12 +205,29 @@ export enum ApprovalStatusType {
   /// </summary>
   WaiteSubmit = 4,
 }
-export interface TravelFormEntity {
-  Id: string;
-  TravelNumber: string;
+export interface TravelNumberValue {
+  Name: string;
+  Code: string;
+}
+
+export class TravelFormDetailEntity extends BaseEntity {
+  public Tmc: TmcEntity;
+  public TravelForm: TravelFormEntity;
+  Tag: string;
+  /// <summary>
+  /// 编号
+  /// </summary>
   Number: string;
   ApplyTime: string;
   ApprovalTime: string;
   StatusType: ApprovalStatusType;
-  StatusTypeName:string;
+  StatusTypeName: string;
+  /// <summary>
+  /// 名称
+  /// </summary>
+  Name: string;
+  /// <summary>
+  /// 内容
+  /// </summary>
+  Content: string;
 }
