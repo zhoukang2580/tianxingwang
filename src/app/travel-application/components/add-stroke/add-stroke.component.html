@@ -1,75 +1,77 @@
 <ng-container>
-  <ion-item-group style="margin: .5em;">
-    <ion-item-divider style="background-color:var(--ion-color-secondary)" >
-      <ion-text color="light">添加行程</ion-text>
-    </ion-item-divider>
-    <ion-item lines="none">
-      <ion-label>行程1</ion-label>
-      <ion-input placeholder="请输入"></ion-input>
-      <ion-icon name="trash-outline" class="trash-outline"></ion-icon>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-label>
-        交通住宿
-      </ion-label>
-      <ion-select>
-        <ion-select-option value="brown">Brown</ion-select-option>
-        <ion-select-option value="blonde">Blonde</ion-select-option>
-        <ion-select-option value="black">Black</ion-select-option>
-        <ion-select-option value="red">Red</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-label>
-        单程往返
-      </ion-label>
-      <ion-select>
-        <ion-select-option value="brown">Brown</ion-select-option>
-        <ion-select-option value="blonde">Blonde</ion-select-option>
-        <ion-select-option value="black">Black</ion-select-option>
-        <ion-select-option value="red">Red</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-label>
-        出发城市
-      </ion-label>
-      <ion-select>
-        <ion-select-option value="brown">Brown</ion-select-option>
-        <ion-select-option value="blonde">Blonde</ion-select-option>
-        <ion-select-option value="black">Black</ion-select-option>
-        <ion-select-option value="red">Red</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-label>
-        目的城市
-      </ion-label>
-      <ion-select>
-        <ion-select-option value="brown">Brown</ion-select-option>
-        <ion-select-option value="blonde">Blonde</ion-select-option>
-        <ion-select-option value="black">Black</ion-select-option>
-        <ion-select-option value="red">Red</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-label>
-        出差开始时间
-      </ion-label>
-      <ion-datetime displayFormat="MM DD YY" placeholder="请选择"></ion-datetime>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-label>
-        出差结束时间
-      </ion-label>
-      <ion-datetime displayFormat="MM DD YY" placeholder="请选择"></ion-datetime>
-    </ion-item>
-    <ion-item lines="none">
-      <ion-label>时长（天）
-      </ion-label>
-      <ion-input placeholder="请输入" slot="end"></ion-input>
-    </ion-item>
-    
-  </ion-item-group>
+  <ion-list>
+    <ion-item-group style="margin: .5em;">
+      <ion-item-divider>
+        <ion-text>添加行程</ion-text>
+      </ion-item-divider>
+      <ion-item lines="none">
+        <ion-label>行程1</ion-label>
+        <ion-input placeholder="请输入"></ion-input>
+        <ion-icon name="trash-outline" class="trash-outline"></ion-icon>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label>
+          交通住宿
+        </ion-label>
+        <ion-select>
+          <ion-select-option value="brown">Brown</ion-select-option>
+          <ion-select-option value="blonde">Blonde</ion-select-option>
+          <ion-select-option value="black">Black</ion-select-option>
+          <ion-select-option value="red">Red</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label>
+          单程往返
+        </ion-label>
+        <ion-select>
+          <ion-select-option value="brown">Brown</ion-select-option>
+          <ion-select-option value="blonde">Blonde</ion-select-option>
+          <ion-select-option value="black">Black</ion-select-option>
+          <ion-select-option value="red">Red</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label>
+          出发城市
+        </ion-label>
+        <ion-select>
+          <ion-select-option value="brown">Brown</ion-select-option>
+          <ion-select-option value="blonde">Blonde</ion-select-option>
+          <ion-select-option value="black">Black</ion-select-option>
+          <ion-select-option value="red">Red</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label>
+          目的城市
+        </ion-label>
+        <ion-select>
+          <ion-select-option value="brown">Brown</ion-select-option>
+          <ion-select-option value="blonde">Blonde</ion-select-option>
+          <ion-select-option value="black">Black</ion-select-option>
+          <ion-select-option value="red">Red</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label>
+          出差开始时间
+        </ion-label>
+        <ion-datetime displayFormat="MM DD YY" placeholder="请选择"></ion-datetime>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label>
+          出差结束时间
+        </ion-label>
+        <ion-datetime displayFormat="MM DD YY" placeholder="请选择"></ion-datetime>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-label>时长（天）
+        </ion-label>
+        <ion-input placeholder="请输入" slot="end"></ion-input>
+      </ion-item>
+      
+    </ion-item-group>
+  </ion-list>
 
 </ng-container>

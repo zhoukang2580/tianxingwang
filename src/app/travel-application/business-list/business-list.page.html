@@ -9,15 +9,18 @@
 </ion-header>
 
 <ion-content>
+    <app-refresher slot='fixed' (ionRefresh)='doRefresh(false)'>
+        <ion-refresher-content>正在加载...</ion-refresher-content>
+      </app-refresher>
   <ion-list>
-    <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]' style="margin-bottom: .5em;">
-      <div style='width: 100%; font-size: 0.9rem' class="ion-padding-bottom ion-padding-top">
+    <ion-item *ngFor='let item of items' style="width: 96%;margin: 0.5em auto;font-size: 0.9rem">
+      <div class="ion-padding-bottom ion-padding-top">
         <ion-row>
           <ion-col size='2.5'>
             <ion-text color="medium">序号</ion-text>
           </ion-col>
           <ion-col>
-            630000000119
+            {{item.Id}}
           </ion-col>
         </ion-row>
         <ion-row>
@@ -25,7 +28,7 @@
             <ion-text color="medium">出差申请单号</ion-text>
           </ion-col>
           <ion-col>
-            3f26d919f19b421aab2acdbcf5471c81
+            {{item.TravelNumber}}
           </ion-col>
         </ion-row>
         <ion-row>
@@ -33,7 +36,7 @@
             <ion-text color="medium">申请时间</ion-text>
           </ion-col>
           <ion-col>
-            2020-04-26 10:16:39
+            {{item.ApplyTime}}
           </ion-col>
         </ion-row>
         <ion-row>
@@ -41,7 +44,7 @@
             <ion-text color="medium">申请单状态</ion-text>
           </ion-col>
           <ion-col>
-            通过
+            {{item.StatusType}}
           </ion-col>
         </ion-row>
         <ion-row>
@@ -49,7 +52,7 @@
             <ion-text color="medium">审批时间</ion-text>
           </ion-col>
           <ion-col>
-            2020-04-27 10:58:37
+            {{item.ApprovalTime}}
           </ion-col>
         </ion-row>
         <div style="width:100%;display: flex;justify-content: flex-end;">

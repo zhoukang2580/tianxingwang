@@ -4,6 +4,7 @@ import { CostCenterEntity, StaffEntity } from '../hr/staff.service';
 import { CityEntity } from '../tmc/models/CityEntity';
 import { HistoryEntity } from '../order/models/HistoryEntity';
 import { TmcEntity } from '../tmc/tmc.service';
+import { RequestEntity } from '../services/api/Request.entity';
 
 @Injectable({
   providedIn: 'root'
@@ -11,10 +12,55 @@ import { TmcEntity } from '../tmc/tmc.service';
 export class TravelService {
 
   constructor(private apiService: ApiService, ) { }
-  getlist() {
-
+  getlist(dto: SearchModel) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiTravelUrl-Home-List`;
+    req.Data = {
+      ...dto
+    };
+    return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
+  getTravelDetail(){
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiTravelUrl-Home-Detail`;
+    req.Data = {
 
+
+    };
+    return this.apiService.getResponse<TravelFormEntity[]>(req);
+  }
+  getTravelSave(){
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiTravelUrl-Home-Save`;
+    req.Data = {
+
+
+    };
+    return this.apiService.getResponse<TravelFormEntity[]>(req);
+  }
+  travelSubmit(){
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiTravelUrl-Home-Submit`;
+    req.Data = {
+
+
+    };
+    return this.apiService.getResponse<TravelFormEntity[]>(req);
+  }
+  travelCancel(){
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiTravelUrl-Home-Cancel`;
+    req.Data = {
+
+
+    };
+    return this.apiService.getResponse<TravelFormEntity[]>(req);
+  }
 }
 export class SearchModel {
   /// <summary>
@@ -58,7 +104,8 @@ export class SearchModel {
 
   SearchContent: string;
   StatusType: ApprovalStatusType;
-
+  PageIndex: number;
+  PageSize: number;
 
 
   AccountId: string
