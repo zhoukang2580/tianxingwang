@@ -52,8 +52,8 @@ import { OrderTrainTicketEntity } from "../models/OrderTrainTicketEntity";
 import { OrderHotelType } from "../models/OrderHotelEntity";
 import { MOCK_TMC_DATA } from "../mock-data";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
-import { OrderFlightTicketType } from '../models/OrderFlightTicketType';
-import { TaskStatusType } from 'src/app/workflow/models/TaskStatusType';
+import { OrderFlightTicketType } from "../models/OrderFlightTicketType";
+import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
 
 export interface TabItem {
   label: string;
@@ -104,7 +104,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService
-  ) { }
+  ) {}
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -391,8 +391,11 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       this.orderDetail.Order.OrderFlightTickets.forEach((it, idx) => {
         if (it.VariablesJsonObj.isShow) {
-
-          this.tabs.push({ label: typeof it.Id === 'string' ? it.VariablesJsonObj.selfId : it.Id, value: idx + 1 });
+          this.tabs.push({
+            label:
+              typeof it.Id === "string" ? it.VariablesJsonObj.selfId : it.Id,
+            value: idx + 1,
+          });
         }
         if (it.Variables && !it.VariablesJsonObj) {
           it.VariablesJsonObj =
@@ -404,9 +407,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private isShowExchange(orderFlightTicket: OrderFlightTicketEntity) {
-    if (
-      !orderFlightTicket
-    ) {
+    if (!orderFlightTicket) {
       return false;
     }
     return [
@@ -420,9 +421,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     ].includes(orderFlightTicket.Status);
   }
   private isTicketCanRefund(orderFlightTicket: OrderFlightTicketEntity) {
-    if (
-      !orderFlightTicket
-    ) {
+    if (!orderFlightTicket) {
       return false;
     }
     return [
@@ -433,11 +432,11 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   // ticket["isShowDetail"]=!ticket["isShowDetail"]
   isShowDetail(t: OrderFlightTicketEntity, event: CustomEvent) {
     t["isShowExplain"] = !t["isShowExplain"];
-    if(t["isShowExplain"]){
+    if (t["isShowExplain"]) {
       const height = this.plt.height();
       setTimeout(() => {
         const rect = (event.target as HTMLElement).getBoundingClientRect();
-        this.ionContent.scrollToBottom(100)
+        this.ionContent.scrollToBottom(100);
       }, 200);
     }
   }
@@ -544,7 +543,6 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       }
     });
     console.log(this.tikectId2OriginalTickets);
-
   }
   private initTicketsTripsInsurance() {
     if (
@@ -731,45 +729,51 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     return insuranceName;
   }
   async showPricePopover() {
-    let Tmc = this.tmc;
-    console.log(Tmc, "TmcTmcTmcTmc");
-
-    if (!Tmc) {
-      return `0`;
-    }
-    Tmc = { ...this.tmc };
-    if (this.orderDetail && this.orderDetail.Order) {
-      if (
-        [OrderTravelPayType.Company, OrderTravelPayType.Balance].some(
-          (t) => t == this.orderDetail.Order.TravelPayType
-        )
-      ) {
-        Tmc.IsShowServiceFee = this.tmc && this.tmc.IsShowServiceFee;
+    try {
+      if (!this.tmc) {
+        this.tmc = await this.tmcService.getTmc();
       }
-      if (OrderTravelPayType.Person == this.orderDetail.Order.TravelPayType) {
-        Tmc.IsShowServiceFee = true;
+      let Tmc = this.tmc;
+      console.log(Tmc, "TmcTmcTmcTmc");
+      if (!Tmc) {
+        return `0`;
       }
+      Tmc = { ...this.tmc };
+      if (this.orderDetail && this.orderDetail.Order) {
+        if (
+          [OrderTravelPayType.Company, OrderTravelPayType.Balance].some(
+            (t) => t == this.orderDetail.Order.TravelPayType
+          )
+        ) {
+          Tmc.IsShowServiceFee = this.tmc && this.tmc.IsShowServiceFee;
+        }
+        if (OrderTravelPayType.Person == this.orderDetail.Order.TravelPayType) {
+          Tmc.IsShowServiceFee = true;
+        }
+      }
+      let orderItems =
+        this.orderDetail.Order && this.orderDetail.Order.OrderItems;
+      if (!Tmc.IsShowServiceFee) {
+        orderItems = orderItems.filter((it) => !(it.Tag || "").endsWith("Fee"));
+      }
+      const p = await this.popoverCtrl.create({
+        component: OrderItemPricePopoverComponent,
+        cssClass: "ticket-changing",
+        componentProps: {
+          order: this.orderDetail && this.orderDetail.Order,
+          insurance: this.getInsuranceAmount(),
+          IsShowServiceFee: Tmc.IsShowServiceFee,
+          orderItems,
+          amount: orderItems.reduce(
+            (acc, item) => (acc = AppHelper.add(acc, +item.Amount)),
+            0
+          ),
+        },
+      });
+      p.present();
+    } catch (e) {
+      console.error(e);
     }
-    let orderItems =
-      this.orderDetail.Order && this.orderDetail.Order.OrderItems;
-    if (!Tmc.IsShowServiceFee) {
-      orderItems = orderItems.filter((it) => !(it.Tag || "").endsWith("Fee"));
-    }
-    const p = await this.popoverCtrl.create({
-      component: OrderItemPricePopoverComponent,
-      cssClass: "ticket-changing",
-      componentProps: {
-        order: this.orderDetail && this.orderDetail.Order,
-        insurance: this.getInsuranceAmount(),
-        IsShowServiceFee: Tmc.IsShowServiceFee,
-        orderItems,
-        amount: orderItems.reduce(
-          (acc, item) => (acc = AppHelper.add(acc, +item.Amount)),
-          0
-        ),
-      },
-    });
-    p.present();
   }
   back() {
     this.navCtrl.pop();
@@ -829,7 +833,6 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         this.ionContent.scrollByPoint(0, rect.top - height / 5, 100);
       }, 100);
     }
-
   }
   private getTicketOrderInsurances(t: OrderFlightTicketEntity) {
     return (
@@ -889,8 +892,15 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   onGetNewTicket(is: boolean) {
     this.orderDetail &&
       this.orderDetail.Order &&
-      this.orderDetail.Order.OrderFlightTickets
-    this.orderDetail.Order.OrderFlightTickets.filter(t => t.VariablesJsonObj.isShow == is)
-    console.log(this.orderDetail.Order.OrderFlightTickets.filter(t => t.VariablesJsonObj.isShow == is), "isisisisis");
+      this.orderDetail.Order.OrderFlightTickets;
+    this.orderDetail.Order.OrderFlightTickets.filter(
+      (t) => t.VariablesJsonObj.isShow == is
+    );
+    console.log(
+      this.orderDetail.Order.OrderFlightTickets.filter(
+        (t) => t.VariablesJsonObj.isShow == is
+      ),
+      "isisisisis"
+    );
   }
 }

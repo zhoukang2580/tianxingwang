@@ -11,7 +11,7 @@
     <ng-container *ngIf='bookInfo.info'>
       <ion-item-divider color='primary' sticky (click)='onSelect(bookInfo)'>
         <ion-label color='dark'>
-          {{bookInfo.info?.passenger?.Name}}{{bookInfo.info?.credential?.Number}}</ion-label>
+          {{bookInfo.info?.credential?.Name}}{{bookInfo.info?.credential?.Number}}</ion-label>
         <ion-checkbox slot='end' [(ngModel)]="bookInfo.isSelected" [disabled]='true'
           style="opacity: 1;margin-right: 1em;">
         </ion-checkbox>
