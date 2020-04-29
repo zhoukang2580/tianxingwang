@@ -7,7 +7,7 @@ import {
   AfterContentInit,
   AfterContentChecked,
   ViewChildren,
-  QueryList
+  QueryList,
 } from "@angular/core";
 import { EventEmitter } from "@angular/core";
 import { ElementRef, Output } from "@angular/core";
@@ -17,7 +17,7 @@ import Swiper from "swiper";
 @Component({
   selector: "app-swiper-slide-content",
   templateUrl: "./swiper-slide-content.component.html",
-  styleUrls: ["./swiper-slide-content.component.scss"]
+  styleUrls: ["./swiper-slide-content.component.scss"],
 })
 export class SwiperSlideContentComponent
   implements OnInit, AfterViewInit, OnDestroy, AfterContentInit {
@@ -85,11 +85,11 @@ export class SwiperSlideContentComponent
           const idx = this.swiper.realIndex;
           this.slideChange.emit(idx);
           this.onSlideTouchEnd(idx);
-        }
+        },
       },
       pagination: {
-        el: this.swiperPagination.nativeElement
-      }
+        el: this.swiperPagination.nativeElement,
+      },
     });
   }
   ngAfterViewInit() {
@@ -114,7 +114,7 @@ export class SwiperSlideContentComponent
     }
   }
   onActiveTab(tab: any) {
-    this.tabs = this.tabs.map(it => {
+    this.tabs = this.tabs.map((it) => {
       it.active = tab.value == it.value;
       return it;
     });
@@ -126,19 +126,17 @@ export class SwiperSlideContentComponent
   private scrollTabToCenter(tab: any) {
     if (this.tabsContainer && this.tabsContainer.nativeElement) {
       const one = this.tabItems.find(
-        it => it.nativeElement.getAttribute("dataid") == `${tab.value}`
+        (it) => it.nativeElement.getAttribute("dataid") == `${tab.value}`
       );
       if (one && one.nativeElement) {
-        this.domCtrl.read(() => {
-          const rect = one.nativeElement.getBoundingClientRect();
-          if (rect) {
-            const delta = rect.left + rect.width / 2 - this.plt.width() / 2;
-            this.tabsContainer.nativeElement.scrollBy({
-              left: delta,
-              behavior: "smooth"
-            });
-          }
-        });
+        const rect = one.nativeElement.getBoundingClientRect();
+        if (rect) {
+          const delta = rect.left + rect.width / 2 - this.plt.width() / 2;
+          this.tabsContainer.nativeElement.scrollBy({
+            left: delta,
+            behavior: "smooth",
+          });
+        }
       }
     }
   }
@@ -146,7 +144,7 @@ export class SwiperSlideContentComponent
     // console.log("idx", idx, tab,this.tabs);
     const tab = this.tabs[idx];
     if (tab) {
-      this.tabs = this.tabs.map(t => {
+      this.tabs = this.tabs.map((t) => {
         t.active = tab.value == t.value;
         return t;
       });

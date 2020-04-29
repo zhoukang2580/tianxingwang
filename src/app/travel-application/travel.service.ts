@@ -1,64 +1,52 @@
-import { Injectable } from '@angular/core';
-import { ApiService } from '../services/api/api.service';
-import { CostCenterEntity, StaffEntity } from '../hr/staff.service';
-import { CityEntity } from '../tmc/models/CityEntity';
-import { HistoryEntity } from '../order/models/HistoryEntity';
-import { TmcEntity } from '../tmc/tmc.service';
-import { RequestEntity } from '../services/api/Request.entity';
+import { Injectable } from "@angular/core";
+import { ApiService } from "../services/api/api.service";
+import { CostCenterEntity, StaffEntity } from "../hr/staff.service";
+import { CityEntity } from "../tmc/models/CityEntity";
+import { HistoryEntity } from "../order/models/HistoryEntity";
+import { TmcEntity } from "../tmc/tmc.service";
+import { RequestEntity } from "../services/api/Request.entity";
+import { BaseEntity } from "../models/BaseEntity";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class TravelService {
-
-  constructor(private apiService: ApiService, ) { }
+  constructor(private apiService: ApiService) {}
   getlist(dto: SearchModel) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-List`;
     req.Data = {
-      ...dto
+      ...dto,
     };
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
-  getTravelDetail(){
+  getTravelDetail() {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Detail`;
-    req.Data = {
-
-
-    };
+    req.Data = {};
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
-  getTravelSave(){
+  getTravelSave() {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Save`;
-    req.Data = {
-
-
-    };
+    req.Data = {};
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
-  travelSubmit(){
+  travelSubmit() {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Submit`;
-    req.Data = {
-
-
-    };
+    req.Data = {};
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
-  travelCancel(){
+  travelCancel() {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Cancel`;
-    req.Data = {
-
-
-    };
+    req.Data = {};
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
 }
@@ -80,35 +68,107 @@ export class SearchModel {
   /// <summary>
   /// 人员
   /// </summary>
-  Staff: StaffEntity
+  Staff: StaffEntity;
 
   /// <summary>
   /// 人员
   /// </summary>
-  Staffs: StaffEntity[]
+  Staffs: StaffEntity[];
 
-  Tmc: TmcEntity
+  Tmc: TmcEntity;
 
   /// <summary>
   /// 审批历史记录
   /// </summary>
-  Histories: HistoryEntity[]
+  Histories: HistoryEntity[];
+  TravelForm: TravelFormEntity;
+  // 参数
 
-
-  //参数
-
-
-  OrganizationId: string
-  TravelFormId: string
-
+  OrganizationId: string;
+  TravelFormId: string;
 
   SearchContent: string;
   StatusType: ApprovalStatusType;
   PageIndex: number;
   PageSize: number;
 
+  AccountId: string;
 
-  AccountId: string
+  Trips: TravelFormTripEntity[];
+}
+export class TravelFormTripEntity extends BaseEntity {
+  Tmc: TmcEntity; //
+  TravelForm: TravelFormEntity; //
+
+  /// <summary>
+  /// 行程内容
+  /// </summary>
+  Content: string; //
+
+  /// <summary>
+  /// 出行工具
+  /// </summary>
+  TravelTool: string; //
+
+  /// <summary>
+  /// 单程往返
+  /// </summary>
+  IsBackway: boolean; //
+
+  /// <summary>
+  /// 出发城市Code
+  /// </summary>
+  FromCityCode: string; //
+
+  /// <summary>
+  /// 出发城市名称
+  /// </summary>
+  FromCityName: string; //
+
+  /// <summary>
+  /// 到达城市Code
+  /// </summary>
+  ToCityCode: string; //
+
+  /// <summary>
+  /// 到达城市名称
+  /// </summary>
+  ToCityName: string; //
+
+  /// <summary>
+  /// 出发机场Code
+  /// </summary>
+  FromAirportCity: string; //
+
+  /// <summary>
+  /// 到达机场Code
+  /// </summary>
+  ToAirportCity: string; //
+
+  /// <summary>
+  /// 出发火车站Code
+  /// </summary>
+  FromStationCity: string; //
+
+  /// <summary>
+  /// 到达火车站Code
+  /// </summary>
+  ToStationCity: string; //
+
+  /// <summary>
+  /// 开始时间
+  /// </summary>
+  StartDate: string; //
+
+  /// <summary>
+  /// 结束时间
+  /// </summary>
+  EndDate: string; //
+
+  /// <summary>
+  /// 时长
+  /// </summary>
+  Day: number; //
 }
 export enum ApprovalStatusType {
   /// <summary>
@@ -127,10 +187,9 @@ export enum ApprovalStatusType {
   /// <summary>
   /// 待提交
   /// </summary>
-  WaiteSubmit = 4
+  WaiteSubmit = 4,
 }
 export interface TravelFormEntity {
-
   Id: string;
   TravelNumber: string;
   Number: string;
