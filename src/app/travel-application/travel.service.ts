@@ -124,8 +124,8 @@ export class TravelFormTripEntity extends BaseEntity {
   /// <summary>
   /// 出行工具
   /// </summary>
-  TravelTool: string; //
-
+  TripType: "国内" | "国际" | "港澳台";
+  TravelTool: "机票" | "火车票" | "酒店" | "租车";
   /// <summary>
   /// 单程往返
   /// </summary>

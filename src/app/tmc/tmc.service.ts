@@ -27,7 +27,9 @@ import { CountryEntity } from "./models/CountryEntity";
 import { IdentityEntity } from "../services/identity/identity.entity";
 import { OrderTrainTripEntity } from "../order/models/OrderTrainTripEntity";
 import { OrderFlightTripEntity } from "../order/models/OrderFlightTripEntity";
-import { BaseVariablesEntity } from '../models/BaseVariablesEntity';
+import { BaseVariablesEntity } from "../models/BaseVariablesEntity";
+import { TravelFormTripEntity } from "../travel-application/travel.service";
+import { CityEntity } from "./models/CityEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -766,10 +768,13 @@ export class TravelFormEntity extends BaseVariablesEntity {
   /// 成本中心
   /// </summary>
   CostCenterCode: string;
+  Organization: OrganizationEntity;
   /// <summary>
   /// 成本中心
   /// </summary>
   CostCenterName: string;
+  CustomerName: string;
+  Trips: TravelFormTripEntity[];
   /// <summary>
   /// 有效期
   /// </summary>
@@ -874,9 +879,9 @@ export class TravelFormEntity extends BaseVariablesEntity {
   /// 相关编号
   /// </summary>
   Numbers: TravelInfoNumberEntity[];
-  ApplyTime:string;
-  StatusTypeName:string;
-  ApprovalTime:string;
+  ApplyTime: string;
+  StatusTypeName: string;
+  ApprovalTime: string;
 }
 export class TravelInfoFlightEntity {
   /// <summary>
