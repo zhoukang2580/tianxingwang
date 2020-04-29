@@ -27,6 +27,7 @@ import { CountryEntity } from "./models/CountryEntity";
 import { IdentityEntity } from "../services/identity/identity.entity";
 import { OrderTrainTripEntity } from "../order/models/OrderTrainTripEntity";
 import { OrderFlightTripEntity } from "../order/models/OrderFlightTripEntity";
+import { BaseVariablesEntity } from '../models/BaseVariablesEntity';
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -735,7 +736,7 @@ export interface IBookOrderResult {
   HasTasks: boolean;
   Message: string;
 }
-export class TravelFormEntity {
+export class TravelFormEntity extends BaseVariablesEntity {
   Tmc: TmcEntity;
   /// <summary>
   ///
