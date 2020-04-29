@@ -22,6 +22,7 @@ import { CarModule } from "./car/car.module";
 import { HotelInternationalModule } from "./hotel-international/hotel-international.module";
 import { WorkflowModule } from "./workflow/workflow.module";
 import { FlightInternationalModule } from "./flight-international/international-flight.module";
+import { TravelApplicationModule } from './travel-application/travel-application.module';
 
 const routes: Routes = [
   {
@@ -142,6 +143,7 @@ const routes: Routes = [
     TmcModule,
     OrderModule,
     MessageModule,
+    TravelApplicationModule,
     TrainModule,
     HotelModule,
     HotelInternationalModule,

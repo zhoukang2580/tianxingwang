@@ -9,6 +9,7 @@ import { WorkflowListPageRoutingModule } from './workflow-list-routing.module';
 
 import { WorkflowListPage } from './workflow-list.page';
 import { WorkflowComponentsModule } from '../components/workflow-components.module';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { WorkflowComponentsModule } from '../components/workflow-components.modu
     IonicModule,
     WorkflowListPageRoutingModule,
     WorkflowComponentsModule,
-    AppDirectivesModule
+    AppDirectivesModule,
+    AppComponentsModule
   ],
   declarations: [WorkflowListPage]
 })

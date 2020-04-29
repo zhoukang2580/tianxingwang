@@ -10,14 +10,6 @@ export const routes: Routes = [
         m => m.WorkflowListPageModule
       )
   },
-  {
-    path: 'business-list',
-    loadChildren: () => import('./business-list/business-list.module').then( m => m.BusinessListPageModule)
-  },
-  {
-    path: 'add-apply',
-    loadChildren: () => import('./add-apply/add-apply.module').then( m => m.AddApplyPageModule)
-  },
 ];
 
 @NgModule({

@@ -8,7 +8,6 @@ import { AddApplyPageRoutingModule } from './add-apply-routing.module';
 
 import { AddApplyPage } from './add-apply.page';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
-import { WorkflowComponentsModule } from '../components/workflow-components.module';
 
 @NgModule({
   imports: [
@@ -17,7 +16,6 @@ import { WorkflowComponentsModule } from '../components/workflow-components.modu
     IonicModule,
     AddApplyPageRoutingModule,
     AppComponentsModule,
-    WorkflowComponentsModule
   ],
   declarations: [AddApplyPage]
 })
