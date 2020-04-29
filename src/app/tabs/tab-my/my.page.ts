@@ -76,6 +76,9 @@ export class MyPage implements OnDestroy, OnInit {
   goToWorkflow() {
     this.router.navigate([AppHelper.getRoutePath("workflow-list")]);
   }
+  goBusiness(){
+    this.router.navigate([AppHelper.getRoutePath("business-list")]);
+  }
   contactUs() {
     this.router.navigate([AppHelper.getRoutePath(`contact-us`)]);
   }
