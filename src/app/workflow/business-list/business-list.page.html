@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button></app-back-button>
+    </ion-buttons>
+    <ion-title>我的出差申请</ion-title>
+    <ion-button color="secondary" style="height: 2em;width: 3.3em;font-size: 0.9rem;" slot="end" (click)="goAddApply()">添加</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]' lines="none" style="margin-bottom: .5em;">
+      <div style='width: 100%; font-size: 0.9rem' class="ion-padding-bottom ion-padding-top">
+        <ion-row>
+          <ion-col size='2.5'>
+            <ion-text color="medium">序号</ion-text>
+          </ion-col>
+          <ion-col>
+            630000000119
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size='2.5'>
+            <ion-text color="medium">出差申请单号</ion-text>
+          </ion-col>
+          <ion-col>
+            3f26d919f19b421aab2acdbcf5471c81
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size='2.5'>
+            <ion-text color="medium">申请时间</ion-text>
+          </ion-col>
+          <ion-col>
+            2020-04-26 10:16:39
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size='2.5'>
+            <ion-text color="medium">申请单状态</ion-text>
+          </ion-col>
+          <ion-col>
+            通过
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size='2.5'>
+            <ion-text color="medium">审批时间</ion-text>
+          </ion-col>
+          <ion-col>
+            2020-04-27 10:58:37
+          </ion-col>
+        </ion-row>
+        <div style="width:100%;display: flex;justify-content: flex-end;">
+          <ion-button color="secondary" style="height:2em;width: 4em;">编辑</ion-button>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>
