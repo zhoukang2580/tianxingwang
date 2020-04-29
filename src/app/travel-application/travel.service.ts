@@ -64,6 +64,14 @@ export class TravelService {
     };
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
+  getCities(name: string) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiTravelUrl-Home-GetCitys`;
+    req.Data = {
+      name,
+    };
+    return this.apiService.getResponse<CityEntity[]>(req);
+  }
 }
 export class SearchModel {
   /// <summary>
