@@ -29,9 +29,8 @@ export class BusinessListPage implements OnInit,OnDestroy {
   }
   gettravel() {
   this.subscription=  this.service.getlist(this.searchModel).subscribe(r => {
-      this.items = r && r.Data || []
+      this.items = r && r.Data.TravelForms|| []
     })
-
   }
   doRefresh() {
 

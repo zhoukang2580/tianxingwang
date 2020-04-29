@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
-import { CostCenterEntity, StaffEntity } from "../hr/staff.service";
+import { CostCenterEntity, StaffEntity, OrganizationEntity } from "../hr/staff.service";
 import { CityEntity } from "../tmc/models/CityEntity";
 import { HistoryEntity } from "../order/models/HistoryEntity";
 import { TmcEntity } from "../tmc/tmc.service";
@@ -11,6 +11,8 @@ import { BaseEntity } from "../models/BaseEntity";
   providedIn: "root",
 })
 export class TravelService {
+  // organization:OrganizationEntity;
+  // costCenter:CostCenterEntity;
   constructor(private apiService: ApiService) {}
   getlist(dto: SearchModel) {
     const req = new RequestEntity();
@@ -19,34 +21,42 @@ export class TravelService {
     req.Data = {
       ...dto,
     };
-    return this.apiService.getResponse<TravelFormEntity[]>(req);
+    return this.apiService.getResponse<SearchModel>(req);
   }
-  getTravelDetail() {
+  getTravelDetail(id:string) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Detail`;
-    req.Data = {};
+    req.Data = {
+      Id:id
+    };
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
-  getTravelSave() {
+  getTravelSave(dto: SearchModel) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Save`;
-    req.Data = {};
+    req.Data = {
+      ...dto
+    };
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
-  travelSubmit() {
+  travelSubmit(dto: SearchModel) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Submit`;
-    req.Data = {};
-    return this.apiService.getResponse<TravelFormEntity[]>(req);
+    req.Data = {
+      ...dto
+    };
+    return this.apiService.getResponse<any>(req);
   }
-  travelCancel() {
+  travelCancel(id:string) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Cancel`;
-    req.Data = {};
+    req.Data = {
+      Id:id
+    };
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
 }
@@ -81,13 +91,14 @@ export class SearchModel {
   /// 审批历史记录
   /// </summary>
   Histories: HistoryEntity[];
-  TravelForm: TravelFormEntity;
+  TravelForms: TravelFormEntity[];
   // 参数
 
   OrganizationId: string;
   TravelFormId: string;
 
   SearchContent: string;
+
   StatusType: ApprovalStatusType;
   PageIndex: number;
   PageSize: number;
@@ -196,4 +207,5 @@ export interface TravelFormEntity {
   ApplyTime: string;
   ApprovalTime: string;
   StatusType: ApprovalStatusType;
+  StatusTypeName:string;
 }

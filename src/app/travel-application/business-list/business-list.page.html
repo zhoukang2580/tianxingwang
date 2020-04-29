@@ -13,46 +13,46 @@
         <ion-refresher-content>正在加载...</ion-refresher-content>
       </app-refresher>
   <ion-list>
-    <ion-item *ngFor='let item of items' style="width: 96%;margin: 0.5em auto;font-size: 0.9rem">
-      <div class="ion-padding-bottom ion-padding-top">
+    <ion-item *ngFor='let item of items' style="width: 96%;margin: 0.5em auto;font-size: 0.9rem;border: 1px solid var(--ion-color-medium);" lines="none">
+      <div class="ion-padding-bottom ion-padding-top" style="width: 100%">
         <ion-row>
-          <ion-col size='2.5'>
-            <ion-text color="medium">序号</ion-text>
+          <ion-col size='3'>
+            <ion-text color="medium">编号</ion-text>
           </ion-col>
           <ion-col>
             {{item.Id}}
           </ion-col>
         </ion-row>
-        <ion-row>
+        <!-- <ion-row>
           <ion-col size='2.5'>
             <ion-text color="medium">出差申请单号</ion-text>
           </ion-col>
           <ion-col>
             {{item.TravelNumber}}
           </ion-col>
-        </ion-row>
+        </ion-row> -->
         <ion-row>
-          <ion-col size='2.5'>
+          <ion-col size='3'>
             <ion-text color="medium">申请时间</ion-text>
           </ion-col>
           <ion-col>
-            {{item.ApplyTime}}
+            {{item?.ApplyTime?.replace("T"," ")?.substring(0,16)}}
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col size='2.5'>
+          <ion-col size='3'>
             <ion-text color="medium">申请单状态</ion-text>
           </ion-col>
           <ion-col>
-            {{item.StatusType}}
+            {{item.StatusTypeName}}
           </ion-col>
         </ion-row>
-        <ion-row>
-          <ion-col size='2.5'>
+        <ion-row >
+          <ion-col size='3'>
             <ion-text color="medium">审批时间</ion-text>
           </ion-col>
           <ion-col>
-            {{item.ApprovalTime}}
+            {{item?.ApprovalTime?.replace("T"," ")?.substring(0,16)}}
           </ion-col>
         </ion-row>
         <div style="width:100%;display: flex;justify-content: flex-end;">
