@@ -874,6 +874,9 @@ export class TravelFormEntity extends BaseVariablesEntity {
   /// 相关编号
   /// </summary>
   Numbers: TravelInfoNumberEntity[];
+  ApplyTime:string;
+  StatusTypeName:string;
+  ApprovalTime:string;
 }
 export class TravelInfoFlightEntity {
   /// <summary>

@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
 import { Router } from '@angular/router';
-import { TravelService, TravelFormEntity, SearchModel } from '../travel.service';
+import { TravelService, SearchModel } from '../travel.service';
 import { Subscription } from 'rxjs';
+import { TravelFormEntity } from 'src/app/tmc/tmc.service';
 
 @Component({
   selector: 'app-business-list',

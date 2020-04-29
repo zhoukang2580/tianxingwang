@@ -98,7 +98,7 @@ export class SearchModel {
   Histories: HistoryEntity[];
   TravelForms: TravelFormEntity[];
   // 参数
-
+  TravelForm: TravelFormEntity; //
   OrganizationId: string;
   TravelFormId: string;
 

@@ -13,14 +13,14 @@
       <ion-label>
         所属部门
       </ion-label>
-      <ion-label>{{organization}} <ng-container *ngIf='organizationCode as code'>({{code}})</ng-container>
+      <ion-label>{{searchModel.TravelForm}} <ng-container *ngIf='organizationCode as code'>({{code}})</ng-container>
       </ion-label>
     </ion-item>
     <ion-item>
       <ion-label>
         出差事由
       </ion-label>
-      <ion-input placeholder="请输入出差事由" slot="end" class="ion-text-end"></ion-input>
+      <ion-input placeholder="请输入出差事由" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Subject"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>将要拜访的客户或公司</ion-label>
