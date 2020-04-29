@@ -236,6 +236,11 @@ export class MemberService {
           idInputEle.value = "";
         }
       };
+      idInputEle.oninput = () => {
+        if (IDCARDRULE_REG.test(idInputEle.value)) {
+          this.changeBirthByIdNumber(idInputEle.value, credential);
+        }
+      };
       idInputEle.onblur = () => {
         this.idNumberTip(idInputEle, credential);
       };

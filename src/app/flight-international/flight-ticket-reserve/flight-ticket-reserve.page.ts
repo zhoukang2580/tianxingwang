@@ -949,7 +949,8 @@ export class FlightTicketReservePage
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.flightRoute &&
         combindInfo.bookInfo.bookInfo.flightRoute.flightFare &&
-        combindInfo.bookInfo.bookInfo.flightRoute.policy
+        combindInfo.bookInfo.bookInfo.flightRoute.policy&&
+        combindInfo.bookInfo.bookInfo.flightRoute.policy.Message
       ) {
         // 只有白名单的才需要考虑差标
         const ele: HTMLElement = this.getEleByAttr(

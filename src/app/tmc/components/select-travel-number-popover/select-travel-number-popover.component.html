@@ -2,13 +2,24 @@
   <ion-list *ngFor='let item of travelInfos'>
     <ion-list-header sticky color='primary' (click)='onSelect(item)'>
       <ion-text color='secondary'>{{item.TravelNumber}}</ion-text>
-      <ion-button  size='small' fill='clear' color='secondary' >
+      <ion-button size='small' fill='clear' color='secondary'>
         选择
       </ion-button>
     </ion-list-header>
-    <ion-item >
+    <ion-item>
+      <div *ngFor='let t of item.Trips'>
+        <ion-label class="ion-text-wrap">
+          {{t}}
+        </ion-label>
+      </div>
       <div>
-          <ion-label *ngFor="let tip of item.Trips" class='ion-text-wrap'>{{tip}}</ion-label>
+        <ion-label class='ion-text-wrap'>
+          {{item.Subject}}
+          <ion-text color='medium'>{{item.Status}}</ion-text>
+          <div *ngIf='item.CostCenterCode&&item.CostCenterName'>
+            {{item.CostCenterCode}}-{{item.CostCenterName}}
+          </div>
+        </ion-label>
       </div>
     </ion-item>
   </ion-list>

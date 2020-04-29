@@ -218,7 +218,9 @@ export class BookPage implements OnInit, AfterViewInit {
     });
     if (cabinPaytypes.length) {
       this.orderTravelPayTypes = this.orderTravelPayTypes.filter((it) =>
-        cabinPaytypes.some((cbt) => cbt == it.label)
+        cabinPaytypes.some(
+          (cbt) => cbt == it.label || it.value == OrderTravelPayType[cbt]
+        )
       );
     }
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
@@ -391,9 +393,9 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     const outnumbers =
       (this.initialBookDtoModel && this.initialBookDtoModel.OutNumbers) || {};
-    this.vmCombindInfos.forEach((item) => {
-      if (item.tmcOutNumberInfos) {
-        item.tmcOutNumberInfos.forEach((it) => {
+    this.vmCombindInfos.forEach((combindInfo) => {
+      if (combindInfo.tmcOutNumberInfos) {
+        combindInfo.tmcOutNumberInfos.forEach((it) => {
           it.labelDataList = outnumbers[it.label] || [];
           if (it.isLoadNumber) {
             if (
@@ -412,10 +414,10 @@ export class BookPage implements OnInit, AfterViewInit {
     });
     const result = await this.tmcService.getTravelUrls(args);
     if (result) {
-      this.vmCombindInfos.forEach((item) => {
-        if (item.tmcOutNumberInfos) {
-          item.tmcOutNumberInfos.forEach((info) => {
-            if ((it) => it.label.toLowerCase() == "travelnumber") {
+      this.vmCombindInfos.forEach((combindInfo) => {
+        if (combindInfo.tmcOutNumberInfos) {
+          combindInfo.tmcOutNumberInfos.forEach((info) => {
+            if (info.label.toLowerCase() == "travelnumber") {
               info.loadTravelUrlErrorMsg =
                 result[info.staffNumber] && result[info.staffNumber].Message;
               info.travelUrlInfos =
