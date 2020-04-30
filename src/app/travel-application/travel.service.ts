@@ -36,7 +36,7 @@ export class TravelService {
     req.Data = {
       Id: id,
     };
-    return this.apiService.getResponse<TravelFormEntity[]>(req);
+    return this.apiService.getPromiseData<TravelFormEntity[]>(req);
   }
   getTravelSave(dto: SearchModel) {
     const req = new RequestEntity();
@@ -45,7 +45,7 @@ export class TravelService {
     req.Data = {
       ...dto,
     };
-    return this.apiService.getResponse<TravelFormEntity[]>(req);
+    return this.apiService.getPromiseData<TravelFormEntity[]>(req);
   }
   travelSubmit(dto: SearchModel) {
     const req = new RequestEntity();
@@ -54,7 +54,7 @@ export class TravelService {
     req.Data = {
       ...dto,
     };
-    return this.apiService.getResponse<any>(req);
+    return this.apiService.getPromiseData<any>(req);
   }
   travelCancel(id: string) {
     const req = new RequestEntity();
@@ -63,7 +63,7 @@ export class TravelService {
     req.Data = {
       Id: id,
     };
-    return this.apiService.getResponse<TravelFormEntity[]>(req);
+    return this.apiService.getPromiseData<TravelFormEntity[]>(req);
   }
   getCities(name: string) {
     const req = new RequestEntity();
