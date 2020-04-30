@@ -15,7 +15,9 @@ export class AddStrokeComponent implements OnInit {
   constructor( private service: TravelService,private modalCtrl: ModalController) {
     this.remove = new EventEmitter();
   }
-
+  compareWithFn = (o1, o2) => {
+    return o1 == o2;
+  };
   ngOnInit() { }
   onDelete() {
     this.remove.emit(this.trip);
