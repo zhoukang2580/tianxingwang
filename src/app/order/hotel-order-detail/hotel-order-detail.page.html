@@ -159,7 +159,7 @@
                         <ng-container *ngFor='let it of OrderHotels;let i=index;let last=last'>
                           <div *ngIf='it.Type==OrderHotelType.International'>
                             <div
-                              *ngIf='it.CustomerName?.substring(it.CustomerName?.indexOf("/")+1)?.replace("/","|")?.replace(",","/") as n'>
+                              *ngIf='it.CustomerName?.includes(",")&&it.CustomerName?.substring(it.CustomerName?.indexOf("/")+1)?.replace("/","|")?.replace(",","/") as n'>
                               <ion-text class="ion-margin-end">
                                 {{n}}
                               </ion-text>

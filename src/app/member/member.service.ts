@@ -319,7 +319,7 @@ export class MemberService {
     return "";
   }
   isIdNubmerValidate(id: string) {
-    return IDCARDRULE_REG.test(id);
+    return IDCARDRULE_REG.test(id) && AppHelper.verifyIdNumber(id);
   }
   private checkProperty(
     obj: any,

@@ -221,7 +221,39 @@ export class AppHelper {
     AppHelper.setStorage<string>("_UUId_DeviceId_", local);
     return Promise.resolve(local);
   }
-
+  static verifyIdNumber(id: string) {
+    if (!id || id.length != 18) {
+      return false;
+    }
+    id = id.trim();
+    let code = id.substr(0, 17);
+    const arr = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+    let num = 0;
+    for (let i = 0; i < 17; i++) {
+      num += +id.substr(i, 1) * arr[i];
+    }
+    num %= 11;
+    switch (num) {
+      case 0: {
+        code = `${code}1`;
+        break;
+      }
+      case 1: {
+        code = `${code}0`;
+        break;
+      }
+      case 2: {
+        code = `${code}X`;
+        break;
+      }
+      default: {
+        code = `${code}${12 - num}`;
+        break;
+      }
+    }
+    console.log(code, id);
+    return code.toLowerCase() == id.toLowerCase();
+  }
   static async dismissAlertLayer() {
     try {
       let i = 5;
