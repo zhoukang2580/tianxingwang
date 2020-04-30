@@ -3,18 +3,14 @@
     <ion-item-group style="margin: .5em;">
       <ion-item-divider>
         <ion-text>行程{{index+1}}</ion-text>
-        <ion-icon name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()" class="ion-text-end"></ion-icon>
+        <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()"
+          class="ion-text-end"></ion-icon>
       </ion-item-divider>
-      <ion-item lines="none">
-          <ion-text>行程</ion-text>
-        <ion-input placeholder="请输入" class="ion-text-end"></ion-input>
-      </ion-item>
       <ion-item lines="none">
         <ion-label>
           交通住宿
         </ion-label>
-        <ion-select [(ngModel)]="trip.TravelTool" okText="确定" cancelText
-        ="取消" [compareWith]="compareWithFn">
+        <ion-select [(ngModel)]="trip.TravelTool" okText="确定" cancelText="取消" [compareWith]="compareWithFn">
           <ion-select-option value="机票">机票</ion-select-option>
           <ion-select-option value="火车票">火车票</ion-select-option>
           <ion-select-option value="酒店">酒店</ion-select-option>
@@ -25,10 +21,9 @@
         <ion-label>
           单程往返
         </ion-label>
-        <ion-select [(ngModel)]="trip.IsBackway" okText="确定" cancelText
-        ="取消" [compareWith]="compareWithFn">
-          <ion-select-option value="false">单程</ion-select-option>
-          <ion-select-option value="true">往返</ion-select-option>
+        <ion-select [(ngModel)]="trip.IsBackway" okText="确定" cancelText="取消" [compareWith]="compareWithFn">
+          <ion-select-option [value]="false">单程</ion-select-option>
+          <ion-select-option [value]="true">往返</ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item lines="none">
@@ -36,37 +31,37 @@
           出发城市
         </ion-label>
         <ion-label (click)="onSelectCity(true)" class="ion-text-end">
-        <ion-text color="medium">{{trip.FromCityName||"请选择"}}</ion-text>
+          <ion-text color='{{trip.FromCityName?"dark":"medium"}}'>{{trip.FromCityName||"请选择"}}</ion-text>
         </ion-label>
       </ion-item>
       <ion-item lines="none">
-        <ion-label >
+        <ion-label>
           目的城市
         </ion-label>
-        <ion-label class="ion-text-end"  (click)="onSelectCity(false)">
-          <ion-text color="medium">{{trip.ToCityName||"请选择"}}</ion-text>
+        <ion-label class="ion-text-end" (click)="onSelectCity(false)">
+          <ion-text color='{{trip.ToCityName?"dark":"medium"}}'>{{trip.ToCityName||"请选择"}}</ion-text>
         </ion-label>
       </ion-item>
       <ion-item lines="none">
         <ion-label>
           出差开始时间
         </ion-label>
-        <ion-datetime displayFormat="YYYY-MM-DD" placeholder="请选择" [(ngModel)]="trip.StartDate" doneText="确定" cancelText
-        ="取消"></ion-datetime>
+        <ion-datetime displayFormat="YYYY-MM-DD" placeholder="请选择" [(ngModel)]="trip.StartDate" doneText="确定"
+          cancelText="取消"></ion-datetime>
       </ion-item>
       <ion-item lines="none">
         <ion-label>
           出差结束时间
         </ion-label>
-        <ion-datetime displayFormat="YYYY-MM-DD" placeholder="请选择" [(ngModel)]="trip.EndDate" doneText="确定" cancelText
-        ="取消"></ion-datetime>
+        <ion-datetime displayFormat="YYYY-MM-DD" placeholder="请选择" [(ngModel)]="trip.EndDate" doneText="确定"
+          cancelText="取消"></ion-datetime>
       </ion-item>
       <ion-item lines="none">
         <ion-label>时长（天）
         </ion-label>
         <ion-input placeholder="请输入" slot="end" [(ngModel)]="trip.Day" class="ion-text-end"></ion-input>
       </ion-item>
-      
+
     </ion-item-group>
   </ion-list>
 

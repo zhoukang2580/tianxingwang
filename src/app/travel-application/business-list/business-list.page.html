@@ -4,16 +4,18 @@
       <app-back-button></app-back-button>
     </ion-buttons>
     <ion-title>我的出差申请</ion-title>
-    <ion-button color="secondary" style="height: 2em;width: 3.3em;font-size: 0.9rem;" slot="end" (click)="goAddApply()">添加</ion-button>
+    <ion-button color="secondary" style="height: 2em;width: 3.3em;font-size: 0.9rem;" slot="end" (click)="goAddApply()">
+      添加</ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
-        <ion-refresher-content>正在加载...</ion-refresher-content>
-      </app-refresher>
+  <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+    <ion-refresher-content>正在加载...</ion-refresher-content>
+  </app-refresher>
   <ion-list>
-    <ion-item *ngFor='let item of items' style="width: 96%;margin: 0.5em auto;font-size: 0.9rem;border: 1px solid var(--ion-color-medium);" lines="none">
+    <ion-item *ngFor='let item of items'
+      style="width: 96%;margin: 0.5em auto;font-size: 0.9rem;border: 1px solid var(--ion-color-medium);" lines="none">
       <div class="ion-padding-bottom ion-padding-top" style="width: 100%">
         <ion-row>
           <ion-col size='3'>
@@ -47,7 +49,7 @@
             {{item.StatusTypeName}}
           </ion-col>
         </ion-row>
-        <ion-row >
+        <ion-row>
           <ion-col size='3'>
             <ion-text color="medium">审批时间</ion-text>
           </ion-col>
@@ -56,9 +58,12 @@
           </ion-col>
         </ion-row>
         <div style="width:100%;display: flex;justify-content: flex-end;">
-          <ion-button color="secondary" style="height:2em;width: 4em;"  (click)="onTravelEdit(item.Id)">编辑</ion-button>
+          <ion-button color="secondary" style="height:2em;width: 4em;" (click)="onTravelEdit(item.Id)">编辑</ion-button>
         </div>
       </div>
     </ion-item>
   </ion-list>
+  <ion-infinite-scroll (ionInfinite)='gettravel()'>
+    <ion-infinite-scroll-content>加载更多</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

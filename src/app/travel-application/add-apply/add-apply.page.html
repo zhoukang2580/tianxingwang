@@ -13,7 +13,9 @@
       <ion-label>
         所属部门
       </ion-label>
-      <ion-label>{{organization}} <ng-container *ngIf="organizationCode">({{organizationCode}})</ng-container>
+      <ion-label class="ion-text-end">{{searchModel.TravelForm?.Organization?.Name}} <ng-container
+          *ngIf="searchModel.TravelForm?.Organization?.Code">({{searchModel.TravelForm?.Organization?.Code}})
+        </ng-container>
       </ion-label>
     </ion-item>
     <ion-item>
@@ -24,15 +26,16 @@
       </ion-input>
     </ion-item>
     <ion-item>
-      <ion-label>将要拜访的客户或公司</ion-label>
-      <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="customerName"></ion-input>
+      <ion-label>客户或公司</ion-label>
+      <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName">
+      </ion-input>
     </ion-item>
     <ion-item>
       <ion-label>
         出差类别
       </ion-label>
-      <ion-select slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.TripType" okText="确定" cancelText
-      ="取消" [compareWith]="compareWithFn">
+      <ion-select slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.TripType" okText="确定"
+        cancelText="取消" [compareWith]="compareWithFn">
         <ion-select-option value="国内">国内</ion-select-option>
         <ion-select-option value="国际">国际</ion-select-option>
         <ion-select-option value="港澳台">港澳台</ion-select-option>
@@ -40,32 +43,34 @@
     </ion-item>
     <app-add-stroke *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;" [index]="idx" [trip]='item'
       (remove)='onRemoveTrip($event)'></app-add-stroke>
-    <div class="add_btn" (click)="onAddTrip()">
+    <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()">
+      <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
       添加行程
-    </div>
+    </ion-button>
     <ion-item>
       <ion-label>
-        出差天数统计
+        出差天数
       </ion-label>
       <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.DayCount">
       </ion-input>
     </ion-item>
     <ion-item>
       <ion-label>
-        出差信息备注
+        备注
       </ion-label>
       <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Detail">
       </ion-input>
     </ion-item>
     <ion-item detail (click)="onSelectCostCenter()">
-      <ion-label>成本中心:</ion-label>
-      <ion-label class="ion-text-end" color="medium">{{costCenterName||"请选择"}}</ion-label>
+      <ion-label>成本中心</ion-label>
+      <ion-label class="ion-text-end" color="{{searchModel.TravelForm?.CostCenterName?'dark':'medium'}}">
+        {{searchModel.TravelForm?.CostCenterName||"请选择"}}</ion-label>
     </ion-item>
     <ion-item>
-      <ion-button color="secondary" style="width: 7em;height: 2.4em;">
+      <ion-button slot='end' color="secondary" style="width: 7em;height: 2.4em;">
         保存
       </ion-button>
-      <ion-button color="secondary" (click)="onSubmit()" style="width: 7em;height: 2.4em;">
+      <ion-button slot='end' color="secondary" (click)="onSubmit()" style="width: 7em;height: 2.4em;">
         提交
       </ion-button>
     </ion-item>

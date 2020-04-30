@@ -19,12 +19,12 @@ import { Router, ActivatedRoute } from "@angular/router";
   styleUrls: ["./add-apply.page.scss"],
 })
 export class AddApplyPage implements OnInit, OnDestroy {
-  organization: string;
-  organizationId: string;
-  costCenterName: string;
-  costCenterCode: string;
-  organizationCode: string;
-  customerName: string;
+  // organization: string;
+  // organizationId: string;
+  // costCenterName: string;
+  // costCenterCode: string;
+  // organizationCode: string;
+  // customerName: string;
   private subscription = Subscription.EMPTY;
   items: TravelFormEntity[];
   searchModel: SearchModel;
@@ -51,7 +51,14 @@ export class AddApplyPage implements OnInit, OnDestroy {
         this.searchModel = JSON.parse(q.get("data"));
       }
     });
-    this.searchModel.TravelForm.Trips.push(item);
+    setTimeout(() => {
+      if (
+        this.searchModel.TravelForm.Trips &&
+        !this.searchModel.TravelForm.Trips.length
+      ) {
+        this.searchModel.TravelForm.Trips.push(item);
+      }
+    }, 0);
   }
   compareWithFn = (o1, o2) => {
     return o1 == o2;
@@ -62,9 +69,15 @@ export class AddApplyPage implements OnInit, OnDestroy {
     const data = await m.onDidDismiss();
     const org = data && (data.data as OrganizationEntity);
     if (org) {
-      this.organization = org.Name;
-      this.organizationCode = org.Code;
-      this.organizationId = org.Id;
+      this.searchModel.OrganizationId = org.Id;
+      this.searchModel.TravelForm = {
+        ...this.searchModel.TravelForm,
+        Organization: {
+          Code: org.Code,
+          Id: org.Id,
+          Name: org.Name,
+        } as OrganizationEntity,
+      } as any;
     }
   }
   async onSelectCostCenter() {
@@ -73,23 +86,32 @@ export class AddApplyPage implements OnInit, OnDestroy {
     const data = await m.onDidDismiss();
     const org = data && (data.data as CostCenterEntity);
     if (org) {
-      this.costCenterName = org.Name;
-      this.costCenterCode = org.Code;
+      // this.costCenterName = org.Name;
+      // this.costCenterCode = org.Code;
+
+      this.searchModel.TravelForm = {
+        ...this.searchModel.TravelForm,
+        Id: org.Id,
+        CostCenterName: org.Name,
+        CostCenterCode: org.Code,
+      } as any;
     }
   }
   onSubmit() {
-    if (this.searchModel.TravelForm) {
-      this.searchModel.TravelForm.Organization = {
-        Code: this.organizationCode,
-        Name: this.organization,
-        Id: this.organizationId,
-      } as OrganizationEntity;
-      this.searchModel.OrganizationId = this.organizationId;
-      this.searchModel.TravelForm.CustomerName = this.customerName;
-      this.searchModel.TravelForm.CostCenterName = this.costCenterName;
-      this.searchModel.Trips = this.searchModel.TravelForm.Trips;
+    try {
+      if (this.searchModel.TravelForm) {
+        this.searchModel.Trips = this.searchModel.TravelForm.Trips;
+        this.searchModel.OrganizationId =
+          this.searchModel.TravelForm.Organization &&
+          this.searchModel.TravelForm.Organization.Id;
+      }
+      this.service.travelSubmit(this.searchModel);
+      this.router.navigate([AppHelper.getRoutePath("business-list")], {
+        queryParams: { doRefresh: true },
+      });
+    } catch (e) {
+      AppHelper.alert(e);
     }
-    this.service.travelSubmit(this.searchModel);
   }
 
   onRemoveTrip(item: TravelFormTripEntity) {
