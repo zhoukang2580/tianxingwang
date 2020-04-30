@@ -53,6 +53,9 @@ export class AddApplyPage implements OnInit, OnDestroy {
     });
     this.searchModel.TravelForm.Trips.push(item);
   }
+  compareWithFn = (o1, o2) => {
+    return o1 == o2;
+  };
   async onSelectOrg() {
     const m = await this.modalCtrl.create({ component: OrganizationComponent });
     m.present();

@@ -31,7 +31,8 @@
       <ion-label>
         出差类别
       </ion-label>
-      <ion-select slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.TripType">
+      <ion-select slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.TripType" okText="确定" cancelText
+      ="取消" [compareWith]="compareWithFn">
         <ion-select-option value="国内">国内</ion-select-option>
         <ion-select-option value="国际">国际</ion-select-option>
         <ion-select-option value="港澳台">港澳台</ion-select-option>
