@@ -10,6 +10,7 @@ import { BaseSettingEntity } from "../models/BaseSettingEntity";
 import { AccountEntity } from "../account/models/AccountEntity";
 import { AppHelper } from "../appHelper";
 import { CountryEntity } from "../tmc/models/CountryEntity";
+import { BaseEntity } from '../models/BaseEntity';
 export enum StaffBookType {
   /// <summary>
   /// 秘书
@@ -323,7 +324,7 @@ export class OrganizationEntity {
   ShortName: string;
   Children: OrganizationEntity[];
 }
-export class CostCenterEntity {
+export class CostCenterEntity extends BaseEntity{
   /// <summary>
   ///
   /// </summary>

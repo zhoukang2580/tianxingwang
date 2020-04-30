@@ -1,0 +1,38 @@
+<ion-header>
+  <ion-toolbar>
+    <form (ngSubmit)='onSearchByKeywords()'>
+      <ion-buttons>
+        <app-back-button defaultHref=''></app-back-button>
+        <ion-searchbar name='searchbar' type='search' [debounce]='300' [(ngModel)]='vmKeyowrds' [animated]='true'
+          placeholder="城市名称/拼音/三字码" (ionChange)='onSearchByKeywords()' mode='ios'>
+        </ion-searchbar>
+      </ion-buttons>
+    </form>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-refresher (ionRefresh)='doRefresh(true)' slot='fixed'>
+    <ion-refresher-content>正在刷新数据</ion-refresher-content>
+  </app-refresher>
+  <ng-container *ngIf='isSearching else n'>
+    <ion-label>正在搜索...</ion-label>
+  </ng-container>
+  <ng-template #n>
+    <ion-list class='holder'>
+    </ion-list>
+    <ion-list *ngIf='vmCostCenters?.length else nodatatempl'>
+      <ion-item *ngFor='let item of vmCostCenters' (click)='onCitySelected(item)'>
+        <ion-label>
+          <ion-text style="position: relative;padding-left: 1em;" [color]="item?.Selected?'secondary':'dark'">
+            <ion-icon *ngIf='item.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon>
+            {{item?.Name}}
+          </ion-text>
+          <ion-text *ngIf='item.Code' color='medium'>({{item.Code}})</ion-text>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ng-template>
+  <ng-template #nodatatempl>
+    <app-or-comp>暂无数据</app-or-comp>
+  </ng-template>
+</ion-content>

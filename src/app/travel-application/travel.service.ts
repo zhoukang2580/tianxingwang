@@ -11,6 +11,7 @@ import { TmcEntity, TravelFormEntity } from "../tmc/tmc.service";
 import { RequestEntity } from "../services/api/Request.entity";
 import { BaseEntity } from "../models/BaseEntity";
 import { AccountEntity } from "../account/models/AccountEntity";
+import { TrafficlineEntity } from '../tmc/models/TrafficlineEntity';
 
 @Injectable({
   providedIn: "root",
@@ -70,7 +71,13 @@ export class TravelService {
     req.Data = {
       name,
     };
-    return this.apiService.getResponse<CityEntity[]>(req);
+    return this.apiService.getResponse<TrafficlineEntity[]>(req);
+  }
+  getCostCenters() {
+    const req = new RequestEntity();
+    req.Method = `TmcApiTravelUrl-Home-GetCostCenters`;
+    req.Data = {};
+    return this.apiService.getPromiseData<CostCenterEntity[]>(req);
   }
 }
 export class SearchModel {

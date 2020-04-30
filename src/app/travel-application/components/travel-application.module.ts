@@ -3,14 +3,16 @@ import { CommonModule } from '@angular/common';
 import { AddStrokeComponent } from './add-stroke/add-stroke.component';
 import { IonicModule } from '@ionic/angular';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
+import { SelectCity } from './select-city/select-city';
+import { FormsModule } from '@angular/forms';
 
 
 
 @NgModule({
-  declarations: [AddStrokeComponent],
+  declarations: [AddStrokeComponent,SelectCity],
   imports: [
-    IonicModule,CommonModule, AppComponentsModule
+    IonicModule,CommonModule,FormsModule, AppComponentsModule
   ],
-  exports:[AddStrokeComponent]
+  exports:[AddStrokeComponent,SelectCity]
 })
 export class TravelApplicationComponentsModule { }
