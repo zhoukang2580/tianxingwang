@@ -1,12 +1,8 @@
 <ion-radio-group class='credentials-remark ion-no-margin ion-no-padding'  (ionChange)='onSelectItem($event)'
   name='CredentialsRemark'>
   <ion-item *ngFor='let info of bookInfos'>
-    <ion-label class='sm-font-size' *ngIf='info?.credential?.FirstName&&info?.credential?.LastName'>
-      {{info?.credential?.FirstName}}{{info?.credential?.LastName}} {{info?.credential?.Number}}</ion-label>
-    <ion-label class='sm-font-size'
-      *ngIf='!(info?.credential?.FirstName&&info?.credential?.LastName)&&info?.passenger?.Name'>
-      {{info?.passenger?.Name}}
-      {{info?.credential?.Number}}</ion-label>
+    <ion-label class='sm-font-size' *ngIf='info?.credential?.Name'>
+      {{info.credential.Name}} {{info?.credential?.Number}}</ion-label>
     <ion-radio [value]="info"></ion-radio>
   </ion-item>
   <ion-item (click)='onUnFilterPolicy()'>
