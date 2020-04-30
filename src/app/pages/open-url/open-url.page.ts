@@ -78,7 +78,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
     const options: InAppBrowserOptions = {
       usewkwebview: "yes",
       location: "no",
-      toolbar: this.plt.is("ios") ? "yes" : "no",
+      toolbar: "yes",
       zoom: "no",
       footer: "no",
       closebuttoncaption:"关闭(CLOSE)",

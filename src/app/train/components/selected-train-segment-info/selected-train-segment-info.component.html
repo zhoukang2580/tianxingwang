@@ -14,7 +14,7 @@
   <ion-item-group *ngFor='let bookInfo of bookInfos$|async'>
     <ng-container *ngIf='bookInfo?.bookInfo'>
       <ion-item-divider color='primary' sticky>
-        <ion-label color='dark'>{{bookInfo?.passenger?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
+        <ion-label color='dark'>{{bookInfo?.credential?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
       </ion-item-divider>
       <ion-item lines='none'>
         <div class='detail'>

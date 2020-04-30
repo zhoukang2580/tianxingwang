@@ -9,13 +9,12 @@
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
     <ion-refresher-content 
       refreshingText="正在加载...">
     </ion-refresher-content>
-  </ion-refresher>
+  </app-refresher>
   <ion-toolbar #toolbar>
-    <!-- Searchbar with a custom debounce -->
     <ion-searchbar class='ion-no-margin ion-no-padding' debounce="400" animated placeholder="空格键、或者关键字 开始查询" (ionChange)='doSearch()'
       [(ngModel)]='vmKeyword'>
     </ion-searchbar>
