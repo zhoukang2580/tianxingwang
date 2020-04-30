@@ -1,4 +1,3 @@
-
 import { Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { Storage } from "@ionic/storage";
@@ -8,14 +7,14 @@ import {
   IonRefresher,
   IonHeader,
   ModalController,
-  IonInfiniteScroll
+  IonInfiniteScroll,
 } from "@ionic/angular";
 import {
   Component,
   OnInit,
   ViewChild,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import * as jsPy from "js-pinyin";
 import {
@@ -23,14 +22,14 @@ import {
   state,
   style,
   animate,
-  transition
+  transition,
 } from "@angular/animations";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
-import { RefresherComponent } from 'src/app/components/refresher';
-import { TravelService } from '../../travel.service';
-import { finalize } from 'rxjs/operators';
-import { CostCenterEntity } from 'src/app/hr/staff.service';
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { RefresherComponent } from "src/app/components/refresher";
+import { TravelService } from "../../travel.service";
+import { finalize } from "rxjs/operators";
+import { CostCenterEntity } from "src/app/hr/staff.service";
 @Component({
   selector: "app-select-costcenter",
   templateUrl: "./select-costcenter.html",
@@ -39,9 +38,9 @@ import { CostCenterEntity } from 'src/app/hr/staff.service';
     trigger("openclose", [
       state("true", style({ transform: "scale(1)" })),
       state("false", style({ transform: "scale(0)" })),
-      transition("true<=>false", animate("300ms ease-in-out"))
-    ])
-  ]
+      transition("true<=>false", animate("300ms ease-in-out")),
+    ]),
+  ],
 })
 export class SelectCostcenter implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
@@ -61,11 +60,16 @@ export class SelectCostcenter implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearchByKeywords() {
     if (this.costCenters && this.costCenters.length) {
-      this.vmCostCenters = this.vmKeyowrds ? this.costCenters.filter(it => it.Name.includes(this.vmKeyowrds)) : this. costCenters;
+      this.vmCostCenters = this.vmKeyowrds
+        ? this.costCenters.filter((it) => it.Name.includes(this.vmKeyowrds))
+        : this.costCenters;
     }
   }
   async ngOnInit() {
     this.doRefresh();
+  }
+  back() {
+    this.modalCtrl.getTop().then((t) => t.dismiss());
   }
   ngOnDestroy() {
     console.log("onDestroy");
@@ -73,12 +77,12 @@ export class SelectCostcenter implements OnInit, OnDestroy, AfterViewInit {
   }
   async doRefresh() {
     try {
-      this.vmKeyowrds=''
+      this.vmKeyowrds = "";
       this.costCenters = [];
       this.subscription.unsubscribe();
       this.costCenters = await this.travelService.getCostCenters();
       this.scrollToTop();
-    } catch{
+    } catch {
       this.costCenters = [];
     }
     this.onSearchByKeywords();
@@ -88,9 +92,8 @@ export class SelectCostcenter implements OnInit, OnDestroy, AfterViewInit {
       this.content.scrollToTop(100);
     }
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
   onCitySelected(city: CostCenterEntity) {
-    this.modalCtrl.getTop().then(t => t.dismiss(city));
+    this.modalCtrl.getTop().then((t) => t.dismiss(city));
   }
-
 }

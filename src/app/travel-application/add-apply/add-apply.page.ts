@@ -97,7 +97,7 @@ export class AddApplyPage implements OnInit, OnDestroy {
       } as any;
     }
   }
-  onSubmit() {
+  async onSubmit() {
     try {
       if (this.searchModel.TravelForm) {
         this.searchModel.Trips = this.searchModel.TravelForm.Trips;
@@ -105,7 +105,7 @@ export class AddApplyPage implements OnInit, OnDestroy {
           this.searchModel.TravelForm.Organization &&
           this.searchModel.TravelForm.Organization.Id;
       }
-      this.service.travelSubmit(this.searchModel);
+      const r = await this.service.travelSubmit(this.searchModel);
       this.router.navigate([AppHelper.getRoutePath("business-list")], {
         queryParams: { doRefresh: true },
       });
