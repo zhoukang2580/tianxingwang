@@ -36,7 +36,7 @@ export class TravelService {
     req.Data = {
       Id: id,
     };
-    return this.apiService.getPromiseData<TravelFormEntity[]>(req);
+    return this.apiService.getPromiseData<SearchModel>(req);
   }
   getTravelSave(dto: SearchModel) {
     const req = new RequestEntity();
