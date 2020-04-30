@@ -73,6 +73,7 @@ export class SelectCostcenter implements OnInit, OnDestroy, AfterViewInit {
   }
   async doRefresh() {
     try {
+      this.vmKeyowrds=''
       this.costCenters = [];
       this.subscription.unsubscribe();
       this.costCenters = await this.travelService.getCostCenters();
@@ -80,6 +81,7 @@ export class SelectCostcenter implements OnInit, OnDestroy, AfterViewInit {
     } catch{
       this.costCenters = [];
     }
+    this.onSearchByKeywords();
   }
   scrollToTop() {
     if (this.content) {
