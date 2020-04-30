@@ -7,7 +7,7 @@ import { TravelFormEntity } from 'src/app/tmc/tmc.service';
 import { SearchModel, TravelService, TravelFormTripEntity } from '../travel.service';
 import { SelectCostcenter } from '../components/select-costcenter/select-costcenter';
 import { AppHelper } from 'src/app/appHelper';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-add-apply',
@@ -23,7 +23,9 @@ export class AddApplyPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   items: TravelFormEntity[];
   searchModel: SearchModel;
-  constructor(private modalCtrl: ModalController, private service: TravelService, private router: Router, ) { }
+  constructor(private modalCtrl: ModalController,
+    private route: ActivatedRoute,
+    private service: TravelService, private router: Router, ) { }
 
   ngOnDestroy() {
     this.subscription.unsubscribe()
@@ -36,6 +38,11 @@ export class AddApplyPage implements OnInit, OnDestroy {
     this.searchModel.PageSize = 20;
     const item: TravelFormTripEntity = {} as any;
     // item.StartDate
+    this.route.queryParamMap.subscribe(q => {
+      if (q.get("data")) {
+        this.searchModel = JSON.parse(q.get("data"))
+      }
+    })
     this.searchModel.TravelForm.Trips.push(item)
   }
   async onSelectOrg() {
@@ -59,16 +66,17 @@ export class AddApplyPage implements OnInit, OnDestroy {
     }
   }
   onSubmit() {
-    if(this.searchModel.TravelForm){
-      this.searchModel.TravelForm.Organization={
-        Code:this.organizationCode,
-        Name:this.organization
+    if (this.searchModel.TravelForm) {
+      this.searchModel.TravelForm.Organization = {
+        Code: this.organizationCode,
+        Name: this.organization
       } as OrganizationEntity;
       this.searchModel.TravelForm.CustomerName = this.customerName
       this.searchModel.TravelForm.CostCenterName = this.costCenterName
     }
     this.service.travelSubmit(this.searchModel)
   }
+
   onRemoveTrip(item: TravelFormTripEntity) {
     if (item && this.searchModel.TravelForm.Trips) {
       this.searchModel.TravelForm.Trips = this.searchModel.TravelForm.Trips.filter(it => it !== item);

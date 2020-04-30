@@ -36,4 +36,10 @@ export class BusinessListPage implements OnInit,OnDestroy {
   doRefresh() {
 
   }
+  async onTravelEdit(id){
+   const m=await this.service.getTravelDetail(id)
+    this.router.navigate([AppHelper.getRoutePath("add-apply")],{queryParams:{
+      data:JSON.stringify(m)
+    }});
+  }
 }

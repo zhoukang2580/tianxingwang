@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <app-back-button></app-back-button>
     </ion-buttons>
-    <ion-title>添加出差申请</ion-title>
+    <ion-title>出差申请</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -58,10 +58,10 @@
         <ion-label class="ion-text-end" color="medium">{{costCenterName||"请选择"}}</ion-label>
       </ion-item>
     <ion-item>
-      <ion-button color="secondary">
+      <ion-button color="secondary" style="width:4em">
         保存
       </ion-button>
-      <ion-button color="secondary" (click)="onSubmit()">
+      <ion-button color="secondary" (click)="onSubmit()"style="width:4em">
         提交
       </ion-button>
     </ion-item>
