@@ -2,7 +2,7 @@
   <ion-buttons>
     <app-back-button [backFn]='back.bind(this)'></app-back-button>
     <form (ngSubmit)='onTextChange(true)'>
-      <ion-searchbar class="ion-no-margin ion-no-padding" name='searchbar' animated placeholder='查询'
+      <ion-searchbar style='padding:0' name='searchbar' animated placeholder='查询'
         [(ngModel)]='keyValue' (ionChange)='onTextChange(false)' debounce=300>
       </ion-searchbar>
       <ion-button class="search" type='search' color='secondary' size='small'>搜索</ion-button>

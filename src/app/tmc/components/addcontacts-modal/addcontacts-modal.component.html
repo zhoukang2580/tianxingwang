@@ -16,7 +16,7 @@
     </ion-refresher>
     <ion-toolbar #toolbar>
       <!-- Searchbar with a custom debounce -->
-      <ion-searchbar class='ion-no-margin ion-no-padding' debounce="400" animated placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='doSearch()'
+      <ion-searchbar class='ion-no-margin ion-no-padding' style='padding:0' debounce="400" animated placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='doSearch()'
         [(ngModel)]='vmKeyword'>
       </ion-searchbar>
     </ion-toolbar>

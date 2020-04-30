@@ -2,9 +2,10 @@
   <ion-toolbar>
     <form (ngSubmit)='onSearchByKeywords()'>
       <ion-buttons>
-        <app-back-button defaultHref=''></app-back-button>
-        <ion-searchbar name='searchbar' style="padding: 0;" type='search' [debounce]='300' [(ngModel)]='vmKeyowrds' [animated]='true'
-          placeholder="城市名称/拼音/三字码" (ionChange)='onSearchByKeywords()' mode='ios'>
+        <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
+        <ion-searchbar name='searchbar' style="padding: 0;margin-right: 1em;" type='search' [debounce]='300'
+          [(ngModel)]='vmKeyowrds' [animated]='true' placeholder="城市名称/拼音/三字码" (ionChange)='onSearchByKeywords()'
+          mode='ios'>
         </ion-searchbar>
       </ion-buttons>
     </form>
@@ -24,7 +25,8 @@
       <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item)'>
         <ion-label>
           <ion-text style="position: relative;padding-left: 1em;" [color]="item?.Selected?'secondary':'dark'">
-            <ion-icon *ngIf='item.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon>
+            <ion-icon *ngIf='item.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;"
+              name="flame-outline"></ion-icon>
             {{item?.Name}}
           </ion-text>
           <ion-text *ngIf='item.Code' color='medium'>({{item.Code}})</ion-text>

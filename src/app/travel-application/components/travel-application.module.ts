@@ -10,6 +10,6 @@ import { SelectCostcenter } from "./select-costcenter/select-costcenter";
 @NgModule({
   declarations: [AddStrokeComponent, SelectCity, SelectCostcenter],
   imports: [IonicModule, CommonModule, FormsModule, AppComponentsModule],
-  exports: [AddStrokeComponent, SelectCity],
+  exports: [AddStrokeComponent],
 })
 export class TravelApplicationComponentsModule {}
