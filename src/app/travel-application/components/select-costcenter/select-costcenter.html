@@ -3,7 +3,7 @@
     <form (ngSubmit)='onSearchByKeywords()'>
       <ion-buttons>
         <app-back-button defaultHref=''></app-back-button>
-        <ion-searchbar name='searchbar' type='search' [debounce]='300' [(ngModel)]='vmKeyowrds' [animated]='true'
+        <ion-searchbar style="padding: 0;" name='searchbar'  [debounce]='300' [(ngModel)]='vmKeyowrds' [animated]='true'
           placeholder="成本中心" (ionChange)='onSearchByKeywords()' mode='ios'>
         </ion-searchbar>
       </ion-buttons>
