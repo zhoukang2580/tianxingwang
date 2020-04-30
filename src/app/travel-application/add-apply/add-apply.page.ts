@@ -6,33 +6,35 @@ import { Subscription } from 'rxjs';
 import { TravelFormEntity } from 'src/app/tmc/tmc.service';
 import { SearchModel, TravelService, TravelFormTripEntity } from '../travel.service';
 import { SelectCostcenter } from '../components/select-costcenter/select-costcenter';
+import { AppHelper } from 'src/app/appHelper';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-apply',
   templateUrl: './add-apply.page.html',
   styleUrls: ['./add-apply.page.scss'],
 })
-export class AddApplyPage implements OnInit,OnDestroy{
+export class AddApplyPage implements OnInit, OnDestroy {
   organization: string;
   costCenterName: string;
   costCenterCode: string;
   organizationCode: string;
   customerName: string;
-  private subscription=Subscription.EMPTY;
+  private subscription = Subscription.EMPTY;
   items: TravelFormEntity[];
   searchModel: SearchModel;
-  constructor(private modalCtrl: ModalController, private service: TravelService) { }
+  constructor(private modalCtrl: ModalController, private service: TravelService, private router: Router, ) { }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.subscription.unsubscribe()
   }
   ngOnInit() {
-    this.searchModel={} as any;
-    this.searchModel.TravelForm={} as any;
-    this.searchModel.TravelForm.Trips=[];
-    this.searchModel.PageIndex=0;
-    this.searchModel.PageSize=20;
-    const item:TravelFormTripEntity={} as any;
+    this.searchModel = {} as any;
+    this.searchModel.TravelForm = {} as any;
+    this.searchModel.TravelForm.Trips = [];
+    this.searchModel.PageIndex = 0;
+    this.searchModel.PageSize = 20;
+    const item: TravelFormTripEntity = {} as any;
     // item.StartDate
     this.searchModel.TravelForm.Trips.push(item)
   }
@@ -56,16 +58,24 @@ export class AddApplyPage implements OnInit,OnDestroy{
       this.costCenterCode = org.Code;
     }
   }
-  onSubmit(){
+  onSubmit() {
+    if(this.searchModel.TravelForm){
+      this.searchModel.TravelForm.Organization={
+        Code:this.organizationCode,
+        Name:this.organization
+      } as OrganizationEntity;
+      this.searchModel.TravelForm.CustomerName = this.customerName
+      this.searchModel.TravelForm.CostCenterName = this.costCenterName
+    }
     this.service.travelSubmit(this.searchModel)
   }
-  onRemoveTrip(item:TravelFormTripEntity){
-    if(item&&this.searchModel.TravelForm.Trips){
-      this.searchModel.TravelForm.Trips=this.searchModel.TravelForm.Trips.filter(it=>it!==item);
+  onRemoveTrip(item: TravelFormTripEntity) {
+    if (item && this.searchModel.TravelForm.Trips) {
+      this.searchModel.TravelForm.Trips = this.searchModel.TravelForm.Trips.filter(it => it !== item);
     }
   }
-  onAddTrip(){
-    const item:TravelFormTripEntity={} as any;
+  onAddTrip() {
+    const item: TravelFormTripEntity = {} as any;
     // item.StartDate
     this.searchModel.TravelForm.Trips.push(item)
   }

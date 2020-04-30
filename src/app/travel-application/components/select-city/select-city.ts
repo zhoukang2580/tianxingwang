@@ -44,7 +44,7 @@ import { finalize } from 'rxjs/operators';
 })
 export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
-  private pageSize = 30;
+  private pageSize = 20;
   private pageIndex = 0;
   textSearchResults: TrafficlineEntity[] = [];
   vmKeyowrds = "";
@@ -66,7 +66,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
     this.isSearching = false;
   }
   async ngOnInit() {
-    this.doRefresh();
+    
   }
   ngOnDestroy() {
     console.log("onDestroy");
@@ -87,7 +87,9 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
       this.content.scrollToTop(100);
     }
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() { 
+    this.doRefresh();
+  }
    onCitySelected(city: TrafficlineEntity) {
     this.modalCtrl.getTop().then(t=>t.dismiss(city));
   }
