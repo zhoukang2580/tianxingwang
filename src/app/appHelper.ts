@@ -26,7 +26,7 @@ export class AppHelper {
     environment.production && !environment.mockProBuild
       ? "sky-trip.com"
       : "testskytrip.com";
-  constructor() {}
+  constructor() { }
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -115,10 +115,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-      ? msg.message
-      : msg && (msg.message || msg.Message)
-      ? msg.message || msg.Message
-      : JSON.stringify(msg);
+        ? msg.message
+        : msg && (msg.message || msg.Message)
+          ? msg.message || msg.Message
+          : JSON.stringify(msg);
   }
   static alert(
     msg: any,
@@ -385,9 +385,7 @@ export class AppHelper {
    *  请注意，这个是异步方法，返回promise,是pda ，返回true，否则返回false，使用判断条件是，判断是否存在sim卡；
    */
   static async isPDA() {
-    return Promise.all([this.hasFrontCamera(), this.hasSimCard()])
-      .then(() => true)
-      .catch(() => false);
+    return this.isApp() && navigator.userAgent.toLowerCase().includes('pda')
   }
   static async hasSimCard() {
     if (AppHelper.isApp()) {
@@ -639,12 +637,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static getQueryParamers() {
     return this._queryParamers as any;

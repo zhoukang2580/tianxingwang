@@ -333,9 +333,10 @@ export class LoginService {
     }
     if (AppHelper.getStorage<string>("loginToken")) {
       const req = new RequestEntity();
+      const device = await AppHelper.getDeviceId();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
-        UUID: await AppHelper.getDeviceId(),
+        Device: device,
         Token: AppHelper.getStorage("loginToken"),
       });
 
