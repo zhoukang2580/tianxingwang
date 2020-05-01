@@ -1,6 +1,6 @@
 <div class="hotel-item">
   <!-- <div class="hotel-img" [lazyLoad]='item?.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl'></div> -->
-  <img class="hotel-img" [lazyLoad]='item?.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl'/>
+  <img class="hotel-img" [enableLazyLoad]='false' [recoverImage]='false' [lazyLoad]='item?.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl'/>
   <div class="right-side">
     <div class='name ion-text-wrap'>
       {{item.Hotel?.Name}}

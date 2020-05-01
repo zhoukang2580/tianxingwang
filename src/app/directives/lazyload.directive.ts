@@ -9,7 +9,8 @@ import {
   Renderer2,
   ElementRef,
   AfterContentInit,
-  NgZone
+  NgZone,
+  SimpleChanges
 } from "@angular/core";
 import { Directive } from "@angular/core";
 import { ImageRecoverService } from "../services/imageRecover/imageRecover.service";
@@ -21,6 +22,7 @@ export class LazyloadDirective
   implements OnInit, OnChanges, OnDestroy, AfterContentInit {
   private io: IntersectionObserver;
   @Input() lazyLoad: string;
+  @Input() enableLazyLoad = true;
   @Input() recoverImage = true;
   @Input() defaultImage;
   private time = 0;
@@ -29,7 +31,7 @@ export class LazyloadDirective
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
     private ngZone: NgZone
   ) { }
-  ngOnChanges() {
+  ngOnChanges(changes: SimpleChanges) {
     // console.log("lazyload changes",this.el.nativeElement,this.lazyLoad);
     this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
@@ -59,6 +61,11 @@ export class LazyloadDirective
     } else {
       this.load("assets/loading.gif");
     }
+    if (!this.enableLazyLoad) {
+      setTimeout(() => {
+        this.load();
+      }, 200);
+    }
   }
   private async setupImageRecover() {
     // Do something
@@ -68,8 +75,8 @@ export class LazyloadDirective
       !this.el.nativeElement.dataset ||
       !this.el.nativeElement.dataset["isInitialized"]
     ) {
-      await this.imageRecoverService.initialize(this.el.nativeElement);
       this.el.nativeElement.dataset["isInitialized"] = "isInitialized";
+      await this.imageRecoverService.initialize(this.el.nativeElement);
     }
   }
   ngOnDestroy() {
@@ -105,7 +112,7 @@ export class LazyloadDirective
     }
   }
   private addIO() {
-    if (!this.lazyLoad) {
+    if (!this.lazyLoad || !this.enableLazyLoad) {
       return;
     }
     // if (AppHelper.isDingtalkH5()) {
