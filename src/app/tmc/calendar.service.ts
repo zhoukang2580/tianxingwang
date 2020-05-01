@@ -353,9 +353,9 @@ export class CalendarService {
       const dayOfiM = iM.startOf("month").date(j); // 每月的j号
       calender.dayList.push(this.generateDayModel(dayOfiM));
     }
-    // this.getHolidays().then((holidays) => {
-    //   this.initDaysDayOff(calender, holidays);
-    // });
+    this.getHolidays().then((holidays) => {
+      this.initDaysDayOff(calender, holidays);
+    }).catch(()=>0);
     // console.log("generateYearNthMonthCalendar", clnder);
     console.log(`生成${year}-${month} 耗时:${Date.now() - st} ms`);
     this.calendars[ym] = {
