@@ -70,9 +70,12 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.curSelectedYear = m.year() + "";
     this.curSelectedMonth = m.month() + 1;
+    let st=Date.now();
     this.generateOneYearCalendar();
+    console.log("生成日历耗时："+(Date.now()-st)+" ms")
   }
   private checkYms() {
+    const st=Date.now();
     const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
     const goDate = this.calendarService.getMoment(0, m.format("YYYY-MM-DD"));
     if (this.yms && this.yms.length) {
@@ -121,9 +124,10 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
         });
       }
     }
+    console.log(`checkYms ${Date.now()-st} ms`);
   }
 
-  private async generateOneYearCalendar() {
+  private  generateOneYearCalendar() {
     const m = this.calendarService.getMoment(0);
     this.yms = [];
     const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;

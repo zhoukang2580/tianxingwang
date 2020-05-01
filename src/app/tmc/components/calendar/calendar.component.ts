@@ -1,3 +1,4 @@
+import { DayComponent } from './../day/day.component';
 import { FlightHotelTrainType } from "./../../tmc.service";
 import { Subscription } from "rxjs";
 import {
@@ -13,7 +14,9 @@ import {
   SimpleChanges,
   ViewChildren,
   QueryList,
-  ElementRef
+  ElementRef,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef
 } from "@angular/core";
 import { AvailableDate } from "../../models/AvailableDate";
 import { CalendarService } from "../../calendar.service";
@@ -27,17 +30,21 @@ import {
 @Component({
   selector: "app-calendar",
   templateUrl: "./calendar.component.html",
-  styleUrls: ["./calendar.component.scss"]
+  styleUrls: ["./calendar.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarComponent
   implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   private subscription = Subscription.EMPTY;
   private page: { m: number; y: number };
   private isSrollToCurYm = false;
+  private st = Date.now();
+  fakeays = new Array(30).fill(0);
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild(IonContent, { static: true }) content: IonContent;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   @ViewChildren("calendar") calendareles: QueryList<ElementRef<HTMLElement>>;
+  @ViewChildren(DayComponent) dayEles: QueryList<DayComponent>;
   weeks: string[];
   @Input() title: string;
   @Input() forType: FlightHotelTrainType;
@@ -54,7 +61,8 @@ export class CalendarComponent
   constructor(
     private calendarService: CalendarService,
     private el: ElementRef<HTMLElement>,
-    private plt: Platform
+    private plt: Platform,
+    private cdref: ChangeDetectorRef
   ) {
     this.back = new EventEmitter();
     this.daySelected = new EventEmitter();
@@ -80,6 +88,8 @@ export class CalendarComponent
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.calendars && changes.calendars.currentValue) {
+      const calendars = changes.calendars.currentValue;
+      this.st = Date.now();
       const first = this.calendars[0];
       if (first) {
         const [y, m] = first.yearMonth.split("-");
@@ -88,9 +98,17 @@ export class CalendarComponent
           m: +m
         };
       }
+      this.calendars = [];
+      setTimeout(() => {
+        this.calendars = calendars;
+        this.cdref.markForCheck();
+      }, 60);
     }
   }
   async loadMore() {
+    if(!this.calendars.length){
+      return;
+    }
     let [y, m] = this.calendars[this.calendars.length - 1].yearMonth
       .split("-")
       .map(it => +it);
@@ -105,7 +123,7 @@ export class CalendarComponent
         nextM = 1;
       }
       result.push(
-         this.calendarService.generateYearNthMonthCalendar(y, nextM)
+        this.calendarService.generateYearNthMonthCalendar(y, nextM)
       );
     }
     this.calendars = this.calendars.concat(result);
@@ -133,7 +151,7 @@ export class CalendarComponent
       if (months > 1) {
         for (let i = 1; i <= months; i++) {
           this.calendars.unshift(
-             this.calendarService.generateYearNthMonthCalendar(
+            this.calendarService.generateYearNthMonthCalendar(
               year,
               month - i
             )
@@ -142,12 +160,12 @@ export class CalendarComponent
       } else {
         if (this.refresher) {
           this.refresher.disabled = true;
-          let calendar =  this.calendarService.generateYearNthMonthCalendar(
+          let calendar = this.calendarService.generateYearNthMonthCalendar(
             year,
             month - 1
           );
           if (month - 1 <= 0) {
-            calendar =  this.calendarService.generateYearNthMonthCalendar(
+            calendar = this.calendarService.generateYearNthMonthCalendar(
               year - 1,
               12
             );
@@ -207,17 +225,19 @@ export class CalendarComponent
         this.scroller.disabled = true;
       }
     }
-    this.calendareles.changes.subscribe(() => {
-      if (this.scrollToMonth) {
-        if (this.isSrollToCurYm) {
-          return;
-        }
-        this.isSrollToCurYm = true;
-        setTimeout(() => {
-          this.moveToCurMonth(this.scrollToMonth);
-        }, 200);
+    console.log(`日历显示 ${this.dayEles.length} 个，${Date.now() - this.st} ms`);
+    this.subscription = this.dayEles.changes.subscribe(() => {
+      console.log(`日历显示 ${this.dayEles.length} 个，${Date.now() - this.st} ms`);
+    })
+    if (this.scrollToMonth) {
+      if (this.isSrollToCurYm) {
+        return;
       }
-    });
+      this.isSrollToCurYm = true;
+      setTimeout(() => {
+        this.moveToCurMonth(this.scrollToMonth);
+      }, 200);
+    }
   }
   private moveToCurMonth(scrollToMonth: string) {
     console.log("scrollToMonth", scrollToMonth);

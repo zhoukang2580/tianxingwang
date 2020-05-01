@@ -19,16 +19,28 @@
   <ion-refresher (ionRefresh)='onPreviousMonth()' slot='fixed'>
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <ul *ngFor='let ym of calendars;let last=last;' [attr.ym]='ym.yearMonth' class='calendar' #calendar>
-    <li style="width: 100%;display: block;height: 1em;">
-      <strong>{{ym.yearMonth?.substr(0,4)}}年{{ym.yearMonth?.substr(5,2)}}月</strong>
-    </li>
-    <li *ngFor='let day of ym.dayList' class='day' [ngClass]='clazz(day)'>
-      <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
-    </li>
-    <div class='shadow-month'>
-      {{ym.yearMonth?.substr(5,2)<"10"?ym.yearMonth?.substr(5,2)?.replace('0',""):ym.yearMonth?.substr(5,2)}}</div>
-  </ul>
+  <ng-container *ngIf='calendars?.length else fake'>
+    <ul *ngFor='let ym of calendars;let last=last;' [attr.ym]='ym.yearMonth' class='calendar' #calendar>
+      <li style="width: 100%;display: block;height: 1em;">
+        <strong>{{ym.yearMonth?.substr(0,4)}}年{{ym.yearMonth?.substr(5,2)}}月</strong>
+      </li>
+      <li *ngFor='let day of ym.dayList' class='day' [ngClass]='clazz(day)'>
+        <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
+      </li>
+      <div class='shadow-month'>
+        {{ym.yearMonth?.substr(5,2)<"10"?ym.yearMonth?.substr(5,2)?.replace('0',""):ym.yearMonth?.substr(5,2)}}</div>
+    </ul>
+  </ng-container>
+  <ng-template #fake>
+    <ul *ngFor='let ym of [1,2]'>
+      <li style="width: 100%;display: block;height: 1em;">
+        <ion-skeleton-text animated='true' style="height: 0.8em;width: 20%;"></ion-skeleton-text>
+      </li>
+      <li *ngFor='let day of fakeays;let idx=index;'>
+        <ion-skeleton-text style="height: 2em;width: 2em;" animated='{{idx%5==0}}'></ion-skeleton-text>
+      </li>
+    </ul>
+  </ng-template>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>

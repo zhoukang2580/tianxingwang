@@ -15,6 +15,7 @@ const _KEY_HOLIDAYS = "_key_holidays";
 })
 export class CalendarService {
   private selectedDaysSource: Subject<DayModel[]>;
+  private calendars: AvailableDate[] = [];
   private selectedDays: DayModel[];
   private holidays: ICalendarEntity[] = [];
   private fetchingHolidaysPromise: { promise: Promise<ICalendarEntity[]> };
@@ -33,6 +34,20 @@ export class CalendarService {
     private plt: Platform
   ) {
     this.selectedDaysSource = new BehaviorSubject([]);
+    this.initCalendars();
+  }
+  private initCalendars() {
+    const m = this.getMoment(0);
+    const len = 12;
+    for (let i = 0; i < len; i++) {
+      const im = m.clone().add(i, "months");
+      this.calendars.push(
+        this.generateYearNthMonthCalendar(
+          im.year(),
+          im.month() + 1
+        )
+      );
+    }
   }
   diff(d2: string, d1: string, unit: any): number {
     return moment(d2).diff(moment(d1), unit);
@@ -71,7 +86,7 @@ export class CalendarService {
     }
     return m;
   }
-  async getHolidays(forceFetch = false) {
+  private async getHolidays(forceFetch = false) {
     if (!this.holidays) {
       const local = await this.storage.get(_KEY_HOLIDAYS);
       this.holidays =
@@ -267,6 +282,11 @@ export class CalendarService {
     return wn;
   }
   generateYearNthMonthCalendar(year: number, month: number) {
+    const one = this.calendars.find(it => it.yearMonth == `${year}-${(month < 10 ? "0" + month : month)}`);
+    if (one) {
+      return one;
+    }
+    const st = Date.now();
     const iM = moment(`${year}-${month}-01`, "YYYY-MM-DD"); // 第i个月
     const calender: AvailableDate = {
       dayList: [],
@@ -305,10 +325,12 @@ export class CalendarService {
       const dayOfiM = iM.startOf("month").date(j); // 每月的j号
       calender.dayList.push(this.generateDayModel(dayOfiM));
     }
-    this.getHolidays().then((holidays) => {
-      this.initDaysDayOff(calender, holidays);
-    });
+    // this.getHolidays().then((holidays) => {
+    //   this.initDaysDayOff(calender, holidays);
+    // });
     // console.log("generateYearNthMonthCalendar", clnder);
+    console.log(`生成${year}-${month} 耗时:${Date.now() - st} ms`);
+    this.calendars.push(calender)
     return calender;
   }
   private initDaysDayOff(c: AvailableDate, holidays: ICalendarEntity[]) {
