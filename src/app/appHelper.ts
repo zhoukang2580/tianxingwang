@@ -384,7 +384,7 @@ export class AppHelper {
   /**
    *  请注意，这个是异步方法，返回promise,是pda ，返回true，否则返回false，使用判断条件是，判断是否存在sim卡；
    */
-  static async isPDA() {
+  static isPDA() {
     return this.isApp() && navigator.userAgent.toLowerCase().includes('pda')
   }
   static async hasSimCard() {
