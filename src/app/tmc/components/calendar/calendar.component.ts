@@ -99,14 +99,18 @@ export class CalendarComponent
         };
       }
       this.calendars = [];
-      setTimeout(() => {
-        this.calendars = calendars;
-        this.cdref.markForCheck();
-      }, 60);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            this.calendars = calendars;
+            this.cdref.markForCheck();
+          })
+        })
+      })
     }
   }
   async loadMore() {
-    if(!this.calendars.length){
+    if (!this.calendars.length) {
       return;
     }
     let [y, m] = this.calendars[this.calendars.length - 1].yearMonth
