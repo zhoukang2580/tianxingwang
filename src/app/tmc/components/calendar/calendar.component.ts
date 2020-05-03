@@ -99,15 +99,31 @@ export class CalendarComponent
         };
       }
       this.calendars = [];
+      this.renderCalendar(calendars)
+    }
+  }
+  private renderCalendar(calendars: AvailableDate[]) {
+    const loop = () => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            this.calendars = calendars;
-            this.cdref.markForCheck();
-          })
-        })
+        const arr = calendars.slice(this.calendars.length, 2 + this.calendars.length);
+        if (arr.length) {
+          this.calendars = this.calendars.concat(arr);
+          this.cdref.markForCheck();
+          loop();
+        } else {
+          if (this.scrollToMonth) {
+            if (this.isSrollToCurYm) {
+              return;
+            }
+            this.isSrollToCurYm = true;
+            setTimeout(() => {
+              this.moveToCurMonth(this.scrollToMonth);
+            }, 200);
+          }
+        }
       })
     }
+    loop();
   }
   async loadMore() {
     if (!this.calendars.length) {
@@ -233,15 +249,6 @@ export class CalendarComponent
     this.subscription = this.dayEles.changes.subscribe(() => {
       console.log(`日历显示 ${this.dayEles.length} 个，${Date.now() - this.st} ms`);
     })
-    if (this.scrollToMonth) {
-      if (this.isSrollToCurYm) {
-        return;
-      }
-      this.isSrollToCurYm = true;
-      setTimeout(() => {
-        this.moveToCurMonth(this.scrollToMonth);
-      }, 200);
-    }
   }
   private moveToCurMonth(scrollToMonth: string) {
     console.log("scrollToMonth", scrollToMonth);
