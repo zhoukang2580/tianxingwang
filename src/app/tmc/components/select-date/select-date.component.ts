@@ -71,7 +71,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
     this.curSelectedYear = m.year() + "";
     this.curSelectedMonth = m.month() + 1;
     let st=Date.now();
-    this.generateOneYearCalendar();
+    this.generateYearCalendar();
     console.log("生成日历耗时："+(Date.now()-st)+" ms")
   }
   private checkYms() {
@@ -127,10 +127,10 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log(`checkYms ${Date.now()-st} ms`);
   }
 
-  private  generateOneYearCalendar() {
+  private  generateYearCalendar() {
     const m = this.calendarService.getMoment(0);
     this.yms = [];
-    const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;
+    const len = this.forType == FlightHotelTrainType.Train ? 2 : 6;
     for (let i = 0; i < len; i++) {
       const im = m.clone().add(i, "months");
       this.yms.push(
