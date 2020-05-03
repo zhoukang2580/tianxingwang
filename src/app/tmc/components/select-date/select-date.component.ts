@@ -325,14 +325,10 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.isMulti) {
       if (this.selectedDays.length > 1) {
-        setTimeout(() => {
-          this.cancel();
-        }, this.delayBackTime);
+        this.cancel();
       }
     } else if (this.selectedDays.length) {
-      setTimeout(() => {
-        this.cancel();
-      }, this.delayBackTime);
+      this.cancel();
     }
   }
   private checkHotelSelectedDate(selectedBeginDay: DayModel) {
