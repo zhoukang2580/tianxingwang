@@ -130,7 +130,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
   private  generateYearCalendar() {
     const m = this.calendarService.getMoment(0);
     this.yms = [];
-    const len = this.forType == FlightHotelTrainType.Train ? 2 : 6;
+    const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;
     for (let i = 0; i < len; i++) {
       const im = m.clone().add(i, "months");
       this.yms.push(
