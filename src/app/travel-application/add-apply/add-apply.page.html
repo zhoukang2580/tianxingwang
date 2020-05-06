@@ -9,7 +9,7 @@
 
 <ion-content>
   <ion-list style="background: transparent;">
-    <ion-item detail (click)='onSelectOrg()'>
+    <ion-item detail (click)='onSelectOrg()' >
       <ion-label>
         所属部门
       </ion-label>
@@ -17,13 +17,19 @@
           *ngIf="searchModel.TravelForm?.Organization?.Code">({{searchModel.TravelForm?.Organization?.Code}})
         </ng-container>
       </ion-label>
+      <!-- <div [(ngModel)]="searchModel.TravelForm.Organization.Name" slot="end">
+          <label color="danger">
+              请选择所属部门
+          </label>
+      </div> -->
     </ion-item>
     <ion-item>
       <ion-label>
         出差事由
       </ion-label>
-      <ion-input placeholder="请输入出差事由" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Subject">
+      <ion-input ValidateName='Subject' name="Subject"  type="text"  slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Subject">
       </ion-input>
+      
     </ion-item>
     <ion-item>
       <ion-label>客户或公司</ion-label>
@@ -49,10 +55,11 @@
     </ion-button>
     <ion-item>
       <ion-label>
-        出差天数
+        出差天数统计
       </ion-label>
-      <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.DayCount">
-      </ion-input>
+      <label slot="end" class="ion-text-end">
+        {{getAllTravelDays()}}
+      </label>
     </ion-item>
     <ion-item>
       <ion-label>
@@ -64,7 +71,15 @@
     <ion-item detail (click)="onSelectCostCenter()">
       <ion-label>成本中心</ion-label>
       <ion-label class="ion-text-end" color="{{searchModel.TravelForm?.CostCenterName?'dark':'medium'}}">
-        {{searchModel.TravelForm?.CostCenterName||"请选择"}}</ion-label>
+        {{searchModel.TravelForm?.CostCenterName||" "}}</ion-label>
+    </ion-item>
+    <ion-item detail (click)='openApproverModal()'>
+      <ion-label>
+        <ion-label>审批人</ion-label>
+        <ion-label class="ion-text-end" color="medium">
+          {{appovalStaff}}
+        </ion-label>
+      </ion-label>
     </ion-item>
     <ion-item>
       <ion-button slot='end' color="secondary" style="width: 7em;height: 2.4em;">

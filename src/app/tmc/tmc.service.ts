@@ -465,7 +465,7 @@ export class TmcService {
     };
     return this.apiService.getPromiseData<[]>(req);
   }
-  async searchApprovals(
+  async searchApprovalsAsync(
     name: string
   ): Promise<{ Text: string; Value: string }[]> {
     const req = new RequestEntity();
@@ -478,6 +478,19 @@ export class TmcService {
     return this.apiService
       .getPromiseData<{ Text: string; Value: string }[]>(req)
       .catch((_) => []);
+  }
+ searchApprovals(
+    name: string
+  ) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Home-SearchApprovals";
+    req.Data = {
+      name,
+    };
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService
+      .getResponse<{ Text: string; Value: string }[]>(req)
   }
   async getAllLocalAirports(forceFetch = false) {
     if (!forceFetch && this.allLocalAirports && this.allLocalAirports.length) {
