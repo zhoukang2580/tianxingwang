@@ -41,7 +41,43 @@ export class DayModel {
     | "medium"
     | "dark";
   lunarInfo: ILunarInfo;
+  el: HTMLElement;
+  update = update;
+  clazz = clazz;
 }
+
+function clazz() {
+  const day: DayModel = this;
+  if (!day) {
+    return {} as any;
+  }
+  return {
+    active: day.selected,
+    today: day.isToday,
+    [`between-selected-days`]: day.isBetweenDays,
+    [`first-selected-day`]: day.firstSelected,
+    [`last-selected-day`]: day.lastSelected,
+    [`last-month-day`]: day.isLastMonthDay,
+    [`not-enabled`]: !day.enabled,
+  };
+}
+function update() {
+  const day: DayModel = this;
+  if (this.el) {
+    this.el.classList.toggle("hasToolTip", this.hasToolTip);
+    this.el.setAttribute("toolTipMsg", this.toolTipMsg);
+    this.el.setAttribute("topDesc", this.topDesc);
+    this.el.classList.toggle("enabled", this.enabled);
+    const cls = day.clazz();
+    const p = this.el.parentElement;
+    if (p) {
+      Object.keys(cls).forEach((k) => {
+        p.classList.toggle(k, !!cls[k]);
+      });
+    }
+  }
+}
+
 export interface ILunarInfo {
   year: number; // 2020
   month: number; // 1

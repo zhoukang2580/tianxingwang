@@ -1,2 +1,3 @@
-<app-calendar (back)='cancel()' [title]='title' [scrollToMonth]='curYm' [forType]='forType'
-    (daySelected)='onDaySelected($event)' [calendars]='yms'></app-calendar>
+<app-calendar (back)='cancel()' [title]='title' [scrollToMonth]='curYm'
+    [disableScroller]='forType==FlightHotelTrainType.Train' (daySelected)='onDaySelected($event)' [calendars]='yms'>
+</app-calendar>

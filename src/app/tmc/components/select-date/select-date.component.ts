@@ -29,6 +29,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
     }`;
   }
   forType: FlightHotelTrainType;
+  FlightHotelTrainType = FlightHotelTrainType;
   yms: AvailableDate[];
   title: string;
   delayBackTime = 200;
@@ -41,6 +42,10 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
       this.days.forEach((dt) => {
         dt.hasToolTip = false;
         dt.toolTipMsg = null;
+        if (dt.el) {
+          dt.el.classList.toggle("hasToolTip", false);
+          dt.el.setAttribute("toolTipMsg", "");
+        }
       });
     }, 1000);
   }
@@ -70,12 +75,12 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.curSelectedYear = m.year() + "";
     this.curSelectedMonth = m.month() + 1;
-    let st=Date.now();
+    let st = Date.now();
     this.generateYearCalendar();
-    console.log("生成日历耗时："+(Date.now()-st)+" ms")
+    console.log("生成日历耗时：" + (Date.now() - st) + " ms");
   }
   private checkYms() {
-    const st=Date.now();
+    const st = Date.now();
     const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
     const goDate = this.calendarService.getMoment(0, m.format("YYYY-MM-DD"));
     if (this.yms && this.yms.length) {
@@ -124,17 +129,17 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
         });
       }
     }
-    console.log(`checkYms ${Date.now()-st} ms`);
+    console.log(`checkYms ${Date.now() - st} ms`);
   }
 
-  private  generateYearCalendar() {
+  private generateYearCalendar() {
     const m = this.calendarService.getMoment(0);
     this.yms = [];
     const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;
     for (let i = 0; i < len; i++) {
       const im = m.clone().add(i, "months");
       this.yms.push(
-         this.calendarService.generateYearNthMonthCalendar(
+        this.calendarService.generateYearNthMonthCalendar(
           im.year(),
           im.month() + 1
         )
@@ -184,6 +189,9 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
               ? LanguageHelper.getSelectCheckOutDate()
               : LanguageHelper.getBackDateTip();
           this.selectedDays = [d];
+          if (d.el) {
+            d.update();
+          }
           this.checkHotelSelectedDate(d);
           // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
         } else {
@@ -220,6 +228,13 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
                     )
                   );
           }
+          if (d.el) {
+            d.el.classList.toggle("hasToolTip", true);
+            d.el.setAttribute("toolTipMsg", d.toolTipMsg);
+            d.el.setAttribute("topDesc", d.topDesc);
+            d.el.parentElement.classList.toggle("last-selected-day", true);
+            d.el.parentElement.classList.toggle("first-selected-day", true);
+          }
           this.selectedDays.push(d);
         }
       } else {
@@ -242,6 +257,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
           d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
         } else {
         }
+        d.update();
         this.selectedDays = [d];
         this.checkHotelSelectedDate(d);
       }
@@ -278,16 +294,11 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
           dt.lastSelected = false;
           dt.firstSelected = false;
           if (!dt.selected) {
-            // dt.desc = null;
-            // dt.descColor =
-            //   dt.lunarInfo &&
-            //   (dt.lunarInfo.lunarFestival || dt.lunarInfo.solarFestival)
-            //     ? "danger"
-            //     : "medium";
             dt.topDesc = null;
             dt.hasToolTip = false;
             dt.toolTipMsg = null;
           }
+          dt.update();
         });
       }
     });
@@ -317,6 +328,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
                 if (it.isBetweenDays) {
                   it.selected = true;
                 }
+                it.update();
               });
             }
           });
