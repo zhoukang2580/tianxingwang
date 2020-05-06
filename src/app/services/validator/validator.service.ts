@@ -6,7 +6,7 @@ import { finalize } from "rxjs/operators";
 export interface Res {
   Message: string; // "账户编号错误"
   Name: string; // "Account.Id"
-  Rules?: {
+  Rules: {
     IsRange?: boolean;
     Message?: string;
     Options?: string;
