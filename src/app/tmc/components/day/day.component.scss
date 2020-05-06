@@ -107,23 +107,26 @@
   .content {
     font-size: 1.1rem;
   }
-  &:not(.selected) {
-    .color-light {
-      color: var(--ion-color-light);
-    }
-    .color-primary {
-      color: var(--ion-color-primary);
-    }
-    .color-dark {
-      color: var(--ion-color-dark);
-    }
-    .color-danger {
-      color: var(--ion-color-danger);
-    }
-    .color-medium {
-      color: var(--ion-color-medium);
-    }
+  &.danger {
+    color: var(--ion-color-danger);
   }
+  // &:not(.selected) {
+  //   .color-light {
+  //     color: var(--ion-color-light);
+  //   }
+  //   .color-primary {
+  //     color: var(--ion-color-primary);
+  //   }
+  //   .color-dark {
+  //     color: var(--ion-color-dark);
+  //   }
+  //   .color-danger {
+  //     color: var(--ion-color-danger);
+  //   }
+  //   .color-medium {
+  //     color: var(--ion-color-medium);
+  //   }
+  // }
 }
 
 :host {

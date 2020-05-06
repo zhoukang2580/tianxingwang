@@ -150,11 +150,11 @@ export class CalendarComponent
     };
     const divtop = document.createElement("div");
     const dayoff = document.createElement("div");
-    dayoff.classList.add("dayoff", "color-danger");
+    dayoff.classList.add("dayoff", "danger");
     dayoff.textContent = "休";
     const topDesc = document.createElement("div");
     topDesc.textContent = `${day.topDesc}`;
-    topDesc.classList.add("desc", `color-${day.descColor}`, "ion-text-nowrap");
+    topDesc.classList.add("desc", "ion-text-nowrap");
     if (day.topDesc) {
       divtop.append(topDesc);
     }
