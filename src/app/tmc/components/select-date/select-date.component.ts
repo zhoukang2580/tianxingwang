@@ -288,6 +288,8 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
           if (first && last) {
             first.firstSelected = true;
             last.lastSelected = true;
+            first.selected = true;
+            last.selected = true;
             if (first.date != last.date) {
               last.firstSelected = false;
               first.lastSelected = false;
@@ -321,7 +323,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   private checkHotelSelectedDate(selectedBeginDay: DayModel) {
     if (this.forType == FlightHotelTrainType.Hotel) {
-      this.yms = this.yms.map((it) => {
+      this.yms.forEach((it) => {
         if (it.dayList) {
           it.dayList = it.dayList.map((itm) => {
             itm.enabled =
