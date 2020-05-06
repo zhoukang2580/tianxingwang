@@ -274,3 +274,8 @@ ion-action-sheet.language {
 .domestic-hotel-filter-condition {
   top: 6.5em;
 }
+ion-input[ValidateName] {
+  display: flex;
+  flex-flow: column;
+  align-items: flex-end;
+}
