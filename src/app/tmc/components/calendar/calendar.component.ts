@@ -75,18 +75,7 @@ export class CalendarComponent
     this.monthChange = new EventEmitter();
   }
   clazz(day: DayModel) {
-    if (!day) {
-      return {};
-    }
-    return {
-      active: day.selected,
-      today: day.isToday,
-      [`between-selected-days`]: day.isBetweenDays,
-      [`first-selected-day`]: day.firstSelected,
-      [`last-selected-day`]: day.lastSelected,
-      [`last-month-day`]: day.isLastMonthDay,
-      [`not-enabled`]: !day.enabled,
-    };
+    return day.clazz();
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -147,6 +136,9 @@ export class CalendarComponent
     d.classList.add("day");
     if (day.hasToolTip) {
       d.classList.add("hasToolTip");
+    }
+    if (day.isToday) {
+      d.classList.add("active", "today");
     }
     d.setAttribute("toolTipMsg", day.toolTipMsg || "");
     d.setAttribute("toolTipPos", day.toolTipPos || "");
@@ -209,6 +201,7 @@ export class CalendarComponent
   private renderCalendar(calendars: AvailableDate[]) {
     const c = this.generateCalendars(calendars);
     if (this.containerEl && this.containerEl.nativeElement) {
+      this.containerEl.nativeElement.innerHTML = "";
       this.containerEl.nativeElement.append(c);
       setTimeout(() => {
         if (this.scrollToMonth) {
@@ -354,13 +347,6 @@ export class CalendarComponent
     }
   }
   onDaySelected(day: DayModel) {
-    // this.calendars.forEach(c => {
-    //   if (c.dayList) {
-    //     c.dayList.forEach(d => {
-    //       d.selected = d.enabled && d.date == day.date;
-    //     });
-    //   }
-    // });
     this.daySelected.emit(day);
   }
 }

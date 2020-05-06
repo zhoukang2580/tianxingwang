@@ -41,11 +41,8 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
     this.timeoutId = setTimeout(() => {
       this.days.forEach((dt) => {
         dt.hasToolTip = false;
-        dt.toolTipMsg = null;
-        if (dt.el) {
-          dt.el.classList.toggle("hasToolTip", false);
-          dt.el.setAttribute("toolTipMsg", "");
-        }
+        dt.toolTipMsg = "";
+        dt.update();
       });
     }, 1000);
   }
@@ -148,10 +145,10 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
     this.checkYms();
   }
   async cancel() {
-    console.log("select date component cancel ", this.selectedDays);
     if (this.selectedDays && this.selectedDays.length) {
       this.calendarService.setSelectedDaysSource(this.selectedDays);
     }
+    console.log("select date component cancel ", this.selectedDays);
     const m = await this.modalCtrl.getTop();
     if (m) {
       await m.dismiss(this.selectedDays).catch((_) => {});
@@ -167,13 +164,10 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     if (this.selectedDays.length >= 2) {
+      // this.selectedDays = [];
       return;
     }
     d.selected = true;
-    // d.topDesc = LanguageHelper.getDepartureTip();
-    // d.descColor = "light";
-    // d.firstSelected = true;
-    // d.lastSelected = true;
     if (this.isMulti) {
       if (this.selectedDays.length) {
         if (d.timeStamp < this.selectedDays[0].timeStamp) {
@@ -189,9 +183,6 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
               ? LanguageHelper.getSelectCheckOutDate()
               : LanguageHelper.getBackDateTip();
           this.selectedDays = [d];
-          if (d.el) {
-            d.update();
-          }
           this.checkHotelSelectedDate(d);
           // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
         } else {
@@ -228,13 +219,7 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
                     )
                   );
           }
-          if (d.el) {
-            d.el.classList.toggle("hasToolTip", true);
-            d.el.setAttribute("toolTipMsg", d.toolTipMsg);
-            d.el.setAttribute("topDesc", d.topDesc);
-            d.el.parentElement.classList.toggle("last-selected-day", true);
-            d.el.parentElement.classList.toggle("first-selected-day", true);
-          }
+          d.update();
           this.selectedDays.push(d);
         }
       } else {
@@ -257,7 +242,6 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
           d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
         } else {
         }
-        d.update();
         this.selectedDays = [d];
         this.checkHotelSelectedDate(d);
       }
@@ -285,7 +269,10 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       this.selectedDays = [d];
     }
-    this.yms.map((item) => {
+    const first = this.selectedDays[0];
+    const last = this.selectedDays[this.selectedDays.length - 1];
+    console.time("update");
+    this.yms.forEach((item) => {
       if (item.dayList) {
         item.dayList.forEach((dt) => {
           dt.selected = this.isMulti
@@ -294,14 +281,28 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
           dt.lastSelected = false;
           dt.firstSelected = false;
           if (!dt.selected) {
-            dt.topDesc = null;
+            dt.topDesc = "";
             dt.hasToolTip = false;
-            dt.toolTipMsg = null;
+            dt.toolTipMsg = "";
+          }
+          if (first && last) {
+            first.firstSelected = true;
+            last.lastSelected = true;
+            if (first.date != last.date) {
+              last.firstSelected = false;
+              first.lastSelected = false;
+            }
+            dt.isBetweenDays =
+              dt.timeStamp > first.timeStamp && dt.timeStamp < last.timeStamp;
+            if (dt.isBetweenDays) {
+              dt.selected = true;
+            }
           }
           dt.update();
         });
       }
     });
+    console.timeEnd("update");
     if (this.isMulti) {
       this.isCurrentSelectedOk =
         this.selectedDays && this.selectedDays.length > 1;
@@ -309,31 +310,6 @@ export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
       this.isCurrentSelectedOk = !!(
         this.selectedDays && this.selectedDays.length
       );
-    }
-    if (this.selectedDays && this.selectedDays.length) {
-      const first = this.selectedDays[0];
-      const last = this.selectedDays[this.selectedDays.length - 1];
-      first.firstSelected = true;
-      if (last) {
-        last.lastSelected = true;
-        if (first.date != last.date) {
-          last.firstSelected = false;
-          first.lastSelected = false;
-          this.yms.forEach((ym) => {
-            if (ym.dayList) {
-              ym.dayList.forEach((it) => {
-                it.isBetweenDays =
-                  it.timeStamp > first.timeStamp &&
-                  it.timeStamp < last.timeStamp;
-                if (it.isBetweenDays) {
-                  it.selected = true;
-                }
-                it.update();
-              });
-            }
-          });
-        }
-      }
     }
     if (this.isMulti) {
       if (this.selectedDays.length > 1) {

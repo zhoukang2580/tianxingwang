@@ -52,6 +52,7 @@ function clazz() {
     return {} as any;
   }
   return {
+    selected: day.selected,
     active: day.selected,
     today: day.isToday,
     [`between-selected-days`]: day.isBetweenDays,
@@ -64,14 +65,17 @@ function clazz() {
 function update() {
   const day: DayModel = this;
   if (this.el) {
-    this.el.classList.toggle("hasToolTip", this.hasToolTip);
     this.el.setAttribute("toolTipMsg", this.toolTipMsg);
     this.el.setAttribute("topDesc", this.topDesc);
+    this.el.classList.toggle("hasToolTip", this.hasToolTip);
     this.el.classList.toggle("enabled", this.enabled);
     const cls = day.clazz();
     const p = this.el.parentElement;
     if (p) {
       Object.keys(cls).forEach((k) => {
+        if (k == "active" || k == "today") {
+          this.el.classList.toggle(k, !!cls[k]);
+        }
         p.classList.toggle(k, !!cls[k]);
       });
     }
