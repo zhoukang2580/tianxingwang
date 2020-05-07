@@ -29,6 +29,14 @@ export class TravelService {
     };
     return this.apiService.getResponse<SearchModel>(req);
   }
+  getStaff() {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiTravelUrl-Home-GetStaff`;
+    req.Data = {
+    };
+    return this.apiService.getPromiseData<StaffEntity>(req);
+  }
   getTravelDetail(id: string) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
@@ -246,3 +254,18 @@ export class TravelFormDetailEntity extends BaseEntity {
   /// </summary>
   Content: string;
 }
+export enum TmcTravelApprovalType
+    {
+        /// <summary>
+        /// 不审批
+        /// </summary>
+        None = 1,
+        /// <summary>
+        /// 自由审批
+        /// </summary>
+        Free = 2,
+        /// <summary>
+        /// 固定审批人
+        /// </summary>
+        Approver = 3
+    }

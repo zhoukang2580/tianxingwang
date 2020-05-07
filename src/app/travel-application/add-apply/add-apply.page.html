@@ -9,34 +9,30 @@
 
 <ion-content>
   <ion-list style="background: transparent;">
-    <ion-item detail (click)='onSelectOrg()' >
+    <ion-item detail (click)='onSelectOrg()' [attr.organization]='"organization"'>
       <ion-label>
         所属部门
       </ion-label>
-      <ion-label class="ion-text-end">{{searchModel.TravelForm?.Organization?.Name}} <ng-container
+      <ion-label class="ion-text-end">{{searchModel.TravelForm?.Organization?.Name||" "}} <ng-container
           *ngIf="searchModel.TravelForm?.Organization?.Code">({{searchModel.TravelForm?.Organization?.Code}})
         </ng-container>
       </ion-label>
-      <!-- <div [(ngModel)]="searchModel.TravelForm.Organization.Name" slot="end">
-          <label color="danger">
-              请选择所属部门
-          </label>
-      </div> -->
     </ion-item>
-    <ion-item>
+    <ion-item [attr.Subject]='"Subject"'>
       <ion-label>
         出差事由
       </ion-label>
-      <ion-input placeholder="请输入" type="text"  slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Subject">
+      <ion-input placeholder="请输入" type="text" slot="end" class="ion-text-end"
+        [(ngModel)]="searchModel.TravelForm.Subject">
       </ion-input>
-      
+
     </ion-item>
     <ion-item>
       <ion-label>客户或公司</ion-label>
       <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName">
       </ion-input>
     </ion-item>
-    <ion-item>
+    <ion-item [attr.tripType]='"tripType"'>
       <ion-label>
         出差类别
       </ion-label>
@@ -47,8 +43,8 @@
         <ion-select-option value="港澳台">港澳台</ion-select-option>
       </ion-select>
     </ion-item>
-    <app-add-stroke *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;" [index]="idx" [trip]='item'
-      (remove)='onRemoveTrip($event)'></app-add-stroke>
+    <app-add-stroke [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"
+      [index]="idx" [trip]='item' (remove)='onRemoveTrip($event)'></app-add-stroke>
     <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()">
       <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
       添加行程
@@ -57,7 +53,7 @@
       <ion-label>
         出差天数统计
       </ion-label>
-      <label slot="end" class="ion-text-end" *ngIf="getAllTravelDays()">
+      <label slot="end" class="ion-text-end">
         {{getAllTravelDays()+1}}
       </label>
     </ion-item>
@@ -73,13 +69,21 @@
       <ion-label class="ion-text-end" color="{{searchModel.TravelForm?.CostCenterName?'dark':'medium'}}">
         {{searchModel.TravelForm?.CostCenterName||" "}}</ion-label>
     </ion-item>
-    <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType=='Free'">
+    <ion-item *ngIf="tmc?.OutNumberNameArray?.length>0">
+      <div>
+        <div *ngFor="let item of tmc?.OutNumberNameArray" [attr.OutNumberName]='item'>
+          <ion-input placeholder="{{item}}" [(ngModel)]="outNumbers[item]" ></ion-input>
+        </div>
+      </div>
+    </ion-item>
+    <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType==TravelApprovalType.Free"
+      [attr.accountId]='"accountId"'>
       <ion-label>
-        <ion-label>审批人</ion-label>
-        <ion-label class="ion-text-end" color="medium">
-          {{appovalStaff}}
-        </ion-label>
+        审批人
       </ion-label>
+      <ion-text class="ion-text-end" color="medium">
+        {{appovalStaff}}
+      </ion-text>
     </ion-item>
     <ion-item>
       <ion-button slot='end' color="secondary" style="width: 7em;height: 2.4em;" (click)="onSave()">
