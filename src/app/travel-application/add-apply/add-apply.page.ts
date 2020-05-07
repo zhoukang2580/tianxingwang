@@ -135,7 +135,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     const result = await modal.onDidDismiss();
     if (result && result.data) {
       this.appovalStaff = result.data.Text;
-
+      this.searchModel.AccountId=result.data.Value
     }
   }
   async onSelectCostCenter() {

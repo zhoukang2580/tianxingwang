@@ -294,7 +294,7 @@ export class FlightTicketReservePage
       if (
         this.searchModel &&
         this.searchModel.trips &&
-        this.searchModel.trips.some((it) => it.bookInfo)
+        this.searchModel.trips.some((it) =>!! it.bookInfo)
       ) {
         if (this.searchModel.voyageType == FlightVoyageType.OneWay) {
           this.flightService.setBookInfoSource(
