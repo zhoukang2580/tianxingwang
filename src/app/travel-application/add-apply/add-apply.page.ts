@@ -3,7 +3,7 @@ import { ModalController, IonContent } from "@ionic/angular";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { OrganizationEntity, CostCenterEntity } from "src/app/hr/staff.service";
 import { Subscription } from "rxjs";
-import { TravelFormEntity } from "src/app/tmc/tmc.service";
+import { TravelFormEntity, TmcService, TmcEntity } from "src/app/tmc/tmc.service";
 import {
   SearchModel,
   TravelService,
@@ -33,11 +33,13 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
   items: TravelFormEntity[];
   searchModel: SearchModel;
   appovalStaff: string;
+  tmc: TmcEntity;
   constructor(
     private modalCtrl: ModalController,
     private route: ActivatedRoute,
     private service: TravelService,
     private router: Router,
+    private tmcService: TmcService,
     private validatorService: ValidatorService
   ) { }
 
@@ -76,6 +78,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     }, 200);
   }
   ngOnInit() {
+    this.tmcService.getTmc().then(tmc => {
+      this.tmc = tmc;
+    })
     this.initValidateRule();
     this.searchModel = {} as any;
     this.searchModel.TravelForm = {} as any;
@@ -151,31 +156,44 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async onSubmit() {
-    if (this.appovalStaff) {
-      try {
-        if (this.searchModel.TravelForm) {
-          this.searchModel.Trips = this.searchModel.TravelForm.Trips;
-          this.searchModel.OrganizationId =
-            this.searchModel.TravelForm.Organization &&
-            this.searchModel.TravelForm.Organization.Id;
-          if (!this.searchModel.TravelForm.Organization.Name) {
-            AppHelper.toast("请选择审批人")
-          } else if (!this.searchModel.TravelForm.Subject) {
-            AppHelper.toast("请选择出差事由")
-          }
-        }
-        const r = await this.service.travelSubmit(this.searchModel);
-        this.router.navigate([AppHelper.getRoutePath("business-list")], {
-          queryParams: { doRefresh: true },
-        });
-      } catch (e) {
-        AppHelper.alert(e);
+    if (this.tmc && this.tmc.TravelApprovalType == "Free") {
+      if (!this.appovalStaff) {
+        AppHelper.toast("请选择审批人");
+        return
       }
-    } else {
-      AppHelper.toast("请选择审批人")
+    }
+    try {
+      if (this.searchModel.TravelForm) {
+        this.searchModel.Trips = this.searchModel.TravelForm.Trips;
+        this.searchModel.OrganizationId =
+          this.searchModel.TravelForm.Organization &&
+          this.searchModel.TravelForm.Organization.Id;
+      }
+      const r = await this.service.travelSubmit(this.searchModel);
+      this.router.navigate([AppHelper.getRoutePath("business-list")], {
+        queryParams: { doRefresh: true },
+      });
+    } catch (e) {
+      AppHelper.alert(e);
     }
   }
 
+  async onSave() {
+    try {
+      if (this.searchModel.TravelForm) {
+        this.searchModel.Trips = this.searchModel.TravelForm.Trips;
+        this.searchModel.OrganizationId =
+          this.searchModel.TravelForm.Organization &&
+          this.searchModel.TravelForm.Organization.Id;
+      }
+      const r = await this.service.getTravelSave(this.searchModel)
+      this.router.navigate([AppHelper.getRoutePath("business-list")], {
+        queryParams: { doRefresh: true },
+      });
+    } catch (e) {
+      AppHelper.alert(e);
+    }
+  }
   onRemoveTrip(item: TravelFormTripEntity) {
     if (item && this.searchModel.TravelForm.Trips) {
       this.searchModel.TravelForm.Trips = this.searchModel.TravelForm.Trips.filter(
@@ -190,26 +208,26 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
 
   }
   getAllTravelDays() {
-    let days:number=0;
-    this.searchModel&&
-    this.searchModel.TravelForm&&
-    this.searchModel.TravelForm.Trips&&
-    this.searchModel.TravelForm.Trips.forEach(
-      it => {
-        if (!it.StartDate || !it.EndDate) {
-          return
-        }
-        AppHelper.getDate(it.StartDate);
-        AppHelper.getDate(it.EndDate);
-        var a1 = AppHelper.getDate(it.StartDate.substr(0,10)).getTime();
-        var a2 = AppHelper.getDate(it.EndDate.substr(0,10)).getTime();
-        var day = (a2 - a1) / (1000 * 60 * 60 * 24);//核心：时间戳相减，然后除以天数
-        days+=day;
-        return days
-      })
-      if(this.searchModel.TravelForm.DayCount){
-        this.searchModel.TravelForm.DayCount=days
-      }
-      return days
+    let days: number = 0;
+    this.searchModel &&
+      this.searchModel.TravelForm &&
+      this.searchModel.TravelForm.Trips &&
+      this.searchModel.TravelForm.Trips.forEach(
+        it => {
+          if (!it.StartDate || !it.EndDate) {
+            return
+          }
+          AppHelper.getDate(it.StartDate);
+          AppHelper.getDate(it.EndDate);
+          var a1 = AppHelper.getDate(it.StartDate.substr(0, 10)).getTime();
+          var a2 = AppHelper.getDate(it.EndDate.substr(0, 10)).getTime();
+          var day = (a2 - a1) / (1000 * 60 * 60 * 24);//核心：时间戳相减，然后除以天数
+          days += day;
+          return days
+        })
+    if (this.searchModel.TravelForm.DayCount) {
+      this.searchModel.TravelForm.DayCount = days
     }
+    return days
+  }
 }

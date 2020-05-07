@@ -40,7 +40,7 @@ export class AddStrokeComponent implements OnInit {
     if(this.trip){
       this.trip.Day=day
     }
-    return day
+    return day+1
   }
   async onSelectCity(isFrom=true){
     const m = await this.modalCtrl.create({ component: SelectCity });

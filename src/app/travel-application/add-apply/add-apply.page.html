@@ -27,7 +27,7 @@
       <ion-label>
         出差事由
       </ion-label>
-      <ion-input ValidateName='Subject' name="Subject"  type="text"  slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Subject">
+      <ion-input placeholder="请输入" type="text"  slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Subject">
       </ion-input>
       
     </ion-item>
@@ -57,8 +57,8 @@
       <ion-label>
         出差天数统计
       </ion-label>
-      <label slot="end" class="ion-text-end">
-        {{getAllTravelDays()}}
+      <label slot="end" class="ion-text-end" *ngIf="getAllTravelDays()">
+        {{getAllTravelDays()+1}}
       </label>
     </ion-item>
     <ion-item>
@@ -73,7 +73,7 @@
       <ion-label class="ion-text-end" color="{{searchModel.TravelForm?.CostCenterName?'dark':'medium'}}">
         {{searchModel.TravelForm?.CostCenterName||" "}}</ion-label>
     </ion-item>
-    <ion-item detail (click)='openApproverModal()'>
+    <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType=='Free'">
       <ion-label>
         <ion-label>审批人</ion-label>
         <ion-label class="ion-text-end" color="medium">
@@ -82,7 +82,7 @@
       </ion-label>
     </ion-item>
     <ion-item>
-      <ion-button slot='end' color="secondary" style="width: 7em;height: 2.4em;">
+      <ion-button slot='end' color="secondary" style="width: 7em;height: 2.4em;" (click)="onSave()">
         保存
       </ion-button>
       <ion-button slot='end' color="secondary" (click)="onSubmit()" style="width: 7em;height: 2.4em;">

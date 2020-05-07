@@ -26,19 +26,19 @@
           <ion-select-option [value]="true">往返</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item lines="none" detail>
+      <ion-item lines="none" detail  (click)="onSelectCity(true)">
         <ion-label>
           出发城市
         </ion-label>
-        <ion-label (click)="onSelectCity(true)" class="ion-text-end">
+        <ion-label class="ion-text-end">
           <ion-text color='{{trip.FromCityName?"dark":"medium"}}'>{{trip.FromCityName||" "}}</ion-text>
         </ion-label>
       </ion-item>
-      <ion-item lines="none" detail>
+      <ion-item lines="none" detail  (click)="onSelectCity(false)">
         <ion-label>
           目的城市
         </ion-label>
-        <ion-label class="ion-text-end" (click)="onSelectCity(false)">
+        <ion-label class="ion-text-end">
           <ion-text color='{{trip.ToCityName?"dark":"medium"}}'>{{trip.ToCityName||" "}}</ion-text>
         </ion-label>
       </ion-item>
@@ -63,6 +63,7 @@
         {{getNumberOfDays(trip.StartDate,trip.EndDate)}}
       </label>
       </ion-item>
+      
 
     </ion-item-group>
   </ion-list>

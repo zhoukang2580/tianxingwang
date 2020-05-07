@@ -491,7 +491,7 @@ export class TmcService {
     req.Timeout = 60;
     return this.apiService
       .getResponse<{ Text: string; Value: string }[]>(req)
-  }
+     }
   async getAllLocalAirports(forceFetch = false) {
     if (!forceFetch && this.allLocalAirports && this.allLocalAirports.length) {
       return Promise.resolve(this.allLocalAirports);
@@ -1098,6 +1098,7 @@ export enum TmcHotelFeeType {
   Order = 2,
 }
 export class TmcEntity extends BaseEntity {
+  TravelApprovalType:string;
   GroupCompanyName: string; // "爱普科斯";
   Name: string; // "爱普科斯（上海）产品服务有限公司";
   /// <summary>
