@@ -50,7 +50,7 @@ export class MemberCredentialManagementPage
     );
   }
   private back() {
-    this.backBtn.backToPrePage();
+    this.backBtn.popToPrePage();
   }
   async onSaveCredential() {
     if (this.modifyCredential) {

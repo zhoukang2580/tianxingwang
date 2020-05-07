@@ -40,7 +40,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       LanguageHelper.getNegativeTip()
     );
     if (ok) {
-      this.backBtn.backToPrePage();
+      this.backBtn.popToPrePage();
     }
   }
   ngOnInit() {

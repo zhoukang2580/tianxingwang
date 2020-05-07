@@ -30,7 +30,7 @@ export class QrScanPage implements OnInit, OnDestroy {
     }
     this.qrScanService.hide();
     this.clearBackground(false);
-    this.backbtn.backToPrePage();
+    this.backbtn.popToPrePage();
   }
   onEnableLight(isOn: boolean) {
     this.isLighting = isOn;
@@ -75,7 +75,7 @@ export class QrScanPage implements OnInit, OnDestroy {
       this.qrScanService.pausePreview();
       this.qrScanService.cancelScan().catch(() => 0);
       if (this.isAutoClose) {
-        this.backbtn.backToPrePage();
+        this.backbtn.popToPrePage();
         this.clearBackground(false);
         return;
       }

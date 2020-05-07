@@ -79,7 +79,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
     this.scanResultSubscription.unsubscribe();
   }
   back() {
-    this.backButton.backToPrePage();
+    this.backButton.popToPrePage();
   }
   ngOnInit() {
     this.identitySubscription = this.identityService

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button fill="clear" color='dark' (click)="cancel()">取消</ion-button>
+      <app-back-button></app-back-button>
     </ion-buttons>
     <ion-title class='ion-text-center'>{{title||"日历"}}</ion-title>
   </ion-toolbar>
@@ -15,19 +15,13 @@
     </ul>
   </ion-toolbar>
 </ion-header>
-<ion-content style="height: 100vh;">
-  <ion-refresher (ionRefresh)='onPreviousMonth()' slot='fixed'>
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
-  <!-- <div class="calendar-container"  #container>
-
-  </div> -->
+<ion-content >
   <ng-container *ngIf='calendars?.length'>
     <ul *ngFor='let ym of calendars;let last=last;' [attr.ym]='ym.yearMonth' class='calendar' #calendar>
       <li style="width: 100%;display: block;height: 1em;">
         <strong>{{ym.yearMonth?.substr(0,4)}}年{{ym.yearMonth?.substr(5,2)}}月</strong>
       </li>
-      <li *ngFor='let day of ym.dayList' class='day' [ngClass]='clazz(day)'>
+      <li *ngFor='let day of ym.dayList' class='day' [ngClass]='day.clazz()'>
         <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
       </li>
       <div class='shadow-month'>

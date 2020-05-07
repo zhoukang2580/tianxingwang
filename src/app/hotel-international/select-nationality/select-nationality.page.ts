@@ -79,7 +79,7 @@ export class SelectNationalityPage implements OnInit, OnDestroy {
     }, 200);
   }
   private back() {
-    this.backbtn.backToPrePage();
+    this.backbtn.popToPrePage();
   }
   loadMore() {
     const arr = this.filterCountries(this.countries, this.keywords);

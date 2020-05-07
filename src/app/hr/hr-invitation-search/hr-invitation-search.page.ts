@@ -141,6 +141,6 @@ export class HrInvitationSearchPage implements OnInit {
   }
 
   private back() {
-    this.backbtn.backToPrePage();
+    this.backbtn.popToPrePage();
   }
 }

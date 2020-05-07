@@ -93,7 +93,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
           sub.unsubscribe();
         }
       }, 100);
-      this.backButton.backToPrePage();
+      this.backButton.popToPrePage();
     });
   }
   ngAfterViewInit() {
@@ -113,7 +113,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
   }
   onBack(evt: CustomEvent) {
     if (this.backButton) {
-      this.backButton.backToPrePage();
+      this.backButton.popToPrePage();
     }
   }
   ngOnInit() {}

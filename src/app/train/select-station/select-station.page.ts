@@ -158,7 +158,7 @@ export class SelectTrainStationPage
       ...search
     });
     setTimeout(() => {
-      this.backBtn.backToPrePage();
+      this.backBtn.popToPrePage();
     }, 200);
   }
   async doSearch() {
