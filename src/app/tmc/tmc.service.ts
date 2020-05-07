@@ -28,7 +28,7 @@ import { IdentityEntity } from "../services/identity/identity.entity";
 import { OrderTrainTripEntity } from "../order/models/OrderTrainTripEntity";
 import { OrderFlightTripEntity } from "../order/models/OrderFlightTripEntity";
 import { BaseVariablesEntity } from "../models/BaseVariablesEntity";
-import { TravelFormTripEntity } from "../travel-application/travel.service";
+import { TravelFormTripEntity, TmcTravelApprovalType } from "../travel-application/travel.service";
 import { CityEntity } from "./models/CityEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
@@ -1098,7 +1098,7 @@ export enum TmcHotelFeeType {
   Order = 2,
 }
 export class TmcEntity extends BaseEntity {
-  TravelApprovalType:string;
+  TravelApprovalType:TmcTravelApprovalType;
   GroupCompanyName: string; // "爱普科斯";
   Name: string; // "爱普科斯（上海）产品服务有限公司";
   /// <summary>

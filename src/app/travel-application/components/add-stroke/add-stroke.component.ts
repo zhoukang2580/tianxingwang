@@ -20,7 +20,10 @@ export class AddStrokeComponent implements OnInit {
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
-  ngOnInit() { }
+  ngOnInit() {
+  this.trip.StartDate=new Date().toISOString();
+  this.trip.EndDate=new Date().toISOString();
+  }
   onDelete() {
     this.remove.emit(this.trip);
   }
