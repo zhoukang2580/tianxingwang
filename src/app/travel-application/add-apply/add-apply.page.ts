@@ -8,7 +8,14 @@ import {
 import { ModalController, IonContent, Platform } from "@ionic/angular";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { OrganizationEntity, CostCenterEntity } from "src/app/hr/staff.service";
-import { Subscription, fromEvent, of, Subject, BehaviorSubject } from "rxjs";
+import {
+  Subscription,
+  fromEvent,
+  of,
+  Subject,
+  BehaviorSubject,
+  Observable,
+} from "rxjs";
 import {
   TravelFormEntity,
   TmcService,
@@ -57,7 +64,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     [key: string]: any;
   };
   tmc: TmcEntity;
-  totalDays$: Subject<number>;
+  totalDays$: Observable<number>;
   constructor(
     private travelService: TravelService,
     private modalCtrl: ModalController,
@@ -67,9 +74,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     private plt: Platform,
     private tmcService: TmcService,
     private validatorService: ValidatorService,
-    private calendarService: CalendarService
   ) {
-    this.totalDays$ = new BehaviorSubject(0);
+    this.totalDays$ = of(0);
   }
 
   ngOnDestroy() {
@@ -414,7 +420,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
         days += it.Day;
       });
     }
-    days += 1;
     if (this.searchModel.TravelForm) {
       this.searchModel.TravelForm.DayCount = days;
     }
