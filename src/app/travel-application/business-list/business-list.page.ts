@@ -39,7 +39,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   onSearch(){
     console.log(this.searchModel.StatusType,"searchModel.StatusType");
     console.log(this.searchModel.SearchContent,"searchModel.AccountId");
-    
+    this.doRefresh(true);
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -70,12 +70,16 @@ export class BusinessListPage implements OnInit, OnDestroy {
         }
       });
   }
-  doRefresh() {
+  doRefresh(isKeepCondition=false) {
+    if(!isKeepCondition){
+      this.searchModel.StatusType=null;
+      this.searchModel.SearchContent="";
+    }
     this.searchModel.PageIndex = 0;
     this.items = [];
     this.subscription.unsubscribe();
     if (this.scroller) {
-      this.scroller.disabled = false;
+      this.scroller.disabled = true;
     }
     this.gettravel();
   }
