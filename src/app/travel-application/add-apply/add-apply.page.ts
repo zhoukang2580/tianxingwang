@@ -90,18 +90,19 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     this.travelService.getStaff().then(s => {
       console.log(this.searchModel.TravelForm, "eeeee");
       if (this.searchModel && this.searchModel.TravelForm) {
-        this.searchModel.TravelForm.CostCenterName = s.CostCenter.Name;
-        this.searchModel.TravelForm.CostCenterCode = s.CostCenter.Code;
+        this.searchModel.TravelForm.CostCenterName = this.searchModel.TravelForm.CostCenterName || s.CostCenter.Name;
+        this.searchModel.TravelForm.CostCenterCode = this.searchModel.TravelForm.CostCenterCode || s.CostCenter.Code;
         if (!this.searchModel.TravelForm.Organization) {
           this.searchModel.TravelForm.Organization = {} as any;
         }
-        if (this.searchModel.TravelForm.Organization) {
-          this.searchModel.TravelForm.Organization.Code = s.Organization.Code;
-          this.searchModel.TravelForm.Organization.Name = s.Organization.Name;
-          this.searchModel.TravelForm.Organization.Id = s.Organization.Id;
-        }
+        this.searchModel.TravelForm.Organization.Code = this.searchModel.TravelForm.Organization.Code || s.Organization.Code;
+        this.searchModel.TravelForm.Organization.Name = this.searchModel.TravelForm.Organization.Name || s.Organization.Name;
+        this.searchModel.TravelForm.Organization.Id = this.searchModel.TravelForm.Organization.Id || s.Organization.Id;
+
       }
     })
+    if (this.searchModel) {
+    }
     this.tmcService.getTmc().then(tmc => {
       this.tmc = tmc;
       if (this.tmc.OutNumberNameArray) {
@@ -122,6 +123,10 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     this.route.queryParamMap.subscribe((q) => {
       if (q.get("data")) {
         this.searchModel = JSON.parse(q.get("data"));
+        if (this.searchModel && this.searchModel.TravelForm && this.searchModel.TravelForm.Account) {
+          this.searchModel.AccountId = this.searchModel.TravelForm.Account.Id
+          this.appovalStaff=this.searchModel.TravelForm.Account.RealName;
+        }
       }
     });
     setTimeout(() => {
@@ -136,6 +141,22 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
+  private processOutNumbers(){
+    if(this.searchModel){
+      if(this.outNumbers&&Object.keys(this.outNumbers)){
+        if(this.searchModel.TravelForm){
+          const n={NumberList:[]};
+          Object.keys(this.outNumbers).forEach(k=>{
+            n.NumberList.push({
+              Name:k,
+              Value:this.outNumbers[k]
+            })
+          })
+          this.searchModel.TravelForm.Variables=JSON.stringify(n);
+        }
+      }
+    }
+  }
   async onSelectOrg() {
     const m = await this.modalCtrl.create({ component: OrganizationComponent });
     m.present();
@@ -223,18 +244,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   async onSubmit() {
-    if (this.tmc && this.tmc.OutNumberRequiryNameArray) {
-      for (let t = 0; t < this.tmc.OutNumberRequiryNameArray.length; t++) {
-        const n=`${this.tmc.OutNumberRequiryNameArray[t]}`;
-        if(!this.outNumbers[n]){
-          const el = this.getEleByAttr("OutNumberName",n );
-          this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请输入"+n);
-          return
-        }
-      }
-      // console.log(this.tmc.OutNumberNameArray, "3333");
-    }
     if (this.searchModel.TravelForm) {
       if (!this.searchModel.TravelForm.Organization) {
         const el = this.getEleByAttr("organization", "organization");
@@ -246,6 +255,13 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
         const el = this.getEleByAttr("Subject", "Subject");
         this.moveRequiredEleToViewPort(el);
         AppHelper.toast("请输入出差事由");
+        return
+      }
+
+      if (!this.searchModel.TravelForm.TripType) {
+        const el = this.getEleByAttr("tripType", "tripType");
+        this.moveRequiredEleToViewPort(el);
+        AppHelper.toast("请选择出差类别");
         return
       }
       if (this.searchModel.TravelForm.Trips) {
@@ -263,15 +279,19 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
 
         }
       }
-
-      if (!this.searchModel.TravelForm.TripType) {
-        const el = this.getEleByAttr("tripType", "tripType");
-        this.moveRequiredEleToViewPort(el);
-        AppHelper.toast("请选择出差类别");
-        return
-      }
     }
-
+    if (this.tmc && this.tmc.OutNumberRequiryNameArray) {
+      for (let t = 0; t < this.tmc.OutNumberRequiryNameArray.length; t++) {
+        const n = `${this.tmc.OutNumberRequiryNameArray[t]}`;
+        if (!this.outNumbers[n]) {
+          const el = this.getEleByAttr("OutNumberName", n);
+          this.moveRequiredEleToViewPort(el);
+          AppHelper.toast("请输入" + n);
+          return
+        }
+      }
+      // console.log(this.tmc.OutNumberNameArray, "3333");
+    }
     if (this.tmc && this.TravelApprovalType && this.tmc.TravelApprovalType == this.TravelApprovalType.Free) {
       if (!this.appovalStaff) {
         const el = this.getEleByAttr("accountId", "accountId");
@@ -287,16 +307,19 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
           this.searchModel.TravelForm.Organization &&
           this.searchModel.TravelForm.Organization.Id;
       }
+      this.processOutNumbers();
       const r = await this.service.travelSubmit(this.searchModel);
       this.router.navigate([AppHelper.getRoutePath("business-list")], {
         queryParams: { doRefresh: true },
       });
+
     } catch (e) {
       AppHelper.alert(e);
     }
   }
 
   async onSave() {
+
     try {
       if (this.searchModel.TravelForm) {
         this.searchModel.Trips = this.searchModel.TravelForm.Trips;
@@ -304,6 +327,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
           this.searchModel.TravelForm.Organization &&
           this.searchModel.TravelForm.Organization.Id;
       }
+      this.processOutNumbers();
       const r = await this.service.getTravelSave(this.searchModel)
       this.router.navigate([AppHelper.getRoutePath("business-list")], {
         queryParams: { doRefresh: true },

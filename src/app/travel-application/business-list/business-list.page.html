@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar style="padding-right: 10px;">
     <ion-buttons slot="start">
       <app-back-button></app-back-button>
     </ion-buttons>
@@ -14,8 +14,7 @@
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
   <ion-list>
-    <ion-item *ngFor='let item of items'
-      style="border-radius: 0.5em;
+    <ion-item *ngFor='let item of items' style="border-radius: 0.5em;
       width: 96%;
       margin: 0.5em auto;
       font-size: 0.9rem;
@@ -23,7 +22,7 @@
       <div class="ion-padding-bottom ion-padding-top" style="width: 100%" (click)="onTravelEdit(item.Id)">
         <ion-row>
           <ion-col size='3'>
-            <ion-text color="medium">编号</ion-text>
+            <ion-text color="medium">申请编号</ion-text>
           </ion-col>
           <ion-col>
             {{item.Id}}
@@ -34,12 +33,13 @@
             <ion-text color="medium">申请时间</ion-text>
           </ion-col>
           <ion-col>
-            {{item?.ApplyTime?.replace("T"," ")?.substring(0,16)}}
+            <!-- .startsWith("1800") -->
+            {{item?.ApplyTime?.startsWith("1800")||item?.ApplyTime?.startsWith("0001")?" ":item?.ApplyTime?.replace("T"," ")?.substring(0,16)}}
           </ion-col>
         </ion-row>
         <ion-row>
           <ion-col size='3'>
-            <ion-text color="medium">申请单状态</ion-text>
+            <ion-text color="medium">申请状态</ion-text>
           </ion-col>
           <ion-col>
             {{item.StatusTypeName}}
@@ -50,7 +50,7 @@
             <ion-text color="medium">审批时间</ion-text>
           </ion-col>
           <ion-col>
-            {{item?.ApprovalTime?.replace("T"," ")?.substring(0,16)}}
+            {{item?.ApprovalTime?.startsWith("1800")||item?.ApprovalTime?.startsWith("0001")?" ":item?.ApprovalTime?.replace("T"," ")?.substring(0,16)}}
           </ion-col>
         </ion-row>
       </div>
