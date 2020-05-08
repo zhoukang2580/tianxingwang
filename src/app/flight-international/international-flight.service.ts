@@ -819,13 +819,13 @@ export class InternationalFlightService {
       const notWhitelist = bookInfos.filter((it) => it.isNotWhitelist);
       let isCheckPolicy =
         m.trips.findIndex((it) => !it.bookInfo) == m.trips.length - 1;
-      if (notWhitelist.length == bookInfos.length) {
-        isCheckPolicy = false;
-      }
       if (!isCheckPolicy) {
         isCheckPolicy = this.flightListResult.FlightRoutes.some(
           (it) => !it.policy
         );
+      }
+      if (notWhitelist.length == bookInfos.length) {
+        isCheckPolicy = false;
       }
       if (!isCheckPolicy) {
         return true;
@@ -853,15 +853,45 @@ export class InternationalFlightService {
         flightFares.some((f) => f.FlightRouteIds.some((ffrid) => ffrid == r.Id))
       );
       req.Data = {
-        FlightRouteInfos: JSON.stringify(flightRouteInfos),
-        FlightSegmentInfos: JSON.stringify(
-          (this.flightListResult.FlightSegments || []).filter((s) => {
-            return flightRouteInfos.some((info) =>
-              info.FlightSegmentIds.some((segId) => segId == s.Id)
-            );
+        FlightRouteInfos: JSON.stringify(
+          flightRouteInfos.map((r) => {
+            const route = new FlightRouteEntity();
+            route.Id = r.Id;
+            route.Cabin = r.Cabin;
+            route.FlightRouteIds = r.FlightRouteIds;
+            route.FlightSegmentIds = r.FlightSegmentIds;
+            route.Duration = r.Duration;
+            route.FirstTime = r.FirstTime;
+            route.Type = r.Type;
+            return route;
           })
         ),
-        FlightFares: JSON.stringify(flightFares),
+        FlightSegmentInfos: JSON.stringify(
+          (this.flightListResult.FlightSegments || [])
+            .filter((s) => {
+              return flightRouteInfos.some((info) =>
+                info.FlightSegmentIds.some((segId) => segId == s.Id)
+              );
+            })
+            .map((seg) => {
+              const s = new FlightSegmentEntity();
+              s.Id = seg.Id;
+              s.Duration = seg.Duration;
+              return s;
+            })
+        ),
+        FlightFares: JSON.stringify(
+          flightFares.map((f) => {
+            const fare = new FlightFareEntity();
+            fare.Id = f.Id;
+            fare.SalesPrice = f.SalesPrice;
+            fare.Type = f.Type;
+            fare.SettlePrice = f.SettlePrice;
+            fare.TicketPrice = f.TicketPrice;
+            fare.Discount = f.Discount;
+            return fare;
+          })
+        ),
         PolicyIds: bookInfos
           .map(
             (it) =>
