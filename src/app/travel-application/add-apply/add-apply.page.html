@@ -13,7 +13,8 @@
       <ion-text [color]="!enable?'dark':'dark'">
         所属部门
       </ion-text>
-      <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;"  class="ion-text-end">{{searchModel.TravelForm?.Organization?.Name||" "}} <ng-container
+      <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;"
+        class="ion-text-end">{{searchModel.TravelForm?.Organization?.Name||" "}} <ng-container
           *ngIf="searchModel.TravelForm?.Organization?.Code">({{searchModel.TravelForm?.Organization?.Code}})
         </ng-container>
       </ion-text>
@@ -30,7 +31,7 @@
     <ion-item>
       <ion-text [color]="!enable?'dark':'dark'">客户或公司</ion-text>
       <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName"
-      [disabled]="!enable">
+        [disabled]="!enable">
       </ion-input>
     </ion-item>
     <ion-item [attr.tripType]='"tripType"'>
@@ -44,8 +45,9 @@
         <ion-select-option value="港澳台">港澳台</ion-select-option>
       </ion-select>
     </ion-item>
-    <app-add-stroke [enable]="enable" [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"
-      [index]="idx" [trip]='item' (remove)='onRemoveTrip($event)'></app-add-stroke>
+    <app-add-stroke [enable]="enable" [attr.addStroke]='idx'
+      *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;" [index]="idx" [trip]='item'
+      (remove)='onRemoveTrip($event)'></app-add-stroke>
     <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()"
       *ngIf="enable">
       <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
@@ -63,18 +65,23 @@
       <ion-text [color]="!enable?'dark':'dark'">
         备注
       </ion-text>
-      <ion-input [disabled]="!enable" placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Detail">
+      <ion-input [disabled]="!enable" placeholder="请输入" slot="end" class="ion-text-end"
+        [(ngModel)]="searchModel.TravelForm.Detail">
       </ion-input>
     </ion-item>
     <ion-item detail (click)="onSelectCostCenter()">
       <ion-text [color]="!enable?'dark':'dark'">成本中心</ion-text>
-      <ion-label class="ion-text-end" color="{{searchModel.TravelForm?.CostCenterName}}" [color]="!enable?'medium':'dark'">
+      <ion-label class="ion-text-end" color="{{searchModel.TravelForm?.CostCenterName}}"
+        [color]="!enable?'medium':'dark'">
         {{searchModel.TravelForm?.CostCenterName||" "}}</ion-label>
     </ion-item>
     <ion-item *ngIf="tmc?.OutNumberNameArray?.length>0">
-      <div>
-        <div *ngFor="let item of tmc?.OutNumberNameArray" [attr.OutNumberName]='item'>
-          <ion-input placeholder="{{item}}" [(ngModel)]="outNumbers[item]" [disabled]="!enable"></ion-input>
+      <div style="width: 100%;">
+        <div *ngFor="let item of tmc?.OutNumberNameArray" [attr.OutNumberName]='item' style="display:flex;justify-content: center;
+        align-items: center;">
+          <ion-label>{{item}}</ion-label>
+          <ion-input placeholder="{{item}}" style="max-width: initial;flex: 3; text-align: end;"
+            [(ngModel)]="outNumbers[item]" [color]="!enable?'medium':'dark'" [disabled]="!enable"></ion-input>
         </div>
       </div>
     </ion-item>
@@ -83,31 +90,35 @@
       <ion-text [color]="!enable?'dark':'dark'">
         审批人
       </ion-text>
-      <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;" class="ion-text-end">
+      <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;"
+        class="ion-text-end">
         {{appovalStaff}}
       </ion-text>
     </ion-item>
     <ion-item *ngIf="!enable">
-      <div *ngIf="searchModel.Histories">
+      <div *ngIf="searchModel.Histories" style="width: 100%;">
         <ion-item-divider>
           审批记录
         </ion-item-divider>
         <div *ngFor="let h of searchModel?.Histories">
-          <div>
+          <div style="display: flex">
             <label>审批时间:</label>
-          <label>{{h.HandleTime}}</label>
+
+            <ion-label color="medium">
+              {{h?.HandleTime?.startsWith("1800")||h.HandleTime?.startsWith("0001")?" ":h.HandleTime?.replace("T"," ")?.substring(0,16)}}
+            </ion-label>
           </div>
-          <div>
+          <div style="display: flex;">
             <label>审批人:</label>
-          <label>{{h.Account.RealName}}</label>
+            <ion-label color="medium">{{h?.Account?.RealName}}</ion-label>
           </div>
-          <div>
+          <div style="display: flex;">
             <label>审批结果:</label>
-          <label>{{h.StatusName}}</label>
+            <ion-label color="medium">{{h?.StatusName}}</ion-label>
           </div>
-          <div>
-            <label>审批意见:</label>
-          <label>{{h.Remark}}</label>
+          <div style="display: flex;">
+            <ion-label>审批意见:</ion-label>
+            <ion-label color="medium">{{h?.Remark}}</ion-label>
           </div>
         </div>
       </div>
