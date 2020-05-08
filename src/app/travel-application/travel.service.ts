@@ -11,7 +11,7 @@ import { TmcEntity, TravelFormEntity } from "../tmc/tmc.service";
 import { RequestEntity } from "../services/api/Request.entity";
 import { BaseEntity } from "../models/BaseEntity";
 import { AccountEntity } from "../account/models/AccountEntity";
-import { TrafficlineEntity } from '../tmc/models/TrafficlineEntity';
+import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 
 @Injectable({
   providedIn: "root",
@@ -33,8 +33,7 @@ export class TravelService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-GetStaff`;
-    req.Data = {
-    };
+    req.Data = {};
     return this.apiService.getPromiseData<StaffEntity>(req);
   }
   getTravelDetail(id: string) {
@@ -130,7 +129,7 @@ export class SearchModel {
   StatusType: ApprovalStatusType;
   PageIndex: number;
   PageSize: number;
-
+  OutNumbers: { Name: string; Code: string }[];
   AccountId: string;
 
   Trips: TravelFormTripEntity[];
@@ -254,18 +253,17 @@ export class TravelFormDetailEntity extends BaseEntity {
   /// </summary>
   Content: string;
 }
-export enum TmcTravelApprovalType
-    {
-        /// <summary>
-        /// 不审批
-        /// </summary>
-        None = 1,
-        /// <summary>
-        /// 自由审批
-        /// </summary>
-        Free = 2,
-        /// <summary>
-        /// 固定审批人
-        /// </summary>
-        Approver = 3
-    }
+export enum TmcTravelApprovalType {
+  /// <summary>
+  /// 不审批
+  /// </summary>
+  None = 1,
+  /// <summary>
+  /// 自由审批
+  /// </summary>
+  Free = 2,
+  /// <summary>
+  /// 固定审批人
+  /// </summary>
+  Approver = 3,
+}
