@@ -4,7 +4,7 @@
       <ion-item-divider>
         <ion-text>行程{{index+1}}</ion-text>
         <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()"
-          class="ion-text-end"></ion-icon>
+          class="ion-text-end" *ngIf="enable"></ion-icon>
       </ion-item-divider>
       <ion-item lines="none">
         <ion-text [color]="!enable?'dark':'dark'">
@@ -34,7 +34,7 @@
           出发城市
         </ion-text>
         <ion-label class="ion-text-end">
-          <ion-text color='{{trip.FromCityName}}'>{{trip.FromCityName||" "}}</ion-text>
+          <ion-text [color]="!enable?'medium':'dark'">{{trip.FromCityName||" "}}</ion-text>
         </ion-label>
       </ion-item>
       <ion-item lines="none" detail (click)="onSelectCity(false)">
@@ -42,7 +42,7 @@
           目的城市
         </ion-text>
         <ion-label class="ion-text-end">
-          <ion-text color='{{trip.ToCityName}}'>{{trip.ToCityName||" "}}</ion-text>
+          <ion-text [color]="!enable?'medium':'dark'">{{trip.ToCityName||" "}}</ion-text>
         </ion-label>
       </ion-item>
       <ion-item lines="none" detail>
@@ -62,9 +62,9 @@
       <ion-item lines="none">
         <ion-text [color]="!enable?'dark':'dark'">时长（天）
         </ion-text>
-        <label slot="end" class="ion-text-end">
+        <ion-label slot="end" class="ion-text-end" [color]="!enable?'medium':'dark'">
           {{getNumberOfDays(trip.StartDate,trip.EndDate)}}
-        </label>
+        </ion-label>
       </ion-item>
 
 
