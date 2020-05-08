@@ -17,7 +17,6 @@ import { CalendarService } from "../tmc/calendar.service";
 import { AppHelper } from "../appHelper";
 import { Router } from "@angular/router";
 import { ModalController } from "@ionic/angular";
-import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { TripType } from "../tmc/models/TripType";
 import { DayModel } from "../tmc/models/DayModel";
 import { RequestEntity } from "../services/api/Request.entity";
@@ -467,7 +466,7 @@ export class InternationalFlightService {
       }
     });
   }
-  async openCalendar(isMulti: boolean, isFrom: boolean, trip: ITripInfo) {
+  openCalendar(isMulti: boolean, isFrom: boolean, trip: ITripInfo) {
     const s = this.getSearchModel();
     const trips = s.trips || [];
     const idx = s.trips && s.trips.findIndex((it) => it == trip);
@@ -484,18 +483,12 @@ export class InternationalFlightService {
         goArrivalTime = s.trips[0].date;
       }
     }
-    const m = await this.modalCtrl.create({
-      component: SelectDateComponent,
-      componentProps: {
-        goArrivalTime,
-        tripType: isFrom ? TripType.departureTrip : TripType.returnTrip,
-        forType: FlightHotelTrainType.InternationalFlight,
-        isMulti,
-      },
+    return this.calendarService.openCalendar({
+      goArrivalTime,
+      tripType: isFrom ? TripType.departureTrip : TripType.returnTrip,
+      forType: FlightHotelTrainType.InternationalFlight,
+      isMulti,
     });
-    await m.present();
-    const d = await m.onDidDismiss();
-    return d && (d.data as DayModel[]);
   }
   initOneWaySearModel() {
     if (this.lastOneWaySearchModel) {
@@ -1240,9 +1233,13 @@ export class InternationalFlightService {
     }
     return data;
   }
-  private getDays(arrivalTime:string,firstTime: string) {
-    const endTime=this.calendarService.getMoment(0,arrivalTime);
-    const addDays = this.calendarService.diff(endTime.format("YYYY-MM-DD"),firstTime.substr(0,10),'days');
+  private getDays(arrivalTime: string, firstTime: string) {
+    const endTime = this.calendarService.getMoment(0, arrivalTime);
+    const addDays = this.calendarService.diff(
+      endTime.format("YYYY-MM-DD"),
+      firstTime.substr(0, 10),
+      "days"
+    );
     return addDays;
   }
   getFlyTime(duration: number) {

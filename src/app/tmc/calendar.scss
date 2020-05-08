@@ -1,3 +1,22 @@
+.calendar-container {
+  overflow: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--ion-color-primary);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all ease-in-out 200ms;
+  z-index: -100;
+  &.show {
+    top: 0;
+    transform: translateY(0);
+    opacity: 1;
+    z-index: 10;
+  }
 
   ul {
     list-style-type: none;
@@ -73,7 +92,7 @@
     justify-content: center;
     align-items: center;
   }
-
+  @import "../tmc/components/day/day.component.scss";
   .day {
     &.active {
       background-color: var(--ion-color-secondary);
@@ -96,4 +115,25 @@
     height: 100%;
     width: 100%;
   }
-
+  .weeks {
+    position: sticky;
+    top: 44px;
+    background-color: var(--ion-color-primary);
+    z-index: 100;
+  }
+  .header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    z-index: 101;
+    background-color: var(--ion-color-primary);
+    display: flex;
+    align-items: center;
+    button {
+      padding: 0.5em;
+      color: var(--ion-color-secondary);
+    }
+  }
+}

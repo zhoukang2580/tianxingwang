@@ -130,6 +130,6 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
     }, 200);
   }
   back() {
-    this.backbtn.backToPrePage();
+    this.backbtn.popToPrePage();
   }
 }

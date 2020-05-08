@@ -129,7 +129,7 @@ export class InternationalHotelListPage
   back(evt?: CustomEvent) {
     this.hideQueryPannel();
     setTimeout(() => {
-      this.backBtn.backToPrePage(evt);
+      this.backBtn.popToPrePage(evt);
     }, 300);
   }
   ngOnDestroy() {

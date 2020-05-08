@@ -140,7 +140,7 @@ export class SelectInterCityPage implements OnInit, OnDestroy, AfterViewInit {
     }, 200);
   }
   back() {
-    this.backBtn.backToPrePage();
+    this.backBtn.popToPrePage();
   }
   private onSearch() {
     this.pageIndex = 0;

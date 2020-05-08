@@ -16,7 +16,7 @@ import { OrderTrainTicketStatusType } from "./models/OrderTrainTicketStatusType"
 import { environment } from "src/environments/environment";
 import { MOCK_CAR_DATA, MOCK_FLIGHT_ORDER_DETAIL } from "./mock-data";
 import { OrderFlightTripEntity } from "./models/OrderFlightTripEntity";
-import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
+// import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { ModalController } from "@ionic/angular";
 import { TripType } from "../tmc/models/TripType";
 import {
@@ -32,6 +32,7 @@ import { OrderFlightTicketEntity } from "./models/OrderFlightTicketEntity";
 import { OrderTrainTicketEntity } from "./models/OrderTrainTicketEntity";
 import { TravelModel } from "./models/TravelModel";
 import { StaffEntity } from "../hr/staff.service";
+import { CalendarService } from "../tmc/calendar.service";
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -47,7 +48,8 @@ export class OrderDetailModel {
 export class OrderService {
   constructor(
     private apiService: ApiService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private calendarService: CalendarService
   ) {}
   getOrderList(searchCondition: OrderModel) {
     const req = new RequestEntity();
@@ -280,18 +282,12 @@ export class OrderService {
     return this.apiService.getPromiseData<any>(req);
   }
   async getExchangeDate(startTime: string) {
-    const m = await this.modalCtrl.create({
-      component: SelectDateComponent,
-      componentProps: {
-        goArrivalTime: startTime,
-        tripType: TripType.departureTrip,
-        forType: FlightHotelTrainType.Flight,
-        isMulti: false,
-      },
+    return this.calendarService.openCalendar({
+      goArrivalTime: startTime,
+      tripType: TripType.departureTrip,
+      forType: FlightHotelTrainType.Flight,
+      isMulti: false,
     });
-    await m.present();
-    const d = await m.onDidDismiss();
-    return d && (d.data as DayModel[]);
   }
   private getmockOrderDetail(): OrderDetailModel {
     return MOCK_FLIGHT_ORDER_DETAIL as any;

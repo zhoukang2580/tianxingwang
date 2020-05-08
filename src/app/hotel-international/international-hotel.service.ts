@@ -31,7 +31,6 @@ import { AppHelper } from "../appHelper";
 import { HotelPassengerModel } from "../hotel/models/HotelPassengerModel";
 import { HotelPolicyModel } from "../hotel/models/HotelPolicyModel";
 import { DayModel } from "../tmc/models/DayModel";
-import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { CountryEntity } from "../tmc/models/CountryEntity";
 import { OrderBookDto } from "../order/models/OrderBookDto";
@@ -667,27 +666,22 @@ export class InternationalHotelService {
     tripType: TripType = TripType.checkIn,
     title = "请选择入离店日期"
   ): Promise<DayModel[]> {
+    let goArrivalTime = "";
     if (typeof checkInDate == "string") {
-      checkInDate = this.calendarService.generateDayModelByDate(checkInDate);
+      goArrivalTime = this.calendarService.generateDayModelByDate(checkInDate)
+        .date;
     }
     if (!checkInDate) {
-      checkInDate = this.calendarService.getMoment().format("YYYY-MM-DD");
+      goArrivalTime = this.calendarService.getMoment().format("YYYY-MM-DD");
     }
-    const m = await this.modalCtrl.create({
-      component: SelectDateComponent,
-      componentProps: {
-        goArrivalTime: checkInDate,
-        tripType,
-        isMulti: true,
-        title,
-        forType: FlightHotelTrainType.Hotel,
-      },
+    const data = await this.calendarService.openCalendar({
+      goArrivalTime,
+      tripType,
+      isMulti: true,
+      title,
+      forType: FlightHotelTrainType.Hotel,
     });
-    await m.present();
-    // this.calendarService.setSelectedDaysSource(this.calendarService.getSelectedDays());
-    const result = await m.onDidDismiss();
-    if (result.data) {
-      const data = result.data as DayModel[];
+    if (data) {
       if (data.length == 2) {
         this.setSearchConditionSource({
           ...this.getSearchCondition(),
@@ -696,7 +690,7 @@ export class InternationalHotelService {
         });
       }
     }
-    return result.data as DayModel[];
+    return data;
   }
   private parseVariables(jsonStr: string) {
     let obj = {};

@@ -1,26 +1,34 @@
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
-import { Subject, BehaviorSubject } from "rxjs";
-import { Injectable } from "@angular/core";
+import { Subject, BehaviorSubject, Subscription } from "rxjs";
+import { Injectable, EventEmitter } from "@angular/core";
 import * as moment from "moment";
 import { AvailableDate } from "./models/AvailableDate";
 import { LanguageHelper } from "../languageHelper";
 import { DayModel, ILunarInfo } from "./models/DayModel";
 import { Storage } from "@ionic/storage";
 import { Platform } from "@ionic/angular";
+import { Router } from "@angular/router";
+import { FlightHotelTrainType } from "./tmc.service";
+import { filter, tap, distinct } from "rxjs/operators";
+import { TripType } from "./models/TripType";
+import { connect } from "http2";
+import { AppHelper } from "../appHelper";
 const lunarCalendar = window["LunarCalendar"];
 const _KEY_HOLIDAYS = "_key_holidays";
 @Injectable({
   providedIn: "root",
 })
 export class CalendarService {
-  private selectedDaysSource: Subject<DayModel[]>;
-  private calendars: {
-    [ym: string]: {
-      orgData: AvailableDate;
-      data;
-    }
-  } = {};
+  private subscription = Subscription.EMPTY;
+  private selectedDaysSource: EventEmitter<DayModel[]>;
+  private isCurrentSelectedOk = false;
+  private isMulti = false;
+  private tripType: TripType;
+  private forType: FlightHotelTrainType;
+  private goArrivalTime = "";
+  private title = "";
+  private calendars: AvailableDate[];
   private selectedDays: DayModel[];
   private holidays: ICalendarEntity[] = [];
   private fetchingHolidaysPromise: { promise: Promise<ICalendarEntity[]> };
@@ -36,12 +44,14 @@ export class CalendarService {
   constructor(
     private apiService: ApiService,
     private storage: Storage,
-    private plt: Platform
+    private plt: Platform,
+    private router: Router
   ) {
-    this.selectedDaysSource = new BehaviorSubject([]);
+    this.selectedDaysSource = new EventEmitter();
     this.initCalendars();
   }
   private initCalendars() {
+    this.calendars = [];
     const m = this.getMoment(0);
     const len = 12;
     for (let i = 0; i < len; i++) {
@@ -55,10 +65,7 @@ export class CalendarService {
         im.year(),
         im.month() + 1
       );
-      this.calendars[ym] = {
-        orgData: calendars,
-        data: calendars
-      }
+      this.calendars.push(calendars);
     }
   }
   diff(d2: string, d1: string, unit: any): number {
@@ -72,6 +79,456 @@ export class CalendarService {
     }
     format = format.replace(/\//g, "-");
     return m.format(format);
+  }
+  private generateOneCalendar(calendar: AvailableDate) {
+    const ul = document.createElement("ul");
+    ul.setAttribute("ym", calendar.yearMonth);
+    ul.classList.add("calendar");
+    const ym = document.createElement("li");
+    const ymc = document.createElement("strong");
+    ym.append(ymc);
+    ymc.textContent = `${calendar.yearMonth.substr(
+      0,
+      4
+    )}年${calendar.yearMonth.substr(5, 2)}月`;
+    ym.style.display = "block";
+    ym.style.width = "100%";
+    ym.style.height = "1em";
+    ul.append(ym);
+    const shadow = document.createElement("div");
+    const m = calendar.yearMonth.substr(5, 2);
+    shadow.textContent = +m < 10 ? `${m.substr(1)}` : m;
+    shadow.classList.add("shadow-month");
+    ul.append(shadow);
+    for (const d of calendar.dayList) {
+      const li = document.createElement("li");
+      const cs = d.clazz();
+      Object.keys(cs)
+        .filter((it) => cs[it])
+        .forEach((clazz) => {
+          li.classList.add(clazz);
+        });
+      const day = this.generateDayHtml(d);
+      li.setAttribute("date", d.date);
+      li.append(day);
+      ul.append(li);
+    }
+    return ul;
+  }
+  private generateDayHtml(day: DayModel) {
+    const d = document.createElement("div");
+    d.classList.add("day");
+    if (day.hasToolTip) {
+      d.classList.add("hasToolTip");
+    }
+    if (day.isToday) {
+      d.classList.add("active", "today");
+    }
+    d.setAttribute("toolTipMsg", day.toolTipMsg || "");
+    d.setAttribute("toolTipPos", day.toolTipPos || "");
+    if (day.isLastMonthDay) {
+      d.classList.add("is-last-month-day");
+    }
+    d.onclick = () => {
+      this.toggleSelected(day, d);
+    };
+    const divtop = document.createElement("div");
+    const dayoff = document.createElement("div");
+    dayoff.classList.add("dayoff", "danger");
+    dayoff.textContent = "休";
+    const topDesc = document.createElement("div");
+    topDesc.textContent = `${day.topDesc}`;
+    topDesc.classList.add("desc", "ion-text-nowrap");
+    if (day.topDesc) {
+      divtop.append(topDesc);
+    }
+    if (day.dayoff) {
+      divtop.append(dayoff);
+    }
+    divtop.classList.add("top");
+    d.append(divtop);
+    const content = document.createElement("div");
+    content.classList.add(
+      "content",
+      `color-${day.dayoff ? "danger" : day.color}`
+    );
+    const cdiv = document.createElement("div");
+    cdiv.textContent = !day.isToday ? day.day : day.displayName;
+    content.append(cdiv);
+    d.append(content);
+    const bottom = document.createElement("div");
+    bottom.classList.add("bottom", `color-${day.descColor}`);
+    const bdiv = document.createElement("div");
+    bdiv.classList.add("ion-text-nowrap");
+    if (day.bottomDesc) {
+      bdiv.textContent = day.bottomDesc.includes("程")
+        ? (day.lunarInfo && day.lunarInfo.lunarDayName) || ""
+        : day.bottomDesc;
+      bottom.append(bdiv);
+    }
+    d.append(bottom);
+    day.el = d;
+    return d;
+  }
+  private toggleSelected(day: DayModel, d: HTMLElement) {
+    day.selected = !day.selected;
+    d.classList.toggle("selected", day.selected);
+    this.onDaySelected(day);
+  }
+  private generateCalendars(calendars: AvailableDate[]) {
+    const df = document.createDocumentFragment();
+    for (const c of calendars) {
+      df.append(this.generateOneCalendar(c));
+    }
+    return df;
+  }
+  private onDaySelected(d: DayModel) {
+    if (!this.selectedDays) {
+      this.selectedDays = [];
+    }
+    if (!d || !d.date || this.isCurrentSelectedOk) {
+      return;
+    }
+    if (!d.enabled) {
+      AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
+      return;
+    }
+    if (this.selectedDays.length >= 2) {
+      // this.selectedDays = [];
+      return;
+    }
+    d.selected = true;
+    if (this.isMulti) {
+      if (this.selectedDays.length) {
+        if (d.timeStamp < this.selectedDays[0].timeStamp) {
+          d.topDesc =
+            this.tripType == TripType.checkIn ||
+            this.tripType == TripType.checkOut
+              ? LanguageHelper.getCheckInTip()
+              : LanguageHelper.getDepartureTip();
+          d.hasToolTip = true;
+          d.toolTipMsg =
+            this.tripType == TripType.checkIn ||
+            this.tripType == TripType.checkOut
+              ? LanguageHelper.getSelectCheckOutDate()
+              : LanguageHelper.getBackDateTip();
+          this.selectedDays = [d];
+          this.checkHotelSelectedDate(d);
+          // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
+        } else {
+          d.firstSelected = true;
+          d.lastSelected = true;
+          d.hasToolTip = true;
+          d.topDesc =
+            this.tripType == TripType.checkIn ||
+            this.tripType == TripType.checkOut
+              ? LanguageHelper.getCheckOutTip()
+              : LanguageHelper.getReturnTripTip();
+          if (this.selectedDays[0].timeStamp == d.timeStamp) {
+            this.selectedDays[0].topDesc =
+              this.tripType == TripType.checkIn ||
+              this.tripType == TripType.checkOut
+                ? LanguageHelper.getCheckInOutTip()
+                : LanguageHelper.getRoundTripTip();
+          } else {
+            d.toolTipMsg =
+              this.tripType == TripType.checkIn ||
+              this.tripType == TripType.checkOut
+                ? LanguageHelper.getCheckInOutTotalDaysTip(
+                    Math.abs(
+                      this.getMoment(0, this.selectedDays[0].date).diff(
+                        d.date,
+                        "days"
+                      )
+                    )
+                  )
+                : LanguageHelper.getRoundTripTotalDaysTip(
+                    Math.abs(
+                      this.getMoment(0, this.selectedDays[0].date).diff(
+                        d.date,
+                        "days"
+                      )
+                    )
+                  );
+          }
+          const first = this.selectedDays[0];
+          first.hasToolTip = false;
+          first.update();
+          d.update();
+          this.selectedDays.push(d);
+        }
+      } else {
+        d.firstSelected = true;
+        d.lastSelected = true;
+        d.hasToolTip = true;
+        console.log("tripType", this.tripType);
+        if (
+          this.tripType == TripType.returnTrip ||
+          this.tripType == TripType.departureTrip
+        ) {
+          d.topDesc = LanguageHelper.getDepartureTip();
+          d.toolTipMsg = LanguageHelper.getSelectFlyBackDate();
+        }
+        if (
+          this.tripType == TripType.checkIn ||
+          this.tripType == TripType.checkOut
+        ) {
+          d.topDesc = LanguageHelper.getCheckInTip();
+          d.toolTipMsg = LanguageHelper.getSelectCheckOutDate();
+        } else {
+        }
+        this.selectedDays = [d];
+        this.checkHotelSelectedDate(d);
+      }
+    } else {
+      d.firstSelected = true;
+      d.lastSelected = true;
+      d.topDesc = LanguageHelper.getDepartureTip();
+      if (this.tripType == TripType.returnTrip) {
+        d.topDesc = LanguageHelper.getReturnTripTip();
+        d.hasToolTip = false;
+        d.toolTipMsg = null;
+      }
+      if (this.tripType == TripType.departureTrip) {
+        d.topDesc = LanguageHelper.getDepartureTip();
+        d.hasToolTip = false;
+        d.toolTipMsg = null;
+      }
+      if (this.tripType == TripType.checkOut) {
+        d.topDesc = LanguageHelper.getCheckOutTip();
+        d.hasToolTip = false;
+      }
+      if (this.tripType == TripType.checkIn) {
+        d.topDesc = LanguageHelper.getCheckInTip();
+        d.hasToolTip = false;
+      }
+      this.selectedDays = [d];
+    }
+    const first = this.selectedDays[0];
+    const last = this.selectedDays[this.selectedDays.length - 1];
+    console.time("update");
+    this.calendars.forEach((item) => {
+      if (item && item.dayList) {
+        item.dayList.forEach((dt) => {
+          dt.selected = this.isMulti
+            ? this.selectedDays.some((it) => it.date === dt.date)
+            : dt.date === d.date;
+          dt.lastSelected = false;
+          dt.firstSelected = false;
+          if (!dt.selected) {
+            dt.topDesc = "";
+            dt.hasToolTip = false;
+            dt.toolTipMsg = "";
+          }
+          if (first && last) {
+            first.firstSelected = true;
+            last.lastSelected = true;
+            first.selected = true;
+            last.selected = true;
+            if (first.date != last.date) {
+              last.firstSelected = false;
+              first.lastSelected = false;
+            }
+            dt.isBetweenDays =
+              dt.timeStamp > first.timeStamp && dt.timeStamp < last.timeStamp;
+            if (dt.isBetweenDays) {
+              dt.selected = true;
+            }
+          }
+          dt.update();
+        });
+      }
+    });
+    console.timeEnd("update");
+    if (this.isMulti) {
+      this.isCurrentSelectedOk =
+        this.selectedDays && this.selectedDays.length > 1;
+    } else {
+      this.isCurrentSelectedOk = !!(
+        this.selectedDays && this.selectedDays.length
+      );
+    }
+    if (this.isMulti) {
+      if (this.selectedDays.length > 1) {
+        this.setSelectedDaysSource(this.selectedDays);
+        this.closeCalendar();
+      }
+    } else if (this.selectedDays.length) {
+      this.setSelectedDaysSource(this.selectedDays);
+      this.closeCalendar();
+    }
+  }
+  private checkHotelSelectedDate(selectedBeginDay: DayModel) {
+    if (this.forType == FlightHotelTrainType.Hotel) {
+      this.calendars.forEach((ym) => {
+        if (ym.dayList) {
+          ym.dayList = ym.dayList.map((itm) => {
+            itm.enabled =
+              itm.enabled && itm.timeStamp > selectedBeginDay.timeStamp;
+            return itm;
+          });
+        }
+      });
+    }
+  }
+  private closeCalendar() {
+    const calendarEle = document.body.querySelector("#calendar");
+    this.isCurrentSelectedOk = false;
+    setTimeout(() => {
+      if (this.calendars) {
+        this.calendars.forEach((item) => {
+          if (item.dayList) {
+            item.dayList.forEach((d) => {
+              d.hasToolTip = false;
+              d.selected = false;
+              d.isBetweenDays = false;
+              d.firstSelected = false;
+              d.lastSelected = false;
+              d.update();
+            });
+          }
+        });
+        if (calendarEle) {
+          calendarEle.classList.toggle("show", false);
+        }
+      }
+      this.selectedDays = [];
+    }, 500);
+  }
+  private renderCalendar(calendars: AvailableDate[]) {
+    let calendarEle = document.body.querySelector("#calendar");
+    if (!calendarEle) {
+      const c = this.generateCalendars(calendars);
+      calendarEle = document.createElement("div");
+      const weeks = document.createElement("ul");
+      const header = document.createElement("div");
+      header.classList.add("header");
+      calendarEle.append(header);
+      const backbtn = document.createElement("button");
+      backbtn.textContent = "取消";
+      const title = document.createElement("div");
+      title.classList.add("title");
+      title.textContent = "请选择日期";
+      backbtn.onclick = () => {
+        this.closeCalendar();
+      };
+      header.append(backbtn);
+      header.append(title);
+      weeks.classList.add("weeks");
+      for (let i = 0; i < 7; i++) {
+        const wn = this.dayOfWeekNames[i];
+        const li = document.createElement("li");
+        li.style.color =
+          i == 0 || i == 6
+            ? "var(--ion-color-danger)"
+            : "var(--ion-color-secondary)";
+        li.textContent = `${wn}`;
+        weeks.append(li);
+      }
+      calendarEle.append(weeks);
+      calendarEle.id = "calendar";
+      calendarEle.classList.add("calendar-container");
+      calendarEle.append(c);
+      document.body.querySelector("ion-app").append(calendarEle);
+      calendarEle.classList.toggle("show", true);
+    } else {
+      calendarEle.querySelector(".title").textContent =
+        this.title || "选择日期";
+      calendarEle.classList.toggle("show", true);
+    }
+    this.checkYms();
+  }
+  private checkYms() {
+    const st = Date.now();
+    const m = this.getMoment(0, this.goArrivalTime || "");
+    const goDate = this.getMoment(0, m.format("YYYY-MM-DD"));
+    if (this.calendars && this.calendars.length) {
+      const type = this.forType;
+      if (
+        this.tripType == TripType.returnTrip ||
+        this.tripType == TripType.checkOut ||
+        this.forType == FlightHotelTrainType.InternationalFlight
+      ) {
+        if (this.goArrivalTime) {
+          if (this.calendars.length) {
+            const endDay = this.generateDayModel(this.getMoment(30));
+            this.calendars.forEach((day) => {
+              if (day.dayList) {
+                day.dayList.forEach((d) => {
+                  d.enabled =
+                    +this.getMoment(0, d.date.substr(0, 10)) >= +goDate;
+                  if (type == FlightHotelTrainType.Train) {
+                    d.enabled =
+                      d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+                  }
+                  d.update();
+                });
+              }
+            });
+          }
+        }
+      } else {
+        const today = this.generateDayModel(this.getMoment(0));
+        const endDay = this.generateDayModel(this.getMoment(30));
+        this.calendars.forEach((day) => {
+          if (day.dayList) {
+            day.dayList.forEach((d) => {
+              d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
+              if (type == FlightHotelTrainType.Train) {
+                d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+              }
+              d.update();
+            });
+          }
+        });
+      }
+    }
+    console.log(`checkYms ${Date.now() - st} ms`);
+  }
+  private generateYearCalendar() {
+    const m = this.getMoment(0);
+    const calendars = [];
+    const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;
+    for (let i = 0; i < len; i++) {
+      const im = m.clone().add(i, "months");
+      calendars.push(
+        this.generateYearNthMonthCalendar(im.year(), im.month() + 1)
+      );
+    }
+    return calendars;
+  }
+  openCalendar(data: {
+    goArrivalTime: string;
+    title?: string;
+    isMulti: boolean;
+    forType: FlightHotelTrainType;
+    tripType?: TripType;
+  }) {
+    const calendars = this.generateYearCalendar();
+    this.goArrivalTime = data.goArrivalTime || "";
+    this.isMulti = data.isMulti;
+    this.tripType = data.tripType;
+    this.title = data.title;
+    this.renderCalendar(calendars);
+    return new Promise<DayModel[]>((resolve) => {
+      this.subscription.unsubscribe();
+      this.subscription = this.getSelectedDaysSource()
+        .pipe(
+          filter((it) => (data.isMulti ? it.length >= 2 : it.length > 0)),
+          tap((days) => {
+            console.log(" getSelectedDaysSource ", days);
+          }),
+          distinct()
+        )
+        .subscribe(
+          (days) => {
+            resolve(days);
+          },
+          () => {
+            this.subscription.unsubscribe();
+          }
+        );
+    });
   }
   getMoment(addDays: number = 0, date: string | number = "") {
     let m = moment();
@@ -277,7 +734,7 @@ export class CalendarService {
         month = `0${month}`;
       }
       if (+date < 10) {
-        date = `0${date}`
+        date = `0${date}`;
       }
       if (retD.date === `${y}-${month}-${date}`) {
         // console.log("今天 "+ retD.date);
@@ -303,16 +760,10 @@ export class CalendarService {
     return wn;
   }
   generateYearNthMonthCalendar(year: number, month: number) {
-    const ym = `${year}-${(month < 10 ? "0" + month : month)}`;
-    const one = this.calendars[ym];
+    const ym = `${year}-${month < 10 ? "0" + month : month}`;
+    const one = this.calendars.find((it) => it.yearMonth == ym);
     if (one) {
-      one.data = {
-        ...one.orgData,
-        dayList: one.orgData.dayList.map(day => {
-          return { ...day }
-        })
-      }
-      return one.data;
+      return one;
     }
     const st = Date.now();
     const iM = moment(`${year}-${month}-01`, "YYYY-MM-DD"); // 第i个月
@@ -353,15 +804,14 @@ export class CalendarService {
       const dayOfiM = iM.startOf("month").date(j); // 每月的j号
       calender.dayList.push(this.generateDayModel(dayOfiM));
     }
-    this.getHolidays().then((holidays) => {
-      this.initDaysDayOff(calender, holidays);
-    }).catch(()=>0);
+    this.getHolidays()
+      .then((holidays) => {
+        this.initDaysDayOff(calender, holidays);
+      })
+      .catch(() => 0);
     // console.log("generateYearNthMonthCalendar", clnder);
     console.log(`生成${year}-${month} 耗时:${Date.now() - st} ms`);
-    this.calendars[ym] = {
-      orgData: calender,
-      data: calender
-    }
+    this.calendars.push(calender);
     return calender;
   }
   private initDaysDayOff(c: AvailableDate, holidays: ICalendarEntity[]) {

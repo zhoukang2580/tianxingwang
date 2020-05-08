@@ -269,7 +269,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       );
   }
   back() {
-    this.backbtn.backToPrePage();
+    this.backbtn.popToPrePage();
   }
   private getVariablesJsonObj(trip: OrderTripModel) {
     if (!trip) {

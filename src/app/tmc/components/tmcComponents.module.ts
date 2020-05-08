@@ -1,4 +1,3 @@
-import { CalendarComponent } from "./calendar/calendar.component";
 import { MemberPipesModule } from "./../../member/pipe/pipe.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -23,7 +22,6 @@ import { SelectCountryModalComponent } from "./select-country/select-countrymoda
 import { DateSelectWheelPopoverComponent } from "./date-select-wheel-popover/date-select-wheel-popover.component";
 import { SelectWheelComponent } from "./select-wheel/select-wheel.component";
 import { SearchDayComponent } from "./search-day/search-day.component";
-import { SelectDateComponent } from "./select-date/select-date.component";
 import { DaysCalendarComponent } from "./days-calendar/days-calendar.component";
 import { BookTmcOutnumberComponent } from "./book-tmc-outnumber/book-tmc-outnumber.component";
 import { WaitingCheckPayComponent } from "./waiting-check-pay/waiting-check-pay.component";
@@ -45,12 +43,10 @@ import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-ex
     BookOrganizationCompComponent,
     BookAddcontactsCompComponent,
     DayComponent,
-    CalendarComponent,
     SelectCountryModalComponent,
     SelectWheelComponent,
     DateSelectWheelPopoverComponent,
     SearchDayComponent,
-    SelectDateComponent,
     DaysCalendarComponent,
     BookTmcOutnumberComponent,
     WaitingCheckPayComponent,
@@ -73,10 +69,8 @@ import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-ex
     BookAddcontactsCompComponent,
     BookTmcOutnumberComponent,
     DayComponent,
-    CalendarComponent,
     SelectWheelComponent,
     SearchDayComponent,
-    SelectDateComponent,
     DaysCalendarComponent,
     WaitingCheckPayComponent,
     BookExpenseTypesCompComponent

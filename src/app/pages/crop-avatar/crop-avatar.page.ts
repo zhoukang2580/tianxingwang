@@ -39,7 +39,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
 
   ngOnInit() { }
   goBack() {
-    this.backbtn.backToPrePage();
+    this.backbtn.popToPrePage();
   }
   ngAfterViewInit() {
     this.croppedImage = document.getElementById("image") as HTMLImageElement;
@@ -58,7 +58,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
           AppHelper.setRouteData(null);
           this.reset();
         } else {
-          this.backbtn.backToPrePage();
+          this.backbtn.popToPrePage();
         }
       }
     });
@@ -70,7 +70,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
   }
   cancel() {
     // this.showCropBox = false;
-    this.backbtn.backToPrePage();
+    this.backbtn.popToPrePage();
   }
 
   ok() {

@@ -244,6 +244,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   async onSubmit() {
+
     if (this.searchModel.TravelForm) {
       if (!this.searchModel.TravelForm.Organization) {
         const el = this.getEleByAttr("organization", "organization");
@@ -279,18 +280,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
 
         }
       }
-    }
-    if (this.tmc && this.tmc.OutNumberRequiryNameArray) {
-      for (let t = 0; t < this.tmc.OutNumberRequiryNameArray.length; t++) {
-        const n = `${this.tmc.OutNumberRequiryNameArray[t]}`;
-        if (!this.outNumbers[n]) {
-          const el = this.getEleByAttr("OutNumberName", n);
-          this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请输入" + n);
-          return
-        }
-      }
-      // console.log(this.tmc.OutNumberNameArray, "3333");
     }
     if (this.tmc && this.TravelApprovalType && this.tmc.TravelApprovalType == this.TravelApprovalType.Free) {
       if (!this.appovalStaff) {

@@ -1,38 +1,33 @@
-import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
-import { ModalController } from "@ionic/angular";
-import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
+import { TmcService, FlightHotelTrainType } from "../tmc.service";
+import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
-import { LanguageHelper } from "src/app/languageHelper";
-import { DayModel } from "../../models/DayModel";
-import { AvailableDate } from "../../models/AvailableDate";
-import { CalendarService } from "../../calendar.service";
+import { IonInfiniteScroll } from "@ionic/angular";
+import { AvailableDate } from "../models/AvailableDate";
+import { CalendarService } from "../calendar.service";
+import { DayModel } from "../models/DayModel";
+import { TripType } from "../models/TripType";
 import { AppHelper } from "src/app/appHelper";
-import { TripType } from "src/app/tmc/models/TripType";
+import { LanguageHelper } from "src/app/languageHelper";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+
 @Component({
-  selector: "app-select-date-comp",
-  templateUrl: "./select-date.component.html",
-  styleUrls: ["./select-date.component.scss"],
+  selector: "app-tmc-calendar",
+  templateUrl: "./tmc-calendar.page.html",
+  styleUrls: ["./tmc-calendar.page.scss"],
 })
-export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
-  private days: DayModel[] = [];
-  private timeoutId: any;
-  private tripType: TripType;
-  private curSelectedYear: string;
-  private curSelectedMonth: number;
+export class TmcCalendarPage implements OnInit, OnDestroy {
+  @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
+  private subscriptions: Subscription[] = [];
+  private page: { m: number; y: number };
+  private delayBackTime = 200;
+  private forType: FlightHotelTrainType;
   private goArrivalTime: string;
   private isCurrentSelectedOk = false;
-  get curYm() {
-    return `${this.curSelectedYear}-${
-      this.curSelectedMonth < 10
-        ? "0" + this.curSelectedMonth
-        : this.curSelectedMonth
-    }`;
-  }
-  forType: FlightHotelTrainType;
-  FlightHotelTrainType = FlightHotelTrainType;
-  yms: AvailableDate[];
-  title: string;
-  delayBackTime = 200;
+  private days: DayModel[] = [];
+  private timeoutId: any;
+  isMulti: boolean; // 是否多选
+  private tripType: TripType;
   set selectedDays(days: DayModel[]) {
     this.days = days;
     if (this.timeoutId) {
@@ -42,49 +37,93 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
       this.days.forEach((dt) => {
         dt.hasToolTip = false;
         dt.toolTipMsg = "";
-        dt.update();
       });
     }, 1000);
   }
   get selectedDays() {
     return this.days;
   }
-  isMulti: boolean; // 是否多选
-  multiSub = Subscription.EMPTY;
-  selectedSub = Subscription.EMPTY;
+  FlightHotelTrainType = FlightHotelTrainType;
+  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  title = "请选择日期";
+  calendars: AvailableDate[];
+  weeks: string[];
   constructor(
+    private tmcService: TmcService,
     private calendarService: CalendarService,
-    private modalCtrl: ModalController
+    private route: ActivatedRoute
   ) {}
+
   ngOnDestroy() {
-    this.multiSub.unsubscribe();
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  clazz(day: DayModel) {
-    return day.clazz();
-  }
-  
-  ngAfterViewInit() {}
-  onCalendarElesChange() {}
   ngOnInit() {
-    this.selectedDays = [];
-    this.initCurYearMonthCalendar();
-    this.checkYms();
+    this.page = {} as any;
+    const w = this.calendarService.getDayOfWeekNames();
+    this.weeks = Object.keys(w).map((k) => w[k]);
+    this.subscriptions.push(
+      this.calendarService.getSelectedDaysSource().subscribe((days) => {
+        this.selectedDays = days;
+      })
+    );
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe((q) => {
+        this.title = q.get("title");
+        this.forType = q.get("forType") as any;
+        this.tripType = q.get("tripType") as any;
+        this.goArrivalTime = q.get("goArrivalTime");
+        if (!this.calendars || !this.calendars.length) {
+          this.initCurYearMonthCalendar();
+        } else {
+          this.updateCalendars();
+        }
+      })
+    );
   }
-  initCurYearMonthCalendar() {
+  private updateCalendars() {
+    const m = this.calendarService.getMoment(0);
+    const calendars = [];
+    const len =
+      this.forType == FlightHotelTrainType.Train
+        ? 2
+        : this.calendars[this.calendars.length - 1].yearMonth.substr(5, 2);
+    for (let i = 0; i < len; i++) {
+      const im = m.clone().add(i, "months");
+      calendars.push(
+        this.calendarService.generateYearNthMonthCalendar(
+          im.year(),
+          im.month() + 1
+        )
+      );
+    }
+  }
+  private initCurYearMonthCalendar() {
     const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
     console.log("goArrivalTime", this.goArrivalTime, m.format("YYYY-MM-DD"));
-
-    this.curSelectedYear = m.year() + "";
-    this.curSelectedMonth = m.month() + 1;
     let st = Date.now();
     this.generateYearCalendar();
     console.log("生成日历耗时：" + (Date.now() - st) + " ms");
+  }
+  private generateYearCalendar() {
+    const m = this.calendarService.getMoment(0);
+    this.calendars = [];
+    const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;
+    for (let i = 0; i < len; i++) {
+      const im = m.clone().add(i, "months");
+      this.calendars.push(
+        this.calendarService.generateYearNthMonthCalendar(
+          im.year(),
+          im.month() + 1
+        )
+      );
+    }
+    this.checkYms();
   }
   private checkYms() {
     const st = Date.now();
     const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
     const goDate = this.calendarService.getMoment(0, m.format("YYYY-MM-DD"));
-    if (this.yms && this.yms.length) {
+    if (this.calendars && this.calendars.length) {
       const type = this.forType;
       if (
         this.tripType == TripType.returnTrip ||
@@ -92,11 +131,11 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
         this.forType == FlightHotelTrainType.InternationalFlight
       ) {
         if (this.goArrivalTime) {
-          if (this.yms.length) {
+          if (this.calendars.length) {
             const endDay = this.calendarService.generateDayModel(
               this.calendarService.getMoment(30)
             );
-            this.yms.forEach((day) => {
+            this.calendars.forEach((day) => {
               if (day.dayList) {
                 day.dayList.forEach((d) => {
                   d.enabled =
@@ -118,7 +157,7 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
         const endDay = this.calendarService.generateDayModel(
           this.calendarService.getMoment(30)
         );
-        this.yms.forEach((day) => {
+        this.calendars.forEach((day) => {
           if (day.dayList) {
             day.dayList.forEach((d) => {
               d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
@@ -131,33 +170,6 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     console.log(`checkYms ${Date.now() - st} ms`);
-  }
-
-  private generateYearCalendar() {
-    const m = this.calendarService.getMoment(0);
-    this.yms = [];
-    const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;
-    for (let i = 0; i < len; i++) {
-      const im = m.clone().add(i, "months");
-      this.yms.push(
-        this.calendarService.generateYearNthMonthCalendar(
-          im.year(),
-          im.month() + 1
-        )
-      );
-    }
-    this.checkYms();
-  }
-  async cancel() {
-    if (this.selectedDays && this.selectedDays.length) {
-      this.calendarService.setSelectedDaysSource(this.selectedDays);
-    }
-    console.log("select date component cancel ", this.selectedDays);
-    const m = await this.modalCtrl.getTop();
-    if (m) {
-      await m.dismiss(this.selectedDays).catch((_) => {});
-    }
-    this.isCurrentSelectedOk = false;
   }
   onDaySelected(d: DayModel) {
     if (!d || !d.date || this.isCurrentSelectedOk) {
@@ -276,7 +288,7 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
     const first = this.selectedDays[0];
     const last = this.selectedDays[this.selectedDays.length - 1];
     console.time("update");
-    this.yms.forEach((item) => {
+    this.calendars.forEach((item) => {
       if (item.dayList) {
         item.dayList.forEach((dt) => {
           dt.selected = this.isMulti
@@ -319,15 +331,15 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
     }
     if (this.isMulti) {
       if (this.selectedDays.length > 1) {
-        this.cancel();
+        this.back();
       }
     } else if (this.selectedDays.length) {
-      this.cancel();
+      this.back();
     }
   }
   private checkHotelSelectedDate(selectedBeginDay: DayModel) {
     if (this.forType == FlightHotelTrainType.Hotel) {
-      this.yms.forEach((it) => {
+      this.calendars.forEach((it) => {
         if (it.dayList) {
           it.dayList = it.dayList.map((itm) => {
             itm.enabled =
@@ -338,5 +350,36 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
         return it;
       });
     }
+  }
+  async loadMore() {
+    if (!this.calendars.length) {
+      return;
+    }
+    let [y, m] = this.calendars[this.calendars.length - 1].yearMonth
+      .split("-")
+      .map((it) => +it);
+    const result: AvailableDate[] = [];
+    let nextM = m;
+    this.page.m = m;
+    this.page.y = y;
+    for (let i = 1; i <= 3; i++) {
+      nextM = ++nextM;
+      if (nextM > 12) {
+        y += 1;
+        nextM = 1;
+      }
+      result.push(this.calendarService.generateYearNthMonthCalendar(y, nextM));
+    }
+    if (this.scroller) {
+      const curY = new Date().getFullYear();
+      this.scroller.disabled = curY + 1 == y && nextM == 1;
+      this.scroller.complete();
+    }
+  }
+  back() {
+    this.calendarService.setSelectedDaysSource(this.selectedDays);
+    setTimeout(() => {
+      this.backbtn.backToPrePage();
+    }, this.delayBackTime);
   }
 }

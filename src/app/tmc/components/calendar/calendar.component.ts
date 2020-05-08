@@ -37,7 +37,7 @@ import {
   styleUrls: ["./calendar.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CalendarComponent
+export class CalendarComponent2
   implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   private subscription = Subscription.EMPTY;
   private page: { m: number; y: number };
@@ -45,24 +45,15 @@ export class CalendarComponent
   private st = Date.now();
   fakeays = new Array(30).fill(0);
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
-  @ViewChild(IonContent, { static: true }) content: IonContent;
   @ViewChild(IonRefresher) refresher: IonRefresher;
-  @ViewChild("container", { static: true }) containerEl: ElementRef<
-    HTMLElement
-  >;
+  @ViewChild(IonContent, { static: true }) content: IonContent;
   weeks: string[];
   @Input() title: string;
   @Input() disableScroller = false;
   @Input() calendars: AvailableDate[];
-  @Output() yearChange: EventEmitter<any>;
-  @Output() monthChange: EventEmitter<any>;
   @Output() back: EventEmitter<any>;
   @Output() daySelected: EventEmitter<any>;
   @Input() scrollToMonth: string;
-  year: number;
-  month: number;
-  months: { month: number; selected: boolean }[];
-  years: { year: number; selected: boolean }[] = [];
   constructor(
     private calendarService: CalendarService,
     private el: ElementRef<HTMLElement>,
@@ -71,8 +62,6 @@ export class CalendarComponent
   ) {
     this.back = new EventEmitter();
     this.daySelected = new EventEmitter();
-    this.yearChange = new EventEmitter();
-    this.monthChange = new EventEmitter();
   }
   clazz(day: DayModel) {
     return day.clazz();
@@ -92,8 +81,8 @@ export class CalendarComponent
           m: +m,
         };
       }
-      this.calendars = [];
-      this.renderCalendar(calendars);
+      // this.calendars = [];
+      // this.renderCalendar(calendars);
     }
   }
   private generateOneCalendar(calendar: AvailableDate) {
@@ -200,21 +189,21 @@ export class CalendarComponent
   }
   private renderCalendar(calendars: AvailableDate[]) {
     const c = this.generateCalendars(calendars);
-    if (this.containerEl && this.containerEl.nativeElement) {
-      this.containerEl.nativeElement.innerHTML = "";
-      this.containerEl.nativeElement.append(c);
-      setTimeout(() => {
-        if (this.scrollToMonth) {
-          if (this.isSrollToCurYm) {
-            return;
-          }
-          this.isSrollToCurYm = true;
-          setTimeout(() => {
-            this.moveToCurMonth(this.scrollToMonth);
-          }, 200);
-        }
-      }, 100);
-    }
+    // if (this.containerEl && this.containerEl.nativeElement) {
+    //   this.containerEl.nativeElement.innerHTML = "";
+    //   this.containerEl.nativeElement.append(c);
+    //   setTimeout(() => {
+    //     if (this.scrollToMonth) {
+    //       if (this.isSrollToCurYm) {
+    //         return;
+    //       }
+    //       this.isSrollToCurYm = true;
+    //       setTimeout(() => {
+    //         this.moveToCurMonth(this.scrollToMonth);
+    //       }, 200);
+    //     }
+    //   }, 100);
+    // }
   }
   async loadMore() {
     if (!this.calendars.length) {
@@ -236,9 +225,6 @@ export class CalendarComponent
       result.push(this.calendarService.generateYearNthMonthCalendar(y, nextM));
     }
     const c = this.generateCalendars(result);
-    if (this.containerEl && this.containerEl.nativeElement) {
-      this.containerEl.nativeElement.append(c);
-    }
     if (this.scroller) {
       const curY = new Date().getFullYear();
       this.scroller.disabled = curY + 1 == y && nextM == 1;
@@ -291,43 +277,11 @@ export class CalendarComponent
     }
   }
   async ngOnInit() {
-    if (this.calendars && this.calendars.length) {
-      const c = this.calendars[0];
-      const y = +c.yearMonth.substr(0, 4);
-      const m = +c.yearMonth.substr(5, 2);
-      if (y && m) {
-        this.initCurYM(y, m);
-      }
-    } else {
-      this.initCurYM();
-    }
     const w = this.calendarService.getDayOfWeekNames();
     this.weeks = Object.keys(w).map((k) => w[k]);
     // this.calendars = await this.calendarService.generateCanlender(12);
   }
-  private initCurYM(
-    y: number = new Date().getFullYear(),
-    m: number = new Date().getMonth() + 1
-  ) {
-    const curY = y;
-    this.year = curY;
-    const curM = m;
-    this.month = curM;
-    this.page = { y, m };
-    this.months = new Array(12).fill(0).map((it, idx) => {
-      const m1 = idx + 1;
-      return {
-        selected: m1 == curM,
-        month: m1,
-      };
-    });
-    this.years = new Array(10).fill(0).map((it, idx) => {
-      return {
-        selected: curY == curY + idx,
-        year: curY + idx,
-      };
-    });
-  }
+  
   ngAfterViewInit() {
     if (this.disableScroller) {
       if (this.scroller) {

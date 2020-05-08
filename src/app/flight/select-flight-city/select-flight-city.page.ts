@@ -139,7 +139,7 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
     }
     this.flightService.onCitySelected(city, this.isFromCity);
     if (this.backBtn) {
-      this.backBtn.backToPrePage();
+      this.backBtn.popToPrePage();
     }
     return false;
   }
