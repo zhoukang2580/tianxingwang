@@ -30,6 +30,9 @@ export class AddStrokeComponent implements OnInit {
     if (Array.isArray(o2)) {
       return o2 && o1 && o2.some((it) => it == o1);
     }
+    if (this.trip && this.trip.travelTools) {
+      this.trip.TravelTool = this.trip.travelTools.join(",");
+    }
     return o1 == o2;
   };
   compareWithFn = (o1, o2) => {
