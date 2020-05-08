@@ -85,7 +85,7 @@
         </div>
       </div>
     </ion-item>
-    <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType==TravelApprovalType.Free"
+    <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType==TravelApprovalType.Free&&enable"
       [attr.accountId]='"accountId"'>
       <ion-text [color]="!enable?'dark':'dark'">
         审批人
