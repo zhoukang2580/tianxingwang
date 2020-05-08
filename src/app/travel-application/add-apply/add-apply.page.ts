@@ -8,7 +8,7 @@ import {
 import { ModalController, IonContent, Platform } from "@ionic/angular";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { OrganizationEntity, CostCenterEntity } from "src/app/hr/staff.service";
-import { Subscription, fromEvent } from "rxjs";
+import { Subscription, fromEvent, of, Subject, BehaviorSubject } from "rxjs";
 import {
   TravelFormEntity,
   TmcService,
@@ -31,6 +31,8 @@ import {
   ValidateInfo,
 } from "src/app/services/validator/validator.service";
 import { log } from "util";
+import { delay } from "rxjs/operators";
+import { CalendarService } from "src/app/tmc/calendar.service";
 
 @Component({
   selector: "app-add-apply",
@@ -55,6 +57,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     [key: string]: any;
   };
   tmc: TmcEntity;
+  totalDays$: Subject<number>;
   constructor(
     private travelService: TravelService,
     private modalCtrl: ModalController,
@@ -63,8 +66,11 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private plt: Platform,
     private tmcService: TmcService,
-    private validatorService: ValidatorService
-  ) {}
+    private validatorService: ValidatorService,
+    private calendarService: CalendarService
+  ) {
+    this.totalDays$ = new BehaviorSubject(0);
+  }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -398,22 +404,16 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     this.searchModel.TravelForm.Trips.push(item);
   }
   getAllTravelDays() {
-    let days: number = 0;
-    this.searchModel &&
+    let days = 0;
+    if (
+      this.searchModel &&
       this.searchModel.TravelForm &&
-      this.searchModel.TravelForm.Trips &&
+      this.searchModel.TravelForm.Trips
+    ) {
       this.searchModel.TravelForm.Trips.forEach((it) => {
-        if (!it.StartDate || !it.EndDate) {
-          return;
-        }
-        AppHelper.getDate(it.StartDate);
-        AppHelper.getDate(it.EndDate);
-        var a1 = AppHelper.getDate(it.StartDate.substr(0, 10)).getTime();
-        var a2 = AppHelper.getDate(it.EndDate.substr(0, 10)).getTime();
-        var day = (a2 - a1) / (1000 * 60 * 60 * 24); //核心：时间戳相减，然后除以天数
-        days += day;
-        return days;
+        days += it.Day;
       });
+    }
     days += 1;
     if (this.searchModel.TravelForm) {
       this.searchModel.TravelForm.DayCount = days;

@@ -19,7 +19,7 @@ import { AppHelper } from "src/app/appHelper";
 export class AddStrokeComponent implements OnInit {
   @Output() remove: EventEmitter<any>;
   @Input() trip: TravelFormTripEntity;
-  @Input() enable:boolean;
+  @Input() enable: boolean;
   @Input() index: number;
   constructor(
     private service: TravelService,
@@ -51,14 +51,11 @@ export class AddStrokeComponent implements OnInit {
   }
   getNumberOfDays(date1, date2) {
     if (!date1 || !date2) {
-      return;
+      return 0;
     }
-    AppHelper.getDate(date1);
-    AppHelper.getDate(date2);
-    var a1 = AppHelper.getDate(date1.substr(0, 10)).getTime();
-    var a2 = AppHelper.getDate(date2.substr(0, 10)).getTime();
-    var day = (a2 - a1) / (1000 * 60 * 60 * 24); //核心：时间戳相减，然后除以天数
-    // this.days=day
+    const a1 = AppHelper.getDate(date1.substr(0, 10)).getTime();
+    const a2 = AppHelper.getDate(date2.substr(0, 10)).getTime();
+    let day = (a2 - a1) / (1000 * 60 * 60 * 24); // 核心：时间戳相减，然后除以天数
     day += 1;
     if (this.trip) {
       this.trip.Day = day;
@@ -66,8 +63,8 @@ export class AddStrokeComponent implements OnInit {
     return day;
   }
   async onSelectCity(isFrom = true) {
-    if(!this.enable){
-      return
+    if (!this.enable) {
+      return;
     }
     const m = await this.modalCtrl.create({ component: SelectCity });
     m.present();
