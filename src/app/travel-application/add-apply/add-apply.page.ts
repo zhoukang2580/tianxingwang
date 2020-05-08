@@ -4,6 +4,7 @@ import {
   OnDestroy,
   AfterViewInit,
   ViewChild,
+  DoCheck,
 } from "@angular/core";
 import { ModalController, IonContent, Platform } from "@ionic/angular";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
@@ -46,7 +47,7 @@ import { CalendarService } from "src/app/tmc/calendar.service";
   templateUrl: "./add-apply.page.html",
   styleUrls: ["./add-apply.page.scss"],
 })
-export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
+export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   // organization: string;
   // organizationId: string;
   // costCenterName: string;
@@ -186,6 +187,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
             );
           }
         }
+      }else{
+        this.onAddTrip();
       }
     });
   }
@@ -409,7 +412,10 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     }
     this.searchModel.TravelForm.Trips.push(item);
   }
-  getAllTravelDays() {
+  ngDoCheck() {
+    this.getAllTravelDays();
+  }
+  private getAllTravelDays() {
     let days = 0;
     if (
       this.searchModel &&
@@ -417,7 +423,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
       this.searchModel.TravelForm.Trips
     ) {
       this.searchModel.TravelForm.Trips.forEach((it) => {
-        days += it.Day;
+        if (it.Day) {
+          days += it.Day;
+        }
       });
     }
     if (this.searchModel.TravelForm) {
