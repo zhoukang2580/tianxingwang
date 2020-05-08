@@ -26,8 +26,11 @@ export class AddStrokeComponent implements OnInit {
   ) {
     this.remove = new EventEmitter();
   }
-  compareTravelToolWithFn = (o1: string, o2: string[]) => {
-    return o1 && o2 && o2.includes(o1);
+  compareTravelToolWithFn = (o1: string, o2: string[] | string) => {
+    if (Array.isArray(o2)) {
+      return o2 && o1 && o2.some((it) => it == o1);
+    }
+    return o1 == o2;
   };
   compareWithFn = (o1, o2) => {
     return o1 == o2;
