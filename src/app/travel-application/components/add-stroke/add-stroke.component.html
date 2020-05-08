@@ -10,11 +10,10 @@
         <ion-label>
           交通住宿
         </ion-label>
-        <ion-select style="max-width: initial;flex: 3;" [(ngModel)]="trip.TravelTool" okText="确定" multiple="true" cancelText="取消" [compareWith]="compareWithFn">
+        <ion-select  style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.TravelTool" okText="确定" multiple="true" cancelText="取消" [compareWith]="compareTravelToolWithFn">
           <ion-select-option value="Flight">机票</ion-select-option>
           <ion-select-option value="Hotel">火车票</ion-select-option>
           <ion-select-option value="Train">酒店</ion-select-option>
-          <ion-select-option value="Car">租车</ion-select-option>
           <ion-select-option value="Car">租车</ion-select-option>
           <ion-select-option value="InternationalFlight">国际*港澳台机票</ion-select-option>
           <ion-select-option value="InternationalHotel">港澳台*海外酒店</ion-select-option>
