@@ -372,6 +372,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
   onAddTrip() {
     const item: TravelFormTripEntity = {} as any;
     // item.StartDate
+    if (!this.searchModel.TravelForm.Trips) {
+      this.searchModel.TravelForm.Trips = [];
+    }
     this.searchModel.TravelForm.Trips.push(item);
   }
   getAllTravelDays() {
