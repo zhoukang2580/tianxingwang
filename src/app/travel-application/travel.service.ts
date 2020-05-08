@@ -131,6 +131,7 @@ export class SearchModel {
   PageSize: number;
   OutNumbers: { Name: string; Code: string }[];
   AccountId: string;
+  ApprovalStaffName: string;
 
   Trips: TravelFormTripEntity[];
 }

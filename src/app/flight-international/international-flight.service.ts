@@ -1409,7 +1409,7 @@ export class InternationalFlightService {
     console.log("addPassengerFlightSegments", arg);
     const infos = this.getBookInfos();
     if (!arg || !arg.passenger || !arg.credential) {
-      AppHelper.alert(LanguageHelper.Flight.getSelectedFlightInvalideTip());
+      // AppHelper.alert(LanguageHelper.Flight.getMustSelectOneCredentialTip());
       return;
     }
     arg.id = AppHelper.uuid();

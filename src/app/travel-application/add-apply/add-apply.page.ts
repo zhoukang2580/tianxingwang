@@ -49,7 +49,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   items: TravelFormEntity[];
   searchModel: SearchModel;
-  enable=true;
+  enable = true;
   appovalStaff: string;
   outNumbers: {
     [key: string]: any;
@@ -132,10 +132,15 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     }
     this.tmcService.getTmc().then((tmc) => {
       this.tmc = tmc;
+      const obj =
+        this.searchModel.OutNumbers &&
+        this.searchModel.OutNumbers.reduce(
+          (acc, it) => ({ ...acc, [it.Name]: it.Code }),
+          {}
+        );
       if (this.tmc.OutNumberNameArray) {
         for (const n of this.tmc.OutNumberNameArray) {
-          // debugger
-          this.outNumbers[n] = "";
+          this.outNumbers[n] = (this.searchModel.OutNumbers && obj[n]) || "";
         }
       }
     });
@@ -150,24 +155,27 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     this.route.queryParamMap.subscribe((q) => {
       if (q.get("data")) {
         this.searchModel = JSON.parse(q.get("data"));
-        if(this.searchModel){
-          console.log(this.searchModel.StatusType,"this.searchModel.StatusType");
-          console.log(ApprovalStatusType.WaiteSubmit,"ApprovalStatusType.Waiting");
-          
-          if(this.searchModel.StatusType!=ApprovalStatusType.WaiteSubmit){
-            this.enable=false
+        if (this.searchModel) {
+          if (this.searchModel.StatusType != ApprovalStatusType.WaiteSubmit) {
+            this.enable = false;
+          }
+          this.appovalStaff = this.searchModel.ApprovalStaffName;
+          if (
+            this.searchModel.TravelForm &&
+            this.searchModel.TravelForm.Trips
+          ) {
+            this.searchModel.TravelForm.Trips = this.searchModel.TravelForm.Trips.map(
+              (t) => {
+                if (t.TravelTool) {
+                  t.travelTools = t.TravelTool.split(",");
+                }
+                return t;
+              }
+            );
           }
         }
       }
     });
-    setTimeout(() => {
-      if (
-        this.searchModel.TravelForm.Trips &&
-        !this.searchModel.TravelForm.Trips.length
-      ) {
-        this.searchModel.TravelForm.Trips.push(item);
-      }
-    }, 0);
   }
   compareWithFn = (o1, o2) => {
     return o1 == o2;
@@ -191,8 +199,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async onSelectOrg() {
-    if(!this.enable){
-      return
+    if (!this.enable) {
+      return;
     }
     const m = await this.modalCtrl.create({ component: OrganizationComponent });
     m.present();
@@ -211,8 +219,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async openApproverModal() {
-    if(!this.enable){
-      return
+    if (!this.enable) {
+      return;
     }
     const modal = await this.modalCtrl.create({
       component: SearchApprovalComponent,
@@ -225,12 +233,13 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     const result = await modal.onDidDismiss();
     if (result && result.data) {
       this.appovalStaff = result.data.Text;
+      this.searchModel.ApprovalStaffName = this.appovalStaff;
       this.searchModel.AccountId = result.data.Value;
     }
   }
   async onSelectCostCenter() {
-    if(!this.enable){
-      return
+    if (!this.enable) {
+      return;
     }
     const m = await this.modalCtrl.create({ component: SelectCostcenter });
     m.present();
@@ -405,7 +414,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
         days += day;
         return days;
       });
-    days+=1;
+    days += 1;
     if (this.searchModel.TravelForm) {
       this.searchModel.TravelForm.DayCount = days;
     }

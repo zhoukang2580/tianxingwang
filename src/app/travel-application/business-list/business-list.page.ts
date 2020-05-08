@@ -1,7 +1,11 @@
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
-import { TravelService, SearchModel, ApprovalStatusType } from "../travel.service";
+import {
+  TravelService,
+  SearchModel,
+  ApprovalStatusType,
+} from "../travel.service";
 import { Subscription } from "rxjs";
 import { TravelFormEntity } from "src/app/tmc/tmc.service";
 import { finalize } from "rxjs/operators";
@@ -15,6 +19,7 @@ import { IonInfiniteScroll } from "@ionic/angular";
 })
 export class BusinessListPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
+  ApprovalStatusType=ApprovalStatusType;
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
@@ -36,9 +41,9 @@ export class BusinessListPage implements OnInit, OnDestroy {
     this.searchModel.PageSize = 20;
     this.doRefresh();
   }
-  onSearch(){
-    console.log(this.searchModel.StatusType,"searchModel.StatusType");
-    console.log(this.searchModel.SearchContent,"searchModel.AccountId");
+  onSearch() {
+    console.log(this.searchModel.StatusType, "searchModel.StatusType");
+    console.log(this.searchModel.SearchContent, "searchModel.AccountId");
     this.doRefresh(true);
   }
   ngOnDestroy() {
@@ -60,7 +65,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
         })
       )
       .subscribe((r) => {
-        const arr = (r && r.Data.TravelForms) || [];
+        const arr = (r && r.Data && r.Data.TravelForms) || [];
         if (this.scroller) {
           this.scroller.disabled = arr.length < this.searchModel.PageSize;
         }
@@ -70,10 +75,10 @@ export class BusinessListPage implements OnInit, OnDestroy {
         }
       });
   }
-  doRefresh(isKeepCondition=false) {
-    if(!isKeepCondition){
-      this.searchModel.StatusType=null;
-      this.searchModel.SearchContent="";
+  doRefresh(isKeepCondition = false) {
+    if (!isKeepCondition) {
+      this.searchModel.StatusType = 0;
+      this.searchModel.SearchContent = "";
     }
     this.searchModel.PageIndex = 0;
     this.items = [];
@@ -86,7 +91,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
-  async onTravelEdit(id,status) {
+  async onTravelEdit(id, status) {
     try {
       const m = await this.service.getTravelDetail(id);
       if (m) {
