@@ -19,6 +19,7 @@ import { AppHelper } from "src/app/appHelper";
 export class AddStrokeComponent implements OnInit {
   @Output() remove: EventEmitter<any>;
   @Input() trip: TravelFormTripEntity;
+  @Input() enable:boolean;
   @Input() index: number;
   constructor(
     private service: TravelService,
@@ -65,6 +66,9 @@ export class AddStrokeComponent implements OnInit {
     return day;
   }
   async onSelectCity(isFrom = true) {
+    if(!this.enable){
+      return
+    }
     const m = await this.modalCtrl.create({ component: SelectCity });
     m.present();
     const res = await m.onDidDismiss();

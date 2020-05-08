@@ -158,14 +158,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
             this.enable=false
           }
         }
-        if (
-          this.searchModel &&
-          this.searchModel.TravelForm &&
-          this.searchModel.TravelForm.Account
-        ) {
-          this.searchModel.AccountId = this.searchModel.TravelForm.Account.Id;
-          this.appovalStaff = this.searchModel.TravelForm.Account.RealName;
-        }
       }
     });
     setTimeout(() => {
@@ -413,7 +405,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
         days += day;
         return days;
       });
-    days + 1;
+    days+=1;
     if (this.searchModel.TravelForm) {
       this.searchModel.TravelForm.DayCount = days;
     }
