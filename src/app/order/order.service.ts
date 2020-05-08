@@ -299,8 +299,10 @@ export class OrderService {
         // OrderFlightTicketStatusType.Refunded
       ];
       ticket = ticket.map((t) => {
-        t.VariablesJsonObj =
-          t.VariablesJsonObj || JSON.parse(t.Variables) || {};
+        if(t.Variables){
+          t.VariablesJsonObj =
+            t.VariablesJsonObj || JSON.parse(t.Variables) || {};
+        }
         if (t.VariablesJsonObj) {
           const isShow = !statusArr.some((s) => s == t.Status);
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;
@@ -318,7 +320,7 @@ export class OrderService {
       ];
       ticket = ticket.map((t) => {
         t.VariablesJsonObj =
-          t.VariablesJsonObj || JSON.parse(t.Variables) || {};
+          t.VariablesJsonObj || (t.Variables?JSON.parse(t.Variables):null) || {};
         if (t.VariablesJsonObj) {
           const isShow = !statusArr.some((s) => s == t.Status);
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;

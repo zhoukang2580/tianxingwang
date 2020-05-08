@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
-import { TravelService, SearchModel } from "../travel.service";
+import { TravelService, SearchModel, ApprovalStatusType } from "../travel.service";
 import { Subscription } from "rxjs";
 import { TravelFormEntity } from "src/app/tmc/tmc.service";
 import { finalize } from "rxjs/operators";
@@ -35,6 +35,11 @@ export class BusinessListPage implements OnInit, OnDestroy {
     this.searchModel = {} as any;
     this.searchModel.PageSize = 20;
     this.doRefresh();
+  }
+  onSearch(){
+    console.log(this.searchModel.StatusType,"searchModel.StatusType");
+    console.log(this.searchModel.SearchContent,"searchModel.AccountId");
+    
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -74,7 +79,10 @@ export class BusinessListPage implements OnInit, OnDestroy {
     }
     this.gettravel();
   }
-  async onTravelEdit(id) {
+  compareWithFn = (o1, o2) => {
+    return o1 == o2;
+  };
+  async onTravelEdit(id,status) {
     try {
       const m = await this.service.getTravelDetail(id);
       if (m) {

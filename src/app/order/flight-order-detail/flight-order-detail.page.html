@@ -106,7 +106,7 @@
         </div>
       </div>
       <ng-container *ngFor="let flightTicket of orderDetail?.Order?.OrderFlightTickets;let i=index">
-        <div class="swiper-slide" #slide *ngIf="flightTicket.VariablesJsonObj.isShow">
+        <div class="swiper-slide" #slide *ngIf="flightTicket?.VariablesJsonObj?.isShow">
           <div>
             <!-- 旅客信息 -->
             <ng-container *ngIf='getTicketPassenger(flightTicket) as p'>

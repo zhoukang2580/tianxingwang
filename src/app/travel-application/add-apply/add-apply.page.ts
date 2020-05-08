@@ -19,6 +19,7 @@ import {
   TravelService,
   TravelFormTripEntity,
   TmcTravelApprovalType,
+  ApprovalStatusType,
 } from "../travel.service";
 import { SelectCostcenter } from "../components/select-costcenter/select-costcenter";
 import { AppHelper } from "src/app/appHelper";
@@ -48,6 +49,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   items: TravelFormEntity[];
   searchModel: SearchModel;
+  enable=true;
   appovalStaff: string;
   outNumbers: {
     [key: string]: any;
@@ -148,6 +150,14 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     this.route.queryParamMap.subscribe((q) => {
       if (q.get("data")) {
         this.searchModel = JSON.parse(q.get("data"));
+        if(this.searchModel){
+          console.log(this.searchModel.StatusType,"this.searchModel.StatusType");
+          console.log(ApprovalStatusType.WaiteSubmit,"ApprovalStatusType.Waiting");
+          
+          if(this.searchModel.StatusType!=ApprovalStatusType.WaiteSubmit){
+            this.enable=false
+          }
+        }
         if (
           this.searchModel &&
           this.searchModel.TravelForm &&
@@ -189,6 +199,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async onSelectOrg() {
+    if(!this.enable){
+      return
+    }
     const m = await this.modalCtrl.create({ component: OrganizationComponent });
     m.present();
     const data = await m.onDidDismiss();
@@ -206,6 +219,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async openApproverModal() {
+    if(!this.enable){
+      return
+    }
     const modal = await this.modalCtrl.create({
       component: SearchApprovalComponent,
       componentProps: {
@@ -221,6 +237,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async onSelectCostCenter() {
+    if(!this.enable){
+      return
+    }
     const m = await this.modalCtrl.create({ component: SelectCostcenter });
     m.present();
     const data = await m.onDidDismiss();

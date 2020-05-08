@@ -23,13 +23,14 @@
         出差事由
       </ion-label>
       <ion-input placeholder="请输入" type="text" slot="end" class="ion-text-end"
-        [(ngModel)]="searchModel.TravelForm.Subject">
+        [(ngModel)]="searchModel.TravelForm.Subject" disabled="enable">
       </ion-input>
 
     </ion-item>
     <ion-item>
       <ion-label>客户或公司</ion-label>
-      <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName">
+      <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName"
+        disabled="enable">
       </ion-input>
     </ion-item>
     <ion-item [attr.tripType]='"tripType"'>
@@ -37,7 +38,7 @@
         出差类别
       </ion-label>
       <ion-select slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.TripType" okText="确定"
-        cancelText="取消" [compareWith]="compareWithFn">
+        cancelText="取消" [compareWith]="compareWithFn" disabled="enable">
         <ion-select-option value="国内">国内</ion-select-option>
         <ion-select-option value="国际">国际</ion-select-option>
         <ion-select-option value="港澳台">港澳台</ion-select-option>
@@ -45,7 +46,8 @@
     </ion-item>
     <app-add-stroke [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"
       [index]="idx" [trip]='item' (remove)='onRemoveTrip($event)'></app-add-stroke>
-    <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()">
+    <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()"
+      *ngIf="enable">
       <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
       添加行程
     </ion-button>
@@ -72,7 +74,7 @@
     <ion-item *ngIf="tmc?.OutNumberNameArray?.length>0">
       <div>
         <div *ngFor="let item of tmc?.OutNumberNameArray" [attr.OutNumberName]='item'>
-          <ion-input placeholder="{{item}}" [(ngModel)]="outNumbers[item]" ></ion-input>
+          <ion-input placeholder="{{item}}" [(ngModel)]="outNumbers[item]" disabled="enable"></ion-input>
         </div>
       </div>
     </ion-item>
@@ -84,6 +86,31 @@
       <ion-text class="ion-text-end" color="medium">
         {{appovalStaff}}
       </ion-text>
+    </ion-item>
+    <ion-item *ngIf="enable">
+      <div>
+        <ion-item-divider>
+          审批记录
+        </ion-item-divider>
+        <div *ngFor="let h of searchModel?.Histories">
+          <div>
+            <label>审批时间:</label>
+          <label>{{h.HandleTime}}</label>
+          </div>
+          <div>
+            <label>审批人:</label>
+          <label>{{h.Account.RealName}}</label>
+          </div>
+          <div>
+            <label>审批结果:</label>
+          <label>{{h.StatusName}}</label>
+          </div>
+          <div>
+            <label>审批意见:</label>
+          <label>{{h.Remark}}</label>
+          </div>
+        </div>
+      </div>
     </ion-item>
     <ion-item>
       <ion-button slot='end' color="secondary" style="width: 7em;height: 2.4em;" (click)="onSave()">

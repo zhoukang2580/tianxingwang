@@ -857,7 +857,12 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     orderFlightTickets: OrderFlightTicketEntity[],
     res: OrderFlightTicketEntity[]
   ) {
-    t.VariablesJsonObj = t.VariablesJsonObj || JSON.parse(t.Variables) || {};
+    if(t.Variables){
+      t.VariablesJsonObj = t.VariablesJsonObj || JSON.parse(t.Variables) || {};
+    }
+    if(!t.VariablesJsonObj){
+      t.VariablesJsonObj={}
+    }
     const it = orderFlightTickets.find(
       (itm) => itm.Id == t.VariablesJsonObj.OriginalTicketId
     );

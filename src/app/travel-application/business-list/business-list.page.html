@@ -14,12 +14,31 @@
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
   <ion-list>
+    <!-- <div style="    display: flex;
+      flex-flow: column;
+      align-items: center;
+      margin-top: 1em;">
+      <ion-input placeholder="申请单号、出差事由等内容搜索" style="border: 1px solid #eeeeee;width: 94%;" [(ngModel)]="searchModel.SearchContent"></ion-input>
+      <div style="display:flex;
+      width: 94%;
+      justify-content: space-between;
+      margin-top: 0.5em;">
+        <ion-select slot="end" class="ion-text-end" okText="确定" cancelText="取消" [compareWith]="compareWithFn"
+          style="border: 1px solid #eeeeee;width: 75%;" placeholder="请选择申请单" [(ngModel)]="searchModel.StatusType">
+          <ion-select-option value="通过">通过</ion-select-option>
+          <ion-select-option value="拒绝">拒绝</ion-select-option>
+          <ion-select-option value="待审核">待审核</ion-select-option>
+          <ion-select-option value="待提交">待提交</ion-select-option>
+        </ion-select>
+        <ion-button color="secondary" style="height:2em" (click)="onSearch()">搜索</ion-button>
+      </div>
+    </div> -->
     <ion-item *ngFor='let item of items' style="border-radius: 0.5em;
       width: 96%;
       margin: 0.5em auto;
       font-size: 0.9rem;
       border: 1px solid #eeeeee;" lines="none">
-      <div class="ion-padding-bottom ion-padding-top" style="width: 100%" (click)="onTravelEdit(item.Id)">
+      <div class="ion-padding-bottom ion-padding-top" style="width: 100%" (click)="onTravelEdit(item.Id,item.StatusTypeName)">
         <ion-row>
           <ion-col size='3'>
             <ion-text color="medium">申请编号</ion-text>
