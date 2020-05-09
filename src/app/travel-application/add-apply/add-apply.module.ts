@@ -9,6 +9,7 @@ import { AddApplyPageRoutingModule } from './add-apply-routing.module';
 import { AddApplyPage } from './add-apply.page';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { TravelApplicationComponentsModule } from '../components/travel-application.module';
+import { PageComponentsModule } from 'src/app/pages/components/page-components.module';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { TravelApplicationComponentsModule } from '../components/travel-applicat
     IonicModule,
     AddApplyPageRoutingModule,
     AppComponentsModule,
-    TravelApplicationComponentsModule
+    TravelApplicationComponentsModule,
+    PageComponentsModule
   ],
   declarations: [AddApplyPage]
 })

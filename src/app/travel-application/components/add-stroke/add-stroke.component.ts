@@ -10,7 +10,10 @@ import { TravelFormTripEntity, TravelService } from "../../travel.service";
 import { ModalController, IonSelect } from "@ionic/angular";
 import { SelectCity } from "../select-city/select-city";
 import { AppHelper } from "src/app/appHelper";
-
+interface IRegionType {
+  label: string;
+  value: string;
+}
 @Component({
   selector: "app-add-stroke",
   templateUrl: "./add-stroke.component.html",
@@ -21,6 +24,7 @@ export class AddStrokeComponent implements OnInit {
   @Input() trip: TravelFormTripEntity;
   @Input() enable: boolean;
   @Input() index: number;
+  @Input() regionTypes: IRegionType[];
   constructor(
     private service: TravelService,
     private modalCtrl: ModalController

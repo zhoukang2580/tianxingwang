@@ -45,7 +45,7 @@
         <ion-select-option value="港澳台">港澳台</ion-select-option>
       </ion-select>
     </ion-item>
-    <app-add-stroke [enable]="enable" [attr.addStroke]='idx'
+    <app-add-stroke [regionTypes]='regionTypes' [enable]="enable" [attr.addStroke]='idx'
       *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;" [index]="idx" [trip]='item'
       (remove)='onRemoveTrip($event)'></app-add-stroke>
     <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()"
