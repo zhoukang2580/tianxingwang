@@ -10,22 +10,26 @@
         <ion-text [color]="!enable?'dark':'dark'">
           交通住宿
         </ion-text>
-        <ion-select  [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.travelTools" okText="确定"
-          multiple="true" cancelText="取消" [compareWith]="compareTravelToolWithFn">
-          <ion-select-option value="Flight">机票</ion-select-option>
+        <ion-select [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;"
+          [(ngModel)]="trip.travelTools" okText="确定" multiple="true" cancelText="取消"
+          [compareWith]="compareTravelToolWithFn">
+          <ion-select-option value="{{t.value}}" *ngFor='let t of regionTypes'>{{t.label}}</ion-select-option>
+
+          <!-- <ion-select-option value="Flight" *ngFor='let t of regionTypes'>机票</ion-select-option>
           <ion-select-option value="Hotel">火车票</ion-select-option>
           <ion-select-option value="Train">酒店</ion-select-option>
           <ion-select-option value="Car">租车</ion-select-option>
           <ion-select-option value="InternationalFlight">国际*港澳台机票</ion-select-option>
-          <ion-select-option value="InternationalHotel">港澳台*海外酒店</ion-select-option>
+          <ion-select-option value="InternationalHotel">港澳台*海外酒店</ion-select-option> -->
         </ion-select>
       </ion-item>
       <ion-item lines="none">
         <ion-text [color]="!enable?'dark':'dark'">
           单程往返
         </ion-text>
-        <ion-select style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" [(ngModel)]="trip.IsBackway" okText="确定" cancelText="取消" [compareWith]="compareWithFn">
-          <ion-select-option [value]="false" >单程</ion-select-option>
+        <ion-select style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable"
+          [(ngModel)]="trip.IsBackway" okText="确定" cancelText="取消" [compareWith]="compareWithFn">
+          <ion-select-option [value]="false">单程</ion-select-option>
           <ion-select-option [value]="true">往返</ion-select-option>
         </ion-select>
       </ion-item>
@@ -49,14 +53,16 @@
         <ion-text [color]="!enable?'dark':'dark'">
           出差开始时间
         </ion-text>
-        <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" [(ngModel)]="trip.StartDate" doneText="确定" cancelText="取消">
+        <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable"
+          displayFormat="YYYY-MM-DD" [(ngModel)]="trip.StartDate" doneText="确定" cancelText="取消">
         </ion-datetime>
       </ion-item>
       <ion-item lines="none" detail>
         <ion-text [color]="!enable?'dark':'dark'">
           出差结束时间
         </ion-text>
-        <ion-datetime style="max-width: initial;flex: 3; text-align: end;"  [disabled]="!enable" displayFormat="YYYY-MM-DD" [(ngModel)]="trip.EndDate" doneText="确定" cancelText="取消">
+        <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable"
+          displayFormat="YYYY-MM-DD" [(ngModel)]="trip.EndDate" doneText="确定" cancelText="取消">
         </ion-datetime>
       </ion-item>
       <ion-item lines="none">

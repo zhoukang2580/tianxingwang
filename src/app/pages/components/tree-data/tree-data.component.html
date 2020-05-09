@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons>
+      <app-back-button [backFn]='back.bind(this)'>
+      </app-back-button>
+      <ion-searchbar mode='ios' debounce="340" style='padding:0;margin-right: 1em;' animated placeholder="输入关键字"
+        (ionChange)='doSearch()' [(ngModel)]='vmKeyword'>
+      </ion-searchbar>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-toolbar class='name-paths'>
+    <ion-label class='ion-text-wrap' style="margin-left: .5em">
+      <ion-text color='secondary' (click)='onNextHierachy({Id:"0"})'>
+        {{rootDeptName}}
+        <ion-text color='medium' *ngIf='currentSelectedNodePaths?.length&&currentSelectedNodePaths[0].Id!="0"'>&gt;
+        </ion-text>
+      </ion-text>
+      <ion-text color='secondary' *ngFor='let node of currentSelectedNodePaths;let last=last;'
+        (click)='onNextHierachy(node)'>
+        {{node.Name}}
+        <ion-text color='medium' *ngIf='!last'>&gt;</ion-text>
+      </ion-text>
+    </ion-label>
+  </ion-toolbar>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+  </ion-refresher>
+  <ng-template #loadingTemp>
+    正在加载...
+  </ng-template>
+  <ng-container *ngIf='!isTreeMode else treeTempl'>
+    <ng-container *ngIf='!isLoading else loadingTemp'>
+      <ng-container *ngIf='nodes?.length else nodataTemp'>
+        <ion-row *ngFor='let node of nodes' class='ion-padding-start'>
+          <ion-col (click)='onItemSelect(node)'>{{node.Name}}</ion-col>
+          <ng-container *ngIf='node.HasChildren'>
+            <ion-col size='1.6' class='next-hierarchy ion-text-end' (click)='onNextHierachy(node)'>
+              <ion-text color='secondary'>
+                <i class='icon icon-organization'></i>
+              </ion-text>
+              <ion-text color='secondary'>下级</ion-text>
+            </ion-col>
+            <ion-col size='1' style="align-self: center;justify-content: center;">
+              <ion-icon name="chevron-forward-outline" mode='ios' color='medium' size='small'></ion-icon>
+            </ion-col>
+          </ng-container>
+        </ion-row>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+  <ng-template #treeTempl>
+    <ng-container *ngIf='!isLoading else loadingTemp'>
+      <tree-ngx *ngIf='nodeItems?.length else nodataTemp' [nodeItems]="nodeItems" [filter]='filter'
+        [callbacks]='callbacks'>
+      </tree-ngx>
+    </ng-container>
+  </ng-template>
+  <ng-template #nodataTemp>
+    <app-or-comp *ngIf='!isLoading'>暂无数据</app-or-comp>
+  </ng-template>
+  <ion-infinite-scroll (ionInfinite)="loadMore()">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

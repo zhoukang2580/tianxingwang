@@ -41,6 +41,7 @@ import {
 import { log } from "util";
 import { delay } from "rxjs/operators";
 import { CalendarService } from "src/app/tmc/calendar.service";
+import { TreeDataComponent } from "src/app/pages/components/tree-data/tree-data.component";
 
 @Component({
   selector: "app-add-apply",
@@ -66,6 +67,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   };
   tmc: TmcEntity;
   totalDays$: Observable<number>;
+  regionTypes: { value: string; label: string }[];
   constructor(
     private travelService: TravelService,
     private modalCtrl: ModalController,
@@ -74,7 +76,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     private router: Router,
     private plt: Platform,
     private tmcService: TmcService,
-    private validatorService: ValidatorService,
+    private validatorService: ValidatorService
   ) {
     this.totalDays$ = of(0);
   }
@@ -122,9 +124,30 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }, 200);
   }
   ngOnInit() {
+    this.regionTypes = [
+      {
+        value: "Flight",
+        label: "机票",
+      },
+      {
+        value: "Hotel",
+        label: "酒店",
+      },
+      {
+        value: "Car",
+        label: "租车",
+      },
+      {
+        value: "InternationalFlight",
+        label: "国际*港澳台机票",
+      },
+      {
+        value: "InternationalHotel",
+        label: "港澳台*海外酒店",
+      },
+    ];
     this.outNumbers = {};
     this.travelService.getStaff().then((s) => {
-      console.log(this.searchModel.TravelForm, "eeeee");
       if (this.searchModel && this.searchModel.TravelForm) {
         this.searchModel.TravelForm.CostCenterName =
           this.searchModel.TravelForm.CostCenterName || s.CostCenter.Name;
@@ -155,6 +178,11 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         for (const n of this.tmc.OutNumberNameArray) {
           this.outNumbers[n] = (this.searchModel.OutNumbers && obj[n]) || "";
         }
+      }
+      if (this.tmc && this.tmc.RegionTypeValue) {
+        this.regionTypes = this.regionTypes.filter((t) =>
+          this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
+        );
       }
     });
     this.initValidateRule();
@@ -187,7 +215,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             );
           }
         }
-      }else{
+      } else {
         this.onAddTrip();
       }
     });
@@ -217,7 +245,13 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     if (!this.enable) {
       return;
     }
-    const m = await this.modalCtrl.create({ component: OrganizationComponent });
+    const m = await this.modalCtrl.create({
+      component: TreeDataComponent,
+      componentProps: {
+        rootDeptName: "部门",
+        reqMethod: "TmcApiTravelUrl-Home-GetOrganizations",
+      },
+    });
     m.present();
     const data = await m.onDidDismiss();
     const org = data && (data.data as OrganizationEntity);
