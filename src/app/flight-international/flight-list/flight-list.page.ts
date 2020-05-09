@@ -22,7 +22,8 @@ import { FlightTransferComponent } from "../components/flight-transfer/flight-tr
 import { environment } from "src/environments/environment";
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
-import { RuleExplainComponent } from "../components/rule-explain/rule-explain.component";
+import { FlightFareEntity } from "src/app/flight/models/FlightFareEntity";
+import { RefundChangeDetailComponent } from "../components/refund-change-detail/refund-change-detail.component";
 interface Iisblue {
   isshow: false;
 }
@@ -92,24 +93,27 @@ export class FlightListPage implements OnInit, OnDestroy {
   }
   onShowRuleExplain(flightRoute: FlightRouteEntity) {
     if (flightRoute && flightRoute.flightFare) {
-      if (!flightRoute.flightFare.ruleExplain) {
+      if (!flightRoute.refundChangeDetail) {
         this.explainSubscription.unsubscribe();
         this.explainSubscription = this.flightService
-          .getRuleExplain(flightRoute.flightFare)
+          .getRuleInfo(flightRoute.flightFare)
           .subscribe((r) => {
-            flightRoute.flightFare.ruleExplain = r && r.Data;
-            this.presentRuleExplain(flightRoute.flightFare.ruleExplain);
+            const data = r && r.Data;
+            if (data.FlightFares) {
+              flightRoute.refundChangeDetail = data.FlightFares;
+            }
           });
       } else {
-        this.presentRuleExplain(flightRoute.flightFare.ruleExplain);
+        this.presentRuleExplain(flightRoute.refundChangeDetail);
       }
     }
   }
-  private async presentRuleExplain(ruleExplain: string) {
+  private async presentRuleExplain(flightfares: FlightFareEntity[]) {
     const m = await this.popoverController.create({
-      component: RuleExplainComponent,
+      component: RefundChangeDetailComponent,
+      cssClass: "flight-refund-comp",
       componentProps: {
-        ruleExplain,
+        flightfares,
       },
     });
     m.present();

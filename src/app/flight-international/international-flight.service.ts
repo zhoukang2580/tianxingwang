@@ -940,16 +940,19 @@ export class InternationalFlightService {
 
     return true;
   }
-  getRuleExplain(flightfare: FlightFareEntity) {
+  getRuleInfo(flightfare: FlightFareEntity) {
     const req = new RequestEntity();
-    req.Method = `TmcApiInternationalFlightUrl-Home-GetRuleExplain`;
+    req.Method = `TmcApiInternationalFlightUrl-Home-GetRuleInfo`;
     req.IsShowLoading = true;
-    req.LoadingMsg = "正在计算差标";
+    req.LoadingMsg = "正在获取";
     req.Data = {
       Flightfare: JSON.stringify(flightfare),
       FlightRoutes: JSON.stringify(this.flightListResult.FlightRoutes || []),
     };
-    return this.apiService.getResponse<string>(req);
+    return this.apiService.getResponse<{
+      FlightRoutes: FlightRouteEntity[];
+      FlightFares: FlightFareEntity[];
+    }>(req);
   }
   private async checkRoutePolicy(result: FlightResultEntity) {
     const req = new RequestEntity();

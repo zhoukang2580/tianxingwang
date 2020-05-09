@@ -371,7 +371,7 @@ export class CalendarService {
       });
     }
   }
-  private closeCalendar() {
+  private closeCalendar(isNow = false) {
     const calendarEle = document.body.querySelector("#calendar");
     this.isCurrentSelectedOk = false;
     setTimeout(() => {
@@ -393,7 +393,7 @@ export class CalendarService {
         }
       }
       this.selectedDays = [];
-    }, 500);
+    },isNow?0: 200);
   }
   private renderCalendar(calendars: AvailableDate[]) {
     let calendarEle = document.body.querySelector("#calendar");
