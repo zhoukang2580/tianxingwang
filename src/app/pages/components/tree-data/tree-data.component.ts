@@ -18,7 +18,7 @@ const ORGANIZATION_PREFERANCE_KEY = "organization_preferance_key";
 const ORGANIZATION_PREFERANCE_KEY_MODE = "organization_preferance_key_mode";
 interface TreeData {
   Id: string;
-  Name: string;
+  Name?: string;
   Parent?: TreeData;
   HasChildren?: boolean;
 }
