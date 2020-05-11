@@ -22,20 +22,22 @@ import { DayModel } from "../tmc/models/DayModel";
 import { RequestEntity } from "../services/api/Request.entity";
 import { FlightResultEntity } from "../flight/models/FlightResultEntity";
 import { IResponse } from "../services/api/IResponse";
-import { tap, switchMap } from "rxjs/operators";
+import { tap, switchMap, filter } from "rxjs/operators";
 import {
   MockInternationalFlightListData,
   MOCK_MultiCity_SEARCHMODEL,
 } from "./mock-data";
 import { environment } from "src/environments/environment";
 import { IdentityEntity } from "../services/identity/identity.entity";
-import { LanguageHelper } from "../languageHelper";
 import { FlightRouteEntity } from "../flight/models/flight/FlightRouteEntity";
 import { StaffService } from "../hr/staff.service";
 import { MemberService } from "../member/member.service";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { OrderBookDto } from "../order/models/OrderBookDto";
+import { Storage } from "@ionic/storage";
+const LAST_INTERNATIONAL_FLIGHT_SEARCH_CONDITION_KEY =
+  "last_international_flight_search_condition_key";
 export interface IFlightCabinType {
   label:
     | "经济舱"
@@ -143,6 +145,7 @@ const fromCity = {
   // 出发城市，不是出发城市的那个机场
   Tag: "AirportCity",
 } as TrafficlineEntity;
+
 @Injectable({
   providedIn: "root",
 })
@@ -174,8 +177,10 @@ export class InternationalFlightService {
     private router: Router,
     private modalCtrl: ModalController,
     private staffService: StaffService,
-    private memerService: MemberService
+    private memerService: MemberService,
+    private storage: Storage
   ) {
+    this.searchModelSource = new BehaviorSubject({} as any);
     this.initOneWaySearModel();
     this.bookInfoSource = new BehaviorSubject([]);
     this.initFilterCondition();
@@ -229,6 +234,45 @@ export class InternationalFlightService {
         }
       }
     });
+  }
+  private async getCacheSearchKey(type: "oneway" | "goBack" | "multi") {
+    let key = "";
+    try {
+      this.identity = await this.identityService.getIdentityAsync();
+      if (!this.identity) {
+        return;
+      }
+      key = `${this.identity.Id}_${LAST_INTERNATIONAL_FLIGHT_SEARCH_CONDITION_KEY}_${type}`.toUpperCase();
+    } catch (e) {
+      console.error(e);
+    }
+    return key;
+  }
+  private async setLastSearchCondition(data: {
+    type: "oneway" | "goBack" | "multi";
+    condition: IInternationalFlightSearchModel;
+  }) {
+    const key = await this.getCacheSearchKey(data.type);
+    return this.storage.set(key, {
+      ...data.condition,
+      trips: (data.condition.trips || []).map((it) => {
+        return {
+          ...it,
+          bookInfo: null,
+        };
+      }),
+    });
+  }
+  private async getLastSearchCondition(
+    type: "oneway" | "goBack" | "multi"
+  ): Promise<IInternationalFlightSearchModel> {
+    try {
+      const key = await this.getCacheSearchKey(type);
+      return this.storage.get(key);
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
   }
   async getInitializeBookDto(
     bookDto: OrderBookDto
@@ -536,7 +580,14 @@ export class InternationalFlightService {
         },
       ],
     };
-    this.setSearchModelSource(this.searchModel);
+    this.getLastSearchCondition("oneway").then((res) => {
+      if (res) {
+        this.lastOneWaySearchModel = res;
+        this.searchModelSource.next(res);
+      } else {
+        this.setSearchModelSource(this.searchModel);
+      }
+    });
   }
   initGoBackSearchModel() {
     if (this.lastGobackSearchModel) {
@@ -590,7 +641,14 @@ export class InternationalFlightService {
         },
       ],
     };
-    this.setSearchModelSource(this.searchModel);
+    this.getLastSearchCondition("goBack").then((res) => {
+      if (res) {
+        this.lastGobackSearchModel = res;
+        this.searchModelSource.next(res);
+      } else {
+        this.setSearchModelSource(this.searchModel);
+      }
+    });
   }
   initMultiTripSearchModel() {
     if (this.lastMultiTripSearchModel) {
@@ -646,7 +704,14 @@ export class InternationalFlightService {
     if (!environment.production) {
       this.searchModel = MOCK_MultiCity_SEARCHMODEL;
     }
-    this.setSearchModelSource(this.searchModel);
+    this.getLastSearchCondition("multi").then((res) => {
+      if (res) {
+        this.lastMultiTripSearchModel = res;
+        this.searchModelSource.next(res);
+      } else {
+        this.setSearchModelSource(this.searchModel);
+      }
+    });
   }
   disposal() {
     this.initOneWaySearModel();
@@ -1371,6 +1436,7 @@ export class InternationalFlightService {
     this.searchModel = m;
     if (m) {
       if (m.voyageType == FlightVoyageType.GoBack) {
+        this.setLastSearchCondition({ type: "goBack", condition: m });
         this.lastGobackSearchModel = m;
         if (m.trips) {
           const trip = m.trips[0];
@@ -1382,9 +1448,11 @@ export class InternationalFlightService {
         }
       }
       if (m.voyageType == FlightVoyageType.OneWay) {
+        this.setLastSearchCondition({ type: "oneway", condition: m });
         this.lastOneWaySearchModel = m;
       }
       if (m.voyageType == FlightVoyageType.MultiCity) {
+        this.setLastSearchCondition({ type: "multi", condition: m });
         this.lastMultiTripSearchModel = m;
       }
     }
@@ -1395,7 +1463,9 @@ export class InternationalFlightService {
     }
   }
   getSearchModelSource() {
-    return this.searchModelSource.asObservable();
+    return this.searchModelSource
+      .asObservable()
+      .pipe(filter((it) => it && !!it.voyageType));
   }
   setBookInfoSource(
     infos: PassengerBookInfo<IInternationalFlightSegmentInfo>[]
