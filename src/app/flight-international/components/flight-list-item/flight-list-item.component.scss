@@ -45,11 +45,19 @@
   align-items: center;
   color: var(--ion-color-medium);
   flex-flow: wrap;
+  padding-left: 3em;
 }
 
 .height {
   width: 1px;
   background-color: var(--ion-color-medium);
+  height: 1em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+.height:last-child{
+  width: 1px;
+  background-color: var(--ion-color-light);
   height: 1em;
   margin-left: 0.5em;
   margin-right: 0.5em;
@@ -67,7 +75,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding-left: 3em;
 }
 
 .addDay {

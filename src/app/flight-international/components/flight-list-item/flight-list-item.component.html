@@ -1,4 +1,4 @@
-<ion-row *ngIf='flight'>
+<ion-row *ngIf='flight' style="margin-bottom: 0.5em;">
   <ion-col size="0.8">
     <div class="logo margin-t11">
       <img [src]="flight.fromSegment.AirlineSrc">
@@ -16,11 +16,11 @@
   </ion-col>
   <ion-col size="2.3" class="ion-text-center">
     <div class="ion-text-nowrap" style="font-size: 0.8rem;">
-      <ion-text style="display: flex;align-items: center;" color="secondary" (click)="onTransfer($event)">
-        <span>---</span>
+      <div style="display: flex;align-items: center;flex-flow: column;" color="secondary" (click)="onTransfer($event)">
         <ion-text *ngIf="flight.isTransfer else directfly" color='secondary'>转机</ion-text>
-        <span>---</span>
-      </ion-text>
+        <ion-text>-----------</ion-text>
+        <ion-text>{{flight.flyTime}}</ion-text>
+      </div>
       <ng-template #directfly>
         <ion-text color='secondary'>直飞</ion-text>
       </ng-template>
@@ -47,15 +47,22 @@
         <span style="font-weight:bold">¥</span>{{flight.flightFare.SalesPrice}}
       </ion-text>
       <div class="fontSize" style="color:var(--ion-color-medium)">{{flight.TypeName}}</div>
+      <div style="font-size: 0.7rem" *ngIf="flight.flightFare.Tax">
+        <ion-text color="medium">
+          税<span style="font-weight:bold">¥</span>{{flight.flightFare.Tax}}
+        </ion-text>
+      </div>
     </div>
   </ion-col>
   <div class="flihtCompany">
-    <ion-text class="whiteSpece">{{flight.fromSegment.AirlineName}}</ion-text>
-    <!-- <div class="height"></div> -->
-    <!-- <span>{{flight.fromSegment.Number}}</span> -->
-    <!-- <ion-text color='secondary' *ngIf="flight.fromSegment.CodeShareNumber">(共享
-      {{flight?.fromSegment?.CodeShareNumber}})</ion-text> -->
-    <div class="height"></div>
-    <ion-text>{{flight.flyTime}}</ion-text>
+    <ng-container *ngFor="let item of flight?.transferSegments">
+      <ion-text class="whiteSpece">{{item.AirlineName}}</ion-text>
+      <span>{{item.Number}}</span>
+      <ion-text *ngIf="item.CodeShareNumber">(共享
+        <!-- {{item.CodeShareNumber}} -->
+        )</ion-text>
+        <div class="height"></div>
+    </ng-container>
+
   </div>
 </ion-row>
