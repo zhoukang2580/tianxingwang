@@ -22,8 +22,8 @@
             <div class="font-size">
               {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,16)}} --
               {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
-              <span *ngIf="trip?.bookInfo?.toSegment?.Variables?.AddDaysTip>'0'">
-                (+{{trip?.bookInfo?.toSegment?.Variables?.AddDaysTip}}天)</span>
+              <span *ngIf="trip.bookInfo.flightRoute.addDays>0">
+                (+{{trip?.bookInfo?.flightRoute.addDays}}天)</span>
             </div>
           </div>
         </ion-col>
