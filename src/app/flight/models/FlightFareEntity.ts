@@ -12,10 +12,12 @@ export class FlightFareEntity {
   ///
   /// </summary>
   Id: string;
+  Explain: string;
   /// <summary>
   ///
   /// </summary>
   FlightRouteIds: string[];
+  FlightFareRules: FlightFareRuleEntity[];
   /// <summary>
   ///
   /// </summary>
@@ -126,5 +128,5 @@ export class FlightFareEntity {
   /// </summary>
   Rules: { [key: string]: string };
   ruleMessage?: string;
-  ruleExplain: string;
+  // ruleExplain: string;
 }

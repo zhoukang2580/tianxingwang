@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-title>退改签详情</ion-title>
+</ion-header>
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size='2'>
+        退改信息
+      </ion-col>
+      <ion-col>
+        <div [innerHTML]='explain'></div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size='2'>
+        退改说明
+      </ion-col>
+      <ion-col>
+        <strong>
+          改期:
+        </strong>
+        如改签新航班价格更高，需补交机票差价。
+      </ion-col>
+    </ion-row>
+    <ng-container *ngFor='let f of flightfares'>
+      <ion-row *ngFor='let fr of f.FlightFareRules'>
+        <ion-col size='2'>行李规定</ion-col>
+        <ion-col>
+          <ion-row *ngFor='let b of getBags(fr.Bags)'></ion-row>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+  </ion-grid>
+</ion-content>

@@ -1,6 +1,6 @@
 import { FlightChangeDetailEntity } from "./flight/FlightChangeDetailEntity";
 import { FlightEndorsementDetailEntity } from "./flight/FlightEndorsementDetailEntity";
-import { FlightFareRuleDetailEntity } from './FlightFareRuleDetailEntity';
+import { FlightFareRuleDetailEntity } from "./FlightFareRuleDetailEntity";
 
 export class FlightFareRuleEntity {
   Airline: string;
@@ -25,4 +25,5 @@ export class FlightFareRuleEntity {
   /// 行李额
   /// </summary>
   BaggageAllowance: string;
+  Bags: { [key: string]: any };
 }

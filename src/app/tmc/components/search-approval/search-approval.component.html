@@ -32,6 +32,9 @@
       <app-or-comp>暂无数据</app-or-comp>
     </ng-template>
   </ion-list>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>加载中...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
   <ng-template #loadingTemp>
     正在加载...
   </ng-template>

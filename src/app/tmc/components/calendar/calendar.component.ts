@@ -21,6 +21,7 @@ import {
   Injector,
   TemplateRef,
   ViewContainerRef,
+  HostBinding,
 } from "@angular/core";
 import { AvailableDate } from "../../models/AvailableDate";
 import { CalendarService } from "../../calendar.service";
@@ -39,6 +40,9 @@ import {
 })
 export class CalendarComponent2
   implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+  @HostBinding("class.show")
+  @Input()
+  isShow = true;
   private subscription = Subscription.EMPTY;
   private page: { m: number; y: number };
   private isSrollToCurYm = false;
@@ -57,8 +61,7 @@ export class CalendarComponent2
   constructor(
     private calendarService: CalendarService,
     private el: ElementRef<HTMLElement>,
-    private plt: Platform,
-    private cdref: ChangeDetectorRef
+    private plt: Platform
   ) {
     this.back = new EventEmitter();
     this.daySelected = new EventEmitter();
@@ -81,8 +84,6 @@ export class CalendarComponent2
           m: +m,
         };
       }
-      // this.calendars = [];
-      // this.renderCalendar(calendars);
     }
   }
   private generateOneCalendar(calendar: AvailableDate) {
@@ -281,7 +282,7 @@ export class CalendarComponent2
     this.weeks = Object.keys(w).map((k) => w[k]);
     // this.calendars = await this.calendarService.generateCanlender(12);
   }
-  
+
   ngAfterViewInit() {
     if (this.disableScroller) {
       if (this.scroller) {

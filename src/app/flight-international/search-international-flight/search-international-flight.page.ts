@@ -19,6 +19,7 @@ import { Router } from "@angular/router";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { TripType } from "src/app/tmc/models/TripType";
+import { Storage } from "@ionic/storage";
 
 @Component({
   selector: "app-search-international-flight",
@@ -38,11 +39,11 @@ export class SearchInternationalFlightPage
     private staffService: StaffService,
     private flightService: InternationalFlightService,
     private popoverCtrl: PopoverController,
-    private router: Router
+    private router: Router,
   ) {}
   compareWithFn = (o1, o2) => {
     return o1 && o2 ? o1 === o2 : false;
-  };
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }

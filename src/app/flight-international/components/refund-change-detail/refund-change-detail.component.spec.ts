@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { RuleExplainComponent } from './rule-explain.component';
+import { RefundChangeDetailComponent } from './refund-change-detail.component';
 
-describe('RuleExplainComponent', () => {
-  let component: RuleExplainComponent;
-  let fixture: ComponentFixture<RuleExplainComponent>;
+describe('RefundChangeDetailComponent', () => {
+  let component: RefundChangeDetailComponent;
+  let fixture: ComponentFixture<RefundChangeDetailComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RuleExplainComponent ],
+      declarations: [ RefundChangeDetailComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(RuleExplainComponent);
+    fixture = TestBed.createComponent(RefundChangeDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

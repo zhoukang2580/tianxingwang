@@ -16,16 +16,13 @@
   </ion-col>
   <ion-col size="2.3" class="ion-text-center">
     <div class="ion-text-nowrap" style="font-size: 0.8rem;">
-      <ion-text style="display: flex;align-items: center;" color="secondary" (click)="onTransfer($event)"
-        *ngIf="flight.isTransfer else directfly">
+      <ion-text style="display: flex;align-items: center;" color="secondary" (click)="onTransfer($event)">
         <span>---</span>
-        <ion-text *ngIf="flight.isTransfer" color='secondary'>转机</ion-text>
+        <ion-text *ngIf="flight.isTransfer else directfly" color='secondary'>转机</ion-text>
         <span>---</span>
       </ion-text>
       <ng-template #directfly>
-        <span>---</span>
-        <ion-text>直飞</ion-text>
-        <span>---</span>
+        <ion-text  color='secondary'>直飞</ion-text>
       </ng-template>
     </div>
   </ion-col>

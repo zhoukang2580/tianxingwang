@@ -28,7 +28,10 @@ import { IdentityEntity } from "../services/identity/identity.entity";
 import { OrderTrainTripEntity } from "../order/models/OrderTrainTripEntity";
 import { OrderFlightTripEntity } from "../order/models/OrderFlightTripEntity";
 import { BaseVariablesEntity } from "../models/BaseVariablesEntity";
-import { TravelFormTripEntity, TmcTravelApprovalType } from "../travel-application/travel.service";
+import {
+  TravelFormTripEntity,
+  TmcTravelApprovalType,
+} from "../travel-application/travel.service";
 import { CityEntity } from "./models/CityEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
@@ -479,19 +482,18 @@ export class TmcService {
       .getPromiseData<{ Text: string; Value: string }[]>(req)
       .catch((_) => []);
   }
- searchApprovals(
-    name: string
-  ) {
+  searchApprovals(name: string, pageIndex: number, pageSize = 20) {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-SearchApprovals";
     req.Data = {
       name,
+      PageSize: pageSize,
+      PageIndex: pageIndex,
     };
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService
-      .getResponse<{ Text: string; Value: string }[]>(req)
-     }
+    return this.apiService.getResponse<{ Text: string; Value: string }[]>(req);
+  }
   async getAllLocalAirports(forceFetch = false) {
     if (!forceFetch && this.allLocalAirports && this.allLocalAirports.length) {
       return Promise.resolve(this.allLocalAirports);
@@ -899,7 +901,6 @@ export class TravelFormEntity extends BaseVariablesEntity {
   DayCount: number;
   Id: string;
   TripType: string;
-  
 }
 export class TravelInfoFlightEntity {
   /// <summary>
@@ -1098,7 +1099,7 @@ export enum TmcHotelFeeType {
   Order = 2,
 }
 export class TmcEntity extends BaseEntity {
-  TravelApprovalType:TmcTravelApprovalType;
+  TravelApprovalType: TmcTravelApprovalType;
   GroupCompanyName: string; // "爱普科斯";
   Name: string; // "爱普科斯（上海）产品服务有限公司";
   /// <summary>

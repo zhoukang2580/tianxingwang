@@ -39,4 +39,5 @@ export class FlightRouteEntity {
   YFare: number;
   addDays?: number;
   flyTime?: string;
+  refundChangeDetail?: FlightFareEntity[];
 }

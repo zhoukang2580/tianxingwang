@@ -63,11 +63,11 @@
 </head>
 
 <body>
-    <h1>应用启动失败</h1>
+    <h1>当前网络环境较差，请在网络良好的情况下重新打开应用</h1>
     <p class="message">
         应用其sd福利费聚少离多圣诞节快乐发生的解放路口就看见了第三方见识到了
     </p>
-    <a onclick="sendErrorReport()" class="send">发送错误报告</a>
+    <a onclick="sendErrorReport()" class="send">发送反馈</a>
     <script>
         let count = 0;
         let isSending = false;
@@ -101,7 +101,7 @@
                 Data: JSON.stringify({
                     Address: "cordovaError.html",
                     Message: "应用启动失败",
-                    Detail: "App 启动失败，可能是index.html文件没有包含在www目录，打包后，生成的apk无法启动"
+                    Detail: "App 启动失败，可能是index.html文件没有包含在www目录，打包后，生成的apk无法启动，或者是网络不通"
                 })
             }
             const formObj = Object.keys(req)
