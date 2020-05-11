@@ -12,6 +12,7 @@ import { FormsModule } from "@angular/forms";
 import { FlightListItemComponent } from "./flight-list-item/flight-list-item.component";
 import { FlightTransferComponent } from "./flight-transfer/flight-transfer.component";
 import { RefundChangeDetailComponent } from "./refund-change-detail/refund-change-detail.component";
+import { AppComponentsModule } from "src/app/components/appcomponents.module";
 
 @NgModule({
   declarations: [
@@ -24,7 +25,13 @@ import { RefundChangeDetailComponent } from "./refund-change-detail/refund-chang
     FlightTransferComponent,
     RefundChangeDetailComponent,
   ],
-  imports: [CommonModule, IonicModule, TmcComponentsModule, FormsModule],
+  imports: [
+    CommonModule,
+    IonicModule,
+    TmcComponentsModule,
+    FormsModule,
+    AppComponentsModule,
+  ],
   exports: [
     TmcComponentsModule,
     FlightDialogComponent,

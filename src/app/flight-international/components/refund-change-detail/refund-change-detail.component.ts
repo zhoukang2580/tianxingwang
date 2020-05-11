@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { FlightFareEntity } from "src/app/flight/models/FlightFareEntity";
+import { ModalController } from "@ionic/angular";
 
 @Component({
   selector: "app-refund-change-detail",
@@ -13,18 +14,26 @@ export class RefundChangeDetailComponent implements OnInit {
       (this.flightfares &&
         this.flightfares[0] &&
         this.flightfares[0].Explain &&
-        this.flightfares[0].Explain.replace(/\r/g, "<br/>")) ||
+        this.flightfares[0].Explain.split("。")
+          .map((it) => it.replace(/[\r|\n]/g, "<br/>"))
+          .map((it) => {
+            if (it.startsWith("<br/>")) {
+              it = it.substring("<br/>".length);
+            }
+            return it;
+          })
+          .join("<br/>")) ||
       ""
     );
   }
-  constructor() {}
+  constructor(private modalCtrl: ModalController) {}
 
-  ngOnInit() {}
-  getBags(bags) {
-    if (!bags) {
-      return [];
-    }
-    let bginfo = "";
-    return Object.keys(bags).map((it) => bags[it]);
+  back() {
+    this.modalCtrl.getTop().then((t) => {
+      if (t) {
+        t.dismiss();
+      }
+    });
   }
+  ngOnInit() {}
 }
