@@ -45,7 +45,7 @@
         <ion-select-option value="港澳台">港澳台</ion-select-option>
       </ion-select>
     </ion-item>
-    <app-add-stroke [regionTypes]='regionTypes' [enable]="enable" [attr.addStroke]='idx'
+    <app-add-stroke [regionTypes]='regionTypes' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx'
       *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;" [index]="idx" [trip]='item'
       (remove)='onRemoveTrip($event)'></app-add-stroke>
     <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()"
@@ -57,7 +57,7 @@
       <ion-text [color]="!enable?'dark':'dark'">
         出差天数统计
       </ion-text>
-      <ion-label  slot="end" class="ion-text-end" [color]="!enable?'medium':'dark'" >
+      <ion-label slot="end" class="ion-text-end" [color]="!enable?'medium':'dark'">
         {{this.searchModel.TravelForm.DayCount}}
       </ion-label>
     </ion-item>
@@ -103,16 +103,13 @@
         <div *ngFor="let h of searchModel?.Histories">
           <div style="display: flex">
             <label>审批时间:</label>
-
             <ion-label color="medium">
               {{h?.HandleTime?.startsWith("1800")||h.HandleTime?.startsWith("0001")?" ":h.HandleTime?.replace("T"," ")?.substring(0,16)}}
             </ion-label>
-            <label>{{h.HandleTime}}</label>
           </div>
           <div style="display: flex;">
             <label>审批人:</label>
             <ion-label color="medium">{{h?.Account?.RealName}}</ion-label>
-            <label>{{h.Account.RealName}}</label>
           </div>
           <div style="display: flex;">
             <label>审批结果:</label>
@@ -121,16 +118,11 @@
           <div style="display: flex;">
             <ion-label>审批意见:</ion-label>
             <ion-label color="medium">{{h?.Remark}}</ion-label>
-            <label>{{h.StatusName}}</label>
-          </div>
-          <div>
-            <label>审批意见:</label>
-            <label>{{h.Remark}}</label>
           </div>
         </div>
       </div>
     </ion-item>
-    <ion-item>
+    <ion-item *ngIf="waiting">
       <ion-button slot='end' color="secondary" style="width: 7em;height: 2.4em;" (click)="onSave()">
         保存
       </ion-button>

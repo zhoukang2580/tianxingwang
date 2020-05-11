@@ -50,7 +50,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   goAddApply() {
-    this.router.navigate([AppHelper.getRoutePath("add-apply")]);
+    this.router.navigate([AppHelper.getRoutePath("add-apply")],{queryParams:{tabId:"1"}});
   }
   gettravel() {
     this.subscription = this.service

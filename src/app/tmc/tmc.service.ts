@@ -1294,6 +1294,7 @@ export class TmcEntity extends BaseEntity {
   WechatMiniId: string;
   WechatMiniSecret: string;
   RegionTypeValue: string;
+  RegionTypeName: string;
   IntFlightApprovalType: TmcApprovalType;
   // =============== 微信支付配置 end ======
 }

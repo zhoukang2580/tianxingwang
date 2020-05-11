@@ -393,6 +393,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         AppHelper.alert("改签失败，请重试");
         return;
       }
+      // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
       let passenger: StaffEntity = {
         Account: {
@@ -432,6 +433,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         ticket: { Id: data.ticketId } as any,
         trip: res.trip,
       };
+      //setSearchFlightModelSource
       this.flightService.setSearchFlightModelSource({
         ...this.flightService.getSearchFlightModel(),
         FromCode: res.trip.FromAirport,

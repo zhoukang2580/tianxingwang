@@ -45,6 +45,19 @@ export class TravelService {
     };
     return this.apiService.getPromiseData<SearchModel>(req);
   }
+  getReserve(dto:{
+    TravelFormId:string;
+    TravelTool:string;
+    TripId:string;
+  }){
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiTravelUrl-Home-Reserve`;
+    req.Data = {
+     ...dto
+    };
+    return this.apiService.getPromiseData<TravelFormEntity>(req);
+  }
   getTravelSave(dto: SearchModel) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
@@ -164,7 +177,8 @@ export class TravelFormTripEntity extends BaseEntity {
   /// 出发城市名称
   /// </summary>
   FromCityName: string; //
-
+  fromCity:TrafficlineEntity;
+  toCity:TrafficlineEntity;
   /// <summary>
   /// 到达城市Code
   /// </summary>

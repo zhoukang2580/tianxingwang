@@ -61,6 +61,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   items: TravelFormEntity[];
   searchModel: SearchModel;
   enable = true;
+  waiting = false;
+  pass = false;
   appovalStaff: string;
   outNumbers: {
     [key: string]: any;
@@ -180,6 +182,11 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         }
       }
       if (this.tmc && this.tmc.RegionTypeValue) {
+        this.regionTypes = [];
+        const names = this.tmc.RegionTypeName && this.tmc.RegionTypeName.split(",") || [];
+        this.tmc.RegionTypeValue.split(",").forEach((v, idx) => {
+          this.regionTypes.push({value:v,label:names[idx]})
+        })
         this.regionTypes = this.regionTypes.filter((t) =>
           this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
         );
@@ -200,6 +207,12 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           if (this.searchModel.StatusType != ApprovalStatusType.WaiteSubmit) {
             this.enable = false;
           }
+          if (this.searchModel.StatusType == ApprovalStatusType.WaiteSubmit) {
+            this.waiting = true
+          }
+          if (this.searchModel.StatusType == ApprovalStatusType.Pass) {
+            this.pass = true
+          }
           this.appovalStaff = this.searchModel.ApprovalStaffName;
           if (
             this.searchModel.TravelForm &&
@@ -217,6 +230,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         }
       } else {
         this.onAddTrip();
+        this.waiting = true
       }
     });
   }
@@ -439,6 +453,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }
   }
   onAddTrip() {
+
     const item: TravelFormTripEntity = {} as any;
     // item.StartDate
     if (!this.searchModel.TravelForm.Trips) {

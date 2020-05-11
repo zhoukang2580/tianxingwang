@@ -72,8 +72,15 @@
           {{getNumberOfDays(trip.StartDate,trip.EndDate)}}
         </ion-label>
       </ion-item>
-
-
+      <ion-item *ngIf="pass">
+        <div>
+          <div *ngFor='let t of trip.travelTools'>
+            <ion-button slot='end' color="secondary" style="height: 2.4em;" (click)="goReserve(t)">
+              预定{{getTravelTools(t)}}
+            </ion-button>
+          </div>
+        </div>
+      </ion-item>
     </ion-item-group>
   </ion-list>
 
