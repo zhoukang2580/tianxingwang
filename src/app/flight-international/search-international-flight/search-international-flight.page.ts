@@ -39,11 +39,11 @@ export class SearchInternationalFlightPage
     private staffService: StaffService,
     private flightService: InternationalFlightService,
     private popoverCtrl: PopoverController,
-    private router: Router,
+    private router: Router
   ) {}
   compareWithFn = (o1, o2) => {
     return o1 && o2 ? o1 === o2 : false;
-  }
+  };
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -75,7 +75,7 @@ export class SearchInternationalFlightPage
     p.present();
   }
   searchFlight() {
-    const m = this.flightService.getSearchModel();
+    const m = this.searchFlightModel;
     if (m) {
       if (
         m.voyageType == FlightVoyageType.GoBack ||

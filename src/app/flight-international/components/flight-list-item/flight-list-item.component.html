@@ -22,7 +22,7 @@
         <span>---</span>
       </ion-text>
       <ng-template #directfly>
-        <ion-text  color='secondary'>直飞</ion-text>
+        <ion-text color='secondary'>直飞</ion-text>
       </ng-template>
     </div>
   </ion-col>
@@ -40,8 +40,9 @@
       </div>
     </div>
   </ion-col>
-  <ion-col size="3.1">
-    <div [class.margin-t11]="flight?.toSegment?.Variables?.AddDaysTip&&flight.toSegment?.Variables?.AddDaysTip>'0'" style="padding-top: 0.4em;">
+  <ion-col size="3.1" class="ion-text-center">
+    <div [class.margin-t11]="flight?.toSegment?.Variables?.AddDaysTip&&flight.toSegment?.Variables?.AddDaysTip>'0'"
+      style="padding-top: 0.4em;">
       <ion-text color="secondary" class="flightMoney">
         <span style="font-weight:bold">¥</span>{{flight.flightFare.SalesPrice}}
       </ion-text>

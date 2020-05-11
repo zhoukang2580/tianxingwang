@@ -583,6 +583,7 @@ export class InternationalFlightService {
     this.getLastSearchCondition("oneway").then((res) => {
       if (res) {
         this.lastOneWaySearchModel = res;
+        this.searchModel = res;
         this.searchModelSource.next(res);
       } else {
         this.setSearchModelSource(this.searchModel);
@@ -644,6 +645,7 @@ export class InternationalFlightService {
     this.getLastSearchCondition("goBack").then((res) => {
       if (res) {
         this.lastGobackSearchModel = res;
+        this.searchModel = res;
         this.searchModelSource.next(res);
       } else {
         this.setSearchModelSource(this.searchModel);
@@ -707,6 +709,7 @@ export class InternationalFlightService {
     this.getLastSearchCondition("multi").then((res) => {
       if (res) {
         this.lastMultiTripSearchModel = res;
+        this.searchModel = res;
         this.searchModelSource.next(res);
       } else {
         this.setSearchModelSource(this.searchModel);
@@ -1010,9 +1013,17 @@ export class InternationalFlightService {
     req.Method = `TmcApiInternationalFlightUrl-Home-GetRuleInfo`;
     req.IsShowLoading = true;
     req.LoadingMsg = "正在获取";
+    const flightRoutes = (this.flightListResult.FlightRoutesData || []).map(r=>{
+      const route=new FlightRouteEntity();
+      route.Id=r.Id;
+      route.FirstTime=r.FirstTime;
+      route.Origin=r.Origin;
+      route.Destination=r.Destination;
+      return route;
+    });
     req.Data = {
       Flightfare: JSON.stringify(flightfare),
-      FlightRoutes: JSON.stringify(this.flightListResult.FlightRoutes || []),
+      FlightRoutes: JSON.stringify(flightRoutes),
     };
     return this.apiService.getResponse<{
       FlightRoutes: FlightRouteEntity[];
