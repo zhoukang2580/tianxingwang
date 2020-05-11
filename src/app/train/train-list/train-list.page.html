@@ -5,26 +5,26 @@
     </ion-buttons>
     <ion-title class='sm-font-size' [class.ion-text-start]='(isShowAddPassenger$|async)'
       [class.ion-text-center]='!(isShowAddPassenger$|async)'>
-      <ion-text (click)='onSelectStation(true)' color='{{!searchTrainModel?.isExchange?"secondary":"medium"}}'
+      <ion-text (click)='onSelectStation(true)' color='{{ !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked?"secondary":"medium"}}'
         class='from-station'>
         <span>
           {{vmFromCity?.Nickname}}
         </span>
-        <ion-icon name='caret-down-outline' *ngIf='!searchTrainModel?.isExchange'></ion-icon>
+        <ion-icon name='caret-down-outline' *ngIf=' !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked'></ion-icon>
       </ion-text>
-      <ion-text color='{{!searchTrainModel?.isExchange?"secondary":"medium"}}'>
+      <ion-text color='{{ !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked?"secondary":"medium"}}'>
         <i class='icon icon-search-train' (click)='onSwapStation()'></i>
       </ion-text>
-      <ion-text (click)='onSelectStation(false)' class='to-station' color='secondary'>
+      <ion-text (click)='onSelectStation(false)' class='to-station' color='{{ !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked?"secondary":"medium"}}'>
         <span>{{ vmToCity?.Nickname}}</span>
-        <ion-icon name='caret-down-outline'></ion-icon>
+        <ion-icon name='caret-down-outline' *ngIf=' !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked'></ion-icon>
       </ion-text>
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='filterPolicyTrains()' size='small'>
         <ion-text class='sm-font-size'>过滤差标</ion-text>
       </ion-button>
-      <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)&&!searchTrainModel?.isExchange' color='secondary'
+      <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)&& !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked' color='secondary'
         size='small' (click)='onSelectPassenger()'>
         <ion-text class='sm-font-size'>添加旅客</ion-text>
         <ion-badge color='danger' *ngIf='selectedPassengersNumbers$|async as n'>

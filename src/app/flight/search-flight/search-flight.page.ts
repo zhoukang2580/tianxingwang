@@ -214,6 +214,7 @@ export class SearchFlightPage
           // this.vmToCity = s.toCity;
           this.isSingle = !s.isRoundTrip;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
+          
           this.backDate = this.calendarService.generateDayModelByDate(
             s.BackDate
           );

@@ -229,6 +229,11 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     return train && train.TrainCode;
   }
   async onSelectStation(isFrom: boolean) {
+    if(this.searchTrainModel){
+      if(this.searchTrainModel.isExchange||this.searchTrainModel.isLocked){
+        return
+      }
+    }
     this.scrollToTop();
     if (this.searchTrainModel) {
       if (isFrom && this.searchTrainModel.isExchange) {
@@ -365,11 +370,13 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       if (this.searchTrainModel) {
-        this.calendarService.setSelectedDaysSource([
-          this.calendarService.generateDayModelByDate(
-            this.searchTrainModel.Date
-          )
-        ]);
+        setTimeout(() => {
+          this.calendarService.setSelectedDaysSource([
+            this.calendarService.generateDayModelByDate(
+              this.searchTrainModel.Date
+            )
+          ]);
+        }, 100);
       }
       if (!keepSearchCondition) {
         this.filterCondition = FilterTrainCondition.init();
