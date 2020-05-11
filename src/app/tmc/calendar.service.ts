@@ -410,7 +410,7 @@ export class CalendarService {
       title.classList.add("title");
       title.textContent = "请选择日期";
       backbtn.onclick = () => {
-        this.closeCalendar();
+        this.closeCalendar(true);
       };
       header.append(backbtn);
       header.append(title);
