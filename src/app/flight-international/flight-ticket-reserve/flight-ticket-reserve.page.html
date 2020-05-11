@@ -53,13 +53,15 @@
             </ng-container>
           </div>
         </ion-item>
-        <ion-item-group *ngIf='combindInfo?.bookInfo as s'>
+        <ion-item-group
+          *ngIf='combindInfo?.bookInfo &&(searchModel?.voyageType!=FlightVoyageType.GoBack||(searchModel?.voyageType==FlightVoyageType.GoBack&&combindInfo.isShowGroupedInfo))'>
           <ion-item-divider color="primary">旅客信息:</ion-item-divider>
           <app-book-credential-comp [credential]='combindInfo.vmCredential' [canEdit]='false'
             (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
             (modify)='onModify(combindInfo)' [attr.credentialcompid]='combindInfo.id'>
           </app-book-credential-comp>
-          <ng-container *ngIf='s && !s.isNotWhitelist'>
+          <ng-container
+            *ngIf='combindInfo?.bookInfo && !combindInfo.bookInfo.isNotWhitelist&&combindInfo?.bookInfo.bookInfo?.flightRoute?.policy?.Message'>
             <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
               [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
               (ionchange)='onIllegalReason($event,combindInfo)'>
@@ -123,23 +125,6 @@
               </div>
             </ion-item>
           </ng-container>
-
-          <ion-item *ngIf='false'>
-            <div class='travel-type ion-margin-top'>
-              差旅类型:
-              <ion-radio-group [(ngModel)]='combindInfo.travelType' name='travelType'>
-                <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Business)'>
-                  <ion-label>因公</ion-label>
-                  <ion-radio [value]="OrderTravelType.Business"></ion-radio>
-                </ion-item>
-                <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Person)'>
-                  <ion-label>因私</ion-label>
-                  <ion-radio [value]="OrderTravelType.Person">
-                  </ion-radio>
-                </ion-item>
-              </ion-radio-group>
-            </div>
-          </ion-item>
         </ion-item-group>
         <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item-group>

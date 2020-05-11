@@ -67,8 +67,14 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.searchModel.trips.length - 1;
       this.isLastTrip = isCheckPolicy;
       if (isCheckPolicy) {
+        let tip = flightRoute.policy.Message;
         if (flightRoute.policy && !flightRoute.policy.IsAllowOrder) {
-          AppHelper.alert(flightRoute.policy.Message || "不可预订");
+          if (tip) {
+            tip = `${tip}，不可预订`;
+          } else {
+            tip = `违规不可预订`;
+          }
+          AppHelper.alert(tip);
           return;
         }
       }

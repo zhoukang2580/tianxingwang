@@ -17,7 +17,7 @@
       <ion-checkbox class="ion-margin-end" color="secondary" [(ngModel)]="isOtherIllegalReason"
         (ionChange)='onValueChange()'></ion-checkbox>
       <ion-label>其他原因</ion-label>
-      <ion-input *ngIf="isOtherIllegalReason"  [disabled]='false&&!isOtherIllegalReason' [(ngModel)]='otherIllegalReason' placeholder='请输入其他原因'
+      <ion-input *ngIf="isOtherIllegalReason" class="ion-text-end"  [disabled]='false&&!isOtherIllegalReason' [(ngModel)]='otherIllegalReason' placeholder='请输入其他原因'
         (ionChange)='onValueChange()'></ion-input>
     </ion-item>
   </ng-container>
@@ -25,6 +25,6 @@
 <ng-template #elsetemp>
   <ion-item lines='none'>
     <ion-label>超标原因</ion-label>
-    <ion-input [(ngModel)]='illegalReason' placeholder='请输入超标原因' (ionChange)='onValueChange()'></ion-input>
+    <ion-input [(ngModel)]='illegalReason' class="ion-text-end" placeholder='请输入超标原因' (ionChange)='onValueChange()'></ion-input>
   </ion-item>
 </ng-template>

@@ -4,7 +4,7 @@
     <ng-container *ngIf='n.labelDataList?.length else nodatas'>
       <ion-label>{{n.label}}</ion-label>
       <ion-select class='travel-number' value='cn' okText="确定" cancelText="取消" [compareWith]='compareWithFn' [(ngModel)]='n.value'
-        style="flex: 1;min-width: 60%;text-align: end;max-width: 100%;">
+        style="flex: 3;min-width: 60%;text-align: end;max-width: 100%;">
         <ion-select-option [value]='item' *ngFor="let item of n.labelDataList">{{item}}</ion-select-option>
       </ion-select>
     </ng-container>
