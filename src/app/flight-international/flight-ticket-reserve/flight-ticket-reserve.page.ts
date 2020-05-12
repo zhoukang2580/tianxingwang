@@ -88,6 +88,7 @@ export class FlightTicketReservePage
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
   private checkPayCountIntervalId: any;
+  FlightVoyageType = FlightVoyageType;
   searchModel: IInternationalFlightSearchModel;
   travelForm: TravelFormEntity;
   addContacts: AddContact[] = [];
@@ -294,7 +295,7 @@ export class FlightTicketReservePage
       if (
         this.searchModel &&
         this.searchModel.trips &&
-        this.searchModel.trips.some((it) =>!! it.bookInfo)
+        this.searchModel.trips.some((it) => !!it.bookInfo)
       ) {
         if (this.searchModel.voyageType == FlightVoyageType.OneWay) {
           this.flightService.setBookInfoSource(
@@ -525,7 +526,7 @@ export class FlightTicketReservePage
     },
     item: ICombindInfo
   ) {
-    console.log("oncostCenterchange", data, item);
+    // console.log("oncostCenterchange", data, item);
     if (data.costCenter && item) {
       item.costCenter = data.costCenter;
       item.isOtherCostCenter = data.isOtherCostCenter;
@@ -949,7 +950,7 @@ export class FlightTicketReservePage
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.flightRoute &&
         combindInfo.bookInfo.bookInfo.flightRoute.flightFare &&
-        combindInfo.bookInfo.bookInfo.flightRoute.policy&&
+        combindInfo.bookInfo.bookInfo.flightRoute.policy &&
         combindInfo.bookInfo.bookInfo.flightRoute.policy.Message
       ) {
         // 只有白名单的才需要考虑差标
@@ -1169,7 +1170,10 @@ export class FlightTicketReservePage
       );
     }
     if (this.tmc && !this.tmc.IsShowServiceFee) {
-      if (this.orderTravelPayType != OrderTravelPayType.Person) {
+      if (
+        this.orderTravelPayType != OrderTravelPayType.Person &&
+        this.orderTravelPayType != OrderTravelPayType.Credit
+      ) {
         fees = 0;
       }
     }

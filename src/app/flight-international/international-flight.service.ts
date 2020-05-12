@@ -957,6 +957,7 @@ export class InternationalFlightService {
             fare.SettlePrice = f.SettlePrice;
             fare.TicketPrice = f.TicketPrice;
             fare.Discount = f.Discount;
+            fare.CabinCodes = f.CabinCodes;
             return fare;
           })
         ),
@@ -1013,14 +1014,16 @@ export class InternationalFlightService {
     req.Method = `TmcApiInternationalFlightUrl-Home-GetRuleInfo`;
     req.IsShowLoading = true;
     req.LoadingMsg = "正在获取";
-    const flightRoutes = (this.flightListResult.FlightRoutesData || []).map(r=>{
-      const route=new FlightRouteEntity();
-      route.Id=r.Id;
-      route.FirstTime=r.FirstTime;
-      route.Origin=r.Origin;
-      route.Destination=r.Destination;
-      return route;
-    });
+    const flightRoutes = (this.flightListResult.FlightRoutesData || []).map(
+      (r) => {
+        const route = new FlightRouteEntity();
+        route.Id = r.Id;
+        route.FirstTime = r.FirstTime;
+        route.Origin = r.Origin;
+        route.Destination = r.Destination;
+        return route;
+      }
+    );
     req.Data = {
       Flightfare: JSON.stringify(flightfare),
       FlightRoutes: JSON.stringify(flightRoutes),

@@ -21,6 +21,7 @@ export class FlightRouteEntity {
   FlightSegments: FlightSegmentEntity[];
   FromCountry: string; // CN";
   Id: string; //  1;
+  IsAllowOrder: boolean;
   policy: {
     IsAllowOrder: boolean;
     IsIllegal: boolean;

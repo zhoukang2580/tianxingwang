@@ -67,8 +67,14 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.searchModel.trips.length - 1;
       this.isLastTrip = isCheckPolicy;
       if (isCheckPolicy) {
+        let tip = flightRoute.policy.Message;
         if (flightRoute.policy && !flightRoute.policy.IsAllowOrder) {
-          AppHelper.alert(flightRoute.policy.Message || "不可预订");
+          if (tip) {
+            tip = `${tip}，不可预订`;
+          } else {
+            tip = `违规不可预订`;
+          }
+          AppHelper.alert(tip);
           return;
         }
       }
@@ -101,6 +107,7 @@ export class FlightListPage implements OnInit, OnDestroy {
             const data = r && r.Data;
             if (data.FlightFares) {
               flightRoute.refundChangeDetail = data.FlightFares;
+              this.presentRuleExplain(flightRoute.refundChangeDetail);
             }
           });
       } else {
@@ -109,9 +116,9 @@ export class FlightListPage implements OnInit, OnDestroy {
     }
   }
   private async presentRuleExplain(flightfares: FlightFareEntity[]) {
-    const m = await this.popoverController.create({
+    const m = await this.modalController.create({
       component: RefundChangeDetailComponent,
-      cssClass: "flight-refund-comp",
+      // cssClass: "flight-refund-comp",
       componentProps: {
         flightfares,
       },

@@ -25,5 +25,13 @@ export class FlightFareRuleEntity {
   /// 行李额
   /// </summary>
   BaggageAllowance: string;
-  Bags: { [key: string]: any };
+  Bags: {
+    AllowedPieces: number; // 2;
+    AllowedWeight: number; // 0;
+    AllowedWeightUnit: string; // "";
+    FlightNumber: string; // "MU8273";
+    FreeAllowedPieces: number; // 1;
+    FreeAllowedWeight: number; // 0;
+    FreeAllowedWeightUnit: string; // "";
+  }[];
 }

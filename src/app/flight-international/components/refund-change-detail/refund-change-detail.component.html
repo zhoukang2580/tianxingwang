@@ -1,34 +1,72 @@
 <ion-header>
-  <ion-title>退改签详情</ion-title>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button [backFn]='back.bind(this)'></app-back-button>
+    </ion-buttons>
+    <ion-title>退改签详情</ion-title>
+  </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col size='2'>
-        退改信息
-      </ion-col>
-      <ion-col>
-        <div [innerHTML]='explain'></div>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size='2'>
-        退改说明
-      </ion-col>
-      <ion-col>
-        <strong>
-          改期:
-        </strong>
-        如改签新航班价格更高，需补交机票差价。
-      </ion-col>
-    </ion-row>
-    <ng-container *ngFor='let f of flightfares'>
-      <ion-row *ngFor='let fr of f.FlightFareRules'>
-        <ion-col size='2'>行李规定</ion-col>
-        <ion-col>
-          <ion-row *ngFor='let b of getBags(fr.Bags)'></ion-row>
-        </ion-col>
-      </ion-row>
-    </ng-container>
-  </ion-grid>
+  <ion-list lines='none'>
+    <ion-item-divider>
+      <strong>
+        <ion-text color='dark'>
+          退改信息
+        </ion-text>
+      </strong>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label class="ion-text-wrap">
+        <p [innerHTML]='explain' class="explain"></p>
+      </ion-label>
+    </ion-item>
+    <ion-item-divider>
+      <strong>
+        <ion-text color='dark'>
+          退改说明
+        </ion-text>
+      </strong>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label class="ion-text-wrap">
+        <p>
+          <strong>改期:</strong>如改签新航班价格更高，需补交机票差价。
+        </p>
+      </ion-label>
+    </ion-item>
+    <ion-item-divider>
+      <strong>
+        <ion-text color='dark'>
+          行李规定(成人)
+        </ion-text>
+      </strong>
+    </ion-item-divider>
+    <ion-grid *ngFor='let f of flightfares'>
+      <ng-container *ngFor='let fr of f.FlightFareRules'>
+        <ion-row *ngFor='let b of fr.Bags'>
+          <ion-col size='3'>
+            <strong>{{b.FlightNumber}}</strong>
+          </ion-col>
+          <ion-col>
+            <div>
+              <ng-container *ngIf='b.AllowedPieces'>
+                可携带件数{{b.AllowedPieces}}
+              </ng-container>
+              <ng-container *ngIf='b.AllowedWeight'>
+                可携带重量{{b.AllowedWeight}}，重量单位{{b.AllowedWeightUnit}}
+              </ng-container>
+            </div>
+            <div>
+              <ng-container *ngIf='b.FreeAllowedPieces'>
+                可免费携带件数{{b.FreeAllowedPieces}}
+              </ng-container>
+              <ng-container *ngIf='b.FreeAllowedWeight'>
+                可免费携带重量{{b.FreeAllowedWeight}}，重量单位{{b.FreeAllowedWeightUnit}}
+              </ng-container>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ng-container>
+    </ion-grid>
+  </ion-list>
 </ion-content>
