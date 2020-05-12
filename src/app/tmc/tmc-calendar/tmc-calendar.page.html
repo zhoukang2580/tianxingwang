@@ -15,19 +15,17 @@
     </ul>
   </ion-toolbar>
 </ion-header>
-<ion-content >
-  <ng-container *ngIf='calendars?.length'>
-    <ul *ngFor='let ym of calendars;let last=last;' [attr.ym]='ym.yearMonth' class='calendar' #calendar>
-      <li style="width: 100%;display: block;height: 1em;">
-        <strong>{{ym.yearMonth?.substr(0,4)}}年{{ym.yearMonth?.substr(5,2)}}月</strong>
-      </li>
-      <li *ngFor='let day of ym.dayList' class='day' [ngClass]='day.clazz()'>
-        <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
-      </li>
-      <div class='shadow-month'>
-        {{ym.yearMonth?.substr(5,2)<"10"?ym.yearMonth?.substr(5,2)?.replace('0',""):ym.yearMonth?.substr(5,2)}}</div>
-    </ul>
-  </ng-container>
+<ion-content>
+  <ul *ngFor='let ym of calendars;let last=last;' [attr.ym]='ym.yearMonth' class='calendar' #calendar>
+    <li style="width: 100%;display: block;height: 1em;">
+      <strong>{{ym.yearMonth?.substr(0,4)}}年{{ym.yearMonth?.substr(5,2)}}月</strong>
+    </li>
+    <li *ngFor='let day of ym.dayList' class='day' [ngClass]='day.clazz()'>
+      <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
+    </li>
+    <div class='shadow-month'>
+      {{ym.yearMonth?.substr(5,2)<"10"?ym.yearMonth?.substr(5,2)?.replace('0',""):ym.yearMonth?.substr(5,2)}}</div>
+  </ul>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>

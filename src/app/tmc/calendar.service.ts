@@ -14,6 +14,7 @@ import { filter, tap, distinct } from "rxjs/operators";
 import { TripType } from "./models/TripType";
 import { connect } from "http2";
 import { AppHelper } from "../appHelper";
+import { SelectDateComponent } from "./components/select-date/select-date.component";
 const lunarCalendar = window["LunarCalendar"];
 const _KEY_HOLIDAYS = "_key_holidays";
 @Injectable({
@@ -374,26 +375,29 @@ export class CalendarService {
   private closeCalendar(isNow = false) {
     const calendarEle = document.body.querySelector("#calendar");
     this.isCurrentSelectedOk = false;
-    setTimeout(() => {
-      if (this.calendars) {
-        this.calendars.forEach((item) => {
-          if (item.dayList) {
-            item.dayList.forEach((d) => {
-              d.hasToolTip = false;
-              d.selected = false;
-              d.isBetweenDays = false;
-              d.firstSelected = false;
-              d.lastSelected = false;
-              d.update();
-            });
+    setTimeout(
+      () => {
+        if (this.calendars) {
+          this.calendars.forEach((item) => {
+            if (item.dayList) {
+              item.dayList.forEach((d) => {
+                d.hasToolTip = false;
+                d.selected = false;
+                d.isBetweenDays = false;
+                d.firstSelected = false;
+                d.lastSelected = false;
+                d.update();
+              });
+            }
+          });
+          if (calendarEle) {
+            calendarEle.classList.toggle("show", false);
           }
-        });
-        if (calendarEle) {
-          calendarEle.classList.toggle("show", false);
         }
-      }
-      this.selectedDays = [];
-    },isNow?0: 200);
+        this.selectedDays = [];
+      },
+      isNow ? 0 : 200
+    );
   }
   private renderCalendar(calendars: AvailableDate[]) {
     let calendarEle = document.body.querySelector("#calendar");
@@ -509,12 +513,42 @@ export class CalendarService {
     this.isMulti = data.isMulti;
     this.tripType = data.tripType;
     this.title = data.title;
+    // return this.openCalendarByNormal(calendars);
+    return this.openCalendarPage(data);
+  }
+  private openCalendarPage(data: any) {
+    return new Promise<DayModel[]>((resolve) => {
+      this.subscription.unsubscribe();
+      this.subscription = this.getSelectedDaysSource()
+        .pipe(
+          filter((it) => (this.isMulti ? it.length >= 2 : it.length > 0)),
+          tap((days) => {
+            console.log(" getSelectedDaysSource ", days);
+          }),
+          distinct()
+        )
+        .subscribe(
+          (days) => {
+            resolve(days);
+          },
+          () => {
+            this.subscription.unsubscribe();
+          }
+        );
+      this.router.navigate(["tmc-calendar"], {
+        queryParams: {
+          ...data,
+        },
+      });
+    });
+  }
+  private openCalendarByNormal(calendars: AvailableDate[], isMulti = false) {
     this.renderCalendar(calendars);
     return new Promise<DayModel[]>((resolve) => {
       this.subscription.unsubscribe();
       this.subscription = this.getSelectedDaysSource()
         .pipe(
-          filter((it) => (data.isMulti ? it.length >= 2 : it.length > 0)),
+          filter((it) => (isMulti ? it.length >= 2 : it.length > 0)),
           tap((days) => {
             console.log(" getSelectedDaysSource ", days);
           }),

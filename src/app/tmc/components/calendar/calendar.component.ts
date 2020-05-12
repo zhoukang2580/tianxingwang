@@ -38,7 +38,7 @@ import {
   styleUrls: ["./calendar.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CalendarComponent2
+export class CalendarComponent
   implements OnInit, AfterViewInit, OnDestroy, OnChanges {
   @HostBinding("class.show")
   @Input()

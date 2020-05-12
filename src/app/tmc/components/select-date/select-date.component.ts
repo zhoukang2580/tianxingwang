@@ -1,19 +1,26 @@
 import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
 import { ModalController } from "@ionic/angular";
-import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterViewInit,
+  forwardRef,
+  Injector,
+} from "@angular/core";
 import { Subscription } from "rxjs";
 import { LanguageHelper } from "src/app/languageHelper";
 import { DayModel } from "../../models/DayModel";
 import { AvailableDate } from "../../models/AvailableDate";
-import { CalendarService } from "../../calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import { TripType } from "src/app/tmc/models/TripType";
+import { CalendarService } from '../../calendar.service';
 @Component({
   selector: "app-select-date-comp",
   templateUrl: "./select-date.component.html",
   styleUrls: ["./select-date.component.scss"],
 })
-export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
+export class SelectDateComponent implements OnInit, OnDestroy, AfterViewInit {
   private days: DayModel[] = [];
   private timeoutId: any;
   private tripType: TripType;
@@ -21,6 +28,7 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
   private curSelectedMonth: number;
   private goArrivalTime: string;
   private isCurrentSelectedOk = false;
+  private calendarService: CalendarService;
   get curYm() {
     return `${this.curSelectedYear}-${
       this.curSelectedMonth < 10
@@ -52,17 +60,16 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
   isMulti: boolean; // 是否多选
   multiSub = Subscription.EMPTY;
   selectedSub = Subscription.EMPTY;
-  constructor(
-    private calendarService: CalendarService,
-    private modalCtrl: ModalController
-  ) {}
+  constructor(private injector: Injector, private modalCtrl: ModalController) {
+    this.calendarService = this.injector.get(CalendarService);
+  }
   ngOnDestroy() {
     this.multiSub.unsubscribe();
   }
   clazz(day: DayModel) {
     return day.clazz();
   }
-  
+
   ngAfterViewInit() {}
   onCalendarElesChange() {}
   ngOnInit() {
@@ -304,7 +311,7 @@ export class SelectDateComponent2 implements OnInit, OnDestroy, AfterViewInit {
               dt.selected = true;
             }
           }
-          dt.update();
+          // dt.update();
         });
       }
     });

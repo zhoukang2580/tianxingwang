@@ -18,9 +18,9 @@ export class AppHelper {
   static httpClient: HttpClient;
   private static _deviceName: "ios" | "android";
   private static _routeData: any;
-  private static toastController: ToastController;
-  private static alertController: AlertController;
-  private static modalController: ModalController;
+  static toastController: ToastController;
+  static alertController: AlertController;
+  static modalController: ModalController;
   private static fileService: FileHelperService;
   static _appDomain =
     environment.production && !environment.mockProBuild
