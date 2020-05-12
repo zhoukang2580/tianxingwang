@@ -14,7 +14,6 @@
           [(ngModel)]="trip.travelTools" okText="确定" multiple="true" cancelText="取消"
           [compareWith]="compareTravelToolWithFn">
           <ion-select-option value="{{t.value}}" *ngFor='let t of regionTypes'>{{t.label}}</ion-select-option>
-
           <!-- <ion-select-option value="Flight" *ngFor='let t of regionTypes'>机票</ion-select-option>
           <ion-select-option value="Hotel">火车票</ion-select-option>
           <ion-select-option value="Train">酒店</ion-select-option>
@@ -61,8 +60,8 @@
         <ion-text [color]="!enable?'dark':'dark'">
           出差结束时间
         </ion-text>
-        <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable"
-          displayFormat="YYYY-MM-DD" [(ngModel)]="trip.EndDate" doneText="确定" cancelText="取消">
+        <ion-datetime  style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable"
+          displayFormat="YYYY-MM-DD" [(ngModel)]="trip.EndDate" (ionChange)="duageTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
         </ion-datetime>
       </ion-item>
       <ion-item lines="none">

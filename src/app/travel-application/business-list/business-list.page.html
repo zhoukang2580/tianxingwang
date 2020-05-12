@@ -18,20 +18,20 @@
       flex-flow: column;
       align-items: center;
       margin-top: 1em;">
-      <ion-input placeholder="申请单号、出差事由等内容搜索" style="border: 1px solid #eeeeee;width: 94%;" [(ngModel)]="searchModel.SearchContent"></ion-input>
+      <ion-input placeholder="申请单号、出差事由等内容搜索" style="border: 1px solid #eeeeee;width: 94%;" [(ngModel)]="searchModel.SearchContent" (ionChange)="onSearch(true)"></ion-input>
       <div style="display:flex;
       width: 94%;
       justify-content: space-between;
       margin-top: 0.5em;">
         <ion-select slot="end" class="ion-text-end" okText="确定" cancelText="取消" [compareWith]="compareWithFn"
-          style="border: 1px solid #eeeeee;width: 75%;" placeholder="请选择申请单" [(ngModel)]="searchModel.StatusType">
+          style="border: 1px solid #eeeeee;width: 75%;" placeholder="请选择申请单" [(ngModel)]="searchModel.StatusType" (ionChange)="onSearch()">
           <ion-select-option value="0">请选择</ion-select-option>
           <ion-select-option value="{{ApprovalStatusType.Pass}}">通过</ion-select-option>
           <ion-select-option value="{{ApprovalStatusType.Refuse}}">拒绝</ion-select-option>
           <ion-select-option value="{{ApprovalStatusType.Waiting}}">待审核</ion-select-option>
           <ion-select-option value="{{ApprovalStatusType.WaiteSubmit}}">待提交</ion-select-option>
         </ion-select>
-        <ion-button color="secondary" style="height:2em" (click)="onSearch()">搜索</ion-button>
+        <!-- <ion-button color="secondary" style="height:2em" (click)="onSearch()">搜索</ion-button> -->
       </div>
     </div>
     <ion-item *ngFor='let item of items' style="border-radius: 0.5em;
@@ -42,7 +42,7 @@
       <div class="ion-padding-bottom ion-padding-top" style="width: 100%" (click)="onTravelEdit(item.Id)">
         <ion-row>
           <ion-col size='3'>
-            <ion-text color="medium">申请编号</ion-text>
+            <ion-text color="medium">序号</ion-text>
           </ion-col>
           <ion-col>
             {{item.Id}}

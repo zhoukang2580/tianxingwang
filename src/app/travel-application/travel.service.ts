@@ -22,7 +22,7 @@ export class TravelService {
   constructor(private apiService: ApiService) {}
   getlist(dto: SearchModel) {
     const req = new RequestEntity();
-    req.IsShowLoading = true;
+    req.IsShowLoading = dto.IsShowLoading;
     req.Method = `TmcApiTravelUrl-Home-List`;
     req.Data = {
       ...dto,
@@ -101,6 +101,7 @@ export class TravelService {
   }
 }
 export class SearchModel {
+  IsShowLoading:boolean;
   /// <summary>
   /// 差旅单
   /// </summary>

@@ -41,7 +41,8 @@ export class BusinessListPage implements OnInit, OnDestroy {
     this.searchModel.PageSize = 20;
     this.doRefresh();
   }
-  onSearch() {
+  onSearch(b) {
+    this.searchModel.IsShowLoading=b;
     console.log(this.searchModel.StatusType, "searchModel.StatusType");
     console.log(this.searchModel.SearchContent, "searchModel.AccountId");
     this.doRefresh(true);

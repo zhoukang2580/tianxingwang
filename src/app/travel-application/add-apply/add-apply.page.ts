@@ -185,7 +185,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         this.regionTypes = [];
         const names = this.tmc.RegionTypeName && this.tmc.RegionTypeName.split(",") || [];
         this.tmc.RegionTypeValue.split(",").forEach((v, idx) => {
-          this.regionTypes.push({value:v,label:names[idx]})
+          this.regionTypes.push({ value: v, label: names[idx] })
         })
         this.regionTypes = this.regionTypes.filter((t) =>
           this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
@@ -311,7 +311,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     if (org) {
       // this.costCenterName = org.Name;
       // this.costCenterCode = org.Code;
-
       this.searchModel.TravelForm = {
         ...this.searchModel.TravelForm,
         Id: org.Id,
@@ -358,60 +357,67 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     });
   }
   async onSubmit() {
-    if (this.searchModel.TravelForm) {
-      if (!this.searchModel.TravelForm.Organization) {
-        const el = this.getEleByAttr("organization", "organization");
-        this.moveRequiredEleToViewPort(el);
-        AppHelper.toast("请选择所属部门");
-        return;
-      }
-      if (!this.searchModel.TravelForm.Subject) {
-        const el = this.getEleByAttr("Subject", "Subject");
-        this.moveRequiredEleToViewPort(el);
-        AppHelper.toast("请输入出差事由");
-        return;
-      }
+    try {
 
-      if (!this.searchModel.TravelForm.TripType) {
-        const el = this.getEleByAttr("tripType", "tripType");
-        this.moveRequiredEleToViewPort(el);
-        AppHelper.toast("请选择出差类别");
-        return;
-      }
-      if (this.searchModel.TravelForm.Trips) {
-        for (
-          let index = 0;
-          index < this.searchModel.TravelForm.Trips.length;
-          index++
-        ) {
-          if (
-            !this.searchModel.TravelForm.Trips[index].TravelTool ||
-            !this.searchModel.TravelForm.Trips[index].FromCityName ||
-            !this.searchModel.TravelForm.Trips[index].ToCityName ||
-            !this.searchModel.TravelForm.Trips[index].StartDate ||
-            !this.searchModel.TravelForm.Trips[index].EndDate
+      if (this.searchModel.TravelForm) {
+        if (!this.searchModel.TravelForm.Organization) {
+          const el = this.getEleByAttr("organization", "organization");
+          this.moveRequiredEleToViewPort(el);
+          AppHelper.toast("请选择所属部门");
+          return;
+        }
+        if (!this.searchModel.TravelForm.Subject) {
+          const el = this.getEleByAttr("Subject", "Subject");
+          this.moveRequiredEleToViewPort(el);
+          AppHelper.toast("请输入出差事由");
+          return;
+        }
+
+        if (!this.searchModel.TravelForm.TripType) {
+          const el = this.getEleByAttr("tripType", "tripType");
+          this.moveRequiredEleToViewPort(el);
+          AppHelper.toast("请选择出差类别");
+          return;
+        }
+        if (this.searchModel.TravelForm.Trips) {
+          for (
+            let index = 0;
+            index < this.searchModel.TravelForm.Trips.length;
+            index++
           ) {
-            const el = this.getEleByAttr("addStroke", `${index}`);
-            this.moveRequiredEleToViewPort(el);
-            AppHelper.toast("请输入行程");
-            return;
+            if (
+              !this.searchModel.TravelForm.Trips[index].TravelTool ||
+              !this.searchModel.TravelForm.Trips[index].FromCityName ||
+              !this.searchModel.TravelForm.Trips[index].ToCityName ||
+              !this.searchModel.TravelForm.Trips[index].StartDate ||
+              !this.searchModel.TravelForm.Trips[index].EndDate
+            ) {
+              const el = this.getEleByAttr("addStroke", `${index}`);
+              this.moveRequiredEleToViewPort(el);
+              AppHelper.toast("请输入行程");
+              return;
+            }
+            if (this.searchModel.TravelForm.Trips[index].Day <= 0) {
+              const el = this.getEleByAttr("addStroke", `${index}`);
+              this.moveRequiredEleToViewPort(el);
+              AppHelper.toast("出差结束时间不能早于出差开始时间");
+              return
+            }
           }
         }
       }
-    }
-    if (
-      this.tmc &&
-      this.TravelApprovalType &&
-      this.tmc.TravelApprovalType == this.TravelApprovalType.Free
-    ) {
-      if (!this.appovalStaff) {
-        const el = this.getEleByAttr("accountId", "accountId");
-        this.moveRequiredEleToViewPort(el);
-        AppHelper.toast("请选择审批人");
-        return;
+      if (
+        this.tmc &&
+        this.TravelApprovalType &&
+        this.tmc.TravelApprovalType == this.TravelApprovalType.Free
+      ) {
+        if (!this.appovalStaff) {
+          const el = this.getEleByAttr("accountId", "accountId");
+          this.moveRequiredEleToViewPort(el);
+          AppHelper.toast("请选择审批人");
+          return;
+        }
       }
-    }
-    try {
       if (this.searchModel.TravelForm) {
         this.searchModel.Trips = this.searchModel.TravelForm.Trips;
         this.searchModel.OrganizationId =
@@ -427,7 +433,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       AppHelper.alert(e);
     }
   }
-
   async onSave() {
     try {
       if (this.searchModel.TravelForm) {
