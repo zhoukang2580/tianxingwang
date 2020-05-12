@@ -77,6 +77,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   orderDetail: OrderDetailModel;
   isLoading = false;
   showTiket = false;
+  tikectNo = [];
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
   @ViewChildren("slide") slides: QueryList<any>;
   @ViewChild(IonHeader) headerEle: IonHeader;
@@ -104,7 +105,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService
-  ) {}
+  ) { }
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -452,6 +453,26 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     });
     this.tmc = await this.tmcService.getTmc();
     this.identity = await this.identityService.getIdentityAsync();
+    // this.getTicketNo();
+  }
+  getTicketNo(f) {
+    if (f) {
+      if(!this.orderDetail&&!this.orderDetail.Order&&!this.orderDetail.Order.OrderFlightTickets){
+        return
+      }
+      const ticket = this.orderDetail.Order.OrderFlightTickets.find(it => it.Id == f.Id);
+      this.tikectNo = [];
+      if (ticket) {
+        this.tikectNo.push(ticket.FullTicketNo);
+      }
+      if(this.tikectId2OriginalTickets[f.Id]){
+        this.tikectId2OriginalTickets[f.Id].forEach(m => {
+          this.tikectNo.push(m.FullTicketNo);
+        })
+      }
+      this.tikectNo = Array.from(new Set(this.tikectNo))
+      return this.tikectNo
+    }
   }
   getVariableObj(
     it: { Variables: string; VariablesDictionary: any },
@@ -638,6 +659,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         this.orderDetail.Order.OrderFlightTickets &&
         this.orderDetail.Order.OrderFlightTickets.length
       ) {
+        // this.getTicketNo();
         const tickets = this.orderDetail.Order.OrderFlightTickets.slice(0);
         tickets.sort((ta, tb) => {
           return (
@@ -857,11 +879,11 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     orderFlightTickets: OrderFlightTicketEntity[],
     res: OrderFlightTicketEntity[]
   ) {
-    if(t.Variables){
+    if (t.Variables) {
       t.VariablesJsonObj = t.VariablesJsonObj || JSON.parse(t.Variables) || {};
     }
-    if(!t.VariablesJsonObj){
-      t.VariablesJsonObj={}
+    if (!t.VariablesJsonObj) {
+      t.VariablesJsonObj = {}
     }
     const it = orderFlightTickets.find(
       (itm) => itm.Id == t.VariablesJsonObj.OriginalTicketId
