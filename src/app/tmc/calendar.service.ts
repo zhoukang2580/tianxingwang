@@ -508,7 +508,6 @@ export class CalendarService {
     forType: FlightHotelTrainType;
     tripType?: TripType;
   }) {
-    const calendars = this.generateYearCalendar();
     this.goArrivalTime = data.goArrivalTime || "";
     this.isMulti = data.isMulti;
     this.tripType = data.tripType;
@@ -521,7 +520,7 @@ export class CalendarService {
       this.subscription.unsubscribe();
       this.subscription = this.getSelectedDaysSource()
         .pipe(
-          filter((it) => (this.isMulti ? it.length >= 2 : it.length > 0)),
+          filter((it) => (data.isMulti ? it.length >= 2 : it.length > 0)),
           tap((days) => {
             console.log(" getSelectedDaysSource ", days);
           }),

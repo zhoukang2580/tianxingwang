@@ -83,14 +83,11 @@ export class TmcCalendarPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.push(
       this.route.queryParamMap.subscribe((q) => {
         this.title = q.get("title");
+        this.isMulti = q.get("isMulti") as any;
         this.forType = q.get("forType") as any;
         this.tripType = q.get("tripType") as any;
         this.goArrivalTime = q.get("goArrivalTime");
-        if (!this.calendars || !this.calendars.length) {
-          this.initCurYearMonthCalendar();
-        } else {
-          this.updateCalendars();
-        }
+        this.initCurYearMonthCalendar();
       })
     );
   }
@@ -102,9 +99,17 @@ export class TmcCalendarPage implements OnInit, OnDestroy, AfterViewInit {
     );
     setTimeout(() => {
       this.moveToCurMonth();
+      if (!this.isSrollToCurYm) {
+        setTimeout(() => {
+          this.moveToCurMonth();
+        }, 500);
+      }
     }, 100);
   }
   private moveToCurMonth() {
+    if (this.isSrollToCurYm) {
+      return;
+    }
     if (!this.calendareles || !this.calendareles.toArray().length) {
       return;
     }
@@ -142,15 +147,34 @@ export class TmcCalendarPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private initCurYearMonthCalendar() {
     const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
-    console.log("goArrivalTime", this.goArrivalTime, m.format("YYYY-MM-DD"));
+    console.log(
+      "goArrivalTime",
+      this.goArrivalTime,
+      m.format("YYYY-MM-DD"),
+      "isSrollToCurYm=" + this.isSrollToCurYm
+    );
     let st = Date.now();
     this.generateYearCalendar();
     console.log("生成日历耗时：" + (Date.now() - st) + " ms");
   }
   private generateYearCalendar() {
     const m = this.calendarService.getMoment(0);
+    const goArrivalTime = this.calendarService
+      .getMoment(0, this.goArrivalTime)
+      .format("YYYY-MM");
     this.calendars = [];
-    const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;
+    let len = this.forType == FlightHotelTrainType.Train ? 2 : 6;
+    if (goArrivalTime) {
+      for (let i = 0; i < 48; i++) {
+        const m2 = m.clone().add(i, "months").format("YYYY-MM");
+        if (m2 == goArrivalTime) {
+          len = i + 3;
+          break;
+        }
+      }
+    }
+    len = len <= 6 ? 6 : len;
+    len = this.forType == FlightHotelTrainType.Train ? 2 : len;
     for (let i = 0; i < len; i++) {
       const im = m.clone().add(i, "months");
       this.calendars.push(
@@ -410,10 +434,12 @@ export class TmcCalendarPage implements OnInit, OnDestroy, AfterViewInit {
       result.push(this.calendarService.generateYearNthMonthCalendar(y, nextM));
     }
     if (this.scroller) {
-      const curY = new Date().getFullYear();
-      this.scroller.disabled = curY + 1 == y && nextM == 1;
+      // const curY = new Date().getFullYear();
+      // this.scroller.disabled = curY + 1 == y && nextM == 1;
       this.scroller.complete();
     }
+    this.calendars = this.calendars.concat(result);
+    this.checkYms();
   }
   back() {
     this.calendarService.setSelectedDaysSource(this.selectedDays);

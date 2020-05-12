@@ -679,17 +679,8 @@ export class InternationalHotelService {
       tripType,
       isMulti: true,
       title,
-      forType: FlightHotelTrainType.Hotel,
+      forType: FlightHotelTrainType.HotelInternational,
     });
-    if (data) {
-      if (data.length == 2) {
-        this.setSearchConditionSource({
-          ...this.getSearchCondition(),
-          checkinDate: data[0].date,
-          checkoutDate: data[1].date,
-        });
-      }
-    }
     return data;
   }
   private parseVariables(jsonStr: string) {

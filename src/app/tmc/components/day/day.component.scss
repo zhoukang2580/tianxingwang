@@ -83,7 +83,7 @@
   }
   .dayoff {
     margin-right: auto;
-    padding-left: 0.5em;
+    // padding-left: 0.5em;
   }
 
   // .top {
@@ -107,7 +107,8 @@
   .content {
     font-size: 1.1rem;
   }
-  .danger {
+  .danger,
+  .dayoff {
     color: var(--ion-color-danger);
   }
   // &:not(.selected) {
