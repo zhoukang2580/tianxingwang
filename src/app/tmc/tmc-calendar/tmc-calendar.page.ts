@@ -83,7 +83,7 @@ export class TmcCalendarPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.push(
       this.route.queryParamMap.subscribe((q) => {
         this.title = q.get("title");
-        this.isMulti = q.get("isMulti") as any;
+        this.isMulti = q.get("isMulti") == "true";
         this.forType = q.get("forType") as any;
         this.tripType = q.get("tripType") as any;
         this.goArrivalTime = q.get("goArrivalTime");
