@@ -19,7 +19,7 @@
         {{trip.fromCity?.CityName}}-{{trip?.toCity?.CityName}}
       </ion-col>
       <ion-col class="font-prime">
-        飞行时长 {{getFlyTime(trip.bookInfo?.flightRoute?.Duration)}}
+            飞行时长 {{getFlyTime(trip.bookInfo?.flightRoute?.Duration)}}
       </ion-col>
     </ion-row>
     <ion-row>
@@ -30,9 +30,21 @@
               {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(10,16)}}
             </ion-col>
             <ion-col class="border-left">
-              {{trip.bookInfo?.fromSegment?.FromAirport}} {{trip.bookInfo?.fromSegment?.FromAirportName}}
-              {{trip.bookInfo?.fromSegment?.FromTerminal}}
+              {{trip?.bookInfo?.fromSegment?.FromAirport}} {{trip?.bookInfo?.fromSegment?.FromAirportName}}
+              {{trip?.bookInfo?.fromSegment?.FromTerminal}}
             </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="2" >
+
+            </ion-col>
+            <ion-col *ngFor="let item of trip?.bookInfo?.flightRoute?.transferSegments;let last=last">
+                <ng-container *ngIf="!last">
+                    <ion-text color="medium" style="font-size:0.7rem" class="ion-padding-start">
+                   {{item.FromAirport}} {{item.ToAirportName}} {{item.FromTerminal}}
+                    </ion-text>
+                </ng-container>
+              </ion-col>
           </ion-row>
           <ion-row style="margin-top:1em">
             <ion-col size="2" style="text-align:end">
