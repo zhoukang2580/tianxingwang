@@ -444,6 +444,16 @@ export class TmcCalendarPage implements OnInit, OnDestroy, AfterViewInit {
   back() {
     this.calendarService.setSelectedDaysSource(this.selectedDays);
     setTimeout(() => {
+      setTimeout(() => {
+        this.calendars.forEach((c) => {
+          c.dayList.forEach((d) => {
+            d.selected = false;
+            d.topDesc = "";
+            d.isBetweenDays = false;
+            d.update();
+          });
+        });
+      }, 200);
       this.backbtn.backToPrePage();
     }, this.delayBackTime);
   }
