@@ -17,7 +17,7 @@ import { DayModel } from "../../tmc/models/DayModel";
 import {
   ModalController,
   NavController,
-  PopoverController
+  PopoverController,
 } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
@@ -31,7 +31,7 @@ import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standa
 @Component({
   selector: "app-search-train",
   templateUrl: "./search-train.page.html",
-  styleUrls: ["./search-train.page.scss"]
+  styleUrls: ["./search-train.page.scss"],
 })
 export class SearchTrainPage
   implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
@@ -63,7 +63,7 @@ export class SearchTrainPage
   ) {}
   async onShowSelectedBookInfos() {
     const m = await this.modalCtrl.create({
-      component: SelectedTrainSegmentInfoComponent
+      component: SelectedTrainSegmentInfoComponent,
     });
     m.present();
   }
@@ -71,8 +71,8 @@ export class SearchTrainPage
     // console.log("onRoundTrip isSingle", single);
     this.isSingle = single;
     this.trainService.setSearchTrainModelSource({
-      ...this.trainService.getSearchTrainModel(),
-      isRoundTrip: !this.isSingle
+      ...this.searchTrainModel,
+      isRoundTrip: !this.isSingle,
     });
   }
   getMonth(d: DayModel) {
@@ -103,21 +103,22 @@ export class SearchTrainPage
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
       componentProps: {
-        details: s.Policy.TrainDescription.split("。")
+        details: s.Policy.TrainDescription.split("。"),
       },
-      cssClass: "ticket-changing"
+      cssClass: "ticket-changing",
     });
     p.present();
   }
-  async ngOnInit() {
+  ngOnInit() {
+    this.initTrainDays();
     this.isShowSelectedInfos$ = this.trainService
       .getBookInfoSource()
       .pipe(
-        map(infos => infos && infos.filter(it => !!it.bookInfo).length > 0)
+        map((infos) => infos && infos.filter((it) => !!it.bookInfo).length > 0)
       );
     const subscription = this.trainService
       .getSearchTrainModelSource()
-      .subscribe(async s => {
+      .subscribe(async (s) => {
         console.log("search-train", s);
         this.searchTrainModel = s;
         if (this.searchTrainModel) {
@@ -127,15 +128,14 @@ export class SearchTrainPage
           this.isSingle = !s.isRoundTrip;
         }
       });
-    const sub = this.route.queryParamMap.subscribe(async _ => {
+    const sub = this.route.queryParamMap.subscribe(async (_) => {
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
       const searchTrainModel = this.trainService.getSearchTrainModel();
       this.searchTrainModel.isExchange =
         searchTrainModel.isExchange ||
         !!this.trainService
           .getBookInfos()
-          .find(it => it.bookInfo && it.bookInfo.isExchange);
-      await this.initTrainDays();
+          .find((it) => it.bookInfo && it.bookInfo.isExchange);
       this.staff = await this.staffService.getStaff();
       this.isSelf = await this.isStaffTypeSelf();
       // this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
@@ -147,7 +147,7 @@ export class SearchTrainPage
       this.selectedPassengers = this.trainService.getBookInfos().length;
       this.selectedBookInfos = this.trainService
         .getBookInfos()
-        .filter(it => it.bookInfo).length;
+        .filter((it) => it.bookInfo).length;
     });
     this.subscriptions.push(sub);
     this.subscriptions.push(subscription);
@@ -155,7 +155,7 @@ export class SearchTrainPage
 
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
-      queryParams: { forType: FlightHotelTrainType.Train }
+      queryParams: { forType: FlightHotelTrainType.Train },
     });
   }
   onSelectCity(isFrom = true) {
@@ -184,11 +184,11 @@ export class SearchTrainPage
   }
   ngOnDestroy(): void {
     console.log("on destroyed");
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   async initTrainDays() {
     const infos = this.trainService.getBookInfos();
-    const exchangeInfo = infos.find(it => !!it.exchangeInfo);
+    const exchangeInfo = infos.find((it) => !!it.exchangeInfo);
     const ticket =
       exchangeInfo &&
       exchangeInfo.exchangeInfo &&
@@ -199,9 +199,7 @@ export class SearchTrainPage
       (await this.storage.get(
         `last_selected_train_goDate_${identity && identity.Id}`
       )) || moment().format("YYYY-MM-DD");
-    const nextDate = moment()
-      .add(1, "days")
-      .format("YYYY-MM-DD");
+    const nextDate = moment().add(1, "days").format("YYYY-MM-DD");
     const now = moment().format("YYYY-MM-DD");
     lastSelectedGoDate =
       lastSelectedGoDate &&
@@ -217,8 +215,8 @@ export class SearchTrainPage
           : now;
     }
     this.trainService.setSearchTrainModelSource({
-      ...this.trainService.getSearchTrainModel(),
-      Date: lastSelectedGoDate
+      ...this.searchTrainModel,
+      Date: lastSelectedGoDate,
     });
   }
 
@@ -238,7 +236,9 @@ export class SearchTrainPage
     console.log("search-train", s);
     this.isCanLeave = true;
     this.trainService.setSearchTrainModelSource(s);
-    this.router.navigate([AppHelper.getRoutePath("train-list")]).then(_ => {});
+    this.router
+      .navigate([AppHelper.getRoutePath("train-list")])
+      .then((_) => {});
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
       await this.storage.set(
@@ -251,6 +251,7 @@ export class SearchTrainPage
     return this.calendarService.getDescOfDay(d);
   }
   async onSelecDate(isGo: boolean, isBack: boolean) {
+    this.isCanLeave = true;
     if (this.isDisabled && !this.searchTrainModel.isExchange && !isBack) {
       return;
     }
@@ -271,9 +272,9 @@ export class SearchTrainPage
   onCitiesSelected(c: { vmTo: TrafficlineEntity; vmFrom: TrafficlineEntity }) {
     if (c) {
       this.trainService.setSearchTrainModelSource({
-        ...this.trainService.getSearchTrainModel(),
+        ...this.searchTrainModel,
         fromCity: c.vmFrom,
-        toCity: c.vmTo
+        toCity: c.vmTo,
       });
     }
   }
@@ -282,7 +283,7 @@ export class SearchTrainPage
       return true;
     }
     const bookInfos = this.trainService.getBookInfos();
-    const info = bookInfos.find(it => !!it.exchangeInfo);
+    const info = bookInfos.find((it) => !!it.exchangeInfo);
     const exchangeInfo = info && info.exchangeInfo;
     if (exchangeInfo) {
       const ok = await AppHelper.alert(
@@ -293,9 +294,9 @@ export class SearchTrainPage
       );
       if (ok) {
         this.trainService.setSearchTrainModelSource({
-          ...this.trainService.getSearchTrainModel(),
+          ...this.searchTrainModel,
           isExchange: false,
-          isLocked: false
+          isLocked: false,
         });
         this.trainService.removeAllBookInfos();
         return true;
