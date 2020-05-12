@@ -575,9 +575,19 @@ export class FlightService {
               ];
             } else {
               // 判断机场
-              const showTip =
+              let showTip =
                 flightSegment.FromAirport !=
                 go.bookInfo.flightSegment.ToAirport;
+              if (showTip) {
+                showTip =
+                  Math.abs(
+                    Math.floor(
+                      flightSegment.TakeoffTimeStamp -
+                        go.bookInfo.flightSegment.ArrivalTimeStamp
+                    )
+                  ) <=
+                  45 * 60 * 1000;
+              }
               if (showTip) {
                 await AppHelper.alert(
                   `回程航班出发机场与去程航班抵达机场不同， 请确保衔接时间充足。`,
