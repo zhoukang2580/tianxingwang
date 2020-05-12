@@ -93,7 +93,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
-  async onTravelEdit(id, status) {
+  async onTravelEdit(id) {
     try {
       const m = await this.service.getTravelDetail(id);
       if (m) {
