@@ -75,6 +75,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
         }
       });
   }
+  
   doRefresh(isKeepCondition = false) {
     if (!isKeepCondition) {
       this.searchModel.StatusType = 0;
@@ -104,6 +105,17 @@ export class BusinessListPage implements OnInit, OnDestroy {
           },
         });
       }
+    } catch (e) {
+      AppHelper.alert(e);
+    }
+  }
+   onCancel(id,event:CustomEvent){
+    event.stopPropagation()
+    try {
+      const m =  this.service.travelCancel(id).then(t=>{
+        AppHelper.alert(t.Message)
+        this.doRefresh()
+      })
     } catch (e) {
       AppHelper.alert(e);
     }

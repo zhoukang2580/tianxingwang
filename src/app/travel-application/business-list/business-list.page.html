@@ -39,7 +39,7 @@
       margin: 0.5em auto;
       font-size: 0.9rem;
       border: 1px solid #eeeeee;" lines="none">
-      <div class="ion-padding-bottom ion-padding-top" style="width: 100%" (click)="onTravelEdit(item.Id,item.StatusTypeName)">
+      <div class="ion-padding-bottom ion-padding-top" style="width: 100%" (click)="onTravelEdit(item.Id)">
         <ion-row>
           <ion-col size='3'>
             <ion-text color="medium">申请编号</ion-text>
@@ -62,7 +62,8 @@
             <ion-text color="medium">申请状态</ion-text>
           </ion-col>
           <ion-col>
-            {{item.StatusTypeName}}
+            {{item.StatusTypeName}} 
+            <ion-button color="secondary" *ngIf="item.StatusTypeName=='待审核'" (click)="onCancel(item.Id,$event)">撤销</ion-button>
           </ion-col>
         </ion-row>
         <ion-row>

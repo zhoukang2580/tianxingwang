@@ -83,7 +83,7 @@ export class TravelService {
     req.Data = {
       Id: id,
     };
-    return this.apiService.getPromiseData<TravelFormEntity[]>(req);
+    return this.apiService.getPromiseData<{Id:string;Message:string;}>(req);
   }
   getCities(name: string) {
     const req = new RequestEntity();
