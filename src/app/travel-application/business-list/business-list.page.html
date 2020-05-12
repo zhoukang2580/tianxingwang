@@ -24,7 +24,7 @@
       justify-content: space-between;
       margin-top: 0.5em;">
         <ion-select slot="end" class="ion-text-end" okText="确定" cancelText="取消" [compareWith]="compareWithFn"
-          style="border: 1px solid #eeeeee;width: 75%;" placeholder="请选择申请单" [(ngModel)]="searchModel.StatusType" (ionChange)="onSearch()">
+          style="border: 1px solid #eeeeee;width: 75%;" placeholder="请选择申请单" [(ngModel)]="searchModel.StatusType" (ionChange)="onSearch(false)">
           <ion-select-option value="0">请选择</ion-select-option>
           <ion-select-option value="{{ApprovalStatusType.Pass}}">通过</ion-select-option>
           <ion-select-option value="{{ApprovalStatusType.Refuse}}">拒绝</ion-select-option>
