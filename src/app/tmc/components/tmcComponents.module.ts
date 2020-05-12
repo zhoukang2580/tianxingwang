@@ -27,6 +27,8 @@ import { BookTmcOutnumberComponent } from "./book-tmc-outnumber/book-tmc-outnumb
 import { WaitingCheckPayComponent } from "./waiting-check-pay/waiting-check-pay.component";
 import { ShowStandardDetailsComponent } from "./show-standard-details/show-standard-details.component";
 import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-expense-types-comp.component";
+import { SelectDateComponent } from "./select-date/select-date.component";
+import { CalendarComponent } from './calendar/calendar.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,9 @@ import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-ex
     BookTmcOutnumberComponent,
     WaitingCheckPayComponent,
     ShowStandardDetailsComponent,
-    BookExpenseTypesCompComponent
+    SelectDateComponent,
+    CalendarComponent,
+    BookExpenseTypesCompComponent,
   ],
   imports: [
     CommonModule,
@@ -59,7 +63,7 @@ import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-ex
     FormsModule,
     AppDirectivesModule,
     AppComponentsModule,
-    MemberPipesModule
+    MemberPipesModule,
   ],
   exports: [
     BookCredentialCompComponent,
@@ -73,7 +77,7 @@ import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-ex
     SearchDayComponent,
     DaysCalendarComponent,
     WaitingCheckPayComponent,
-    BookExpenseTypesCompComponent
-  ]
+    BookExpenseTypesCompComponent,
+  ],
 })
 export class TmcComponentsModule {}

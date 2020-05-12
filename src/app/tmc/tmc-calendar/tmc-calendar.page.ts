@@ -1,8 +1,17 @@
-import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  QueryList,
+  ElementRef,
+  ViewChildren,
+  AfterViewInit,
+} from "@angular/core";
 import { TmcService, FlightHotelTrainType } from "../tmc.service";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
-import { IonInfiniteScroll } from "@ionic/angular";
+import { IonInfiniteScroll, IonContent, Platform } from "@ionic/angular";
 import { AvailableDate } from "../models/AvailableDate";
 import { CalendarService } from "../calendar.service";
 import { DayModel } from "../models/DayModel";
@@ -16,7 +25,7 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
   templateUrl: "./tmc-calendar.page.html",
   styleUrls: ["./tmc-calendar.page.scss"],
 })
-export class TmcCalendarPage implements OnInit, OnDestroy {
+export class TmcCalendarPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   private subscriptions: Subscription[] = [];
   private page: { m: number; y: number };
@@ -26,6 +35,11 @@ export class TmcCalendarPage implements OnInit, OnDestroy {
   private isCurrentSelectedOk = false;
   private days: DayModel[] = [];
   private timeoutId: any;
+  private isSrollToCurYm = false;
+  @ViewChild(IonContent, { static: true }) content: IonContent;
+  @ViewChildren("calendar") private calendareles: QueryList<
+    ElementRef<HTMLElement>
+  >;
   isMulti: boolean; // 是否多选
   private tripType: TripType;
   set selectedDays(days: DayModel[]) {
@@ -49,9 +63,9 @@ export class TmcCalendarPage implements OnInit, OnDestroy {
   calendars: AvailableDate[];
   weeks: string[];
   constructor(
-    private tmcService: TmcService,
     private calendarService: CalendarService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private plt: Platform
   ) {}
 
   ngOnDestroy() {
@@ -79,6 +93,35 @@ export class TmcCalendarPage implements OnInit, OnDestroy {
         }
       })
     );
+  }
+  ngAfterViewInit() {
+    this.subscriptions.push(
+      this.calendareles.changes.subscribe(() => {
+        this.moveToCurMonth();
+      })
+    );
+    setTimeout(() => {
+      this.moveToCurMonth();
+    }, 100);
+  }
+  private moveToCurMonth() {
+    if (!this.calendareles || !this.calendareles.toArray().length) {
+      return;
+    }
+    const scrollToMonth: string = this.calendarService
+      .getMoment(0, this.goArrivalTime)
+      .format("YYYY-MM");
+    console.log("scrollToMonth", scrollToMonth);
+    const el = this.calendareles
+      .toArray()
+      .find((it) => it.nativeElement.getAttribute("ym") == scrollToMonth);
+    if (el && el.nativeElement) {
+      const rect = el.nativeElement.getBoundingClientRect();
+      if (rect) {
+        this.isSrollToCurYm = true;
+        this.content.scrollByPoint(0, rect.top - this.plt.height() / 2, 100);
+      }
+    }
   }
   private updateCalendars() {
     const m = this.calendarService.getMoment(0);
@@ -235,7 +278,6 @@ export class TmcCalendarPage implements OnInit, OnDestroy {
                     )
                   );
           }
-          d.update();
           this.selectedDays.push(d);
         }
       } else {
@@ -287,7 +329,6 @@ export class TmcCalendarPage implements OnInit, OnDestroy {
     }
     const first = this.selectedDays[0];
     const last = this.selectedDays[this.selectedDays.length - 1];
-    console.time("update");
     this.calendars.forEach((item) => {
       if (item.dayList) {
         item.dayList.forEach((dt) => {
@@ -316,11 +357,9 @@ export class TmcCalendarPage implements OnInit, OnDestroy {
               dt.selected = true;
             }
           }
-          dt.update();
         });
       }
     });
-    console.timeEnd("update");
     if (this.isMulti) {
       this.isCurrentSelectedOk =
         this.selectedDays && this.selectedDays.length > 1;
