@@ -13,6 +13,7 @@ export class FlightFareEntity {
   /// </summary>
   Id: string;
   Explain: string;
+  refundChangeDetail?: FlightFareEntity[];
   /// <summary>
   ///
   /// </summary>

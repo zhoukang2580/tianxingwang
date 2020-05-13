@@ -251,7 +251,6 @@ export class SearchTrainPage
     return this.calendarService.getDescOfDay(d);
   }
   async onSelecDate(isGo: boolean, isBack: boolean) {
-    this.isCanLeave = true;
     if (this.isDisabled && !this.searchTrainModel.isExchange && !isBack) {
       return;
     }

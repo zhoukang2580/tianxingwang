@@ -228,25 +228,36 @@ export class FlightTicketReservePage
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.flightService.getBookInfos();
     bookDto.Passengers = [];
+    const trips = this.searchModel.trips || [];
     const isSelf = await this.staffService.isSelfBookType();
-    infos.forEach((item, idx) => {
-      if (item.passenger) {
+    infos.forEach((info, idx) => {
+      if (info.passenger) {
         const p = new PassengerDto();
-        p.ClientId = item.id;
+        p.ClientId = info.id;
         p.FlightFare =
-          item.bookInfo &&
-          item.bookInfo.flightRoute &&
-          item.bookInfo.flightRoute.policy &&
-          item.bookInfo.flightRoute.policy.FlightFare;
-        p.Credentials = item.credential;
+          info.bookInfo &&
+          info.bookInfo.flightRoute &&
+          info.bookInfo.flightRoute.policy &&
+          info.bookInfo.flightRoute.policy.FlightFare;
+        p.Credentials = info.credential;
         if (idx == 0) {
-          const flightRouteIds = infos
+          const flightRouteIds = trips
             .map((it) => it.bookInfo && it.bookInfo.flightRoute)
             .filter((it) => !!it)
             .map((r) => r.Id);
           p.FlightRoutes = this.flightService.flightListResult.FlightRoutesData.filter(
             (it) => flightRouteIds.some((id) => id == it.Id)
-          );
+          ).map((it) => {
+            const r = {
+              ...it,
+              flightFare: null,
+              FlightSegments: [],
+              fromSegment: null,
+              toSegment: null,
+              transferSegments: null,
+            };
+            return r;
+          });
           const segs = this.flightService.flightListResult.FlightSegments.filter(
             (s) =>
               p.FlightRoutes.some(
@@ -258,9 +269,9 @@ export class FlightTicketReservePage
           p.FlightSegments = segs;
         }
         const account = new AccountEntity();
-        account.Id = item.passenger.AccountId;
+        account.Id = info.passenger.AccountId;
         p.Credentials.Account = p.Credentials.Account || account;
-        p.Policy = item.passenger.Policy;
+        p.Policy = info.passenger.Policy;
         bookDto.Passengers.push(p);
       }
     });
@@ -560,13 +571,13 @@ export class FlightTicketReservePage
           item.bookInfo &&
           item.bookInfo.bookInfo &&
           item.bookInfo.bookInfo.flightRoute &&
-          item.bookInfo.bookInfo.flightRoute.flightFare
+          item.bookInfo.bookInfo.flightRoute.selectFlightFare
         ) {
           const info = item.bookInfo;
           arr = AppHelper.add(
             arr,
-            +info.bookInfo.flightRoute.flightFare.SalesPrice,
-            +info.bookInfo.flightRoute.flightFare.Tax
+            +info.bookInfo.flightRoute.selectFlightFare.SalesPrice,
+            +info.bookInfo.flightRoute.selectFlightFare.Tax
           );
         }
         if (item.insuranceProducts) {
@@ -863,7 +874,7 @@ export class FlightTicketReservePage
           trips[trips.length - 1].bookInfo.flightRoute
         ) {
           p.FlightFare =
-            trips[trips.length - 1].bookInfo.flightRoute.flightFare;
+            trips[trips.length - 1].bookInfo.flightRoute.selectFlightFare;
           p.FlightCabin = p.FlightFare as any;
           p.IllegalPolicy =
             trips[trips.length - 1].bookInfo.flightRoute.policy &&
@@ -967,7 +978,7 @@ export class FlightTicketReservePage
         !combindInfo.bookInfo.isNotWhitelist &&
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.flightRoute &&
-        combindInfo.bookInfo.bookInfo.flightRoute.flightFare &&
+        combindInfo.bookInfo.bookInfo.flightRoute.selectFlightFare &&
         combindInfo.bookInfo.bookInfo.flightRoute.policy &&
         combindInfo.bookInfo.bookInfo.flightRoute.policy.Message
       ) {
@@ -1236,13 +1247,13 @@ export class FlightTicketReservePage
                 price:
                   bookInfo &&
                   bookInfo.flightRoute &&
-                  bookInfo.flightRoute.flightFare &&
-                  bookInfo.flightRoute.flightFare.SalesPrice,
+                  bookInfo.flightRoute.selectFlightFare &&
+                  bookInfo.flightRoute.selectFlightFare.SalesPrice,
                 tax:
                   bookInfo &&
                   bookInfo.flightRoute &&
-                  bookInfo.flightRoute.flightFare &&
-                  bookInfo.flightRoute.flightFare.Tax,
+                  bookInfo.flightRoute.selectFlightFare &&
+                  bookInfo.flightRoute.selectFlightFare.Tax,
                 insurances: item.insuranceProducts
                   .filter(
                     (it) =>

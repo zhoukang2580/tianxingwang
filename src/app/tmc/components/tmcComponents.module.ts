@@ -27,8 +27,8 @@ import { BookTmcOutnumberComponent } from "./book-tmc-outnumber/book-tmc-outnumb
 import { WaitingCheckPayComponent } from "./waiting-check-pay/waiting-check-pay.component";
 import { ShowStandardDetailsComponent } from "./show-standard-details/show-standard-details.component";
 import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-expense-types-comp.component";
-import { SelectDateComponent } from "./select-date/select-date.component";
-import { CalendarComponent } from './calendar/calendar.component';
+import { CalendarComponent } from "./calendar/calendar.component";
+import { TmcCalendarComponent } from "./tmc-calendar/tmc-calendar.page";
 
 @NgModule({
   declarations: [
@@ -53,7 +53,7 @@ import { CalendarComponent } from './calendar/calendar.component';
     BookTmcOutnumberComponent,
     WaitingCheckPayComponent,
     ShowStandardDetailsComponent,
-    SelectDateComponent,
+    TmcCalendarComponent,
     CalendarComponent,
     BookExpenseTypesCompComponent,
   ],

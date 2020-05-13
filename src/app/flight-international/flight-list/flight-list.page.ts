@@ -58,7 +58,7 @@ export class FlightListPage implements OnInit, OnDestroy {
   private scrollToTop() {
     this.content.scrollToTop();
   }
-  async onSelectTrip(flightRoute: FlightRouteEntity) {
+  async onSelectTrip(flightRoute: FlightRouteEntity, fare?: FlightFareEntity) {
     console.log(this.searchModel, "this.searchModel");
     if (this.searchModel && this.searchModel.trips) {
       let trip = this.searchModel.trips.find((it) => !it.bookInfo);
@@ -81,6 +81,9 @@ export class FlightListPage implements OnInit, OnDestroy {
       if (!trip) {
         trip = this.searchModel.trips[this.searchModel.trips.length - 1];
       }
+      if (fare) {
+        flightRoute.selectFlightFare = fare;
+      }
       trip.bookInfo = {
         flightPolicy: null,
         fromSegment: flightRoute.fromSegment,
@@ -97,21 +100,21 @@ export class FlightListPage implements OnInit, OnDestroy {
       this.doRefresh();
     }
   }
-  onShowRuleExplain(flightRoute: FlightRouteEntity) {
-    if (flightRoute && flightRoute.flightFare) {
-      if (!flightRoute.refundChangeDetail) {
+  onShowRuleExplain(flightfare: FlightFareEntity) {
+    if (flightfare) {
+      if (!flightfare.refundChangeDetail) {
         this.explainSubscription.unsubscribe();
         this.explainSubscription = this.flightService
-          .getRuleInfo(flightRoute.flightFare)
+          .getRuleInfo(flightfare)
           .subscribe((r) => {
             const data = r && r.Data;
             if (data.FlightFares) {
-              flightRoute.refundChangeDetail = data.FlightFares;
-              this.presentRuleExplain(flightRoute.refundChangeDetail);
+              flightfare.refundChangeDetail = data.FlightFares;
+              this.presentRuleExplain(flightfare.refundChangeDetail);
             }
           });
       } else {
-        this.presentRuleExplain(flightRoute.refundChangeDetail);
+        this.presentRuleExplain(flightfare.refundChangeDetail);
       }
     }
   }
@@ -200,6 +203,7 @@ export class FlightListPage implements OnInit, OnDestroy {
       }
       this.scrollToTop();
     } catch (e) {
+      console.error(e);
       AppHelper.alert(e);
     }
   }
@@ -230,9 +234,10 @@ export class FlightListPage implements OnInit, OnDestroy {
     if (this.flightQuery && this.flightQuery.FlightRoutes) {
       this.flightQuery.FlightRoutes.sort((a, b) => {
         const delta =
-          (a.flightFare &&
-            b.flightFare &&
-            +a.flightFare.TicketPrice - +b.flightFare.TicketPrice) ||
+          (a.selectFlightFare &&
+            b.selectFlightFare &&
+            +a.selectFlightFare.TicketPrice -
+              +b.selectFlightFare.TicketPrice) ||
           0;
         return c.price == "asc" ? delta : -delta;
       });

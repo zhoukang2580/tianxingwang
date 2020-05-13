@@ -13,7 +13,9 @@ export class FlightRouteEntity {
   FirstTime: string; // 2020-07-08T11:15:00";
   FlightRouteIds: string[];
   FlightSegmentIds: string[];
-  flightFare: FlightFareEntity;
+  flightFares: FlightFareEntity[];
+  minPriceFlightFare: FlightFareEntity;
+  selectFlightFare: FlightFareEntity;
   fromSegment: FlightSegmentEntity;
   toSegment: FlightSegmentEntity;
   isTransfer: boolean;
@@ -40,5 +42,4 @@ export class FlightRouteEntity {
   YFare: number;
   addDays?: number;
   flyTime?: string;
-  refundChangeDetail?: FlightFareEntity[];
 }
