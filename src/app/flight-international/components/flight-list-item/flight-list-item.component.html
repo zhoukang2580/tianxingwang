@@ -60,9 +60,7 @@
     <ng-container *ngFor="let item of flight?.transferSegments">
       <ion-text class="whiteSpece">{{item.AirlineName}}</ion-text>
       <span>{{item.Number}}</span>
-      <ion-text *ngIf="item.CodeShareNumber">(共享
-        <!-- {{item.CodeShareNumber}} -->
-        )</ion-text>
+      <ion-text *ngIf="item.CodeShareNumber">(共享)</ion-text>
       <div class="height"></div>
     </ng-container>
 

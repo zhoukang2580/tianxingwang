@@ -14,9 +14,16 @@ import { RefresherComponent } from "src/app/components/refresher";
 })
 export class FlightTransferComponent implements OnInit {
   flight: FlightRouteEntity;
-
   private subscription = Subscription.EMPTY;
-  constructor() {}
+  constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() { }
+  isShowRemind(index, seg) {
+    if (index && seg && this.flight) {
+      if (this.flight.transferSegments[index - 1].ToTerminal!=seg.FromTerminal) {
+        return true
+      }
+      return false
+    }
+  }
 }
