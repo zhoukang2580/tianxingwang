@@ -880,7 +880,7 @@ export class InternationalFlightService {
         );
       });
   }
-  private async checkPolicy() {
+  async checkPolicy(route: FlightRouteEntity, flightFare: FlightFareEntity) {
     try {
       const m = this.getSearchModel();
       const bookInfos = this.getBookInfos();
@@ -888,9 +888,7 @@ export class InternationalFlightService {
       let isCheckPolicy =
         m.trips.findIndex((it) => !it.bookInfo) == m.trips.length - 1;
       if (!isCheckPolicy) {
-        isCheckPolicy = this.flightListResult.FlightRoutes.some(
-          (it) => !it.policy
-        );
+        isCheckPolicy = !flightFare.policy;
       }
       if (notWhitelist.length == bookInfos.length) {
         isCheckPolicy = false;
@@ -903,66 +901,49 @@ export class InternationalFlightService {
       if (!this.flightListResult || !this.flightListResult.FlightFares) {
         return true;
       }
-      const selectedRids = m.trips
+      let selectedRids = m.trips
         .filter(
           (it) =>
             it.bookInfo && it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id
         )
         .map((it) => it.bookInfo.flightRoute.Id);
-      const flightFares = this.flightListResult.FlightFares.filter((it) =>
-        selectedRids.length
-          ? it.FlightRouteIds.slice(0, selectedRids.length).join(",") ==
-            selectedRids.join(",")
-          : true
-      );
+      selectedRids = [...selectedRids, route.Id];
       const flightRouteInfos = (
         this.flightListResult.FlightRoutes || []
-      ).filter((r) =>
-        (r.flightFares || []).some((f) =>
-          f.FlightRouteIds.some((ffrid) => ffrid == r.Id)
-        )
-      );
+      ).filter((r) => selectedRids.some((sr) => sr == r.Id));
       req.Data = {
-        FlightRouteInfos: JSON.stringify(
-          flightRouteInfos.map((r) => {
-            const route = new FlightRouteEntity();
-            route.Id = r.Id;
-            route.Cabin = r.Cabin;
-            route.FlightRouteIds = r.FlightRouteIds;
-            route.FlightSegmentIds = r.FlightSegmentIds;
-            route.Duration = r.Duration;
-            route.FirstTime = r.FirstTime;
-            route.Type = r.Type;
-            return route;
+        FlightRouteInfos: flightRouteInfos.map((r) => {
+          const res = new FlightRouteEntity();
+          res.Id = r.Id;
+          res.Cabin = r.Cabin;
+          res.FlightRouteIds = r.FlightRouteIds;
+          res.FlightSegmentIds = r.FlightSegmentIds;
+          res.Duration = r.Duration;
+          res.FirstTime = r.FirstTime;
+          res.Type = r.Type;
+          return res;
+        }),
+        FlightSegmentInfos: (this.flightListResult.FlightSegments || [])
+          .filter((s) => {
+            return flightRouteInfos.some((info) =>
+              info.FlightSegmentIds.some((segId) => segId == s.Id)
+            );
           })
-        ),
-        FlightSegmentInfos: JSON.stringify(
-          (this.flightListResult.FlightSegments || [])
-            .filter((s) => {
-              return flightRouteInfos.some((info) =>
-                info.FlightSegmentIds.some((segId) => segId == s.Id)
-              );
-            })
-            .map((seg) => {
-              const s = new FlightSegmentEntity();
-              s.Id = seg.Id;
-              s.Duration = seg.Duration;
-              return s;
-            })
-        ),
-        FlightFares: JSON.stringify(
-          flightFares.map((f) => {
-            const fare = new FlightFareEntity();
-            fare.Id = f.Id;
-            fare.SalesPrice = f.SalesPrice;
-            fare.Type = f.Type;
-            fare.SettlePrice = f.SettlePrice;
-            fare.TicketPrice = f.TicketPrice;
-            fare.Discount = f.Discount;
-            fare.CabinCodes = f.CabinCodes;
-            return fare;
-          })
-        ),
+          .map((seg) => {
+            const s = new FlightSegmentEntity();
+            s.Id = seg.Id;
+            s.Duration = seg.Duration;
+            return s;
+          }),
+        FlightFare: {
+          Id: flightFare.Id,
+          SalesPrice: flightFare.SalesPrice,
+          Type: flightFare.Type,
+          SettlePrice: flightFare.SettlePrice,
+          TicketPrice: flightFare.TicketPrice,
+          Discount: flightFare.Discount,
+          CabinCodes: flightFare.CabinCodes,
+        },
         PolicyIds: bookInfos
           .map(
             (it) =>
@@ -975,24 +956,15 @@ export class InternationalFlightService {
       req.IsShowLoading = true;
       req.LoadingMsg = "正在计算差标信息";
       const result = await this.apiService.getPromiseData<{
-        RuleExplains: {
-          [fareId: string]: string;
-        };
-        PolicyDis: {
-          [fareId: string]: {
-            IsAllowOrder: boolean;
-            IsIllegal: boolean;
-            Message: string;
-          };
+        Policy: {
+          IsAllowOrder: boolean;
+          IsIllegal: boolean;
+          Message: string;
         };
         flightCabinCodeDis: { [flightSegmentId: string]: string };
       }>(req);
-      if (result.PolicyDis) {
-        this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
-          (r) => {
-            return { ...r, policy: result.PolicyDis[r.Id] };
-          }
-        );
+      if (result.Policy) {
+        flightFare.policy = result.Policy;
       }
       if (result.flightCabinCodeDis) {
         this.flightListResult.FlightSegments = this.flightListResult.FlightSegments.map(
@@ -1221,15 +1193,15 @@ export class InternationalFlightService {
         .map((it) => it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id)
         .filter((it) => !!it);
       const rids = routeIds.join(",");
-      const fares = data.FlightFares.filter((it) => {
-        const temp = it.FlightRouteIds || [];
-        return temp.slice(0, routeIds.length).join(",") === rids;
-      });
       if (!routeIds.length) {
         data.FlightRoutes = data.FlightRoutesData.filter(
           (r) => r.Paragraphs == 1
         );
       } else {
+        const fares = data.FlightFares.filter((it) => {
+          const temp = it.FlightRouteIds || [];
+          return temp.slice(0, routeIds.length).join(",") === rids;
+        });
         data.FlightRoutes = data.FlightRoutesData.filter((it) =>
           fares.some((f) => f.FlightRouteIds[routeIds.length] == it.Id)
         );
@@ -1274,11 +1246,15 @@ export class InternationalFlightService {
             });
           }
         }
+        const fares = data.FlightFares.filter((it) => {
+          const temp = it.FlightRouteIds || [];
+          return temp.join(",") === [...routeIds, r.Id].join(",");
+        });
+        r.flightFares = fares;
         const flightFare = this.getMinPriceFlightFare(fares, routeIds);
         if (flightFare) {
           r.minPriceFlightFare = flightFare;
         }
-        r.flightFares = fares;
         return r;
       });
       this.setFilterConditionSource(condition);

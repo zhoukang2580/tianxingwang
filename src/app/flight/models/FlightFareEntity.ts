@@ -32,6 +32,12 @@ export class FlightFareEntity {
   /// z
   /// </summary>
   PolicyId: string;
+  policy: {
+    IsAllowOrder: boolean;
+    IsIllegal: boolean;
+    Message: string;
+    FlightFare?: FlightFareEntity;
+  };
   /// <summary>
   /// 来源
   /// </summary>
