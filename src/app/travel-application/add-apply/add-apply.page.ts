@@ -42,6 +42,7 @@ import { log } from "util";
 import { delay } from "rxjs/operators";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { TreeDataComponent } from "src/app/pages/components/tree-data/tree-data.component";
+import { toLower } from 'ionicons/dist/types/components/icon/utils';
 
 @Component({
   selector: "app-add-apply",
@@ -58,6 +59,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   TravelApprovalType = TmcTravelApprovalType;
   @ViewChild(IonContent, { static: true }) contnt: IonContent;
   private subscription = Subscription.EMPTY;
+  private regionTypes: { value: string; label: string }[] = [];
   items: TravelFormEntity[];
   searchModel: SearchModel;
   enable = true;
@@ -69,7 +71,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   };
   tmc: TmcEntity;
   totalDays$: Observable<number>;
-  regionTypes: { value: string; label: string }[];
+  vmRegionTypes: { value: string; label: string }[];
   constructor(
     private travelService: TravelService,
     private modalCtrl: ModalController,
@@ -126,28 +128,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }, 200);
   }
   ngOnInit() {
-    this.regionTypes = [
-      {
-        value: "Flight",
-        label: "机票",
-      },
-      {
-        value: "Hotel",
-        label: "酒店",
-      },
-      {
-        value: "Car",
-        label: "租车",
-      },
-      {
-        value: "InternationalFlight",
-        label: "国际*港澳台机票",
-      },
-      {
-        value: "InternationalHotel",
-        label: "港澳台*海外酒店",
-      },
-    ];
     this.outNumbers = {};
     this.travelService.getStaff().then((s) => {
       if (this.searchModel && this.searchModel.TravelForm) {
@@ -190,6 +170,10 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         this.regionTypes = this.regionTypes.filter((t) =>
           this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
         );
+        //  this.regionTypes = this.regionTypes.filter((t) =>
+        // this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
+        // );
+        this.vmRegionTypes = this.regionTypes.slice(0);
       }
     });
     this.initValidateRule();
@@ -233,6 +217,25 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         this.waiting = true
       }
     });
+  }
+  getRegionTypes(t) {
+    console.log(t, "Tttt");
+    console.log(this.regionTypes, "this.regionTypes ");
+    if (t == "Domestic") {
+      this.vmRegionTypes = this.regionTypes.filter((t) => {
+        if (t.value) {
+          return t.value.toLowerCase() == "flight" || t.value.toLowerCase() == "hotel" || t.value.toLowerCase() == "train" || t.value.toLowerCase() == "car"
+        }
+        return false
+      }
+      );
+    } else if (t == "International") {
+      this.vmRegionTypes = this.regionTypes.filter((t) =>{
+        if(t.value){
+          t.value.toLowerCase().includes("international")
+        }
+      })
+    }
   }
   compareWithFn = (o1, o2) => {
     return o1 == o2;

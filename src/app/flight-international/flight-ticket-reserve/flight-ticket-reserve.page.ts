@@ -1104,43 +1104,29 @@ export class FlightTicketReservePage
     if (item.credentials) {
       item.credentials = item.credentials.filter((it) => !!it.Number);
     }
-    if (item.credentials) {
-      item.credentials = item.credentials.filter(t => t.Type != CredentialsType.IdCard)
-      if (this.searchModel && this.searchModel.trips) {
-       const hasHKMO= this.searchModel.trips.some(t=>{
-          return (t.fromCity.CountryCode == "HK"||t.fromCity.CountryCode == "MO"||t.toCity.CountryCode == "HK"|| t.toCity.CountryCode == "MO")
-        })
-        if(!hasHKMO){
-          item.credentials = item.credentials.filter(t => t.Type != CredentialsType.HmPass)
-        }
-        const hasTW= this.searchModel.trips.some(t=>{
-          return (t.fromCity.CountryCode == "TW"||t.toCity.CountryCode == "TW")
-        })
-        if(!hasTW){
-          item.credentials = item.credentials.filter(t => t.Type != CredentialsType.TwPass)
-        }
-      }
-     
-    }
-    // this.filterCredentials(item.credentials)
+    item.credentials = this.filterCredentials(item.credentials)
     console.log("onModify", item.credentials);
   }
+
   filterCredentials(credentials: CredentialsEntity[]) {
-    console.log(this.searchModel.trips, "this.searchModel.trips ");
     if (credentials) {
       credentials = credentials.filter(t => t.Type != CredentialsType.IdCard)
+      if (this.searchModel && this.searchModel.trips) {
+        const hasHKMO = this.searchModel.trips.some(t => {
+          return (t.fromCity.CountryCode == "HK" || t.fromCity.CountryCode == "MO" || t.toCity.CountryCode == "HK" || t.toCity.CountryCode == "MO")
+        })
+        if (!hasHKMO) {
+          credentials = credentials.filter(t => t.Type != CredentialsType.HmPass)
+        }
+        const hasTW = this.searchModel.trips.some(t => {
+          return (t.fromCity.CountryCode == "TW" || t.toCity.CountryCode == "TW")
+        })
+        if (!hasTW) {
+          credentials = credentials.filter(t => t.Type != CredentialsType.TwPass)
+        }
+      }
     }
-    return credentials
-    // if(this.searchModel&&this.searchModel.trips){
-    //   if(credentials.find(t=>t.Type==CredentialsType.IdCard)){
-
-    //   } 
-    //       this.searchModel.trips.forEach(t=>{
-    //         if((t.fromCity.Name=="香港"||t.toCity.Name=="香港")){
-    //           credentials.filter(t=>t.TypeName!="港澳通行证")
-    //         }
-    //       })
-    // }
+    return credentials;
   }
   private moveRequiredEleToViewPort(ele: any) {
     const el: HTMLElement = (ele && ele.nativeElement) || ele;
@@ -1342,7 +1328,7 @@ export class FlightTicketReservePage
           (it) => it.Account.Id == item.passenger.AccountId
         );
         const cstaff = cs && cs.CredentialStaff;
-        const credentials = [];
+        let credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
           Tag: string;
@@ -1379,6 +1365,7 @@ export class FlightTicketReservePage
           )
         ) {
           credentials.push(item.credential);
+          credentials = this.filterCredentials(credentials)
         }
         const insuranceProducts =
           (this.initialBookDtoModel.Insurances &&
