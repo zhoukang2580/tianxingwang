@@ -76,6 +76,7 @@ import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { Storage } from "@ionic/storage";
 import { TMC_FLIGHT_OUT_NUMBER } from "../mock-data";
 import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
+import { CredentialsType } from 'src/app/member/pipe/credential.pipe';
 @Component({
   selector: "app-flight-ticket-reserve",
   templateUrl: "./flight-ticket-reserve.page.html",
@@ -816,12 +817,12 @@ export class FlightTicketReservePage
     ) => {
       AppHelper.toast(
         `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-              item.bookInfo.credential.Givenname)
+        (item.credentialStaff && item.credentialStaff.Name) ||
+        (item.bookInfo.credential &&
+          item.bookInfo.credential.Surname +
+          item.bookInfo.credential.Givenname)
         } 【${
-          item.bookInfo.credential && item.bookInfo.credential.Number
+        item.bookInfo.credential && item.bookInfo.credential.Number
         }】 ${msg} 信息不能为空`,
         2000,
         "bottom"
@@ -939,7 +940,7 @@ export class FlightTicketReservePage
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -953,7 +954,7 @@ export class FlightTicketReservePage
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1103,9 +1104,44 @@ export class FlightTicketReservePage
     if (item.credentials) {
       item.credentials = item.credentials.filter((it) => !!it.Number);
     }
+    if (item.credentials) {
+      item.credentials = item.credentials.filter(t => t.Type != CredentialsType.IdCard)
+      if (this.searchModel && this.searchModel.trips) {
+       const hasHKMO= this.searchModel.trips.some(t=>{
+          return (t.fromCity.CountryCode == "HK"||t.fromCity.CountryCode == "MO"||t.toCity.CountryCode == "HK"|| t.toCity.CountryCode == "MO")
+        })
+        if(!hasHKMO){
+          item.credentials = item.credentials.filter(t => t.Type != CredentialsType.HmPass)
+        }
+        const hasTW= this.searchModel.trips.some(t=>{
+          return (t.fromCity.CountryCode == "TW"||t.toCity.CountryCode == "TW")
+        })
+        if(!hasTW){
+          item.credentials = item.credentials.filter(t => t.Type != CredentialsType.TwPass)
+        }
+      }
+     
+    }
+    // this.filterCredentials(item.credentials)
     console.log("onModify", item.credentials);
   }
+  filterCredentials(credentials: CredentialsEntity[]) {
+    console.log(this.searchModel.trips, "this.searchModel.trips ");
+    if (credentials) {
+      credentials = credentials.filter(t => t.Type != CredentialsType.IdCard)
+    }
+    return credentials
+    // if(this.searchModel&&this.searchModel.trips){
+    //   if(credentials.find(t=>t.Type==CredentialsType.IdCard)){
 
+    //   } 
+    //       this.searchModel.trips.forEach(t=>{
+    //         if((t.fromCity.Name=="香港"||t.toCity.Name=="香港")){
+    //           credentials.filter(t=>t.TypeName!="港澳通行证")
+    //         }
+    //       })
+    // }
+  }
   private moveRequiredEleToViewPort(ele: any) {
     const el: HTMLElement = (ele && ele.nativeElement) || ele;
     if (!el) {
@@ -1388,20 +1424,20 @@ export class FlightTicketReservePage
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1455,6 +1491,8 @@ export class FlightTicketReservePage
             combineInfo.tmcOutNumberInfos;
         }
         this.vmCombindInfos.push(combineInfo);
+        console.log(this.vmCombindInfos, "this.vmCombindInfos");
+
       }
       await this.initCombineInfosShowApproveInfo();
     } catch (e) {

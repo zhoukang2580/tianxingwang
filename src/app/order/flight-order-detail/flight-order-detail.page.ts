@@ -455,25 +455,6 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.identity = await this.identityService.getIdentityAsync();
     // this.getTicketNo();
   }
-  getTicketNo(f) {
-    if (f) {
-      if(!this.orderDetail&&!this.orderDetail.Order&&!this.orderDetail.Order.OrderFlightTickets){
-        return
-      }
-      const ticket = this.orderDetail.Order.OrderFlightTickets.find(it => it.Id == f.Id);
-      this.tikectNo = [];
-      if (ticket) {
-        this.tikectNo.push(ticket.FullTicketNo);
-      }
-      if(this.tikectId2OriginalTickets[f.Id]){
-        this.tikectId2OriginalTickets[f.Id].forEach(m => {
-          this.tikectNo.push(m.FullTicketNo);
-        })
-      }
-      this.tikectNo = Array.from(new Set(this.tikectNo))
-      return this.tikectNo
-    }
-  }
   getVariableObj(
     it: { Variables: string; VariablesDictionary: any },
     key: string
