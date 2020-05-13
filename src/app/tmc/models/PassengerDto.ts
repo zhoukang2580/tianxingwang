@@ -67,7 +67,6 @@ export class PassengerDto {
   /// 航班
   /// </summary>
   FlightSegment: FlightSegmentEntity;
-
   /// <summary>
   /// 票编号
   /// </summary>

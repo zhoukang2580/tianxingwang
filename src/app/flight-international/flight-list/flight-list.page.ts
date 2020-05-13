@@ -67,7 +67,7 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.searchModel.trips.length - 1;
       this.isLastTrip = isCheckPolicy;
       if (isCheckPolicy) {
-        let tip = flightRoute.policy.Message;
+        let tip = (flightRoute.policy && flightRoute.policy.Message) || "";
         if (flightRoute.policy && !flightRoute.policy.IsAllowOrder) {
           if (tip) {
             tip = `${tip}，不可预订`;

@@ -229,7 +229,7 @@ export class FlightTicketReservePage
     const infos = this.flightService.getBookInfos();
     bookDto.Passengers = [];
     const isSelf = await this.staffService.isSelfBookType();
-    infos.forEach((item) => {
+    infos.forEach((item, idx) => {
       if (item.passenger) {
         const p = new PassengerDto();
         p.ClientId = item.id;
@@ -239,6 +239,24 @@ export class FlightTicketReservePage
           item.bookInfo.flightRoute.policy &&
           item.bookInfo.flightRoute.policy.FlightFare;
         p.Credentials = item.credential;
+        if (idx == 0) {
+          const flightRouteIds = infos
+            .map((it) => it.bookInfo && it.bookInfo.flightRoute)
+            .filter((it) => !!it)
+            .map((r) => r.Id);
+          p.FlightRoutes = this.flightService.flightListResult.FlightRoutesData.filter(
+            (it) => flightRouteIds.some((id) => id == it.Id)
+          );
+          const segs = this.flightService.flightListResult.FlightSegments.filter(
+            (s) =>
+              p.FlightRoutes.some(
+                (r) =>
+                  r.FlightSegmentIds &&
+                  r.FlightSegmentIds.some((rsegid) => rsegid == s.Id)
+              )
+          );
+          p.FlightSegments = segs;
+        }
         const account = new AccountEntity();
         account.Id = item.passenger.AccountId;
         p.Credentials.Account = p.Credentials.Account || account;
