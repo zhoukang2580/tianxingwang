@@ -1250,6 +1250,7 @@ export class InternationalFlightService {
           const temp = it.FlightRouteIds || [];
           return temp.join(",") === [...routeIds, r.Id].join(",");
         });
+        fares.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
         r.flightFares = fares;
         const flightFare = this.getMinPriceFlightFare(fares, routeIds);
         if (flightFare) {
