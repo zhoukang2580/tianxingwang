@@ -44,12 +44,12 @@
     <div [class.margin-t11]="flight?.toSegment?.Variables?.AddDaysTip&&flight.toSegment?.Variables?.AddDaysTip>'0'"
       style="padding-top: 0.4em;">
       <ion-text color="secondary" class="flightMoney">
-        <span style="font-weight:bold">¥</span>{{flight.flightFare.SalesPrice}}
+        <span style="font-weight:bold">¥</span>{{flight.minPriceFlightFare?.SalesPrice}}
       </ion-text>
       <div class="fontSize" style="color:var(--ion-color-medium)">{{flight.TypeName}}</div>
-      <div style="font-size: 0.7rem" *ngIf="flight.flightFare.Tax">
+      <div style="font-size: 0.7rem" *ngIf="flight.minPriceFlightFare?.Tax">
         <ion-text color="medium">
-          税<span style="font-weight:bold">¥</span>{{flight.flightFare.Tax}}
+          税<span style="font-weight:bold">¥</span>{{flight.minPriceFlightFare?.Tax}}
         </ion-text>
       </div>
     </div>

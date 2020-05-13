@@ -32,7 +32,6 @@ import {
   TravelFormTripEntity,
   TmcTravelApprovalType,
 } from "../travel-application/travel.service";
-import { CityEntity } from "./models/CityEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -482,6 +481,8 @@ export class TmcService {
       .getPromiseData<{ Text: string; Value: string }[]>(req)
       .catch((_) => []);
   }
+  
+
   searchApprovals(name: string, pageIndex: number, pageSize = 20) {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Home-SearchApprovals";

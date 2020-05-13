@@ -14,7 +14,7 @@ import { filter, tap, distinct } from "rxjs/operators";
 import { TripType } from "./models/TripType";
 import { connect } from "http2";
 import { AppHelper } from "../appHelper";
-import { SelectDateComponent } from "./components/select-date/select-date.component";
+import { TmcCalendarComponent } from "./components/tmc-calendar/tmc-calendar.page";
 const lunarCalendar = window["LunarCalendar"];
 const _KEY_HOLIDAYS = "_key_holidays";
 @Injectable({
@@ -71,6 +71,24 @@ export class CalendarService {
   }
   diff(d2: string, d1: string, unit: any): number {
     return moment(d2).diff(moment(d1), unit);
+  }
+  async openCalendar(data: {
+    goArrivalTime: string;
+    title?: string;
+    isMulti: boolean;
+    forType: FlightHotelTrainType;
+    tripType?: TripType;
+  }) {
+    const m = await AppHelper.modalController.create({
+      component: TmcCalendarComponent,
+      componentProps: {
+        calendarService:this,
+        ...data,
+      },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    return d && (d.data as DayModel[]);
   }
   getFormatedDate(date: string) {
     const m = this.getMoment(0, date);
@@ -501,46 +519,7 @@ export class CalendarService {
     }
     return calendars;
   }
-  openCalendar(data: {
-    goArrivalTime: string;
-    title?: string;
-    isMulti: boolean;
-    forType: FlightHotelTrainType;
-    tripType?: TripType;
-  }) {
-    this.goArrivalTime = data.goArrivalTime || "";
-    this.isMulti = data.isMulti;
-    this.tripType = data.tripType;
-    this.title = data.title;
-    // return this.openCalendarByNormal(calendars);
-    return this.openCalendarPage(data);
-  }
-  private openCalendarPage(data: any) {
-    return new Promise<DayModel[]>((resolve) => {
-      this.subscription.unsubscribe();
-      this.subscription = this.getSelectedDaysSource()
-        .pipe(
-          filter((it) => (data.isMulti ? it.length >= 2 : it.length > 0)),
-          tap((days) => {
-            console.log(" getSelectedDaysSource ", days);
-          }),
-          distinct()
-        )
-        .subscribe(
-          (days) => {
-            resolve(days);
-          },
-          () => {
-            this.subscription.unsubscribe();
-          }
-        );
-      this.router.navigate(["tmc-calendar"], {
-        queryParams: {
-          ...data,
-        },
-      });
-    });
-  }
+
   private openCalendarByNormal(calendars: AvailableDate[], isMulti = false) {
     this.renderCalendar(calendars);
     return new Promise<DayModel[]>((resolve) => {

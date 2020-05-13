@@ -15,9 +15,6 @@ export const routes: Routes = [
       import("./select-passenger/select-passenger.module").then(
         m => m.SelectPassengerPageModule
       )
-  },  {
-    path: 'tmc-calendar',
-    loadChildren: () => import('./tmc-calendar/tmc-calendar.module').then( m => m.TmcCalendarPageModule)
   }
 
 ];

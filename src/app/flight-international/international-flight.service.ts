@@ -918,7 +918,9 @@ export class InternationalFlightService {
       const flightRouteInfos = (
         this.flightListResult.FlightRoutes || []
       ).filter((r) =>
-        flightFares.some((f) => f.FlightRouteIds.some((ffrid) => ffrid == r.Id))
+        (r.flightFares || []).some((f) =>
+          f.FlightRouteIds.some((ffrid) => ffrid == r.Id)
+        )
       );
       req.Data = {
         FlightRouteInfos: JSON.stringify(
@@ -988,7 +990,7 @@ export class InternationalFlightService {
       if (result.PolicyDis) {
         this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
           (r) => {
-            return { ...r, policy: result.PolicyDis[r.flightFare.Id] };
+            return { ...r, policy: result.PolicyDis[r.Id] };
           }
         );
       }
@@ -1041,12 +1043,6 @@ export class InternationalFlightService {
     const bookInfos = this.getBookInfos();
     const notWhitelist = bookInfos.filter((it) => it.isNotWhitelist);
     const whitelist = bookInfos.filter((it) => !it.isNotWhitelist);
-    const m = this.getSearchModel();
-    if (!result || !result.FlightRoutes) {
-      if (!environment.production) {
-        result = this.flightListResult;
-      }
-    }
     if (
       !result ||
       !result.FlightFares ||
@@ -1109,7 +1105,10 @@ export class InternationalFlightService {
             return f;
           })
         ),
-        PolicyIds: whitelist[0].passenger.Policy.Id,
+        PolicyIds:
+          whitelist[0].passenger &&
+          whitelist[0].passenger.Policy &&
+          whitelist[0].passenger.Policy.Id,
       };
       result = await this.apiService.getPromiseData<FlightResultEntity>(req);
     } else {
@@ -1218,22 +1217,19 @@ export class InternationalFlightService {
     condition.isDirectFly = false;
     if (data && data.FlightRoutesData) {
       const routeIds = m.trips
-        .filter((it) => !!it.bookInfo)
-        .map(
-          (it) =>
-            it.bookInfo && it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id
-        )
+        .filter((it) => it.bookInfo && !!it.bookInfo.flightRoute)
+        .map((it) => it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id)
         .filter((it) => !!it);
+      const rids = routeIds.join(",");
+      const fares = data.FlightFares.filter((it) => {
+        const temp = it.FlightRouteIds || [];
+        return temp.slice(0, routeIds.length).join(",") === rids;
+      });
       if (!routeIds.length) {
         data.FlightRoutes = data.FlightRoutesData.filter(
           (r) => r.Paragraphs == 1
         );
       } else {
-        const rids = routeIds.join(",");
-        const fares = data.FlightFares.filter((it) => {
-          const temp = it.FlightRouteIds || [];
-          return temp.slice(0, routeIds.length).join(",") === rids;
-        });
         data.FlightRoutes = data.FlightRoutesData.filter((it) =>
           fares.some((f) => f.FlightRouteIds[routeIds.length] == it.Id)
         );
@@ -1278,26 +1274,25 @@ export class InternationalFlightService {
             });
           }
         }
-        const ids = m.trips
-          .filter((it) => !!it.bookInfo)
-          .map((it) => it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id)
-          .filter((it) => !!it);
-        const flightFare = this.getFlightFare(data.FlightFares, ids);
+        const flightFare = this.getMinPriceFlightFare(fares, routeIds);
         if (flightFare) {
-          r.flightFare = flightFare;
+          r.minPriceFlightFare = flightFare;
         }
+        r.flightFares = fares;
         return r;
       });
       this.setFilterConditionSource(condition);
-      await this.checkPolicy();
     }
   }
   private initFlightRouteSegments(data: FlightResultEntity) {
     if (data && data.FlightSegments && data.FlightFares) {
-      const trips = this.getSearchModel().trips || [];
       data = { ...data };
       if (!data.FlightRoutesData || !data.FlightRoutesData.length) {
-        data.FlightRoutesData = [...data.FlightRoutes];
+        data.FlightRoutesData = [
+          ...data.FlightRoutes.map((r) => {
+            return { ...r };
+          }),
+        ];
       }
       if (data.FlightRoutesData && data.FlightRoutesData.length) {
         data.FlightRoutesData.sort((a, b) => {
@@ -1330,9 +1325,10 @@ export class InternationalFlightService {
           flightRoute.toSegment =
             flightRoute.FlightSegments[flightRoute.FlightSegments.length - 1];
           flightRoute.isTransfer = flightRoute.transferSegments.length > 1;
-          flightRoute.flightFare = this.getFlightFare(data.FlightFares, [
-            flightRoute.Id,
-          ]);
+          flightRoute.minPriceFlightFare = this.getMinPriceFlightFare(
+            data.FlightFares,
+            [flightRoute.Id]
+          );
 
           flightRoute.addDays = this.getDays(
             flightRoute.ArrivalTime,
@@ -1362,7 +1358,10 @@ export class InternationalFlightService {
     flyTime = `${h}H${m}M`;
     return flyTime;
   }
-  private getFlightFare(flightFares: FlightFareEntity[], routeIds: string[]) {
+  private getMinPriceFlightFare(
+    flightFares: FlightFareEntity[],
+    routeIds: string[]
+  ) {
     const ffs = flightFares.filter((f) => {
       const ids = f.FlightRouteIds && f.FlightRouteIds;
       return routeIds.length > 1
