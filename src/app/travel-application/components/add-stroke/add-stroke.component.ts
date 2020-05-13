@@ -5,6 +5,9 @@ import {
   EventEmitter,
   Input,
   ViewChild,
+  OnChanges,
+  SimpleChange,
+  SimpleChanges,
 } from "@angular/core";
 import { TravelFormTripEntity, TravelService } from "../../travel.service";
 import { ModalController, IonSelect } from "@ionic/angular";
@@ -28,7 +31,7 @@ interface IRegionType {
   templateUrl: "./add-stroke.component.html",
   styleUrls: ["./add-stroke.component.scss"],
 })
-export class AddStrokeComponent implements OnInit {
+export class AddStrokeComponent implements OnInit,OnChanges {
   @Output() remove: EventEmitter<any>;
   @Input() trip: TravelFormTripEntity;
   @Input() enable: boolean;
@@ -61,6 +64,9 @@ export class AddStrokeComponent implements OnInit {
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
+  ngOnChanges(change:SimpleChanges){
+    
+  }
   ngOnInit() {
     // this.trip.StartDate = new Date().toISOString();
     // this.trip.EndDate = new Date().toISOString();
