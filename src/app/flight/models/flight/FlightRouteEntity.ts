@@ -24,12 +24,6 @@ export class FlightRouteEntity {
   FromCountry: string; // CN";
   Id: string; //  1;
   IsAllowOrder: boolean;
-  policy: {
-    IsAllowOrder: boolean;
-    IsIllegal: boolean;
-    Message: string;
-    FlightFare?: FlightFareEntity;
-  };
   Key: string; // C4A3CF5E5BC5E7EAB8A1259DA38A943F";
   MaxDuration: string; //  100;
   Origin: string; // SHA";

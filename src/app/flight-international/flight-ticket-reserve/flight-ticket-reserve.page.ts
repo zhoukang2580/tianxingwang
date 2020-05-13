@@ -238,8 +238,9 @@ export class FlightTicketReservePage
         p.FlightFare =
           info.bookInfo &&
           info.bookInfo.flightRoute &&
-          info.bookInfo.flightRoute.policy &&
-          info.bookInfo.flightRoute.policy.FlightFare;
+          info.bookInfo.flightRoute.selectFlightFare &&
+          info.bookInfo.flightRoute.selectFlightFare.policy &&
+          info.bookInfo.flightRoute.selectFlightFare.policy.FlightFare;
         p.Credentials = info.credential;
         if (idx == 0) {
           const flightRouteIds = trips
@@ -878,8 +879,7 @@ export class FlightTicketReservePage
             trips[trips.length - 1].bookInfo.flightRoute.selectFlightFare;
           p.FlightCabin = p.FlightFare as any;
           p.IllegalPolicy =
-            trips[trips.length - 1].bookInfo.flightRoute.policy &&
-            trips[trips.length - 1].bookInfo.flightRoute.policy.Message;
+            p.FlightFare && p.FlightFare.policy && p.FlightFare.policy.Message;
         }
       }
       p.ClientId = accountId;
@@ -980,8 +980,9 @@ export class FlightTicketReservePage
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.flightRoute &&
         combindInfo.bookInfo.bookInfo.flightRoute.selectFlightFare &&
-        combindInfo.bookInfo.bookInfo.flightRoute.policy &&
-        combindInfo.bookInfo.bookInfo.flightRoute.policy.Message
+        combindInfo.bookInfo.bookInfo.flightRoute.selectFlightFare.policy &&
+        combindInfo.bookInfo.bookInfo.flightRoute.selectFlightFare.policy
+          .Message
       ) {
         // 只有白名单的才需要考虑差标
         const ele: HTMLElement = this.getEleByAttr(
@@ -1573,8 +1574,9 @@ export class FlightTicketReservePage
       info.bookInfo &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo.flightRoute &&
-      info.bookInfo.bookInfo.flightRoute.policy &&
-      info.bookInfo.bookInfo.flightRoute.policy.Message
+      info.bookInfo.bookInfo.flightRoute.selectFlightFare &&
+      info.bookInfo.bookInfo.flightRoute.selectFlightFare.policy &&
+      info.bookInfo.bookInfo.flightRoute.selectFlightFare.policy.Message
     ) {
       return true;
     }
@@ -1585,8 +1587,9 @@ export class FlightTicketReservePage
       info.bookInfo &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo.flightRoute &&
-      info.bookInfo.bookInfo.flightRoute.policy &&
-      info.bookInfo.bookInfo.flightRoute.policy.Message
+      info.bookInfo.bookInfo.flightRoute.selectFlightFare &&
+      info.bookInfo.bookInfo.flightRoute.selectFlightFare.policy &&
+      info.bookInfo.bookInfo.flightRoute.selectFlightFare.policy.Message
     ) {
       return true;
     }

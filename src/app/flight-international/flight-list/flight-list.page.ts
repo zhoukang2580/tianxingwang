@@ -67,15 +67,18 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.searchModel.trips.length - 1;
       this.isLastTrip = isCheckPolicy;
       if (isCheckPolicy) {
-        let tip = (flightRoute.policy && flightRoute.policy.Message) || "";
-        if (flightRoute.policy && !flightRoute.policy.IsAllowOrder) {
-          if (tip) {
-            tip = `${tip}，不可预订`;
-          } else {
-            tip = `违规不可预订`;
+        if (fare) {
+          await this.flightService.checkPolicy(flightRoute, fare);
+          let tip = (fare.policy && fare.policy.Message) || "";
+          if (fare.policy && !fare.policy.IsAllowOrder) {
+            if (tip) {
+              tip = `${tip}，不可预订`;
+            } else {
+              tip = `违规不可预订`;
+            }
+            AppHelper.alert(tip);
+            return;
           }
-          AppHelper.alert(tip);
-          return;
         }
       }
       if (!trip) {

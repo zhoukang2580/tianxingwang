@@ -16,7 +16,7 @@
       </strong>
     </ion-item-divider>
     <ion-item>
-      <ion-label class="ion-text-wrap">
+      <ion-label class="ion-text-wrap" color='medium'>
         <p [innerHTML]='explain' class="explain"></p>
       </ion-label>
     </ion-item>
@@ -28,7 +28,7 @@
       </strong>
     </ion-item-divider>
     <ion-item>
-      <ion-label class="ion-text-wrap">
+      <ion-label class="ion-text-wrap" color='medium'>
         <p>
           <strong>改期:</strong>如改签新航班价格更高，需补交机票差价。
         </p>
@@ -45,24 +45,30 @@
       <ng-container *ngFor='let fr of f.FlightFareRules'>
         <ion-row *ngFor='let b of fr.Bags'>
           <ion-col size='3'>
-            <strong>{{b.FlightNumber}}</strong>
+            <strong>
+              <ion-text color='medium'>{{b.FlightNumber}}</ion-text>
+            </strong>
           </ion-col>
           <ion-col>
             <div>
-              <ng-container *ngIf='b.AllowedPieces'>
-                可携带件数{{b.AllowedPieces}}
-              </ng-container>
-              <ng-container *ngIf='b.AllowedWeight'>
-                可携带重量{{b.AllowedWeight}}，重量单位{{b.AllowedWeightUnit}}
-              </ng-container>
+              <ion-text color='medium'>
+                <ng-container *ngIf='b.AllowedPieces'>
+                  可携带件数{{b.AllowedPieces}}
+                </ng-container>
+                <ng-container *ngIf='b.AllowedWeight'>
+                  可携带重量{{b.AllowedWeight}}，重量单位{{b.AllowedWeightUnit}}
+                </ng-container>
+              </ion-text>
             </div>
             <div>
-              <ng-container *ngIf='b.FreeAllowedPieces'>
-                可免费携带件数{{b.FreeAllowedPieces}}
-              </ng-container>
-              <ng-container *ngIf='b.FreeAllowedWeight'>
-                可免费携带重量{{b.FreeAllowedWeight}}，重量单位{{b.FreeAllowedWeightUnit}}
-              </ng-container>
+              <ion-text color='medium'>
+                <ng-container *ngIf='b.FreeAllowedPieces'>
+                  可免费携带件数{{b.FreeAllowedPieces}}
+                </ng-container>
+                <ng-container *ngIf='b.FreeAllowedWeight'>
+                  可免费携带重量{{b.FreeAllowedWeight}}，重量单位{{b.FreeAllowedWeightUnit}}
+                </ng-container>
+              </ion-text>
             </div>
           </ion-col>
         </ion-row>

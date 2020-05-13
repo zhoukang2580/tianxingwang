@@ -63,13 +63,17 @@
         </app-flight-list-item>
         <ng-container *ngIf='isLastTrip'>
           <ng-container *ngFor='let f of flight.flightFares'>
-            <ion-buttons>
+            <ion-buttons class="ion-justify-content-between" style="margin: 0.25em 1em 0.25em 1.7em;">
               <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(f)'>退改签规则
               </ion-button>
-              <ion-button (click)='onSelectTrip(flight,f)'>预订</ion-button>
+              <div style="display: flex;align-items: center;">
+                <ion-text color='danger'>￥{{f.SalesPrice}}</ion-text>
+                <ion-button (click)='onSelectTrip(flight,f)' color='secondary' fill='solid' expand='block' size='small'>
+                  预订</ion-button>
+              </div>
             </ion-buttons>
-            <div *ngIf='(flight.policy?.Message||f.ruleMessage)' style="font-size: 0.6rem;text-indent: 1.1em;">
-              <ion-text color='danger'>{{(flight.policy?.Message||f.ruleMessage)}}</ion-text>
+            <div *ngIf='(f.policy?.Message||f.ruleMessage)' style="font-size: 0.6rem;text-indent: 1.1em;">
+              <ion-text color='danger'>{{(f.policy.Message||f.ruleMessage)}}</ion-text>
             </div>
           </ng-container>
         </ng-container>

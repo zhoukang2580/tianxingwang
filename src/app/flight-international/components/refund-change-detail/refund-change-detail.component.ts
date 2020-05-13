@@ -9,6 +9,7 @@ import { ModalController } from "@ionic/angular";
 })
 export class RefundChangeDetailComponent implements OnInit {
   flightfares: FlightFareEntity[];
+  private airports: string[];
   get explain() {
     return (
       (this.flightfares &&
