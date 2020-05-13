@@ -73,7 +73,7 @@
               </div>
             </ion-buttons>
             <div *ngIf='(f.policy?.Message||f.ruleMessage)' style="font-size: 0.6rem;text-indent: 1.1em;">
-              <ion-text color='danger'>{{(f.policy.Message||f.ruleMessage)}}</ion-text>
+              <ion-text color='danger'>{{(f.policy?.Message||f.ruleMessage)}}</ion-text>
             </div>
           </ng-container>
         </ng-container>

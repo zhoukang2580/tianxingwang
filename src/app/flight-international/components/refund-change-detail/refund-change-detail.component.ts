@@ -21,6 +21,9 @@ export class RefundChangeDetailComponent implements OnInit {
             if (it.startsWith("<br/>")) {
               it = it.substring("<br/>".length);
             }
+            if (this.airports && this.airports.some((a) => it.includes(a))) {
+              it = `<br/>${it}`;
+            }
             return it;
           })
           .join("<br/>")) ||
@@ -36,5 +39,7 @@ export class RefundChangeDetailComponent implements OnInit {
       }
     });
   }
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.airports);
+  }
 }

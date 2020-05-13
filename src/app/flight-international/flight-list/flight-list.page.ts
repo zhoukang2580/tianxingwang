@@ -122,10 +122,26 @@ export class FlightListPage implements OnInit, OnDestroy {
     }
   }
   private async presentRuleExplain(flightfares: FlightFareEntity[]) {
+    const trips = this.searchModel.trips || [];
+    const routes = trips
+      .map((it) => it.bookInfo && it.bookInfo.flightRoute)
+      .filter((r) => !!r);
+    if (this.flightRoutes) {
+      this.flightRoutes.forEach((r) => {
+        if (!routes.find((it) => it.Id == r.Id)) {
+          routes.push(r);
+        }
+      });
+    }
     const m = await this.modalController.create({
       component: RefundChangeDetailComponent,
       // cssClass: "flight-refund-comp",
       componentProps: {
+        airports: routes
+          .map((it) => `${it.Origin}-${it.Destination}`)
+          .concat(
+            this.flightRoutes.map((it) => `${it.Destination}-${it.Origin}`)
+          ),
         flightfares,
       },
     });

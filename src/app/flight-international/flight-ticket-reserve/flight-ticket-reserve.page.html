@@ -45,9 +45,9 @@
                   </div>
                 </ion-col>
               </ion-row>
-              <div style="font-size: 0.8rem;" *ngIf='trip.bookInfo?.flightRoute?.policy?.Message'>
+              <div style="font-size: 0.8rem;" *ngIf='trip.bookInfo?.flightRoute?.selectFlightFare?.policy?.Message'>
                 <ion-text color='danger'>
-                  超标：{{trip.bookInfo.flightRoute.policy.Message}}
+                  超标：{{trip.bookInfo.flightRoute.selectFlightFare.policy.Message}}
                 </ion-text>
               </div>
             </ng-container>
@@ -61,7 +61,7 @@
             (modify)='onModify(combindInfo)' [canEdit]='combindInfo.credentials?.length==0' [canMaintainCredentials]='combindInfo.credentials?.length==0' [attr.credentialcompid]='combindInfo.id'>
           </app-book-credential-comp>
           <ng-container
-            *ngIf='combindInfo?.bookInfo && !combindInfo.bookInfo.isNotWhitelist&&combindInfo?.bookInfo.bookInfo?.flightRoute?.policy?.Message'>
+            *ngIf='combindInfo?.bookInfo && !combindInfo.bookInfo.isNotWhitelist&&combindInfo?.bookInfo.bookInfo?.flightRoute?.selectFlightFare?.policy?.Message'>
             <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
               [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
               (ionchange)='onIllegalReason($event,combindInfo)'>
