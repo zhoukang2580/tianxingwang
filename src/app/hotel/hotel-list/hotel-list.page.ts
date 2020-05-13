@@ -60,6 +60,7 @@ import {
   animate
 } from "@angular/animations";
 import { ISearchTextValue } from "src/app/hotel-international/international-hotel.service";
+import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
 
 @Component({
   selector: "app-hotel-list",
@@ -73,6 +74,7 @@ export class HotelListPage
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
   @ViewChild(IonHeader) headerEl: IonHeader;
+  @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
@@ -334,7 +336,7 @@ export class HotelListPage
   back() {
     this.hideQueryPannel();
     setTimeout(() => {
-      this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
+      this.backbtn.popToPrePage();
     }, 200);
   }
   ngOnDestroy() {
