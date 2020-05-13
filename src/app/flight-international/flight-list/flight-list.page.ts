@@ -79,6 +79,8 @@ export class FlightListPage implements OnInit, OnDestroy {
             AppHelper.alert(tip);
             return;
           }
+        } else {
+          return;
         }
       }
       if (!trip) {
