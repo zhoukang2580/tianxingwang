@@ -67,7 +67,10 @@
               <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(f)'>退改签规则
               </ion-button>
               <div style="display: flex;align-items: center;">
-                <ion-text color='danger'>￥{{f.SalesPrice}}<ng-container *ngIf='f.TypeName'>
+                <ion-text color='danger'>￥{{f.SalesPrice}}<ng-container *ngIf='f.Variables?.AccountCode'>
+                  <ion-text color='secondary'>协</ion-text>
+                </ng-container>
+                  <ng-container *ngIf='f.TypeName'>
                   <ion-text color='medium' style="font-size:0.8rem;">({{f.TypeName}})</ion-text>
                 </ng-container></ion-text>
                 <ion-button style="margin-left:.5em;" (click)='onSelectTrip(flight,f)' color='secondary' fill='solid' expand='block' size='small'>
