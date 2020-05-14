@@ -36,7 +36,7 @@ export class FlightListPage implements OnInit, OnDestroy {
   private flightQuery: FlightResultEntity;
   private subscriptions: Subscription[] = [];
   private explainSubscription = Subscription.EMPTY;
-  private pageSize = 12;
+  private pageSize = 8;
   isLastTrip = false;
   isLoading = false;
   multipassShow = false;
@@ -255,10 +255,10 @@ export class FlightListPage implements OnInit, OnDestroy {
     if (this.flightQuery && this.flightQuery.FlightRoutes) {
       this.flightQuery.FlightRoutes.sort((a, b) => {
         const delta =
-          (a.selectFlightFare &&
-            b.selectFlightFare &&
-            +a.selectFlightFare.TicketPrice -
-              +b.selectFlightFare.TicketPrice) ||
+          (a.minPriceFlightFare &&
+            b.minPriceFlightFare &&
+            +a.minPriceFlightFare.TicketPrice -
+              +b.minPriceFlightFare.TicketPrice) ||
           0;
         return c.price == "asc" ? delta : -delta;
       });
