@@ -41,7 +41,7 @@
         </ion-text>
       </strong>
     </ion-item-divider>
-    <ion-grid *ngFor='let f of flightfares' style="padding-left: 0.6em;">
+    <ion-grid *ngFor='let f of flightfares' >
       <ng-container *ngFor='let fr of f.FlightFareRules'>
         <ion-row *ngFor='let b of fr.Bags'>
           <ion-col size='3'>

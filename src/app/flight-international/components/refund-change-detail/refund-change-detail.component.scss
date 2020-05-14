@@ -1,3 +1,11 @@
 ion-row ion-col {
   align-self: flex-start;
 }
+ion-grid{
+  &.md{
+    padding-left: .6em;
+  }
+  &.ios{
+    padding-left: 1em;
+  }
+}
