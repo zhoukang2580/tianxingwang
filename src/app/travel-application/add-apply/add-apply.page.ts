@@ -232,8 +232,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     } else if (t == "International") {
       this.vmRegionTypes = this.regionTypes.filter((t) =>{
         if(t.value){
-          t.value.toLowerCase().includes("international")
+          return  t.value.toLowerCase().includes("international")
         }
+        return false
       })
     }
   }

@@ -6,7 +6,7 @@
         <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()"
           class="ion-text-end" *ngIf="enable"></ion-icon>
       </ion-item-divider>
-      <ion-item lines="none">
+      <ion-item lines="none" *ngIf='regionTypes?.length'>
         <ion-text [color]="!enable?'dark':'dark'">
           交通住宿
         </ion-text>
@@ -14,12 +14,6 @@
           [(ngModel)]="trip.travelTools" okText="确定" multiple="true" cancelText="取消"
           [compareWith]="compareTravelToolWithFn">
           <ion-select-option value="{{t.value}}" *ngFor='let t of regionTypes'>{{t.label}}</ion-select-option>
-          <!-- <ion-select-option value="Flight" *ngFor='let t of regionTypes'>机票</ion-select-option>
-          <ion-select-option value="Hotel">火车票</ion-select-option>
-          <ion-select-option value="Train">酒店</ion-select-option>
-          <ion-select-option value="Car">租车</ion-select-option>
-          <ion-select-option value="InternationalFlight">国际*港澳台机票</ion-select-option>
-          <ion-select-option value="InternationalHotel">港澳台*海外酒店</ion-select-option> -->
         </ion-select>
       </ion-item>
       <ion-item lines="none">

@@ -31,7 +31,7 @@ interface IRegionType {
   templateUrl: "./add-stroke.component.html",
   styleUrls: ["./add-stroke.component.scss"],
 })
-export class AddStrokeComponent implements OnInit,OnChanges {
+export class AddStrokeComponent implements OnInit, OnChanges {
   @Output() remove: EventEmitter<any>;
   @Input() trip: TravelFormTripEntity;
   @Input() enable: boolean;
@@ -64,16 +64,19 @@ export class AddStrokeComponent implements OnInit,OnChanges {
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
-  ngOnChanges(change:SimpleChanges){
-    
+  ngOnChanges(change: SimpleChanges) {
+    if (this.trip) {
+      this.trip.travelTools = null;
+      this.trip.TravelTool=null;
+    }
   }
   ngOnInit() {
     // this.trip.StartDate = new Date().toISOString();
     // this.trip.EndDate = new Date().toISOString();
   }
-  duageTime(start,EndDate){
-    let day = this.getNumberOfDays(start,EndDate);
-    if(day<0){
+  duageTime(start, EndDate) {
+    let day = this.getNumberOfDays(start, EndDate);
+    if (day < 0) {
       AppHelper.alert("出差结束时间不能早于出差开始时间")
     }
   }
@@ -142,20 +145,20 @@ export class AddStrokeComponent implements OnInit,OnChanges {
       }
       if (t == "InternationalFlight") {
         this.getInternationalFlight(a);
-      }else if (t == "Flight") {
+      } else if (t == "Flight") {
         this.getFlight(a)
       } else if (t == "InternationalHotel") {
-       this.getInternationalHotel(a);
+        this.getInternationalHotel(a);
       } else if (t == "Hotel") {
         this.getHotel(a);
-      }else if(t=="Train"){
+      } else if (t == "Train") {
         this.getTrain(a);
       }
     } catch (e) {
       AppHelper.alert(e);
     }
   }
-  getInternationalFlight(a){
+  getInternationalFlight(a) {
     if (a.VariablesJsonObj) {
       // const toCity: TrafficlineEntity = a.VariablesJsonObj.ToAirportCity || {};
       // const fromCity: TrafficlineEntity = a.VariablesJsonObj.FromAirportCity || {};
@@ -176,7 +179,7 @@ export class AddStrokeComponent implements OnInit,OnChanges {
       //  });
     }
   }
-  getFlight(a){
+  getFlight(a) {
     if (a.VariablesJsonObj) {
       const toCity: TrafficlineEntity = a.VariablesJsonObj.ToAirportCity || {};
       const fromCity: TrafficlineEntity = a.VariablesJsonObj.FromAirportCity || {};
@@ -200,7 +203,7 @@ export class AddStrokeComponent implements OnInit,OnChanges {
       AppHelper.alert("接口请求异常")
     }
   }
-  async getInternationalHotel(a){
+  async getInternationalHotel(a) {
     if (a.VariablesJsonObj) {
       const countries = await this.tmcService.getCountries();
       const fromCity: TrafficlineEntity = a.VariablesJsonObj.City || {};
@@ -215,11 +218,11 @@ export class AddStrokeComponent implements OnInit,OnChanges {
       // this.router.navigate(["flight-list"], {
       //   queryParams: { doRefresh: true },
       // });
-    }else {
+    } else {
       AppHelper.alert("接口请求异常")
     }
   }
-  getHotel(a){
+  getHotel(a) {
     if (a.VariablesJsonObj) {
       const fromCity: TrafficlineEntity = a.VariablesJsonObj.City || {};
       this.hotelService.setSearchHotelModel({
@@ -227,31 +230,31 @@ export class AddStrokeComponent implements OnInit,OnChanges {
         checkInDate: (this.trip.StartDate || "").substr(0, 10),
         checkOutDate: (this.trip.EndDate || "").substr(0, 10),
         destinationCity: fromCity,
-        hotelType:'normal'
+        hotelType: 'normal'
       });
       this.router.navigate(["hotel-list"], {
         queryParams: { doRefresh: true },
       });
     }
   }
-  getTrain(a){
+  getTrain(a) {
     if (a.VariablesJsonObj) {
-      console.log((this.trip.StartDate || "").substr(0, 10),"this.trip.StartDate") 
+      console.log((this.trip.StartDate || "").substr(0, 10), "this.trip.StartDate")
       const toCity: TrafficlineEntity = a.VariablesJsonObj.ToStationCity || {};
       const fromCity: TrafficlineEntity = a.VariablesJsonObj.FromStationCity || {};
       this.trainService.setSearchTrainModelSource({
         ...this.trainService.getSearchTrainModel(),
         Date: (this.trip.StartDate || "").substr(0, 10),
-        FromStation:a.VariablesJsonObj.FromStationCity.Code,
+        FromStation: a.VariablesJsonObj.FromStationCity.Code,
         fromCity,
         toCity,
-        ToStation:a.VariablesJsonObj.ToStationCity.Code,
-        isLocked:true
+        ToStation: a.VariablesJsonObj.ToStationCity.Code,
+        isLocked: true
       });
       this.router.navigate(["train-list"], {
         queryParams: { doRefresh: true },
       });
-    }else {
+    } else {
       AppHelper.alert("接口请求异常")
     }
   }
