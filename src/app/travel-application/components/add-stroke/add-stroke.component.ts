@@ -65,10 +65,10 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     return o1 == o2;
   };
   ngOnChanges(change: SimpleChanges) {
-    if (this.trip) {
-      this.trip.travelTools = null;
-      this.trip.TravelTool=null;
-    }
+    // if (this.trip) {
+    //   this.trip.travelTools = null;
+    //   this.trip.TravelTool=null;
+    // }
   }
   ngOnInit() {
     // this.trip.StartDate = new Date().toISOString();
@@ -119,6 +119,9 @@ export class AddStrokeComponent implements OnInit, OnChanges {
   getTravelTools(t) {
 
     let text = "";
+    if(!this.regionTypes){
+      return
+    }
     for (const it of this.regionTypes) {
       if (it.value == t) {
         text = it.label;

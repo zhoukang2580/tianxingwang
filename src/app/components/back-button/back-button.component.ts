@@ -55,12 +55,12 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       evt.preventDefault();
       evt.stopPropagation();
     }
-    console.log(
-      "app-back-button curUrl:",
-      this.curUrl,
-      "customeback = " + this.customeback,
-      this.router.url.split("?")[0]
-    );
+    // console.log(
+    //   "app-back-button curUrl:",
+    //   this.curUrl,
+    //   "customeback = " + this.customeback,
+    //   this.router.url.split("?")[0]
+    // );
     this.navCtrl.pop().then(() => {
       // console.log(
       //   "app-back-button pop 后 curUrl:",

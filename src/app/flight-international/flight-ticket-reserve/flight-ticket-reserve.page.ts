@@ -1070,47 +1070,50 @@ export class FlightTicketReservePage
       `[${attrName}='${value}']`
     ) as HTMLElement;
   }
+  private async getCredentials(accountIds:string[]){
+    const res: {
+      [accountId: string]: CredentialsEntity[];
+    } = await this.tmcService
+      .getPassengerCredentials(accountIds)
+      return res;
+  }
   async onModify(item: ICombindInfo) {
     if (!item.credentialsRequested) {
-      const res: {
-        [accountId: string]: CredentialsEntity[];
-      } = await this.tmcService
-        .getPassengerCredentials([item.bookInfo.passenger.AccountId])
-        .catch((_) => ({ [item.bookInfo.passenger.AccountId]: [] }));
-      if (item.credentials.length) {
-        const exist = item.credentials[0];
-        const credentials = res && res[item.bookInfo.passenger.AccountId];
-        item.credentialsRequested = credentials && credentials.length > 0;
-        if (credentials) {
-          if (credentials.length) {
-            const one = credentials.find(
-              (it) => it.Number == exist.Number && exist.Type == it.Type
-            );
-            if (one) {
-              item.credentials = [
-                one,
-                ...credentials.filter((it) => it != one),
-              ];
-            } else {
-              if (item.credentialsRequested) {
-                item.credentials = credentials;
-              }
-            }
-          } else {
-          }
-        }
-      }
-    }
-    if (item.credentials) {
-      item.credentials = item.credentials.filter((it) => !!it.Number);
+      const res = await this.getCredentials([item.bookInfo.passenger.AccountId]);
+      const credentials = res && res[item.bookInfo.passenger.AccountId];
+      item.credentials = credentials;
+      // if (credentials.length) {
+      //   const exist = item.credentials[0];
+      //   item.credentialsRequested = credentials && credentials.length > 0;
+      //   if (credentials) {
+      //     if (credentials.length) {
+      //       const one = credentials.find(
+      //         (it) => it.Number == exist.Number && exist.Type == it.Type
+      //       );
+      //       if (one) {
+      //         item.credentials = [
+      //           one,
+      //           ...credentials.filter((it) => it != one),
+      //         ];
+      //       } else {
+      //         if (item.credentialsRequested) {
+      //           item.credentials = credentials;
+      //         }
+      //       }
+      //     } else {
+      //     }
+      //   }
+      // }
     }
     item.credentials = this.filterCredentials(item.credentials)
+    item.vmCredential=item.credentials[0];
     console.log("onModify", item.credentials);
   }
 
   filterCredentials(credentials: CredentialsEntity[]) {
     if (credentials) {
       credentials = credentials.filter(t => t.Type != CredentialsType.IdCard)
+      // credentials = credentials.filter(t => t.Type == CredentialsType.Passport)
       if (this.searchModel && this.searchModel.trips) {
         const hasHKMO = this.searchModel.trips.some(t => {
           return (t.fromCity.CountryCode == "HK" || t.fromCity.CountryCode == "MO" || t.toCity.CountryCode == "HK" || t.toCity.CountryCode == "MO")
@@ -1320,15 +1323,17 @@ export class FlightTicketReservePage
         [accountId: string]: ITmcOutNumberInfo[];
       } = {} as any;
       const isSelfOrisSecretary =
-        (await this.staffService.isSecretaryBookType()) ||
-        (await this.staffService.isSelfBookType());
+      (await this.staffService.isSecretaryBookType()) ||
+      (await this.staffService.isSelfBookType());
       const pfs = this.flightService.getBookInfos();
+      const accountIds=pfs.map(it=>it.passenger.AccountId);
+     const id2Credentials= await this.getCredentials(accountIds);
       for (const item of pfs) {
         const cs = this.initialBookDtoModel.Staffs.find(
           (it) => it.Account.Id == item.passenger.AccountId
         );
         const cstaff = cs && cs.CredentialStaff;
-        let credentials = [];
+        let credentials = id2Credentials[item.passenger.AccountId];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
           Tag: string;
@@ -1365,8 +1370,8 @@ export class FlightTicketReservePage
           )
         ) {
           credentials.push(item.credential);
-          credentials = this.filterCredentials(credentials)
         }
+        credentials = this.filterCredentials(credentials)
         const insuranceProducts =
           (this.initialBookDtoModel.Insurances &&
             this.initialBookDtoModel.Insurances[item.id]) ||
@@ -1390,13 +1395,14 @@ export class FlightTicketReservePage
         );
         const combineInfo: ICombindInfo = {} as ICombindInfo;
         combineInfo.selectedInsuranceProductId =
-          forceInsurance &&
-          forceInsurance.insuranceResult &&
-          forceInsurance.insuranceResult.Id;
+        forceInsurance &&
+        forceInsurance.insuranceResult &&
+        forceInsurance.insuranceResult.Id;
         combineInfo.id = AppHelper.uuid();
         combineInfo.vmCredential = item.credential;
         combineInfo.isSkipApprove = false;
         combineInfo.credentials = credentials || [];
+        combineInfo.vmCredential=credentials[0]||item.credential;
         combineInfo.openrules = false;
         combineInfo.credentialStaff = cstaff;
         combineInfo.isOtherIllegalReason = false;
