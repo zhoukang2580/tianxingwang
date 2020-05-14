@@ -13,7 +13,7 @@ export class RequestEntity {
   Token?: string;
   FileValue?: string;
   IsShowLoading?: boolean;
-  IsForbidShowMessage?: boolean;
+  IsShowMessage?: boolean;
   LoadingMsg?: string;
   IsRedirctLogin?: boolean;
   IsForward?: boolean;

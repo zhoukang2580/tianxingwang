@@ -62,8 +62,8 @@ export class ApiService {
       }
     });
     this.loadApiConfig(true)
-      .then((_) => { })
-      .catch(() => { });
+      .then((_) => {})
+      .catch(() => {});
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -206,49 +206,14 @@ export class ApiService {
     }
     return req.Url;
   }
-  async tryAutoLogin(res:IResponse<any>) {
-    if(AppHelper.isH5()){
-      let tip="登陆超时，请重新登陆";
-      if(res){
-        if(res.Message){
-          tip=res.Message;
-        }else if(res.Code){
-          
-        }
-      }
-      if(this.router.url!='login'){
-        this.router.navigate(['login'])
-      }
-      return Promise.reject(tip)
-    }
+  async tryAutoLogin(res: IResponse<any>) {    
     const req = this.createRequest();
-    if (AppHelper.isApp()) {
-      const device = await AppHelper.getDeviceId();
+    const device = await AppHelper.getDeviceId();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
         Device: device,
         Token: AppHelper.getStorage("loginToken"),
       });
-    } else if (AppHelper.isWechatH5()) {
-      const code = "";
-      req.Method = "ApiLoginUrl-Home-WechatLogin";
-      req.Data = JSON.stringify({
-        Code: code,
-      });
-    } else if (AppHelper.isWechatMini()) {
-      const code = "";
-      req.Method = "ApiLoginUrl-Home-WechatLogin";
-      req.Data = JSON.stringify({
-        Code: code,
-        SdkType: "Mini",
-      });
-    } else if (AppHelper.isDingtalkH5()) {
-      const code = "";
-      req.Method = "ApiLoginUrl-Home-DingtalkLogin";
-      req.Data = JSON.stringify({
-        Code: code,
-      });
-    }
     const formObj = Object.keys(req)
       .filter((it) => it != "Url" && it != "IsShowLoading")
       .map((k) => `${k}=${req[k]}`)
@@ -257,44 +222,45 @@ export class ApiService {
     if (this.tryAutoLoginPromise) {
       return this.tryAutoLoginPromise;
     }
-    this.tryAutoLoginPromise = new Promise<IResponse<any>>((resolve, reject) => {
-      const subscribtion = this.http
-        .post(
-          url,
-          `${formObj}&Sign=${this.getSign(
-            req
-          )}&x-requested-with=XMLHttpRequest`,
-          {
-            headers: { "content-type": "application/x-www-form-urlencoded" },
-            observe: "body",
-          }
-        )
-        .subscribe(
-          (r: IResponse<any>) => {
-            resolve(r);
-          },
-          (e) => {
-            reject(e);
-          },
-          () => {
-            setTimeout(() => {
-              if (subscribtion) {
-                subscribtion.unsubscribe();
-              }
-            }, 1000);
-          }
-        );
-    }).then(r=>{
-      if(r&&r.Data){
+    this.tryAutoLoginPromise = new Promise<IResponse<any>>(
+      (resolve, reject) => {
+        const subscribtion = this.http
+          .post(
+            url,
+            `${formObj}&Sign=${this.getSign(
+              req
+            )}&x-requested-with=XMLHttpRequest`,
+            {
+              headers: { "content-type": "application/x-www-form-urlencoded" },
+              observe: "body",
+            }
+          )
+          .subscribe(
+            (r: IResponse<any>) => {
+              resolve(r);
+            },
+            (e) => {
+              reject(e);
+            },
+            () => {
+              setTimeout(() => {
+                if (subscribtion) {
+                  subscribtion.unsubscribe();
+                }
+              }, 1000);
+            }
+          );
+      }
+    ).then((r) => {
+      if (r && r.Data) {
         const id: IdentityEntity = new IdentityEntity();
         id.Name = r.Data.Name;
         id.Ticket = r.Data.Ticket;
         id.IsShareTicket = r.Data.IsShareTicket;
         id.Numbers = r.Data.Numbers;
         id.Id = r.Data.Id;
-        id.Token=r.Data.Token;
         this.identityService.setIdentity(id);
-        AppHelper.setStorage("loginToken",id.Token);
+        AppHelper.setStorage("loginToken", r.Data.Token);
       }
       return r;
     });
@@ -321,7 +287,7 @@ export class ApiService {
       )
       .pipe(
         finalize(() => {
-          console.log("reqMethod =" + req.Method,this.reqLoadingStatus);
+          console.log("reqMethod =" + req.Method, this.reqLoadingStatus);
           this.setLoading({
             isShowLoading: false,
             reqMethod: req.Method,
@@ -342,7 +308,7 @@ export class ApiService {
       tap((r) => console.log(r)),
       map((r) => r as any),
       switchMap((r: IResponse<any>) => {
-        if (isCheckLogin && r.Code && r.Code.toUpperCase() === "NOLOGIN") {
+        if (isCheckLogin && r.Code && r.Code.toUpperCase()=== "NOLOGIN" && AppHelper.isApp()) {
           return from(this.tryAutoLogin(r)).pipe(
             map((r) => r as any),
             switchMap((r: IResponse<any>) => {
@@ -350,33 +316,27 @@ export class ApiService {
                 return this.sendRequest(req, false);
               }
               this.identityService.removeIdentity();
-              if (req.IsRedirctLogin == false) {
-                if (r.Message) {
-                  if (!req.IsForbidShowMessage) {
-                    AppHelper.alert(r.Message);
-                  }
-                }
-              } else {
+              if (r.Message && req.IsShowMessage) {
+                AppHelper.alert(r.Message);
+              }
+              if (req.IsRedirctLogin!=false) {
                 this.router.navigate([AppHelper.getRoutePath("login")]);
               }
               return of(r);
             })
-          )
+          );
         } else if (r.Code && r.Code.toUpperCase() === "NOLOGIN") {
           this.identityService.removeIdentity();
-          if (req.IsRedirctLogin == false) {
-            if (r.Message) {
-              if (!req.IsForbidShowMessage) {
-                AppHelper.alert(r.Message);
-              }
-            }
-          } else {
+          if (r.Message && req.IsShowMessage) {
+            AppHelper.alert(r.Message);
+          }
+          if (req.IsRedirctLogin!=false) {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
         } else if (r.Code && r.Code.toUpperCase() === "NOAUTHORIZE") {
           this.router.navigate([AppHelper.getRoutePath("no-authorize")]);
         } else if (r.Code && r.Code.toLowerCase() == "systemerror") {
-          if (!req.IsForbidShowMessage) {
+          if (req.IsShowMessage) {
             AppHelper.alert("接口请求异常，系统错误");
           }
         }
@@ -526,7 +486,6 @@ export class ApiService {
                 this.storage.set(`KEY_API_CONFIG`, this.apiConfig);
                 const identityEntity = await this.identityService.getIdentityAsync();
                 if (identityEntity) {
-                  identityEntity.Token = this.apiConfig.Token;
                   this.identityService.setIdentity(identityEntity);
                 }
                 s(this.apiConfig);
@@ -545,7 +504,7 @@ export class ApiService {
   getSign(req: RequestEntity) {
     return md5(
       `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
-      req.Timestamp
+        req.Timestamp
       }${req.Token}`
     ) as string;
   }
