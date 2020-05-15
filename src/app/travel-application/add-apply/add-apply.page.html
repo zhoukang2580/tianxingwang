@@ -34,17 +34,8 @@
         [disabled]="!enable">
       </ion-input>
     </ion-item>
-    <ion-item [attr.tripType]='"tripType"'>
-      <ion-text [color]="!enable?'dark':'dark'">
-        出差类别
-      </ion-text>
-      <ion-select slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.TripType" okText="确定"
-        cancelText="取消" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(searchModel.TravelForm.TripType)" [disabled]="!enable">
-        <ion-select-option value="Domestic">国内</ion-select-option>
-        <ion-select-option value="International">国际*港澳台</ion-select-option>
-      </ion-select>
-    </ion-item>
-    <app-add-stroke [regionTypes]='vmRegionTypes' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx'
+
+    <app-add-stroke [regionTypes]='vmRegionTypes'  [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx'
       *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;" [index]="idx" [trip]='item'
       (remove)='onRemoveTrip($event)'></app-add-stroke>
     <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()"

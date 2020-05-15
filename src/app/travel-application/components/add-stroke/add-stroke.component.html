@@ -6,6 +6,16 @@
         <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()"
           class="ion-text-end" *ngIf="enable"></ion-icon>
       </ion-item-divider>
+      <ion-item lines="none" [attr.tripType]='"tripType"'>
+        <ion-text [color]="!enable?'dark':'dark'">
+          出差类别
+        </ion-text>
+        <ion-select slot="end" class="ion-text-end" [(ngModel)]="trip.TripType" okText="确定"
+          cancelText="取消" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(trip.TripType)" [disabled]="!enable">
+          <ion-select-option value="Domestic">国内</ion-select-option>
+          <ion-select-option value="International">国际*港澳台</ion-select-option>
+        </ion-select>
+      </ion-item>
       <ion-item lines="none" *ngIf='regionTypes?.length'>
         <ion-text [color]="!enable?'dark':'dark'">
           交通住宿
@@ -13,7 +23,7 @@
         <ion-select [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;"
           [(ngModel)]="trip.travelTools" okText="确定" multiple="true" cancelText="取消"
           [compareWith]="compareTravelToolWithFn">
-          <ion-select-option value="{{t.value}}" *ngFor='let t of regionTypes'>{{t.label}}</ion-select-option>
+          <ion-select-option value="{{t.value}}" *ngFor='let t of vmRegionTypes'>{{t.label}}</ion-select-option>
         </ion-select>
       </ion-item>
       <ion-item lines="none">
@@ -69,12 +79,11 @@
         <div>
           <div *ngFor='let t of trip.travelTools'>
             <ion-button slot='end' color="secondary" style="height: 2.4em;" (click)="goReserve(t)">
-              预定{{getTravelTools(t)}}
+              预订{{getTravelTools(t)}}
             </ion-button>
           </div>
         </div>
       </ion-item>
     </ion-item-group>
   </ion-list>
-
 </ng-container>

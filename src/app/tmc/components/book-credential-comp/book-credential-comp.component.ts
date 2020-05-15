@@ -64,6 +64,8 @@ export class BookCredentialCompComponent
     console.log(this.credential,"qdjleijdeldelidjiw");
   }
   async ngOnInit() {
+ 
+    // this.isModified=true
     // this.isFlightTrainHotel = "train";
     // this.isSelf = await this.staffService.isSelfBookType();
   }

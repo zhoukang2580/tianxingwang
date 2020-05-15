@@ -69,9 +69,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   outNumbers: {
     [key: string]: any;
   };
+  vmRegionTypes: { value: string; label: string }[];
   tmc: TmcEntity;
   totalDays$: Observable<number>;
-  vmRegionTypes: { value: string; label: string }[];
   constructor(
     private travelService: TravelService,
     private modalCtrl: ModalController,
@@ -218,26 +218,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       }
     });
   }
-  getRegionTypes(t) {
-    console.log(t, "Tttt");
-    console.log(this.regionTypes, "this.regionTypes ");
-    if (t == "Domestic") {
-      this.vmRegionTypes = this.regionTypes.filter((t) => {
-        if (t.value) {
-          return t.value.toLowerCase() == "flight" || t.value.toLowerCase() == "hotel" || t.value.toLowerCase() == "train" || t.value.toLowerCase() == "car"
-        }
-        return false
-      }
-      );
-    } else if (t == "International") {
-      this.vmRegionTypes = this.regionTypes.filter((t) =>{
-        if(t.value){
-          return  t.value.toLowerCase().includes("international")
-        }
-        return false
-      })
-    }
-  }
+
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
