@@ -82,7 +82,7 @@ export class CalendarService {
     const m = await AppHelper.modalController.create({
       component: TmcCalendarComponent,
       componentProps: {
-        calendarService:this,
+        calendarService: this,
         ...data,
       },
     });
@@ -775,7 +775,12 @@ export class CalendarService {
     const ym = `${year}-${month < 10 ? "0" + month : month}`;
     const one = this.calendars.find((it) => it.yearMonth == ym);
     if (one) {
-      return one;
+      return {
+        ...one,
+        dayList: one.dayList.map((d) => {
+          return { ...d };
+        }),
+      };
     }
     const st = Date.now();
     const iM = moment(`${year}-${month}-01`, "YYYY-MM-DD"); // 第i个月

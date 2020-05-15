@@ -59,8 +59,10 @@ export class IdentityService {
     return of(rev);
   }
   removeIdentity() {
-    this.identityEntity.Ticket = null;
-    this.identityEntity.Id = null;
+    if (this.identityEntity) {
+      this.identityEntity.Ticket = null;
+      this.identityEntity.Id = null;
+    }
     AppHelper.setStorage("ticket", "");
     this.setIdentity(this.identityEntity);
   }
