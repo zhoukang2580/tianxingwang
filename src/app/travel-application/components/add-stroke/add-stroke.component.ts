@@ -57,19 +57,31 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     if (Array.isArray(o2)) {
       return o2 && o1 && o2.some((it) => it == o1);
     }
-    if (this.trip && this.trip.travelTools) {
-      this.trip.TravelTool = this.trip.travelTools.join(",");
-    }
+    
     return o1 == o2;
   };
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
   ngOnChanges(change: SimpleChanges) {
-    // if (this.trip) {
-    //   this.trip.travelTools = null;
-    //   this.trip.TravelTool=null;
-    // }
+    if (change&&change.regionTypes&&change.regionTypes.currentValue) {
+      if(this.trip&&this.regionTypes&&this.trip.TravelTool){
+        console.log(this.regionTypes,"regionTypes");
+        const arr=this.trip.TravelTool.split(",")
+        this.vmRegionTypes=this.vmRegionTypes||[]
+        this.regionTypes.forEach(t=>{
+          // console.log(arr.some(f=>f==t.value),"arr.some(f=>f==t.value)");
+          if(arr.some(f=>f==t.value)&&!this.vmRegionTypes.some(s=>s.value==t.value)){
+            this.vmRegionTypes.push(t)
+          }
+         
+
+        })
+        //  console.log(this.vmRegionTypes, "vmRegionTypes");
+        //  console.log(this.trip.travelTools, "this.trip.travelTools333333");
+        // this.getRegionTypes()
+      }
+    }
   }
   ngOnInit() {
     // this.trip.StartDate = new Date().toISOString();
@@ -120,7 +132,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
   getTravelTools(t) {
 
     let text = "";
-    if(!this.regionTypes){
+    if (!this.regionTypes) {
       return
     }
     for (const it of this.regionTypes) {
@@ -274,9 +286,9 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       }
       );
     } else if (t == "International") {
-      this.vmRegionTypes = this.regionTypes.filter((t) =>{
-        if(t.value){
-          return  t.value.toLowerCase().includes("international")
+      this.vmRegionTypes = this.regionTypes.filter((t) => {
+        if (t.value) {
+          return t.value.toLowerCase().includes("international")
         }
         return false
       })

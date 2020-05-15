@@ -174,6 +174,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         // this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
         // );
         this.vmRegionTypes = this.regionTypes.slice(0);
+        
       }
     });
     this.initValidateRule();
@@ -370,13 +371,17 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             index < this.searchModel.TravelForm.Trips.length;
             index++
           ) {
+            const trip =this.searchModel.TravelForm.Trips[index];
+            if (trip && trip.travelTools) {
+      trip.TravelTool = trip.travelTools.join(",");
+    }
             if (
-              !this.searchModel.TravelForm.Trips[index].TripType ||
-              !this.searchModel.TravelForm.Trips[index].TravelTool ||
-              !this.searchModel.TravelForm.Trips[index].FromCityName ||
-              !this.searchModel.TravelForm.Trips[index].ToCityName ||
-              !this.searchModel.TravelForm.Trips[index].StartDate ||
-              !this.searchModel.TravelForm.Trips[index].EndDate
+              !trip.TripType ||
+              !trip.TravelTool ||
+              !trip.FromCityName ||
+              !trip.ToCityName ||
+              !trip.StartDate ||
+              !trip.EndDate
             ) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
