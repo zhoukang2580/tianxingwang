@@ -1471,13 +1471,15 @@ export class InternationalFlightService {
   ): Promise<string> {
     console.log("addPassengerFlightSegments", arg);
     const infos = this.getBookInfos();
-    if (!arg || !arg.passenger || !arg.credential) {
+    if (!arg || !arg.passenger) {
       // AppHelper.alert(LanguageHelper.Flight.getMustSelectOneCredentialTip());
       return;
     }
     arg.id = AppHelper.uuid();
-    if (!arg.credential.Account || arg.isNotWhitelist) {
-      arg.credential.Account = arg.passenger.Account;
+    if(arg.credential){
+      if (!arg.credential.Account || arg.isNotWhitelist) {
+        arg.credential.Account = arg.passenger.Account;
+      }
     }
     arg.isNotWhitelist = arg.passenger.isNotWhiteList;
     infos.push(arg);

@@ -58,7 +58,6 @@ export class BookCredentialCompComponent
   }
   onMaintainCredentials() {
     this.managementCredentials.emit();
-    this.router.navigate(["member-credential-list"]);
   }
   onSave() {
     this.savecredential.emit(this.credential);

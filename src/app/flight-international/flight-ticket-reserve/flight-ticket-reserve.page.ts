@@ -102,6 +102,7 @@ export class FlightTicketReservePage
   isCheckingPay = false;
   isCanSave = false;
   isSubmitDisabled = false;
+  isManagementCredential = false;
   isCanSkipApproval$: Observable<boolean>;
   orderTravelPayType: OrderTravelPayType;
   OrderTravelPayType = OrderTravelPayType;
@@ -149,6 +150,10 @@ export class FlightTicketReservePage
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async () => {
         this.errors = "";
+        if(this.isManagementCredential){
+          this.refresh(true)
+          this.isManagementCredential=false;
+        }
         this.isCanSave = await this.identityService
           .getIdentityAsync()
           .catch((_) => null as IdentityEntity)
@@ -268,7 +273,9 @@ export class FlightTicketReservePage
         }
         const account = new AccountEntity();
         account.Id = info.passenger.AccountId;
-        p.Credentials.Account = p.Credentials.Account || account;
+        if(p.Credentials&&p.Credentials.Account){
+          p.Credentials.Account = p.Credentials.Account || account;
+        }
         p.Policy = info.passenger.Policy;
         p.FlightCabin = p.FlightFare as any;
         bookDto.Passengers.push(p);
@@ -659,7 +666,7 @@ export class FlightTicketReservePage
     const isSelf = await this.staffService.isSelfBookType();
     const arr = this.fillGroupConbindInfoApprovalInfo(this.vmCombindInfos);
     canBook = this.fillBookLinkmans(bookDto);
-    canBook2 = this.fillBookPassengers(bookDto, arr);
+    canBook2 =await this.fillBookPassengers(bookDto, arr);
     if (canBook && canBook2) {
       if (isSelf && this.isRoundTrip) {
         const p1 = bookDto.Passengers.find((it) => !!it.OutNumbers);
@@ -798,10 +805,16 @@ export class FlightTicketReservePage
     }
     return true;
   }
-  private fillBookPassengers(
+  onManagementCredentials(){
+    this.isManagementCredential=true;
+    this.router.navigate(["member-credential-management"],{queryParams:{addNew:true}});
+
+  }
+   private async fillBookPassengers(
     bookDto: OrderBookDto,
     combindInfos: ICombindInfo[]
   ) {
+    
     const showErrorMsg = (
       msg: string,
       item: ICombindInfo,
@@ -838,6 +851,14 @@ export class FlightTicketReservePage
       });
     for (const combindInfo of combindInfos) {
       i++;
+      console.log(combindInfo.vmCredential,"combindInfo.vmCredential111");
+      if(!combindInfo.vmCredential){
+       let a= await AppHelper.alert("请维护第"+i+"个旅客的证件",true,"确定","取消")
+       if(a){
+         this.onManagementCredentials();
+       }
+        return 
+      }
       const accountId =
         combindInfo.bookInfo.passenger.AccountId ||
         (this.tmc && this.tmc.Account && this.tmc.Account.Id);
@@ -903,6 +924,7 @@ export class FlightTicketReservePage
       p.TicketNum = "";
       p.Credentials = new CredentialsEntity();
       p.Credentials = { ...combindInfo.vmCredential };
+    
       const el = this.getEleByAttr(
         "credentialcompid",
         combindInfo.id

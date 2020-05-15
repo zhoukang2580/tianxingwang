@@ -5,7 +5,8 @@
       style="font-size: 0.9rem;">
       <div style="width:100%">
         <div>
-          <ion-text color="secondary" *ngIf="isShowRemind(index,seg)" style="font-size: 0.6rem;">
+          <ion-text color="secondary" *ngIf="isShowRemind(index,seg)" style="font-size: 0.6rem;display: flex;
+          justify-content: center;">
             <span *ngIf="isShow==1">转机机场不同，请保留充足中转时间。</span>
             <span *ngIf="isShow==2">转机机场起降航站楼不同<br/>请保留充足中转时间。</span>
           </ion-text>
