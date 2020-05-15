@@ -56,11 +56,13 @@
           </div>
         </ion-item>
         <ion-item-group
-          *ngIf='combindInfo?.bookInfo &&(searchModel?.voyageType!=FlightVoyageType.GoBack||(searchModel?.voyageType==FlightVoyageType.GoBack&&combindInfo.isShowGroupedInfo))'>
+          *ngIf='combindInfo?.bookInfo &&(searchModel?.voyageType!=FlightVoyageType.GoBack||(searchModel?.voyageType==FlightVoyageType.GoBack&&first))'>
           <ion-item-divider color="primary">旅客信息:</ion-item-divider>
           <app-book-credential-comp [credential]='combindInfo.vmCredential'
             (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
-            (modify)='onModify(combindInfo)' (managementCredentials)='onManagementCredentials()' [canEdit]='false' [canMaintainCredentials]='combindInfo.credentials?.length==0||!combindInfo.vmCredential' [attr.credentialcompid]='combindInfo.id'>
+            (modify)='onModify(combindInfo)' (managementCredentials)='onManagementCredentials()' [canEdit]='false'
+            [canMaintainCredentials]='combindInfo.credentials?.length==0||!combindInfo.vmCredential'
+            [attr.credentialcompid]='combindInfo.id'>
           </app-book-credential-comp>
           <ng-container
             *ngIf='combindInfo?.bookInfo && !combindInfo.bookInfo.isNotWhitelist&&combindInfo?.bookInfo.bookInfo?.flightRoute?.selectFlightFare?.policy?.Message'>

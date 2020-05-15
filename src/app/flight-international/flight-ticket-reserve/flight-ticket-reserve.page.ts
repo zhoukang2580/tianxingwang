@@ -806,14 +806,29 @@ export class FlightTicketReservePage
       .slice(0)
       .pop()
       .bookInfo.flightRoute.selectFlightFare.FlightRouteIds.forEach((rid) => {
-        flightRoutes.push(
-          this.flightService.flightListResult.FlightRoutesData.find(
-            (it) => it.Id == rid
-          )
+        const r = this.flightService.flightListResult.FlightRoutesData.find(
+          (it) => it.Id == rid
         );
+        if (r) {
+          flightRoutes.push({
+            ...r,
+            transferSegments: null,
+            fromSegment: null,
+            toSegment: null,
+            minPriceFlightFare: null,
+            flightFares: null,
+            selectFlightFare: null,
+          });
+        }
       });
+    const isGoBack =
+      this.searchModel &&
+      this.searchModel.voyageType == FlightVoyageType.GoBack;
     for (const combindInfo of combindInfos) {
       i++;
+      if (isGoBack && i > 1) {
+        break;
+      }
       const info = combindInfo.bookInfo.bookInfo;
       console.log(combindInfo.vmCredential, "combindInfo.vmCredential111");
       if (!combindInfo.vmCredential) {
@@ -858,6 +873,17 @@ export class FlightTicketReservePage
                 r.FlightSegmentIds.some((rsid) => rsid == it.Id)
             )
           );
+          if (isGoBack) {
+            p.FlightSegments = p.FlightSegments.map((s) => {
+              if (!s.CabinCode) {
+                const one = p.FlightSegments.find((it) => !!it.CabinCode);
+                if (one) {
+                  s.CabinCode = one.CabinCode;
+                }
+              }
+              return s;
+            });
+          }
         }
         if (info.flightRoute) {
           p.FlightFare = info.flightRoute.selectFlightFare;
@@ -1048,12 +1074,7 @@ export class FlightTicketReservePage
       p.IsSkipApprove = combindInfo.isSkipApprove;
       p.Policy = combindInfo.bookInfo.passenger.Policy;
       p.RuleInfo = (p.FlightFare && p.FlightFare.Explain) || "";
-      if (
-        this.searchModel &&
-        this.searchModel.voyageType == FlightVoyageType.GoBack&&i==1
-      ) {
-        bookDto.Passengers.push(p);
-      }
+      bookDto.Passengers.push(p);
     }
     return true;
   }
@@ -1323,7 +1344,13 @@ export class FlightTicketReservePage
       const isSelfOrisSecretary =
         (await this.staffService.isSecretaryBookType()) ||
         (await this.staffService.isSelfBookType());
-      const pfs = this.flightService.getBookInfos();
+      let pfs = this.flightService.getBookInfos();
+      if (
+        this.searchModel &&
+        this.searchModel.voyageType == FlightVoyageType.GoBack
+      ) {
+        pfs = [pfs[0]];
+      }
       const accountIds = pfs.map((it) => it.passenger.AccountId);
       const id2Credentials = await this.getCredentials(accountIds);
       for (const item of pfs) {
