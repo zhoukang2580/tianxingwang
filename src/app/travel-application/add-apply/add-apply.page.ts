@@ -358,12 +358,12 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           return;
         }
 
-        if (!this.searchModel.TravelForm.TripType) {
-          const el = this.getEleByAttr("tripType", "tripType");
-          this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请选择出差类别");
-          return;
-        }
+        // if (!this.searchModel.TravelForm.TripType) {
+        //   const el = this.getEleByAttr("tripType", "tripType");
+        //   this.moveRequiredEleToViewPort(el);
+        //   AppHelper.toast("请选择出差类别");
+        //   return;
+        // }
         if (this.searchModel.TravelForm.Trips) {
           for (
             let index = 0;
@@ -371,6 +371,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             index++
           ) {
             if (
+              !this.searchModel.TravelForm.Trips[index].TripType ||
               !this.searchModel.TravelForm.Trips[index].TravelTool ||
               !this.searchModel.TravelForm.Trips[index].FromCityName ||
               !this.searchModel.TravelForm.Trips[index].ToCityName ||
