@@ -90,7 +90,6 @@ export class FlightListPage implements OnInit, OnDestroy {
         flightRoute.selectFlightFare = fare;
       }
       trip.bookInfo = {
-        flightPolicy: null,
         fromSegment: flightRoute.fromSegment,
         toSegment: flightRoute.toSegment,
         flightRoute: flightRoute,
