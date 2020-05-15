@@ -7,13 +7,13 @@ import {
   Observable,
   Subject,
   BehaviorSubject,
-  TimeoutError
+  TimeoutError,
 } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import {
   HttpClient,
   HttpParams,
-  HttpErrorResponse
+  HttpErrorResponse,
 } from "@angular/common/http";
 import {
   map,
@@ -21,7 +21,7 @@ import {
   finalize,
   switchMap,
   tap,
-  timeout
+  timeout,
 } from "rxjs/operators";
 import { IResponse } from "../api/IResponse";
 import { ExceptionEntity } from "../log/exception.entity";
@@ -29,7 +29,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { environment } from "src/environments/environment";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class IdentityService {
   private fetchingIdentityPromise: Promise<IdentityEntity>;
@@ -45,14 +45,15 @@ export class IdentityService {
   }
   setIdentity(info: IdentityEntity) {
     this.identityEntity = info;
-    AppHelper.setStorage("ticket", info && info.Ticket || "");
+    AppHelper.setStorage("ticket", (info && info.Ticket) || "");
     this.identitySource.next(this.identityEntity);
+    console.log("Identity", this.identityEntity);
   }
   getStatus(): Observable<boolean> {
     const rev = !!(this.identityEntity && this.identityEntity.Ticket);
     if (rev && !this.identityEntity.Id) {
       return this.checkTicket(this.identityEntity.Ticket).pipe(
-        map(it => it && it.Ticket && !!it.Id)
+        map((it) => it && it.Ticket && !!it.Id)
       );
     }
     return of(rev);
@@ -64,11 +65,15 @@ export class IdentityService {
     this.setIdentity(this.identityEntity);
   }
   getIdentityAsync(): Promise<IdentityEntity> {
-    if (this.identityEntity && this.identityEntity.Ticket && this.identityEntity.Id) {
+    if (
+      this.identityEntity &&
+      this.identityEntity.Ticket &&
+      this.identityEntity.Id
+    ) {
       return Promise.resolve(this.identityEntity);
     }
     if (!this.fetchingIdentityPromise) {
-      this.fetchingIdentityPromise = new Promise<IdentityEntity>(s => {
+      this.fetchingIdentityPromise = new Promise<IdentityEntity>((s) => {
         const sub = this.loadIdentityEntity()
           .pipe(
             finalize(() => {
@@ -78,10 +83,10 @@ export class IdentityService {
             })
           )
           .subscribe(
-            r => {
+            (r) => {
               s(r);
             },
-            e => {
+            (e) => {
               AppHelper.alert(e);
               s(null);
             }
@@ -96,7 +101,7 @@ export class IdentityService {
     return this.identitySource.asObservable();
   }
   checkTicketAsync(t: string = "") {
-    return new Promise<IdentityEntity>(s => {
+    return new Promise<IdentityEntity>((s) => {
       const sub = this.checkTicket(t)
         .pipe(
           finalize(() => {
@@ -108,14 +113,14 @@ export class IdentityService {
           })
         )
         .subscribe(
-          res => {
+          (res) => {
             if (res) {
               s(res);
             } else {
               s(null);
             }
           },
-          _ => {
+          (_) => {
             s(null);
           }
         );
@@ -138,17 +143,17 @@ export class IdentityService {
     due = due < 1000 ? due * 1000 : due;
     due = environment.disableNetWork ? 1 : due;
     const formObj = Object.keys(req)
-      .map(k => `${k}=${req[k]}`)
+      .map((k) => `${k}=${req[k]}`)
       .join("&");
     const url = req.Url || AppHelper.getApiUrl() + "/Home/Proxy";
     return this.http
       .post(url, `${formObj}&x-requested-with=XMLHttpRequest`, {
         headers: { "content-type": "application/x-www-form-urlencoded" },
-        observe: "body"
+        observe: "body",
       })
       .pipe(
         map((r: IResponse<IdentityEntity>) => r),
-        switchMap(r => {
+        switchMap((r) => {
           this.identityEntity = r && r.Data;
           this.setIdentity(this.identityEntity);
           return of(this.identityEntity);
@@ -177,7 +182,7 @@ export class IdentityService {
     if (ticket) {
       return this.checkTicket(ticket);
     }
-    this.identityEntity =null;
+    this.identityEntity = null;
     return of(this.identityEntity);
   }
 }

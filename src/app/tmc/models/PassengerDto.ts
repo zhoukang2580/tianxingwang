@@ -37,6 +37,7 @@ export enum PassengerType {
   Soldier = 5,
 }
 export class PassengerDto {
+  RuleInfo: string;
   FlightRoutes: FlightRouteEntity[]; // 国际票
   FlightSegments: FlightSegmentEntity[]; // 国际票
   PassengerType: PassengerType;

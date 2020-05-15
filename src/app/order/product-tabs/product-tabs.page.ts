@@ -669,13 +669,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       const identity: IdentityEntity = await this.identityService
         .getIdentityAsync()
         .catch((_) => null);
-      const sign = this.apiService.getSign({
-        Token: identity && identity.Token,
-      } as any);
       this.router
         .navigate(["open-url"], {
           queryParams: {
-            url: `${url}?sign=${sign}&taskid=${task.Id}&ticket=${
+            url: `${url}?taskid=${task.Id}&ticket=${
               identity && identity.Ticket
             }`,
             title: task && task.Name,

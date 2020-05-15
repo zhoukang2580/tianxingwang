@@ -19,6 +19,7 @@ export class LoginService {
   identity: IdentityEntity;
   private imageValue: string;
   private preventAutoLogin = false;
+  private isAutoLoginPromise: Promise<boolean>;
   set ImageValue(value: string) {
     this.imageValue = value;
   }
@@ -327,55 +328,46 @@ export class LoginService {
       return true; // 直接跳转到首页，然后经过授权验证守卫验证
     }
   }
-  async autoLogin() {
-    if (this.preventAutoLogin) {
-      return;
+  async autoLogin(showLoading?: { loadingMsg: string }) {
+    if (this.preventAutoLogin || !AppHelper.isApp()) {
+      return false;
     }
     if (AppHelper.getStorage<string>("loginToken")) {
       const req = new RequestEntity();
+      req.IsShowLoading = !!(showLoading && showLoading.loadingMsg);
+      if (req.IsShowLoading) {
+        req.LoadingMsg = showLoading.loadingMsg;
+      }
+      if (this.isAutoLoginPromise) {
+        return this.isAutoLoginPromise;
+      }
       const device = await AppHelper.getDeviceId();
       req.Method = "ApiLoginUrl-Home-DeviceLogin";
       req.Data = JSON.stringify({
         Device: device,
         Token: AppHelper.getStorage("loginToken"),
       });
-
-      return new Promise<boolean>((resolve, reject) => {
-        const sub = this.apiService
-          .getResponse<{
-            Ticket: string; // "";
-            Id: string; // ;
-            Name: string; // "";
-            IsShareTicket: boolean; // false;
-            Numbers: { [key: string]: string };
-          }>(req)
-          .pipe(
-            finalize(() => {
-              setTimeout(() => {
-                if (sub) {
-                  sub.unsubscribe();
-                }
-              }, 3000);
-            })
-          )
-          .subscribe(
-            (rid) => {
-              if (!rid) {
-                return resolve(false);
-              }
-              const id: IdentityEntity = new IdentityEntity();
-              id.Name = rid.Data.Name;
-              id.Ticket = rid.Data.Ticket;
-              id.IsShareTicket = rid.Data.IsShareTicket;
-              id.Numbers = rid.Data.Numbers;
-              this.identityService.setIdentity(id);
-              return resolve(true);
-            },
-            (e) => {
-              reject(e);
-            }
-          );
-      });
+      this.isAutoLoginPromise = this.apiService
+        .getPromiseData<{
+          Ticket: string; // "";
+          Id: string; // ;
+          Name: string; // "";
+          IsShareTicket: boolean; // false;
+          Numbers: { [key: string]: string };
+          Token: string;
+        }>(req)
+        .then((res) => {
+          if (!res) {
+            return false;
+          }
+          this.identityService.setIdentity(res);
+          AppHelper.setStorage("logintoken", res.Token || "");
+          return !!res;
+        })
+        .catch(() => false)
+        .finally(() => {
+          this.isAutoLoginPromise = null;
+        });
     }
     return false;
   }
