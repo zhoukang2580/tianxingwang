@@ -1537,7 +1537,5 @@ export interface IInternationalFlightSegmentInfo {
   fromSegment: FlightSegmentEntity;
   toSegment: FlightSegmentEntity;
   flightRoute: FlightRouteEntity;
-  flightPolicy: FlightPolicy;
-  isDontAllowBook?: boolean;
   id?: string;
 }

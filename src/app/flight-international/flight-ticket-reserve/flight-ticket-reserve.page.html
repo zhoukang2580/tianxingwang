@@ -12,7 +12,9 @@
     <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ng-container *ngIf='vmCombindInfos?.length'>
       <ion-list *ngFor='let combindInfo of vmCombindInfos;let idx=index;let first=first;' lines='none'>
-        <ion-item-divider color='primary' class="backg_w sticky" [class.not-sticky]='isDingTalk' style="z-index: 200;
+        <ion-item-divider color='primary' class="backg_w sticky"
+          *ngIf='searchModel?.voyageType!=FlightVoyageType.GoBack||(searchModel?.voyageType==FlightVoyageType.GoBack&&first)'
+          [class.not-sticky]='isDingTalk' style="z-index: 200;
         box-shadow: 0.1em 0.2em 0.6em rgba(0,0,0,.1);
         padding-bottom: 0.5em;">
           <div style="width: 100%">
@@ -26,7 +28,7 @@
             <ion-label style="text-align:center;font-weight: bold">
               航班预订信息
             </ion-label>
-            <ng-container *ngFor='let trip of searchModel?.trips;let i=index;'>
+            <ng-container *ngFor='let trip of searchModel.trips;let i=index;'>
               <ion-row *ngIf='trip?.bookInfo' class="back_white ">
                 <ion-col style="display: flex;">
                   <div class="padding-s">
@@ -56,7 +58,7 @@
         <ion-item-group
           *ngIf='combindInfo?.bookInfo &&(searchModel?.voyageType!=FlightVoyageType.GoBack||(searchModel?.voyageType==FlightVoyageType.GoBack&&combindInfo.isShowGroupedInfo))'>
           <ion-item-divider color="primary">旅客信息:</ion-item-divider>
-          <app-book-credential-comp [credential]='combindInfo.vmCredential' 
+          <app-book-credential-comp [credential]='combindInfo.vmCredential'
             (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
             (modify)='onModify(combindInfo)' (managementCredentials)='onManagementCredentials()' [canEdit]='false' [canMaintainCredentials]='combindInfo.credentials?.length==0||!combindInfo.vmCredential' [attr.credentialcompid]='combindInfo.id'>
           </app-book-credential-comp>
