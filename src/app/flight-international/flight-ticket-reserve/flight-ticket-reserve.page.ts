@@ -150,9 +150,9 @@ export class FlightTicketReservePage
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async () => {
         this.errors = "";
-        if(this.isManagementCredential){
-          this.refresh(true)
-          this.isManagementCredential=false;
+        if (this.isManagementCredential) {
+          this.refresh(true);
+          this.isManagementCredential = false;
         }
         this.isCanSave = await this.identityService
           .getIdentityAsync()
@@ -232,16 +232,14 @@ export class FlightTicketReservePage
     const infos = this.flightService.getBookInfos();
     bookDto.Passengers = [];
     const trips = this.searchModel.trips || [];
-    const isSelf = await this.staffService.isSelfBookType();
-    const bookInfo = trips.slice(0).pop().bookInfo;
+    const isGoback =
+      this.searchModel &&
+      this.searchModel.voyageType == FlightVoyageType.GoBack;
     infos.forEach((info, idx) => {
       if (info.passenger) {
         const p = new PassengerDto();
         p.ClientId = info.id;
-        p.FlightFare =
-          bookInfo &&
-          bookInfo.flightRoute &&
-          bookInfo.flightRoute.selectFlightFare;
+        p.FlightFare = info.bookInfo.flightRoute.selectFlightFare;
         p.Credentials = info.credential;
         if (idx == 0) {
           const flightRouteIds = trips
@@ -273,7 +271,7 @@ export class FlightTicketReservePage
         }
         const account = new AccountEntity();
         account.Id = info.passenger.AccountId;
-        if(p.Credentials&&p.Credentials.Account){
+        if (p.Credentials && p.Credentials.Account) {
           p.Credentials.Account = p.Credentials.Account || account;
         }
         p.Policy = info.passenger.Policy;
@@ -317,6 +315,36 @@ export class FlightTicketReservePage
     }
     return "";
   }
+  private initPassengersBookInfo() {
+    if (
+      this.searchModel &&
+      this.searchModel.trips &&
+      this.searchModel.trips.length
+    ) {
+      const trips = this.searchModel.trips || [];
+      if (this.searchModel) {
+        if (
+          this.searchModel.voyageType == FlightVoyageType.OneWay ||
+          this.searchModel.voyageType == FlightVoyageType.MultiCity
+        ) {
+          this.flightService.setBookInfoSource(
+            this.flightService.getBookInfos().map((it) => {
+              it.bookInfo = { ...trips[trips.length - 1].bookInfo };
+              return it;
+            })
+          );
+        }
+        if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
+          this.flightService.setBookInfoSource(
+            this.flightService.getBookInfos().map((it, idx) => {
+              it.bookInfo = { ...trips[idx].bookInfo };
+              return it;
+            })
+          );
+        }
+      }
+    }
+  }
   async refresh(byUser: boolean) {
     const MOCK_FLIGHT_VMCOMBINDINFO = "mock_international_flight_vmcombindinfo";
     try {
@@ -327,44 +355,7 @@ export class FlightTicketReservePage
           this.ionRefresher.disabled = false;
         }, 300);
       }
-      if (
-        this.searchModel &&
-        this.searchModel.trips &&
-        this.searchModel.trips.length
-      ) {
-        if (this.searchModel.voyageType == FlightVoyageType.OneWay) {
-          this.flightService.setBookInfoSource(
-            this.flightService.getBookInfos().map((it, idx) => {
-              if (idx == 0) {
-                it.bookInfo = this.searchModel.trips[0].bookInfo;
-              }
-              return it;
-            })
-          );
-        } else if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
-          this.flightService.setBookInfoSource(
-            this.flightService
-              .getBookInfos()
-              .map((it, idx) => {
-                if (idx == 0) {
-                  it.bookInfo = this.searchModel.trips[
-                    this.searchModel.trips.length - 1
-                  ].bookInfo;
-                }
-                return it;
-              })
-              .filter((it) => !!it.bookInfo)
-          );
-        } else if (this.searchModel.voyageType == FlightVoyageType.MultiCity) {
-          const trips = this.searchModel.trips;
-          this.flightService.setBookInfoSource(
-            this.flightService.getBookInfos().map((it) => {
-              it.bookInfo = trips[trips.length - 1].bookInfo;
-              return it;
-            })
-          );
-        }
-      }
+      this.initPassengersBookInfo();
       // this.vmCombindInfos = TMC_FLIGHT_OUT_NUMBER;
       // if (this.vmCombindInfos) { return; }
       if (byUser) {
@@ -666,7 +657,7 @@ export class FlightTicketReservePage
     const isSelf = await this.staffService.isSelfBookType();
     const arr = this.fillGroupConbindInfoApprovalInfo(this.vmCombindInfos);
     canBook = this.fillBookLinkmans(bookDto);
-    canBook2 =await this.fillBookPassengers(bookDto, arr);
+    canBook2 = await this.fillBookPassengers(bookDto, arr);
     if (canBook && canBook2) {
       if (isSelf && this.isRoundTrip) {
         const p1 = bookDto.Passengers.find((it) => !!it.OutNumbers);
@@ -805,16 +796,16 @@ export class FlightTicketReservePage
     }
     return true;
   }
-  onManagementCredentials(){
-    this.isManagementCredential=true;
-    this.router.navigate(["member-credential-management"],{queryParams:{addNew:true}});
-
+  onManagementCredentials() {
+    this.isManagementCredential = true;
+    this.router.navigate(["member-credential-management"], {
+      queryParams: { addNew: true },
+    });
   }
-   private async fillBookPassengers(
+  private async fillBookPassengers(
     bookDto: OrderBookDto,
     combindInfos: ICombindInfo[]
   ) {
-    
     const showErrorMsg = (
       msg: string,
       item: ICombindInfo,
@@ -851,13 +842,18 @@ export class FlightTicketReservePage
       });
     for (const combindInfo of combindInfos) {
       i++;
-      console.log(combindInfo.vmCredential,"combindInfo.vmCredential111");
-      if(!combindInfo.vmCredential){
-       let a= await AppHelper.alert("请维护第"+i+"个旅客的证件",true,"确定","取消")
-       if(a){
-         this.onManagementCredentials();
-       }
-        return 
+      console.log(combindInfo.vmCredential, "combindInfo.vmCredential111");
+      if (!combindInfo.vmCredential) {
+        const a = await AppHelper.alert(
+          "请维护第" + i + "个旅客的证件",
+          true,
+          "确定",
+          "取消"
+        );
+        if (a) {
+          this.onManagementCredentials();
+        }
+        return;
       }
       const accountId =
         combindInfo.bookInfo.passenger.AccountId ||
@@ -924,7 +920,7 @@ export class FlightTicketReservePage
       p.TicketNum = "";
       p.Credentials = new CredentialsEntity();
       p.Credentials = { ...combindInfo.vmCredential };
-    
+
       const el = this.getEleByAttr(
         "credentialcompid",
         combindInfo.id
@@ -1086,16 +1082,17 @@ export class FlightTicketReservePage
       `[${attrName}='${value}']`
     ) as HTMLElement;
   }
-  private async getCredentials(accountIds:string[]){
+  private async getCredentials(accountIds: string[]) {
     const res: {
       [accountId: string]: CredentialsEntity[];
-    } = await this.tmcService
-      .getPassengerCredentials(accountIds)
-      return res;
+    } = await this.tmcService.getPassengerCredentials(accountIds);
+    return res;
   }
   async onModify(item: ICombindInfo) {
     if (!item.credentialsRequested) {
-      const res = await this.getCredentials([item.bookInfo.passenger.AccountId]);
+      const res = await this.getCredentials([
+        item.bookInfo.passenger.AccountId,
+      ]);
       const credentials = res && res[item.bookInfo.passenger.AccountId];
       item.credentials = credentials;
       // if (credentials.length) {
@@ -1121,8 +1118,8 @@ export class FlightTicketReservePage
       //   }
       // }
     }
-    item.credentials = this.filterCredentials(item.credentials)
-    item.vmCredential=item.credentials[0];
+    item.credentials = this.filterCredentials(item.credentials);
+    item.vmCredential = item.credentials[0];
     console.log("onModify", item.credentials);
   }
 
@@ -1344,11 +1341,11 @@ export class FlightTicketReservePage
         [accountId: string]: ITmcOutNumberInfo[];
       } = {} as any;
       const isSelfOrisSecretary =
-      (await this.staffService.isSecretaryBookType()) ||
-      (await this.staffService.isSelfBookType());
+        (await this.staffService.isSecretaryBookType()) ||
+        (await this.staffService.isSelfBookType());
       const pfs = this.flightService.getBookInfos();
-      const accountIds=pfs.map(it=>it.passenger.AccountId);
-     const id2Credentials= await this.getCredentials(accountIds);
+      const accountIds = pfs.map((it) => it.passenger.AccountId);
+      const id2Credentials = await this.getCredentials(accountIds);
       for (const item of pfs) {
         const cs = this.initialBookDtoModel.Staffs.find(
           (it) => it.Account.Id == item.passenger.AccountId
@@ -1392,7 +1389,7 @@ export class FlightTicketReservePage
         ) {
           credentials.push(item.credential);
         }
-        credentials = this.filterCredentials(credentials)
+        credentials = this.filterCredentials(credentials);
         const insuranceProducts =
           (this.initialBookDtoModel.Insurances &&
             this.initialBookDtoModel.Insurances[item.id]) ||
@@ -1416,14 +1413,14 @@ export class FlightTicketReservePage
         );
         const combineInfo: ICombindInfo = {} as ICombindInfo;
         combineInfo.selectedInsuranceProductId =
-        forceInsurance &&
-        forceInsurance.insuranceResult &&
-        forceInsurance.insuranceResult.Id;
+          forceInsurance &&
+          forceInsurance.insuranceResult &&
+          forceInsurance.insuranceResult.Id;
         combineInfo.id = AppHelper.uuid();
         combineInfo.vmCredential = item.credential;
         combineInfo.isSkipApprove = false;
         combineInfo.credentials = credentials || [];
-        combineInfo.vmCredential=credentials[0]||item.credential;
+        combineInfo.vmCredential = credentials[0] || item.credential;
         combineInfo.openrules = false;
         combineInfo.credentialStaff = cstaff;
         combineInfo.isOtherIllegalReason = false;
