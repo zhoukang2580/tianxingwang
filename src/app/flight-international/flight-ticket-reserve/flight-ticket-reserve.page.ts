@@ -182,22 +182,7 @@ export class FlightTicketReservePage
     this.refresh(false);
   }
   private async initOrderTravelPayTypes() {
-    const bookInfos = this.flightService.getBookInfos();
     const cabinPaytypes: string[] = [];
-    bookInfos.forEach((info) => {
-      if (
-        info.bookInfo &&
-        info.bookInfo.flightPolicy &&
-        info.bookInfo.flightPolicy.OrderTravelPays
-      ) {
-        const arr0 = info.bookInfo.flightPolicy.OrderTravelPays.split(",");
-        arr0.forEach((t) => {
-          if (!cabinPaytypes.find((type) => type == t)) {
-            cabinPaytypes.push(t);
-          }
-        });
-      }
-    });
     this.tmc = this.tmc || (await this.getTmc());
     this.identity = await this.identityService
       .getIdentityAsync()
@@ -231,21 +216,18 @@ export class FlightTicketReservePage
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.flightService.getBookInfos();
     bookDto.Passengers = [];
-    const trips = this.searchModel.trips || [];
-    const isGoback =
-      this.searchModel &&
-      this.searchModel.voyageType == FlightVoyageType.GoBack;
-    infos.forEach((info, idx) => {
+    for (let i = 0; i < infos.length; i++) {
+      const info = infos[i];
       if (info.passenger) {
         const p = new PassengerDto();
         p.ClientId = info.id;
-        p.FlightFare = info.bookInfo.flightRoute.selectFlightFare;
+        p.FlightFare =
+          info.bookInfo &&
+          info.bookInfo.flightRoute &&
+          info.bookInfo.flightRoute.selectFlightFare;
         p.Credentials = info.credential;
-        if (idx == 0) {
-          const flightRouteIds = trips
-            .map((it) => it.bookInfo && it.bookInfo.flightRoute)
-            .filter((it) => !!it)
-            .map((r) => r.Id);
+        if (i == 0 && p.FlightFare) {
+          const flightRouteIds = p.FlightFare.FlightRouteIds || [];
           p.FlightRoutes = this.flightService.flightListResult.FlightRoutesData.filter(
             (it) => flightRouteIds.some((id) => id == it.Id)
           ).map((it) => {
@@ -278,7 +260,7 @@ export class FlightTicketReservePage
         p.FlightCabin = p.FlightFare as any;
         bookDto.Passengers.push(p);
       }
-    });
+    }
     console.log("initializeBookDto", bookDto);
     this.initialBookDtoModel = await this.flightService.getInitializeBookDto(
       bookDto
@@ -322,26 +304,16 @@ export class FlightTicketReservePage
       this.searchModel.trips.length
     ) {
       const trips = this.searchModel.trips || [];
-      if (this.searchModel) {
-        if (
-          this.searchModel.voyageType == FlightVoyageType.OneWay ||
-          this.searchModel.voyageType == FlightVoyageType.MultiCity
-        ) {
-          this.flightService.setBookInfoSource(
-            this.flightService.getBookInfos().map((it) => {
-              it.bookInfo = { ...trips[trips.length - 1].bookInfo };
-              return it;
-            })
-          );
-        }
-        if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
-          this.flightService.setBookInfoSource(
-            this.flightService.getBookInfos().map((it, idx) => {
-              it.bookInfo = { ...trips[idx].bookInfo };
-              return it;
-            })
-          );
-        }
+      const last = trips.slice(0).pop();
+      if (this.searchModel && last && last.bookInfo) {
+        this.flightService.setBookInfoSource(
+          this.flightService.getBookInfos().map((it, idx) => {
+            it.bookInfo = {
+              flightRoute: last.bookInfo.flightRoute,
+            } as IInternationalFlightSegmentInfo;
+            return it;
+          })
+        );
       }
     }
   }
@@ -827,21 +799,22 @@ export class FlightTicketReservePage
     };
     bookDto.Passengers = [];
     let i = 0;
-    const trips = this.flightService.getSearchModel().trips;
-    const flightRoutes = trips
-      .map((t) => t.bookInfo && t.bookInfo.flightRoute)
-      .filter((it) => !!it)
-      .map((r) => {
-        return {
-          ...r,
-          FlightSegments: [],
-          fromSegment: null,
-          toSegment: null,
-          transferSegments: [],
-        };
+    const trips = this.flightService.getSearchModel().trips || [];
+    const flightRoutes = [];
+
+    trips
+      .slice(0)
+      .pop()
+      .bookInfo.flightRoute.selectFlightFare.FlightRouteIds.forEach((rid) => {
+        flightRoutes.push(
+          this.flightService.flightListResult.FlightRoutesData.find(
+            (it) => it.Id == rid
+          )
+        );
       });
     for (const combindInfo of combindInfos) {
       i++;
+      const info = combindInfo.bookInfo.bookInfo;
       console.log(combindInfo.vmCredential, "combindInfo.vmCredential111");
       if (!combindInfo.vmCredential) {
         const a = await AppHelper.alert(
@@ -870,22 +843,24 @@ export class FlightTicketReservePage
         showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo, ele);
         return;
       }
-      const info = combindInfo.bookInfo.bookInfo;
       const p = new PassengerDto();
       if (trips.length) {
         if (i === 1) {
           p.FlightRoutes = flightRoutes;
-          p.FlightSegments =
+          p.FlightSegments = (
             (this.flightService.flightListResult &&
               this.flightService.flightListResult.FlightSegments) ||
-            [];
+            []
+          ).filter((it) =>
+            flightRoutes.some(
+              (r) =>
+                r.FlightSegmentIds &&
+                r.FlightSegmentIds.some((rsid) => rsid == it.Id)
+            )
+          );
         }
-        if (
-          trips[trips.length - 1].bookInfo &&
-          trips[trips.length - 1].bookInfo.flightRoute
-        ) {
-          p.FlightFare =
-            trips[trips.length - 1].bookInfo.flightRoute.selectFlightFare;
+        if (info.flightRoute) {
+          p.FlightFare = info.flightRoute.selectFlightFare;
           p.FlightCabin = p.FlightFare as any;
           p.IllegalPolicy =
             p.FlightFare && p.FlightFare.policy && p.FlightFare.policy.Message;
@@ -1073,7 +1048,12 @@ export class FlightTicketReservePage
       p.IsSkipApprove = combindInfo.isSkipApprove;
       p.Policy = combindInfo.bookInfo.passenger.Policy;
       p.RuleInfo = (p.FlightFare && p.FlightFare.Explain) || "";
-      bookDto.Passengers.push(p);
+      if (
+        this.searchModel &&
+        this.searchModel.voyageType == FlightVoyageType.GoBack&&i==1
+      ) {
+        bookDto.Passengers.push(p);
+      }
     }
     return true;
   }
@@ -1561,9 +1541,10 @@ export class FlightTicketReservePage
         .some(
           (it) =>
             it.bookInfo &&
-            it.bookInfo.flightPolicy &&
-            it.bookInfo.flightPolicy.Rules &&
-            it.bookInfo.flightPolicy.Rules.length > 0
+            it.bookInfo.flightRoute &&
+            it.bookInfo.flightRoute.selectFlightFare &&
+            it.bookInfo.flightRoute.selectFlightFare.policy &&
+            it.bookInfo.flightRoute.selectFlightFare.policy.Message
         )
     ) {
       return true;
