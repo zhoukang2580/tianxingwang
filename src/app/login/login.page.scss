@@ -6,7 +6,8 @@ ion-content {
     --background:transparent;
   }
   ion-toolbar:first-child {
-    margin: 4vh auto 3vh;
+    margin: 0 auto 3vh;
+    padding-top: 10vh;
   }
   .err-msg {
     ion-label {
