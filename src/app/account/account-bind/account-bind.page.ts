@@ -1,4 +1,4 @@
-import { finalize } from 'rxjs/operators';
+import { finalize } from "rxjs/operators";
 import { LoginService } from "../../services/login/login.service";
 import { FormBuilder } from "@angular/forms";
 import { FormGroup } from "@angular/forms";
@@ -14,7 +14,7 @@ import { NavController } from "@ionic/angular";
 @Component({
   selector: "app-account-bind",
   templateUrl: "./account-bind.page.html",
-  styleUrls: ["./account-bind.page.scss"]
+  styleUrls: ["./account-bind.page.scss"],
 })
 export class AccountBindPage implements OnInit, OnDestroy {
   isSmsCodSendeDisabled = false;
@@ -24,6 +24,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
   paramsSubscription = Subscription.EMPTY;
   mobileChangeSubscription = Subscription.EMPTY;
   isMobileNumberOk = false;
+  isBinding = false;
   path: string;
   form: FormGroup;
   isShowImageCode: boolean;
@@ -37,7 +38,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
     private router: Router,
     private apiService: ApiService,
     private route: ActivatedRoute
-  ) { }
+  ) {}
   back() {
     this.navCtrl.pop();
   }
@@ -45,9 +46,9 @@ export class AccountBindPage implements OnInit, OnDestroy {
     this.form = this.fb.group({
       Mobile: [],
       ImageCode: [],
-      MobileCode: []
+      MobileCode: [],
     });
-    this.paramsSubscription = this.route.paramMap.subscribe(p => {
+    this.paramsSubscription = this.route.paramMap.subscribe((p) => {
       if (p) {
         this.bindMobileInfo.IsActiveMobile = p.get("IsActiveMobile") == "true";
         this.bindMobileInfo.Mobile = p.get("Mobile");
@@ -59,7 +60,7 @@ export class AccountBindPage implements OnInit, OnDestroy {
 
     this.mobileChangeSubscription = this.form.controls[
       "Mobile"
-    ].valueChanges.subscribe(v => {
+    ].valueChanges.subscribe((v) => {
       if (v && `${v}`.length >= 11) {
         this.isMobileNumberOk = true;
       }
@@ -80,20 +81,22 @@ export class AccountBindPage implements OnInit, OnDestroy {
         SendInterval: number;
         ExpiredInterval: number;
       }>(req)
-      .pipe(finalize(() => {
-        setTimeout(() => {
-          this.isDisableSendMobileCode = false;
-        }, 200);
-      }))
+      .pipe(
+        finalize(() => {
+          setTimeout(() => {
+            this.isDisableSendMobileCode = false;
+          }, 200);
+        })
+      )
       .subscribe(
-        res => {
+        (res) => {
           if (!res.Status && res.Message) {
             AppHelper.alert(res.Message);
             return;
           }
           this.startCountDonw(res.Data.SendInterval);
         },
-        e => {
+        (e) => {
           AppHelper.alert(e);
         },
         () => {
@@ -122,11 +125,12 @@ export class AccountBindPage implements OnInit, OnDestroy {
     req.Method = "ApiPasswordUrl-Mobile-Bind";
     req.Data = {
       Mobile: this.form.value.Mobile,
-      MobileCode: this.form.value.MobileCode
+      MobileCode: this.form.value.MobileCode,
     };
     const res = await this.apiService
       .getPromiseData<any>(req)
-      .then(_ => true).catch(_ => {
+      .then((_) => true)
+      .catch((_) => {
         AppHelper.alert(_);
         return false;
       });
@@ -144,22 +148,30 @@ export class AccountBindPage implements OnInit, OnDestroy {
       Mobile: this.form.value.Mobile,
       MobileCode: this.form.value.MobileCode,
       DeviceNumber: uuid,
-      DeviceName: name
+      DeviceName: name,
     };
+    this.isBinding = true;
     const sub = this.apiService
       .getResponse<{
         SendInterval: number;
         ExpiredInterval: number;
       }>(req)
+      .pipe(
+        finalize(() => {
+          this.isBinding = false;
+        })
+      )
       .subscribe(
-        res => {
+        (res) => {
           if (!res.Status) {
             if (res.Message) {
-              AppHelper.alert(res.Message)
+              AppHelper.alert(res.Message);
             }
+          } else {
+            this.jump();
           }
         },
-        e => { },
+        (e) => {},
         () => {
           sub.unsubscribe();
         }
