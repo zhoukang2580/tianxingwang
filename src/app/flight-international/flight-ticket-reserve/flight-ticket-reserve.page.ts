@@ -220,12 +220,12 @@ export class FlightTicketReservePage
       const info = infos[i];
       if (info.passenger) {
         const p = new PassengerDto();
+        p.Credentials = info.credential;
         p.ClientId = info.id;
         p.FlightFare =
           info.bookInfo &&
           info.bookInfo.flightRoute &&
           info.bookInfo.flightRoute.selectFlightFare;
-        p.Credentials = info.credential;
         if (i == 0 && p.FlightFare) {
           const flightRouteIds = p.FlightFare.FlightRouteIds || [];
           p.FlightRoutes = this.flightService.flightListResult.FlightRoutesData.filter(
@@ -253,7 +253,7 @@ export class FlightTicketReservePage
         }
         const account = new AccountEntity();
         account.Id = info.passenger.AccountId;
-        if (p.Credentials && p.Credentials.Account) {
+        if (p.Credentials) {
           p.Credentials.Account = p.Credentials.Account || account;
         }
         p.Policy = info.passenger.Policy;
@@ -309,6 +309,7 @@ export class FlightTicketReservePage
         this.flightService.setBookInfoSource(
           this.flightService.getBookInfos().map((it, idx) => {
             it.bookInfo = {
+              ...it.bookInfo,
               flightRoute: last.bookInfo.flightRoute,
             } as IInternationalFlightSegmentInfo;
             return it;
