@@ -132,18 +132,20 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     this.travelService.getStaff().then((s) => {
       if (this.searchModel && this.searchModel.TravelForm) {
         this.searchModel.TravelForm.CostCenterName =
-          this.searchModel.TravelForm.CostCenterName || s.CostCenter.Name;
+          this.searchModel.TravelForm.CostCenterName || s.staff.CostCenter.Name;
         this.searchModel.TravelForm.CostCenterCode =
-          this.searchModel.TravelForm.CostCenterCode || s.CostCenter.Code;
+          this.searchModel.TravelForm.CostCenterCode || s.staff.CostCenter.Code;
+        // this.searchModel.TravelForm.Id =
+        //   this.searchModel.TravelForm.Id || s.staff.CostCenter.Id;
         if (!this.searchModel.TravelForm.Organization) {
           this.searchModel.TravelForm.Organization = {} as any;
         }
         this.searchModel.TravelForm.Organization.Code =
-          this.searchModel.TravelForm.Organization.Code || s.Organization.Code;
+          this.searchModel.TravelForm.Organization.Code || s.staff.Organization.Code;
         this.searchModel.TravelForm.Organization.Name =
-          this.searchModel.TravelForm.Organization.Name || s.Organization.Name;
+          this.searchModel.TravelForm.Organization.Name || s.staff.Organization.Name;
         this.searchModel.TravelForm.Organization.Id =
-          this.searchModel.TravelForm.Organization.Id || s.Organization.Id;
+          this.searchModel.TravelForm.Organization.Id || s.staff.Organization.Id;
       }
     });
     if (this.searchModel) {
@@ -174,7 +176,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         // this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
         // );
         this.vmRegionTypes = this.regionTypes.slice(0);
-        
+
       }
     });
     this.initValidateRule();
@@ -299,7 +301,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       // this.costCenterCode = org.Code;
       this.searchModel.TravelForm = {
         ...this.searchModel.TravelForm,
-        Id: org.Id,
+        // Id: org.Id,
         CostCenterName: org.Name,
         CostCenterCode: org.Code,
       } as any;
@@ -371,10 +373,10 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             index < this.searchModel.TravelForm.Trips.length;
             index++
           ) {
-            const trip =this.searchModel.TravelForm.Trips[index];
+            const trip = this.searchModel.TravelForm.Trips[index];
             if (trip && trip.travelTools) {
-      trip.TravelTool = trip.travelTools.join(",");
-    }
+              trip.TravelTool = trip.travelTools.join(",");
+            }
             if (
               !trip.TripType ||
               !trip.TravelTool ||
@@ -417,6 +419,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       }
       this.processOutNumbers();
       const r = await this.service.travelSubmit(this.searchModel);
+
       this.router.navigate([AppHelper.getRoutePath("business-list")], {
         queryParams: { doRefresh: true },
       });

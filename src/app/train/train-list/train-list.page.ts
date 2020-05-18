@@ -468,7 +468,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     return result;
   }
   onSwapStation() {
-    if (this.searchTrainModel && this.searchTrainModel.isExchange) {
+    if (this.searchTrainModel.isLocked && this.searchTrainModel.isExchange) {
       return;
     }
     const s = this.trainService.getSearchTrainModel();

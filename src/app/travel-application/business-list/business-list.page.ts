@@ -51,6 +51,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   goAddApply() {
+
     this.router.navigate([AppHelper.getRoutePath("add-apply")],{queryParams:{tabId:"1"}});
   }
   gettravel() {
@@ -78,11 +79,13 @@ export class BusinessListPage implements OnInit, OnDestroy {
   }
   
   doRefresh(isKeepCondition = false) {
-    if (!isKeepCondition) {
-      this.searchModel.StatusType = 0;
-      this.searchModel.SearchContent = "";
+    if(this.searchModel){
+      if (!isKeepCondition) {
+        this.searchModel.StatusType = 0;
+        this.searchModel.SearchContent = "";
+      }
+      this.searchModel.PageIndex = 0;
     }
-    this.searchModel.PageIndex = 0;
     this.items = [];
     this.subscription.unsubscribe();
     if (this.scroller) {

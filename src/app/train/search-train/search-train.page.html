@@ -39,7 +39,7 @@
         <ion-button [disabled]='isDisabled||searchTrainModel?.isLocked||searchTrainModel?.isExchange'
           (click)='onSelectCity(true)' color='{{isDisabled?"medium":"secondary"}}'>
           {{searchTrainModel?.fromCity?.Nickname}}</ion-button>
-        <ion-button color='{{isDisabled?"medium":"secondary"}}' [disabled]='isDisabled||searchTrainModel?.isLocked||searchTrainModel?.isExchange'
+        <ion-button color='{{isDisabled?"medium":"secondary"}}' [disabled]='isDisabled||!searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'
           (click)='onSwapCity()'>
           <ion-icon name="swap-horizontal-outline" color='{{isDisabled?"medium":"secondary"}}'>
           </ion-icon>

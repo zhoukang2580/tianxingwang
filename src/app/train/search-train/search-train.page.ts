@@ -173,11 +173,7 @@ export class SearchTrainPage
     this.trainService.onSelectCity(isFrom);
   }
   onSwapCity() {
-    if (
-      this.isDisabled ||
-      (this.searchTrainModel &&
-        (this.searchTrainModel.isExchange || this.searchTrainModel.isLocked))
-    ) {
+    if (this.isDisabled) {
       return;
     }
     this.trainService.onSwapCity();
