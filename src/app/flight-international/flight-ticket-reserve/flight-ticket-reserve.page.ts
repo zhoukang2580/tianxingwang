@@ -308,6 +308,11 @@ export class FlightTicketReservePage
       if (this.searchModel && last && last.bookInfo) {
         this.flightService.setBookInfoSource(
           this.flightService.getBookInfos().map((it, idx) => {
+            if(it.bookInfo&&it.bookInfo.flightRoute&&it.bookInfo.flightRoute.FlightSegments){
+              it.bookInfo.flightRoute.FlightSegments=it.bookInfo.flightRoute.FlightSegments.map(seg=>{
+                return seg;
+              })
+            }
             it.bookInfo = {
               ...it.bookInfo,
               flightRoute: last.bookInfo.flightRoute,

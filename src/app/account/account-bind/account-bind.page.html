@@ -47,7 +47,7 @@
       <ion-button fill='clear' (click)='jump()' color='secondary' class='ion-text-end'>跳过</ion-button>
     </ion-col>
     <ion-col>
-      <ion-button fill='clear' (click)='bind()' color='secondary' class='ion-text-end'>下一步</ion-button>
+      <ion-button fill='clear' (click)='bind()' color='secondary' class='ion-text-end' [disabled]='isBinding'>下一步</ion-button>
     </ion-col>
   </ion-row>
 
