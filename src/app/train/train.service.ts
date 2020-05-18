@@ -78,7 +78,7 @@ export class TrainService {
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
     private router: Router,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
@@ -100,11 +100,13 @@ export class TrainService {
   private async initTrainCities() {
     let fromCity = {
       Name: "北京",
+      CityName: "北京",
       Nickname: "北京",
       Code: "BJP",
     } as TrafficlineEntity;
     let toCity = {
       Name: "上海",
+      CityName: "上海",
       Nickname: "上海",
       Code: "SHH",
     } as TrafficlineEntity;
@@ -1270,6 +1272,11 @@ export class TrainService {
   removeAllBookInfos() {
     this.bookInfos = [];
     this.setBookInfoSource(this.bookInfos);
+    this.setSearchTrainModelSource({
+      ...this.getSearchTrainModel(),
+      isLocked: false,
+      isExchange:false
+    });
   }
 }
 export interface CacheTrafficLineModel {

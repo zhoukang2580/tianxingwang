@@ -265,7 +265,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
         fromCity,
         toCity,
         ToStation: a.VariablesJsonObj.ToStationCity.Code,
-        isLocked: true
+        isLocked: true,
+        isExchange:false,
       });
       this.router.navigate(["train-list"], {
         queryParams: { doRefresh: true },

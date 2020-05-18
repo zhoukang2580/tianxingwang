@@ -29,13 +29,16 @@ export class TravelService {
     };
     return this.apiService.getResponse<SearchModel>(req);
   }
+
   getStaff() {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-GetStaff`;
     req.Data = {};
-    return this.apiService.getPromiseData<StaffEntity>(req);
+    return this.apiService.getPromiseData<{staff:StaffEntity;approvalStaff:StaffEntity}>(req);
   }
+  
+
   getTravelDetail(id: string) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
