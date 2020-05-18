@@ -128,7 +128,7 @@ export class AppComponent
         },
         false
       );
-      if (AppHelper.isApp() && this.platform.is("android")) {
+      if (AppHelper.isApp()) {
         setTimeout(async () => {
           this.splashScreen.hide();
           // console.log(`uuid = ${await AppHelper.getUUID()}`);

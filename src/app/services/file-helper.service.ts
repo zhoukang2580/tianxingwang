@@ -16,13 +16,14 @@ import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { RequestEntity } from "./api/Request.entity";
 import { App } from "../app.component";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
+const KEY_NEW_VERSION_PAGE_PATH='key_newVersionPagePath';
 interface Hcp {
   getHash: (filePath: string) => Promise<string>;
   getUUID: () => Promise<string>;
   openHcpPage: (filePath: string) => Promise<any>;
   saveHcpPath: (serverVersion: string) => Promise<any>;
   openAPK: (apkFilePath: string) => Promise<any>; // 仅Android可用
-  loadHcpPage: () => Promise<any>; // 仅Android可用
+  loadHcpPage: () => Promise<any>;
   checkPathOrFileExists: (filePath: string) => Promise<void>;
   getStartIndexPath: () => Promise<string>;
   getWebViewUrl: () => Promise<string>;
@@ -87,10 +88,12 @@ export class FileHelperService {
       this.hcpPlugin = window["hcp"];
       if (this.hcpPlugin) {
         if (this.plt.is("ios")) {
-          setTimeout(() => {
-            this.splashScreen.hide();
-          }, 2000);
-          // this.loadiosHcpPage();
+          // setTimeout(() => {
+          //   this.splashScreen.hide();
+          // }, 3000);
+          // setTimeout(() => {
+          //   this.hcpPlugin.loadHcpPage();
+          // }, 0);
         } else {
           this.hcpPlugin.loadHcpPage();
         }
