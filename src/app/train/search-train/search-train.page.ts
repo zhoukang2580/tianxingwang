@@ -44,7 +44,6 @@ export class SearchTrainPage
   searchTrainModel: SearchTrainModel = new SearchTrainModel();
   isMoving: boolean;
   showReturnTrip = false;
-  isDisabled = false;
   isSelf = false;
   selectedPassengers: number;
   selectedBookInfos: number;
@@ -123,7 +122,6 @@ export class SearchTrainPage
         this.searchTrainModel = s;
         if (this.searchTrainModel) {
           this.searchTrainModel.isExchange = s.isExchange;
-          this.isDisabled = s.isLocked;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
           this.isSingle = !s.isRoundTrip;
         }
@@ -139,10 +137,6 @@ export class SearchTrainPage
       this.staff = await this.staffService.getStaff();
       this.isSelf = await this.isStaffTypeSelf();
       // this.canAddPassengers = await this.staffService.isAllBookType() || await this.staffService.isSecretaryBookType();
-      if (this.isSelf) {
-        this.isDisabled =
-          this.searchTrainModel && this.searchTrainModel.isLocked;
-      }
       this.isCanLeave = this.searchTrainModel.isExchange ? false : true;
       this.selectedPassengers = this.trainService.getBookInfos().length;
       this.selectedBookInfos = this.trainService
@@ -159,21 +153,22 @@ export class SearchTrainPage
     });
   }
   onSelectCity(isFrom = true) {
-    if (
-      this.isDisabled ||
-      (this.searchTrainModel && this.searchTrainModel.isLocked)
-    ) {
+    if (!this.searchTrainModel) {
       return;
     }
     if (isFrom) {
-      if (this.searchTrainModel && this.searchTrainModel.isExchange) {
+      if (this.searchTrainModel && this.searchTrainModel.isExchange && this.searchTrainModel.isLocked) {
         return;
       }
     }
+    this.isCanLeave = true;
     this.trainService.onSelectCity(isFrom);
   }
   onSwapCity() {
-    if (this.isDisabled) {
+    if (!this.searchTrainModel) {
+      return;
+    }
+    if (this.searchTrainModel.isExchange || this.searchTrainModel.isLocked) {
       return;
     }
     this.trainService.onSwapCity();
@@ -247,9 +242,6 @@ export class SearchTrainPage
     return this.calendarService.getDescOfDay(d);
   }
   async onSelecDate(isGo: boolean, isBack: boolean) {
-    if (this.isDisabled && !this.searchTrainModel.isExchange && !isBack) {
-      return;
-    }
     const days = await this.trainService.openCalendar(false);
     // console.log("train openCalendar", days);
     if (days && days.length) {
@@ -257,7 +249,7 @@ export class SearchTrainPage
         if (isGo) {
           this.searchTrainModel.Date = days[0].date;
         }
-        // if (isBack) {
+        // if (isBack) {  
         //   this.searchTrainModel.BackDate = days[0].date;
         // }
         this.trainService.setSearchTrainModelSource(this.searchTrainModel);

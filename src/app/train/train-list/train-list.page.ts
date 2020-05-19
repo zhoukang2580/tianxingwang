@@ -13,14 +13,14 @@ import { TrainEntity } from "./../models/TrainEntity";
 import { TrainService, SearchTrainModel } from "src/app/train/train.service";
 import {
   PassengerBookInfo,
-  FlightHotelTrainType
+  FlightHotelTrainType,
 } from "src/app/tmc/tmc.service";
 import {
   Component,
   OnInit,
   ViewChild,
   OnDestroy,
-  AfterViewInit
+  AfterViewInit,
 } from "@angular/core";
 import {
   IonRefresher,
@@ -28,7 +28,7 @@ import {
   PopoverController,
   NavController,
   ModalController,
-  IonInfiniteScroll
+  IonInfiniteScroll,
 } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -53,14 +53,14 @@ import { trigger, transition, style, animate } from "@angular/animations";
     trigger("flyInOut", [
       transition(":enter", [
         style({ opacity: 0, transform: "translateX(-10%)" }),
-        animate("200ms", style({ opacity: 1, transform: "translateX(0)" }))
+        animate("200ms", style({ opacity: 1, transform: "translateX(0)" })),
       ]),
       transition(":leave", [
         style({ transform: "translateX(-10%)" }),
-        animate("200ms", style({ opacity: 0, transform: "translateX(100%)" }))
-      ])
-    ])
-  ]
+        animate("200ms", style({ opacity: 0, transform: "translateX(100%)" })),
+      ]),
+    ]),
+  ],
 })
 export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(DaysCalendarComponent) daysCalendarComp: DaysCalendarComponent;
@@ -126,25 +126,25 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnDestroy() {
     this.searchModalSubscription.unsubscribe();
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   ngAfterViewInit() {}
   ngOnInit() {
-    this.route.queryParamMap.subscribe(async _ => {
+    this.route.queryParamMap.subscribe(async (_) => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       let isDoRefresh = false;
       this.currentSelectedPassengerIds = this.trainService
         .getBookInfos()
-        .map(it => it.passenger && it.passenger.AccountId);
+        .map((it) => it.passenger && it.passenger.AccountId);
       if (this.currentSelectedPassengerIds && this.lastSelectedPassengerIds) {
         if (
           this.currentSelectedPassengerIds.length !=
             this.lastSelectedPassengerIds.length ||
           !this.currentSelectedPassengerIds.some(
-            it => !!this.lastSelectedPassengerIds.find(id => id == it)
+            (it) => !!this.lastSelectedPassengerIds.find((id) => id == it)
           ) ||
           !this.lastSelectedPassengerIds.some(
-            it => !!this.currentSelectedPassengerIds.find(id => id == it)
+            (it) => !!this.currentSelectedPassengerIds.find((id) => id == it)
           )
         ) {
           isDoRefresh = true;
@@ -159,11 +159,11 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     });
     this.curFilteredBookInfo$ = this.trainService
       .getBookInfoSource()
-      .pipe(map(infos => infos.find(info => info.isFilterPolicy)));
+      .pipe(map((infos) => infos.find((info) => info.isFilterPolicy)));
     this.goRoundTripDateTime$ = this.trainService.getBookInfoSource().pipe(
-      map(infos => {
+      map((infos) => {
         const go = infos.find(
-          it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
+          (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
         );
         let goArrivalDateTime = "";
         let backDateTime = "";
@@ -172,7 +172,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
           goArrivalDateTime = d.format("YYYY-MM-DD HH:mm");
         }
         const back = infos.find(
-          it => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
+          (it) => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
         );
         if (back && back.bookInfo.trainEntity) {
           const d = moment(back.bookInfo.trainEntity.StartTime);
@@ -180,16 +180,16 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
         }
         return {
           goArrivalDateTime,
-          backDateTime
+          backDateTime,
         };
       })
     );
     this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
-      map(isSelf => !isSelf)
+      map((isSelf) => !isSelf)
     );
     this.searchModalSubscription = this.trainService
       .getSearchTrainModelSource()
-      .subscribe(modal => {
+      .subscribe((modal) => {
         this.searchTrainModel = modal;
         console.log("getSearchTrainModelSource", modal, this.isLoading);
         if (this.searchTrainModel) {
@@ -199,7 +199,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       });
     this.selectedPassengersNumbers$ = this.trainService
       .getBookInfoSource()
-      .pipe(map(infos => infos.length));
+      .pipe(map((infos) => infos.length));
     this.doRefresh(true, false);
   }
   async schedules(train: TrainEntity) {
@@ -209,7 +209,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
         FromStation: train.FromStationCode,
         ToStation: train.ToStationCode,
         TrainNo: train.TrainNo,
-        TrainCode: train.TrainCode
+        TrainCode: train.TrainCode,
       });
       if (trains && trains.length) {
         train.Schedules = trains[0].Schedules;
@@ -220,8 +220,8 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       componentProps: {
         schedules: train.Schedules,
         vmFromCity: this.vmFromCity,
-        vmToCity: this.vmToCity
-      }
+        vmToCity: this.vmToCity,
+      },
     });
     m.present();
   }
@@ -229,23 +229,22 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     return train && train.TrainCode;
   }
   async onSelectStation(isFrom: boolean) {
-    if(this.searchTrainModel){
-      if(this.searchTrainModel.isExchange||this.searchTrainModel.isLocked){
-        return
-      }
-    }
     this.scrollToTop();
     if (this.searchTrainModel) {
-      if (isFrom && this.searchTrainModel.isExchange) {
-        return;
+      if (isFrom && !this.searchTrainModel?.isExchange && !this.searchTrainModel?.isLocked) {
+        this.trainService.onSelectCity(isFrom);
       }
-      this.trainService.onSelectCity(isFrom);
+      if (!isFrom && (this.searchTrainModel?.isExchange || !this.searchTrainModel?.isLocked)) {
+        this.trainService.onSelectCity(isFrom);
+      }
+     return;  
     }
+    return;
   }
   private async loadPolicyedTrainsAsync(): Promise<TrainEntity[]> {
     // 先获取最新的数据
     this.vmTrains = [];
-    this.trains = await this.trainService.loadPolicyedTrainsAsync(status => {
+    this.trains = await this.trainService.loadPolicyedTrainsAsync((status) => {
       this.progressName = status;
     });
     return JSON.parse(JSON.stringify(this.trains));
@@ -272,9 +271,9 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       const popover = await this.popoverController.create({
         component: FilterPassengersPolicyComponent,
         componentProps: {
-          bookInfos$: this.trainService.getBookInfoSource()
+          bookInfos$: this.trainService.getBookInfoSource(),
         },
-        translucent: true
+        translucent: true,
       });
       await popover.present();
       const d = await popover.onDidDismiss();
@@ -299,11 +298,11 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   goToSelectPassengerPage() {
     this.lastSelectedPassengerIds = this.trainService
       .getBookInfos()
-      .map(it => it.passenger && it.passenger.AccountId);
+      .map((it) => it.passenger && it.passenger.AccountId);
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
       queryParams: {
-        forType: FlightHotelTrainType.Train
-      }
+        forType: FlightHotelTrainType.Train,
+      },
     });
   }
   async onFilter() {
@@ -311,8 +310,8 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     const m = await this.modalCtrl.create({
       component: TrainFilterComponent,
       componentProps: {
-        trains: JSON.parse(JSON.stringify(this.trains))
-      }
+        trains: JSON.parse(JSON.stringify(this.trains)),
+      },
     });
     if (m) {
       m.present();
@@ -345,7 +344,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async showSelectedBookInfos() {
     const modal = await this.modalCtrl.create({
-      component: SelectedTrainSegmentInfoComponent
+      component: SelectedTrainSegmentInfoComponent,
     });
     await this.trainService.dismissAllTopOverlays();
     await modal.present();
@@ -374,7 +373,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
           this.calendarService.setSelectedDaysSource([
             this.calendarService.generateDayModelByDate(
               this.searchTrainModel.Date
-            )
+            ),
           ]);
         }, 100);
       }
@@ -391,12 +390,12 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
         // 强制从服务器端返回新数据
         data = await this.loadPolicyedTrainsAsync();
       }
-      this.apiService.showLoadingView({msg:this.progressName});
+      this.apiService.showLoadingView({ msg: this.progressName });
       data = this.filterTrains(data);
       {
         const b = this.trainService
           .getBookInfos()
-          .find(it => it.isFilterPolicy);
+          .find((it) => it.isFilterPolicy);
         data = this.trainService.filterPassengerPolicyTrains(b, data);
       }
       // 根据筛选条件过滤航班信息：
@@ -404,7 +403,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       this.trainsCount = data.length;
       this.completeRefresher();
       const trains = this.trainsForRender.splice(0, this.pageSize);
-      requestAnimationFrame(_ => {
+      requestAnimationFrame((_) => {
         this.closeScroller(trains);
       });
       this.vmTrains = trains;
@@ -427,14 +426,14 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     if (await this.trainService.checkCanAdd()) {
       const currentViewtTainItem: ICurrentViewtTainItem = {
         selectedSeat: seat,
-        train
+        train,
       };
       const isSelf = await this.staffService.isSelfBookType();
 
       if (isSelf) {
         const bookInfos = this.trainService.getBookInfos();
         const bookInfo = this.trainService.getTrainInfo(currentViewtTainItem, {
-          ...bookInfos[0]
+          ...bookInfos[0],
         });
         if (
           bookInfo &&
@@ -456,7 +455,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private async showSelectedInfos() {
     const m = await this.modalCtrl.create({
-      component: SelectedTrainSegmentInfoComponent
+      component: SelectedTrainSegmentInfoComponent,
     });
     m.present();
   }
@@ -468,16 +467,17 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     return result;
   }
   onSwapStation() {
-    if (this.searchTrainModel.isLocked && this.searchTrainModel.isExchange) {
-      return;
+    // debugger
+    if (!this.searchTrainModel?.isExchange && !this.searchTrainModel?.isLocked) {
+      const s = this.trainService.getSearchTrainModel();
+      this.trainService.setSearchTrainModelSource({
+        ...s,
+        fromCity: s.toCity,
+        toCity: s.fromCity,
+      });
+      this.doRefresh(true, false);
     }
-    const s = this.trainService.getSearchTrainModel();
-    this.trainService.setSearchTrainModelSource({
-      ...s,
-      fromCity: s.toCity,
-      toCity: s.fromCity
-    });
-    this.doRefresh(true, false);
+    return;
   }
   onSelectPassenger() {
     this.goToSelectPassengerPage();
@@ -499,8 +499,8 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     console.log("this.filterCondition", this.filterCondition, trains);
     let result = trains;
     result = [];
-    trains.forEach(t => {
-      if (!result.find(it => it.TrainNo == t.TrainNo)) {
+    trains.forEach((t) => {
+      if (!result.find((it) => it.TrainNo == t.TrainNo)) {
         result.push(t);
       }
     });
@@ -519,7 +519,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       this.filterCondition &&
       this.filterCondition.departureTimeSpan
     ) {
-      return trains.filter(train => {
+      return trains.filter((train) => {
         const t = train.StartShortTime.split(":");
         const h = +t[0];
         const m = +t[1];
@@ -539,9 +539,9 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       this.filterCondition.trainTypes &&
       this.filterCondition.trainTypes.length
     ) {
-      return trains.filter(train =>
+      return trains.filter((train) =>
         this.filterCondition.trainTypes.some(
-          it => it.id == `${train.TrainType}`
+          (it) => it.id == `${train.TrainType}`
         )
       );
     }
@@ -554,9 +554,9 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       this.filterCondition.departureStations &&
       this.filterCondition.departureStations.length
     ) {
-      return trains.filter(train =>
+      return trains.filter((train) =>
         this.filterCondition.departureStations.some(
-          it => it.id == train.FromStationCode
+          (it) => it.id == train.FromStationCode
         )
       );
     }
@@ -569,9 +569,9 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       this.filterCondition.arrivalStations &&
       this.filterCondition.arrivalStations.length
     ) {
-      return trains.filter(train =>
+      return trains.filter((train) =>
         this.filterCondition.arrivalStations.some(
-          it => it.id == train.ToStationCode
+          (it) => it.id == train.ToStationCode
         )
       );
     }
@@ -589,7 +589,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     this.activeTab = "none";
     const identity = await this.identityService
       .getIdentityAsync()
-      .catch(_ => null);
+      .catch((_) => null);
     if (this.searchTrainModel) {
       if (this.searchTrainModel.tripType == TripType.departureTrip) {
         this.searchTrainModel.Date = day.date;
@@ -616,7 +616,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       // }
       this.trainService.setSearchTrainModelSource({
         ...this.searchTrainModel,
-        Date: days[0].date
+        Date: days[0].date,
       });
       this.calendarService.setSelectedDaysSource(days);
       this.onChangedDay(
@@ -652,13 +652,13 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     }
     this.scrollToTop();
     let data = this.filterTrains(this.trains);
-    const b = this.trainService.getBookInfos().find(it => it.isFilterPolicy);
+    const b = this.trainService.getBookInfos().find((it) => it.isFilterPolicy);
     data = this.trainService.filterPassengerPolicyTrains(b, data);
     // 根据筛选条件过滤航班信息：
     this.trainsForRender = data;
     this.trainsCount = data.length;
     const trains = this.trainsForRender.splice(0, this.pageSize);
-    requestAnimationFrame(_ => {
+    requestAnimationFrame((_) => {
       this.closeScroller(trains);
     });
     this.vmTrains = trains;

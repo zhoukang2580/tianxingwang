@@ -15,9 +15,9 @@
       <ion-text color='{{!searchTrainModel?.isExchange&&!searchTrainModel?.isLocked?"secondary":"medium"}}'>
         <i class='icon icon-search-train' (click)='onSwapStation()'></i>
       </ion-text>
-      <ion-text (click)='onSelectStation(false)' class='to-station' color='{{ !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked?"secondary":"medium"}}'>
+      <ion-text (click)='onSelectStation(false)' class='to-station' color='{{searchTrainModel?.isExchange||!searchTrainModel?.isLocked?"secondary":"medium"}}'>
         <span>{{vmToCity?.CityName}}</span>
-        <ion-icon name='caret-down-outline' *ngIf=' !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked'></ion-icon>
+        <ion-icon name='caret-down-outline' *ngIf='searchTrainModel?.isExchange||!searchTrainModel?.isLocked'></ion-icon>
       </ion-text>
     </ion-title>
     <ion-buttons slot='end'>
