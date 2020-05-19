@@ -25,7 +25,7 @@
   <ion-card class='ion-padding'>
     <ion-card-content>
       <ion-segment (ionChange)="onSegmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary'
-        *ngIf='showReturnTrip' [disabled]='isDisabled||searchTrainModel?.isExchange'>
+        *ngIf='showReturnTrip' [disabled]='searchTrainModel?.isExchange'>
         <ion-segment-button value="single">
           <ion-label><strong>单程</strong></ion-label>
         </ion-segment-button>
@@ -36,21 +36,21 @@
       <ion-text color='danger' style="opacity: 0.7;font-size: 0.7rem;" *ngIf='searchTrainModel?.isExchange'>正在改签
       </ion-text>
       <ion-buttons class="ion-justify-content-between">
-        <ion-button [disabled]='isDisabled||searchTrainModel?.isLocked||searchTrainModel?.isExchange'
-          (click)='onSelectCity(true)' color='{{isDisabled?"medium":"secondary"}}'>
+        <ion-button [disabled]='searchTrainModel?.isLocked && searchTrainModel?.isExchange'
+          (click)='onSelectCity(true)' color='{{searchTrainModel?.isLocked && searchTrainModel?.isExchange?"medium":"secondary"}}'>
           {{searchTrainModel?.fromCity?.Nickname}}</ion-button>
-        <ion-button color='{{isDisabled?"medium":"secondary"}}' [disabled]='isDisabled||!searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'
+        <ion-button color='{{searchTrainModel?.isLocked&&searchTrainModel?.isExchange?"medium":"secondary"}}' [disabled]='searchTrainModel?.isLocked&&searchTrainModel?.isExchange'
           (click)='onSwapCity()'>
-          <ion-icon name="swap-horizontal-outline" color='{{isDisabled?"medium":"secondary"}}'>
+          <ion-icon name="swap-horizontal-outline" color='{{searchTrainModel?.isLocked&&searchTrainModel?.isExchange?"medium":"secondary"}}'>
           </ion-icon>
         </ion-button>
-        <ion-button [disabled]='isDisabled||searchTrainModel?.isLocked' (click)='onSelectCity(false)'
-          color='{{isDisabled?"medium":"secondary"}}'>
+        <ion-button [disabled]='searchTrainModel?.isLocked && !searchTrainModel?.isExchange' (click)='onSelectCity(false)'
+          color='{{searchTrainModel?.isLocked&&!searchTrainModel?.isExchange?"medium":"secondary"}}'>
           {{searchTrainModel?.toCity?.Nickname}}</ion-button>
       </ion-buttons>
       <section class="flight-date">
         <app-search-day-comp [day]='goDate' (click)="onSelecDate(true,false)"
-          [disabled]='isDisabled&&!(searchTrainModel?.isExchange)'>
+          [disabled]='searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'>
         </app-search-day-comp>
       </section>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="searchTrain()"
