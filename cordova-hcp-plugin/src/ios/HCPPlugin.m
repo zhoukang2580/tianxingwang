@@ -23,11 +23,12 @@ NSString * const KEY_UDID_INSTEAD = @"com.beeant.ios.uuid";
 BOOL destroyed;
 -(void)pluginInitialize {
     NSLog(@"pluginInitialize");
-    [self loadHcpPageUrl];
+//    [self loadHcpPageUrl];
 }
 - (void)handleOpenURL:(NSNotification *)notification{
     NSLog(@"handleOpenURL,notification: %@",notification);
 }
+
 - (void)onAppTerminate {
     NSLog(@"onAppTerminate");
     destroyed=YES;
@@ -54,7 +55,6 @@ BOOL destroyed;
     NSLog(@"![path containsString _app_file_] %d",[path containsString:@"_app_file_"]);
     if(NO==[[url absoluteString] containsString:@"_app_file_"]||destroyed==YES){
         NSLog(@"loadHcpPageUrl 加载热更页面 path =%@",path);
-    
         [self loadURL:path];
     }
 }
@@ -121,6 +121,10 @@ BOOL destroyed;
         
     }
     return path;
+}
+- (void)loadHcpPage:(CDVInvokedUrlCommand *)command{
+    [self loadHcpPageUrl];
+    [self sendSuccessStringResult:@"OK":command];
 }
 - (void)getHash:(CDVInvokedUrlCommand *)command{
     NSString* filePath= [command argumentAtIndex:0];

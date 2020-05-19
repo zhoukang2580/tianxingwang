@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+// const utils = require("./utils");
 function delDir(p, delSelf) {
   let files = [];
   if (fs.existsSync(p)) {
@@ -89,9 +90,10 @@ function copyCordovaErrorHtml(ctx) {
     fs.copyFileSync(errorhtmlPath, path.join(wwwPath, name), { encoding: "utf8" });
   }
 }
+
+
 module.exports = function (ctx) {
   checkAngularJsonOutPutPath(ctx);
-  // copyProductionWwwToProjectRoot();
   copyCordovaErrorHtml(ctx);
   if (ctx.opts.platforms.includes("android")) {
     const projectRoot = ctx.opts.projectRoot;
