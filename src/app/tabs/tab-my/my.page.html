@@ -53,7 +53,7 @@
         联系我们</ion-label>
     </ion-item>
   </ion-list>
-  <ion-list *ngIf='isShowWorkflow'>
+  <ion-list *ngIf='isShowWorkflow&&isAgent'>
     <ion-item (click)="goToWorkflow()" detail>
       <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
       <ion-label class="has-left-icon">
@@ -61,7 +61,7 @@
         我的待办</ion-label>
     </ion-item>
   </ion-list>
-  <ion-list *ngIf='isShowWorkflow'>
+  <ion-list *ngIf='!isAgent&&isShowWorkflow'>
     <ion-item (click)="goBusiness()" detail>
       <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
       <ion-label class="has-left-icon">
@@ -77,7 +77,7 @@
         我的邀请</ion-label>
     </ion-item>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf='isAgent'>
     <ion-item (click)="goTomessageList()" detail>
       <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
       <ion-label class="has-left-icon">
@@ -89,13 +89,13 @@
     </ion-item>
   </ion-list>
   <ion-list>
-      <ion-item (click)='goToPage("bulletin","notice")' detail>
-        <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
-        <ion-label class="has-left-icon">
-          <img src="assets/svgs/notification.svg" alt="通知">
-          公司通知</ion-label>
-      </ion-item>
-    </ion-list>
+    <ion-item (click)='goToPage("bulletin","notice")' detail>
+      <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+      <ion-label class="has-left-icon">
+        <img src="assets/svgs/notification.svg" alt="通知">
+        公司通知</ion-label>
+    </ion-item>
+  </ion-list>
   <ion-list>
     <ion-item (click)="onSettings()" detail>
       <!-- <ion-icon name="cog" color="dark"></ion-icon> -->

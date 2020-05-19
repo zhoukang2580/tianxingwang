@@ -26,7 +26,7 @@ interface PageModel {
 @Component({
   selector: "app-my",
   templateUrl: "my.page.html",
-  styleUrls: ["my.page.scss"]
+  styleUrls: ["my.page.scss"],
 })
 export class MyPage implements OnDestroy, OnInit {
   Model: PageModel;
@@ -38,11 +38,12 @@ export class MyPage implements OnDestroy, OnInit {
   items: ProductItem[] = [];
   isShowMyOrderTabs = true;
   config: ConfigEntity;
+  isAgent = false;
   get isShowDeveloperOption() {
     if (
       (environment.production &&
         this.staffService.staffCredentials &&
-        this.staffService.staffCredentials.find(it =>
+        this.staffService.staffCredentials.find((it) =>
           /^450881\d+87x$/gi.test(it.Number)
         )) ||
       (this.Model &&
@@ -68,7 +69,8 @@ export class MyPage implements OnDestroy, OnInit {
   ) {
     this.isIos = plt.is("ios");
     this.subscriptions.push(
-      this.identityService.getIdentitySource().subscribe(_ => {
+      this.identityService.getIdentitySource().subscribe((identity) => {
+        this.isAgent = identity && identity.Numbers && !!identity.Numbers.AgentId;
         this.Model = null;
       })
     );
@@ -76,7 +78,7 @@ export class MyPage implements OnDestroy, OnInit {
   goToWorkflow() {
     this.router.navigate([AppHelper.getRoutePath("workflow-list")]);
   }
-  goBusiness(){
+  goBusiness() {
     this.router.navigate([AppHelper.getRoutePath("business-list")]);
   }
   contactUs() {
@@ -99,7 +101,7 @@ export class MyPage implements OnDestroy, OnInit {
           handler: () => {
             AppHelper.setStorage("style", "en");
             this.reloadPage();
-          }
+          },
         },
         {
           text: "中文",
@@ -107,16 +109,16 @@ export class MyPage implements OnDestroy, OnInit {
           handler: () => {
             AppHelper.setStorage("style", "");
             this.reloadPage();
-          }
+          },
         },
         {
           text: "取消",
           role: "destructive",
           handler: () => {
             ash.dismiss();
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
     ash.present();
   }
@@ -176,7 +178,7 @@ export class MyPage implements OnDestroy, OnInit {
       route = "bulletin-list";
     }
     this.router.navigate([AppHelper.getRoutePath(route)], {
-      queryParams: { bulletinType: params }
+      queryParams: { bulletinType: params },
     });
   }
   private reloadPage() {
@@ -191,7 +193,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
   private goToProductTabsPage(tab: ProductItem) {
     this.router.navigate([AppHelper.getRoutePath(`product-tabs`)], {
-      queryParams: { tabId: tab.value }
+      queryParams: { tabId: tab.value },
     });
   }
   onSettings() {
@@ -205,13 +207,13 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.items = ORDER_TABS.filter(it => it.isDisplay);
+    this.items = ORDER_TABS.filter((it) => it.isDisplay);
     if (this.items.length < 4) {
-      this.items = this.items.filter(it => it.value != ProductItemType.more);
+      this.items = this.items.filter((it) => it.value != ProductItemType.more);
     }
 
     this.subscriptions.push(
-      this.route.queryParamMap.subscribe(async _ => {
+      this.route.queryParamMap.subscribe(async (_) => {
         this.msgCount$ = this.messageService.getMsgCount();
         this.config = await this.configService.getConfigAsync();
         this.load(
@@ -238,7 +240,7 @@ export class MyPage implements OnDestroy, OnInit {
     req.Method = "ApiMemberUrl-Home-Get";
     this.Model = await this.apiService
       .getPromiseData<PageModel>(req)
-      .catch(_ => null);
+      .catch((_) => null);
     if (this.Model && this.Model.HeadUrl) {
       this.Model.HeadUrl = this.addVersionToUrl(this.Model.HeadUrl);
     }
@@ -256,7 +258,7 @@ export class MyPage implements OnDestroy, OnInit {
     this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   goToMyDetail() {
     this.router.navigate([AppHelper.getRoutePath("member-detail")]);
