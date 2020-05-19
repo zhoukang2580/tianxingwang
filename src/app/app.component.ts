@@ -132,7 +132,7 @@ export class AppComponent
         setTimeout(async () => {
           this.splashScreen.hide();
           // console.log(`uuid = ${await AppHelper.getUUID()}`);
-        }, 3000);
+        }, 1500);
       }
     });
   }
