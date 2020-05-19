@@ -13,7 +13,7 @@
  CDVInvokedUrlCommand* cdvInvokedUrlCommand;
  CDVInvokedUrlCommand* cdvPayInvokedUrlCommand;
 NSString* _appId;
- NSString* const UNIVERSAL_LINK=@"https://app.sky-trip.com/eskytripapp/";
+ NSString* const UNIVERSAL_LINK=@"https://*/";
 - (void)pluginInitialize{
     NSLog(@"插件初始化 cdv wechat");
     wXApiDelegate=self;
