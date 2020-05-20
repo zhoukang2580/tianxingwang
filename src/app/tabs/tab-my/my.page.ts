@@ -17,6 +17,7 @@ import { StaffService } from "src/app/hr/staff.service";
 import { tap, map } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
 interface PageModel {
   Name: string;
   RealName: string;
@@ -29,6 +30,7 @@ interface PageModel {
   styleUrls: ["my.page.scss"],
 })
 export class MyPage implements OnDestroy, OnInit {
+  private identity: IdentityEntity;
   Model: PageModel;
   isIos = false;
   isShowWorkflow = environment.mockProBuild;
@@ -46,10 +48,12 @@ export class MyPage implements OnDestroy, OnInit {
         this.staffService.staffCredentials.find((it) =>
           /^450881\d+87x$/gi.test(it.Number)
         )) ||
-      (this.Model &&
+      (environment.mockProBuild &&
+        this.Model &&
         (this.Model.Mobile == "18817392136" ||
           this.Model.RealName == "黄满标" ||
-          this.Model.Name == "黄满标"))
+          this.Model.Name == "黄满标" ||
+          this.Model.Name == "T163G996"))
     ) {
       return true;
     }
@@ -70,7 +74,8 @@ export class MyPage implements OnDestroy, OnInit {
     this.isIos = plt.is("ios");
     this.subscriptions.push(
       this.identityService.getIdentitySource().subscribe((identity) => {
-        this.isAgent = identity && identity.Numbers && !!identity.Numbers.AgentId;
+        this.isAgent =
+          identity && identity.Numbers && !!identity.Numbers.AgentId;
         this.Model = null;
       })
     );

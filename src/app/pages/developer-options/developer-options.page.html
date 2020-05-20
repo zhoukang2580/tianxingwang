@@ -24,6 +24,12 @@
     </ion-item>
     <ion-item>
       <ion-label>
+        删除Ticket
+      </ion-label>
+      <ion-toggle color="secondary" (ionChange)='onClearTicket($event)' [checked]='showLog'></ion-toggle>
+    </ion-item>
+    <ion-item>
+      <ion-label>
         当前应用版本
       </ion-label>
       <ion-label>{{currentVersion}}</ion-label>
