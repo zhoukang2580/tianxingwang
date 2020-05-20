@@ -14,13 +14,17 @@
     </ion-item>
     <ion-item>
       <ion-label>开始日期</ion-label>
-      <ion-input type='date' placeholder='开始日期' [(ngModel)]='condition.vmFromDate' value='{{condition.vmFromDate}}'>
-      </ion-input>
+      <!-- <ion-input type='date' placeholder='开始日期' [(ngModel)]='condition.vmFromDate' value='{{condition.vmFromDate}}'>
+      </ion-input> -->
+      <ion-datetime displayFormat="YYYY-MM-DD"  placeholder='开始日期'  [(ngModel)]='condition.vmFromDate'  doneText="确定" value="{{condition.vmFromDate}}" cancelText="取消">
+        </ion-datetime>
     </ion-item>
     <ion-item>
       <ion-label>结束日期</ion-label>
-      <ion-input type='date' placeholder='结束日期' [(ngModel)]='condition.vmToDate' value="{{condition.vmToDate}}">
-      </ion-input>
+      <!-- <ion-input type='date' placeholder='结束日期' [(ngModel)]='condition.vmToDate' value="{{condition.vmToDate}}">
+      </ion-input> -->
+      <ion-datetime displayFormat="YYYY-MM-DD"  placeholder='结束日期' [(ngModel)]='condition.vmToDate'  doneText="确定" value="{{condition.vmToDate}}" cancelText="取消">
+    </ion-datetime>
     </ion-item>
     <ion-item>
       <ion-label>订单编号</ion-label>
