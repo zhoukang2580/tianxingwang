@@ -36,6 +36,7 @@ import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { Storage } from "@ionic/storage";
+import { FlightCabinType } from "../flight/models/flight/FlightCabinType";
 const LAST_INTERNATIONAL_FLIGHT_SEARCH_CONDITION_KEY =
   "last_international_flight_search_condition_key";
 export interface IFlightCabinType {
@@ -168,6 +169,7 @@ export class InternationalFlightService {
     PassengerBookInfo<IInternationalFlightSegmentInfo>[]
   >;
   private flightPolicyResult: FlightResultEntity;
+  private flightCabinLevelPolicies: { [cabinType: number]: string };
   flightListResult: FlightResultEntity;
   constructor(
     private apiService: ApiService,
@@ -717,6 +719,7 @@ export class InternationalFlightService {
     });
   }
   disposal() {
+    this.flightCabinLevelPolicies = null;
     this.initOneWaySearModel();
     this.initFilterCondition();
     this.setBookInfoSource([]);
@@ -1006,6 +1009,29 @@ export class InternationalFlightService {
       FlightRoutes: FlightRouteEntity[];
       FlightFares: FlightFareEntity[];
     }>(req);
+  }
+  async flightCabinLevelPolicy() {
+    const staff = await this.staffService.getStaff();
+    if (staff && staff.Policy) {
+      if (
+        this.flightCabinLevelPolicies &&
+        Object.keys(this.flightCabinLevelPolicies).length
+      ) {
+        return this.flightCabinLevelPolicies;
+      }
+      const req = new RequestEntity();
+      req.Method = `TmcApiInternationalFlightUrl-Home-FlightCabinLevelPolicy`;
+      req.IsShowLoading = true;
+      req.LoadingMsg = "正在获取舱位差标";
+      req.Data = {
+        PolicyId: staff.Policy.Id,
+      };
+      this.flightCabinLevelPolicies = await this.apiService.getPromiseData<{
+        [FlightCabinType: number]: string;
+      }>(req);
+      return this.flightCabinLevelPolicies;
+    }
+    return this.flightCabinLevelPolicies;
   }
   private async checkRoutePolicy(result: FlightResultEntity) {
     const req = new RequestEntity();
@@ -1476,7 +1502,7 @@ export class InternationalFlightService {
       return;
     }
     arg.id = AppHelper.uuid();
-    if(arg.credential){
+    if (arg.credential) {
       if (!arg.credential.Account || arg.isNotWhitelist) {
         arg.credential.Account = arg.passenger.Account;
       }

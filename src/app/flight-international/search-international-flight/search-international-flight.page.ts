@@ -6,6 +6,7 @@ import {
   IInternationalFlightSearchModel,
   FlightVoyageType,
   ITripInfo,
+  FlightCabinInternationalType,
 } from "../international-flight.service";
 import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -15,11 +16,10 @@ import {
 } from "src/app/tmc/tmc.service";
 import { PopoverController } from "@ionic/angular";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { TripType } from "src/app/tmc/models/TripType";
-import { Storage } from "@ionic/storage";
+import { FlightCabinType } from "src/app/flight/models/flight/FlightCabinType";
 
 @Component({
   selector: "app-search-international-flight",
@@ -29,17 +29,21 @@ import { Storage } from "@ionic/storage";
 export class SearchInternationalFlightPage
   implements OnInit, OnDestroy, CanComponentDeactivate {
   private subscriptions: Subscription[] = [];
+  private flightCabinLevelPolicies: { [FlightCabinType: number]: string };
+  flightCabinLevelPolicy: string;
   FlightVoyageType = FlightVoyageType;
   selectedPassengers: PassengerBookInfo<IInternationalFlightSegmentInfo>[];
   isSelf = true;
   isCanleave = true;
   disabled = false;
+  isLoadingLevelPolicies = false;
   searchFlightModel: IInternationalFlightSearchModel;
   constructor(
     private staffService: StaffService,
     private flightService: InternationalFlightService,
     private popoverCtrl: PopoverController,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
   compareWithFn = (o1, o2) => {
     return o1 && o2 ? o1 === o2 : false;
@@ -141,6 +145,9 @@ export class SearchInternationalFlightPage
       this.flightService.setSearchModelSource(this.searchFlightModel);
     }
   }
+  onCabinChange() {
+    this.loadLoadingLevelPolicies();
+  }
   ngOnInit() {
     try {
       this.staffService.isSelfBookType().then((s) => {
@@ -157,8 +164,35 @@ export class SearchInternationalFlightPage
           this.selectedPassengers = infos;
         })
       );
+      this.route.queryParamMap.subscribe((q) => {
+        this.loadLoadingLevelPolicies();
+      });
     } catch (e) {
       AppHelper.alert(e);
+    }
+  }
+  private async loadLoadingLevelPolicies() {
+    if (!this.isLoadingLevelPolicies) {
+      this.isLoadingLevelPolicies = true;
+      this.flightCabinLevelPolicies = await this.flightService
+        .flightCabinLevelPolicy()
+        .catch(() => null);
+      this.isLoadingLevelPolicies = false;
+    }
+    if (this.flightCabinLevelPolicies) {
+      const map = {
+        [FlightCabinInternationalType.ECONOMY]: FlightCabinType.Y,
+        [FlightCabinInternationalType.BUSINESS]: FlightCabinType.Y,
+        [FlightCabinInternationalType.PREMIUM_ECONOMY]: FlightCabinType.Y,
+        [FlightCabinInternationalType.FIRST]: FlightCabinType.Y,
+        [FlightCabinInternationalType.PREMIUM_BUSINESS]: FlightCabinType.Y,
+        [FlightCabinInternationalType.PREMIUM_FIRST]: FlightCabinType.Y,
+      };
+      if (this.searchFlightModel && this.searchFlightModel.cabin) {
+        this.flightCabinLevelPolicy = this.flightCabinLevelPolicies[
+          map[this.searchFlightModel.cabin.value]
+        ];
+      }
     }
   }
   canDeactivate() {

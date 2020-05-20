@@ -84,12 +84,17 @@
             </ion-text>
           </ion-button>
         </li>
-        <ion-select style="padding: 0;margin:1em 0;" [(ngModel)]='searchFlightModel.cabin.value' color="dark"
-          cancel-text="取消" interface="action-sheet" [compareWith]="compareWithFn">
+        <ion-select (ionChange)='onCabinChange()' style="padding: 0;margin:1em 0;"
+          [(ngModel)]='searchFlightModel.cabin.value' color="dark" cancel-text="取消" interface="action-sheet"
+          [compareWith]="compareWithFn">
           <ion-select-option [value]="flightCabin.value" *ngFor="let flightCabin of searchFlightModel?.cabins">
             {{flightCabin.label}}</ion-select-option>
         </ion-select>
       </ul>
+      <ion-item *ngIf='flightCabinLevelPolicy' line='none'>
+        <ion-label color='danger' class="ion-text-wrap">{{flightCabinLevelPolicy}}
+        </ion-label>
+      </ion-item>
       <ion-button style='width: 100%' (click)="searchFlight()" class='ion-margin-top'
         *ngIf='isSelf||(!isSelf&&selectedPassengers?.length>0)' color="secondary" expand="block">
         <ion-text>查询航班</ion-text>

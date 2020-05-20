@@ -308,10 +308,16 @@ export class FlightTicketReservePage
       if (this.searchModel && last && last.bookInfo) {
         this.flightService.setBookInfoSource(
           this.flightService.getBookInfos().map((it, idx) => {
-            if(it.bookInfo&&it.bookInfo.flightRoute&&it.bookInfo.flightRoute.FlightSegments){
-              it.bookInfo.flightRoute.FlightSegments=it.bookInfo.flightRoute.FlightSegments.map(seg=>{
-                return seg;
-              })
+            if (
+              it.bookInfo &&
+              it.bookInfo.flightRoute &&
+              it.bookInfo.flightRoute.FlightSegments
+            ) {
+              it.bookInfo.flightRoute.FlightSegments = it.bookInfo.flightRoute.FlightSegments.map(
+                (seg) => {
+                  return seg;
+                }
+              );
             }
             it.bookInfo = {
               ...it.bookInfo,
@@ -807,7 +813,6 @@ export class FlightTicketReservePage
     let i = 0;
     const trips = this.flightService.getSearchModel().trips || [];
     const flightRoutes = [];
-
     trips
       .slice(0)
       .pop()
@@ -830,6 +835,7 @@ export class FlightTicketReservePage
     const isGoBack =
       this.searchModel &&
       this.searchModel.voyageType == FlightVoyageType.GoBack;
+    const last = trips.slice(0).pop();
     for (const combindInfo of combindInfos) {
       i++;
       if (isGoBack && i > 1) {
@@ -879,16 +885,25 @@ export class FlightTicketReservePage
                 r.FlightSegmentIds.some((rsid) => rsid == it.Id)
             )
           );
-          if (isGoBack) {
-            p.FlightSegments = p.FlightSegments.map((s) => {
-              if (!s.CabinCode) {
-                const one = p.FlightSegments.find((it) => !!it.CabinCode);
-                if (one) {
-                  s.CabinCode = one.CabinCode;
+          if (
+            last &&
+            last.bookInfo &&
+            last.bookInfo.flightRoute &&
+            last.bookInfo.flightRoute.selectFlightFare
+          ) {
+            const cabinCodes =
+              last.bookInfo.flightRoute.selectFlightFare.CabinCodes;
+            if (cabinCodes) {
+              p.FlightSegments = p.FlightSegments.map((s) => {
+                if (!s.CabinCode) {
+                  const code = cabinCodes[s.Id];
+                  if (code) {
+                    s.CabinCode = code;
+                  }
                 }
-              }
-              return s;
-            });
+                return s;
+              });
+            }
           }
         }
         if (info.flightRoute) {
