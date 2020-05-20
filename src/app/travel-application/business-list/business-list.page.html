@@ -74,6 +74,18 @@
             {{item?.ApprovalTime?.startsWith("1800")||item?.ApprovalTime?.startsWith("0001")?" ":item?.ApprovalTime?.replace("T"," ")?.substring(0,16)}}
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="item.Trips">
+          <ion-col size='3'>
+            <ion-text color="medium">行程</ion-text>
+          </ion-col>
+          <ion-col>
+            <div>
+            <div *ngFor="let i of item.Trips">
+            {{i?.StartDate?.replace("T"," ")?.substring(0,10)}} {{getCityName(i.FromCityName)}}--{{getCityName(i.ToCityName)}}
+            </div>
+            </div>
+          </ion-col>
+        </ion-row>
       </div>
     </ion-item>
   </ion-list>

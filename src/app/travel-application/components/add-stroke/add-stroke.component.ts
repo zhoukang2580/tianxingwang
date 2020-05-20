@@ -38,7 +38,10 @@ export class AddStrokeComponent implements OnInit, OnChanges {
   @Input() pass: boolean;
   @Input() index: number;
   @Input() regionTypes: IRegionType[];
+  @Input() domestic:boolean;
+  @Input() international:boolean;
   @Input() travelFromId: string;
+  @Input() TravelApprovalContent: string;
   @Input() vmRegionTypes: { value: string; label: string }[];
   constructor(
     private router: Router,
@@ -64,6 +67,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     return o1 == o2;
   };
   ngOnChanges(change: SimpleChanges) {
+    console.log("ngOnChanges ",change);
+    
     if (change&&change.regionTypes&&change.regionTypes.currentValue) {
       if(this.trip&&this.regionTypes&&this.trip.TravelTool){
         console.log(this.regionTypes,"regionTypes");
@@ -74,7 +79,6 @@ export class AddStrokeComponent implements OnInit, OnChanges {
           if(arr.some(f=>f==t.value)&&!this.vmRegionTypes.some(s=>s.value==t.value)){
             this.vmRegionTypes.push(t)
           }
-         
 
         })
         //  console.log(this.vmRegionTypes, "vmRegionTypes");
@@ -84,6 +88,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     }
   }
   ngOnInit() {
+    
     // this.trip.StartDate = new Date().toISOString();
     // this.trip.EndDate = new Date().toISOString();
   }
@@ -99,7 +104,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
   onGetCities() {
     // return this.service.getCities();
   }
-  getNumberOfDays(date1, date2) {
+  private getNumberOfDays(date1, date2) {
     if (!date1 || !date2) {
       return 0;
     }
@@ -116,7 +121,10 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     if (!this.enable) {
       return;
     }
-    const m = await this.modalCtrl.create({ component: SelectCity });
+    const m = await this.modalCtrl.create({ component: SelectCity ,componentProps:{
+      tripType:this.trip.TripType
+    }});
+    
     m.present();
     const res = await m.onDidDismiss();
     if (res && res.data && this.trip) {
@@ -276,6 +284,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     }
   }
   getRegionTypes(t) {
+    console.log(this.TravelApprovalContent.split(","),"vmTravelApprovalContent");
+    const approvals=this.TravelApprovalContent&&this.TravelApprovalContent.split(",")||[]
     console.log(t, "Tttt");
     console.log(this.regionTypes, "this.regionTypes ");
     if (t == "Domestic") {
@@ -286,6 +296,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
         return false
       }
       );
+      // this.vmRegionTypes.includes()
     } else if (t == "International") {
       this.vmRegionTypes = this.regionTypes.filter((t) => {
         if (t.value) {
@@ -294,5 +305,6 @@ export class AddStrokeComponent implements OnInit, OnChanges {
         return false
       })
     }
+    this.vmRegionTypes=this.vmRegionTypes.filter(it=>approvals.some(a=>a==it.value));
   }
 }

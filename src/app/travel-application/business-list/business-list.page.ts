@@ -19,7 +19,7 @@ import { IonInfiniteScroll } from "@ionic/angular";
 })
 export class BusinessListPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
-  ApprovalStatusType=ApprovalStatusType;
+  ApprovalStatusType = ApprovalStatusType;
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
@@ -29,7 +29,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private service: TravelService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((q) => {
@@ -42,7 +42,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     this.doRefresh();
   }
   onSearch(b) {
-    this.searchModel.IsShowLoading=b;
+    this.searchModel.IsShowLoading = b;
     console.log(this.searchModel.StatusType, "searchModel.StatusType");
     console.log(this.searchModel.SearchContent, "searchModel.AccountId");
     this.doRefresh(true);
@@ -52,7 +52,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   }
   goAddApply() {
 
-    this.router.navigate([AppHelper.getRoutePath("add-apply")],{queryParams:{tabId:"1"}});
+    this.router.navigate([AppHelper.getRoutePath("add-apply")], { queryParams: { tabId: "1" } });
   }
   gettravel() {
     this.subscription = this.service
@@ -77,9 +77,9 @@ export class BusinessListPage implements OnInit, OnDestroy {
         }
       });
   }
-  
+
   doRefresh(isKeepCondition = false) {
-    if(this.searchModel){
+    if (this.searchModel) {
       if (!isKeepCondition) {
         this.searchModel.StatusType = 0;
         this.searchModel.SearchContent = "";
@@ -113,15 +113,24 @@ export class BusinessListPage implements OnInit, OnDestroy {
       AppHelper.alert(e);
     }
   }
-   onCancel(id,event:CustomEvent){
+  onCancel(id, event: CustomEvent) {
     event.stopPropagation()
     try {
-      const m =  this.service.travelCancel(id).then(t=>{
+      const m = this.service.travelCancel(id).then(t => {
         AppHelper.alert(t.Message)
         this.doRefresh()
       })
     } catch (e) {
       AppHelper.alert(e);
     }
+  }
+  getCityName(name: string) {
+    // debugger
+    let idxStart = name.indexOf("(");
+    let result = name.substring(0, idxStart);
+    if (result) {
+      return result
+    }
+    return name
   }
 }

@@ -64,12 +64,15 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   searchModel: SearchModel;
   enable = true;
   waiting = false;
+  domestic = false;
+  international = false;
   pass = false;
   appovalStaff: string;
   outNumbers: {
     [key: string]: any;
   };
   vmRegionTypes: { value: string; label: string }[];
+  vmTravelApprovalContent:string;
   tmc: TmcEntity;
   totalDays$: Observable<number>;
   constructor(
@@ -127,16 +130,17 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       }
     }, 200);
   }
-  ngOnInit() {
-    this.outNumbers = {};
+  getApprovalStaff() {
     this.travelService.getStaff().then((s) => {
       if (this.searchModel && this.searchModel.TravelForm) {
         this.searchModel.TravelForm.CostCenterName =
           this.searchModel.TravelForm.CostCenterName || s.staff.CostCenter.Name;
         this.searchModel.TravelForm.CostCenterCode =
           this.searchModel.TravelForm.CostCenterCode || s.staff.CostCenter.Code;
-        // this.searchModel.TravelForm.Id =
-        //   this.searchModel.TravelForm.Id || s.staff.CostCenter.Id;
+        if (s.approvalStaff && s.approvalStaff.Name) {
+          this.appovalStaff = s.approvalStaff.Name;
+          this.searchModel.AccountId = s.approvalStaff.Account.Id;
+        }
         if (!this.searchModel.TravelForm.Organization) {
           this.searchModel.TravelForm.Organization = {} as any;
         }
@@ -148,6 +152,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           this.searchModel.TravelForm.Organization.Id || s.staff.Organization.Id;
       }
     });
+  }
+  ngOnInit() {
+    this.outNumbers = {};
     if (this.searchModel) {
     }
     this.tmcService.getTmc().then((tmc) => {
@@ -172,11 +179,17 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         this.regionTypes = this.regionTypes.filter((t) =>
           this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
         );
-        //  this.regionTypes = this.regionTypes.filter((t) =>
-        // this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
-        // );
         this.vmRegionTypes = this.regionTypes.slice(0);
-
+        let t=this.tmc.TravelApprovalContent||"";
+        if(t){
+          if (t.toLowerCase().includes("international")) {
+            this.international = true
+          }
+          if(t.toLowerCase().includes("flight")||t.toLowerCase().includes("hotel")||t.toLowerCase().includes("train")||t.toLowerCase().includes("car")){
+            this.domestic = true
+          }
+        }
+        this.vmTravelApprovalContent=this.tmc.TravelApprovalContent
       }
     });
     this.initValidateRule();
@@ -186,7 +199,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     this.searchModel.PageIndex = 0;
     this.searchModel.PageSize = 20;
     const item: TravelFormTripEntity = {} as any;
-    // item.StartDate
     this.route.queryParamMap.subscribe((q) => {
       if (q.get("data")) {
         this.searchModel = JSON.parse(q.get("data"));
@@ -217,7 +229,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         }
       } else {
         this.onAddTrip();
-        this.waiting = true
+        this.waiting = true;
+        this.getApprovalStaff();
       }
     });
   }
@@ -285,6 +298,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     if (result && result.data) {
       this.appovalStaff = result.data.Text;
       this.searchModel.ApprovalStaffName = this.appovalStaff;
+
       this.searchModel.AccountId = result.data.Value;
     }
   }
@@ -418,8 +432,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           this.searchModel.TravelForm.Organization.Id;
       }
       this.processOutNumbers();
-      const r = await this.service.travelSubmit(this.searchModel);
 
+      await this.service.travelSubmit(this.searchModel);
       this.router.navigate([AppHelper.getRoutePath("business-list")], {
         queryParams: { doRefresh: true },
       });
@@ -452,7 +466,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }
   }
   onAddTrip() {
-
     const item: TravelFormTripEntity = {} as any;
     // item.StartDate
     if (!this.searchModel.TravelForm.Trips) {
@@ -464,21 +477,36 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     this.getAllTravelDays();
   }
   private getAllTravelDays() {
-    let days = 0;
-    if (
-      this.searchModel &&
-      this.searchModel.TravelForm &&
-      this.searchModel.TravelForm.Trips
-    ) {
-      this.searchModel.TravelForm.Trips.forEach((it) => {
-        if (it.Day) {
-          days += it.Day;
-        }
-      });
+    // let days = 0;
+    // if (
+    //   this.searchModel &&
+    //   this.searchModel.TravelForm &&
+    //   this.searchModel.TravelForm.Trips
+    // ) {
+    //   this.searchModel.TravelForm.Trips.forEach((it) => {
+    //     if (it.Day) {
+    //       days += it.Day;
+    //     }
+    //   });
+    // }
+    if (this.searchModel && this.searchModel.TravelForm) {
+      this.searchModel.TravelForm.DayCount = this.getAllDay() + 1;
     }
-    if (this.searchModel.TravelForm) {
-      this.searchModel.TravelForm.DayCount = days;
+    return this.getAllDay();
+  }
+  getAllDay() {
+    if (this.searchModel && this.searchModel.TravelForm && this.searchModel.TravelForm.Trips) {
+      let trips = this.searchModel.TravelForm.Trips;
+      if (trips[trips.length - 1].EndDate && trips[0].StartDate) {
+        const a1 = AppHelper.getDate(trips[trips.length - 1].EndDate.substr(0, 10)).getTime();
+        const a2 = AppHelper.getDate(trips[0].StartDate.substr(0, 10)).getTime();
+        let result = (a1 - a2) / (1000 * 60 * 60 * 24)
+        return result
+      } else {
+        return
+      }
+    } else {
+      return
     }
-    return days;
   }
 }

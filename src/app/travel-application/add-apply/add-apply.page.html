@@ -35,7 +35,7 @@
       </ion-input>
     </ion-item>
 
-    <app-add-stroke [regionTypes]='vmRegionTypes'  [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx'
+    <app-add-stroke [regionTypes]='vmRegionTypes'[TravelApprovalContent]="vmTravelApprovalContent" [international]='international' [domestic]='domestic'  [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx'
       *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;" [index]="idx" [trip]='item'
       (remove)='onRemoveTrip($event)'></app-add-stroke>
     <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()"
@@ -47,8 +47,8 @@
       <ion-text [color]="!enable?'dark':'dark'">
         出差天数统计
       </ion-text>
-      <ion-label slot="end" class="ion-text-end" [color]="!enable?'medium':'dark'">
-        {{this.searchModel.TravelForm.DayCount}}
+      <ion-label slot="end" class="ion-text-end" [color]="!enable?'medium':'dark'" *ngIf="searchModel?.TravelForm?.DayCount">
+        {{searchModel?.TravelForm?.DayCount}}
       </ion-label>
     </ion-item>
     <ion-item>
@@ -81,7 +81,7 @@
         审批人
       </ion-text>
       <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;"
-        class="ion-text-end">
+        class="ion-text-end" *ngIf="appovalStaff">
         {{appovalStaff}}
       </ion-text>
     </ion-item>
@@ -99,6 +99,7 @@
           </div>
           <div style="display: flex;">
             <label>审批人:</label>
+         
             <ion-label color="medium">{{h?.Account?.RealName}}</ion-label>
           </div>
           <div style="display: flex;">

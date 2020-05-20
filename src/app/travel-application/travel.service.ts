@@ -88,11 +88,12 @@ export class TravelService {
     };
     return this.apiService.getPromiseData<{Id:string;Message:string;}>(req);
   }
-  getCities(name: string) {
+  getCities(name: string,TripType:string) {
     const req = new RequestEntity();
     req.Method = `TmcApiTravelUrl-Home-GetCitys`;
     req.Data = {
       name,
+      Type:TripType
     };
     return this.apiService.getResponse<TrafficlineEntity[]>(req);
   }

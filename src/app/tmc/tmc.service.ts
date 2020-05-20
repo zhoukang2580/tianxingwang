@@ -1100,6 +1100,7 @@ export enum TmcHotelFeeType {
   Order = 2,
 }
 export class TmcEntity extends BaseEntity {
+  TravelApprovalContent:string;
   TravelApprovalType: TmcTravelApprovalType;
   GroupCompanyName: string; // "爱普科斯";
   Name: string; // "爱普科斯（上海）产品服务有限公司";

@@ -45,6 +45,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private pageSize = 20;
   private pageIndex = 0;
+  private tripType =""
   textSearchResults: TrafficlineEntity[] = [];
   vmKeyowrds = "";
   isSearching = false;
@@ -96,7 +97,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   async loadMore() {
     const name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
     this.subscription = this.travelService
-      .getCities(name)
+      .getCities(name,this.tripType)
       .pipe(
         finalize(() => {
           setTimeout(() => {
