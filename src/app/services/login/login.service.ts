@@ -332,44 +332,50 @@ export class LoginService {
     if (this.preventAutoLogin || !AppHelper.isApp()) {
       return false;
     }
-    if (AppHelper.getStorage<string>("loginToken")) {
-      const req = new RequestEntity();
-      req.IsShowLoading = !!(showLoading && showLoading.loadingMsg);
-      if (req.IsShowLoading) {
-        req.LoadingMsg = showLoading.loadingMsg;
-      }
-      if (this.isAutoLoginPromise) {
-        return this.isAutoLoginPromise;
-      }
-      const device = await AppHelper.getDeviceId();
-      req.Method = "ApiLoginUrl-Home-DeviceLogin";
-      req.Data = JSON.stringify({
-        Device: device,
-        Token: AppHelper.getStorage("loginToken"),
-      });
-      this.isAutoLoginPromise = this.apiService
-        .getPromiseData<{
-          Ticket: string; // "";
-          Id: string; // ;
-          Name: string; // "";
-          IsShareTicket: boolean; // false;
-          Numbers: { [key: string]: string };
-          Token: string;
-        }>(req)
-        .then((res) => {
-          if (!res) {
-            return false;
-          }
-          this.identityService.setIdentity(res);
-          AppHelper.setStorage("logintoken", res.Token || "");
-          return !!res;
-        })
-        .catch(() => false)
-        .finally(() => {
-          this.isAutoLoginPromise = null;
-        });
+    if (this.isAutoLoginPromise) {
+      return this.isAutoLoginPromise;
     }
-    return false;
+    try{
+      const device = await AppHelper.getDeviceId();
+      if (AppHelper.getStorage<string>("loginToken")) {
+        const req = new RequestEntity();
+        req.IsShowLoading = !!(showLoading && showLoading.loadingMsg);
+        if (req.IsShowLoading) {
+          req.LoadingMsg = showLoading.loadingMsg;
+        }
+        req.Method = "ApiLoginUrl-Home-DeviceLogin";
+        req.Data = JSON.stringify({
+          Device: device,
+          Token: AppHelper.getStorage("loginToken"),
+        });
+        // 需要注意，判断if(isAutoLoginPromise)...到这里之前，不能有 await的代码，否则并发调用就不能得到有效的控制
+        this.isAutoLoginPromise = this.apiService
+          .getPromiseData<{
+            Ticket: string; // "";
+            Id: string; // ;
+            Name: string; // "";
+            IsShareTicket: boolean; // false;
+            Numbers: { [key: string]: string };
+            Token: string;
+          }>(req)
+          .then((res) => {
+            if (!res) {
+              return false;
+            }
+            this.identityService.setIdentity(res);
+            AppHelper.setStorage("logintoken", res.Token || "");
+            return !!res;
+          })
+          .catch(() => false)
+          .finally(() => {
+            this.isAutoLoginPromise = null;
+          });
+      }
+    }catch(e){
+      console.error(e);
+    }
+    // 切记，返回一个promise，否则，需要在此之前，await this.isAutoLoginPromise
+    return this.isAutoLoginPromise;
   }
   getLoginType() {
     if (AppHelper.isPDA()) {

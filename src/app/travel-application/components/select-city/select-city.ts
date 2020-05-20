@@ -45,7 +45,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private pageSize = 20;
   private pageIndex = 0;
-  private tripType =""
+  private tripType = "";
   textSearchResults: TrafficlineEntity[] = [];
   vmKeyowrds = "";
   isSearching = false;
@@ -97,7 +97,12 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   async loadMore() {
     const name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
     this.subscription = this.travelService
-      .getCities(name,this.tripType)
+      .getCities({
+        name,
+        tripType: this.tripType,
+        pageIndex: this.pageIndex,
+        pageSize: this.pageSize,
+      })
       .pipe(
         finalize(() => {
           setTimeout(() => {
@@ -106,13 +111,15 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
                 this.refresher.complete();
               }
             }
-            this.scroller.complete();
           }, 300);
         })
       )
       .subscribe((r) => {
         const arr = (r && r.Data) || [];
         this.scroller.disabled = arr.length < this.pageSize;
+        if (this.scroller) {
+          this.scroller.complete();
+        }
         if (arr.length) {
           this.pageIndex++;
           this.textSearchResults = this.textSearchResults.concat(arr);

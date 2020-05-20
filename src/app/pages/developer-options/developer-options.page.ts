@@ -1,19 +1,20 @@
-import { environment } from 'src/environments/environment';
-import { FileHelperService } from 'src/app/services/file-helper.service';
-import { NavController } from '@ionic/angular';
-import { Component, OnInit } from '@angular/core';
-const VConsole = window['VConsole'];
+import { environment } from "src/environments/environment";
+import { FileHelperService } from "src/app/services/file-helper.service";
+import { NavController } from "@ionic/angular";
+import { Component, OnInit } from "@angular/core";
+import { AppHelper } from "src/app/appHelper";
+const VConsole = window["VConsole"];
 @Component({
-  selector: 'app-developer-options',
-  templateUrl: './developer-options.page.html',
-  styleUrls: ['./developer-options.page.scss'],
+  selector: "app-developer-options",
+  templateUrl: "./developer-options.page.html",
+  styleUrls: ["./developer-options.page.scss"],
 })
 export class DeveloperOptionsPage implements OnInit {
   private version: string;
   VConsole = VConsole;
   showLog = !environment.production;
   get vConsole() {
-    return !!window['vConsole'];
+    return !!window["vConsole"];
   }
   get currentVersion() {
     if (this.version) {
@@ -21,9 +22,15 @@ export class DeveloperOptionsPage implements OnInit {
     }
     this.version = this.flieService.getLocalHcpVersion();
     return this.version;
-  };
-  constructor(private navCtrl: NavController, private flieService: FileHelperService) { }
-  ngOnInit() {
+  }
+  constructor(
+    private navCtrl: NavController,
+    private flieService: FileHelperService
+  ) {}
+  ngOnInit() {}
+  onClearTicket() {
+    AppHelper.setStorage("ticket", "");
+    AppHelper.alert("清空成功，请杀死应用进程，重新进入应用");
   }
   onLogChange(evt: CustomEvent) {
     const isLog = evt.detail.checked;
@@ -31,21 +38,21 @@ export class DeveloperOptionsPage implements OnInit {
     if (isLog) {
       console.log = console.info;
     } else {
-      console.log = _ => 0;
+      console.log = (_) => 0;
     }
   }
   onVConsoleChange(evt: CustomEvent) {
     const isShowVConsole = evt.detail.checked;
     if (isShowVConsole) {
-      if (window['vConsole']) {
-        window['vConsole'].destroy();
-        window['vConsole'] = null;
+      if (window["vConsole"]) {
+        window["vConsole"].destroy();
+        window["vConsole"] = null;
       }
-      window['vConsole'] = new VConsole();
+      window["vConsole"] = new VConsole();
     } else {
-      if (window['vConsole']) {
-        window['vConsole'] = null;
-        window['vConsole'].destroy();
+      if (window["vConsole"]) {
+        window["vConsole"] = null;
+        window["vConsole"].destroy();
       }
     }
   }

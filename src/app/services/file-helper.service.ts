@@ -580,7 +580,9 @@ export class FileHelperService {
     const hcpVersion = (
       AppHelper.getStorage<string>("apphcpversion") || ""
     ).trim();
-    this.logMessage(`getStorage 热更后存储在本地的版本=${hcpVersion}`);
+    if(AppHelper.isApp()){
+      this.logMessage(`getStorage 热更后存储在本地的版本=${hcpVersion}`);
+    }
     return hcpVersion;
   }
   private setHcpVersionToLoacal(version: string) {

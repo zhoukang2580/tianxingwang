@@ -35,9 +35,11 @@ export class TravelService {
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-GetStaff`;
     req.Data = {};
-    return this.apiService.getPromiseData<{staff:StaffEntity;approvalStaff:StaffEntity}>(req);
+    return this.apiService.getPromiseData<{
+      staff: StaffEntity;
+      approvalStaff: StaffEntity;
+    }>(req);
   }
-  
 
   getTravelDetail(id: string) {
     const req = new RequestEntity();
@@ -48,16 +50,16 @@ export class TravelService {
     };
     return this.apiService.getPromiseData<SearchModel>(req);
   }
-  getReserve(dto:{
-    TravelFormId:string;
-    TravelTool:string;
-    TripId:string;
-  }){
+  getReserve(dto: {
+    TravelFormId: string;
+    TravelTool: string;
+    TripId: string;
+  }) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Reserve`;
     req.Data = {
-     ...dto
+      ...dto,
     };
     return this.apiService.getPromiseData<TravelFormEntity>(req);
   }
@@ -86,14 +88,21 @@ export class TravelService {
     req.Data = {
       Id: id,
     };
-    return this.apiService.getPromiseData<{Id:string;Message:string;}>(req);
+    return this.apiService.getPromiseData<{ Id: string; Message: string }>(req);
   }
-  getCities(name: string,TripType:string) {
+  getCities(data: {
+    name: string;
+    tripType: string;
+    pageIndex: number;
+    pageSize: number;
+  }) {
     const req = new RequestEntity();
     req.Method = `TmcApiTravelUrl-Home-GetCitys`;
     req.Data = {
       name,
-      Type:TripType
+      Type: data.tripType,
+      PageIndex: data.pageIndex,
+      PageSize: data.pageSize,
     };
     return this.apiService.getResponse<TrafficlineEntity[]>(req);
   }
@@ -105,7 +114,7 @@ export class TravelService {
   }
 }
 export class SearchModel {
-  IsShowLoading:boolean;
+  IsShowLoading: boolean;
   /// <summary>
   /// 差旅单
   /// </summary>
@@ -182,8 +191,8 @@ export class TravelFormTripEntity extends BaseEntity {
   /// 出发城市名称
   /// </summary>
   FromCityName: string; //
-  fromCity:TrafficlineEntity;
-  toCity:TrafficlineEntity;
+  fromCity: TrafficlineEntity;
+  toCity: TrafficlineEntity;
   /// <summary>
   /// 到达城市Code
   /// </summary>
