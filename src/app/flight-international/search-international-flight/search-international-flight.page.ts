@@ -30,6 +30,15 @@ export class SearchInternationalFlightPage
   implements OnInit, OnDestroy, CanComponentDeactivate {
   private subscriptions: Subscription[] = [];
   private flightCabinLevelPolicies: { [FlightCabinType: number]: string };
+  private typeMap = {
+    [FlightCabinInternationalType.ECONOMY]: FlightCabinType.Y,
+    [FlightCabinInternationalType.PREMIUM_BUSINESS]:
+      FlightCabinType.BusinessPremier,
+    [FlightCabinInternationalType.BUSINESS]: FlightCabinType.C,
+    [FlightCabinInternationalType.PREMIUM_ECONOMY]: FlightCabinType.SeniorY,
+    [FlightCabinInternationalType.FIRST]: FlightCabinType.F,
+    [FlightCabinInternationalType.PREMIUM_FIRST]: FlightCabinType.SuperF,
+  };
   flightCabinLevelPolicy: string;
   FlightVoyageType = FlightVoyageType;
   selectedPassengers: PassengerBookInfo<IInternationalFlightSegmentInfo>[];
@@ -180,17 +189,9 @@ export class SearchInternationalFlightPage
       this.isLoadingLevelPolicies = false;
     }
     if (this.flightCabinLevelPolicies) {
-      const map = {
-        [FlightCabinInternationalType.ECONOMY]: FlightCabinType.Y,
-        [FlightCabinInternationalType.BUSINESS]: FlightCabinType.Y,
-        [FlightCabinInternationalType.PREMIUM_ECONOMY]: FlightCabinType.Y,
-        [FlightCabinInternationalType.FIRST]: FlightCabinType.Y,
-        [FlightCabinInternationalType.PREMIUM_BUSINESS]: FlightCabinType.Y,
-        [FlightCabinInternationalType.PREMIUM_FIRST]: FlightCabinType.Y,
-      };
       if (this.searchFlightModel && this.searchFlightModel.cabin) {
         this.flightCabinLevelPolicy = this.flightCabinLevelPolicies[
-          map[this.searchFlightModel.cabin.value]
+          this.typeMap[this.searchFlightModel.cabin.value]
         ];
       }
     }
