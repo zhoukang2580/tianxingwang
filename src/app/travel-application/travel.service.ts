@@ -151,7 +151,7 @@ export class SearchModel {
   AccountId: string;
   ApprovalStaffName: string;
 
-  Trips: TravelFormTripEntity[];
+  // Trips: TravelFormTripEntity[];
 }
 export class TravelFormTripEntity extends BaseEntity {
   Tmc: TmcEntity; //

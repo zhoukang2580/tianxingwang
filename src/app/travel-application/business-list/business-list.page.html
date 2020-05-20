@@ -81,7 +81,7 @@
           <ion-col>
             <div>
             <div *ngFor="let i of item.Trips">
-            {{i?.StartDate?.replace("T"," ")?.substring(0,10)}} {{getCityName(i.FromCityName)}}--{{getCityName(i.ToCityName)}}
+            {{i?.StartDate?.replace("T"," ")?.substring(0,10)}} {{i.FromCityName}}--{{i.ToCityName}}
             </div>
             </div>
           </ion-col>

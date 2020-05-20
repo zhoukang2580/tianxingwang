@@ -127,13 +127,14 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     
     m.present();
     const res = await m.onDidDismiss();
-    if (res && res.data && this.trip) {
+    const city :TrafficlineEntity=res && res.data;
+    if ( city&& this.trip) {
       if (isFrom) {
         this.trip.FromCityCode = res.data.Code;
-        this.trip.FromCityName = res.data.Name;
+        this.trip.FromCityName = res.data.Name+`(${city.Country&&city.Country.Name||""})`;
       } else {
         this.trip.ToCityCode = res.data.Code;
-        this.trip.ToCityName = res.data.Name;
+        this.trip.ToCityName = res.data.Name+`(${city.Country&&city.Country.Name||""})`;
       }
     }
   }

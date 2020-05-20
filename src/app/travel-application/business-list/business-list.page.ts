@@ -100,9 +100,9 @@ export class BusinessListPage implements OnInit, OnDestroy {
     try {
       const m = await this.service.getTravelDetail(id);
       if (m) {
-        if (m.TravelForm) {
-          m.TravelForm.Trips = m.TravelForm.Trips || m.Trips;
-        }
+        // if (m.TravelForm) {
+        //   m.TravelForm.Trips = m.TravelForm.Trips ;
+        // }
         this.router.navigate([AppHelper.getRoutePath("add-apply")], {
           queryParams: {
             data: JSON.stringify(m),
@@ -124,13 +124,13 @@ export class BusinessListPage implements OnInit, OnDestroy {
       AppHelper.alert(e);
     }
   }
-  getCityName(name: string) {
-    // debugger
-    let idxStart = name.indexOf("(");
-    let result = name.substring(0, idxStart);
-    if (result) {
-      return result
-    }
-    return name
-  }
+  // getCityName(name: string) {
+  //   // debugger
+  //   let idxStart = name.indexOf("(");
+  //   let result = name.substring(0, idxStart);
+  //   if (result) {
+  //     return result
+  //   }
+  //   return name
+  // }
 }

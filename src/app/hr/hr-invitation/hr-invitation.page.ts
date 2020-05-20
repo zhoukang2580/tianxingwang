@@ -59,7 +59,7 @@ export class HrInvitationPage implements OnInit, OnDestroy {
       .invitationAdd()
       .then((s) => {
         AppHelper.alert("申请成功！");
-        this.router.navigate(["home"]);
+        this.router.navigate([" "]);
       })
       .catch((e) => {
         AppHelper.alert(e);

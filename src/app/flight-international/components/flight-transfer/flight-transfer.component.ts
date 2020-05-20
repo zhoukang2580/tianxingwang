@@ -23,6 +23,8 @@ export class FlightTransferComponent implements OnInit {
     if (index && seg && this.flight) {
       if (this.flight.transferSegments[index - 1].ToAirportName!=seg.FromAirportName) {
         return this.isShow=1
+      }else if((this.flight.transferSegments[index - 1].ToTerminal.includes("T")!=seg.FromTerminal)||(this.flight.transferSegments[index - 1].ToTerminal!=seg.FromTerminal.includes("T"))){
+        return this.isShow=3
       }
       else if(this.flight.transferSegments[index - 1].ToTerminal!=seg.FromTerminal){
         return this.isShow=2
