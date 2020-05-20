@@ -70,7 +70,7 @@
         <div *ngFor="let item of tmc?.OutNumberNameArray" [attr.OutNumberName]='item' style="display:flex;justify-content: center;
         align-items: center;">
           <ion-label>{{item}}</ion-label>
-          <ion-input placeholder="{{item}}" style="max-width: initial;flex: 3; text-align: end;"
+          <ion-input placeholder="请输入{{item}}" style="max-width: initial;flex: 3; text-align: end;"
             [(ngModel)]="outNumbers[item]" [color]="!enable?'medium':'dark'" [disabled]="!enable"></ion-input>
         </div>
       </div>

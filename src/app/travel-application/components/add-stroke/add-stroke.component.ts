@@ -96,6 +96,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     let day = this.getNumberOfDays(start, EndDate);
     if (day < 0) {
       AppHelper.alert("出差结束时间不能早于出差开始时间")
+      return
     }
   }
   onDelete() {

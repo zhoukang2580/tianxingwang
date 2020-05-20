@@ -72,7 +72,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     [key: string]: any;
   };
   vmRegionTypes: { value: string; label: string }[];
-  vmTravelApprovalContent:string;
+  vmTravelApprovalContent: string;
   tmc: TmcEntity;
   totalDays$: Observable<number>;
   constructor(
@@ -167,7 +167,10 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         );
       if (this.tmc.OutNumberNameArray) {
         for (const n of this.tmc.OutNumberNameArray) {
+
           this.outNumbers[n] = (this.searchModel.OutNumbers && obj[n]) || "";
+          console.log(this.outNumbers[n],"this.outNumbers[n]");
+          
         }
       }
       if (this.tmc && this.tmc.RegionTypeValue) {
@@ -180,16 +183,16 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
         );
         this.vmRegionTypes = this.regionTypes.slice(0);
-        let t=this.tmc.TravelApprovalContent||"";
-        if(t){
+        let t = this.tmc.TravelApprovalContent || "";
+        if (t) {
           if (t.toLowerCase().includes("international")) {
             this.international = true
           }
-          if(t.toLowerCase().includes("flight")||t.toLowerCase().includes("hotel")||t.toLowerCase().includes("train")||t.toLowerCase().includes("car")){
+          if (t.toLowerCase().includes("flight") || t.toLowerCase().includes("hotel") || t.toLowerCase().includes("train") || t.toLowerCase().includes("car")) {
             this.domestic = true
           }
         }
-        this.vmTravelApprovalContent=this.tmc.TravelApprovalContent
+        this.vmTravelApprovalContent = this.tmc.TravelApprovalContent
       }
     });
     this.initValidateRule();
@@ -239,6 +242,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     return o1 == o2;
   };
   private processOutNumbers() {
+    // debugger
     if (this.searchModel) {
       if (this.outNumbers && Object.keys(this.outNumbers)) {
         if (this.searchModel.TravelForm) {
@@ -438,9 +442,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
               AppHelper.toast("出差结束时间不能早于出差开始时间");
               return
             }
-            if(trip.StartDate&&trip.EndDate){
-              trip.StartDate=trip.StartDate.replace("T"," ").substring(0,10);
-              trip.EndDate=trip.EndDate.replace("T"," ").substring(0,10);
+            if (trip.StartDate && trip.EndDate) {
+              trip.StartDate = trip.StartDate.replace("T", " ").substring(0, 10);
+              trip.EndDate = trip.EndDate.replace("T", " ").substring(0, 10);
             }
           }
         }
@@ -457,12 +461,31 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           return;
         }
       }
+      if(this.tmc&&this.tmc.OutNumberNameArray){
+        // this.tmc.OutNumberNameArray
+        // this.tmc.OutNumberRequiryNameArray
+        console.log(this.tmc.OutNumberNameArray,"this.tmc.OutNumberNameArray");
+        console.log( this.tmc.OutNumberRequiryNameArray," this.tmc.OutNumberRequiryNameArray");
+        for (let index = 0; index < this.tmc.OutNumberRequiryNameArray.length; index++) {
+          const element = this.tmc.OutNumberRequiryNameArray[index];
+          if(!this.outNumbers[element]){
+            // debugger
+            const el = this.getEleByAttr("OutNumberName", element);
+            this.moveRequiredEleToViewPort(el);
+            AppHelper.toast(`请输入${this.tmc.OutNumberNameArray.find(f=>f==element)}`);
+            return
+          }
+        }
+        // this.tmc.OutNumberRequiryNameArray.forEach(t=>{
+        //  console.log(this.tmc.OutNumberNameArray.find(f=>f==t),"this.tmc.OutNumberNameArray.find(f=>f==t)");
+        
+        // })
+      }
       if (this.searchModel.TravelForm) {
         // this.searchModel.Trips = this.searchModel.TravelForm.Trips;
         this.searchModel.OrganizationId =
           this.searchModel.TravelForm.Organization &&
           this.searchModel.TravelForm.Organization.Id;
-
       }
       this.processOutNumbers();
 
@@ -489,9 +512,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           index++
         ) {
           const trip = this.searchModel.TravelForm.Trips[index];
-          if(trip.StartDate&&trip.EndDate){
-            trip.StartDate=trip.StartDate.replace("T"," ").substring(0,10);
-            trip.EndDate=trip.EndDate.replace("T"," ").substring(0,10);
+          if (trip.StartDate && trip.EndDate) {
+            trip.StartDate = trip.StartDate.replace("T", " ").substring(0, 10);
+            trip.EndDate = trip.EndDate.replace("T", " ").substring(0, 10);
           }
         }
       }
@@ -535,18 +558,27 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     //     }
     //   });
     // }
+    
     if (this.searchModel && this.searchModel.TravelForm) {
       this.searchModel.TravelForm.DayCount = this.getAllDay() + 1;
     }
-    return this.getAllDay();
+    return this.searchModel.TravelForm.DayCount;
   }
   getAllDay() {
     if (this.searchModel && this.searchModel.TravelForm && this.searchModel.TravelForm.Trips) {
-      let trips = this.searchModel.TravelForm.Trips;
-      if (trips[trips.length - 1].EndDate && trips[0].StartDate) {
-        const a1 = AppHelper.getDate(trips[trips.length - 1].EndDate.substr(0, 10)).getTime();
-        const a2 = AppHelper.getDate(trips[0].StartDate.substr(0, 10)).getTime();
-        let result = (a1 - a2) / (1000 * 60 * 60 * 24)
+      let alldate = []
+      this.searchModel.TravelForm.Trips.forEach(t => {
+        if(t.StartDate&&t.EndDate){
+          alldate.push(AppHelper.getDate(t.StartDate.substr(0, 10)).getTime());
+          alldate.push(AppHelper.getDate(t.EndDate.substr(0, 10)).getTime())
+        }
+      })
+      alldate.sort((s1, s2) =>  s1-s2 )
+      // console.log(alldate,"alldate");
+      if (alldate && alldate[alldate.length - 1] && alldate[0]) {
+        let result = (alldate[alldate.length - 1] - alldate[0]) / (1000 * 60 * 60 * 24)
+        // console.log(result,"assssss");
+        
         return result
       } else {
         return

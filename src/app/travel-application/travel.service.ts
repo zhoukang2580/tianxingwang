@@ -22,7 +22,7 @@ export class TravelService {
   constructor(private apiService: ApiService) {}
   getlist(dto: SearchModel) {
     const req = new RequestEntity();
-    req.IsShowLoading = dto.IsShowLoading;
+    req.IsShowLoading = dto&&dto.IsShowLoading;
     req.Method = `TmcApiTravelUrl-Home-List`;
     req.Data = {
       ...dto,
