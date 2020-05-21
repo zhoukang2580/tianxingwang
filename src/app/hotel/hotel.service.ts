@@ -419,11 +419,13 @@ export class HotelService {
       checkInDate = this.calendarService.generateDayModel(moment());
     }
     const data = await this.calendarService.openCalendar({
-      goArrivalTime: checkInDate.date,
+      goArrivalTime: "",
       tripType,
       isMulti: true,
       title,
       forType: FlightHotelTrainType.Hotel,
+      beginDate: this.searchHotelModel && this.searchHotelModel.checkInDate,
+      endDate: this.searchHotelModel && this.searchHotelModel.checkOutDate,
     });
     if (data) {
       if (data.length == 2) {

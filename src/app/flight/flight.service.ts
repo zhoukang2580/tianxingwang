@@ -403,11 +403,14 @@ export class FlightService {
         }
       }
     }
+    tripType = tripType || s.tripType || TripType.departureTrip;
     return this.calendarService.openCalendar({
       goArrivalTime,
-      tripType: tripType || s.tripType || TripType.departureTrip,
+      tripType,
       forType: FlightHotelTrainType.Flight,
       isMulti,
+      beginDate: tripType == TripType.departureTrip ? s.Date : "",
+      endDate: tripType == TripType.returnTrip ? s.BackDate : "",
     });
   }
 

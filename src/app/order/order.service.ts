@@ -287,6 +287,8 @@ export class OrderService {
       tripType: TripType.departureTrip,
       forType: FlightHotelTrainType.Flight,
       isMulti: false,
+      beginDate: startTime,
+      endDate: "",
     });
   }
   private getmockOrderDetail(): OrderDetailModel {
@@ -299,7 +301,7 @@ export class OrderService {
         // OrderFlightTicketStatusType.Refunded
       ];
       ticket = ticket.map((t) => {
-        if(t.Variables){
+        if (t.Variables) {
           t.VariablesJsonObj =
             t.VariablesJsonObj || JSON.parse(t.Variables) || {};
         }
@@ -320,7 +322,9 @@ export class OrderService {
       ];
       ticket = ticket.map((t) => {
         t.VariablesJsonObj =
-          t.VariablesJsonObj || (t.Variables?JSON.parse(t.Variables):null) || {};
+          t.VariablesJsonObj ||
+          (t.Variables ? JSON.parse(t.Variables) : null) ||
+          {};
         if (t.VariablesJsonObj) {
           const isShow = !statusArr.some((s) => s == t.Status);
           t.VariablesJsonObj.isShow = !t.VariablesJsonObj.IsScrap && isShow;

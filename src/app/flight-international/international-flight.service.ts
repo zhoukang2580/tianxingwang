@@ -534,6 +534,8 @@ export class InternationalFlightService {
       tripType: isFrom ? TripType.departureTrip : TripType.returnTrip,
       forType: FlightHotelTrainType.InternationalFlight,
       isMulti,
+      beginDate: goArrivalTime,
+      endDate: "",
     });
   }
   initOneWaySearModel() {

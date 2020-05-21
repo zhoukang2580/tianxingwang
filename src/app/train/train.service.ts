@@ -78,7 +78,7 @@ export class TrainService {
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
     private router: Router,
-    private popoverCtrl: PopoverController,
+    private popoverCtrl: PopoverController
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
@@ -750,6 +750,8 @@ export class TrainService {
       tripType: s.tripType || TripType.departureTrip,
       isMulti,
       forType: FlightHotelTrainType.Train,
+      beginDate: this.searchModel && this.searchModel.Date,
+      endDate: "",
     });
   }
   async getStationsAsync(forceUpdate = false): Promise<TrafficlineEntity[]> {
@@ -1275,7 +1277,7 @@ export class TrainService {
     this.setSearchTrainModelSource({
       ...this.getSearchTrainModel(),
       isLocked: false,
-      isExchange:false
+      isExchange: false,
     });
   }
 }

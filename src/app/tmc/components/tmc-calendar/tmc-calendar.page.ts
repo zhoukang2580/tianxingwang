@@ -8,8 +8,7 @@ import {
   ViewChildren,
   AfterViewInit,
 } from "@angular/core";
-import { TmcService, FlightHotelTrainType } from "../../tmc.service";
-import { ActivatedRoute } from "@angular/router";
+import { FlightHotelTrainType } from "../../tmc.service";
 import { Subscription } from "rxjs";
 import { IonInfiniteScroll, IonContent, Platform } from "@ionic/angular";
 import { AvailableDate } from "../../models/AvailableDate";
@@ -18,7 +17,7 @@ import { DayModel } from "../../models/DayModel";
 import { TripType } from "../../models/TripType";
 import { AppHelper } from "src/app/appHelper";
 import { LanguageHelper } from "src/app/languageHelper";
-import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { RefresherComponent } from "src/app/components/refresher";
 
 @Component({
   selector: "app-tmc-calendar",
@@ -36,6 +35,10 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   private timeoutId: any;
   private isSrollToCurYm = false;
   private calendarService: CalendarService;
+  private beginDate: string;
+  private endDate: string;
+  @ViewChild(RefresherComponent, { static: true })
+  refresher: RefresherComponent;
   @ViewChild(IonContent, { static: true }) content: IonContent;
   @ViewChildren("calendar") private calendareles: QueryList<
     ElementRef<HTMLElement>
@@ -67,11 +70,93 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
+  loadPreMonths() {
+    const first = this.calendars && this.calendars[0];
+    if (first) {
+      const mm = this.calendarService.getMoment(0, first.dayList[0].date);
+      for (let i = 1; ; i++) {
+        const temp = mm.clone().add(-i, "months");
+        if (+temp < new Date().getTime()) {
+          if (this.refresher) {
+            this.refresher.disabled = true;
+          }
+          break;
+        }
+        this.calendars.unshift(
+          this.calendarService.generateYearNthMonthCalendar(
+            temp.year(),
+            temp.month() + 1
+          )
+        );
+        if (this.refresher) {
+          this.refresher.complete();
+        }
+      }
+      this.checkYms();
+    }
+  }
   ngOnInit() {
     this.page = {} as any;
     const w = this.calendarService.getDayOfWeekNames();
     this.weeks = Object.keys(w).map((k) => w[k]);
-    this.initCurYearMonthCalendar();
+    this.generateCalendars();
+    this.heightLightSelectedDays();
+  }
+  private heightLightSelectedDays() {
+    console.log(
+      `heightLightSelectedDays begin=${this.beginDate},end=${this.endDate}`
+    );
+    if (this.beginDate || this.endDate) {
+      let begin = this.calendarService.generateDayModelByDate(this.beginDate);
+      if (!this.beginDate) {
+        begin = null;
+      }
+      let end = this.calendarService.generateDayModelByDate(this.endDate);
+      if (!this.endDate) {
+        end = null;
+      }
+      if (this.calendars) {
+        this.calendars.forEach((c) => {
+          if (c.dayList) {
+            c.dayList = c.dayList.map((d) => {
+              if (this.beginDate && this.endDate) {
+                if (d.date == this.beginDate) {
+                  if (
+                    this.forType == FlightHotelTrainType.Hotel ||
+                    this.forType == FlightHotelTrainType.HotelInternational
+                  ) {
+                    d.topDesc = "入住";
+                  }
+                  d.firstSelected = true;
+                }
+                if (d.date == this.endDate) {
+                  d.lastSelected = true;
+                  if (
+                    this.forType == FlightHotelTrainType.Hotel ||
+                    this.forType == FlightHotelTrainType.HotelInternational
+                  ) {
+                    d.topDesc = "离店";
+                  }
+                }
+                if (begin && end) {
+                  d.isBetweenDays =
+                    d.timeStamp > begin.timeStamp &&
+                    d.timeStamp < end.timeStamp;
+                  if (d.isBetweenDays) {
+                    d.selected = true;
+                  }
+                }
+              }
+              d.selected =
+                d.selected ||
+                d.date == this.beginDate ||
+                d.date == this.endDate;
+              return d;
+            });
+          }
+        });
+      }
+    }
   }
   ngAfterViewInit() {
     this.subscriptions.push(
@@ -96,9 +181,9 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     const scrollToMonth: string = this.calendarService
-      .getMoment(0, this.goArrivalTime)
+      .getMoment(0, this.beginDate || this.goArrivalTime)
       .format("YYYY-MM");
-    console.log("scrollToMonth", scrollToMonth);
+    console.log("scrollToMonth", scrollToMonth, this.calendars);
     const el = this.calendareles
       .toArray()
       .find((it) => it.nativeElement.getAttribute("ym") == scrollToMonth);
@@ -106,56 +191,57 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       const rect = el.nativeElement.getBoundingClientRect();
       if (rect) {
         this.isSrollToCurYm = true;
-        this.content.scrollByPoint(0, rect.top - this.plt.height() / 2, 100);
+        this.content.scrollByPoint(0, rect.top - this.plt.height() / 4, 100);
       }
     }
   }
 
-  private initCurYearMonthCalendar() {
-    const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
-    console.log(
-      "goArrivalTime",
-      this.goArrivalTime,
-      m.format("YYYY-MM-DD"),
-      "isSrollToCurYm=" + this.isSrollToCurYm
-    );
-    let st = Date.now();
-    this.generateYearCalendar();
-    console.log("生成日历耗时：" + (Date.now() - st) + " ms");
-  }
-  private generateYearCalendar() {
-    const m = this.calendarService.getMoment(0);
-    const goArrivalTime = this.calendarService
-      .getMoment(0, this.goArrivalTime)
-      .format("YYYY-MM");
+  private generateCalendars() {
     this.calendars = [];
-    let len = this.forType == FlightHotelTrainType.Train ? 2 : 6;
-    if (goArrivalTime) {
-      for (let i = 0; i < 48; i++) {
-        const m2 = m.clone().add(i, "months").format("YYYY-MM");
-        if (m2 == goArrivalTime) {
-          len = i + 3;
+    const m = this.calendarService.getMoment(0, this.beginDate || "");
+    if (this.forType != FlightHotelTrainType.Train) {
+      for (let i = 1; i <= 2; i++) {
+        const temp = m.clone().add(-i, "months");
+        if (temp.month() < new Date().getMonth()) {
           break;
         }
+        this.calendars.push(
+          this.calendarService.generateYearNthMonthCalendar(
+            temp.year(),
+            temp.month() + 1
+          )
+        );
       }
-    }
-    len = len <= 6 ? 6 : len;
-    len = this.forType == FlightHotelTrainType.Train ? 2 : len;
-    for (let i = 0; i < len; i++) {
-      const im = m.clone().add(i, "months");
-      this.calendars.push(
-        this.calendarService.generateYearNthMonthCalendar(
-          im.year(),
-          im.month() + 1
-        )
-      );
+      for (let i = 0; i <= 2; i++) {
+        const temp = m.clone().add(i, "months");
+        console.log("temp ", temp.year(), temp.month() + 1);
+        this.calendars.push(
+          this.calendarService.generateYearNthMonthCalendar(
+            temp.year(),
+            temp.month() + 1
+          )
+        );
+      }
+    } else {
+      for (let i = 0; i < 2; i++) {
+        const im = m.clone().add(i, "months");
+        this.calendars.push(
+          this.calendarService.generateYearNthMonthCalendar(
+            im.year(),
+            im.month() + 1
+          )
+        );
+      }
     }
     this.checkYms();
   }
   private checkYms() {
     const st = Date.now();
     const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
-    const goDate = m.format("YYYY-MM-DD");
+    let goDate = m.format("YYYY-MM-DD");
+    if (!this.selectedDays || !this.selectedDays.length) {
+      goDate = "";
+    }
     if (this.calendars && this.calendars.length) {
       const type = this.forType;
       if (
@@ -409,16 +495,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   back() {
     setTimeout(() => {
-      setTimeout(() => {
-        this.calendars.forEach((c) => {
-          c.dayList.forEach((d) => {
-            d.selected = false;
-            d.topDesc = "";
-            d.isBetweenDays = false;
-            d.update();
-          });
-        });
-      }, 200);
       AppHelper.modalController.getTop().then((m) => {
         if (m) {
           m.dismiss(this.selectedDays);
