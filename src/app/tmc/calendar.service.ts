@@ -74,6 +74,8 @@ export class CalendarService {
   }
   async openCalendar(data: {
     goArrivalTime: string;
+    beginDate: string;
+    endDate: string;
     title?: string;
     isMulti: boolean;
     forType: FlightHotelTrainType;

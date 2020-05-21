@@ -16,6 +16,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
+  <app-refresher slot='fixed' (ionRefresh)='loadPreMonths()'>
+    <ion-refresher-content></ion-refresher-content>
+  </app-refresher>
   <ul *ngFor='let ym of calendars;let last=last;' [attr.ym]='ym.yearMonth' class='calendar' #calendar>
     <li style="width: 100%;display: block;height: 1em;">
       <strong>{{ym.yearMonth?.substr(0,4)}}年{{ym.yearMonth?.substr(5,2)}}月</strong>

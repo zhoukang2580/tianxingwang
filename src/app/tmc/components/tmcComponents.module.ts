@@ -27,7 +27,6 @@ import { BookTmcOutnumberComponent } from "./book-tmc-outnumber/book-tmc-outnumb
 import { WaitingCheckPayComponent } from "./waiting-check-pay/waiting-check-pay.component";
 import { ShowStandardDetailsComponent } from "./show-standard-details/show-standard-details.component";
 import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-expense-types-comp.component";
-import { CalendarComponent } from "./calendar/calendar.component";
 import { TmcCalendarComponent } from "./tmc-calendar/tmc-calendar.page";
 
 @NgModule({
@@ -54,14 +53,12 @@ import { TmcCalendarComponent } from "./tmc-calendar/tmc-calendar.page";
     WaitingCheckPayComponent,
     ShowStandardDetailsComponent,
     TmcCalendarComponent,
-    CalendarComponent,
     BookExpenseTypesCompComponent,
   ],
   imports: [
     CommonModule,
     IonicModule,
     FormsModule,
-    AppDirectivesModule,
     AppComponentsModule,
     MemberPipesModule,
   ],

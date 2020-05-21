@@ -667,19 +667,21 @@ export class InternationalHotelService {
     title = "请选择入离店日期"
   ): Promise<DayModel[]> {
     let goArrivalTime = "";
-    if (typeof checkInDate == "string") {
-      goArrivalTime = this.calendarService.generateDayModelByDate(checkInDate)
-        .date;
-    }
-    if (!checkInDate) {
-      goArrivalTime = this.calendarService.getMoment().format("YYYY-MM-DD");
-    }
+    // if (typeof checkInDate == "string") {
+    //   goArrivalTime = this.calendarService.generateDayModelByDate(checkInDate)
+    //     .date;
+    // }
+    // if (!checkInDate) {
+    //   goArrivalTime = this.calendarService.getMoment().format("YYYY-MM-DD");
+    // }
     const data = await this.calendarService.openCalendar({
-      goArrivalTime,
+      goArrivalTime: "",
       tripType,
       isMulti: true,
       title,
       forType: FlightHotelTrainType.HotelInternational,
+      beginDate: this.searchConditon && this.searchConditon.checkinDate,
+      endDate: this.searchConditon && this.searchConditon.checkoutDate,
     });
     return data;
   }
