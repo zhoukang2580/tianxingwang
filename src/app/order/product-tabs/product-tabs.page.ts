@@ -584,7 +584,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       );
   }
   getTaskOrderId(task: TaskEntity) {
-    return task && task.VariablesJsonObj["OrderId"];
+    return task&&task.VariablesJsonObj && (task.VariablesJsonObj["OrderId"]||task.VariablesJsonObj["ConsumerId"]);
   }
   getTaskUrl(task: TaskEntity) {
     return task && task.VariablesJsonObj["TaskUrl"];

@@ -538,6 +538,10 @@ export class FlightService {
     flightSegment: FlightSegmentEntity
   ) {
     const isSelfBookType = await this.staffService.isSelfBookType();
+    const result = {
+      isSelfBookType,
+      isReplace: false,
+    };
     let bookInfos = this.getPassengerBookInfos();
     let s = this.getSearchFlightModel();
     if (isSelfBookType) {
@@ -614,6 +618,7 @@ export class FlightService {
       );
       let cannotArr: string[] = [];
       if (unselectBookInfos.length) {
+        result.isReplace = true;
         bookInfos = bookInfos.map((item) => {
           if (unselectBookInfos.find((it) => it.id == item.id)) {
             const info = this.getPolicyCabinBookInfo(
@@ -647,11 +652,13 @@ export class FlightService {
           LanguageHelper.getCancelTip()
         );
         if (ok) {
-          bookInfos = await this.selectAndReplaceBookInfos(
+          const res = await this.selectAndReplaceBookInfos(
             flightCabin,
             flightSegment,
             bookInfos
           );
+          result.isReplace = res.isRePlace;
+          bookInfos = res.bookInfos;
         }
       }
     }
@@ -663,6 +670,7 @@ export class FlightService {
       return item;
     });
     this.setPassengerBookInfosSource(arr);
+    return result;
   }
   checkIfCabinIsAllowBook(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>,
@@ -681,6 +689,10 @@ export class FlightService {
     flightSegment: FlightSegmentEntity,
     bookInfos: PassengerBookInfo<IFlightSegmentInfo>[]
   ) {
+    const processResult = {
+      isRePlace: false,
+      bookInfos,
+    };
     const m = await this.modalCtrl.create({
       component: SelectAndReplacebookinfoComponent,
       componentProps: {
@@ -700,6 +712,7 @@ export class FlightService {
     const data =
       result && (result.data as PassengerBookInfo<IFlightSegmentInfo>[]);
     if (data && data.length) {
+      processResult.isRePlace = true;
       const cannotArr: string[] = [];
       for (let i = 0; i < data.length; i++) {
         const item = data[i];
@@ -732,7 +745,8 @@ export class FlightService {
       }
       return it;
     });
-    return bookInfos;
+    processResult.bookInfos = bookInfos;
+    return processResult;
   }
   getPolicyCabinBookInfo(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>,
