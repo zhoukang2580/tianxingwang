@@ -70,11 +70,17 @@ ng serve --disableHostCheck
 2. 将其值修改对应的appid即可
 ## ios 发布app说明
 执行命令前，先到config.xml修改版本号
-1. 首先执行 `sudo ionic cordova build ios --prod`
-2. 用 xcode 打开 platforms/ios/项目
+0. 确定打包的环境变量值，environment里面的测试/生产环境，environment.prod.ts
+1. 首先执行 `sudo ionic cordova build ios --prod --release`
+2. 用 xcode 打开 platforms/ios/项目名称.xcodeproj/项目名称.xcworkspace
 3. 到xcode target 的选项卡中打开 info，修改打包的bundle identifier为： `com.eskytrip.zhaozuomingios`，如果要修改微信appid ,修改最底下的url types 的schema `https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5`,位置访问，需要在info标签下面新增 key =`Privacy - Location Always Usage Description`和`Privacy - Location Usage Description`
 4. 执行archive打包，传到iTunes,提交审核
-
+## 热更新打包
+1. 确定环境变量
+2. 执行打包命令
+3. 如果发现命令行出现 ARCHIVE FAILED 的提示，则需要手动生成一个md5值
+  a. 到项目目录下面的scripts文件夹，右键，命令行中打开
+  b. 执行 `node hashfile.js` 命令，即可看到项目目录下面有个文件，包名.ios.zip的文件，就是热更新的zip文件
 ## 旧版本Android 微信配置
 1. AppID：wx58e8910e60cd69ac
 2. com.dmonline.v2
