@@ -461,7 +461,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           return;
         }
       }
-      if (this.tmc && this.tmc.OutNumberNameArray) {
+      if (this.tmc && this.tmc.OutNumberNameArray&&this.tmc.OutNumberRequiryNameArray) {
         console.log(this.tmc.OutNumberNameArray, "this.tmc.OutNumberNameArray");
         console.log(this.tmc.OutNumberRequiryNameArray, " this.tmc.OutNumberRequiryNameArray");
         for (let index = 0; index < this.tmc.OutNumberRequiryNameArray.length; index++) {
@@ -486,6 +486,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         queryParams: { doRefresh: true },
       });
     } catch (e) {
+      console.error(e);
+      
       AppHelper.alert(e);
     }
   }

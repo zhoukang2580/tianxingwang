@@ -36,6 +36,7 @@ export class BookCredentialCompComponent
   @Input() canMaintainCredentials;
   @Input() canEdit;
   isModified = false;
+  credentialsType:CredentialsType;
   @ViewChild(IonSelect) ionSelect: IonSelect;
   constructor(private router: Router) {
     this.savecredential = new EventEmitter();
@@ -59,9 +60,17 @@ export class BookCredentialCompComponent
   onMaintainCredentials() {
     this.managementCredentials.emit();
   }
+  addCredential(){
+    this.router.navigate(["member-credential-management"], {
+      queryParams: { addNew: true },
+    });
+  }
   onSave() {
     this.savecredential.emit(this.credential);
     console.log(this.credential,"qdjleijdeldelidjiw");
+    // if(this.credential.TypeName==this.credentialsType){
+
+    // }
   }
   async ngOnInit() {
  
