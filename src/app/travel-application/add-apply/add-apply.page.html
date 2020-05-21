@@ -35,9 +35,10 @@
       </ion-input>
     </ion-item>
 
-    <app-add-stroke [regionTypes]='vmRegionTypes'[TravelApprovalContent]="vmTravelApprovalContent" [international]='international' [domestic]='domestic'  [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx'
-      *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;" [index]="idx" [trip]='item'
-      (remove)='onRemoveTrip($event)'></app-add-stroke>
+    <app-add-stroke [regionTypes]='vmRegionTypes' [TravelApprovalContent]="vmTravelApprovalContent"
+      [international]='international' [domestic]='domestic' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable"
+      [pass]="pass" [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"
+      [index]="idx" [trip]='item' (remove)='onRemoveTrip($event)'></app-add-stroke>
     <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()"
       *ngIf="enable">
       <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
@@ -47,7 +48,8 @@
       <ion-text [color]="!enable?'dark':'dark'">
         出差天数统计
       </ion-text>
-      <ion-label slot="end" class="ion-text-end" [color]="!enable?'medium':'dark'" *ngIf="searchModel?.TravelForm?.DayCount">
+      <ion-label slot="end" class="ion-text-end" [color]="!enable?'medium':'dark'"
+        *ngIf="searchModel?.TravelForm?.DayCount">
         {{searchModel?.TravelForm?.DayCount}}
       </ion-label>
     </ion-item>
@@ -67,12 +69,15 @@
     </ion-item>
     <ion-item *ngIf="tmc?.OutNumberNameArray?.length>0">
       <div style="width: 100%;">
-        <div *ngFor="let item of tmc?.OutNumberNameArray" [attr.OutNumberName]='item' style="display:flex;justify-content: center;
-        align-items: center;">
-          <ion-label>{{item}}</ion-label>
-          <ion-input placeholder="请输入{{item}}" style="max-width: initial;flex: 3; text-align: end;"
-            [(ngModel)]="outNumbers[item]" [color]="!enable?'medium':'dark'" [disabled]="!enable"></ion-input>
-        </div>
+        <ion-row *ngFor="let item of tmc?.OutNumberNameArray"style="justify-content: center;
+        align-items: center;
+        display: flex !important;">
+          <ion-col>{{item}}</ion-col>
+          <ion-col  [attr.OutNumberName]='item'>
+            <ion-input placeholder="请输入{{item}}" style="max-width: initial;flex: 3; text-align: end;"
+              [(ngModel)]="outNumbers[item]" [color]="!enable?'medium':'dark'" [disabled]="!enable"></ion-input>
+          </ion-col>
+        </ion-row>
       </div>
     </ion-item>
     <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType==TravelApprovalType.Free&&enable"
@@ -99,7 +104,7 @@
           </div>
           <div style="display: flex;">
             <label>审批人:</label>
-         
+
             <ion-label color="medium">{{h?.Account?.RealName}}</ion-label>
           </div>
           <div style="display: flex;">
