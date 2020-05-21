@@ -65,7 +65,8 @@
           <li *ngFor='let trip of myTrips' (click)='goToDetailPage(trip.OrderId,orderModel.Type)'>
             <ng-container [ngSwitch]='trip.Type'>
               <ng-container *ngSwitchCase='"Flight"'>
-                <app-flight-trip  [trip]="trip" *ngIf="!(trip.VariablesJsonObj&&trip.VariablesJsonObj.IsCustomApplyRefund)"></app-flight-trip>
+                <app-flight-trip [trip]="trip"
+                  *ngIf="!(trip.VariablesJsonObj&&trip.VariablesJsonObj.IsCustomApplyRefund)"></app-flight-trip>
               </ng-container>
               <app-train-trip *ngSwitchCase='"Train"' [trip]="trip"></app-train-trip>
               <app-hotel-trip *ngSwitchCase='"Hotel"' [trip]="trip"></app-hotel-trip>
@@ -93,8 +94,13 @@
                 <ion-text class='ion-text-wrap' *ngIf='getTaskUrl(task) as url else labelTemp' color='secondary'>
                   {{task.Name}}</ion-text>
               </h3>
-              <h4>
-                订单号：{{getTaskOrderId(task)}}
+              <h4 *ngIf='task?.VariablesJsonObj' style="user-select: text;">
+                <ng-container *ngIf='task.VariablesJsonObj["ConsumerId"]'>
+                  编号：{{getTaskOrderId(task)}}
+                </ng-container>
+                <ng-container *ngIf='task.VariablesJsonObj["OrderId"]'>
+                  订单号：{{getTaskOrderId(task)}}
+                </ng-container>
               </h4>
               <h4>
                 发起时间： {{task.InsertTime}}

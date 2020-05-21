@@ -245,8 +245,13 @@ export class FlightListPage
               this.flightService.checkIfCabinIsAllowBook(info, it, s)
           );
         if (cabin) {
-          await this.flightService.addOrReplaceSegmentInfo(cabin, s);
-          this.onShowSelectedInfos();
+          const res = await this.flightService.addOrReplaceSegmentInfo(
+            cabin,
+            s
+          );
+          if (res.isReplace || res.isSelfBookType) {
+            this.onShowSelectedInfos();
+          }
         } else {
           AppHelper.alert("超标不可预订");
           s["disabled"] = true;

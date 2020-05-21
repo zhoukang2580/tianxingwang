@@ -54,6 +54,6 @@ export class SelectAndReplacebookinfoComponent implements OnInit {
   }
   onCancel() {
     this.selectedItems = [];
-    this.back();
+    this.modal.dismiss(this.selectedItems);
   }
 }

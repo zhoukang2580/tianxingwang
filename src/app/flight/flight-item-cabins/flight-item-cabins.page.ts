@@ -146,6 +146,7 @@ export class FlightItemCabinsPage implements OnInit {
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
     const bookInfos = this.flightService.getPassengerBookInfos();
+    let isShowPage = false;
     if (bookInfos[0]) {
       if (!bookInfos[0].exchangeInfo) {
         if (
@@ -187,10 +188,11 @@ export class FlightItemCabinsPage implements OnInit {
             return;
           }
         }
-        await this.flightService.addOrReplaceSegmentInfo(
+        const res = await this.flightService.addOrReplaceSegmentInfo(
           flightCabin,
           this.vmFlightSegment
         );
+        isShowPage = res.isReplace || res.isSelfBookType;
       } else {
         const info = {
           flightSegment: this.vmFlightSegment,
@@ -205,7 +207,9 @@ export class FlightItemCabinsPage implements OnInit {
         bookInfos[0].bookInfo = info;
         this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
       }
-      await this.onShowSelectedInfosPage();
+      if (isShowPage) {
+        await this.onShowSelectedInfosPage();
+      }
     }
   }
   async filterPolicyFlights() {
