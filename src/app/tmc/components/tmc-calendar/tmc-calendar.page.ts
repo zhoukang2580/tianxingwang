@@ -26,7 +26,6 @@ import { RefresherComponent } from "src/app/components/refresher";
 })
 export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
-  private page: { m: number; y: number };
   private delayBackTime = 200;
   private forType: FlightHotelTrainType;
   private goArrivalTime: string;
@@ -96,7 +95,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngOnInit() {
-    this.page = {} as any;
     const w = this.calendarService.getDayOfWeekNames();
     this.weeks = Object.keys(w).map((k) => w[k]);
     this.generateCalendars();
@@ -190,42 +188,37 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       .find((it) => it.nativeElement.getAttribute("ym") == scrollToMonth);
     if (el && el.nativeElement) {
       const rect = el.nativeElement.getBoundingClientRect();
-      if (rect) {
+      if (rect && rect.top) {
         this.isSrollToCurYm = true;
-        this.content.scrollByPoint(0, rect.top - this.plt.height() / 4, 100);
+        const delta = rect.top - this.plt.height() / 3;
+        console.log("delta ", delta, rect);
+        this.content.scrollByPoint(0, delta, 100);
       }
     }
   }
 
   private generateCalendars() {
     this.calendars = [];
-    let m = this.calendarService.getMoment(
+    const m = this.calendarService.getMoment(
       0,
       this.beginDate || this.endDate || ""
     );
     if (this.forType != FlightHotelTrainType.Train) {
-      for (let i = 1; i <= 2; i++) {
-        const temp = m.clone().add(-i, "months");
-        if (temp.month() < new Date().getMonth()) {
-          break;
-        }
-        this.calendars.push(
-          this.calendarService.generateYearNthMonthCalendar(
-            temp.year(),
-            temp.month() + 1
-          )
-        );
-      }
-      const last = this.calendars && this.calendars[this.calendars.length - 1];
-      if (last) {
-        m = this.calendarService.getMoment(
-          0,
-          last.dayList[last.dayList.length - 1].date
-        );
-      }
-      for (let i = 0; i <= 2; i++) {
+      // for (let i = 1; i <= 2; i++) {
+      //   const temp = m.clone().add(-i, "months");
+      //   if (+temp < new Date().getTime()) {
+      //     break;
+      //   }
+      //   this.calendars.push(
+      //     this.calendarService.generateYearNthMonthCalendar(
+      //       temp.year(),
+      //       temp.month() + 1
+      //     )
+      //   );
+      // }
+      for (let i = 0; i < 2; i++) {
         const temp = m.clone().add(i, "months");
-        console.log("temp ", temp.year(), temp.month() + 1);
+        console.log("temp ", temp.year(), temp.month() + 1,this.beginDate,this.endDate);
         this.calendars.push(
           this.calendarService.generateYearNthMonthCalendar(
             temp.year(),
@@ -485,8 +478,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       .map((it) => +it);
     const result: AvailableDate[] = [];
     let nextM = m;
-    this.page.m = m;
-    this.page.y = y;
     for (let i = 1; i <= 3; i++) {
       nextM = ++nextM;
       if (nextM > 12) {
