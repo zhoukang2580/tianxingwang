@@ -463,6 +463,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
     if (order.Status == OrderStatusType.WaitHandle) {
       return false;
     }
+    if (order.Status == OrderStatusType.WaitPay) {
+      return true;
+    }
     let rev =
       order.PayAmount < order.TotalAmount &&
       (order.VariablesJsonObj["TravelPayType"] == OrderTravelPayType.Credit ||
@@ -496,6 +499,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
           it.Status == OrderTrainTicketStatusType.BookExchanging
       ).length > 0;
     return rev;
+
   }
   getTotalAmount(order: OrderEntity, key: string) {
     let amount = 0;
