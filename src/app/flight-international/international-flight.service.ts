@@ -534,7 +534,13 @@ export class InternationalFlightService {
       tripType: isFrom ? TripType.departureTrip : TripType.returnTrip,
       forType: FlightHotelTrainType.InternationalFlight,
       isMulti,
-      beginDate: goArrivalTime,
+      beginDate:
+        goArrivalTime ||
+        (this.searchModel &&
+          this.searchModel.trips &&
+          this.searchModel.trips[0] &&
+          this.searchModel.trips[0].date) ||
+        "",
       endDate: "",
     });
   }
