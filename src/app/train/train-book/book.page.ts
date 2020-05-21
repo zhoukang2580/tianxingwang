@@ -73,6 +73,7 @@ import { PayService } from "src/app/services/pay/pay.service";
 import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
+import { CredentialsType } from 'src/app/member/pipe/credential.pipe';
 
 @Component({
   selector: "app-train-book",
@@ -105,6 +106,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
+  CredentialsType=CredentialsType;
   constructor(
     private trainService: TrainService,
     private storage: Storage,

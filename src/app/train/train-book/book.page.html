@@ -41,22 +41,27 @@
           <ion-item-divider>旅客信息：</ion-item-divider>
           <ion-item [disabled]='searchTrainModel?.isExchange'>
             <div style='width: 100%'>
-              <app-book-credential-comp [attr.credentialcompid]='combindInfo.id' [credential]='combindInfo?.vmCredential'
-                *ngIf='!searchTrainModel?.isExchange else excredentialTemp'
+              <app-book-credential-comp [attr.credentialcompid]='combindInfo.id'
+                [credential]='combindInfo?.vmCredential' *ngIf='!searchTrainModel?.isExchange else excredentialTemp'
+                [canEdit]='true' [canEditNumber]='false'
+                [canEditSurname]='combindInfo?.vmCredential.Type==CredentialsType.HvPass||combindInfo?.vmCredential.Type==CredentialsType.Taiwan'
+                [canEditName]='combindInfo?.vmCredential.Type==CredentialsType.HvPass||combindInfo?.vmCredential.Type==CredentialsType.Taiwan'
                 (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'
                 (modify)='onModify(combindInfo)'>
               </app-book-credential-comp>
               <ng-template #excredentialTemp>
-                <app-book-credential-comp [attr.credentialcompid]='combindInfo.id' [credential]='combindInfo?.vmCredential' [isExchange]='true'
-                  (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'>
+                <app-book-credential-comp [attr.credentialcompid]='combindInfo.id' [canEdit]='false' 
+                  [credential]='combindInfo?.vmCredential' (savecredential)='onSavecredential($event,combindInfo)'
+                  [credentials]='combindInfo?.credentials'>
                 </app-book-credential-comp>
               </ng-template>
             </div>
           </ion-item>
           <ion-item *ngIf='combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist'>
             <div style='width: 100%'>
-              <app-book-illegal-reason-comp   [attr.illegalReasonid]='combindInfo.id' #illegalReasonsEle [illegalReasons]='viewModel?.illegalReasons'
-                [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
+              <app-book-illegal-reason-comp [attr.illegalReasonid]='combindInfo.id' #illegalReasonsEle
+                [illegalReasons]='viewModel?.illegalReasons' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
+                (ionchange)='onIllegalReason($event,combindInfo)'>
               </app-book-illegal-reason-comp>
             </div>
           </ion-item>
@@ -155,7 +160,7 @@
             </ion-radio-group>
           </ion-item-group>
         </ng-container>
-        <ion-item-group *ngIf="isShowApprove(combindInfo)" >
+        <ion-item-group *ngIf="isShowApprove(combindInfo)">
           <ion-item-divider>
             审批人:
           </ion-item-divider>
@@ -212,7 +217,8 @@
               </ion-item>
             </ng-container>
             <ng-template #exApproval>
-              <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' disabled [attr.approvalid]='combindInfo.id'>
+              <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' disabled
+                [attr.approvalid]='combindInfo.id'>
                 <ion-label>
                   审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
                     {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
@@ -221,7 +227,7 @@
               </ion-item>
             </ng-template>
           </ion-item-group>
-          <ion-item-group >
+          <ion-item-group>
             <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
               [isExchange]='searchTrainModel?.isExchange' [isShowGroupedInfo]='true'
               (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>

@@ -26,7 +26,7 @@ import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 export class BookCredentialCompComponent
   implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
-  @Input() isExchange: boolean;
+  // @Input() isExchange: boolean;
   @Input() credential: CredentialsEntity;
   @Input() credentials: CredentialsEntity[];
   // @Input() isFlightTrainHotel: "flight" | "train" | "hotel";
@@ -34,9 +34,12 @@ export class BookCredentialCompComponent
   @Output() modify: EventEmitter<any>;
   @Output() managementCredentials: EventEmitter<any>;
   @Input() canMaintainCredentials;
-  @Input() canEdit;
+  @Input() canEditName;
+  @Input() canEditSurname;
+  @Input() canEditNumber = false;
+  @Input() canEdit =true;
   isModified = false;
-  credentialsType:CredentialsType;
+  CredentialsType = CredentialsType;
   @ViewChild(IonSelect) ionSelect: IonSelect;
   constructor(private router: Router) {
     this.savecredential = new EventEmitter();
@@ -49,7 +52,7 @@ export class BookCredentialCompComponent
     );
   }
   onModify() {
-    if (this.isExchange) {
+    if (!this.canEdit) {
       return;
     }
     this.isModified = !this.isModified;
@@ -60,23 +63,24 @@ export class BookCredentialCompComponent
   onMaintainCredentials() {
     this.managementCredentials.emit();
   }
-  addCredential(){
+  addCredential() {
+    if (!this.canEdit) {
+      return;
+    }
     this.router.navigate(["member-credential-management"], {
       queryParams: { addNew: true },
     });
   }
   onSave() {
     this.savecredential.emit(this.credential);
-    console.log(this.credential,"qdjleijdeldelidjiw");
-    // if(this.credential.TypeName==this.credentialsType){
-
+    console.log(this.credential.Type, "qdjleijdeldelidjiw");
+    // if(this.credential.Type==CredentialsType.HvPass||this.credential.Type==CredentialsType.Taiwan){
+    //   debugger
+    //   this.canEdit=true;
+    //   this.isShowDisable=true
     // }
   }
   async ngOnInit() {
- 
-    // this.isModified=true
-    // this.isFlightTrainHotel = "train";
-    // this.isSelf = await this.staffService.isSelfBookType();
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -89,10 +93,7 @@ export class BookCredentialCompComponent
     }
   }
   openSelect() {
-    if (this.isExchange) {
-      return;
-    }
-    if (!this.isModified) {
+    if (!this.canEdit) {
       AppHelper.alert("请先点击修改");
       return;
     }
