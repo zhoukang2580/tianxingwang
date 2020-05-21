@@ -133,6 +133,10 @@
             <ion-text color='secondary'>
               （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
             </ion-text>
+            <ng-container *ngIf='order["checkPay"]'>
+              <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
+              </ion-button>
+            </ng-container>
           </ion-col>
           <!-- <ion-col class='ion-text-end' *ngIf='check(orderTrainTicket)' size='3'>
             <ion-col style="justify-content: flex-end;">
