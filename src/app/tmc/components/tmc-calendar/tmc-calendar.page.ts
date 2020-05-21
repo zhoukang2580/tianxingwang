@@ -101,6 +101,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     this.weeks = Object.keys(w).map((k) => w[k]);
     this.generateCalendars();
     this.heightLightSelectedDays();
+    this.checkYms();
   }
   private heightLightSelectedDays() {
     console.log(
@@ -169,7 +170,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       if (!this.isSrollToCurYm) {
         setTimeout(() => {
           this.moveToCurMonth();
-        }, 500);
+        }, 16 * this.calendars.length);
       }
     }, 100);
   }
@@ -198,7 +199,10 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private generateCalendars() {
     this.calendars = [];
-    const m = this.calendarService.getMoment(0, this.beginDate || "");
+    let m = this.calendarService.getMoment(
+      0,
+      this.beginDate || this.endDate || ""
+    );
     if (this.forType != FlightHotelTrainType.Train) {
       for (let i = 1; i <= 2; i++) {
         const temp = m.clone().add(-i, "months");
@@ -210,6 +214,13 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
             temp.year(),
             temp.month() + 1
           )
+        );
+      }
+      const last = this.calendars && this.calendars[this.calendars.length - 1];
+      if (last) {
+        m = this.calendarService.getMoment(
+          0,
+          last.dayList[last.dayList.length - 1].date
         );
       }
       for (let i = 0; i <= 2; i++) {
@@ -233,15 +244,14 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
         );
       }
     }
-    this.checkYms();
   }
   private checkYms() {
     const st = Date.now();
     const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
-    let goDate = m.format("YYYY-MM-DD");
-    if (!this.selectedDays || !this.selectedDays.length) {
-      goDate = "";
-    }
+    const goDate = m.format("YYYY-MM-DD");
+    // if (!this.selectedDays || !this.selectedDays.length) {
+    //   goDate = "";
+    // }
     if (this.calendars && this.calendars.length) {
       const type = this.forType;
       if (
