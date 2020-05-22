@@ -58,7 +58,7 @@
     </ng-template>
   </ng-container>
   <ng-template #addTempl>
-    <ion-radio-group value="{{selectedCredentialId}}">
+    <ion-radio-group value="{{selectedCredentialId}}" [allowEmptySelection]="true">
       <ion-list>
         <ng-container *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
           <ng-container *ngIf='item!=vmNewCredential'>
@@ -66,10 +66,11 @@
               <ion-label>
                 {{item.Type|credential}}
               </ion-label>
-              <ion-radio slot='end' name='credentialType' class="ion-margin-end" value="{{item.Id}}">
+              <ion-radio slot='end' name='credentialType' mode='md' class="ion-margin-end" value="{{item.Id}}">
               </ion-radio>
             </ion-item-divider>
-            <ion-item lines='none' (click)='onSelectCredential(item.Id)'>
+            <ion-item lines='none' (click)='onSelectCredential(item.Id)' [@flyInOut] 
+            *ngIf='selectedCredentialId ==item.Id'>
               <div class='credential-item'>
                 <ion-row>
                   <ion-col>

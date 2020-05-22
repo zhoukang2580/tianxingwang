@@ -171,7 +171,7 @@ export class MemberService {
     c.Givenname = c.Givenname && c.Givenname.toUpperCase();
     c.Number = c.Number && c.Number.toUpperCase();
     const ok = await AppHelper.alert(
-      `请确认您的证件姓名：${c.Surname}${c.Givenname},证件号码：${c.Number}`,
+      `请确认您的证件姓名：${c.Surname}/${c.Givenname},证件号码：${c.Number}`,
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
