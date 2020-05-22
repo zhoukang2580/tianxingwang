@@ -269,13 +269,12 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       );
   }
   back() {
-    this.backbtn.popToPrePage();
+    this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
   }
   private getVariablesJsonObj(trip: OrderTripModel) {
     if (!trip) {
       return trip;
     }
-    // <ng-container *ngIf="trip.VariablesJsonObj.IsCustomApplyRefund||trip.VariablesJsonObj.IsCustomApplyExchange||trip.Status!= OrderFlightTicketStatusType.Refunded">
     trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables);
     return trip;
   }
@@ -584,7 +583,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       );
   }
   getTaskOrderId(task: TaskEntity) {
-    return task&&task.VariablesJsonObj && (task.VariablesJsonObj["OrderId"]||task.VariablesJsonObj["ConsumerId"]);
+    return (
+      task &&
+      task.VariablesJsonObj &&
+      (task.VariablesJsonObj["OrderId"] || task.VariablesJsonObj["ConsumerId"])
+    );
   }
   getTaskUrl(task: TaskEntity) {
     return task && task.VariablesJsonObj["TaskUrl"];
