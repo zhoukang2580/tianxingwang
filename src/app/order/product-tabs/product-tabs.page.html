@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button isBackHome='true' defaultHref=""></app-back-button>
+      <app-back-button isBackHome='true' defaultHref="" [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title>{{title}}</ion-title>
     <ion-buttons slot='end'>
