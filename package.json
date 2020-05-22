@@ -114,7 +114,6 @@
       "cordova-plugin-statusbar": {},
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-console": {},
-      "cordova-ali-plugin": {},
       "cordova-plugin-add-swift-support": {},
       "cordova-plugin-app-version": {},
       "cordova-plugin-device": {},
@@ -131,7 +130,8 @@
       "cordova-plugin-android-permissions": {},
       "cordova-qrscanner-plugin": {},
       "cordova-wechat-plugin": {},
-      "cordova-hcp-plugin": {}
+      "cordova-hcp-plugin": {},
+      "cordova-ali-plugin": {}
     },
     "platforms": [
       "android",

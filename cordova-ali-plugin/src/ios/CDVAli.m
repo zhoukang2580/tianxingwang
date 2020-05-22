@@ -65,7 +65,7 @@ CDVInvokedUrlCommand *cdvCommand;
           [self sendErrorResult:@"Not Installed" :command];
         return;
     }
-    [self sendErrorResult:@"Ok" :command];
+    [self sendSuccessStringResult:@"Ok" :command];
 }
 
 - (void)handleOpenURL:(NSNotification *)notification{

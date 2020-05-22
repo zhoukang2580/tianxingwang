@@ -9,9 +9,9 @@ exports.isAlipayAppInstalled = (appName) => {
   })
 }
 exports.pay = function (arg0) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     exec(
-      function (resource) {
+      resource => {
         console.log("ali pay" + (typeof resource === "string" ? resource : JSON.stringify(resource)));
         // console.log(`ali resource`,resource);
         // if(resource.result&&typeof resource.result==='string'){
@@ -19,7 +19,7 @@ exports.pay = function (arg0) {
         // }
         resolve(resource);
       },
-      function (error) {
+      error => {
         reject(error);
       },
       "Ali",
