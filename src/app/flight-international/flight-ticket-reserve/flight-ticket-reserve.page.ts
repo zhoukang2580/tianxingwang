@@ -89,6 +89,7 @@ export class FlightTicketReservePage
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
   private checkPayCountIntervalId: any;
+  isNotWihte=true;
   FlightVoyageType = FlightVoyageType;
   searchModel: IInternationalFlightSearchModel;
   travelForm: TravelFormEntity;
@@ -179,6 +180,7 @@ export class FlightTicketReservePage
         console.log("是否可以跳过审批", can);
       })
     );
+    
     this.refresh(false);
   }
   private async initOrderTravelPayTypes() {
@@ -1116,6 +1118,8 @@ export class FlightTicketReservePage
         item.bookInfo.passenger.AccountId,
       ]);
       const credentials = res && res[item.bookInfo.passenger.AccountId];
+      item.bookInfo.isNotWhitelist
+      
       item.credentials = credentials;
       // if (credentials.length) {
       //   const exist = item.credentials[0];
@@ -1592,7 +1596,7 @@ export class FlightTicketReservePage
             it.bookInfo.flightRoute &&
             it.bookInfo.flightRoute.selectFlightFare &&
             it.bookInfo.flightRoute.selectFlightFare.policy &&
-            it.bookInfo.flightRoute.selectFlightFare.policy.Message
+            !!it.bookInfo.flightRoute.selectFlightFare.policy.Message
         )
     ) {
       return true;

@@ -37,6 +37,7 @@ export class BookCredentialCompComponent
   @Input() canEditName;
   @Input() canEditSurname;
   @Input() canEditNumber = false;
+  @Input() isNotWihte;
   @Input() canEdit =true;
   isModified = false;
   CredentialsType = CredentialsType;
@@ -73,7 +74,7 @@ export class BookCredentialCompComponent
   }
   onSave() {
     this.savecredential.emit(this.credential);
-    console.log(this.credential.Type, "qdjleijdeldelidjiw");
+    // console.log(this.credential.Type, "qdjleijdeldelidjiw");
     // if(this.credential.Type==CredentialsType.HvPass||this.credential.Type==CredentialsType.Taiwan){
     //   debugger
     //   this.canEdit=true;
@@ -81,6 +82,10 @@ export class BookCredentialCompComponent
     // }
   }
   async ngOnInit() {
+    // console.log(this.isNotWihte,"this.isNotWihte");  
+    if(this.isNotWihte){
+      this.canEdit=false;
+    }
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();

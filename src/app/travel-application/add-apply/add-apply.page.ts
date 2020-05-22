@@ -446,6 +446,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
               trip.StartDate = trip.StartDate.replace("T", " ").substring(0, 10);
               trip.EndDate = trip.EndDate.replace("T", " ").substring(0, 10);
             }
+            // this.searchModel.TravelForm.Trips.some()
           }
         }
       }
