@@ -1,28 +1,28 @@
 var exec = require('cordova/exec');
 
-exports.getCode = (appId, universalLink) => {
-    return new Promise((resolve, reject) => {
-        exec(openId => {
+exports.getCode = function (appId, universalLink) {
+    return new Promise(function (resolve, reject) {
+        exec(function (openId) {
             resolve(openId);
-        }, error => {
+        }, function (error) {
             reject(error)
         }, 'Wechat', 'getCode', [appId, universalLink]);
     });
 };
-exports.isWXAppInstalled = (appId) => {
-    return new Promise((resolve, reject) => {
-        exec((res) => {
+exports.isWXAppInstalled = function (appId) {
+    return new Promise(function (resolve, reject) {
+        exec(function (res) {
             resolve(res);
-        }, error => {
+        }, function (error) {
             reject(error)
         }, 'Wechat', 'isWXAppInstalled', [appId]);
     })
 }
-exports.pay = (payInfo, universalLink) => {
-    return new Promise((resolve, reject) => {
-        exec(() => {
+exports.pay = function (payInfo, universalLink) {
+    return new Promise(function (resolve, reject) {
+        exec(function () {
             resolve();
-        }, error => {
+        }, function (error) {
             reject(error)
         }, 'Wechat', 'pay', [payInfo, universalLink]);
     });

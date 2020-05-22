@@ -48,6 +48,13 @@ export class PayService {
     let result = false;
     const messages: IPayMessage[] = [];
     if (AppHelper.isApp()) {
+      const isAlipayAppInstalled = await AppHelper.isAliPayAppInstalled();
+      if (!isAlipayAppInstalled) {
+        result = true;
+        req.Data.CreateType = "Mobile";
+        this.payMobile(req, path);
+        return;
+      }
       req.IsShowLoading = true;
       req.Data.DataType = "json";
       req.Data.CreateType = "App";
@@ -89,17 +96,23 @@ export class PayService {
     }
     return result;
   }
-  wechatpay(req: RequestEntity, path: string) {
+  async wechatpay(req: RequestEntity, path: string) {
     if (
       AppHelper.isApp() ||
       AppHelper.isWechatMini() ||
       AppHelper.isWechatH5()
     ) {
-      req.Data.OpenId =AppHelper.isWechatMini()?WechatHelper.getMiniOpenId(): WechatHelper.getOpenId();
+      req.Data.OpenId = AppHelper.isWechatMini() ? WechatHelper.getMiniOpenId() : WechatHelper.getOpenId();
       req.IsShowLoading = true;
       if (AppHelper.isApp()) {
         req.Data.CreateType = "App";
         req.Data.DataType = "json";
+        const isWecahtInstalled = await AppHelper.isWXAppInstalled().then(() => true).catch(() => false);
+        if (!isWecahtInstalled) {
+          req.Data.CreateType = "Mobile";
+          this.payMobile(req, path);
+          return;
+        }
       }
       else if (AppHelper.isWechatMini()) {
         req.Data.CreateType = "Mini";
@@ -200,15 +213,15 @@ export class PayService {
   payMobile(req: RequestEntity, path: string) {
     let url =
       AppHelper.getApiUrl() +
-      "/home/Pay?ticket="+AppHelper.getTicket()+"&path=" +
+      "/home/Pay?ticket=" + AppHelper.getTicket() + "&path=" +
       encodeURIComponent(
         AppHelper.getRedirectUrl() +
-          "?path=" +
-          path +
-          "&ticket=" +
-          AppHelper.getTicket() +
-          "&openid" +
-          (WechatHelper.getOpenId() || "")
+        "?path=" +
+        path +
+        "&ticket=" +
+        AppHelper.getTicket() +
+        "&openid" +
+        (WechatHelper.getOpenId() || "")
       );
     for (let r in req) {
       url +=

@@ -55,6 +55,19 @@ CDVInvokedUrlCommand *cdvCommand;
         }
     }];
 }
+-(void) isAlipayAppInstalled:(CDVInvokedUrlCommand *)command{
+    NSURL * myURL_APP_A = [NSURL URLWithString:@"alipay:"];
+    NSString *alipay =[command argumentAtIndex:0];
+    if(alipay!=nil&&[alipay length]>0){
+        myURL_APP_A=[NSURL URLWithString:alipay];
+    }
+    if (![[UIApplication sharedApplication] canOpenURL:myURL_APP_A]) {        //如果没有安装支付宝客户端那么需要安装
+          [self sendErrorResult:@"Not Installed" :command];
+        return;
+    }
+    [self sendErrorResult:@"Ok" :command];
+}
+
 - (void)handleOpenURL:(NSNotification *)notification{
     NSURL* url = [notification object];
     if ([url.host isEqualToString:@"safepay"]) {
