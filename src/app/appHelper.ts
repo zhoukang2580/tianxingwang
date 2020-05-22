@@ -360,7 +360,7 @@ export class AppHelper {
     await AppHelper.platform.ready();
     const wechat = window["wechat"];
     if (wechat) {
-      return wechat.getCode(appId);
+      return wechat.getCode(appId,"https://app." + this._appDomain);
     }
     return Promise.reject("cordova wechat plugin is unavailable");
   }
@@ -370,6 +370,16 @@ export class AppHelper {
       const appId = await AppHelper.getWechatAppId();
       return window["wechat"]
         .isWXAppInstalled(appId)
+        .then(() => true)
+        .catch(() => false);
+    }
+    return false;
+  }
+  static async isAliPayAppInstalled() {
+    await AppHelper.platform.ready();
+    if (window["ali"]) {
+      return window["ali"]
+        .isAlipayAppInstalled()
         .then(() => true)
         .catch(() => false);
     }

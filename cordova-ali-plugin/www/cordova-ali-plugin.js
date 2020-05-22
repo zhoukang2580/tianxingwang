@@ -1,9 +1,17 @@
 var exec = require("cordova/exec");
-
-exports.pay = function (arg0) {
+exports.isAlipayAppInstalled = (appName) => {
   return new Promise((resolve, reject) => {
+      exec(function(res) {
+          resolve(res);
+      }, function(error) {
+          reject(error)
+      }, 'Ali', 'isAlipayAppInstalled', [appName]);
+  })
+}
+exports.pay = function (arg0) {
+  return new Promise(function (resolve, reject) {
     exec(
-      resource => {
+      function (resource) {
         console.log("ali pay" + (typeof resource === "string" ? resource : JSON.stringify(resource)));
         // console.log(`ali resource`,resource);
         // if(resource.result&&typeof resource.result==='string'){
@@ -11,7 +19,7 @@ exports.pay = function (arg0) {
         // }
         resolve(resource);
       },
-      error => {
+      function (error) {
         reject(error);
       },
       "Ali",
