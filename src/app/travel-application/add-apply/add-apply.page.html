@@ -54,12 +54,20 @@
       </ion-label>
     </ion-item>
     <ion-item>
-      <ion-text [color]="!enable?'dark':'dark'">
-        备注
-      </ion-text>
-      <ion-input [disabled]="!enable" placeholder="请输入" slot="end" class="ion-text-end"
-        [(ngModel)]="searchModel.TravelForm.Detail">
-      </ion-input>
+      <div style="display: flex;justify-content: space-between;width: 100%;">
+        <div style="padding-top: 0.5em;">
+          <ion-text [color]="!enable?'dark':'dark'">
+            备注
+          </ion-text>
+        </div>
+      <div>
+        <ion-textarea  [disabled]="!enable" placeholder="请输入" slot="end" class="ion-text-end"
+        [(ngModel)]="searchModel.TravelForm.Detail"></ion-textarea>
+        <!-- <ion-input [disabled]="!enable" placeholder="请输入" slot="end" class="ion-text-end"
+          [(ngModel)]="searchModel.TravelForm.Detail">
+        </ion-input> -->
+      </div>
+      </div>
     </ion-item>
     <ion-item detail (click)="onSelectCostCenter()">
       <ion-text [color]="!enable?'dark':'dark'">成本中心</ion-text>

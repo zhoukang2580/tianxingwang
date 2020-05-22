@@ -250,12 +250,15 @@ export class AddStrokeComponent implements OnInit, OnChanges {
   }
   getHotel(a) {
     if (a.VariablesJsonObj) {
-      const fromCity: TrafficlineEntity = a.VariablesJsonObj.City || {};
+      console.log(a.VariablesJsonObj.toCity,"a.VariablesJsonObj");
+      
+      const toCity: TrafficlineEntity = a.VariablesJsonObj.toCity || {};
+      // const fromCity: TrafficlineEntity = a.VariablesJsonObj.City || {};
       this.hotelService.setSearchHotelModel({
         ...this.hotelService.getSearchHotelModel(),
         checkInDate: (this.trip.StartDate || "").substr(0, 10),
         checkOutDate: (this.trip.EndDate || "").substr(0, 10),
-        destinationCity: fromCity,
+        destinationCity: toCity,
         hotelType: 'normal'
       });
       this.router.navigate(["hotel-list"], {
