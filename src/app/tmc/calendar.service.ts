@@ -49,7 +49,8 @@ export class CalendarService {
     private router: Router
   ) {
     this.selectedDaysSource = new EventEmitter();
-    this.initCalendars();
+    this.calendars = [];
+    // this.initCalendars();
   }
   private initCalendars() {
     this.calendars = [];

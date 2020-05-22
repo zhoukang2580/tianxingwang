@@ -49,7 +49,7 @@ export class MapService {
       } catch (e) {
         console.error(e);
       }
-    }, 1000);
+    }, 3000);
   }
   convertToAmap(p: { lat: string; lng: string }) {
     console.log("原始坐标", p);
@@ -101,7 +101,7 @@ export class MapService {
       } catch (e) {
         console.error(e);
       }
-    }, 0);
+    }, 3000);
   }
   getBMap(container: HTMLElement) {
     let bmap;

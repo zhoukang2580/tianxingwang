@@ -23,10 +23,12 @@ export class ThemeService {
   }
   private async initMode() {
     const prefersDark = window.matchMedia(`(prefers-color-scheme: dark)`);
-    prefersDark.addListener((e) =>
-      this.setModeSource(e.matches ? "dark" : "light")
-    );
     this.mode = await this.storage.get("preferance_mode");
+    prefersDark.addListener((e) => {
+      if (!this.mode) {
+        this.setModeSource(e.matches ? "dark" : "light");
+      }
+    });
     this.mode =
       this.mode ||
       (prefersDark.matches

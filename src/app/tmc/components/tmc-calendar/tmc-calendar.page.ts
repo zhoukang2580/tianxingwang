@@ -26,7 +26,7 @@ import { RefresherComponent } from "src/app/components/refresher";
 })
 export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
-  private delayBackTime = 200;
+  private delayBackTime = 10;
   private forType: FlightHotelTrainType;
   private goArrivalTime: string;
   private isCurrentSelectedOk = false;
@@ -53,8 +53,9 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       this.days.forEach((dt) => {
         dt.hasToolTip = false;
         dt.toolTipMsg = "";
+        dt.selected = false;
       });
-    }, 1000);
+    }, 200);
   }
   get selectedDays() {
     return this.days;
@@ -73,9 +74,11 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     const first = this.calendars && this.calendars[0];
     if (first) {
       const mm = this.calendarService.getMoment(0, first.dayList[0].date);
+      const current = this.calendarService.getMoment(0);
+      const m = this.calendarService.getMoment(0, current.format("YYYY-MM-DD"));
       for (let i = 1; ; i++) {
         const temp = mm.clone().add(-i, "months");
-        if (+temp < new Date().getTime()) {
+        if (+temp < +m) {
           if (this.refresher) {
             this.refresher.disabled = true;
           }
@@ -158,19 +161,19 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    this.subscriptions.push(
-      this.calendareles.changes.subscribe(() => {
-        this.moveToCurMonth();
-      })
-    );
-    setTimeout(() => {
-      this.moveToCurMonth();
-      if (!this.isSrollToCurYm) {
-        setTimeout(() => {
-          this.moveToCurMonth();
-        }, 16 * this.calendars.length);
-      }
-    }, 100);
+    // this.subscriptions.push(
+    //   this.calendareles.changes.subscribe(() => {
+    //     this.moveToCurMonth();
+    //   })
+    // );
+    // setTimeout(() => {
+    //   this.moveToCurMonth();
+    //   if (!this.isSrollToCurYm) {
+    //     setTimeout(() => {
+    //       this.moveToCurMonth();
+    //     }, 16 * this.calendars.length);
+    //   }
+    // }, 100);
   }
   private moveToCurMonth() {
     if (this.isSrollToCurYm) {
@@ -218,7 +221,13 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       // }
       for (let i = 0; i < 2; i++) {
         const temp = m.clone().add(i, "months");
-        console.log("temp ", temp.year(), temp.month() + 1,this.beginDate,this.endDate);
+        console.log(
+          "temp ",
+          temp.year(),
+          temp.month() + 1,
+          this.beginDate,
+          this.endDate
+        );
         this.calendars.push(
           this.calendarService.generateYearNthMonthCalendar(
             temp.year(),
