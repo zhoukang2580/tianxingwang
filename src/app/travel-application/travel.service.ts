@@ -99,7 +99,7 @@ export class TravelService {
     const req = new RequestEntity();
     req.Method = `TmcApiTravelUrl-Home-GetCitys`;
     req.Data = {
-      name,
+      name:data.name,
       Type: data.tripType,
       PageIndex: data.pageIndex,
       PageSize: data.pageSize,

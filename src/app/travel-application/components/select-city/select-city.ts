@@ -96,6 +96,8 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   }
   async loadMore() {
     const name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
+    console.log((this.vmKeyowrds && this.vmKeyowrds.trim()) || "","vmKeyowrds");
+    
     this.subscription = this.travelService
       .getCities({
         name,
