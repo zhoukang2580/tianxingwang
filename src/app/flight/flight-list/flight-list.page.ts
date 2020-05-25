@@ -231,32 +231,21 @@ export class FlightListPage
       evt.preventDefault();
     }
     if (s) {
-      const info = this.flightService
+      const unselectBookInfos = this.flightService
         .getPassengerBookInfos()
-        .find((it) => it.isFilterPolicy);
-      if (info) {
-        const cabins =
-          s.Cabins && s.Cabins.filter((it) => it.SalesPrice == s.LowestFare);
-        const cabin =
-          cabins &&
-          cabins.find(
-            (it) =>
-              it.SalesPrice == s.LowestFare &&
-              this.flightService.checkIfCabinIsAllowBook(info, it, s)
-          );
-        if (cabin) {
-          const res = await this.flightService.addOrReplaceSegmentInfo(
-            cabin,
-            s
-          );
-          if (res.isReplace || res.isSelfBookType) {
-            this.onShowSelectedInfos();
-          }
-        } else {
-          AppHelper.alert("超标不可预订");
-          s["disabled"] = true;
+        .filter((it) => !it.bookInfo || !it.bookInfo.flightPolicy);
+      const cabins =
+        s.Cabins && s.Cabins.filter((it) => it.SalesPrice == s.LowestFare);
+      const cabin =
+        cabins && cabins.find((it) => it.SalesPrice == s.LowestFare);
+      if (cabin) {
+        const res = await this.flightService.addOrReplaceSegmentInfo(cabin, s);
+        if (res.isReplace || res.isSelfBookType) {
+          this.onShowSelectedInfos();
         }
       } else {
+        AppHelper.alert("超标不可预订");
+        s["disabled"] = true;
         this.goToFlightCabinsDetails(s);
       }
     }
