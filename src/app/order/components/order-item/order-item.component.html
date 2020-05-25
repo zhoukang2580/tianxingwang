@@ -21,7 +21,10 @@
               ({{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}})
             </ion-text>
           </span>
-        
+          <ng-container *ngIf='order.VariablesJsonObj.isPay'>
+            <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
+            </ion-button>
+          </ng-container>
         </div>
       </div>
       <ng-container *ngFor='let t of order.OrderFlightTickets;let i=index;'>
@@ -45,8 +48,7 @@
                     <ion-text color='light'>退票 </ion-text>
                   </ion-button>
                   <ng-template #showrefunding>
-                    <ion-text color='medium'
-                      *ngIf='t.VariablesJsonObj.isCustomApplyRefunding'>
+                    <ion-text color='medium' *ngIf='t.VariablesJsonObj.isCustomApplyRefunding'>
                       退票申请中
                     </ion-text>
                   </ng-template>
@@ -61,10 +63,6 @@
                     (click)='onAbolishFlightOrder($event,t)' color='secondary'>
                     <ion-text color='light'>取消订单</ion-text>
                   </ion-button>
-                  <ng-container *ngIf='t.VariablesJsonObj.isPay'>
-                      <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
-                      </ion-button>
-                    </ng-container>
                 </ng-container>
               </div>
               <div class="item">

@@ -35,6 +35,7 @@ import { SelectFlightsegmentCabinComponent } from "../components/select-flightse
 import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntity";
 import { OrderService } from "src/app/order/order.service";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
+import { CredentialsType } from 'src/app/member/pipe/credential.pipe';
 
 @Component({
   selector: "app-selected-flight-bookinfos",

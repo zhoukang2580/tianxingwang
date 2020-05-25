@@ -78,7 +78,15 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       }, 200);
     }
   }
-  ngOnInit() {}
+  ngOnInit() {
+    if(this.order&&this.order.Variables){
+      this.order.VariablesJsonObj =
+      this.order.VariablesJsonObj || JSON.parse(this.order.Variables) || {};
+    }
+  }
+  getOrderFees(t:OrderFlightTicketEntity){
+    return this.order&&this.order.VariablesJsonObj&&this.order.VariablesJsonObj.orderFees[t.Id]
+  }
   getPassenger(t: OrderFlightTicketEntity): OrderPassengerEntity {
     if (!t || !t.Passenger) {
       return null;
@@ -89,7 +97,7 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       this.order.OrderPassengers.find(it => it.Id == t.Passenger.Id)
     );
   }
-  getInsurances(t: OrderFlightTicketEntity) {
+  getInsurances(t: OrderFlightTicketEntity){
     return this.order&&this.order.OrderInsurances&&this.order.OrderInsurances.filter(it=>
       it.TravelKey==(t&&t.Key)).filter(
         it=>it.Status!=OrderInsuranceStatusType.Abolish&&it.Status!=OrderInsuranceStatusType.Refunded&&it.Status!=OrderInsuranceStatusType.PayFailure)
