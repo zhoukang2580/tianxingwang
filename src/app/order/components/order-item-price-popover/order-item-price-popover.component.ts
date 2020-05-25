@@ -14,7 +14,7 @@ import {
   NgZone
 } from "@angular/core";
 import { OrderItemEntity, OrderEntity } from "../../models/OrderEntity";
-import { IonGrid, IonSlides } from "@ionic/angular";
+import { IonGrid, IonSlides, IonText } from "@ionic/angular";
 import { OrderInsuranceEntity } from '../../models/OrderInsuranceEntity';
 import { TmcEntity } from 'src/app/tmc/tmc.service';
 import { OrderInsuranceStatusType } from '../../models/OrderInsuranceStatusType';
@@ -28,7 +28,7 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   @ViewChildren(IonGrid) iongrids: QueryList<IonGrid>;
   @ViewChild(IonSlides) slides: IonSlides;
   order: OrderEntity;
-  amount: number;
+  amount=0;
   orderItems: OrderItemEntity[];
   // OrderInsurance:OrderInsuranceEntity[];
   OrderItemHelper = OrderItemHelper;
@@ -48,7 +48,6 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
         });
       });
     });
-    this.calcTotalPrice();
   }
   private calcTotalPrice() {
     if (this.iongrids) {
@@ -101,6 +100,14 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
     return this.order&&this.order.OrderInsurances&&this.order.OrderInsurances.filter(it=>
       it.TravelKey==(t&&t.Key)).filter(
         it=>it.Status!=OrderInsuranceStatusType.Abolish&&it.Status!=OrderInsuranceStatusType.Refunded&&it.Status!=OrderInsuranceStatusType.PayFailure)
+  }
+  getPriceAmount(t: OrderFlightTicketEntity){
+    this.amount=0;
+    if(this.order&&this.order.VariablesJsonObj&&this.order.VariablesJsonObj.orderFees[t.Id]){
+      this.order.VariablesJsonObj.orderFees[t.Id].forEach(f=>this.amount+=f.Value)
+    }
+    // console.log(this.amount,"this.amount");
+    return this.amount
   }
   getAmount(
     ticket: OrderFlightTicketEntity,
