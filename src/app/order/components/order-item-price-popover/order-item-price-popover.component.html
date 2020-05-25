@@ -2,11 +2,6 @@
   <ion-slides >
     <ion-slide *ngFor='let t of order?.OrderFlightTickets'>
       <ion-grid>
-        <!-- <ion-row *ngIf='getPassenger(t) as p'>
-          <ion-col>
-            <span>{{p.Name}}</span>
-          </ion-col>
-        </ion-row> -->
         <div style="font-size:0.9rem">
           <ion-row *ngIf="t.Id">
             <ion-col class="ion-text-nowrap">
