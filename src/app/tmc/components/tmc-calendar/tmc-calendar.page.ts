@@ -26,7 +26,7 @@ import { RefresherComponent } from "src/app/components/refresher";
 })
 export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
-  private delayBackTime = 10;
+  private delayBackTime = 100;
   private forType: FlightHotelTrainType;
   private goArrivalTime: string;
   private isCurrentSelectedOk = false;
@@ -49,13 +49,21 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }
-    this.timeoutId = setTimeout(() => {
-      this.days.forEach((dt) => {
-        dt.hasToolTip = false;
-        dt.toolTipMsg = "";
-        dt.selected = false;
-      });
-    }, 200);
+    if (
+      ((this.forType == FlightHotelTrainType.Hotel ||
+        this.forType == FlightHotelTrainType.HotelInternational) &&
+        days &&
+        days.length > 1) ||
+      !this.isMulti
+    ) {
+      this.timeoutId = setTimeout(() => {
+        this.days.forEach((dt) => {
+          dt.hasToolTip = false;
+          dt.toolTipMsg = "";
+          dt.selected = false;
+        });
+      }, this.delayBackTime + 50);
+    }
   }
   get selectedDays() {
     return this.days;
@@ -68,30 +76,39 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private plt: Platform) {}
 
   ngOnDestroy() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   loadPreMonths() {
     const first = this.calendars && this.calendars[0];
     if (first) {
-      const mm = this.calendarService.getMoment(0, first.dayList[0].date);
+      const mm = this.calendarService.getMoment(
+        0,
+        first.dayList.filter((it) => !it.isLastMonthDay)[0].date
+      );
       const current = this.calendarService.getMoment(0);
       const m = this.calendarService.getMoment(0, current.format("YYYY-MM-DD"));
       for (let i = 1; ; i++) {
         const temp = mm.clone().add(-i, "months");
+        const c = this.calendarService.generateYearNthMonthCalendar(
+          temp.year(),
+          temp.month() + 1
+        );
+        c.dayList = c.dayList.map((it) => {
+          it.selected = false;
+          it.hasToolTip = false;
+          it.topDesc = "";
+          return it;
+        });
+        this.calendars.unshift(c);
         if (+temp < +m) {
           if (this.refresher) {
             this.refresher.disabled = true;
+            this.refresher.complete();
           }
           break;
-        }
-        this.calendars.unshift(
-          this.calendarService.generateYearNthMonthCalendar(
-            temp.year(),
-            temp.month() + 1
-          )
-        );
-        if (this.refresher) {
-          this.refresher.complete();
         }
       }
       this.checkYms();
@@ -108,56 +125,54 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log(
       `heightLightSelectedDays begin=${this.beginDate},end=${this.endDate}`
     );
-    if (this.beginDate || this.endDate) {
-      let begin = this.calendarService.generateDayModelByDate(this.beginDate);
-      if (!this.beginDate) {
-        begin = null;
-      }
-      let end = this.calendarService.generateDayModelByDate(this.endDate);
-      if (!this.endDate) {
-        end = null;
-      }
-      if (this.calendars) {
-        this.calendars.forEach((c) => {
-          if (c.dayList) {
-            c.dayList = c.dayList.map((d) => {
-              if (this.beginDate && this.endDate) {
-                if (d.date == this.beginDate) {
-                  if (
-                    this.forType == FlightHotelTrainType.Hotel ||
-                    this.forType == FlightHotelTrainType.HotelInternational
-                  ) {
-                    d.topDesc = "入住";
-                  }
-                  d.firstSelected = true;
+    let begin = this.calendarService.generateDayModelByDate(this.beginDate);
+    if (!this.beginDate) {
+      begin = null;
+    }
+    let end = this.calendarService.generateDayModelByDate(this.endDate);
+    if (!this.endDate) {
+      end = null;
+    }
+    if (this.calendars) {
+      this.calendars.forEach((c) => {
+        if (c.dayList) {
+          c.dayList = c.dayList.map((d) => {
+            d.selected = false;
+            d.topDesc = "";
+            d.hasToolTip = false;
+            if (this.beginDate && this.endDate) {
+              if (d.date == this.beginDate) {
+                if (
+                  this.forType == FlightHotelTrainType.Hotel ||
+                  this.forType == FlightHotelTrainType.HotelInternational
+                ) {
+                  d.topDesc = "入住";
                 }
-                if (d.date == this.endDate) {
-                  d.lastSelected = true;
-                  if (
-                    this.forType == FlightHotelTrainType.Hotel ||
-                    this.forType == FlightHotelTrainType.HotelInternational
-                  ) {
-                    d.topDesc = "离店";
-                  }
-                }
-                if (begin && end) {
-                  d.isBetweenDays =
-                    d.timeStamp > begin.timeStamp &&
-                    d.timeStamp < end.timeStamp;
-                  if (d.isBetweenDays) {
-                    d.selected = true;
-                  }
+                d.firstSelected = true;
+              }
+              if (d.date == this.endDate) {
+                d.lastSelected = true;
+                if (
+                  this.forType == FlightHotelTrainType.Hotel ||
+                  this.forType == FlightHotelTrainType.HotelInternational
+                ) {
+                  d.topDesc = "离店";
                 }
               }
-              d.selected =
-                d.selected ||
-                d.date == this.beginDate ||
-                d.date == this.endDate;
-              return d;
-            });
-          }
-        });
-      }
+              if (begin && end) {
+                d.isBetweenDays =
+                  d.timeStamp > begin.timeStamp && d.timeStamp < end.timeStamp;
+                if (d.isBetweenDays) {
+                  d.selected = true;
+                }
+              }
+            }
+            d.selected =
+              d.selected || d.date == this.beginDate || d.date == this.endDate;
+            return d;
+          });
+        }
+      });
     }
   }
   ngAfterViewInit() {
@@ -330,7 +345,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
               ? LanguageHelper.getSelectCheckOutDate()
               : LanguageHelper.getBackDateTip();
           this.selectedDays = [d];
-          this.checkHotelSelectedDate(d);
+          // this.checkHotelSelectedDate(d);
           // AppHelper.toast(LanguageHelper.getSelectFlyBackDate(), 1000, "top");
         } else {
           d.firstSelected = true;
@@ -389,7 +404,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
         }
         this.selectedDays = [d];
-        this.checkHotelSelectedDate(d);
+        // this.checkHotelSelectedDate(d);
       }
     } else {
       d.firstSelected = true;
