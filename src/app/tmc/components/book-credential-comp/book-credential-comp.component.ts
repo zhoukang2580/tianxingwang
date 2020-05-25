@@ -63,6 +63,7 @@ export class BookCredentialCompComponent
   }
   onMaintainCredentials() {
     this.managementCredentials.emit();
+    this.addCredential();
   }
   addCredential() {
     if (!this.canEdit) {
