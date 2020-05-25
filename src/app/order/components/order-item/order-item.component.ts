@@ -159,9 +159,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
         }
         this.initPassengers();
         // this.initInsuranceAmount();
-        this.order.OrderFlightTickets = this.orderService.checkIfOrderFlightTicketShow(
-          this.order.OrderFlightTickets
-        );
+        // this.order.OrderFlightTickets = this.orderService.checkIfOrderFlightTicketShow(
+        //   this.order.OrderFlightTickets
+        // );
       }
     }
   }
