@@ -100,6 +100,23 @@ export class HotelListPage
     isLoading: boolean;
     disabled: boolean;
   };
+  hotelType = [
+    {
+      value: "normal",
+      lable: "非协议酒店",
+      isshow: false
+    },
+    {
+      value: "agreement",
+      lable: "协议酒店",
+      isshow: false
+    },
+    {
+      value: "specialprice",
+      lable: "特价酒店",
+      isshow: false
+    }
+  ]
   filterTab: IHotelQueryCompTab;
   isShowBackdrop = false;
   totalHotels = 0;
@@ -125,7 +142,7 @@ export class HotelListPage
     }
     this.hideQueryPannel();
   }
-  async ngAfterContentInit() {}
+  async ngAfterContentInit() { }
   async ngAfterViewInit() {
     this.autofocusSearchBarInput();
     this.setQueryConditionEleTop();
@@ -293,13 +310,29 @@ export class HotelListPage
         }
       );
   }
+  onTypeChanged(h: any) {
+    console.log(h.value, "value");
+    if (h) {
+      h.isshow = !h.isshow;
+      this.hotelType.forEach(t => {
+        if (t != h) {
+          t.isshow = false
+        }
+        return t
+      })
+    }
+    this.hotelService.setSearchHotelModel({
+      ...this.hotelService.getSearchHotelModel(),
+      hotelType: h.value
+    });
+    this.doRefresh();
+  }
   async onDateChange() {
     const days = await this.hotelService.openCalendar();
     if (days.length) {
       this.hotelQueryModel.BeginDate = days[0].date;
       this.hotelQueryModel.EndDate = days[days.length - 1].date;
-      console.log(this.hotelQueryModel.EndDate,"this.hotelQueryModel.EndDate");
-      
+      console.log(this.hotelQueryModel.EndDate, "this.hotelQueryModel.EndDate");
       this.doRefresh();
     }
   }
@@ -384,7 +417,13 @@ export class HotelListPage
           m.destinationCity && m.destinationCity.Name;
         this.hotelQueryModel.BeginDate = m.checkInDate;
         this.hotelQueryModel.EndDate = m.checkOutDate;
-        this.hotelQueryModel.City = m.destinationCity;
+        this.hotelQueryModel.City = m.destinationCity; 
+        this.hotelType.forEach(t=>{
+          if(t.value==m.hotelType.toLowerCase()){
+            t.isshow=true
+          }
+          return t
+        })
       }
     });
     this.subscriptions.push(sub);

@@ -20,6 +20,13 @@
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
   <ng-container *ngIf='!isLoadingHotels else fakeList'>
+    <div >
+      <ng-container *ngFor="let h of hotelType">
+        <ion-chip [color]="h.isshow?'secondary':'light'" (click)="onTypeChanged(h)">
+        <ion-label [color]="h.isshow?'secondary':'medium'">{{h.lable}}</ion-label>
+        </ion-chip>
+      </ng-container>
+    </div>
     <ion-list>
       <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
         <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
