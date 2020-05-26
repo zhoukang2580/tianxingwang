@@ -810,7 +810,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private sortFlightTicket() {
     const trips: OrderFlightTripEntity[] = [];
-    if (this.orderDetail.Order && this.orderDetail.Order.OrderFlightTickets) {
+    if (this.orderDetail&&this.orderDetail.Order && this.orderDetail.Order.OrderFlightTickets) {
       this.orderDetail.Order.OrderFlightTickets.sort(
         (t1, t2) => +t2.Id - +t1.Id
       );
