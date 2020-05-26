@@ -126,7 +126,7 @@
             <ion-text color='secondary'>
               （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
             </ion-text>
-            <ng-container *ngIf='order["checkPay"]'>
+            <ng-container *ngIf='order.VariablesJsonObj.isPay'>
               <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
               </ion-button>
             </ng-container>
@@ -156,16 +156,15 @@
                 <ion-text color='secondary' class="ion-padding-end">({{orderTrainTicket.StatusName}})</ion-text>
                 <ng-container *ngIf='orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn'>
                   <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
-                    *ngIf='orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+                    *ngIf='orderTrainTicket.VariablesJsonObj.isShowExchangeButton'>
                     <span>改签</span>
                   </ion-button>
                   <ion-button (click)='onRefundTrainTicket($event,orderTrainTicket)' color='secondary'
-                    *ngIf='(orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
-                    &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !="0" && orderTrainTicket.BookType != TrainBookType.Offline'>
+                    *ngIf='orderTrainTicket.VariablesJsonObj.isShowExchangeButton'>
                     <span>退票</span>
                   </ion-button>
                 </ng-container>
-                <ion-button size='small' *ngIf='orderTrainTicket.VariablesJsonObj.isShowCancelBtn'
+                <ion-button size='small' *ngIf='orderTrainTicket.VariablesJsonObj.isShowCancelButton'
                   (click)='onAbolishTraninOrder($event,orderTrainTicket)' color='secondary'>
                   <ion-text color='light'>取消订单</ion-text>
                 </ion-button>
