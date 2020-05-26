@@ -10,19 +10,17 @@ import {
   ElementRef,
   AfterContentInit,
   NgZone,
-  SimpleChanges
 } from "@angular/core";
 import { Directive } from "@angular/core";
 import { ImageRecoverService } from "../services/imageRecover/imageRecover.service";
 
 @Directive({
-  selector: "[lazyLoad]"
+  selector: "[lazyLoad]",
 })
 export class LazyloadDirective
   implements OnInit, OnChanges, OnDestroy, AfterContentInit {
   private io: IntersectionObserver;
   @Input() lazyLoad: string;
-  @Input() enableLazyLoad = true;
   @Input() recoverImage = true;
   @Input() defaultImage;
   private time = 0;
@@ -30,13 +28,19 @@ export class LazyloadDirective
     private imageRecoverService: ImageRecoverService,
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
     private ngZone: NgZone
-  ) { }
-  ngOnChanges(changes: SimpleChanges) {
+  ) {}
+  ngOnChanges() {
     // console.log("lazyload changes",this.el.nativeElement,this.lazyLoad);
     this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
       this.addIO();
     });
+    console.log(
+      "default image ",
+      this.defaultImage,
+      "lazyLoad ",
+      this.lazyLoad
+    );
   }
   ngAfterContentInit() {
     // console.log("ngAfterContentInit", this.defaultImage);
@@ -44,11 +48,6 @@ export class LazyloadDirective
   ngOnInit() {
     this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
-      // console.log(
-      //   "runOutsideAngular ",
-      //   Date.now() - this.time,
-      //   this.defaultImage
-      // );
       this.setDefaultImage();
       if (this.recoverImage) {
         this.setupImageRecover();
@@ -60,11 +59,6 @@ export class LazyloadDirective
       this.load(this.defaultImage);
     } else {
       this.load("assets/loading.gif");
-    }
-    if (!this.enableLazyLoad) {
-      setTimeout(() => {
-        this.load();
-      }, 200);
     }
   }
   private async setupImageRecover() {
@@ -101,9 +95,11 @@ export class LazyloadDirective
   }
   private addVersion(url: string) {
     if (url) {
-      url = url.includes("?v") ? `${url.split("?v")[0]}?v=${Date.now()}` : `${url}?v=${Date.now()}`
+      url = url.includes("?v")
+        ? `${url.split("?v")[0]}?v=${Date.now()}`
+        : `${url}?v=${Date.now()}`;
     }
-    return url
+    return url;
   }
   private removeIO() {
     if (this.io) {
@@ -112,7 +108,10 @@ export class LazyloadDirective
     }
   }
   private addIO() {
-    if (!this.lazyLoad || !this.enableLazyLoad) {
+    if (!this.lazyLoad) {
+      if (this.defaultImage) {
+        this.load(this.defaultImage);
+      }
       return;
     }
     // if (AppHelper.isDingtalkH5()) {
@@ -126,13 +125,13 @@ export class LazyloadDirective
     ) {
       // console.log("当前浏览器支持：IntersectionObserver");
       this.removeIO();
-      this.io = new IntersectionObserver(data => {
+      this.io = new IntersectionObserver((data) => {
         // because there will only ever be one instance
         // of the element we are observing
         // we can just use data[0]
         // console.log("IntersectionObserver 耗时：", Date.now() - this.time);
         // console.log(data);
-        if (data.find(it => it.isIntersecting)) {
+        if (data.find((it) => it.isIntersecting)) {
           // console.log(
           //   "IntersectionObserver  isIntersecting 耗时：",
           //   Date.now() - this.time

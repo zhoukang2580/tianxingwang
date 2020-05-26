@@ -33,6 +33,7 @@ ion-content {
   justify-content: center;
   max-width: 35vw;
   overflow: auto;
+  overflow-y: hidden;
   margin: 0 auto;
   .bullet {
     margin: 0.5em;

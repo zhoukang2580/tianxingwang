@@ -48,6 +48,9 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
           // console.log("slidechange", this.activeIdx);
         });
       });
+      setTimeout(() => {
+        swiper.update();
+      }, 200);
     });
   }
   private calcTotalPrice() {
