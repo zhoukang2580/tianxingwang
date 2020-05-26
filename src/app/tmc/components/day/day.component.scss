@@ -11,7 +11,7 @@
     content: attr(toolTipMsg);
     width: $toolTipWidth;
     height: 1.5rem;
-    color: var(--ion-color-light);
+    color: var(--ion-color-primary);
     position: absolute;
     display: flex;
     font-size: 0.6rem;
@@ -29,7 +29,7 @@
     content: attr(toolTipMsg);
     width: $toolTipWidth;
     height: 1.5rem;
-    color: var(--ion-color-light);
+    color: var(--ion-color-primary);
     position: absolute;
     display: flex;
     font-size: 0.6rem;
@@ -47,7 +47,7 @@
     content: attr(toolTipMsg);
     width: $toolTipWidth;
     height: 1.5rem;
-    color: var(--ion-color-light);
+    color: var(--ion-color-primary);
     position: absolute;
     display: flex;
     font-size: 0.6rem;

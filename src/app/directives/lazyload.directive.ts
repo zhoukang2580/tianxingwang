@@ -35,12 +35,12 @@ export class LazyloadDirective
     this.ngZone.runOutsideAngular(() => {
       this.addIO();
     });
-    console.log(
-      "default image ",
-      this.defaultImage,
-      "lazyLoad ",
-      this.lazyLoad
-    );
+    // console.log(
+    //   "default image ",
+    //   this.defaultImage,
+    //   "lazyLoad ",
+    //   this.lazyLoad
+    // );
   }
   ngAfterContentInit() {
     // console.log("ngAfterContentInit", this.defaultImage);

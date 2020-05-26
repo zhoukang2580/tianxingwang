@@ -35,7 +35,10 @@ ul {
     &.selected.between-selected-days:not(.not-enabled),
     &.selected.between-selected-days {
       background-color: rgba(var(--ion-color-secondary-rgb), 0.8);
-      color: var(--ion-color-primary);
+      color: var(--ion-color-light);
+      .day{
+        color: var(--ion-color-light);
+      }
     }
   }
 }
@@ -78,13 +81,13 @@ ul {
     background-color: var(--ion-color-secondary);
     color: var(--ion-color-light);
   }
-  &.today {
-    color: var(--ion-color-light);
-    background-color: rgba(var(--ion-color-danger-rgb), 0.7);
-    &.active {
-      background-color: rgba(var(--ion-color-danger-rgb), 0.9);
-    }
-  }
+  // &.today {
+  //   color: var(--ion-color-light);
+  //   background-color: rgba(var(--ion-color-danger-rgb), 0.7);
+  //   &.active {
+  //     background-color: rgba(var(--ion-color-danger-rgb), 0.9);
+  //   }
+  // }
 }
 ion-content {
   height: 100vh;
