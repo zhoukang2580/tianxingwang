@@ -152,7 +152,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = false;
     }
-    if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
+    if (
+      this.activeTab &&
+      this.activeTab.value == ProductItemType.waitingApprovalTask
+    ) {
       this.doRefreshTasks();
       return;
     }
