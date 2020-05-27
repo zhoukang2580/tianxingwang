@@ -84,6 +84,7 @@ export class CalendarService {
   }) {
     const m = await AppHelper.modalController.create({
       component: TmcCalendarComponent,
+      animated:false,
       componentProps: {
         calendarService: this,
         ...data,

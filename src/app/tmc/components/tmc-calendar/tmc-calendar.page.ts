@@ -36,6 +36,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   private calendarService: CalendarService;
   private beginDate: string;
   private endDate: string;
+  private st = 0;
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
   @ViewChild(IonContent, { static: true }) content: IonContent;
@@ -115,6 +116,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngOnInit() {
+    this.st = Date.now();
     const w = this.calendarService.getDayOfWeekNames();
     this.weeks = Object.keys(w).map((k) => w[k]);
     this.generateCalendars();
@@ -189,6 +191,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     //     }, 16 * this.calendars.length);
     //   }
     // }, 100);
+    console.log("耗时：", Date.now() - this.st);
   }
   private moveToCurMonth() {
     if (this.isSrollToCurYm) {
