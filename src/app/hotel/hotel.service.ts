@@ -635,7 +635,7 @@ export class HotelService {
     };
     // req.IsShowLoading = true;
     return from(this.setDefaultFilterPolicy()).pipe(
-      switchMap((_) => from(this.initSelfBookTypeBookInfos())),
+      switchMap((_) => from(this.initSelfBookTypeBookInfos(true))),
       switchMap((_) => this.apiService.getResponse<HotelResultEntity>(req)),
       map((result) => {
         if (result && result.Data && result.Data.HotelDayPrices) {

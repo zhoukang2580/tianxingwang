@@ -14,7 +14,7 @@ import {
   OnInit,
   ViewChild,
   HostBinding,
-  HostListener
+  HostListener,
 } from "@angular/core";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import { RoomPlanEntity } from "../models/RoomPlanEntity";
@@ -23,7 +23,7 @@ import * as moment from "moment";
 @Component({
   selector: "app-hotel-room-bookedinfos",
   templateUrl: "./hotel-room-bookedinfos.page.html",
-  styleUrls: ["./hotel-room-bookedinfos.page.scss"]
+  styleUrls: ["./hotel-room-bookedinfos.page.scss"],
 })
 export class HotelRoomBookedinfosPage implements OnInit {
   private changeDateBookInfo: PassengerBookInfo<IHotelInfo>;
@@ -61,8 +61,8 @@ export class HotelRoomBookedinfosPage implements OnInit {
       bookInfo.bookInfo.hotelEntity.HotelImages;
     if (images && bookInfo.bookInfo.hotelRoom) {
       const roomImages = images
-        .filter(it => it.Room && it.Room.Id == bookInfo.bookInfo.hotelRoom.Id)
-        .map(it => it.FileName && it.FileName);
+        .filter((it) => it.Room && it.Room.Id == bookInfo.bookInfo.hotelRoom.Id)
+        .map((it) => it.FileName && it.FileName);
       return roomImages;
     }
   }
@@ -115,7 +115,7 @@ export class HotelRoomBookedinfosPage implements OnInit {
               .format("YYYY-MM-DD"),
             price: this.hotelService.getAvgPrice(
               this.curSelectedBookInfo.bookInfo.roomPlan
-            )
+            ),
           });
         }
       }
@@ -127,7 +127,7 @@ export class HotelRoomBookedinfosPage implements OnInit {
       this.ionRefresher.complete();
     }
     if (!this.config) {
-      this.config = await this.configService.get().catch(_ => null);
+      this.config = await this.configService.get().catch((_) => null);
     }
     if (this.hotelDetailSub) {
       this.hotelDetailSub.unsubscribe();
@@ -137,15 +137,15 @@ export class HotelRoomBookedinfosPage implements OnInit {
     }
     this.hotelDetailSub = this.hotelService
       .getHotelDetail({
-        Hotel: this.changeDateBookInfo.bookInfo.hotelEntity
+        Hotel: this.changeDateBookInfo.bookInfo.hotelEntity,
       } as any)
       .pipe(
-        map(res => res && res.Data),
-        tap(r => {
+        map((res) => res && res.Data),
+        tap((r) => {
           console.log(r);
         })
       )
-      .subscribe(async hotel => {
+      .subscribe(async (hotel) => {
         if (hotel) {
           this.checkIfBookedRoomPlan(hotel.Hotel);
         }
@@ -160,11 +160,11 @@ export class HotelRoomBookedinfosPage implements OnInit {
     if (changeDateBookInfo && changeDateBookInfo.bookInfo) {
       if (changeDateBookInfo.bookInfo.roomPlan && hotel && hotel.Rooms) {
         const r = hotel.Rooms.find(
-          it => it.Id == changeDateBookInfo.bookInfo.hotelRoom.Id
+          (it) => it.Id == changeDateBookInfo.bookInfo.hotelRoom.Id
         );
         if (r) {
           const rp = r.RoomPlans.find(
-            it =>
+            (it) =>
               this.hotelService.getRoomPlanUniqueId(
                 changeDateBookInfo.bookInfo.roomPlan
               ) == this.hotelService.getRoomPlanUniqueId(it)
@@ -177,7 +177,7 @@ export class HotelRoomBookedinfosPage implements OnInit {
             }
             changeDateBookInfo.bookInfo.hotelRoom = r;
             changeDateBookInfo.bookInfo.roomPlan = rp;
-            const bookinfos = this.hotelService.getBookInfos().map(it => {
+            const bookinfos = this.hotelService.getBookInfos().map((it) => {
               if (it.id == changeDateBookInfo.id) {
                 it = changeDateBookInfo;
               }
@@ -185,6 +185,11 @@ export class HotelRoomBookedinfosPage implements OnInit {
             });
             this.hotelService.setBookInfos(bookinfos);
           }
+        } else {
+          const old = changeDateBookInfo.bookInfo.roomPlan.TotalAmount;
+          const totalDays = this.calendarService
+            .getMoment(0, changeDateBookInfo.bookInfo.roomPlan.EndDate)
+            .diff(changeDateBookInfo.bookInfo.roomPlan.BeginDate, "days");
         }
       }
     }
@@ -243,7 +248,7 @@ export class HotelRoomBookedinfosPage implements OnInit {
       hotel: bookInfo.bookInfo.hotelEntity,
       room: bookInfo.bookInfo.hotelRoom,
       roomImages: this.roomImages,
-      config: this.config
+      config: this.config,
       // agent: this.agent
     };
     this.router.navigate(["hotel-room-detail"]);
@@ -252,7 +257,7 @@ export class HotelRoomBookedinfosPage implements OnInit {
     return true;
   }
   async ngOnInit() {
-    this.config = await this.configService.get().catch(_ => null);
+    this.config = await this.configService.get().catch((_) => null);
   }
   @HostListener("click")
   closePriceDetail() {

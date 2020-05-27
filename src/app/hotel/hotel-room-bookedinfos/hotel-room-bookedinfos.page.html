@@ -17,9 +17,8 @@
         <ion-icon name='trash' color='danger' (click)='onRemoveBookInfo(bookInfo)' slot='end' class='ion-margin-end'>
         </ion-icon>
       </ion-item-divider>
-      <app-room-show-item [bookInfo]='bookInfo' (changeDate)='onChangeDate(bookInfo)'
-        (bedChange)='onbedChange($event,bookInfo)' (showRoomDetail)='onShowRoomDetail(bookInfo)'
-        (showPriceDetailEvt)='onShowPriceDetails($event)'>
+      <app-room-show-item [bookInfo]='bookInfo' [disabledEdit]='false' (bedChange)='onbedChange($event,bookInfo)'
+        (showRoomDetail)='onShowRoomDetail(bookInfo)' (showPriceDetailEvt)='onShowPriceDetails($event)'>
       </app-room-show-item>
     </ng-container>
   </ion-item-group>

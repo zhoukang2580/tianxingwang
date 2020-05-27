@@ -7,7 +7,7 @@
       <div class='date' (click)='onChangeDate()'>
         <span>{{getDate(bookInfo?.bookInfo?.roomPlan?.BeginDate)}}</span>
         <span>{{getDayDesc(bookInfo?.bookInfo?.roomPlan?.BeginDate)}}</span>
-        <ion-chip color='secondary'>{{calcNights()}}晚</ion-chip>
+        <ion-chip color='{{disabledEdit?"":"secondary"}}'>{{calcNights()}}晚</ion-chip>
         <span>{{getDate(bookInfo?.bookInfo?.roomPlan?.EndDate)}}</span>
         <span>{{getDayDesc(bookInfo?.bookInfo?.roomPlan?.EndDate)}}</span>
         <ion-button fill='clear' size='small' color='secondary' *ngIf='false&&!disabledEdit'>修改</ion-button>
@@ -16,7 +16,7 @@
         <span>
           {{bookInfo?.bookInfo?.roomPlan?.Name}}
         </span>
-        <ion-label class='price ion-text-end' *ngIf='bookInfo?.bookInfo?.roomPlan?.TotalAmount as m'  color='danger'>
+        <ion-label class='price ion-text-end' *ngIf='bookInfo?.bookInfo?.roomPlan?.TotalAmount as m' color='danger'>
           共<small>￥</small>{{m}}<ion-text color='secondary' (click)='onShowPriceDetail()'>
             明细
           </ion-text>
@@ -35,7 +35,8 @@
           <ion-button slot='end' fill='clear' color='secondary' *ngIf='!disabledEdit'>房型详情</ion-button>
         </div>
       </div>
-      <ion-item class='ion-no-margin ion-no-padding' *ngIf='getRules(bookInfo?.bookInfo?.roomPlan) as rules' lines='none'>
+      <ion-item class='ion-no-margin ion-no-padding' *ngIf='getRules(bookInfo?.bookInfo?.roomPlan) as rules'
+        lines='none'>
         <ion-label color='danger' class='ion-text-wrap'>超标：{{rules}}</ion-label>
       </ion-item>
       <ion-item class='ion-no-margin ion-no-padding' *ngIf='disabledEdit' lines='none'>
@@ -50,12 +51,13 @@
           </ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item class='ion-no-margin ion-no-padding' *ngIf='bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' lines='none'>
+      <ion-item class='ion-no-margin ion-no-padding'
+        *ngIf='bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' lines='none'>
         <ion-label>
           床型需求（尽量安排）
         </ion-label>
-        <ion-select value="brown" okText="确定" (ionChange)='onBedChange()' [compareWith]='bedCompareFn'
-          cancelText="取消" [(ngModel)]='bookInfo?.bookInfo?.roomPlan.Remark'>
+        <ion-select value="brown" okText="确定" (ionChange)='onBedChange()' [compareWith]='bedCompareFn' cancelText="取消"
+          [(ngModel)]='bookInfo?.bookInfo?.roomPlan.Remark'>
           <ion-select-option value="">请选择 </ion-select-option>
           <ion-select-option value="大床">大床 </ion-select-option>
           <ion-select-option value="双床">双床 </ion-select-option>
