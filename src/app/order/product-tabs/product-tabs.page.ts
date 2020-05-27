@@ -133,7 +133,8 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   loadMoreOrders() {
     if (
       this.isShowMyTrips ||
-      this.activeTab.value == ProductItemType.waitingApprovalTask
+      (this.activeTab &&
+        this.activeTab.value == ProductItemType.waitingApprovalTask)
     ) {
       return;
     }
