@@ -64,14 +64,14 @@ export class TmcHomePage implements OnInit, OnDestroy {
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   options = {};
   swiperOption: {
-    loop: true,
+    loop: true;
     // autoplay:true,//等同于以下设置
     autoplay: {
-      delay: 3000,
-      stopOnLastSlide: false,
-      disableOnInteraction: true,
-    },
-  }
+      delay: 3000;
+      stopOnLastSlide: false;
+      disableOnInteraction: true;
+    };
+  };
   isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaHotel = environment.mockProBuild || !environment.production;
   constructor(
@@ -93,23 +93,22 @@ export class TmcHomePage implements OnInit, OnDestroy {
   ) {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
-    route.paramMap.subscribe(async (p) => {
-      this.navCtrl.navigateRoot(this.router.url, { replaceUrl: true });
+    route.queryParamMap.subscribe(async (p) => {
       this.clearBookInfos();
-      this.identity = await this.identityService
-        .getIdentityAsync()
-        .catch((_) => null);
       this.check();
-      // console.log("返回到首页 ",p.keys);
+      this.canSelectCompany$ = from(this.staffService.isSelfBookType()).pipe(
+        map((isSelf) => {
+          return !isSelf;
+        })
+      );
       if (p.get("selectedCompany")) {
         this.tmcService.setSelectedCompany(p.get("selectedCompany"));
       }
+      this.identity = await this.identityService
+        .getIdentityAsync()
+        .catch((_) => null);
+      // console.log("返回到首页 ",p.keys);
     });
-    this.canSelectCompany$ = from(this.staffService.isSelfBookType()).pipe(
-      map((isSelf) => {
-        return !isSelf;
-      })
-    );
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -142,14 +141,14 @@ export class TmcHomePage implements OnInit, OnDestroy {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) { }
+    } catch (e) {}
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
       this.slidesEle.startAutoplay();
     }
   }
-  async ngOnInit() {
+  ngOnInit() {
     this.options = {
       loop: true,
       autoplay: {
@@ -186,7 +185,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
           delay: 3000,
           stopOnLastSlide: false,
           disableOnInteraction: true,
-        }
+        },
       });
       this.swiper.on("touchEnd", () => {
         this.onTouchEnd();
@@ -200,7 +199,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
     }, 1000);
   }
   private startAutoPlay() {
-        this.swiper.autoplay.start();
+    this.swiper.autoplay.start();
   }
 
   private async getAgentNotices() {
