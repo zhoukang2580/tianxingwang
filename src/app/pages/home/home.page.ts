@@ -3,6 +3,7 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
+import { QrScanService } from "src/app/services/qrScan/qrscan.service";
 
 @Component({
   selector: "app-home",
@@ -14,7 +15,8 @@ export class HomePage implements OnInit {
   scanresult: string;
   constructor(
     private identityService: IdentityService,
-    private router: Router
+    private router: Router,
+    private scanService: QrScanService
   ) {}
 
   ngOnInit() {
@@ -28,6 +30,7 @@ export class HomePage implements OnInit {
   onScanResult(txt: string) {
     this.scanresult = txt;
     if (txt && txt.toLowerCase().includes("app_path")) {
+      this.scanService.setScanResultSource("");
       const path = AppHelper.getValueFromQueryString("app_path", txt);
       console.log("txt " + txt);
       // tslint:disable-next-line: max-line-length
