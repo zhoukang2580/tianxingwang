@@ -345,5 +345,6 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     this.vmRegionTypes = this.vmRegionTypes.filter((it) =>
       approvals.some((a) => a == it.value)
     );
+    this.trip.travelTools=[];
   }
 }

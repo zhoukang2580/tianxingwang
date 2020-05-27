@@ -445,9 +445,9 @@ export class SelectPassengerPage
           this.interFlightService.isPassportHmTwPass(it.Type)
         );
       }
-      if (first) {
-        this.selectedCredentialId = first.Id;
-      }
+      // if (first) {
+      //   this.selectedCredentialId = first.Id;
+      // }
     } else {
       // 选择了非白名单，直接新增证件
       this.staffCredentails = [];
@@ -494,8 +494,16 @@ export class SelectPassengerPage
   }
 
   onSelectCredential(credentialId: string) {
-    console.log("onSelectCredential", credentialId);
-    this.selectedCredentialId = credentialId;
+    console.log("credentialId", credentialId);
+    if(this.selectedCredentialId!=credentialId){
+      this.selectedCredentialId = credentialId;
+    }
+    else if(this.selectedCredentialId){
+      this.selectedCredentialId=null
+    }else{
+      this.selectedCredentialId = credentialId;
+    }
+    console.log("this.selectedCredentialId", this.selectedCredentialId);
   }
   async onAddPassenger() {
     let selectedCredential: MemberCredential;

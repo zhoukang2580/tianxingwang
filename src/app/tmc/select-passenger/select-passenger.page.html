@@ -62,7 +62,7 @@
       <ion-list>
         <ng-container *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
           <ng-container *ngIf='item!=vmNewCredential'>
-            <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'>
+            <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)' style="border-bottom:0.01rem solid #cccccc">
               <ion-label>
                 {{item.Type|credential}}
               </ion-label>
@@ -133,7 +133,8 @@
             <ion-radio slot='end' class="ion-margin-end" name='credentialType' value="{{vmNewCredential?.Id}}">
             </ion-radio>
           </ion-item-divider>
-          <ion-grid #addForm (click)='onSelectCredential(vmNewCredential?.Id)'>
+          <ion-grid #addForm (click)='onSelectCredential(vmNewCredential?.Id)' [@flyInOut] 
+          *ngIf='selectedCredentialId ==vmNewCredential.Id'>
             <app-credentials-comp [(credential)]='vmNewCredential'></app-credentials-comp>
             <ion-row>
               <ion-col size='12'>
@@ -162,12 +163,14 @@
           <ng-container *ngFor='let item of frqPassengerCredentials'>
             <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'>
               <ion-label>
-                {{item.Type|credential}}
+                <!-- {{item.Type|credential}} -->
+                {{item?.Surname}}{{item?.Givenname}}
               </ion-label>
               <ion-radio slot='end' name='credentialType' class="ion-margin-end" value="{{item.Id}}">
               </ion-radio>
             </ion-item-divider>
-            <ion-item lines='none' (click)='onSelectCredential(item.Id)'>
+            <ion-item lines='none' (click)='onSelectCredential(item.Id)'  [@flyInOut] 
+            *ngIf='selectedCredentialId ==item.Id'>
               <div class='credential-item'>
                 <ion-row>
                   <ion-col>

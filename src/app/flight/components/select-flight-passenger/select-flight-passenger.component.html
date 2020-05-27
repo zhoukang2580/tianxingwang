@@ -121,14 +121,13 @@
     </ion-item-group>
     <ng-container *ngIf='isShowNewCredential'>
       <ion-item-group>
-        <ion-item-divider color='primary'>
+        <ion-item-divider color='primary'  (ionSelect)='onSelectCredential(vmNewCredential?.Id)' style="border-bottom: 0.01rem solid #cccccc;">
           <ion-item slot='start' style='width: 100%;' lines='none'>
             <ion-label>
               <ion-text *ngIf='!vmNewCredential?.isNotWhiteList'>此人其他证件：</ion-text>
               <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>证件：</ion-text>
             </ion-label>
-            <ion-radio slot='end' name='credentialType' value="{{vmNewCredential?.Id}}"
-              (ionSelect)='onSelectCredential(vmNewCredential?.Id)'>
+            <ion-radio slot='end' name='credentialType' mode='md' value="{{vmNewCredential?.Id}}">
             </ion-radio>
           </ion-item>
         </ion-item-divider>
