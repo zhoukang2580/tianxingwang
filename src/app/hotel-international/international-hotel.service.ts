@@ -683,6 +683,13 @@ export class InternationalHotelService {
       beginDate: this.searchConditon && this.searchConditon.checkinDate,
       endDate: this.searchConditon && this.searchConditon.checkoutDate,
     });
+    if (data && data.length > 1) {
+      this.setSearchConditionSource({
+        ...this.searchConditon,
+        checkinDate: data[0].date,
+        checkoutDate: data[1].date,
+      });
+    }
     return data;
   }
   private parseVariables(jsonStr: string) {

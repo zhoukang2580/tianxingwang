@@ -12,7 +12,7 @@ import { Subscription, fromEvent } from "rxjs";
 import {
   InternationalHotelService,
   IInterHotelSearchCondition,
-  IInterHotelInfo
+  IInterHotelInfo,
 } from "./../international-hotel.service";
 import {
   Component,
@@ -22,7 +22,7 @@ import {
   ElementRef,
   AfterViewInit,
   Renderer2,
-  EventEmitter
+  EventEmitter,
 } from "@angular/core";
 import {
   IonRefresher,
@@ -33,14 +33,14 @@ import {
   NavController,
   PopoverController,
   IonList,
-  ModalController
+  ModalController,
 } from "@ionic/angular";
 import { ActivatedRoute, Router } from "@angular/router";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import {
   PassengerBookInfo,
-  FlightHotelTrainType
+  FlightHotelTrainType,
 } from "src/app/tmc/tmc.service";
 import { StaffService } from "src/app/hr/staff.service";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -55,7 +55,7 @@ import { SelectedPassengersComponent } from "src/app/tmc/components/selected-pas
   selector: "app-international-hotel-detail",
   templateUrl: "./international-hotel-detail.page.html",
   styleUrls: ["./international-hotel-detail.page.scss"],
-  animations: [flyInOut, fadeInOut]
+  animations: [flyInOut, fadeInOut],
 })
 export class InternationalHotelDetailPage
   implements OnInit, OnDestroy, AfterViewInit {
@@ -121,20 +121,22 @@ export class InternationalHotelDetailPage
     this.initQueryModel();
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(() => {
-        this.staffService.isSelfBookType().then(self => {
+        this.staffService.isSelfBookType().then((self) => {
           this.isSelf = self;
           this.canAddPassengers = !self;
         });
         setTimeout(
           () => {
-            this.doRefresh();
+            if (!this.colors || !Object.keys(this.colors).length) {
+              this.doRefresh();
+            }
           },
           this.plt.is("ios") ? 500 : 200
         );
       })
     );
     this.subscriptions.push(
-      this.hotelService.getBookInfoSource().subscribe(bookinfos => {
+      this.hotelService.getBookInfoSource().subscribe((bookinfos) => {
         this.selectedPassengers = bookinfos;
       })
     );
@@ -156,15 +158,15 @@ export class InternationalHotelDetailPage
       component: SelectedPassengersComponent,
       componentProps: {
         bookInfos$: this.hotelService.getBookInfoSource(),
-        removeitem
-      }
+        removeitem,
+      },
     });
     await m.present();
     await m.onDidDismiss();
     removeitem.unsubscribe();
   }
   private observeScrollIsShowHoteldetails() {
-    this.domCtrl.read(_ => {
+    this.domCtrl.read((_) => {
       const el = this.hotelInfoEle && this.hotelInfoEle["el"];
       const trafficInfoEl = this.trafficInfo && this.trafficInfo["el"];
       if (el) {
@@ -215,7 +217,7 @@ export class InternationalHotelDetailPage
     await this.getPolicy();
     const filteredPassenger = this.hotelService
       .getBookInfos()
-      .find(it => it.isFilterPolicy);
+      .find((it) => it.isFilterPolicy);
     this.filterPassengerPolicy(
       filteredPassenger &&
         filteredPassenger.passenger &&
@@ -231,8 +233,8 @@ export class InternationalHotelDetailPage
       translucent: true,
       componentProps: {
         isShowOnlyMatchSwitch: false,
-        bookInfos$: this.hotelService.getBookInfoSource()
-      }
+        bookInfos$: this.hotelService.getBookInfoSource(),
+      },
       // backdropDismiss: false
     });
     await popover.present();
@@ -248,9 +250,9 @@ export class InternationalHotelDetailPage
   private async getPolicy() {
     let roomPlans: RoomPlanEntity[] = [];
     if (this.hotel && this.hotel.Rooms) {
-      this.hotel.Rooms.forEach(r => {
+      this.hotel.Rooms.forEach((r) => {
         if (r.RoomPlans) {
-          r.RoomPlans.forEach(plan => {
+          r.RoomPlans.forEach((plan) => {
             if (!plan.Room) {
               plan.Room = r;
             }
@@ -260,7 +262,7 @@ export class InternationalHotelDetailPage
       });
       this.hotelPolicy = await this.hotelService
         .getHotelPolicy(roomPlans, this.hotel)
-        .catch(_ => null);
+        .catch((_) => null);
       return this.hotelPolicy;
     }
     return [];
@@ -271,14 +273,16 @@ export class InternationalHotelDetailPage
       // console.log("hotelPolicyAsync", hotelPolicy);
       this.colors = {};
       if (hotelPolicy) {
-        const policies = hotelPolicy.find(it => it.PassengerKey == passengerId);
+        const policies = hotelPolicy.find(
+          (it) => it.PassengerKey == passengerId
+        );
         if (policies) {
           if (this.hotel && this.hotel.Rooms) {
-            this.hotel.Rooms.forEach(r => {
+            this.hotel.Rooms.forEach((r) => {
               if (r.RoomPlans) {
-                r.RoomPlans.forEach(plan => {
+                r.RoomPlans.forEach((plan) => {
                   const p = policies.HotelPolicies.find(
-                    it =>
+                    (it) =>
                       it.UniqueIdId ==
                       this.hotelService.getRoomPlanUniqueId(plan)
                   );
@@ -301,9 +305,9 @@ export class InternationalHotelDetailPage
           }
         } else {
           if (this.hotel.Rooms) {
-            this.hotel.Rooms.forEach(r => {
+            this.hotel.Rooms.forEach((r) => {
               if (r.RoomPlans) {
-                r.RoomPlans.forEach(plan => {
+                r.RoomPlans.forEach((plan) => {
                   let color = "";
                   color = "success";
                   this.colors[
@@ -329,7 +333,7 @@ export class InternationalHotelDetailPage
       const temp: {
         [tag: string]: any[];
       } = {};
-      this.hotel.HotelDetails.forEach(d => {
+      this.hotel.HotelDetails.forEach((d) => {
         if (temp[d.Tag]) {
           temp[d.Tag].push(d);
         } else {
@@ -338,12 +342,12 @@ export class InternationalHotelDetailPage
       });
       this.hotelDetails = [];
       const showOpen = `<span class='open-close-arrow'></span>`;
-      Object.keys(temp).forEach(tag => {
+      Object.keys(temp).forEach((tag) => {
         const sep = tag.toLowerCase().includes("facilit")
           ? `<span class='line'>|</span>`
           : ",";
         if (temp[tag] && temp[tag].length) {
-          const description = temp[tag].map(it => it.Description).join(sep);
+          const description = temp[tag].map((it) => it.Description).join(sep);
           let overviewDesc = description;
           const len = 21 * 2;
           const res = description.match(/<\s*(\w+)\s*>.*?<\/\s*\1\s*>/i);
@@ -370,7 +374,7 @@ export class InternationalHotelDetailPage
             Tag: tag,
             Name: temp[tag][0].Name,
             Description: description,
-            OverviewDesc: overviewDesc
+            OverviewDesc: overviewDesc,
           });
         }
       });
@@ -391,26 +395,26 @@ export class InternationalHotelDetailPage
       room,
       roomImages,
       config: this.config,
-      agent: this.agent
+      agent: this.agent,
     };
     this.router.navigate(["international-room-detail"]);
   }
   async onShowRoomImages(room: RoomEntity) {
-    this.hotelService.showImages = this.getRoomImages(room).map(it => {
+    this.hotelService.showImages = this.getRoomImages(room).map((it) => {
       return {
-        url: it
+        url: it,
       };
     });
     this.router.navigate(["international-hotel-show-images"], {
-      queryParams: { hotelName: this.hotel && this.hotel.Name }
+      queryParams: { hotelName: this.hotel && this.hotel.Name },
     });
   }
   getRoomImages(room: RoomEntity) {
     const images = this.hotel && this.hotel.HotelImages;
     if (room && images) {
       const roomImages = images
-        .filter(it => it.Room && it.Room.Id == room.Id)
-        .map(it => it.FullFileName && it.FullFileName);
+        .filter((it) => it.Room && it.Room.Id == room.Id)
+        .map((it) => it.FullFileName && it.FullFileName);
       return roomImages;
     }
   }
@@ -421,7 +425,7 @@ export class InternationalHotelDetailPage
     let result = 0;
     if (room && room.RoomPlans) {
       const arr: number[] = [];
-      room.RoomPlans.forEach(plan => {
+      room.RoomPlans.forEach((plan) => {
         arr.push(this.hotelService.getAvgPrice(plan));
       });
       arr.sort((p1, p2) => p1 - p2);
@@ -451,7 +455,7 @@ export class InternationalHotelDetailPage
   isFullOnly(ps: RoomPlanEntity[]) {
     if (ps && ps.length) {
       return ps.every(
-        p =>
+        (p) =>
           this.hotelService.getRoomPlanUniqueId(p) &&
           this.colors &&
           this.colors[this.hotelService.getRoomPlanUniqueId(p)] &&
@@ -475,14 +479,14 @@ export class InternationalHotelDetailPage
             }
           })
         )
-        .subscribe(res => {
+        .subscribe((res) => {
           console.log("getHotelDetail", res);
           if (res) {
             this.hotel = res;
             if (this.hotel) {
               const name = this.hotel.Name;
               const enName = this.hotel.HotelSummaries.find(
-                it => it.Tag == "Name" && it.Lang == "en"
+                (it) => it.Tag == "Name" && it.Lang == "en"
               );
               this.hotelName = name;
               if (enName) {
@@ -503,7 +507,7 @@ export class InternationalHotelDetailPage
   ngAfterViewInit() {
     this.hideHeader(true);
     this.checkScroll();
-    this.content.getScrollElement().then(c => {
+    this.content.getScrollElement().then((c) => {
       this.scrollEl = c;
       if (this.scrollEl.scrollHeight < 1.31 * this.plt.height()) {
         this.isHeaderHide = true;
@@ -519,7 +523,7 @@ export class InternationalHotelDetailPage
     color: string;
   }) {
     const remove = new EventEmitter<PassengerBookInfo<IHotelInfo>>();
-    const sub = remove.subscribe(info => {
+    const sub = remove.subscribe((info) => {
       const ok = AppHelper.alert(
         LanguageHelper.getConfirmDeleteTip(),
         true,
@@ -535,8 +539,8 @@ export class InternationalHotelDetailPage
       componentProps: {
         forType: FlightHotelTrainType.HotelInternational,
         removeitem: remove,
-        isOpenPageAsModal: true
-      }
+        isOpenPageAsModal: true,
+      },
     });
     m.present();
     await m.onDidDismiss();
@@ -579,9 +583,9 @@ export class InternationalHotelDetailPage
     const policy =
       policies &&
       policies.find(
-        it =>
+        (it) =>
           !!it.HotelPolicies.find(
-            k =>
+            (k) =>
               k.UniqueIdId ==
               this.hotelService.getRoomPlanUniqueId(evt.roomPlan)
           )
@@ -593,7 +597,7 @@ export class InternationalHotelDetailPage
       if (p) {
         const info = this.hotelService
           .getBookInfos()
-          .find(it => it.isFilterPolicy);
+          .find((it) => it.isFilterPolicy);
         if (
           info &&
           info.passenger &&
@@ -623,14 +627,14 @@ export class InternationalHotelDetailPage
       }
     } else {
       const s = this.hotelService.getSearchCondition();
-      bookInfos.forEach(info => {
+      bookInfos.forEach((info) => {
         let bookInfo: IInterHotelInfo;
         bookInfo = {
           hotelEntity: this.hotel,
           hotelRoom: evt.room,
           roomPlan: evt.roomPlan,
           tripType: s.tripType || TripType.checkIn,
-          id: AppHelper.uuid()
+          id: AppHelper.uuid(),
         };
         if (
           !this.checkIfPassengerCanBookRoomPlan(
@@ -647,18 +651,18 @@ export class InternationalHotelDetailPage
         }
         if (bookInfo) {
           const p = policies.find(
-            it => it.PassengerKey == info.passenger.AccountId
+            (it) => it.PassengerKey == info.passenger.AccountId
           );
           const policy2 =
             p &&
             p.HotelPolicies.find(
-              it =>
+              (it) =>
                 it.UniqueIdId ==
                 this.hotelService.getRoomPlanUniqueId(bookInfo.roomPlan)
             );
           if (policy2 && policy2.Rules) {
             const rules = {};
-            policy2.Rules.forEach(r => {
+            policy2.Rules.forEach((r) => {
               rules[AppHelper.uuid()] = r;
             });
             bookInfo.roomPlan.Rules = bookInfo.roomPlan.Rules || rules;
@@ -669,7 +673,7 @@ export class InternationalHotelDetailPage
       if (removedBookInfos.length) {
         AppHelper.alert(
           `${removedBookInfos
-            .map(it => it.credential.Name)
+            .map((it) => it.credential.Name)
             .join(",")}预订信息因差标变化已被删除`
         );
       }
@@ -688,16 +692,16 @@ export class InternationalHotelDetailPage
     if (!roomPlan || !passengerAccountId) {
       return false;
     }
-    const p = policies.find(it => it.PassengerKey == passengerAccountId);
+    const p = policies.find((it) => it.PassengerKey == passengerAccountId);
     if (!p || !p.HotelPolicies) {
       return false;
     }
     const policy = p.HotelPolicies.find(
-      it => this.hotelService.getRoomPlanUniqueId(roomPlan) == it.UniqueIdId
+      (it) => this.hotelService.getRoomPlanUniqueId(roomPlan) == it.UniqueIdId
     );
     const passenger = this.hotelService
       .getBookInfos()
-      .find(it => it.passenger && it.passenger.AccountId == p.PassengerKey);
+      .find((it) => it.passenger && it.passenger.AccountId == p.PassengerKey);
     if (policy && !policy.IsAllowBook) {
       if (passenger && isAlert) {
         AppHelper.alert(`房客${passenger.passenger.Name}超标不可预订`);
@@ -717,13 +721,22 @@ export class InternationalHotelDetailPage
     this.router.navigate(["international-hotel-show-images"], {
       queryParams: {
         hotelName: this.hotelName,
-        initPos: this.curSlideIndx || 0
-      }
+        initPos: this.curSlideIndx || 0,
+      },
     });
   }
-  onOpenCalendar() {
+  async onOpenCalendar() {
     const checkindate = this.queryModel && this.queryModel.checkinDate;
-    return this.hotelService.openCalendar(checkindate);
+    const checkoutDate = this.queryModel && this.queryModel.checkoutDate;
+    await this.hotelService.openCalendar(checkindate);
+    if (this.queryModel) {
+      if (
+        this.queryModel.checkinDate != checkindate ||
+        this.queryModel.checkoutDate != checkoutDate
+      ) {
+        this.onSearch();
+      }
+    }
   }
   onOpenMap() {
     const el = this.trafficInfo && this.trafficInfo["el"];
@@ -769,14 +782,14 @@ export class InternationalHotelDetailPage
     }
   }
   private initQueryModel() {
-    const sub = this.hotelService.getSearchConditionSource().subscribe(c => {
+    const sub = this.hotelService.getSearchConditionSource().subscribe((c) => {
       this.queryModel = c;
       this.calcTotalNights();
     });
     this.subscriptions.push(sub);
   }
   private checkScroll() {
-    this.domCtrl.write(async _ => {
+    this.domCtrl.write(async (_) => {
       const scroll = await this.content.getScrollElement();
       this.scrollEl = scroll;
 
@@ -786,7 +799,7 @@ export class InternationalHotelDetailPage
         this.bgEle.nativeElement.offsetHeight;
       const sub = fromEvent(scroll, "scroll")
         .pipe(debounceTime(10))
-        .subscribe(evt => {
+        .subscribe((evt) => {
           this.domCtrl.read(() => {
             const top = scroll.scrollTop;
             this.observeScrollIsShowHoteldetails();
@@ -809,7 +822,7 @@ export class InternationalHotelDetailPage
     });
   }
   private changeHeaderOpacity(opacity: number) {
-    this.domCtrl.write(_ => {
+    this.domCtrl.write((_) => {
       if (this.ionHeader) {
         if (opacity < 0.01) {
           this.hideHeader(true);
@@ -821,7 +834,7 @@ export class InternationalHotelDetailPage
     });
   }
   private hideHeader(hide: boolean) {
-    this.domCtrl.write(_ => {
+    this.domCtrl.write((_) => {
       if (this.ionHeader) {
         this.render.setStyle(
           this.ionHeader["el"],
@@ -832,7 +845,7 @@ export class InternationalHotelDetailPage
     });
   }
   private initHotelImages() {
-    this.hotelImages = this.getHotelImages().map(it => {
+    this.hotelImages = this.getHotelImages().map((it) => {
       return { imageUrl: it };
     });
   }
@@ -840,7 +853,7 @@ export class InternationalHotelDetailPage
     return (
       (this.hotel &&
         this.hotel.HotelImages &&
-        this.hotel.HotelImages.map(it => {
+        this.hotel.HotelImages.map((it) => {
           return it.FullFileName;
         })) ||
       []
@@ -850,8 +863,8 @@ export class InternationalHotelDetailPage
   private initConfig() {
     this.configService
       .getConfigAsync()
-      .catch(_ => null)
-      .then(c => {
+      .catch((_) => null)
+      .then((c) => {
         this.config = c;
       });
   }
