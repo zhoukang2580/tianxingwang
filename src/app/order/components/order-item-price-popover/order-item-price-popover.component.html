@@ -3,6 +3,13 @@
     <ion-slide *ngFor='let t of order?.OrderFlightTickets'>
       <ion-grid>
         <div style="font-size:0.9rem">
+          <ion-row *ngIf="getPassenger(t)">
+            <ion-col style="font-size:1rem">
+              <ion-text>
+                {{getPassenger(t)?.Name}}
+              </ion-text>
+            </ion-col>
+          </ion-row>
           <ion-row *ngIf="t.Id">
             <ion-col class="ion-text-nowrap">
               事务号

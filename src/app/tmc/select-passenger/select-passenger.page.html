@@ -66,10 +66,10 @@
               <ion-label>
                 {{item.Type|credential}}
               </ion-label>
-              <ion-radio slot='end' name='credentialType' mode='md' class="ion-margin-end" value="{{item.Id}}">
+              <ion-radio slot='end' name='credentialType' disabled="disabled" style="opacity:1" mode='md' class="ion-margin-end" value="{{item.Id}}">
               </ion-radio>
             </ion-item-divider>
-            <ion-item lines='none' (click)='onSelectCredential(item.Id)' [@flyInOut] 
+            <ion-item lines='none'[@flyInOut] 
             *ngIf='selectedCredentialId ==item.Id'>
               <div class='credential-item'>
                 <ion-row>
@@ -130,10 +130,10 @@
               <ion-text *ngIf='!vmNewCredential?.isNotWhiteList'>此人其他证件：</ion-text>
               <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>证件：</ion-text>
             </ion-label>
-            <ion-radio slot='end' class="ion-margin-end" name='credentialType' value="{{vmNewCredential?.Id}}">
+            <ion-radio slot='end' class="ion-margin-end" disabled="disabled" style="opacity:1" mode='md' name='credentialType' value="{{vmNewCredential?.Id}}">
             </ion-radio>
           </ion-item-divider>
-          <ion-grid #addForm (click)='onSelectCredential(vmNewCredential?.Id)' [@flyInOut] 
+          <ion-grid #addForm [@flyInOut] 
           *ngIf='selectedCredentialId ==vmNewCredential.Id'>
             <app-credentials-comp [(credential)]='vmNewCredential'></app-credentials-comp>
             <ion-row>
@@ -166,10 +166,10 @@
                 <!-- {{item.Type|credential}} -->
                 {{item?.Surname}}{{item?.Givenname}}
               </ion-label>
-              <ion-radio slot='end' name='credentialType' class="ion-margin-end" value="{{item.Id}}">
+              <ion-radio slot='end' name='credentialType' disabled="disabled" style="opacity:1" mode='md' class="ion-margin-end" value="{{item.Id}}">
               </ion-radio>
             </ion-item-divider>
-            <ion-item lines='none' (click)='onSelectCredential(item.Id)'  [@flyInOut] 
+            <ion-item lines='none'[@flyInOut] 
             *ngIf='selectedCredentialId ==item.Id'>
               <div class='credential-item'>
                 <ion-row>
