@@ -66,7 +66,7 @@ export class AppHelper {
     AppHelper.fileService = fileService;
   }
   static getAppVersion() {
-    return this.fileService && this.fileService.getAppVersion();
+    return this.fileService && this.fileService.getRunningVersion();
   }
   static setToastController(toastController: ToastController) {
     this.toastController = toastController;

@@ -39,9 +39,7 @@ export class AccountSettingPage implements OnInit, OnDestroy {
     this.themeService.setModeSource(this.isDarkMode ? "dark" : "light")
   }
   private async getVersion() {
-    this.appVersion = AppHelper.isApp()
-      ? AppHelper.getHcpVersion() || (await AppHelper.getAppVersion())
-      : "";
+    this.appVersion = AppHelper.isApp() ? await AppHelper.getAppVersion() : "";
   }
   logout() {
     this.loginService.logout();
