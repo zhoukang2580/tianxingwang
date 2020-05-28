@@ -776,33 +776,33 @@ export class InternationalFlightService {
         }
       }
     }
-    if (!environment.production && !forceFetch) {
-      let result = this.flightListResult;
-      if (!result || !result.FlightRoutes || !result.FlightRoutes.length) {
-        result = MockInternationalFlightListData as any;
-        this.flightPolicyResult = await this.checkRoutePolicy(result);
-        if (this.flightPolicyResult && this.flightPolicyResult.FlightFares) {
-          result.FlightFares = result.FlightFares.map((it) => {
-            const one = this.flightPolicyResult.FlightFares.find(
-              (i) => i.Id == it.Id
-            );
-            if (one) {
-              it.Rules = one.Rules;
-              it.IsAllowOrder = one.IsAllowOrder;
-            }
-            return it;
-          });
-        }
-        result = this.initFlightRouteSegments(result);
-        this.flightListResult = result;
-        await this.initParagraphCondition(result);
-      }
-      if (!keepFilterCondition) {
-        await this.initParagraphCondition(result);
-      }
-      result = this.filterByCondition(result);
-      return result;
-    }
+    // if (!environment.production && !forceFetch) {
+    //   let result = this.flightListResult;
+    //   if (!result || !result.FlightRoutes || !result.FlightRoutes.length) {
+    //     result = MockInternationalFlightListData as any;
+    //     this.flightPolicyResult = await this.checkRoutePolicy(result);
+    //     if (this.flightPolicyResult && this.flightPolicyResult.FlightFares) {
+    //       result.FlightFares = result.FlightFares.map((it) => {
+    //         const one = this.flightPolicyResult.FlightFares.find(
+    //           (i) => i.Id == it.Id
+    //         );
+    //         if (one) {
+    //           it.Rules = one.Rules;
+    //           it.IsAllowOrder = one.IsAllowOrder;
+    //         }
+    //         return it;
+    //       });
+    //     }
+    //     result = this.initFlightRouteSegments(result);
+    //     this.flightListResult = result;
+    //     await this.initParagraphCondition(result);
+    //   }
+    //   if (!keepFilterCondition) {
+    //     await this.initParagraphCondition(result);
+    //   }
+    //   result = this.filterByCondition(result);
+    //   return result;
+    // }
     if (!m || !forceFetch) {
       if (
         this.flightListResult &&
@@ -810,11 +810,11 @@ export class InternationalFlightService {
         this.flightListResult.FlightSegments.length
       ) {
         let result = this.flightListResult;
-        const data = this.initFlightRouteSegments(result);
+        result=this.initParagraphFlightRoutes(result);
         if (!keepFilterCondition) {
-          await this.initParagraphCondition(data);
+          await this.initParagraphCondition(result);
         }
-        result = this.filterByCondition(data);
+        result = this.filterByCondition(result);
         return result;
       }
     }
@@ -1203,10 +1203,36 @@ export class InternationalFlightService {
             return (
               r.toSegment &&
               toAirports.some(
-                (fa) => fa.ToAirportName == r.fromSegment.ToAirportName
+                (fa) => fa.ToAirportName == r.toSegment.ToAirportName
               )
             );
           });
+        }
+      }
+    }
+    return data;
+  }
+  private initParagraphFlightRoutes(data: FlightResultEntity) {
+    if (data && data.FlightRoutesData) {
+      const m = this.searchModel;
+      if (m) {
+        const routeIds = m.trips
+          .filter((it) => it.bookInfo && !!it.bookInfo.flightRoute)
+          .map((it) => it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id)
+          .filter((it) => !!it);
+        const rids = routeIds.join(",");
+        if (!routeIds.length) {
+          data.FlightRoutes = data.FlightRoutesData.filter(
+            (r) => r.Paragraphs == 1
+          );
+        } else {
+          const fares = data.FlightFares.filter((it) => {
+            const temp = it.FlightRouteIds || [];
+            return temp.slice(0, routeIds.length).join(",") === rids;
+          });
+          data.FlightRoutes = data.FlightRoutesData.filter((it) =>
+            fares.some((f) => f.FlightRouteIds[routeIds.length] == it.Id)
+          );
         }
       }
     }
@@ -1221,25 +1247,8 @@ export class InternationalFlightService {
     condition.isFilter = false;
     condition.timeSpan = { lower: 0, upper: 24 };
     condition.isDirectFly = false;
-    if (data && data.FlightRoutesData) {
-      const routeIds = m.trips
-        .filter((it) => it.bookInfo && !!it.bookInfo.flightRoute)
-        .map((it) => it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id)
-        .filter((it) => !!it);
-      const rids = routeIds.join(",");
-      if (!routeIds.length) {
-        data.FlightRoutes = data.FlightRoutesData.filter(
-          (r) => r.Paragraphs == 1
-        );
-      } else {
-        const fares = data.FlightFares.filter((it) => {
-          const temp = it.FlightRouteIds || [];
-          return temp.slice(0, routeIds.length).join(",") === rids;
-        });
-        data.FlightRoutes = data.FlightRoutesData.filter((it) =>
-          fares.some((f) => f.FlightRouteIds[routeIds.length] == it.Id)
-        );
-      }
+    if (data && data.FlightRoutesData && m) {
+      data = this.initParagraphFlightRoutes(data);
       data.FlightRoutes.forEach((r) => {
         if (r.fromSegment) {
           const s = r.fromSegment;
@@ -1280,6 +1289,10 @@ export class InternationalFlightService {
             });
           }
         }
+        const routeIds = m.trips
+          .filter((it) => it.bookInfo && !!it.bookInfo.flightRoute)
+          .map((it) => it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id)
+          .filter((it) => !!it);
         const fares = data.FlightFares.filter((it) => {
           const temp = it.FlightRouteIds || [];
           return temp.join(",") === [...routeIds, r.Id].join(",");

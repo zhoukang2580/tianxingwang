@@ -212,16 +212,21 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       //  });
     }
   }
-  private getDate() {
-    const m = this.calendarService.getMoment(
-      0,
-      ((this.trip && this.trip.StartDate) || "").substr(0, 10)
-    );
+  private getDate(date: string) {
+    const m = this.calendarService.getMoment(0, (date || "").substr(0, 10));
     const m2 = this.calendarService.getMoment(
       0,
       this.calendarService.getMoment(0).format("YYYY-MM-DD")
     );
     return +m > +m2 ? m.format("YYYY-MM-DD") : m2.format("YYYY-MM-DD");
+  }
+  private addOneDate(date: string) {
+    const m = this.calendarService.getMoment(0, (date || "").substr(0, 10));
+    const m2 = this.calendarService.getMoment(
+      1,
+      this.calendarService.getMoment(0).format("YYYY-MM-DD")
+    );
+    return +m >= +m2 ? m.format("YYYY-MM-DD") : m2.format("YYYY-MM-DD");
   }
   getFlight(a) {
     if (a.VariablesJsonObj) {
@@ -238,8 +243,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
         ToAsAirport: false,
         isLocked: true,
         isRoundTrip: this.trip.IsBackway,
-        Date: this.getDate(),
-        BackDate: (this.trip.EndDate || "").substr(0, 10),
+        Date: this.getDate(this.trip.StartDate),
+        BackDate: this.addOneDate(this.trip.EndDate),
       });
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true },
@@ -254,8 +259,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       const fromCity: TrafficlineEntity = a.VariablesJsonObj.City || {};
       this.internationalHotelService.setSearchConditionSource({
         ...this.internationalHotelService.getSearchCondition(),
-        checkinDate: this.getDate(),
-        checkoutDate: (this.trip.EndDate || "").substr(0, 10),
+        checkinDate: this.getDate(this.trip.StartDate),
+        checkoutDate: this.addOneDate(this.trip.EndDate),
         destinationCity: fromCity,
         country: countries.find((it) => it.Code == fromCity.CountryCode),
         adultCount: 1,
@@ -275,8 +280,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       // const fromCity: TrafficlineEntity = a.VariablesJsonObj.City || {};
       this.hotelService.setSearchHotelModel({
         ...this.hotelService.getSearchHotelModel(),
-        checkInDate: this.getDate(),
-        checkOutDate: (this.trip.EndDate || "").substr(0, 10),
+        checkInDate: this.getDate(this.trip.StartDate),
+        checkOutDate: this.addOneDate(this.trip.EndDate),
         destinationCity: toCity,
         hotelType: "normal",
       });
@@ -296,7 +301,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
         a.VariablesJsonObj.FromStationCity || {};
       this.trainService.setSearchTrainModelSource({
         ...this.trainService.getSearchTrainModel(),
-        Date: this.getDate(),
+        Date: this.getDate(this.trip.StartDate),
         FromStation: a.VariablesJsonObj.FromStationCity.Code,
         fromCity,
         toCity,
@@ -345,6 +350,6 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     this.vmRegionTypes = this.vmRegionTypes.filter((it) =>
       approvals.some((a) => a == it.value)
     );
-    this.trip.travelTools=[];
+    this.trip.travelTools = [];
   }
 }
