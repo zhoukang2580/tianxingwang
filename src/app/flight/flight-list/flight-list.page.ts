@@ -117,7 +117,6 @@ export class FlightListPage
   implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
-  private backFromDetail = false;
   lowestPriceSegments: FlightSegmentEntity[];
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
@@ -212,10 +211,9 @@ export class FlightListPage
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.showAddPassenger = await this.canShowAddPassenger();
       console.log("this.route.queryParamMap", this.searchFlightModel, d);
-      if (d && d.get("doRefresh") == "true" && !this.backFromDetail) {
+      if (d && d.get("doRefresh") == "true") {
         this.doRefresh(true, false);
       }
-      this.backFromDetail = false;
       const filteredBookInfo = this.flightService
         .getPassengerBookInfos()
         .find((it) => it.isFilterPolicy);
@@ -501,7 +499,6 @@ export class FlightListPage
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
     this.isCanLeave = true;
-    this.backFromDetail = true;
     await this.flightService.addOneBookInfoToSelfBookType();
     this.flightService.currentViewtFlightSegment = fs;
     this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
