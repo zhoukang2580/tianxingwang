@@ -1,11 +1,11 @@
 var exec = require("cordova/exec");
-exports.isAliPayAppInstalled = (appName) => {
+exports.isAliPayInstalled = (appName) => {
   return new Promise((resolve, reject) => {
       exec(function(res) {
           resolve(res);
       }, function(error) {
           reject(error)
-      }, 'Ali', 'isAliPayAppInstalled', [appName]);
+      }, 'Ali', 'isAliPayInstalled', [appName]);
   })
 }
 exports.pay = function (arg0) {
