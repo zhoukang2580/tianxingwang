@@ -256,7 +256,7 @@ export class FileHelperService {
     } else {
       // this.loadiosHcpPage(newVersionPagePath);
       setTimeout(() => {
-        this.hcpPlugin.openHcpPage(newVersionPagePath);
+        this.hcpPlugin.loadHcpPage();
       }, 0);
     }
   }
