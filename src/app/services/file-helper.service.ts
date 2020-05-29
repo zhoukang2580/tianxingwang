@@ -157,12 +157,14 @@ export class FileHelperService {
     let version = "";
     try {
       const installVersion = await this.getInstallAppVersionNumber();
+      console.log("安装的版本 " + installVersion);
       version = installVersion;
       const hcpDirPath = await this.getWebViewUrl();
+      console.log("当前正在运行的路径：" + hcpDirPath);
       if (hcpDirPath && hcpDirPath.match(/\d_\d_\d/)) {
         version = hcpDirPath.match(/\d_\d_\d/)[0];
-        if(version){
-          version=version.replace(/_/g,'.');
+        if (version) {
+          version = version.replace(/_/g, ".");
         }
       }
     } catch (e) {
@@ -257,7 +259,7 @@ export class FileHelperService {
       // this.loadiosHcpPage(newVersionPagePath);
       setTimeout(() => {
         this.hcpPlugin.loadHcpPage();
-      }, 0);
+      }, 200);
     }
   }
   private async getPackageName() {
