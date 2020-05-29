@@ -871,17 +871,31 @@ export class InternationalFlightService {
       })
       .then((policyResult) => {
         this.flightPolicyResult = policyResult;
-        if (policyResult && policyResult.FlightFares) {
-          this.flightListResult.FlightFares = this.flightListResult.FlightFares.map(
-            (it) => {
-              const one = policyResult.FlightFares.find((i) => i.Id == it.Id);
-              if (one) {
-                it.Rules = one.Rules;
-                it.IsAllowOrder = one.IsAllowOrder;
+        if (policyResult) {
+          if(policyResult.FlightFares){
+            this.flightListResult.FlightFares = this.flightListResult.FlightFares.map(
+              (it) => {
+                const one = policyResult.FlightFares.find((i) => i.Id == it.Id);
+                if (one) {
+                  it.Rules = one.Rules;
+                  it.IsAllowOrder = one.IsAllowOrder;
+                }
+                return it;
               }
-              return it;
-            }
-          );
+            );
+          }
+          if(policyResult.FlightRoutes){
+            this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
+              (r) => {
+                const one = policyResult.FlightRoutes.find((i) => i.Id == r.Id);
+                if (one) {
+                  // r.Rules = one.Rules;
+                  r.IsAllowOrder = one.IsAllowOrder;
+                }
+                return r;
+              }
+            );
+          }
         }
         this.flightListResult = this.initFlightRouteSegments(
           this.flightListResult

@@ -68,13 +68,16 @@
               </ion-button>
               <div style="display: flex;align-items: center;">
                 <ion-text color='danger'>￥{{f.SalesPrice}}<ng-container *ngIf='f.Variables?.AccountCode'>
-                  <ion-text color='secondary'>协</ion-text>
-                </ng-container>
+                    <ion-text color='secondary'>协</ion-text>
+                  </ng-container>
                   <ng-container *ngIf='f.TypeName'>
-                  <ion-text color='medium' style="font-size:0.8rem;">({{f.TypeName}})</ion-text>
-                </ng-container></ion-text>
-                <ion-button style="margin-left:.5em;" (click)='onSelectTrip(flight,f)' color='secondary' fill='solid' expand='block' size='small'>
-                  预订</ion-button>
+                    <ion-text color='medium' style="font-size:0.8rem;">({{f.TypeName}})</ion-text>
+                  </ng-container>
+                </ion-text>
+                <ion-button style="margin-left:.5em;" (click)='onSelectTrip(flight,f)' [disabled]='!flight.IsAllowOrder'
+                  color='{{flight.IsAllowOrder?"secondary":"danger"}}' fill='solid' expand='block' size='small'>
+                <ion-text color='light'>预订</ion-text>  
+                </ion-button>
               </div>
             </ion-buttons>
             <div *ngIf='(f.policy?.Message||f.ruleMessage)' style="font-size: 0.6rem;text-indent: 1.1em;">
