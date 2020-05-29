@@ -34,6 +34,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isMobileNumberOk = false;
   isLoginOk = false;
   eyeOn = false;
+  isKeyboardShow = false;
   eyeType = "password";
   isShowWechatLogin: boolean = false;
   isShowImageCode: boolean;
@@ -73,6 +74,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngAfterViewInit() {
+    this.listenKeyboard();
     this.identityService.getIdentityAsync().then((identity) => {
       console.log("login page ngAfterViewInit identity", identity);
     });
@@ -80,6 +82,21 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => {
       this.autoLogin();
     }, 0);
+  }
+  private listenKeyboard() {
+    const innerHeight = window.innerHeight;
+    window.addEventListener("resize", () => {
+      const newInnerHeight = window.innerHeight;
+      if (innerHeight > newInnerHeight) {
+        // 键盘弹出事件处理
+        // alert("android 键盘弹窗事件");
+        this.isKeyboardShow = true;
+      } else {
+        // 键盘收起事件处理
+        // alert("android 键盘收起事件处理");
+        this.isKeyboardShow = false;
+      }
+    });
   }
   private async dismissAllOverlayer() {
     let i = 10;

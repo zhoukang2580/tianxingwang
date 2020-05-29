@@ -1,5 +1,8 @@
-ion-header ion-toolbar {
+ion-toolbar {
   padding-top: 2em;
+  &.keyboard-show {
+    padding-top: 0em;
+  }
 }
 img.logo {
   max-height: 4em;
@@ -23,6 +26,11 @@ ion-input {
 ion-list.container {
   height: 100%;
   margin-bottom: 0;
+}
+.container {
+  max-height: 100%;
+  overflow-y: auto;
+  height: 100%;
 }
 ion-segment {
   &.ios {
