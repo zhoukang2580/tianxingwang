@@ -17,7 +17,7 @@ import { environment } from "src/environments/environment";
 @Component({
   selector: "app-login",
   templateUrl: "./login.page.html",
-  styleUrls: ["./login.page.scss"]
+  styleUrls: ["./login.page.scss"],
 })
 export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   loginEntity: RequestEntity;
@@ -39,9 +39,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isShowImageCode: boolean;
   SlideEventType: string;
   environment = environment;
+  isApp = AppHelper.isApp();
   private mockDeviceInfo = {
     Device: `accw125487df1254accw125487df1254`,
-    DeviceName: `pc模拟测试`
+    DeviceName: `pc模拟测试`,
   };
   constructor(
     private loginService: LoginService,
@@ -52,12 +53,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private modalCtrl: ModalController
   ) {
-    AppHelper.isWXAppInstalled().then(installed => {
+    AppHelper.isWXAppInstalled().then((installed) => {
       this.isShowWechatLogin = installed;
     });
-    route.queryParamMap.subscribe(_ => {
+    route.queryParamMap.subscribe((_) => {
       setTimeout(() => {
-        this.configService.getConfigAsync().then(c => {
+        this.configService.getConfigAsync().then((c) => {
           this.config = c;
         });
       }, 1000);
@@ -72,9 +73,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngAfterViewInit() {
-    this.identityService.getIdentityAsync().then(identity => {
+    this.identityService.getIdentityAsync().then((identity) => {
       console.log("login page ngAfterViewInit identity", identity);
-    })
+    });
     this.dismissAllOverlayer();
     setTimeout(() => {
       this.autoLogin();
@@ -86,7 +87,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     while (--i > 0 && t) {
       t = await this.modalCtrl.getTop();
       if (t) {
-        await t.dismiss().catch(_ => { });
+        await t.dismiss().catch((_) => {});
       }
     }
   }
@@ -103,7 +104,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.identitySubscription = this.identityService
       .getIdentitySource()
-      .subscribe(r => {
+      .subscribe((r) => {
         this.identity = r;
       });
     // this.fileInfo=this.fileService.fileInfo;
@@ -116,7 +117,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       Mobile: [null], // 手机号
       WechatCode: [null],
       SdkType: [null],
-      DingtalkCode: [null]
+      DingtalkCode: [null],
     });
     this.form.controls["Mobile"].valueChanges.subscribe((m: string) => {
       this.isMobileNumberOk = `${m}`.length >= 11;
@@ -134,7 +135,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.setLoginButton();
   }
   private autoLogin() {
-    this.identityService.getStatus().subscribe(ok => {
+    this.identityService.getStatus().subscribe((ok) => {
       console.log("this.identityService.getStatus() ok = " + ok);
       if (!ok) {
         if (AppHelper.isApp()) {
@@ -240,7 +241,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
             })
           )
           .subscribe(
-            r => {
+            (r) => {
               if (!r.Ticket) {
               } else {
                 AppHelper.setStorage("loginname", this.loginEntity.Data.Name);
@@ -248,7 +249,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
                 this.jump(true);
               }
             },
-            e => {
+            (e) => {
               AppHelper.alert(e);
             }
           );
@@ -277,12 +278,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
             })
           )
           .subscribe(
-            r => {
+            (r) => {
               if (r.Ticket) {
                 this.jump(true);
               }
             },
-            e => {
+            (e) => {
               this.message = e;
             }
           );
@@ -301,7 +302,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
               this.hideLoadingStatus();
             })
           )
-          .subscribe(r => {
+          .subscribe((r) => {
             if (r.Ticket) {
               this.jump(true);
             }
@@ -323,12 +324,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
             })
           )
           .subscribe(
-            r => {
+            (r) => {
               if (r.Ticket) {
                 this.jump(true);
               }
             },
-            e => {
+            (e) => {
               AppHelper.alert("wechat登录失败，" + JSON.stringify(e));
             }
           );
@@ -351,7 +352,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
             })
           )
           .subscribe(
-            r => {
+            (r) => {
               if (!r.Ticket) {
                 this.loginType = "user";
               } else {
@@ -368,7 +369,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   // 发生手机验证码
   startCountDonw(count: number) {
     this.countDown = count;
-    const intervalSubscribtion = interval(1000).subscribe(v => {
+    const intervalSubscribtion = interval(1000).subscribe((v) => {
       this.countDown--;
       if (this.countDown <= 0) {
         this.countDown = 0;
@@ -386,7 +387,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     const subscription = this.loginService
       .sendMobileCode(this.form.value.Mobile)
       .subscribe(
-        r => {
+        (r) => {
           if (!r.Status && r.Message) {
             AppHelper.alert(r.Message);
             return;
@@ -396,7 +397,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           }
           this.message = r.Message;
         },
-        e => {
+        (e) => {
           this.message =
             e instanceof Error ? e.message : typeof e === "string" ? e : e;
         },

@@ -379,7 +379,7 @@ export class AppHelper {
     await AppHelper.platform.ready();
     if (window["ali"]) {
       return window["ali"]
-        .isAlipayAppInstalled()
+        .isAliPayInstalled()
         .then(() => true)
         .catch(() => false);
     }

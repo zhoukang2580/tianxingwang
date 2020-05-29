@@ -1,13 +1,12 @@
+ion-header ion-toolbar {
+  padding-top: 2em;
+}
 ion-content {
   ion-list {
     height: 100%;
   }
-  ion-input{
-    --background:transparent;
-  }
-  ion-toolbar:first-child {
-    margin: 0 auto 3vh;
-    padding-top: 10vh;
+  ion-input {
+    --background: transparent;
   }
   .err-msg {
     ion-label {
@@ -21,13 +20,10 @@ ion-content {
     width: 90%;
   }
 
- img.logo {
+  img.logo {
     max-height: 4em;
     max-width: 10em;
     object-fit: cover;
-  }
-  form {
-    margin-top: 1em;
   }
   ion-list {
     margin-bottom: 0;
