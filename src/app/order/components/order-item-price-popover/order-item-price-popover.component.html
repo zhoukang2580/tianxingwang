@@ -14,7 +14,7 @@
             <ion-col class="ion-text-nowrap">
               事务号
               <span>{{t.Id}}</span>
-              <span> ({{t.StatusName}})</span>
+              <ion-text color="medium"> ({{t.StatusName}})</ion-text>
             </ion-col>
           </ion-row>
           <ion-row *ngFor="let o of getOrderFees(t)" >
@@ -32,10 +32,7 @@
           </ion-row>
           <ion-row>
             <ion-col size='7'>总计</ion-col>
-            <ion-col class='price total'>
-            <span class='amount'>{{getPriceAmount(t)}}</span>
-            </ion-col>
-            <ion-col size='1'>元</ion-col>
+            <ion-col class='price'>{{getPriceAmount(t)}}元</ion-col>
           </ion-row>
         </div>
       </ion-grid>

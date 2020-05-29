@@ -37,14 +37,18 @@
               <ion-col size='3'>应付金额</ion-col>
               <ion-col>
                 <div>
-                  {{orderDetail.orderTotalAmount}}
-                  <span *ngIf='orderDetail.insuranceAmount'>(含保险{{orderDetail.insuranceAmount}})</span>
+                  <ion-text *ngIf="orderDetail.orderTotalAmount!=0" color="danger">￥{{orderDetail.orderTotalAmount}}
+                  </ion-text>
+                  <ion-text *ngIf="orderDetail.orderTotalAmount==0" color="dark">- -</ion-text>
+                  <!-- {{orderDetail.orderTotalAmount}} -->
+                  <ion-text *ngIf='orderDetail.insuranceAmount' color="danger">(含保险{{orderDetail.insuranceAmount}})</ion-text>
+                  <ion-text color="secondary" style="font-size: 0.7rem;">应付明细</ion-text>
                 </div>
               </ion-col>
-              <ion-col size='2'>
+              <!-- <ion-col size='2'>
                 <ion-icon name="chevron-forward-outline" mode='ios'>
                 </ion-icon>
-              </ion-col>
+              </ion-col> -->
             </ion-row>
             <ng-container>
               <ng-container *ngIf='tmc?.IsShowServiceFee'>

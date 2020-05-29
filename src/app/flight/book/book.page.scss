@@ -89,6 +89,7 @@ ion-item-group {
   opacity   : 0;
   max-width: 100%;
   width: 100%;
+  will-change: transform;
   &.show {
     z-index  : 1;
     opacity  : 1;

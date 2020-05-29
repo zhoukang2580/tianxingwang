@@ -35,7 +35,7 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
   tmc: TmcEntity;
   IsShowServiceFee = false;
   activeIdx = 0;
-  constructor(private render: Renderer2, private ngZone: NgZone) {}
+  constructor(private render: Renderer2, private ngZone: NgZone) { }
   abs(item: number) {
     return Math.abs(item);
   }
@@ -128,6 +128,11 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       this.order.VariablesJsonObj.orderFees[t.Id].forEach(
         (f) => (this.amount += f.Value)
       );
+      if( this.getInsurances(t)){
+        this.getInsurances(t).forEach(
+          (i) => (this.amount += parseInt(i.Premium))
+        );
+      }
     }
     // console.log(this.amount,"this.amount");
     return this.amount;

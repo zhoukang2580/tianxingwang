@@ -10,14 +10,15 @@
         </div>
       </div>
       <div class="item">
-        <div [style.align-self]='order["checkPay"]?"center":""'>金额</div>
+        <div [style.align-self]='order["checkPay"]?"center":""'>应付</div>
         <div style="display: flex;align-items: center;">
           <ion-text color='danger' class="ion-text-nowrap">
-            <ion-text>￥{{order.TotalAmount}}</ion-text>
+            <ion-text *ngIf="order.TotalAmount!='0'">￥{{order.TotalAmount}}</ion-text>
+            <ion-text *ngIf="order.TotalAmount=='0'" color="dark">- -</ion-text>
             <ion-text *ngIf='order.OrderInsurances?.length'>(含保险)</ion-text>
           </ion-text>
           <span>
-            <ion-text color='secondary' class="ion-text-nowrap">
+            <ion-text color="medium" class="ion-text-nowrap">
               ({{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}})
             </ion-text>
           </span>
@@ -39,7 +40,7 @@
                 <div>
                   <span>{{trip.OrderFlightTicket.Passenger.Name}}</span>
                   <span>
-                    <ion-text color='secondary'>({{t.StatusName}})</ion-text>
+                    <ion-text color='medium'>({{t.StatusName}})</ion-text>
                   </span>
                 </div>
                 <ng-container>
@@ -114,16 +115,17 @@
         </ion-row>
         <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center;">
           <ion-col size='2'>
-            <ion-text color="medium"> 金额</ion-text>
+            <ion-text color="medium"> 应付</ion-text>
           </ion-col>
           <ion-col>
             <ion-text color='danger'>
-              ￥{{order.TotalAmount}}
+                <ion-text *ngIf="order.TotalAmount!='0'">￥{{order.TotalAmount}}</ion-text>
+                <ion-text *ngIf="order.TotalAmount=='0'" color="dark">- -</ion-text>
               <span *ngIf="order.OrderInsurances?.length">
                 (含保险)
               </span>
             </ion-text>
-            <ion-text color='secondary'>
+            <ion-text color='medium'>
               （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
             </ion-text>
             <ng-container *ngIf='order.VariablesJsonObj.isPay'>
@@ -154,7 +156,7 @@
                   <ion-text>
                     {{p.Name}}
                   </ion-text>
-                  <ion-text color='secondary' class="ion-padding-end">({{orderTrainTicket.StatusName}})</ion-text>
+                  <ion-text color='medium' class="ion-padding-end">({{orderTrainTicket.StatusName}})</ion-text>
                   <ng-container *ngIf='orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn'>
                     <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary'
                       *ngIf='orderTrainTicket.VariablesJsonObj.isShowExchangeButton'>
@@ -211,17 +213,18 @@
         </ion-row>
         <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center">
           <ion-col size='2'>
-            <ion-text color="medium"> 金额</ion-text>
+            <ion-text color="medium"> 应付</ion-text>
           </ion-col>
           <ion-col>
             <div style="align-items: center;display: flex;">
               <ion-text color='danger'>
-                ￥{{order.TotalAmount}}
+                  <ion-text *ngIf="order.TotalAmount!='0'">￥{{order.TotalAmount}}</ion-text>
+                  <ion-text *ngIf="order.TotalAmount=='0'" color="dark">- -</ion-text>
               </ion-text>
               <ion-text color='medium'>
                 {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
               </ion-text>
-              <ion-text color='secondary'>
+              <ion-text color='medium'>
                 （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
               </ion-text>
               <ion-button *ngIf='order["checkPay"]' (click)='onPay($event)' size='small' color='secondary'>去支付
@@ -239,7 +242,7 @@
                 <span>
                   {{p.Name}}
                 </span>
-                <ion-text color="secondary">
+                <ion-text color="medium">
                   （{{orderHotel.StatusName}}）
                 </ion-text>
               </div>
