@@ -1,5 +1,9 @@
 package com.beeant.plugin.ali;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -25,9 +29,27 @@ public class Ali extends CordovaPlugin {
             pay(payInfo, callbackContext);
             return true;
         }
+        if (TextUtils.equals("isAliPayInstalled", action)) {
+            if(isAliPayInstalled(cordova.getContext())){
+                callbackContext.success("ok");
+            }else{
+                callbackContext.error("not install");
+            }
+            return true;
+        }
         return super.execute(action, args, callbackContext);
     }
-
+    /**
+     * 检测是否安装支付宝
+     * @param context
+     * @return
+     */
+    public static boolean isAliPayInstalled(Context context) {
+        Uri uri = Uri.parse("alipays://platformapi/startApp");
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        ComponentName componentName = intent.resolveActivity(context.getPackageManager());
+        return componentName != null;
+    }
     private void pay(String orderInfo, CallbackContext callbackContext) {// 订单信息
         // 必须异步调用
         cordova.getThreadPool().execute(() -> {
