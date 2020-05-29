@@ -60,7 +60,8 @@
           <ion-item-divider color="primary">旅客信息:</ion-item-divider>
           <app-book-credential-comp [credential]='combindInfo.vmCredential'
             (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
-            (modify)='onModify(combindInfo)' (managementCredentials)='onManagementCredentials()' [isNotWihte]='combindInfo.bookInfo.isNotWhitelist'
+            (modify)='onModify(combindInfo)' (managementCredentials)='onManagementCredentials()'
+            [isNotWihte]='combindInfo.bookInfo.isNotWhitelist'
             [canMaintainCredentials]='combindInfo.credentials?.length==0||!combindInfo.vmCredential'
             [attr.credentialcompid]='combindInfo.id'>
           </app-book-credential-comp>
@@ -166,35 +167,37 @@
           </ion-item-group>
         </ng-container>
       </ion-list>
-      <ion-item-group>
-        <ion-item-divider color="primary">
-          添加联系人:
-        </ion-item-divider>
-        <ion-item>
-          <app-book-addcontacts-comp [(contacts)]='addContacts'>
-          </app-book-addcontacts-comp>
-        </ion-item>
-      </ion-item-group>
-      <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
-        <ion-item-divider color="primary">
-          支付方式：
-        </ion-item-divider>
-        <ion-item>
-          <div style='width: 100%'>
-            <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
-              <ion-item *ngFor='let pt of orderTravelPayTypes'>
-                <ion-label>{{pt.label}}
-                  <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>
-                    (请在20分钟内完成支付)
-                  </ng-container>
-                </ion-label>
-                <ion-radio [value]="pt.value">
-                </ion-radio>
-              </ion-item>
-            </ion-radio-group>
-          </div>
-        </ion-item>
-      </ion-item-group>
+      <ion-list>
+        <ion-item-group>
+          <ion-item-divider color="primary">
+            添加联系人:
+          </ion-item-divider>
+          <ion-item>
+            <app-book-addcontacts-comp [(contacts)]='addContacts'>
+            </app-book-addcontacts-comp>
+          </ion-item>
+        </ion-item-group>
+        <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
+          <ion-item-divider color="primary">
+            支付方式：
+          </ion-item-divider>
+          <ion-item>
+            <div style='width: 100%'>
+              <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
+                <ion-item *ngFor='let pt of orderTravelPayTypes'>
+                  <ion-label>{{pt.label}}
+                    <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>
+                      (请在20分钟内完成支付)
+                    </ng-container>
+                  </ion-label>
+                  <ion-radio [value]="pt.value">
+                  </ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </div>
+          </ion-item>
+        </ion-item-group>
+      </ion-list>
     </ng-container>
   </ng-container>
   <ng-template #errorTemp>
@@ -206,18 +209,53 @@
     </ion-row>
   </ng-template>
 </ion-content>
+
 <ion-footer>
-  <ion-toolbar>
+  <ion-toolbar (click)="isShowFee=!isShowFee">
     <ion-buttons slot='start'>
-      <ion-button color='secondary' (click)='onShowPriceDetail()'>总计:
-        <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
-        <ion-icon name='caret-up-outline' slot='end' color='secondary' mode='md'></ion-icon>
-      </ion-button>
+      <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
+      <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
+      <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
-    <ion-button slot='end' size='small' *ngIf='isCanSave' color='secondary' (click)='bookFlight(true)'
+    <ion-button slot='end' size='small' *ngIf='isCanSave' color='secondary' (click)='bookFlight(true,$event)'
       [disabled]='isSubmitDisabled'>保存订单</ion-button>
-    <ion-button slot='end' size='small' color='secondary' (click)='bookFlight()' [disabled]='isSubmitDisabled'> 提交
+    <ion-button slot='end' size='small' color='secondary' (click)='bookFlight(false,$event)'
+      [disabled]='isSubmitDisabled'> 提交
     </ion-button>
   </ion-toolbar>
 </ion-footer>
+<div class="zz" *ngIf="isShowFee" (click)="isShowFee=!isShowFee"></div>
+<div [class.show]="isShowFee" class="transfrom">
+  <div class="wrapper">
+    <div *ngFor="let trip of searchModel?.trips" style="    min-width: 90%;">
+      <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee">
+        <div>{{infos?.vmCredential?.Name}}</div>
+        <div>({{infos?.vmModal?.credential?.Number}})</div>
+        <div class="spacebetween">
+          <ion-text color="secondary">{{trip?.fromCity?.Name}}</ion-text>
+          <ion-text color="secondary">{{trip?.toCity?.Name}}</ion-text>
+        </div>
+        <div class="spacebetween">
+          <ion-text color="medium">机票票价</ion-text>
+          <ion-text>{{infos?.bookInfo?.bookInfo?.flightRoute?.selectFlightFare?.SalesPrice}}</ion-text>
+        </div>
+        <div class="spacebetween">
+          <ion-text color="medium">税费</ion-text>
+          <ion-text>{{infos?.bookInfo?.bookInfo?.flightRoute?.selectFlightFare?.Tax}}</ion-text>
+        </div>
+        <!-- <ng-container *ngIf="infos.insuranceProducts">
+          <ion-row *ngFor='let insurance of getInsurances(infos?.insuranceProducts)'>
+            <ion-col>{{insurance?.insuranceResult?.Name}}：</ion-col>
+            <ion-col size='3'>{{insurance?.insuranceResult?.price}}</ion-col>
+            <ion-col size='1'>元</ion-col>
+          </ion-row>
+        </ng-container> -->
+        <div *ngIf="infos.serviceFee" class="spacebetween">
+          <ion-text color="medium">服务费</ion-text>
+          <ion-text>{{infos.serviceFee}}</ion-text>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍候</app-waiting-check-pay>

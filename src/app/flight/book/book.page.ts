@@ -117,6 +117,7 @@ export class BookPage implements OnInit, AfterViewInit {
   isCanSkipApproval$ = of(false);
   isCanSave = false;
   isRoundTrip = false;
+  isShowFee = false;
   appoval: {
     Value: string;
     Text: string;
@@ -636,7 +637,9 @@ export class BookPage implements OnInit, AfterViewInit {
     });
     return result;
   }
-  async bookFlight(isSave: boolean = false) {
+  async bookFlight(isSave: boolean = false,event:CustomEvent) {
+    this.isShowFee = false;
+    event.stopPropagation();
     if (this.isSubmitDisabled) {
       return;
     }
@@ -1168,6 +1171,30 @@ export class BookPage implements OnInit, AfterViewInit {
       insurance.showDetail = !insurance.showDetail;
     }
   }
+   getInsurances(i) {
+    let a=this.vmCombindInfos.map(item => {
+      return {
+        insurances: i.filter(
+          (it) =>
+            it.insuranceResult &&
+            it.insuranceResult.Id == item.selectedInsuranceProductId
+        )
+          .map((it) => {
+            return {
+              name: it.insuranceResult && it.insuranceResult.Name,
+              price: it.insuranceResult && it.insuranceResult.Price,
+            };
+          }),
+      }
+    })
+    let list=[]
+    a.map(t=>{
+      list.push(t)
+    })
+    // console.log(list,"aaaa");
+    return list
+    // console.log(this.vmCombindInfos,"this.vmCombindInfos");
+  }
   async onShowPriceDetail() {
     const isSelf = await this.staffService.isSelfBookType();
     const p = await this.popoverCtrl.create({
@@ -1214,7 +1241,7 @@ export class BookPage implements OnInit, AfterViewInit {
               };
             })
             .filter((it) => !!it.from),
-        fees: this.getTicketsFees(),
+        // fees: this.getTicketsFees(),
         isSelf,
       },
     });
@@ -1232,13 +1259,13 @@ export class BookPage implements OnInit, AfterViewInit {
       queryParams: { url: insurance.DetailUrl, title: insurance.Name },
     });
   }
-  private getTicketsFees() {
+  getTicketsFees(id:string) {
     const totalFees = this.getTotalServiceFees();
     if (!totalFees) {
       return null;
     }
     const bookInfos = this.flightService.getPassengerBookInfos();
-    return bookInfos.reduce((acc, it) => {
+    const fs= bookInfos.reduce((acc, it) => {
       acc = {
         ...acc,
         [it.id]:
@@ -1247,6 +1274,9 @@ export class BookPage implements OnInit, AfterViewInit {
       };
       return acc;
     }, {});
+    console.log(id,fs,"fs[id]", this.initialBookDtoModel.ServiceFees);
+    
+    return fs[id];
   }
   private async initCombindInfos() {
     try {

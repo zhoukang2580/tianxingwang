@@ -77,6 +77,7 @@ import { Storage } from "@ionic/storage";
 import { TMC_FLIGHT_OUT_NUMBER } from "../mock-data";
 import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { OrderInsuranceEntity } from 'src/app/order/models/OrderInsuranceEntity';
 @Component({
   selector: "app-flight-ticket-reserve",
   templateUrl: "./flight-ticket-reserve.page.html",
@@ -89,7 +90,7 @@ export class FlightTicketReservePage
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
   private checkPayCountIntervalId: any;
-  isNotWihte=true;
+  isNotWihte = true;
   FlightVoyageType = FlightVoyageType;
   searchModel: IInternationalFlightSearchModel;
   travelForm: TravelFormEntity;
@@ -111,6 +112,7 @@ export class FlightTicketReservePage
     label: string;
     value: OrderTravelPayType;
   }[];
+  isShowFee = false
   totalPriceSource: Subject<number>;
   vmCombindInfos: ICombindInfo[];
   illegalReasons: any[];
@@ -180,7 +182,6 @@ export class FlightTicketReservePage
         console.log("是否可以跳过审批", can);
       })
     );
-    
     this.refresh(false);
   }
   private async initOrderTravelPayTypes() {
@@ -632,7 +633,9 @@ export class FlightTicketReservePage
     });
     return result;
   }
-  async bookFlight(isSave: boolean = false) {
+  async bookFlight(isSave: boolean = false, event: CustomEvent) {
+    this.isShowFee = false;
+    event.stopPropagation();
     if (this.isSubmitDisabled) {
       return;
     }
@@ -701,6 +704,23 @@ export class FlightTicketReservePage
         }
       }
     }
+  }
+  getInsurances(i) {
+    this.vmCombindInfos.map(item => {
+      return {
+        insurances: i.filter(
+          (it) =>
+            it.insuranceResult &&
+            it.insuranceResult.Id == item.selectedInsuranceProductId
+        )
+          .map((it) => {
+            return {
+              name: it.insuranceResult && it.insuranceResult.Name,
+              price: it.insuranceResult && it.insuranceResult.Price,
+            };
+          }),
+      }
+    })
   }
   private goToMyOrders(tab: ProductItemType) {
     this.router.navigate(["product-tabs"], {
@@ -799,12 +819,12 @@ export class FlightTicketReservePage
     ) => {
       AppHelper.toast(
         `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-              item.bookInfo.credential.Givenname)
+        (item.credentialStaff && item.credentialStaff.Name) ||
+        (item.bookInfo.credential &&
+          item.bookInfo.credential.Surname +
+          item.bookInfo.credential.Givenname)
         } 【${
-          item.bookInfo.credential && item.bookInfo.credential.Number
+        item.bookInfo.credential && item.bookInfo.credential.Number
         }】 ${msg} 信息不能为空`,
         2000,
         "bottom"
@@ -974,7 +994,7 @@ export class FlightTicketReservePage
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -988,7 +1008,7 @@ export class FlightTicketReservePage
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1119,7 +1139,7 @@ export class FlightTicketReservePage
       ]);
       const credentials = res && res[item.bookInfo.passenger.AccountId];
       item.bookInfo.isNotWhitelist
-      
+
       item.credentials = credentials;
       // if (credentials.length) {
       //   const exist = item.credentials[0];
@@ -1345,6 +1365,7 @@ export class FlightTicketReservePage
     });
     p.present();
   }
+
   private getTicketsFees() {
     const totalFees = this.getTotalServiceFees();
     if (!totalFees) {
@@ -1467,20 +1488,20 @@ export class FlightTicketReservePage
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {

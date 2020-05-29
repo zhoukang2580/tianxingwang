@@ -511,9 +511,9 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       return;
     }
-    this.orderDetail.Order.OrderFlightTickets = this.orderService.checkIfOrderFlightTicketShow(
-      this.orderDetail.Order.OrderFlightTickets
-    );
+    // this.orderDetail.Order.OrderFlightTickets = this.orderService.checkIfOrderFlightTicketShow(
+    //   this.orderDetail.Order.OrderFlightTickets
+    // );
     // let ob = this.orderDetail.Order.OrderFlightTickets.filter(f => f.VariablesJsonObj.isShow && (f.VariablesJsonObj.IsCustomApplyRefund || f.VariablesJsonObj.IsCustomApplyExchange)).map(m => {
     //   const res = {
     //     ...m,
