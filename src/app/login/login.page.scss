@@ -1,6 +1,6 @@
 ion-toolbar {
   padding-top: 2em;
-  &.keyboard-show {
+  &.keyboard-show:not(.is-app) {
     padding-top: 0em;
   }
 }
