@@ -312,6 +312,10 @@
 <div [class.show]="isShowFee" class="transfrom">
   <div class="wrapper">
    <div *ngFor="let infos of combindInfos" class="ion-padding fee" [style.min-width]="combindInfos.length>1?'90%':'100%'">
+     <div class="spacebetween" *ngIf="infos.bookInfo.bookInfo.roomPlan.RoomPlanRules[0].PrepayPenaltyAmount">
+       <ion-text color="medium">担保</ion-text>
+       <ion-text>{{infos.bookInfo?.bookInfo?.roomPlan?.RoomPlanRules[0]?.PrepayPenaltyAmount}}</ion-text>
+     </div>
       <div *ngIf="infos.bookInfo?.bookInfo?.roomPlan?.TotalAmount" class="spacebetween">
         <ion-text color="medium">房费明细</ion-text>
         <ion-text>{{calcNights()}}晚,共<small>￥</small>{{infos.bookInfo?.bookInfo?.roomPlan?.TotalAmount}}</ion-text>
