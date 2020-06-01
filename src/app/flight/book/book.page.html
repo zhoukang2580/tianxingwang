@@ -328,16 +328,16 @@
         <ion-text>{{infos?.modal?.bookInfo?.flightSegment?.Tax}}元</ion-text>
       </div>
       <ng-container>
-        <div *ngFor='let insurance of getInsurances(infos?.insuranceProducts) let i=index'>
-          <div class="spacebetween" *ngIf="insurance?.insurances[i]">
-            <ion-text  style="color: #ccc;">{{insurance?.insurances[i]?.name}}</ion-text>
-            <ion-text>{{insurance?.insurances[i]?.price}}元</ion-text>
+        <div *ngFor='let insurance of infos?.insuranceProducts'>
+          <div class="spacebetween" *ngIf="insurance.insuranceResult?.Id==infos.selectedInsuranceProductId">
+            <ion-text  style="color: #ccc;">{{insurance.insuranceResult?.Name}}</ion-text>
+            <ion-text>{{insurance?.insuranceResult?.Price}}元</ion-text>
           </div>
         </div>
       </ng-container>
-      <div class="spacebetween" *ngIf="getTicketsFees(infos.modal.id)">
+      <div class="spacebetween" *ngIf="passengerServiceFeesObj[infos.modal?.id]">
         <ion-text  style="color: #ccc;">服务费</ion-text>
-        <ion-text>{{getTicketsFees(infos.modal.id)}}元</ion-text>
+        <ion-text>{{passengerServiceFeesObj[infos.modal.id]}}元</ion-text>
       </div>
     </div>
   </div>
