@@ -100,3 +100,7 @@ ng serve --disableHostCheck
 ## 判断是否是测试库
 1. mockProBuild: true （测试库）
 2. mockProBuild: !true （正式库）
+
+## ios,android 插件开发详情查看官网
+cordova 官网 `https://cordova.apache.org/`
+插件教程：`https://cordova.apache.org/docs/en/latest/guide/hybrid/plugins/index.html`
