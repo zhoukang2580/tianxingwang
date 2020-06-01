@@ -10,6 +10,7 @@ import {
   PayComponent,
   IPayWayItem
 } from "src/app/components/pay/pay.component";
+import { finalize } from 'rxjs/operators';
 
 @Injectable({
   providedIn: "root"
@@ -59,10 +60,13 @@ export class PayService {
       req.Data.DataType = "json";
       req.Data.CreateType = "App";
       await this.plt.ready();
-      const r: { Body: string; Number: string } = await this.apiService.getPromiseData<any>(req).catch(_ => {
+      const r: { Body: string; Number: string, Status: boolean; Code: string; Message: string; } = await this.apiService.getPromiseData<any>(req).catch(_ => {
         messages.push({ timeStamp: Date.now(), message: _, remark: "ali" });
         return null;
       });
+      if (r && r.Status != undefined && !r.Status) {
+        messages.push(this.addPayMessage(r.Message));
+      }
       if (r && r.Body) {
         const payresult: IAliPayPluginPayResult = await this.ali.pay(r.Body).catch(_ => {
           messages.push(this.addPayMessage(_));
@@ -122,87 +126,109 @@ export class PayService {
         req.Data.DataType = "json";
       }
       return new Promise<any>((resolve, reject) => {
-        const sub = this.apiService.getResponse<any>(req).subscribe(
-          async r => {
-            if (r.Status && r.Data) {
-              if (AppHelper.isWechatMini()) {
-                const url =
-                  "/pages/pay/index?timeStamp=" +
-                  r.Data.timeStamp +
-                  "&nonceStr=" +
-                  r.Data.nonceStr +
-                  "&package=" +
-                  encodeURIComponent(r.Data.package) +
-                  "&signType=" +
-                  r.Data.signType +
-                  "&paySign=" +
-                  r.Data.paySign +
-                  "&openid=" +
-                  WechatHelper.getMiniOpenId() +
-                  "&ticket=" +
-                  AppHelper.getTicket() +
-                  "&path=" +
-                  path +
-                  "&number=" +
-                  r.Data.Number;
-                WechatHelper.wx.miniProgram.navigateTo({ url: url });
-              } else if (AppHelper.isWechatH5()) {
-                const ok = await WechatHelper.ready().catch(e => {
-                  return false;
-                });
-                WechatHelper.wx.chooseWXPay({
-                  timestamp: r.Data.timeStamp,
-                  nonceStr: r.Data.nonceStr, // 支付签名随机串，不长于 32 位
-                  package: r.Data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
-                  signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                  paySign: r.Data.paySign, // 支付签名
-                  success: res => {
-                    resolve(r.Data.Number || "支付操作完成");
-                    //  if(res.errMsg=="chooseWXPay:ok")
-                    //  {
-                    //     resolve("success");
-                    //  }
-                    //  else{
-                    //     reject(res.errMsg);
-                    //  }
+        const messages: IPayMessage[] = [];
+        const sub = this.apiService.getResponse<any>(req)
+          .pipe(finalize(() => {
+            setTimeout(async () => {
+              if (messages.filter(it => !!it.message).length) {
+                messages.sort((a, b) => b.timeStamp - a.timeStamp);
+                for (let i = 0; i < messages.length; i++) {
+                  if (messages[i].message) {
+                    await AppHelper.alert(messages[i].message, true);
                   }
-                });
-              } else {
-                const payInfo = {
-                  appId: r.Data.appid,
-                  partnerId: r.Data.partnerid,
-                  prepayId: r.Data.prepayid,
-                  packageValue: r.Data.package,
-                  nonceStr: r.Data.noncestr,
-                  timeStamp: r.Data.timestamp,
-                  sign: r.Data.sign
-                };
-                this.wechat
-                  .pay(payInfo as any)
-                  .then(n => {
-                    console.log("wechat 支付成功返回结果：" + JSON.stringify(n));
-                    resolve(r.Data.Number || "支付操作完成");
-                  })
-                  .catch(e => {
-                    console.log("wechat 支付成功返回结果：" + typeof e);
-                    console.log("wechat 支付成功返回结果：" + JSON.stringify(e));
-                    // AppHelper.alert(e.message || e);
-                    reject(e.message || `${e}`.includes("-2") ? "用户取消" : `${e}`.includes("-1") ? "签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配" : `微信支付结果：${e}`.replace(",(null)", ""));
-                  });
+                }
               }
-            } else {
-              reject(r.Message);
+            }, 200);
+          }))
+          .subscribe(
+            async r => {
+              if (r.Status && r.Data) {
+                if (!r.Data.Status) {
+                  messages.push(this.addPayMessage(r.Data.Message, "wechatPay"));
+                }
+                if (AppHelper.isWechatMini()) {
+                  const url =
+                    "/pages/pay/index?timeStamp=" +
+                    r.Data.timeStamp +
+                    "&nonceStr=" +
+                    r.Data.nonceStr +
+                    "&package=" +
+                    encodeURIComponent(r.Data.package) +
+                    "&signType=" +
+                    r.Data.signType +
+                    "&paySign=" +
+                    r.Data.paySign +
+                    "&openid=" +
+                    WechatHelper.getMiniOpenId() +
+                    "&ticket=" +
+                    AppHelper.getTicket() +
+                    "&path=" +
+                    path +
+                    "&number=" +
+                    r.Data.Number;
+                  WechatHelper.wx.miniProgram.navigateTo({ url: url });
+                } else if (AppHelper.isWechatH5()) {
+                  const ok = await WechatHelper.ready().catch(e => {
+                    return false;
+                  });
+                  WechatHelper.wx.chooseWXPay({
+                    timestamp: r.Data.timeStamp,
+                    nonceStr: r.Data.nonceStr, // 支付签名随机串，不长于 32 位
+                    package: r.Data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                    signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                    paySign: r.Data.paySign, // 支付签名
+                    success: res => {
+                      resolve(r.Data.Number || "支付操作完成");
+                      //  if(res.errMsg=="chooseWXPay:ok")
+                      //  {
+                      //     resolve("success");
+                      //  }
+                      //  else{
+                      //     reject(res.errMsg);
+                      //  }
+                    }
+                  });
+                } else {
+                  if (!r.Data.appid) {
+                    return;
+                  }
+                  const payInfo = {
+                    appId: r.Data.appid,
+                    partnerId: r.Data.partnerid,
+                    prepayId: r.Data.prepayid,
+                    packageValue: r.Data.package,
+                    nonceStr: r.Data.noncestr,
+                    timeStamp: r.Data.timestamp,
+                    sign: r.Data.sign
+                  };
+                  this.wechat
+                    .pay(payInfo as any)
+                    .then(n => {
+                      console.log("wechat 支付成功返回结果：" + JSON.stringify(n));
+                      resolve(r.Data.Number || "支付操作完成");
+                    })
+                    .catch(e => {
+                      console.log("wechat 支付成功返回结果：" + typeof e);
+                      console.log("wechat 支付成功返回结果：" + JSON.stringify(e));
+                      // AppHelper.alert(e.message || e);
+                      reject(e.message || `${e}`.includes("-2") ? "用户取消" : `${e}`.includes("-1") ? "签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配" : `微信支付结果：${e}`.replace(",(null)", ""));
+                    });
+                }
+              } else {
+                messages.push(this.addPayMessage(r.Message, "wechatpay"));
+                reject(r.Message);
+              }
+            },
+            e => {
+              this.addPayMessage(e, "wechatpay")
+              reject(e);
+            },
+            () => {
+              setTimeout(() => {
+                sub.unsubscribe();
+              }, 1000);
             }
-          },
-          e => {
-            reject(e);
-          },
-          () => {
-            setTimeout(() => {
-              sub.unsubscribe();
-            }, 1000);
-          }
-        );
+          );
       });
     } else if (AppHelper.isH5()) {
       req.Data.CreateType = "Mobile";
