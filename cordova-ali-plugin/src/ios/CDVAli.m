@@ -55,7 +55,7 @@ CDVInvokedUrlCommand *cdvCommand;
         }
     }];
 }
--(void) isAlipayAppInstalled:(CDVInvokedUrlCommand *)command{
+-(void) isAliPayInstalled:(CDVInvokedUrlCommand *)command{
     NSURL * myURL_APP_A = [NSURL URLWithString:@"alipay:"];
     NSString *alipay =[command argumentAtIndex:0];
     if(alipay!=nil&&[alipay length]>0){
