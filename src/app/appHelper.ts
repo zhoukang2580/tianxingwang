@@ -115,10 +115,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-      ? msg.message
-      : msg && (msg.message || msg.Message)
-      ? msg.message || msg.Message
-      : JSON.stringify(msg);
+        ? msg.message
+        : msg && (msg.message || msg.Message)
+          ? msg.message || msg.Message
+          : JSON.stringify(msg);
   }
   static alert(
     msg: any,
@@ -177,39 +177,10 @@ export class AppHelper {
     this.httpClient = httpClient;
   }
   static getDeviceId() {
-    // if (this._deviceName == "ios") {
-    //   return new Promise<string>((resolve, reject) => {
-    //     if (this.isH5()) {
-    //       resolve("");
-    //     }
-    //     document.addEventListener(
-    //       "deviceready",
-    //       async () => {
-    //         try {
-    //           const hcp = window["hcp"]; // 插件获取
-    //           if (!hcp) {
-    //             reject("hcp 未安装");
-    //             return;
-    //           }
-    //           const uuid = await hcp.getUUID();
-    //           console.log("hcp get uuid =" + uuid);
-    //           if (uuid) {
-    //             resolve(`${uuid}`.replace(/-/g, "").toLowerCase());
-    //           } else {
-    //             reject("can't get uuid");
-    //           }
-    //         } catch (e) {
-    //           reject(e);
-    //         }
-    //       },
-    //       false
-    //     );
-    //   }).catch(ex => {
-    //     return "";
-    //   });
-    // }
     if (this.isH5()) {
-      return Promise.resolve("");
+      return Promise.resolve(
+        `${environment.mockProBuild ? "_test_app_uuid_123456" : ""}`
+      );
     }
     let local = AppHelper.getStorage<string>("_UUId_DeviceId_");
     console.log("local uuid " + local);
@@ -278,59 +249,63 @@ export class AppHelper {
       console.error(e);
     }
   }
-  static getWechatAppId() {
-    if (this.httpClient) {
-      return new Promise<string>((resolve, reject) => {
-        const subscription = this.httpClient
-          .get("assets/config.xml", { responseType: "arraybuffer" })
-          .subscribe(
-            (r) => {
-              // console.log(r);
-              const fr = new FileReader();
-              fr.readAsText(new Blob([r]));
-              fr.onerror = (e) => {
-                // console.error("读取出错");
-                reject(e);
-              };
-              fr.onload = () => {
-                // console.log("读取完成", fr.result);
-                if (fr.result) {
-                  const configXmlStr = (fr.result || "") as string;
-                  const p = configXmlStr
-                    .split("/>")
-                    .find((it) => it.includes("WECHATAPPID"));
-                  const appId =
-                    p &&
-                    p
-                      .substring(p.indexOf(`value="`) + `value="`.length)
-                      .trim()
-                      .replace(/\"/g, "");
-                  if (appId.trim()) {
-                    console.log("getWechatAppId appid = ", appId);
-                    resolve(appId);
-                  } else {
-                    reject("variable WECHATAPPID can not be found");
-                  }
-                } else {
-                  reject("config.xml file does not exist");
-                }
-              };
-            },
-            (e) => {
-              // console.error(e);
-              reject(e);
-            },
-            () => {
-              setTimeout(() => {
-                if (subscription) {
-                  subscription.unsubscribe();
-                }
-              }, 888);
-            }
-          );
-      });
+  static async getWechatUniversalLinks() {
+    return this.getPreferanceValue("WECHAT_UNIVERSAL_LINKS");
+  }
+  private static async getPreferanceValue(key: string) {
+    let value = "";
+    try {
+      const str = await this.getConfigXmlStr();
+      const p = str.split("/>").find((it) => it.includes(key));
+      value =
+        p &&
+        p
+          .substring(p.indexOf(`value="`) + `value="`.length)
+          .trim()
+          .replace(/\"/g, "");
+    } catch (e) {
+      console.error("getPreferanceValue error", e);
     }
-    return Promise.reject("httpclient is null");
+    return value;
+  }
+  private static getConfigXmlStr() {
+    return new Promise<string>((resolve, reject) => {
+      const subscription = this.httpClient
+        .get("assets/config.xml", { responseType: "arraybuffer" })
+        .subscribe(
+          (r) => {
+            // console.log(r);
+            const fr = new FileReader();
+            fr.readAsText(new Blob([r]));
+            fr.onerror = (e) => {
+              // console.error("读取出错");
+              reject(e);
+            };
+            fr.onload = () => {
+              // console.log("读取完成", fr.result);
+              if (fr.result) {
+                const configXmlStr = (fr.result || "") as string;
+                resolve(configXmlStr);
+              } else {
+                reject("config.xml file does not exist");
+              }
+            };
+          },
+          (e) => {
+            reject(e);
+          },
+          () => {
+            setTimeout(() => {
+              if (subscription) {
+                subscription.unsubscribe();
+              }
+            }, 888);
+          }
+        );
+    });
+  }
+  static getWechatAppId() {
+    return this.getPreferanceValue("WECHATAPPID");
   }
   static setDeviceName(name: "ios" | "android") {
     this._deviceName = name;
@@ -340,8 +315,8 @@ export class AppHelper {
       return "H5";
     }
     return new Promise<string>((resolve, reject) => {
-      if (this.isH5()) {
-        resolve("");
+      if (!window['cordova']) {
+        resolve("H5");
       }
       document.addEventListener(
         "deviceready",
@@ -360,7 +335,7 @@ export class AppHelper {
     await AppHelper.platform.ready();
     const wechat = window["wechat"];
     if (wechat) {
-      return wechat.getCode(appId,"https://app." + this._appDomain);
+      return wechat.getCode(appId, await this.getWechatUniversalLinks());
     }
     return Promise.reject("cordova wechat plugin is unavailable");
   }
@@ -389,13 +364,24 @@ export class AppHelper {
     return !!window["cordova"];
   }
   static isH5() {
-    return !window["cordova"];
+    return !this.isApp();
   }
   /**
    *  请注意，这个是异步方法，返回promise,是pda ，返回true，否则返回false，使用判断条件是，判断是否存在sim卡；
    */
+  static async isPDAAsync() {
+    return Promise.all([this.hasFrontCamera(), this.hasSimCard()])
+      .then(() => false)
+      .catch(() => true)
+      .then((ispda) => {
+        console.log("ispda " + ispda);
+        return ispda;
+      });
+  }
   static isPDA() {
-    return this.isApp() && navigator.userAgent.toLowerCase().includes("pda");
+    return (
+      AppHelper.isApp() && navigator.userAgent.toLowerCase().includes("pda")
+    );
   }
   static async hasSimCard() {
     if (AppHelper.isApp()) {
@@ -446,7 +432,7 @@ export class AppHelper {
         document.addEventListener("WeixinJSBridgeReady", ready, false);
         setTimeout(() => {
           resolve(false);
-        }, 30000);
+        }, 3000);
       } else {
         ready();
       }
@@ -531,7 +517,7 @@ export class AppHelper {
   static getStorage<T>(key: string) {
     let result: T;
     if (!key) {
-      return result || "";
+      return (result || "") as T;
     }
     const local = window.localStorage.getItem(key.toLowerCase()) as any;
     if (local) {
@@ -544,7 +530,8 @@ export class AppHelper {
         result = local as T;
       }
     }
-    return result || "";
+    result = result || (("" as any) as T);
+    return result;
   }
   static getTicket() {
     const ticket =
@@ -598,13 +585,13 @@ export class AppHelper {
     return "http://test.app." + this._appDomain;
   }
   static getRoutePath(path: string) {
-    path = this.getNormalizedPath(path);
     const style = AppHelper.getStyle() || "";
     if (path.lastIndexOf("_") != -1) {
       path = path.substring(0, path.lastIndexOf("_"));
     }
     path =
       path && path.length > 0 ? `${path}${style ? "_" + style : ""}` : path;
+    path = this.getNormalizedPath(path);
     console.log(`get style=${style}, Route Path=${path}`);
     if (path) {
       return `/${path}`;
@@ -630,7 +617,7 @@ export class AppHelper {
   static initlizeQueryParamers() {
     let name: string = "";
     let value: string = "";
-    let str = location.href;
+    let str = decodeURIComponent(location.href);
     let num = str.indexOf("?");
     str = str.substr(num + 1);
     const arr = str.split("&");
@@ -643,16 +630,15 @@ export class AppHelper {
       }
     }
   }
-
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static getQueryParamers() {
     return this._queryParamers as any;
@@ -753,6 +739,21 @@ export class AppHelper {
     if (datestr && typeof datestr == "string") {
       return new Date(datestr.replace(/-/g, "/").replace("T", " "));
     }
-    return datestr ? new Date(datestr) : new Date();
+    return new Date(datestr);
+  }
+  static getAddDaysDate(addDays: number = 0) {
+    let d = new Date();
+    if (addDays) {
+      d = new Date(d.getTime() + addDays * 24 * 3600 * 1000);
+    }
+    let m = `${d.getMonth() + 1}`;
+    let day = `${d.getDate()}`;
+    if (+m < 10) {
+      m = `0${m}`;
+    }
+    if (+day < 10) {
+      day = `0${day}`;
+    }
+    return `${d.getFullYear()}-${m}-${day}`;
   }
 }
