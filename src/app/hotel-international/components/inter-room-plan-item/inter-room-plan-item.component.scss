@@ -41,7 +41,7 @@
       max-width: 5em;
       justify-content: center;
       align-items: center;
-      border: 1px solid tomato;
+      border: 2px solid tomato;
       float: right;
       border-radius: 5px;
       font-size: 0.8rem;
@@ -54,13 +54,13 @@
       }
     }
     &[color="success"] .btn-book {
-      border: 1px solid var(--ion-color-success);
+      border: 2px solid var(--ion-color-success);
       ion-button {
         --background: var(--ion-color-success);
       }
     }
     &[color="warning"] .btn-book {
-      border: 1px solid var(--ion-color-warning);
+      border: 2px solid var(--ion-color-warning);
       ion-button {
         --background: var(--ion-color-warning);
       }
