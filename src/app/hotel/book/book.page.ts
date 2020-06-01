@@ -283,7 +283,6 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         return acc;
       }, 0);
     }
-    // 是否显示房费
     if (this.notShowServiceFee()) {
       fees = 0;
     } else {
