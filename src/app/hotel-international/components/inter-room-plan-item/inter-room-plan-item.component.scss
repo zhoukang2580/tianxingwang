@@ -23,7 +23,7 @@
       opacity: 0.6;
     }
     &.can-not-be-book .btn-book {
-      border: 1px solid var(--ion-color-danger);
+      border: 2px solid var(--ion-color-danger);
       opacity: 0.7;
       ion-button {
         --background: var(--ion-color-danger);
