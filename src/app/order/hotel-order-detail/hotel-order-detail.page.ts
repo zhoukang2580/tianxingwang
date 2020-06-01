@@ -18,7 +18,7 @@ import {
   ModalController,
   PopoverController,
   IonHeader,
-  DomController
+  DomController,
 } from "@ionic/angular";
 import {
   Component,
@@ -29,7 +29,7 @@ import {
   QueryList,
   ViewChildren,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ProductItem, ProductItemType } from "../../tmc/models/ProductItems";
@@ -58,9 +58,9 @@ export interface TabItem {
   value: number;
 }
 @Component({
-  selector: 'app-hotel-order-detail',
-  templateUrl: './hotel-order-detail.page.html',
-  styleUrls: ['./hotel-order-detail.page.scss'],
+  selector: "app-hotel-order-detail",
+  templateUrl: "./hotel-order-detail.page.html",
+  styleUrls: ["./hotel-order-detail.page.scss"],
 })
 export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private headerHeight = 0;
@@ -114,10 +114,10 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       return [];
     }
-    return this.orderDetail.Order.OrderNumbers.filter(it => it.Tag == tag);
+    return this.orderDetail.Order.OrderNumbers.filter((it) => it.Tag == tag);
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   private initTabs() {
     this.tabs = [];
@@ -129,14 +129,13 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       this.orderDetail.Order.OrderHotels.forEach((it, idx) => {
         // if (it.VariablesJsonObj.isShow) {
-          this.tabs.push({ label: it.Id, value: idx + 1 });
+        this.tabs.push({ label: it.Id, value: idx + 1 });
         // }
       });
     }
   }
   async ngOnInit() {
-   
-    this.route.queryParamMap.subscribe(q => {
+    this.route.queryParamMap.subscribe((q) => {
       this.initTabs();
       if (q.get("orderId")) {
         this.getOrderInfo(q.get("orderId"));
@@ -164,7 +163,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     return (
       this.orderDetail.Order &&
       this.orderDetail.Order.OrderItems &&
-      this.orderDetail.Order.OrderItems.filter(it =>
+      this.orderDetail.Order.OrderItems.filter((it) =>
         Tag ? it.Tag == Tag : true
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it[name])), 0)
     );
@@ -174,7 +173,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       this.orderDetail &&
       this.orderDetail.Order.OrderItems &&
       this.orderDetail.Order.OrderItems.filter(
-        it => it.Key == orderHotelKey && (it.Tag || "").includes("Fee")
+        (it) => it.Key == orderHotelKey && (it.Tag || "").includes("Fee")
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)
     );
   }
@@ -185,13 +184,13 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       return amount;
     }
     if (Tmc.IsShowServiceFee) {
-      amount = order.OrderItems.filter(it => it.Key == key).reduce(
+      amount = order.OrderItems.filter((it) => it.Key == key).reduce(
         (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
         0
       );
     } else {
       amount = order.OrderItems.filter(
-        it => it.Key == key && !(it.Tag || "").endsWith("Fee")
+        (it) => it.Key == key && !(it.Tag || "").endsWith("Fee")
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount;
@@ -205,13 +204,13 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       return;
     }
-    this.orderDetail.Order.OrderFlightTickets.forEach(ticket => {
+    this.orderDetail.Order.OrderFlightTickets.forEach((ticket) => {
       const ticketInsurances = this.orderDetail.Order.OrderInsurances.filter(
-        insurance => insurance.TravelKey == ticket.Key
+        (insurance) => insurance.TravelKey == ticket.Key
       );
-      ticketInsurances.map(insurance => {
+      ticketInsurances.map((insurance) => {
         const oneTrip = ticket.OrderFlightTrips.find(
-          trip =>
+          (trip) =>
             // console.log("wwww");
             insurance.AdditionKey == trip.Key
         );
@@ -233,7 +232,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     this.isLoading = true;
     this.orderDetail = await this.orderService
       .getOrderDetailAsync(orderId)
-      .catch(_ => null);
+      .catch((_) => null);
     console.log(this.orderDetail, "33333");
     // console.log(this.orderDetail.Order.OrderFlightTickets, "44444");
     this.initTicketsTripsInsurance();
@@ -262,7 +261,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         );
       }
       if (this.orderDetail.Histories) {
-        this.orderDetail.Histories = this.orderDetail.Histories.map(h => {
+        this.orderDetail.Histories = this.orderDetail.Histories.map((h) => {
           if (h.ExpiredTime) {
             h.ExpiredTime = this.transformTime(h.ExpiredTime);
           }
@@ -297,7 +296,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       );
     } else {
       amount = order.OrderItems.filter(
-        it => !(it.Tag || "").endsWith("Fee")
+        (it) => !(it.Tag || "").endsWith("Fee")
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount < 0 ? 0 : amount;
@@ -310,7 +309,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       return amount;
     }
     amount = (order.OrderPays || [])
-      .filter(it => it.Status == OrderPayStatusType.Effective)
+      .filter((it) => it.Status == OrderPayStatusType.Effective)
       .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     if (amount == 0) {
       return amount;
@@ -321,7 +320,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       return (
         amount -
         (order.OrderItems || [])
-          .filter(it => !(it.Tag || "").endsWith("Fee"))
+          .filter((it) => !(it.Tag || "").endsWith("Fee"))
           .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)
       );
     }
@@ -337,20 +336,20 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       return 0;
     }
     const flightTripkeys: string[] = [];
-    this.orderDetail.Order.OrderFlightTickets.forEach(t => {
+    this.orderDetail.Order.OrderFlightTickets.forEach((t) => {
       if (t.OrderFlightTrips) {
-        t.OrderFlightTrips.forEach(trip => {
-          if (!flightTripkeys.find(k => k == trip.Key)) {
+        t.OrderFlightTrips.forEach((trip) => {
+          if (!flightTripkeys.find((k) => k == trip.Key)) {
             flightTripkeys.push(trip.Key);
           }
         });
       }
     });
     const keys = this.orderDetail.Order.OrderInsurances.filter(
-      it => !!flightTripkeys.find(k => k == it.AdditionKey)
-    ).map(it => it.Key);
-    const insuranceAmount = this.orderDetail.Order.OrderItems.filter(it =>
-      keys.find(k => k == it.Key)
+      (it) => !!flightTripkeys.find((k) => k == it.AdditionKey)
+    ).map((it) => it.Key);
+    const insuranceAmount = this.orderDetail.Order.OrderItems.filter((it) =>
+      keys.find((k) => k == it.Key)
     ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     return insuranceAmount;
   }
@@ -368,8 +367,12 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     let orderItems =
       this.orderDetail.Order && this.orderDetail.Order.OrderItems;
     if (!Tmc.IsShowServiceFee) {
-      orderItems = orderItems.filter(it => !(it.Tag || "").endsWith("Fee"));
+      orderItems = orderItems.filter((it) => !(it.Tag || "").endsWith("Fee"));
     }
+    // if (orderItems) {
+    //   orderItems = orderItems.filter((it) => (it.Tag = "Hotel"));
+    // }
+    // console.log(orderItems, "orderItems");
     const p = await this.popoverCtrl.create({
       component: OrderItemPricePopoverComponent,
       cssClass: "ticket-changing",
@@ -381,8 +384,8 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         amount: orderItems.reduce(
           (acc, item) => (acc = AppHelper.add(acc, +item.Amount)),
           0
-        )
-      }
+        ),
+      },
     });
     p.present();
   }
@@ -406,10 +409,10 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       this.orderDetail.Order &&
       this.orderDetail.Order.OrderFlightTickets &&
       this.orderDetail.Order.OrderFlightTickets.filter(
-        it =>
+        (it) =>
           it.OrderFlightTrips &&
           it.OrderFlightTrips.filter(
-            t => t.Status == OrderFlightTripStatusType.Exchange
+            (t) => t.Status == OrderFlightTripStatusType.Exchange
           ).length > 0
       ).length > 0
     );
@@ -418,23 +421,27 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     return (
       this.orderDetail &&
       this.orderDetail.Order &&
-      this.orderDetail.Order.OrderPassengers.find(it => t.Passenger.Id == it.Id)
+      this.orderDetail.Order.OrderPassengers.find(
+        (it) => t.Passenger.Id == it.Id
+      )
     );
   }
   getInsuranceTravel(t: OrderFlightTripEntity) {
     return (
       this.orderDetail &&
       this.orderDetail.Order &&
-      this.orderDetail.Order.OrderInsurances.find(it => t.Key == it.AdditionKey)
+      this.orderDetail.Order.OrderInsurances.find(
+        (it) => t.Key == it.AdditionKey
+      )
     );
   }
   getHotelRoomFee(orderHotelKey: string) {
     return (
       this.orderDetail &&
-      this.orderDetail.Order&&
+      this.orderDetail.Order &&
       this.orderDetail.Order.OrderItems &&
       this.orderDetail.Order.OrderItems.filter(
-        it => it.Key == orderHotelKey && it.Tag == OrderItemHelper.Hotel
+        (it) => it.Key == orderHotelKey && it.Tag == OrderItemHelper.Hotel
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)
     );
   }
@@ -444,7 +451,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       this.orderDetail &&
       this.orderDetail.Order &&
       this.orderDetail.Order.OrderPassengers &&
-      this.orderDetail.Order.OrderPassengers.find(it => it.Id == passengerId);
+      this.orderDetail.Order.OrderPassengers.find((it) => it.Id == passengerId);
     if (!p) {
       if (
         this.orderDetail &&
@@ -479,12 +486,12 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       let OrganizationName: string;
       const orderTravels = this.orderDetail.Order.OrderTravels || [];
       const IllegalPolicy = orderTravels
-        .filter(it => it.Key == ticketKey)
-        .map(it => it.IllegalPolicy)
+        .filter((it) => it.Key == ticketKey)
+        .map((it) => it.IllegalPolicy)
         .join(",");
       const IllegalReason = orderTravels
-        .filter(it => it.Key == ticketKey)
-        .map(it => it.IllegalReason)
+        .filter((it) => it.Key == ticketKey)
+        .map((it) => it.IllegalReason)
         .join(",");
       const OutNumbers = this.getOrderNumbers().concat(
         this.getOrderNumbers("OutNumber")
@@ -495,24 +502,24 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         this.orderDetail.Order.OrderTravels
       ) {
         CostCenterCode = this.orderDetail.Order.OrderTravels.filter(
-          it => it.Key == ticketKey
+          (it) => it.Key == ticketKey
         )
-          .map(it => it.CostCenterCode)
+          .map((it) => it.CostCenterCode)
           .join(",");
         CostCenterName = this.orderDetail.Order.OrderTravels.filter(
-          it => it.Key == ticketKey
+          (it) => it.Key == ticketKey
         )
-          .map(it => it.CostCenterName)
+          .map((it) => it.CostCenterName)
           .join(",");
         OrganizationCode = this.orderDetail.Order.OrderTravels.filter(
-          it => it.Key == ticketKey
+          (it) => it.Key == ticketKey
         )
-          .map(it => it.OrganizationCode)
+          .map((it) => it.OrganizationCode)
           .join(",");
         OrganizationName = this.orderDetail.Order.OrderTravels.filter(
-          it => it.Key == ticketKey
+          (it) => it.Key == ticketKey
         )
-          .map(it => it.OrganizationName)
+          .map((it) => it.OrganizationName)
           .join(",");
       }
       const info = {
@@ -523,7 +530,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         OrganizationName,
         IllegalPolicy,
         IllegalReason,
-        OutNumbers
+        OutNumbers,
       };
       return info;
     }
@@ -558,8 +565,8 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         component: SendMsgComponent,
         componentProps: {
           defaultMobile: passenger.Mobile,
-          orderTicketId: selectedTicket.Id
-        }
+          orderTicketId: selectedTicket.Id,
+        },
       });
       await p.present();
       const result = await p.onDidDismiss();
@@ -574,7 +581,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
             data.content,
             this.orderDetail.Order && this.orderDetail.Order.Id
           )
-          .catch(_ => {
+          .catch((_) => {
             AppHelper.alert(_ || "短信发送失败");
             return null;
           });
@@ -597,8 +604,8 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         component: SendEmailComponent,
         componentProps: {
           defaultEmail: passenger.Email,
-          orderTicketId: selectedTicket.Id
-        }
+          orderTicketId: selectedTicket.Id,
+        },
       });
       await p.present();
       const result = await p.onDidDismiss();
@@ -615,7 +622,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
             data.content,
             this.orderDetail.Order && this.orderDetail.Order.Id
           )
-          .catch(_ => {
+          .catch((_) => {
             AppHelper.alert(_ || "邮件发送失败");
             return null;
           });
@@ -625,13 +632,13 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-  getExpenseType(hkey:string) {
+  getExpenseType(hkey: string) {
     return (
       this.orderDetail &&
       this.orderDetail.Order &&
       this.orderDetail.Order.OrderTravels &&
-      this.orderDetail.Order.OrderTravels.filter(it => it.Key == hkey)
-        .map(it => it.ExpenseType)
+      this.orderDetail.Order.OrderTravels.filter((it) => it.Key == hkey)
+        .map((it) => it.ExpenseType)
         .join(",")
     );
   }

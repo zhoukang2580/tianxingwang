@@ -70,6 +70,7 @@
   .price {
     align-self: flex-start;
   }
+  background-color: rgba(var(--ion-color-secondary-rgb), 0.1);
 }
 .tip.recomend-segment {
   background: var(--ion-color-primary);

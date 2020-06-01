@@ -155,7 +155,7 @@ export class SearchInternationalFlightPage
     }
   }
   onCabinChange() {
-    this.loadLoadingLevelPolicies();
+    // this.loadLoadingLevelPolicies();
   }
   ngOnInit() {
     try {
@@ -173,29 +173,29 @@ export class SearchInternationalFlightPage
           this.selectedPassengers = infos;
         })
       );
-      this.route.queryParamMap.subscribe((q) => {
-        this.loadLoadingLevelPolicies();
-      });
+      // this.route.queryParamMap.subscribe((q) => {
+      //   this.loadLoadingLevelPolicies();
+      // });
     } catch (e) {
       AppHelper.alert(e);
     }
   }
-  private async loadLoadingLevelPolicies() {
-    if (!this.isLoadingLevelPolicies) {
-      this.isLoadingLevelPolicies = true;
-      this.flightCabinLevelPolicies = await this.flightService
-        .flightCabinLevelPolicy()
-        .catch(() => null);
-      this.isLoadingLevelPolicies = false;
-    }
-    if (this.flightCabinLevelPolicies) {
-      if (this.searchFlightModel && this.searchFlightModel.cabin) {
-        this.flightCabinLevelPolicy = this.flightCabinLevelPolicies[
-          this.typeMap[this.searchFlightModel.cabin.value]
-        ];
-      }
-    }
-  }
+  // private async loadLoadingLevelPolicies() {
+  //   if (!this.isLoadingLevelPolicies) {
+  //     this.isLoadingLevelPolicies = true;
+  //     this.flightCabinLevelPolicies = await this.flightService
+  //       .flightCabinLevelPolicy()
+  //       .catch(() => null);
+  //     this.isLoadingLevelPolicies = false;
+  //   }
+  //   if (this.flightCabinLevelPolicies) {
+  //     if (this.searchFlightModel && this.searchFlightModel.cabin) {
+  //       this.flightCabinLevelPolicy = this.flightCabinLevelPolicies[
+  //         this.typeMap[this.searchFlightModel.cabin.value]
+  //       ];
+  //     }
+  //   }
+  // }
   canDeactivate() {
     return this.isCanleave;
   }

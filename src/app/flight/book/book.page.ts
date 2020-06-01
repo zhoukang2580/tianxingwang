@@ -1275,7 +1275,6 @@ export class BookPage implements OnInit, AfterViewInit {
       return acc;
     }, {});
     console.log(id,fs,"fs[id]", this.initialBookDtoModel.ServiceFees);
-    
     return fs[id];
   }
   private async initCombindInfos() {
