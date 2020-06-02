@@ -78,6 +78,7 @@ import { TMC_FLIGHT_OUT_NUMBER } from "../mock-data";
 import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { OrderInsuranceEntity } from 'src/app/order/models/OrderInsuranceEntity';
+import { SearchModel } from 'src/app/travel-application/travel.service';
 @Component({
   selector: "app-flight-ticket-reserve",
   templateUrl: "./flight-ticket-reserve.page.html",
@@ -1298,6 +1299,9 @@ export class FlightTicketReservePage
       ) {
         fees = 0;
       }
+    }
+    if(this.searchModel.voyageType=FlightVoyageType.GoBack){
+      return fees/2 as number;
     }
     return fees as number;
   }
