@@ -49,11 +49,11 @@ export class HotelOrderPricePopoverComponent implements OnInit, AfterViewInit {
     }
   }
   getHotelServiceFee(orderHotelKey: string) {
-    debugger
     return (
-      this.orderItems
-        .filter((it) => it.Key == orderHotelKey)
-        .reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)
+      this.order.OrderItems &&
+      this.order.OrderItems.filter(
+        (it) => it.Key == orderHotelKey && (it.Tag || "").includes("Fee")
+      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)
     );
   }
 }
