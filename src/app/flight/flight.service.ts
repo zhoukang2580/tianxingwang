@@ -588,7 +588,8 @@ export class FlightService {
               if (showTip) {
                 await AppHelper.alert(
                   `回程航班出发机场与去程航班抵达机场不同`,
-                  true
+                  true,
+                  "继续"
                 );
               }
               bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
