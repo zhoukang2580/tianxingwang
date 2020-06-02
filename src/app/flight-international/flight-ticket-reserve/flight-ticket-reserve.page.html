@@ -244,9 +244,9 @@
         <ion-text style="color: #ccc;">税费</ion-text>
         <ion-text>{{infos?.bookInfo?.bookInfo?.flightRoute?.selectFlightFare?.Tax}}</ion-text>
       </div>
-      <div *ngIf="infos.serviceFee" class="spacebetween">
+      <div *ngIf="tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)" class="spacebetween">
         <ion-text style="color: #ccc;">服务费</ion-text>
-        <ion-text>{{infos.serviceFee}}</ion-text>
+      <ion-text>{{infos.serviceFee}}</ion-text>
       </div>
     </div>
   </div>
