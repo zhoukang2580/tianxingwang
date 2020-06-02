@@ -2,6 +2,7 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { BookCredentialCompComponent } from "./../../tmc/components/book-credential-comp/book-credential-comp.component";
 import { flyInOut } from "./../../animations/flyInOut";
 import { environment } from "./../../../environments/environment";
+import * as moment from "moment";
 import {
   InternationalHotelService,
   IInterHotelInfo,
@@ -118,6 +119,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   isCheckingPay = false;
   isSubmitDisabled = false;
   isPlaceOrderOk = false;
+  isShowFee = false;
   checkPayCountIntervalId: any;
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
@@ -156,6 +158,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     );
   }
   calcNights() {
+    this.curSelectedBookInfo = this.hotelService.getBookInfos()[0];
     if (
       this.curSelectedBookInfo &&
       this.curSelectedBookInfo.bookInfo &&
@@ -209,6 +212,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         this.curSelectedBookInfo.bookInfo.roomPlan &&
         this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate
       ) {
+        
         for (let i = 0; i < n; i++) {
           this.dates.push({
             date: this.calendarService
@@ -1174,6 +1178,29 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       this.hotelService.getBookInfos().filter((it) => !!it.bookInfo)
     );
   }
+  onShowFeesDetails() {
+    this.isShowFee = !this.isShowFee;
+    this.initDayPrice();
+  }
+  private initDayPrice() {
+    const bookInfos = this.hotelService.getBookInfoSource();
+    this.curSelectedBookInfo = bookInfos[0];
+    this.dates = [];
+    const n = this.calcNights();
+    // debugger  
+    for (let i = 0; i < n; i++) {
+      this.dates.push({
+        date: moment(this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate)
+          .add(i, "days")
+          .format("YYYY-MM-DD"),
+        price: this.hotelService.getAvgPrice(
+          this.curSelectedBookInfo.bookInfo.roomPlan
+        ),
+      });
+    }
+    console.log(this.dates,"ddddd");
+    
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -1200,6 +1227,17 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       });
     }
     return !(this.tmc && this.tmc.IsShowServiceFee) || totalFee == 0;
+  }
+  showServiceFees() {
+    let fees = 0;
+    if (this.initialBookDto && this.initialBookDto.ServiceFees) {
+      fees = Object.keys(this.initialBookDto.ServiceFees).reduce((acc, key) => {
+        const fee = +this.initialBookDto.ServiceFees[key];
+        acc = AppHelper.add(fee, acc);
+        return acc;
+      }, 0);
+    }
+    return fees
   }
   checkOrderTravelPayType(pt: string) {
     const payType = OrderTravelPayType[pt];
@@ -1250,6 +1288,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     );
   }
   async onBook(isSave: boolean) {
+    this.isShowFee = false;
+    event.stopPropagation();
     if (this.isSubmitDisabled) {
       return;
     }

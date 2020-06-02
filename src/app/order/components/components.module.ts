@@ -22,12 +22,14 @@ import { HotelTripComponent } from "./hotel-trip/hotel-trip.component";
 import { FlightTripComponent } from "./flight-trip/flight-trip.component";
 import { RefundFlightTicketTipComponent } from "./refund-flight-ticket-tip/refund-flight-ticket-tip.component";
 import { UploadFileComponent } from './upload-file/upload-file.component';
+import { HotelOrderPricePopoverComponent } from './hotel-order-price-popover/hotel-order-price-popover.component';
 
 @NgModule({
   declarations: [
     OrderItemComponent,
     CarItemComponent,
     OrderItemPricePopoverComponent,
+    HotelOrderPricePopoverComponent,
     UploadFileComponent,
     SendMsgComponent,
     SendEmailComponent,

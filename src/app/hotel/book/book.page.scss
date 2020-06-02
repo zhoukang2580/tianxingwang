@@ -71,10 +71,11 @@ ion-content {
   display        : flex;
   justify-content: space-between;
   font-size      : 0.8em;
+  color: var(--ion-color-dark)
 }
 
 .fee {
-  background-color       : white;
+  background-color: var(--ion-color-primary);
   border-top-right-radius: 10px;
   border-top-left-radius : 10px;
   font-size              : 0.9rem;

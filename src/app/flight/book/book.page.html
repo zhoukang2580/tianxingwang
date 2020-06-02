@@ -314,7 +314,7 @@
     <!-- <div *ngFor="let vm of vmCombindInfos" style="    min-width: 90%;"> -->
     <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee"
       [style.min-width]='vmCombindInfos.length>1?"90%":"100%"'>
-      <div>{{infos?.vmCredential?.Name}}({{infos?.vmModal?.credential?.Number}})</div>
+      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmModal?.credential?.Number}})</div>
       <div class="spacebetween">
         <ion-text color="secondary">{{infos.modal.bookInfo.flightSegment.FromCityName}}</ion-text>
         <ion-text color="secondary">{{infos.modal.bookInfo.flightSegment.ToCityName}}</ion-text>

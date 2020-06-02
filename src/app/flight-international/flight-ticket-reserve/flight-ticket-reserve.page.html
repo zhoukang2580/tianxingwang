@@ -229,7 +229,7 @@
 <div [class.show]="isShowFee" class="transfrom">
   <div class="wrapper">
     <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee" [style.min-width]="vmCombindInfos.length>1?'90%':'100%'">
-      <div>{{infos?.vmCredential?.Name}}({{infos?.vmModal?.credential?.Number}})</div>
+      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmModal?.credential?.Number}})</div>
       <div *ngFor="let trip of searchModel?.trips" >
         <div class="spacebetween">
           <ion-text color="secondary">{{trip?.fromCity?.Name}}</ion-text>

@@ -52,6 +52,7 @@ import { OrderTrainTicketEntity } from "../models/OrderTrainTicketEntity";
 import { OrderHotelType, OrderHotelEntity } from "../models/OrderHotelEntity";
 import { MOCK_TMC_DATA } from "../mock-data";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
+import { HotelOrderPricePopoverComponent } from '../components/hotel-order-price-popover/hotel-order-price-popover.component';
 
 export interface TabItem {
   label: string;
@@ -155,9 +156,11 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   getVariable(orderHotel: OrderHotelEntity, key: string) {
-    orderHotel.VariablesJsonObj =
-      orderHotel.VariablesJsonObj || JSON.parse(orderHotel.Variables) || {};
-    return orderHotel.VariablesJsonObj[key];
+    if(orderHotel.Variables){
+      orderHotel.VariablesJsonObj =
+        orderHotel.VariablesJsonObj || JSON.parse(orderHotel.Variables) || {};
+      return orderHotel.VariablesJsonObj[key];
+    }
   }
   getOrderItemsSum(Tag: string = "", name: string = "Amount") {
     return (
@@ -325,34 +328,6 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       );
     }
   }
-  getInsuranceAmount() {
-    if (
-      !this.orderDetail ||
-      !this.orderDetail.Order ||
-      !this.orderDetail.Order.OrderInsurances ||
-      !this.orderDetail.Order.OrderItems ||
-      !this.orderDetail.Order.OrderFlightTickets
-    ) {
-      return 0;
-    }
-    const flightTripkeys: string[] = [];
-    this.orderDetail.Order.OrderFlightTickets.forEach((t) => {
-      if (t.OrderFlightTrips) {
-        t.OrderFlightTrips.forEach((trip) => {
-          if (!flightTripkeys.find((k) => k == trip.Key)) {
-            flightTripkeys.push(trip.Key);
-          }
-        });
-      }
-    });
-    const keys = this.orderDetail.Order.OrderInsurances.filter(
-      (it) => !!flightTripkeys.find((k) => k == it.AdditionKey)
-    ).map((it) => it.Key);
-    const insuranceAmount = this.orderDetail.Order.OrderItems.filter((it) =>
-      keys.find((k) => k == it.Key)
-    ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
-    return insuranceAmount;
-  }
 
   async showPricePopover() {
     const Tmc = this.tmc;
@@ -374,11 +349,10 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     console.log(orderItems, "orderItems");
     const p = await this.popoverCtrl.create({
-      component: OrderItemPricePopoverComponent,
+      component: HotelOrderPricePopoverComponent,
       cssClass: "ticket-changing",
       componentProps: {
         order: this.orderDetail && this.orderDetail.Order,
-        insurance: this.getInsuranceAmount(),
         IsShowServiceFee: Tmc.IsShowServiceFee,
         orderItems,
         amount: orderItems.reduce(

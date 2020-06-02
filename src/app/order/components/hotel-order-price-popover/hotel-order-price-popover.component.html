@@ -1,0 +1,22 @@
+<ion-content class='ion-padding'>
+  <ion-slides >
+    <ion-slide *ngFor='let t of order?.OrderHotels'>
+      <ion-grid>
+        <div style="font-size:0.9rem;display: flex;justify-content: space-between;" *ngFor="let o of orderItems">
+          <ion-text>{{o.Name}}</ion-text>
+          <ion-text>{{o.Amount}}</ion-text>
+        </div>
+        <div *ngIf="IsShowServiceFee">
+          <ion-text>服务费</ion-text>
+          <ion-text>{{getHotelServiceFee(t.Key)}}</ion-text>
+        </div>
+      </ion-grid>
+    </ion-slide>
+  </ion-slides>
+  <div class="bullets" *ngIf='order?.OrderHotels?.length>1'>
+    <ion-icon name="caret-back-outline" color='secondary'></ion-icon>
+    <div *ngFor='let b of order?.OrderHotels;let i=index;' class="bullet"
+      [class.active]='b.Id==order?.OrderHotels[activeIdx].Id'></div>
+    <ion-icon name="caret-forward-outline" color='secondary'></ion-icon>
+  </div>
+</ion-content>
