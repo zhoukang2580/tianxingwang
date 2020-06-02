@@ -22,6 +22,7 @@ import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
 import { PriceDetailComponent } from './price-detail/price-detail.component';
 import { SelectAndReplacebookinfoComponent } from './select-and-replacebookinfo/select-and-replacebookinfo.component';
 import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment-item.component';
+import { MemberComponentsModule } from 'src/app/member/components/components.module';
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment
     AppDirectivesModule,
     AppComponentsModule,
     TmcComponentsModule,
-    MemberPipesModule
+    MemberPipesModule,
+    MemberComponentsModule
   ],
   exports: [
     AppDirectivesModule,
