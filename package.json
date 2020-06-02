@@ -130,8 +130,8 @@
       "cordova-plugin-android-permissions": {},
       "cordova-qrscanner-plugin": {},
       "cordova-hcp-plugin": {},
-      "cordova-ali-plugin": {},
-      "cordova-wechat-plugin": {}
+      "cordova-wechat-plugin": {},
+      "cordova-ali-plugin": {}
     },
     "platforms": [
       "android",
