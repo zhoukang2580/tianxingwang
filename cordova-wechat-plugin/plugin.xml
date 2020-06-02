@@ -44,7 +44,7 @@
 
     <!-- ios -->
     <platform name="ios">
-        <preferance name='WECHATAPPID' default='wx0839a418ccafdf36'/>
+        <preferance name='WECHATAPPID' default=''/>
         <config-file target="config.xml" parent="/*">
             <feature name="Wechat">
                 <param name="ios-package" value="CDVWechat"/>
@@ -54,6 +54,7 @@
             <array>
                 <string>weixin</string>
                 <string>wechat</string>
+                <string>weixinULAPI</string>
             </array>
         </config-file>
         <config-file target="*-Info.plist" parent="NSPhotoLibraryUsageDescription">
@@ -62,7 +63,6 @@
         <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
             <string>允许使用相机拍照</string>
         </config-file>
-
         <config-file target="*-Info.plist" parent="NSAppTransportSecurity">
             <dict>
                 <key>NSAllowsArbitraryLoads</key>
@@ -86,10 +86,10 @@
         <!-- 微信sdk start-->
         <header-file src="src/ios/CDVWechat.h" />
         <source-file src="src/ios/CDVWechat.m" />
-        <source-file src='src/ios/WeChatSDK1.8.6/libWeChatSDK.a' framework='true'/>
-        <header-file src='src/ios/WeChatSDK1.8.6/WechatAuthSDK.h'/>
-        <header-file src='src/ios/WeChatSDK1.8.6/WXApi.h'/>
-        <header-file src='src/ios/WeChatSDK1.8.6/WXApiObject.h'/>
+        <source-file src='src/ios/OpenSDK1.8.7.1/libWeChatSDK.a' framework='true'/>
+        <header-file src='src/ios/OpenSDK1.8.7.1/WechatAuthSDK.h'/>
+        <header-file src='src/ios/OpenSDK1.8.7.1/WXApi.h'/>
+        <header-file src='src/ios/OpenSDK1.8.7.1/WXApiObject.h'/>
         <!-- 微信sdk end -->
         <!-- Other required frameworks -->
         <framework src="libz.tbd" />

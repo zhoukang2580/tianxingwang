@@ -17,7 +17,7 @@
 
         <source-file src="src/android/Ali.java" target-dir="src/com/beeant/plugin/ali" />
         <framework src="src/android/alipay.gradle" custom="true" type="gradleReference"/>
-        <lib-file src="src/android/alipaySdk-15.7.3-20200217092932.aar"/>
+        <lib-file src="src/android/alipaySdk-15.7.6-20200521195109.aar"/>
     </platform>
 
     <!-- ios -->

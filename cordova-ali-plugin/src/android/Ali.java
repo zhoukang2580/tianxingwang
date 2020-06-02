@@ -30,7 +30,7 @@ public class Ali extends CordovaPlugin {
             return true;
         }
         if (TextUtils.equals("isAliPayInstalled", action)) {
-            if(isAliPayInstalled(cordova.getContext())){
+            if(isAliPayInstalled(cordova.getContext(),args.optString(0))){
                 callbackContext.success("ok");
             }else{
                 callbackContext.error("not install");
@@ -44,8 +44,8 @@ public class Ali extends CordovaPlugin {
      * @param context
      * @return
      */
-    public static boolean isAliPayInstalled(Context context) {
-        Uri uri = Uri.parse("alipays://platformapi/startApp");
+    public static boolean isAliPayInstalled(Context context,String apkName) {
+        Uri uri = Uri.parse(TextUtils.isEmpty(apkName)?"alipays://platformapi/startApp":apkName);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         ComponentName componentName = intent.resolveActivity(context.getPackageManager());
         return componentName != null;
