@@ -1287,7 +1287,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.credential.Type == CredentialsType.Passport)
     );
   }
-  async onBook(isSave: boolean) {
+  async onBook(isSave: boolean,event:CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
     if (this.isSubmitDisabled) {
