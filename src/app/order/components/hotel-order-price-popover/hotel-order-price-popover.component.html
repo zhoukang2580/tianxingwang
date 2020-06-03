@@ -8,12 +8,12 @@
         </div>
         <div style="display:flex;justify-content: space-between;padding: 2px 0px; border-bottom: 1px dashed #eeeeee;" *ngFor="let o of orderItems">
           <ion-text>{{o.Name}}</ion-text>
-        <ion-text>{{t.Count}}&times;{{o.Amount}}</ion-text>
+        <ion-text>{{o.Amount}}</ion-text>
         </div>
-        <div style="display: flex;justify-content: space-between;" *ngIf="IsShowServiceFee">
+        <!-- <div style="display: flex;justify-content: space-between;" *ngIf="IsShowServiceFee">
           <ion-text style="font-weight:bold">服务费</ion-text>
           <ion-text>{{getHotelServiceFee(t.Key)}}</ion-text>
-        </div>
+        </div> -->
       </ion-grid>
     </ion-slide>
   </ion-slides>

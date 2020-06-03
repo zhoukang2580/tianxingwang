@@ -52,7 +52,7 @@ export class HotelOrderPricePopoverComponent implements OnInit, AfterViewInit {
     return (
       this.order.OrderItems &&
       this.order.OrderItems.filter(
-        (it) => it.Key == orderHotelKey && (it.Tag || "").includes("Fee")
+        (it) => it.Key == orderHotelKey
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0)
     );
   }

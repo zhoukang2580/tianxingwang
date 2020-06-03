@@ -344,9 +344,6 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
     if (!Tmc.IsShowServiceFee) {
       orderItems = orderItems.filter((it) => !(it.Tag || "").endsWith("Fee"));
     }
-    if (orderItems) {
-      orderItems = orderItems.filter((it) => (it.Tag == "Hotel"));
-    }
     console.log(orderItems, "orderItems");
     const p = await this.popoverCtrl.create({
       component: HotelOrderPricePopoverComponent,
