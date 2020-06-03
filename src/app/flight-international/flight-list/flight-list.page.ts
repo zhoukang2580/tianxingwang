@@ -21,9 +21,10 @@ import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntit
 import { FlightTransferComponent } from "../components/flight-transfer/flight-transfer.component";
 import { environment } from "src/environments/environment";
 import { AppHelper } from "src/app/appHelper";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { FlightFareEntity } from "src/app/flight/models/FlightFareEntity";
 import { RefundChangeDetailComponent } from "../components/refund-change-detail/refund-change-detail.component";
+import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
 interface Iisblue {
   isshow: false;
 }
@@ -44,6 +45,8 @@ export class FlightListPage implements OnInit, OnDestroy {
   condition: IFilterCondition;
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
+  @ViewChild(BackButtonComponent, { static: true })
+  backbtn: BackButtonComponent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   @ViewChild(IonContent, { static: true }) content: IonContent;
   dialogShow: Iisblue[];
@@ -51,12 +54,31 @@ export class FlightListPage implements OnInit, OnDestroy {
   curTrip: ITripInfo;
   constructor(
     private router: Router,
+    private route:ActivatedRoute,
     private flightService: InternationalFlightService,
     public modalController: ModalController,
     public popoverController: PopoverController
-  ) {}
+  ) { }
   private scrollToTop() {
     this.content.scrollToTop();
+  }
+  back() {
+    if (this.searchModel && this.searchModel.trips && this.searchModel.trips.some(it => !!it.bookInfo)) {
+      this.clearLastTrip();
+      if( this.searchModel.trips[this.searchModel.trips.length - 1].bookInfo == null){
+        this.onReselectTrip(this.searchModel.trips[0])
+      }
+      this.doRefresh();
+      return;
+    }
+    
+    this.backbtn.popToPrePage();
+  }
+  private clearLastTrip() {
+    const last = this.searchModel.trips[this.searchModel.trips.length - 1];
+    if (last && last.bookInfo) {
+      last.bookInfo = null;
+    }
   }
   async onSelectTrip(flightRoute: FlightRouteEntity, fare?: FlightFareEntity) {
     console.log(this.searchModel, "this.searchModel");
@@ -185,6 +207,12 @@ export class FlightListPage implements OnInit, OnDestroy {
         }
       })
     );
+    this.subscriptions.push(this.route.queryParamMap.subscribe(q=>{
+      if(this.searchModel&&this.searchModel.trips&&this.searchModel.trips.some(t=>!!t.bookInfo)){
+        this.clearLastTrip();
+        this.doRefresh();
+      }
+    }))
     this.subscriptions.push(
       this.flightService.getFilterConditionSource().subscribe((c) => {
         this.condition = c;
@@ -257,7 +285,7 @@ export class FlightListPage implements OnInit, OnDestroy {
           (a.minPriceFlightFare &&
             b.minPriceFlightFare &&
             +a.minPriceFlightFare.TicketPrice -
-              +b.minPriceFlightFare.TicketPrice) ||
+            +b.minPriceFlightFare.TicketPrice) ||
           0;
         return c.price == "asc" ? delta : -delta;
       });
@@ -285,7 +313,7 @@ export class FlightListPage implements OnInit, OnDestroy {
           (a.fromSegment &&
             b.fromSegment &&
             +a.fromSegment.TakeoffTimeStamp -
-              +b.fromSegment.TakeoffTimeStamp) ||
+            +b.fromSegment.TakeoffTimeStamp) ||
           0;
         return c.time == "asc" ? delta : -delta;
       });
