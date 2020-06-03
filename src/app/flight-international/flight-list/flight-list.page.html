@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar style="border-bottom: 1px solid var(--ion-color-primary-shade);">
     <ion-buttons slot='start'>
-      <app-back-button></app-back-button>
+      <app-back-button [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title style="font-size: 0.9em;">
       {{curTrip?.fromCity?.CityName}} -- {{curTrip?.toCity?.CityName}}

@@ -147,17 +147,19 @@
                 <ion-text color='secondary' (click)='onShowRoomDetails(room)'>
                   详情
                 </ion-text>
-                <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 1em;"
+                <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 2em;"
                   (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
-                  <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
-                    <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span
-                        style="font-size: 1rem">{{price}}</span>
-                      <small style="font-size:.6rem;margin-left:.2em">起</small></strong>
-                  </ion-text>
-                  <ion-icon class='arrow-icon' name='caret-down-outline' mode='ios' color='secondary'
-                    *ngIf='!room["isShowRoomPlans"]'></ion-icon>
-                  <ion-icon class='arrow-icon' name="caret-up-outline" mode='ios' color='secondary'
-                    *ngIf='room["isShowRoomPlans"]'></ion-icon>
+                  <ng-container *ngIf='!isFullOnly(room.RoomPlans)'>
+                    <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
+                      <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span
+                          style="font-size: 1rem">{{price}}</span>
+                        <small style="font-size:.6rem;margin-left:.2em">起</small></strong>
+                    </ion-text>
+                    <ion-icon class='arrow-icon' name='caret-down-outline' mode='ios' color='secondary'
+                      *ngIf='!room["isShowRoomPlans"]'></ion-icon>
+                    <ion-icon class='arrow-icon' name="caret-up-outline" mode='ios' color='secondary'
+                      *ngIf='room["isShowRoomPlans"]'></ion-icon>
+                  </ng-container>
                 </h3>
               </ion-label>
             </div>
