@@ -412,7 +412,10 @@ export class SelectPassengerPage
     // 白名单
     let staffCredentails: MemberCredential[] = [];
     if (!s.isNotWhiteList) {
-      staffCredentails = await this.getCredentials(s.AccountId);
+      staffCredentails = await this.getCredentials(
+        s.AccountId,
+        s.OrderPassengerId
+      );
       if (
         this.forType == FlightHotelTrainType.HotelInternational ||
         this.forType == FlightHotelTrainType.InternationalFlight
@@ -730,13 +733,14 @@ export class SelectPassengerPage
       LanguageHelper.getCancelTip()
     );
   }
-  private async getCredentials(accountId: string) {
+  private async getCredentials(accountId: string, orderPassengerId: string) {
     this.loading = true;
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Staff-Credentials";
     req.Data = {
       AccountId: accountId,
+      OrderPassengerId: orderPassengerId || "",
     };
     const credentials = await this.apiService
       .getPromiseData<MemberCredential[]>(req)
