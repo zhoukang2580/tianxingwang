@@ -92,6 +92,24 @@ export class HotelRoomBookedinfosPage implements OnInit {
       );
     }
   }
+  private initDayPrice() {
+    const bookInfos = this.hotelService.getBookInfos();
+    this.curSelectedBookInfo = bookInfos[0];
+    if (
+      this.curSelectedBookInfo &&
+      this.curSelectedBookInfo.bookInfo &&
+      this.curSelectedBookInfo.bookInfo.roomPlan
+    ) {
+      this.dates = (
+        this.curSelectedBookInfo.bookInfo.roomPlan.RoomPlanPrices || []
+      ).map((it) => {
+        return {
+          date: it.Date && it.Date.substr(0, 10),
+          price: it.Price,
+        };
+      });
+    }
+  }
   onShowPriceDetails(evt: {
     isShow: boolean;
     bookInfo?: PassengerBookInfo<IHotelInfo>;
@@ -101,23 +119,13 @@ export class HotelRoomBookedinfosPage implements OnInit {
     }
     if (evt.isShow) {
       this.dates = [];
-      const n = this.calcNights();
       if (
         this.curSelectedBookInfo &&
         this.curSelectedBookInfo.bookInfo &&
         this.curSelectedBookInfo.bookInfo.roomPlan &&
         this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate
       ) {
-        for (let i = 0; i < n; i++) {
-          this.dates.push({
-            date: moment(this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate)
-              .add(i, "days")
-              .format("YYYY-MM-DD"),
-            price: this.hotelService.getAvgPrice(
-              this.curSelectedBookInfo.bookInfo.roomPlan
-            ),
-          });
-        }
+        this.initDayPrice();
       }
     }
     this.isShowPriceDetail = evt.isShow;
