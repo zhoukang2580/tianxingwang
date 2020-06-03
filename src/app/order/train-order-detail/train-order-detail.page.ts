@@ -38,6 +38,8 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { OrderNumberEntity } from "../models/OrderNumberEntity";
 import { flyInOut } from "src/app/animations/flyInOut";
 import { TaskStatusType } from 'src/app/workflow/models/TaskStatusType';
+import { OrderTravelPayType } from '../models/OrderTravelEntity';
+import { TrainOrderPricePopoverComponent } from '../components/train-order-price-popover/train-order-price-popover.component';
 interface ITab {
   label: string;
   value: number;
@@ -57,6 +59,7 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
   ProductItemType = ProductItemType;
   items: { label: string; value: string }[] = [];
   tabs: ITab[] = [];
+  OrderTravelPayType=OrderTravelPayType;
   orderDetail: OrderDetailModel;
   isLoading = false;
   showTiket = false;
@@ -746,5 +749,52 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         (it) => t.Key == it.AdditionKey
       )
     );
+  }
+  async showPricePopover() {
+    try {
+      if (!this.tmc) {
+        this.tmc = await this.tmcService.getTmc();
+      }
+      let Tmc = this.tmc;
+      console.log(Tmc, "TmcTmcTmcTmc");
+      if (!Tmc) {
+        return `0`;
+      }
+      Tmc = { ...this.tmc };
+      if (this.orderDetail && this.orderDetail.Order) {
+        if (
+          [OrderTravelPayType.Company, OrderTravelPayType.Balance].some(
+            (t) => t == this.orderDetail.Order.TravelPayType
+          )
+        ) {
+          Tmc.IsShowServiceFee = this.tmc && this.tmc.IsShowServiceFee;
+        }
+        if (OrderTravelPayType.Person == this.orderDetail.Order.TravelPayType) {
+          Tmc.IsShowServiceFee = true;
+        }
+      }
+      let orderItems =
+        this.orderDetail.Order && this.orderDetail.Order.OrderItems;
+      if (!Tmc.IsShowServiceFee) {
+        orderItems = orderItems.filter((it) => !(it.Tag || "").endsWith("Fee"));
+      }
+      const p = await this.popoverCtrl.create({
+        component: TrainOrderPricePopoverComponent,
+        cssClass: "ticket-changing",
+        componentProps: {
+          order: this.orderDetail && this.orderDetail.Order,
+          insurance: this.getInsuranceAmount(),
+          IsShowServiceFee: Tmc.IsShowServiceFee,
+          orderItems,
+          amount: orderItems.reduce(
+            (acc, item) => (acc = AppHelper.add(acc, +item.Amount)),
+            0
+          ),
+        },
+      });
+      p.present();
+    } catch (e) {
+      console.error(e);
+    }
   }
 }

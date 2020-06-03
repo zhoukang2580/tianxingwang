@@ -99,8 +99,10 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   tmc: TmcEntity;
   totalPriceSource: Subject<number>;
   isCanSave$ = of(false);
+  OrderTravelPayType= OrderTravelPayType;
   addContacts: AddContact[] = [];
   isCheckingPay = false;
+  isShowFee = false;
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
@@ -156,6 +158,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.tmc = this.initialBookDto.Tmc;
       await this.initializeViewModel();
+      console.log(this.viewModel.combindInfos,"this.viewModel.combindInfos");
+      
     } catch (e) {
       console.log(e);
       this.error = e;
@@ -505,7 +509,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-  async bookTrain(isSave?: boolean) {
+  async bookTrain(isSave: boolean = false, event: CustomEvent) {
+    this.isShowFee = false;
+    event.stopPropagation();
     if (this.isSubmitDisabled) {
       return;
     }

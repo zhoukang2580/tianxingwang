@@ -235,33 +235,35 @@
           </ion-item-group>
         </ng-container>
       </ion-list>
-      <ion-item-group *ngIf='!searchTrainModel?.isExchange'>
-        <ion-item-divider>
-          添加联系人：
-        </ion-item-divider>
-        <ion-item>
-          <app-book-addcontacts-comp [(contacts)]='addContacts'>
-          </app-book-addcontacts-comp>
-        </ion-item>
-      </ion-item-group>
-      <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
-        <ion-item-divider>
-          支付方式：
-        </ion-item-divider>
-        <ion-item [disabled]='searchTrainModel?.isExchange'>
-          <div style='width: 100%'>
-            <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'
-              (ionChange)="calcTotalPrice()">
-              <ion-item *ngFor='let pt of orderTravelPayTypes'>
-                <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)'
-                  [class.radio-checked]='pt.checked'>
-                </ion-radio>
-              </ion-item>
-            </ion-radio-group>
-          </div>
-        </ion-item>
-      </ion-item-group>
+      <ion-list>
+        <ion-item-group *ngIf='!searchTrainModel?.isExchange'>
+          <ion-item-divider>
+            添加联系人：
+          </ion-item-divider>
+          <ion-item>
+            <app-book-addcontacts-comp [(contacts)]='addContacts'>
+            </app-book-addcontacts-comp>
+          </ion-item>
+        </ion-item-group>
+        <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
+          <ion-item-divider>
+            支付方式：
+          </ion-item-divider>
+          <ion-item [disabled]='searchTrainModel?.isExchange'>
+            <div style='width: 100%'>
+              <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'
+                (ionChange)="calcTotalPrice()">
+                <ion-item *ngFor='let pt of orderTravelPayTypes'>
+                  <ion-label>{{pt.label}}</ion-label>
+                  <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)'
+                    [class.radio-checked]='pt.checked'>
+                  </ion-radio>
+                </ion-item>
+              </ion-radio-group>
+            </div>
+          </ion-item>
+        </ion-item-group>
+      </ion-list>
     </ng-container>
   </ng-container>
   <ng-template #retryTempl>
@@ -274,16 +276,36 @@
   </ng-template>
 </ion-content>
 <ion-footer>
-  <ion-toolbar>
+  <ion-toolbar (click)="isShowFee=!isShowFee">
     <ion-buttons slot='start'>
-      <ion-button color='secondary'>总计:
+      <!-- <ion-button color='secondary'>总计:
         <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
-      </ion-button>
+      </ion-button> -->
+      <ion-text color="secondary">总计:</ion-text>
+      <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
+      <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
+      <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
-    <ion-button slot='end' size='small' color='secondary' (click)='bookTrain()' [disabled]='isSubmitDisabled'> 提交
+    <ion-button slot='end' size='small' color='secondary' (click)='bookTrain(false,$event)' [disabled]='isSubmitDisabled'> 提交
     </ion-button>
     <ion-button slot='end' size='small' *ngIf='(isCanSave$|async)&&!(searchTrainModel?.isExchange)' color='secondary'
-      (click)='bookTrain(true)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
+      (click)='bookTrain(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
   </ion-toolbar>
 </ion-footer>
+<div class="zz" *ngIf="isShowFee" (click)="isShowFee=!isShowFee"></div>
+<div [class.show]="isShowFee" class="transfrom">
+  <div class="wrapper">
+    <div *ngFor="let infos of viewModel.combindInfos" class="ion-padding fee"
+    [style.min-width]="viewModel.combindInfos.length>1?'90%':'100%'">
+    <div class="spacebetween"style="margin-top: 2px;">
+      <ion-text>票价</ion-text>
+    <ion-text>{{infos.bookInfo.bookInfo.selectedSeat.Price}}元</ion-text>
+    </div>
+    <div class="spacebetween"style="margin-top: 2px;" *ngIf="tmc?.IsShowServiceFee||(viewModel.orderTravelPayType == OrderTravelPayType.Person||viewModel.orderTravelPayType==OrderTravelPayType.Credit)">
+      <ion-text>服务费</ion-text>
+    <ion-text>{{infos.serviceFee}}元</ion-text>
+    </div>
+  </div>
+  </div>
+</div>
 <app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍后...</app-waiting-check-pay>
