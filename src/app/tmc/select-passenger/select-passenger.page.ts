@@ -403,7 +403,12 @@ export class SelectPassengerPage
       }
     }
     console.log("onSelect", s);
-    
+    this.selectedPassenger = s;
+    this.vmStaffs = null; // 是否显示搜索列表
+    this.isShowNewCredential = false; // 页面上显示新增此人其他证件,或者是非白名单的证件
+    this.vmNewCredential = null;
+    this.selectedCredentialId = null; // 所选择的证件Id
+    this.frqPassengerCredentials = null; // 是否显示常旅客
     // 白名单
     let staffCredentails: MemberCredential[] = [];
     if (!s.isNotWhiteList) {
@@ -463,12 +468,6 @@ export class SelectPassengerPage
       AppHelper.alert("所选乘客尚无可用证件信息");
       return;
     }
-    this.selectedPassenger = s;
-    this.vmStaffs = null; // 是否显示搜索列表
-    this.isShowNewCredential = false; // 页面上显示新增此人其他证件,或者是非白名单的证件
-    this.vmNewCredential = null;
-    this.selectedCredentialId = null; // 所选择的证件Id
-    this.frqPassengerCredentials = null; // 是否显示常旅客
   }
   private initNewCredential(s: StaffEntity) {
     this.vmNewCredential = new MemberCredential();
