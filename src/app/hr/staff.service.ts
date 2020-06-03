@@ -458,6 +458,7 @@ export class StaffEntity {
   Password: string;
   ApproveId: string; // ApproveId Id
   Id: string; // Long Id
+  OrderPassengerId: string; // Long Id
   TmcId: string; // Long 客户 id
   AccountId: string; // Long 帐号 id
   OrganizationId: string; // Long 所属部门 Id
