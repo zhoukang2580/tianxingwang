@@ -46,7 +46,7 @@
                 </ion-icon>
               </ion-col>
             </ion-row>
-            <ng-container>
+            <!-- <ng-container>
               <ng-container *ngIf='tmc?.IsShowServiceFee'>
                 <ion-row *ngFor='let orderHotel of orderDetail.Order.OrderHotels'>
                   <ion-col size='3'>
@@ -61,7 +61,7 @@
                   </ion-col>
                 </ion-row>
               </ng-container>
-            </ng-container>
+            </ng-container> -->
             <ion-row (click)='showPricePopover()'>
               <ion-col size='3'>已付金额:</ion-col>
               <ion-col>{{getOrderPayAmount()}}
