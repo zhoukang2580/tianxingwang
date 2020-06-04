@@ -29,7 +29,11 @@
             <ion-col size='7'>{{insurance.Name}}</ion-col>
             <ion-col class='price'>{{insurance.Premium}}元</ion-col>
           </ion-row>
-          <ion-row>
+          <ion-row *ngIf="t.StatusName=='废除'">
+            <ion-col size="7">应付</ion-col>
+            <ion-col class="price">0元</ion-col>
+          </ion-row>
+          <ion-row *ngIf="t.StatusName!='废除'">
             <ion-col size='7'>总计</ion-col>
             <ion-col class='price'>{{getPriceAmount(t)}}元</ion-col>
           </ion-row>

@@ -752,10 +752,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             });
           }
           order.vmIsCheckPay = this.checkPay(order);
-          order.TotalAmount = this.orderService.getOrderTotalAmount(
-            order,
-            this.tmc
-          );
+          // order.TotalAmount = this.orderService.getOrderTotalAmount(
+          //   order,
+          //   this.tmc
+          // );
           return order;
         });
       }

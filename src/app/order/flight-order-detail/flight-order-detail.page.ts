@@ -666,7 +666,7 @@ export class FlightOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         });
       }
       console.log("orderDetail ", this.orderDetail);
-    }
+    }    
   }
   private transformTime(datetime: string) {
     if (datetime && datetime.includes("T")) {
