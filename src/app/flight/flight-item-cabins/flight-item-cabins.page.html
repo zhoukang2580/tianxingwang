@@ -116,12 +116,13 @@
               </ion-button>
             </ion-col>
           </ion-row>
+
           <ion-row *ngIf='cabin?.Rules'>
             <ion-col>
               <ion-label *ngFor='let r of cabin.Rules' color='danger'  class='rule ion-text-wrap'>{{r}}</ion-label>
-              <ion-label *ngIf='getFlightIllegalTip() as tip' color='danger'  class='rule ion-text-wrap'>提示：({{tip}})
+              <ion-label *ngIf='cabin.Rules?.length&&getFlightIllegalTip()' color='danger'  class='rule ion-text-wrap'>提示：({{getFlightIllegalTip()}})
               </ion-label>
-              <ion-label *ngIf='getFlightlegalTip() as tip' color='danger'  class='rule ion-text-wrap'>提示：({{tip}})
+              <ion-label *ngIf='!cabin.Rules?.length&&getFlightlegalTip()' color='danger'  class='rule ion-text-wrap'>提示：({{getFlightlegalTip()}})
               </ion-label>
             </ion-col>
           </ion-row>

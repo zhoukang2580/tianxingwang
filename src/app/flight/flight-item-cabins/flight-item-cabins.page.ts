@@ -333,6 +333,8 @@ export class FlightItemCabinsPage implements OnInit {
       this.hasMoreCabins = false;
       this.vmCabins = this.moreCabins;
     }
+   console.log(this.vmCabins,"cabins");
+
   }
   onShowSelectedInfosPage() {
     this.flightService.showSelectedBookInfosPage();
@@ -389,6 +391,7 @@ export class FlightItemCabinsPage implements OnInit {
       );
     this.cabins = this.getPolicyCabins();
     this.initVmCabins(this.cabins);
+   
   }
 
   private getPolicyCabins() {
