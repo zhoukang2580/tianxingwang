@@ -62,7 +62,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     private identityService: IdentityService,
     private navCtrl: NavController,
     private orderService: OrderService
-  ) {}
+  ) { }
   ngOnDestroy() {
     this.subscritions.forEach((sub) => sub.unsubscribe());
   }
@@ -280,7 +280,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       if (
         info.bookInfo.tripType == TripType.returnTrip &&
         info.bookInfo.flightSegment.FromAirport !=
-          lowestFlightSegment.FromAirport
+        lowestFlightSegment.FromAirport
       ) {
         return true;
       }
@@ -397,15 +397,17 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     return `${day.date} ${day.dayOfWeekName}`;
   }
   getFlightIllegalTip(info: PassengerBookInfo<IFlightSegmentInfo>) {
+    const isShow = info && info.bookInfo && info.bookInfo.flightPolicy.Rules && info.bookInfo.flightPolicy && info.bookInfo.flightPolicy.Rules.length;
     return (
-      info &&
+      isShow && info &&
       info.passenger &&
       info.passenger.Policy &&
       info.passenger.Policy.FlightIllegalTip
     );
   }
   getFlightlegalTip(info: PassengerBookInfo<IFlightSegmentInfo>) {
-    return (
+    const isShow = info && info.bookInfo && info.bookInfo.flightPolicy.Rules && info.bookInfo.flightPolicy && info.bookInfo.flightPolicy.Rules.length;
+    return (!isShow&&
       info &&
       info.passenger &&
       info.passenger.Policy &&
@@ -420,7 +422,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-    }]`;
+      }]`;
   }
 
   async onSelectReturnTrip() {
