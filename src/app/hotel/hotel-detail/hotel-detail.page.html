@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar >
+  <ion-toolbar>
     <ion-buttons slot='start'>
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
@@ -70,6 +70,12 @@
       <ion-item (click)='onOpenMap()' lines='none'>
         <ion-label color='secondary'>{{hotel?.Address}}</ion-label>
         <ion-icon name="location" color='secondary'></ion-icon>
+      </ion-item>
+      <ion-item lines='none'>
+        <ion-label>
+          电话
+          <ion-text class="ion-padding-start" style="user-select: text;">{{hotel?.Phone}}</ion-text>
+        </ion-label>
       </ion-item>
     </ion-card-subtitle>
     <ion-card-content>
@@ -143,7 +149,7 @@
                 </ion-button>
               </h4>
               <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 2em;"
-                (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]' >
+                (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
                 <ng-container *ngIf='!isFullOnly(room.RoomPlans)'>
                   <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
                     <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span
