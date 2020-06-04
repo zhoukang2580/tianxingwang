@@ -810,7 +810,7 @@ export class InternationalFlightService {
         this.flightListResult.FlightSegments.length
       ) {
         let result = this.flightListResult;
-        result=this.initParagraphFlightRoutes(result);
+        result = this.initParagraphFlightRoutes(result);
         if (!keepFilterCondition) {
           await this.initParagraphCondition(result);
         }
@@ -872,7 +872,7 @@ export class InternationalFlightService {
       .then((policyResult) => {
         this.flightPolicyResult = policyResult;
         if (policyResult) {
-          if(policyResult.FlightFares){
+          if (policyResult.FlightFares) {
             this.flightListResult.FlightFares = this.flightListResult.FlightFares.map(
               (it) => {
                 const one = policyResult.FlightFares.find((i) => i.Id == it.Id);
@@ -884,7 +884,7 @@ export class InternationalFlightService {
               }
             );
           }
-          if(policyResult.FlightRoutes){
+          if (policyResult.FlightRoutes) {
             this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
               (r) => {
                 const one = policyResult.FlightRoutes.find((i) => i.Id == r.Id);
@@ -1427,6 +1427,11 @@ export class InternationalFlightService {
           flightFare.ruleMessage = Object.keys(flightFare.Rules)
             .map((k) => flightFare.Rules[k])
             .join(";");
+        }
+        if (!flightFare.ruleMessage) {
+          const p = this.getBookInfos().map((it) => it.passenger)[0];
+          flightFare.ruleMessage =
+            p && p.Policy && p.Policy.InternationalFlightDescription;
         }
       }
     }
