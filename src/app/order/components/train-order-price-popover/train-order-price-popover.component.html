@@ -1,18 +1,20 @@
 <ion-content class='ion-padding'>
-    <ion-slides >
-      <ion-slide *ngFor='let t of order?.OrderTrainTickets'>
-        <ion-grid style="font-size:0.9rem;color: var(--ion-color-dark)">
-          <div style="display:flex;justify-content: space-between;padding: 2px 0px; border-bottom: 1px dashed #eeeeee;" *ngFor="let o of orderItems">
-            <ion-text>{{o.Name}}</ion-text>
+  <ion-slides>
+    <ion-slide *ngFor='let t of order?.OrderTrainTickets'>
+      <ion-grid style="font-size:0.9rem;color: var(--ion-color-dark)">
+        <div style="display:flex;justify-content: space-between;padding: 2px 0px; border-bottom: 1px dashed #eeeeee;"
+          *ngFor="let o of orderItems">
+          <ion-text *ngIf="o.Tag.includes('Fee')">服务费</ion-text>
+          <ion-text *ngIf="!(o.Tag.includes('Fee'))">{{o.Name}}</ion-text>
           <ion-text>{{o.Amount}}</ion-text>
-          </div>
-        </ion-grid>
-      </ion-slide>
-    </ion-slides>
-    <div class="bullets" *ngIf='order?.OrderTrainTickets?.length>1'>
-      <ion-icon name="caret-back-outline" color='secondary'></ion-icon>
-      <div *ngFor='let b of order?.OrderTrainTickets;let i=index;' class="bullet"
-        [class.active]='b.Id==order?.OrderTrainTickets[activeIdx].Id'></div>
-      <ion-icon name="caret-forward-outline" color='secondary'></ion-icon>
-    </div>
-  </ion-content>
+        </div>
+      </ion-grid>
+    </ion-slide>
+  </ion-slides>
+  <div class="bullets" *ngIf='order?.OrderTrainTickets?.length>1'>
+    <ion-icon name="caret-back-outline" color='secondary'></ion-icon>
+    <div *ngFor='let b of order?.OrderTrainTickets;let i=index;' class="bullet"
+      [class.active]='b.Id==order?.OrderTrainTickets[activeIdx].Id'></div>
+    <ion-icon name="caret-forward-outline" color='secondary'></ion-icon>
+  </div>
+</ion-content>

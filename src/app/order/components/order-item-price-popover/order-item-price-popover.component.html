@@ -27,8 +27,7 @@
           </ion-row>
           <ion-row *ngFor="let insurance of getInsurances(t)">
             <ion-col size='7'>{{insurance.Name}}</ion-col>
-            <ion-col class='price'>{{insurance.Premium}}</ion-col>
-            <ion-col size='1'>元</ion-col>
+            <ion-col class='price'>{{insurance.Premium}}元</ion-col>
           </ion-row>
           <ion-row>
             <ion-col size='7'>总计</ion-col>
