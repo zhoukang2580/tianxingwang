@@ -501,24 +501,24 @@ export class OrderItemComponent implements OnInit, OnChanges {
     return rev;
 
   }
-  getTotalAmount(order: OrderEntity, key: string) {
-    let amount = 0;
-    const Tmc = this.tmc;
-    if (!order || !order.OrderItems || !Tmc) {
-      return amount;
-    }
-    if (Tmc.IsShowServiceFee) {
-      amount = order.OrderItems.filter((it) => it.Key == key).reduce(
-        (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
-        0
-      );
-    } else {
-      amount = order.OrderItems.filter(
-        (it) => it.Key == key && !(it.Tag || "").endsWith("Fee")
-      ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
-    }
-    return amount > 0 ? amount : 0;
-  }
+  // getTotalAmount(order: OrderEntity, key: string) {
+  //   let amount = 0;
+  //   const Tmc = this.tmc;
+  //   if (!order || !order.OrderItems || !Tmc) {
+  //     return amount;
+  //   }
+  //   if (Tmc.IsShowServiceFee) {
+  //     amount = order.OrderItems.filter((it) => it.Key == key).reduce(
+  //       (acc, it) => (acc = AppHelper.add(acc, +it.Amount)),
+  //       0
+  //     );
+  //   } else {
+  //     amount = order.OrderItems.filter(
+  //       (it) => it.Key == key && !(it.Tag || "").endsWith("Fee")
+  //     ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+  //   }
+  //   return amount > 0 ? amount : 0;
+  // }
   ticketIsReject(orderFlightTicket: {
     Variables: string;
     VariablesJsonObj: any;
@@ -611,4 +611,5 @@ export class OrderItemComponent implements OnInit, OnChanges {
   //     []
   //   ).length>0;
   // }
+
 }

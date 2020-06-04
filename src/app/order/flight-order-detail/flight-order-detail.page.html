@@ -37,7 +37,7 @@
               <ion-col size='3'>应付金额</ion-col>
               <ion-col>
                 <div>
-                  <ion-text *ngIf="orderDetail.orderTotalAmount!=0" color="danger">￥{{orderDetail.orderTotalAmount}}
+                  <ion-text *ngIf="orderDetail.orderTotalAmount!=0" color="danger">￥{{orderDetail.Order.TotalAmount}}
                   </ion-text>
                   <ion-text *ngIf="orderDetail.orderTotalAmount==0" color="dark">- -</ion-text>
                   <!-- {{orderDetail.orderTotalAmount}} -->

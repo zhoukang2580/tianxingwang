@@ -271,7 +271,8 @@
         </ion-row>
         <ion-row *ngIf='false'>
           <ion-col *ngIf='false'>
-            <ion-text color='danger'>￥{{getTotalAmount(order,orderHotel.Key)}}</ion-text>
+            <!-- <ion-text color='danger'>￥{{getTotalAmount(order,orderHotel.Key)}}</ion-text> -->
+          <ion-text color='danger'>￥{{order.TotalAmount}}</ion-text>
           </ion-col>
           <ion-col>
             {{orderHotel.StatusName}}
