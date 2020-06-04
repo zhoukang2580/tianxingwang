@@ -4,8 +4,8 @@
   "Ignore": true,
   "EnabledHcpUpdate": true,
   "EnabledAppUpdate": true,
-  "Md5": "cf56e6ed2891e8ede3397472b089cc25",
-  "ApkMd5": "30d06bc1536b09c69d7d96554a840640",
+  "Md5": "b5a35ff9b79fc6cfc02ae033c8926727",
+  "ApkMd5": "da1012ff18bf330d0fe9fb1c876afa35",
   "Version": "3.13.0",
   "UpdateDescriptions": []
 }

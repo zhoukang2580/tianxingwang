@@ -62,7 +62,7 @@ export class HotelRoomBookedinfosPage implements OnInit {
     if (images && bookInfo.bookInfo.hotelRoom) {
       const roomImages = images
         .filter((it) => it.Room && it.Room.Id == bookInfo.bookInfo.hotelRoom.Id)
-        .map((it) => it.FileName && it.FileName);
+        .map((it) => it.FullFileName || it.FileName);
       return roomImages;
     }
   }
