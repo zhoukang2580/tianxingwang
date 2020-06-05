@@ -10,7 +10,7 @@ import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { StaffService } from "../../hr/staff.service";
 import {
   FlightService,
-  SearchFlightModel
+  SearchFlightModel,
 } from "src/app/flight/flight.service";
 import { CalendarService } from "../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
@@ -22,7 +22,7 @@ import { DayModel } from "../../tmc/models/DayModel";
 import {
   NavController,
   ModalController,
-  PopoverController
+  PopoverController,
 } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -30,7 +30,7 @@ import { map } from "rxjs/operators";
 @Component({
   selector: "app-search-flight",
   templateUrl: "./search-flight.page.html",
-  styleUrls: ["./search-flight.page.scss"]
+  styleUrls: ["./search-flight.page.scss"],
 })
 export class SearchFlightPage
   implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
@@ -66,7 +66,7 @@ export class SearchFlightPage
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController
   ) {
-    const sub = route.queryParamMap.subscribe(async q => {
+    const sub = route.queryParamMap.subscribe(async (q) => {
       this.isSelf = await this.staffService.isSelfBookType();
       this.isleave = false;
       this.isCanleave = false;
@@ -75,9 +75,7 @@ export class SearchFlightPage
       let lastSelectedGoDate = await this.storage.get(
         `last_selected_flight_goDate_${identity && identity.Id}`
       );
-      const nextDate = moment()
-        .add(1, "days")
-        .format("YYYY-MM-DD");
+      const nextDate = moment().add(1, "days").format("YYYY-MM-DD");
       lastSelectedGoDate =
         lastSelectedGoDate &&
         this.calendarService.generateDayModelByDate(lastSelectedGoDate)
@@ -130,7 +128,7 @@ export class SearchFlightPage
     }
     const bookInfos = this.flightService
       .getPassengerBookInfos()
-      .filter(it => !!it.bookInfo);
+      .filter((it) => !!it.bookInfo);
     if (bookInfos.length) {
       return AppHelper.alert(
         "是否放弃所选航班信息？",
@@ -156,9 +154,9 @@ export class SearchFlightPage
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
       componentProps: {
-        details: s.Policy.FlightDescription.split(",")
+        details: s.Policy.FlightDescription.split(","),
       },
-      cssClass: "ticket-changing"
+      cssClass: "ticket-changing",
     });
     p.present();
   }
@@ -181,10 +179,10 @@ export class SearchFlightPage
     this.isSingle = single;
     this.flightService.setSearchFlightModelSource({
       ...this.flightService.getSearchFlightModel(),
-      isRoundTrip: !this.isSingle
+      isRoundTrip: !this.isSingle,
     });
     this.flightService.setPassengerBookInfosSource(
-      this.flightService.getPassengerBookInfos().map(it => {
+      this.flightService.getPassengerBookInfos().map((it) => {
         it.bookInfo = null;
         return it;
       })
@@ -206,7 +204,7 @@ export class SearchFlightPage
   async ngOnInit() {
     this.searchConditionSubscription = this.flightService
       .getSearchFlightModelSource()
-      .subscribe(async s => {
+      .subscribe(async (s) => {
         this.searchFlightModel = s;
         if (s) {
           this.disabled = s.isLocked;
@@ -214,7 +212,7 @@ export class SearchFlightPage
           // this.vmToCity = s.toCity;
           this.isSingle = !s.isRoundTrip;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
-          
+
           this.backDate = this.calendarService.generateDayModelByDate(
             s.BackDate
           );
@@ -224,20 +222,20 @@ export class SearchFlightPage
       });
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map(infos => infos.filter(it => !!it.bookInfo).length));
+      .pipe(map((infos) => infos.filter((it) => !!it.bookInfo).length));
     await this.initFlightCities();
     this.showReturnTrip = await this.staffService
       .isSelfBookType()
-      .catch(_ => false);
+      .catch((_) => false);
   }
   onSelectPassenger() {
     this.isCanleave = true;
     this.isleave = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
-      queryParams: { forType: FlightHotelTrainType.Flight }
+      queryParams: { forType: FlightHotelTrainType.Flight },
     });
   }
-   onShowSelectedInfosPage() {
+  onShowSelectedInfosPage() {
     this.flightService.showSelectedBookInfosPage();
   }
   ngOnDestroy(): void {
@@ -261,7 +259,7 @@ export class SearchFlightPage
       Nickname: "北京",
       Pinyin: "Beijing",
       Sequence: 2,
-      Tag: "AirportCity"
+      Tag: "AirportCity",
     } as TrafficlineEntity;
     const vmToCity = {
       AirportCityCode: "SHA",
@@ -279,7 +277,7 @@ export class SearchFlightPage
       Pinyin: "Shanghai",
       Sequence: 1,
       // 出发城市，不是出发城市的那个机场
-      Tag: "AirportCity"
+      Tag: "AirportCity",
     } as TrafficlineEntity;
     const lastFromCity =
       (await this.storage
@@ -290,7 +288,7 @@ export class SearchFlightPage
           }
           return c;
         })
-        .catch(_ => null)) || vmFromCity;
+        .catch((_) => null)) || vmFromCity;
     const lastToCity =
       (await this.storage
         .get("toCity")
@@ -300,11 +298,11 @@ export class SearchFlightPage
           }
           return c;
         })
-        .catch(_ => null)) || vmToCity;
+        .catch((_) => null)) || vmToCity;
     this.flightService.setSearchFlightModelSource({
       ...this.flightService.getSearchFlightModel(),
       fromCity: lastFromCity,
-      toCity: lastToCity
+      toCity: lastToCity,
     });
   }
   async searchFlight() {
@@ -317,14 +315,14 @@ export class SearchFlightPage
     const s: SearchFlightModel =
       this.searchFlightModel || new SearchFlightModel();
     // s.tripType = TripType.departureTrip;
-    const staff = await this.staffService.getStaff().catch(_ => null);
+    const staff = await this.staffService.getStaff().catch((_) => null);
     if (staff && staff.BookType == StaffBookType.Self) {
       const exists = this.flightService.getPassengerBookInfos();
       const go = exists.find(
-        it => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
+        (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
       );
       const back = exists.find(
-        it => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
+        (it) => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
       );
       // if (go && back && !exists.some(it => it.isReplace)) {
       //   s.tripType = TripType.departureTrip;
@@ -362,7 +360,7 @@ export class SearchFlightPage
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModelSource(s);
     this.router.navigate([AppHelper.getRoutePath("flight-list")], {
-      queryParams: { doRefresh: true }
+      queryParams: { doRefresh: true },
     });
     this.cachLastSelectedFlightGoDate(s.Date);
   }
@@ -385,6 +383,7 @@ export class SearchFlightPage
     this.flightService.onSwapCity();
   }
   onSelectCity(isFromCity = true) {
+    this.isCanleave = true;
     this.flightService.onSelectCity(isFromCity);
   }
   async onSelecFlyDate(flyTo: boolean, backDate: boolean) {
