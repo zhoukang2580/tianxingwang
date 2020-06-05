@@ -18,9 +18,9 @@
           <ion-item-divider>
             <div style="width: 100%;">
               <div style="padding: 0.5em 0;">
-                {{combindInfo?.credential?.Name}}
+                {{combindInfo?.vmCredential?.Name}}
                 【成人】
-                <span style="color:var(--ion-color-medium)">{{combindInfo?.credential?.Number}}</span>
+                <span style="color:var(--ion-color-medium)">{{combindInfo?.vmCredential?.Number}}</span>
               </div>
               <div style="display: flex;align-items: center;font-size: 0.9rem;padding-bottom: 0.5em;">
                 <img src="assets/svgs/home-hotel.svg" style="width: 1.5em;height: 1.5em;margin-right: 0.5em;" alt="">
@@ -329,10 +329,13 @@
         <ion-text color="medium">{{d.date}}</ion-text>
         <ion-text>1&times;<small>￥</small>{{d.price}}</ion-text>
       </div>
-      <div class="spacebetween" *ngIf="tmc?.IsShowServiceFee||orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit" style="margin-top: 2px;">
+      <div class="spacebetween" *ngIf="tmc?.IsShowServiceFee||
+      orderTravelPayType==OrderTravelPayType.Person||
+      orderTravelPayType==OrderTravelPayType.Credit" 
+      style="margin-top: 2px;">
         <ion-text style="font-weight: bold;">
           服务费
-          <!-- {{notShowServiceFee()}} -->
+          <!--       hotelPaymentType==HotelPaymentType.SelfPay -->
         </ion-text>
         <ion-text>
           {{serviceFee}}

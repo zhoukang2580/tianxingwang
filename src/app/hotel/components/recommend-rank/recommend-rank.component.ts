@@ -20,19 +20,12 @@ export class RecommendRankComponent implements OnInit {
   }
   onReset() {
     this.hotelQuery.ranks = [];
+
     this.hotelQuery.ranks.push({
-      id: 0,
-      label: "星级【低-高↑】",
-      value: "Category",
-      orderBy: "CategoryAsc",
-      isSelected: true
-    });
-    this.hotelQuery.ranks.push({
-      id: 1,
-      label: "星级【高-低↓】",
-      value: "Category",
-      orderBy: "CategoryDesc",
-      isSelected: false
+      id: 3,
+      label: "价格【高-低↓】",
+      value: "Price",
+      orderBy: "PriceDesc"
     });
     this.hotelQuery.ranks.push({
       id: 2,
@@ -41,10 +34,19 @@ export class RecommendRankComponent implements OnInit {
       orderBy: "PriceAsc"
     });
     this.hotelQuery.ranks.push({
-      id: 3,
-      label: "价格【高-低↓】",
-      value: "Price",
-      orderBy: "PriceDesc"
+      id: 1,
+      label: "星级【高-低↓】",
+      value: "Category",
+      orderBy: "CategoryDesc",
+      isSelected: false
+    });
+    this.hotelQuery.ranks.push(
+      {
+      id: 0,
+      label: "星级【低-高↑】",
+      value: "Category",
+      orderBy: "CategoryAsc",
+      isSelected: true
     });
     let rank =
       this.hotelQuery.ranks.find(it => it.isSelected) ||

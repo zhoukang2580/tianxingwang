@@ -16,10 +16,10 @@
     <ng-container *ngIf='viewModel?.combindInfos?.length'>
       <ion-list *ngFor="let combindInfo of viewModel?.combindInfos" lines='none'>
         <ion-item-divider color='primary' class="sticky">
-          {{combindInfo?.credential?.Name}}
+          {{combindInfo?.vmCredential?.Name}}
           【{{tmc?.Name}}】
           [成人]
-          {{combindInfo?.credential?.Number}}
+          {{combindInfo?.vmCredential?.Number}}
         </ion-item-divider>
         <ion-item-group>
           <ion-item-divider>车票预订信息:</ion-item-divider>

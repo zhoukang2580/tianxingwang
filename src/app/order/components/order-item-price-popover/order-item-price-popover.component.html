@@ -42,9 +42,9 @@
     </ion-slide>
   </ion-slides>
   <div class="bullets" *ngIf='order?.OrderFlightTickets?.length>1'>
-    <ion-icon name="caret-back-outline" color='secondary'></ion-icon>
+    <!-- <ion-icon name="caret-back-outline" color='secondary'></ion-icon> -->
     <div *ngFor='let b of order?.OrderFlightTickets;let i=index;' class="bullet"
       [class.active]='b.Id==order?.OrderFlightTickets[activeIdx].Id'></div>
-    <ion-icon name="caret-forward-outline" color='secondary'></ion-icon>
+    <!-- <ion-icon name="caret-forward-outline" color='secondary'></ion-icon> -->
   </div>
 </ion-content>
