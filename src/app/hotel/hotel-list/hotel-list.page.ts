@@ -15,7 +15,7 @@ import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { HotelEntity } from "./../models/HotelEntity";
 import {
   HotelQueryComponent,
-  IHotelQueryCompTab
+  IHotelQueryCompTab,
 } from "./../components/hotel-query/hotel-query.component";
 import { HotelQueryEntity, IFilterTab } from "./../models/HotelQueryEntity";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -32,7 +32,7 @@ import {
   AfterContentInit,
   ElementRef,
   EventEmitter,
-  NgZone
+  NgZone,
 } from "@angular/core";
 import {
   IonContent,
@@ -45,7 +45,7 @@ import {
   ModalController,
   IonRefresher,
   NavController,
-  IonHeader
+  IonHeader,
 } from "@ionic/angular";
 import { Subscription, Observable, fromEvent, merge } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
@@ -57,16 +57,16 @@ import {
   state,
   style,
   transition,
-  animate
+  animate,
 } from "@angular/animations";
 import { ISearchTextValue } from "src/app/hotel-international/international-hotel.service";
-import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 
 @Component({
   selector: "app-hotel-list",
   templateUrl: "./hotel-list.page.html",
   styleUrls: ["./hotel-list.page.scss"],
-  animations: []
+  animations: [],
 })
 export class HotelListPage
   implements OnInit, OnDestroy, AfterViewInit, AfterContentInit {
@@ -104,19 +104,19 @@ export class HotelListPage
     {
       value: "normal",
       lable: "非协议酒店",
-      isshow: false
+      isshow: false,
     },
     {
       value: "agreement",
       lable: "协议酒店",
-      isshow: false
+      isshow: false,
     },
     {
       value: "specialprice",
       lable: "特价酒店",
-      isshow: false
-    }
-  ]
+      isshow: false,
+    },
+  ];
   filterTab: IHotelQueryCompTab;
   isShowBackdrop = false;
   totalHotels = 0;
@@ -132,7 +132,7 @@ export class HotelListPage
   ) {
     this.filterTab = {
       isActive: false,
-      label: ""
+      label: "",
     } as any;
   }
   onBackdropClick(evt: CustomEvent) {
@@ -142,7 +142,13 @@ export class HotelListPage
     }
     this.hideQueryPannel();
   }
-  async ngAfterContentInit() { }
+  onSegmentChanged(ev: CustomEvent) {
+    this.hotelService.setSearchHotelModel({
+      ...this.hotelService.getSearchHotelModel(),
+      hotelType: ev.detail.value,
+    });
+  }
+  async ngAfterContentInit() {}
   async ngAfterViewInit() {
     this.autofocusSearchBarInput();
     this.setQueryConditionEleTop();
@@ -184,9 +190,9 @@ export class HotelListPage
   }
   private autofocusSearchBarInput() {
     if (this.searchbarEls) {
-      const sub = this.searchbarEls.changes.subscribe(_ => {
+      const sub = this.searchbarEls.changes.subscribe((_) => {
         if (this.searchbarEls.first) {
-          this.searchbarEls.first.getInputElement().then(input => {
+          this.searchbarEls.first.getInputElement().then((input) => {
             if (input) {
               input.focus();
             }
@@ -198,7 +204,7 @@ export class HotelListPage
   }
   onHotelQueryChange(query: HotelQueryEntity) {
     this.hotelQueryModel = {
-      ...query
+      ...query,
     };
     this.hotelDayPrices = [];
     this.doRefresh(true);
@@ -207,7 +213,7 @@ export class HotelListPage
     this.hideQueryPannel();
     this.status = {
       isLoading: false,
-      disabled: false
+      disabled: false,
     };
     if (!isKeepQueryCondition) {
       if (this.queryComp) {
@@ -215,7 +221,7 @@ export class HotelListPage
       }
       this.hotelService.setSearchHotelModel({
         ...this.hotelService.getSearchHotelModel(),
-        searchText: null
+        searchText: null,
       });
       this.hotelQueryModel = new HotelQueryEntity();
       this.hotelService.setHotelQuerySource(this.hotelQueryModel);
@@ -266,7 +272,7 @@ export class HotelListPage
         })
       )
       .subscribe(
-        result => {
+        (result) => {
           if (this.refresher) {
             if (this.hotelQueryModel.PageIndex < 1) {
               console.log("refresher complete");
@@ -292,19 +298,19 @@ export class HotelListPage
               this.hotelQueryModel.PageIndex++;
               this.hotelDayPrices = [
                 ...this.hotelDayPrices,
-                ...arr.map(it => {
+                ...arr.map((it) => {
                   if (it.Hotel) {
                     it.Hotel["avgPrice"] = this.getAvgPrice(it.Hotel);
                     it.Hotel["stars"] = this.getStars(it.Hotel);
                   }
                   return it;
-                })
+                }),
               ];
             }
             // console.log("this.scroller.disabled", this.scroller.disabled);
           }
         },
-        e => {
+        (e) => {
           this.refresher.complete();
           console.error(e);
         }
@@ -314,16 +320,16 @@ export class HotelListPage
     console.log(h.value, "value");
     if (h) {
       h.isshow = !h.isshow;
-      this.hotelType.forEach(t => {
+      this.hotelType.forEach((t) => {
         if (t != h) {
-          t.isshow = false
+          t.isshow = false;
         }
-        return t
-      })
+        return t;
+      });
     }
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
-      hotelType: h.value
+      hotelType: h.value,
     });
     this.doRefresh();
   }
@@ -373,7 +379,7 @@ export class HotelListPage
     }, 200);
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => {
+    this.subscriptions.forEach((sub) => {
       sub.unsubscribe();
     });
     this.subscriptions = null;
@@ -387,11 +393,11 @@ export class HotelListPage
   }
   async ngOnInit() {
     this.subscriptions.push(
-      this.hotelService.getHotelQuerySource().subscribe(query => {
+      this.hotelService.getHotelQuerySource().subscribe((query) => {
         this.hotelQueryModel = query;
       })
     );
-    const sub0 = this.route.queryParamMap.subscribe(_ => {
+    const sub0 = this.route.queryParamMap.subscribe((_) => {
       this.hideQueryPannel();
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
@@ -404,28 +410,30 @@ export class HotelListPage
       }
     });
     this.subscriptions.push(sub0);
-    const sub = this.hotelService.getConditionModelSource().subscribe(c => {
+    const sub = this.hotelService.getConditionModelSource().subscribe((c) => {
       this.conditionModel = c;
     });
-    const sub1 = this.hotelService.getSearchHotelModelSource().subscribe(m => {
-      console.log(m);
-      if (m) {
-        this.searchHotelModel = m;
-        this.hotelQueryModel.CityCode =
-          m.destinationCity && m.destinationCity.Code;
-        this.hotelQueryModel.CityName =
-          m.destinationCity && m.destinationCity.Name;
-        this.hotelQueryModel.BeginDate = m.checkInDate;
-        this.hotelQueryModel.EndDate = m.checkOutDate;
-        this.hotelQueryModel.City = m.destinationCity; 
-        this.hotelType.forEach(t=>{
-          if(t.value==m.hotelType.toLowerCase()){
-            t.isshow=true
-          }
-          return t
-        })
-      }
-    });
+    const sub1 = this.hotelService
+      .getSearchHotelModelSource()
+      .subscribe((m) => {
+        console.log(m);
+        if (m) {
+          this.searchHotelModel = m;
+          this.hotelQueryModel.CityCode =
+            m.destinationCity && m.destinationCity.Code;
+          this.hotelQueryModel.CityName =
+            m.destinationCity && m.destinationCity.Name;
+          this.hotelQueryModel.BeginDate = m.checkInDate;
+          this.hotelQueryModel.EndDate = m.checkOutDate;
+          this.hotelQueryModel.City = m.destinationCity;
+          this.hotelType.forEach((t) => {
+            if (t.value == m.hotelType.toLowerCase()) {
+              t.isshow = true;
+            }
+            return t;
+          });
+        }
+      });
     this.subscriptions.push(sub);
     this.subscriptions.push(sub1);
     setTimeout(() => {
@@ -436,7 +444,7 @@ export class HotelListPage
   }
   private hideQueryPannel() {
     if (this.queryComp) {
-      this.queryComp.queryTabComps.forEach(tab => {
+      this.queryComp.queryTabComps.forEach((tab) => {
         tab.isActive = false;
       });
       this.filterTab.isActive = false;
@@ -461,30 +469,30 @@ export class HotelListPage
     if (
       query &&
       query.starAndPrices &&
-      query.starAndPrices.some(it => it.hasItemSelected)
+      query.starAndPrices.some((it) => it.hasItemSelected)
     ) {
       const customeprice = query.starAndPrices.find(
-        it => it.tag == "customeprice"
+        (it) => it.tag == "customeprice"
       );
       const starAndPrices = query.starAndPrices
-        .filter(it => it.hasItemSelected)
-        .filter(it => !!it);
+        .filter((it) => it.hasItemSelected)
+        .filter((it) => !!it);
       console.log("onStarPriceChange starAndPrices ", starAndPrices);
       this.hideQueryPannel();
       const tabs = starAndPrices.filter(
-        it => it.tag == "price" || it.tag == "customeprice"
+        (it) => it.tag == "price" || it.tag == "customeprice"
       );
-      if (tabs.filter(it => it.hasItemSelected).length == 0) {
+      if (tabs.filter((it) => it.hasItemSelected).length == 0) {
         delete query.BeginPrice;
         delete query.EndPrice;
       }
       console.log("price customeprice", tabs, query);
       let { lower, upper } = tabs
-        .map(tab => tab.items)
+        .map((tab) => tab.items)
         .reduce((p, items) => {
           items
-            .filter(it => it.isSelected)
-            .forEach(item => {
+            .filter((it) => it.isSelected)
+            .forEach((item) => {
               p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
               p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
             });
@@ -501,19 +509,19 @@ export class HotelListPage
       if (upper) {
         query.EndPrice = upper == Infinity ? "10000000" : `${upper}`;
       }
-      const stars = starAndPrices.find(it => it.tag == "stars");
+      const stars = starAndPrices.find((it) => it.tag == "stars");
       query.Stars = null;
-      if (stars && stars.items && stars.items.some(it => it.isSelected)) {
+      if (stars && stars.items && stars.items.some((it) => it.isSelected)) {
         query.Stars = stars.items
-          .filter(it => it.isSelected)
-          .map(it => it.value);
+          .filter((it) => it.isSelected)
+          .map((it) => it.value);
       }
-      const types = starAndPrices.find(it => it.tag == "types");
+      const types = starAndPrices.find((it) => it.tag == "types");
       query.Categories = null;
-      if (types && types.items && types.items.some(it => it.isSelected)) {
+      if (types && types.items && types.items.some((it) => it.isSelected)) {
         query.Categories = types.items
-          .filter(it => it.isSelected)
-          .map(it => it.value);
+          .filter((it) => it.isSelected)
+          .map((it) => it.value);
       }
     } else {
       query.Stars = null;
@@ -527,22 +535,22 @@ export class HotelListPage
     query.searchGeoId = "";
     if (query && query.locationAreas) {
       query.Geos = query.Geos || [];
-      const geoTabs = query.locationAreas.filter(tab => tab.hasFilterItem);
+      const geoTabs = query.locationAreas.filter((tab) => tab.hasFilterItem);
       console.log("geo 搜索", geoTabs);
       if (geoTabs.length) {
         const metroIds = [];
-        geoTabs.forEach(tab => {
-          tab.items.forEach(item => {
+        geoTabs.forEach((tab) => {
+          tab.items.forEach((item) => {
             if (item.items && item.items.length) {
               // level 3
-              item.items.forEach(t => {
+              item.items.forEach((t) => {
                 if (t.isSelected) {
                   if (tab.tag == "Metro") {
                     let selectedId;
                     if (tab.items) {
-                      tab.items.forEach(third => {
+                      tab.items.forEach((third) => {
                         if (third.items) {
-                          third.items.forEach(m => {
+                          third.items.forEach((m) => {
                             if (m.isSelected) {
                               selectedId = m.id;
                             }
@@ -557,7 +565,7 @@ export class HotelListPage
                     if (metroIds.length) {
                       // 移除已经选择过的地铁站
                       query.Geos = query.Geos.filter(
-                        it => !metroIds.some(md => md == it)
+                        (it) => !metroIds.some((md) => md == it)
                       );
                     }
                   }
@@ -583,7 +591,7 @@ export class HotelListPage
   }
   onFilter() {
     const query = this.hotelService.getHotelQueryModel();
-    if (!query.filters || !query.filters.some(it => it.hasFilterItem)) {
+    if (!query.filters || !query.filters.some((it) => it.hasFilterItem)) {
       query.Themes = null;
       query.Brands = null;
       query.Services = null;
@@ -592,21 +600,23 @@ export class HotelListPage
       return;
     }
     const filter: IFilterTab<any>[] = query.filters.filter(
-      it => it.hasFilterItem
+      (it) => it.hasFilterItem
     );
-    const theme = filter.find(it => it.tag == "Theme");
-    const brand = filter.find(it => it.tag == "Brand");
-    const services = filter.find(it => it.tag == "Service");
-    const facility = filter.find(it => it.tag == "Facility");
+    const theme = filter.find((it) => it.tag == "Theme");
+    const brand = filter.find((it) => it.tag == "Brand");
+    const services = filter.find((it) => it.tag == "Service");
+    const facility = filter.find((it) => it.tag == "Facility");
     if (theme) {
       query.Themes = [];
       const themes =
         theme.items &&
-        theme.items.filter(it => it.items && it.items.some(k => k.IsSelected));
+        theme.items.filter(
+          (it) => it.items && it.items.some((k) => k.IsSelected)
+        );
       if (themes) {
-        themes.forEach(t => {
+        themes.forEach((t) => {
           if (t.items) {
-            t.items.forEach(k => {
+            t.items.forEach((k) => {
               if (k.IsSelected) {
                 query.Themes.push(k.Id);
               }
@@ -619,11 +629,13 @@ export class HotelListPage
       query.Brands = [];
       const brands =
         brand.items &&
-        brand.items.filter(it => it.items && it.items.some(k => k.IsSelected));
+        brand.items.filter(
+          (it) => it.items && it.items.some((k) => k.IsSelected)
+        );
       if (brands) {
-        brands.forEach(t => {
+        brands.forEach((t) => {
           if (t.items) {
-            t.items.forEach(k => {
+            t.items.forEach((k) => {
               if (k.IsSelected) {
                 query.Brands.push(k.Id);
               }
@@ -637,12 +649,12 @@ export class HotelListPage
       const s =
         services.items &&
         services.items.filter(
-          it => it.items && it.items.some(k => k.IsSelected)
+          (it) => it.items && it.items.some((k) => k.IsSelected)
         );
       if (s) {
-        s.forEach(t => {
+        s.forEach((t) => {
           if (t.items) {
-            t.items.forEach(k => {
+            t.items.forEach((k) => {
               if (k.IsSelected) {
                 query.Services.push(k.Id);
               }
@@ -656,12 +668,12 @@ export class HotelListPage
       const facilities =
         facility.items &&
         facility.items.filter(
-          it => it.items && it.items.some(k => k.IsSelected)
+          (it) => it.items && it.items.some((k) => k.IsSelected)
         );
       if (facilities) {
-        facilities.forEach(t => {
+        facilities.forEach((t) => {
           if (t.items) {
-            t.items.forEach(k => {
+            t.items.forEach((k) => {
               if (k.IsSelected) {
                 query.Facilities.push(k.Id);
               }
@@ -686,7 +698,7 @@ export class HotelListPage
       const m = await this.modalCtrl.create({
         component: HotelGeoComponent,
         backdropDismiss: false,
-        cssClass: "domestic-hotel-filter-condition"
+        cssClass: "domestic-hotel-filter-condition",
       });
       m.present();
       const result = await m.onDidDismiss();
@@ -696,7 +708,7 @@ export class HotelListPage
       const m = await this.modalCtrl.create({
         component: HotelStarPriceComponent,
         backdropDismiss: false,
-        cssClass: "domestic-hotel-filter-condition"
+        cssClass: "domestic-hotel-filter-condition",
       });
       m.present();
       await m.onDidDismiss();
@@ -706,7 +718,7 @@ export class HotelListPage
       const m = await this.modalCtrl.create({
         component: HotelFilterComponent,
         backdropDismiss: false,
-        cssClass: "domestic-hotel-filter-condition"
+        cssClass: "domestic-hotel-filter-condition",
       });
       m.present();
       await m.onDidDismiss();
@@ -716,7 +728,7 @@ export class HotelListPage
       const m = await this.modalCtrl.create({
         component: RecommendRankComponent,
         backdropDismiss: false,
-        cssClass: "domestic-hotel-filter-condition"
+        cssClass: "domestic-hotel-filter-condition",
       });
       m.present();
       await m.onDidDismiss();

@@ -120,7 +120,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     });
     p.present();
   }
-  segmentChanged(ev: CustomEvent) {
+  onSegmentChanged(ev: CustomEvent) {
     // console.log("Segment changed", ev);
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
