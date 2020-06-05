@@ -125,6 +125,7 @@ export class BookPage implements OnInit, AfterViewInit {
   passengerServiceFeesObj: { [clientId: string]: string };
   isDingTalk = AppHelper.isDingtalkH5();
   addContacts: AddContact[] = [];
+  isself:boolean;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -182,6 +183,9 @@ export class BookPage implements OnInit, AfterViewInit {
         console.log("是否可以跳过审批", can);
       })
     );
+    this.isself= await this.staffService.isSelfBookType();
+    console.log(this.isself,"isself");
+    
   }
   private async initOrderTravelPayTypes() {
     const bookInfos = this.flightService.getPassengerBookInfos();

@@ -39,6 +39,7 @@ export class BookCredentialCompComponent
   @Input() canEditNumber = false;
   @Input() isNotWihte;
   @Input() canEdit =true;
+  @Input() isself =true;
   isModified = false;
   CredentialsType = CredentialsType;
   @ViewChild(IonSelect) ionSelect: IonSelect;

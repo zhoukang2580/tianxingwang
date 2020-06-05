@@ -88,7 +88,7 @@
         </ion-item-group>
         <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
           <ion-item-divider color="primary">旅客信息:</ion-item-divider>
-          <app-book-credential-comp [credential]='combindInfo.vmCredential'
+          <app-book-credential-comp [credential]='combindInfo.vmCredential' [isself]="isself"
             (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
             (modify)='onModify(combindInfo)' [attr.credentialcompid]='combindInfo.id'>
           </app-book-credential-comp>
