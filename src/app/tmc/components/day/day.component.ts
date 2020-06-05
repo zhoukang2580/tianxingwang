@@ -5,9 +5,10 @@ import { DayModel } from "../../models/DayModel";
 @Component({
   selector: "app-day",
   templateUrl: "./day.component.html",
-  styleUrls: ["./day.component.scss"]
+  styleUrls: ["./day.component.scss"],
 })
 export class DayComponent implements OnInit {
+  bottomDesc: string;
   @Input()
   dayModel: DayModel;
   @Output()
@@ -18,6 +19,11 @@ export class DayComponent implements OnInit {
   ngOnInit() {
     if (!this.dayModel.enabled) {
       this.dayModel.color = this.dayModel.color || "medium";
+    }
+    if (this.dayModel && this.dayModel.bottomDesc) {
+      this.bottomDesc = this.dayModel.bottomDesc.includes("程")
+        ? this.dayModel.lunarInfo && this.dayModel.lunarInfo.lunarDayName
+        : this.dayModel.bottomDesc;
     }
     this.isToday();
   }

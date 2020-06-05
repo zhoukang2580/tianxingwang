@@ -2,11 +2,11 @@
   <ion-text color='secondary'>
     <i class="icon icon-calendar"></i>
   </ion-text>
-  <ion-label class='day'>{{transform()?.day}}</ion-label>
+  <ion-label class='day'>{{dayNumber}}</ion-label>
   <ion-label [class.start]='isCheckIn||isCheckOut' class="date">
-    <h5>{{getDayDesc()}} <ng-container *ngIf='isCheckIn'>入住</ng-container>
+    <h5>{{dayDesc}} <ng-container *ngIf='isCheckIn'>入住</ng-container>
       <ng-container *ngIf='isCheckOut'>离店</ng-container>
     </h5>
-    <h5>{{getYearMonth()}}</h5>
+    <h5>{{yearMonth}}</h5>
   </ion-label>
 </section>

@@ -84,7 +84,7 @@ export class CalendarService {
   }) {
     const m = await AppHelper.modalController.create({
       component: TmcCalendarComponent,
-      animated:false,
+      animated: false,
       componentProps: {
         calendarService: this,
         ...data,
@@ -93,6 +93,7 @@ export class CalendarService {
     m.present();
     const d = await m.onDidDismiss();
     return d && (d.data as DayModel[]);
+    // return this.openCalendarByNormal();
   }
   getFormatedDate(date: string) {
     const m = this.getMoment(0, date);
@@ -109,7 +110,7 @@ export class CalendarService {
     ul.classList.add("calendar");
     const ym = document.createElement("li");
     const ymc = document.createElement("strong");
-    ym.append(ymc);
+    ym.appendChild(ymc);
     ymc.textContent = `${calendar.yearMonth.substr(
       0,
       4
@@ -117,12 +118,12 @@ export class CalendarService {
     ym.style.display = "block";
     ym.style.width = "100%";
     ym.style.height = "1em";
-    ul.append(ym);
+    ul.appendChild(ym);
     const shadow = document.createElement("div");
     const m = calendar.yearMonth.substr(5, 2);
     shadow.textContent = +m < 10 ? `${m.substr(1)}` : m;
     shadow.classList.add("shadow-month");
-    ul.append(shadow);
+    ul.appendChild(shadow);
     for (const d of calendar.dayList) {
       const li = document.createElement("li");
       const cs = d.clazz();
@@ -133,8 +134,8 @@ export class CalendarService {
         });
       const day = this.generateDayHtml(d);
       li.setAttribute("date", d.date);
-      li.append(day);
-      ul.append(li);
+      li.appendChild(day);
+      ul.appendChild(li);
     }
     return ul;
   }
@@ -163,13 +164,13 @@ export class CalendarService {
     topDesc.textContent = `${day.topDesc}`;
     topDesc.classList.add("desc", "ion-text-nowrap");
     if (day.topDesc) {
-      divtop.append(topDesc);
+      divtop.appendChild(topDesc);
     }
     if (day.dayoff) {
-      divtop.append(dayoff);
+      divtop.appendChild(dayoff);
     }
     divtop.classList.add("top");
-    d.append(divtop);
+    d.appendChild(divtop);
     const content = document.createElement("div");
     content.classList.add(
       "content",
@@ -177,8 +178,8 @@ export class CalendarService {
     );
     const cdiv = document.createElement("div");
     cdiv.textContent = !day.isToday ? day.day : day.displayName;
-    content.append(cdiv);
-    d.append(content);
+    content.appendChild(cdiv);
+    d.appendChild(content);
     const bottom = document.createElement("div");
     bottom.classList.add("bottom", `color-${day.descColor}`);
     const bdiv = document.createElement("div");
@@ -187,9 +188,9 @@ export class CalendarService {
       bdiv.textContent = day.bottomDesc.includes("程")
         ? (day.lunarInfo && day.lunarInfo.lunarDayName) || ""
         : day.bottomDesc;
-      bottom.append(bdiv);
+      bottom.appendChild(bdiv);
     }
-    d.append(bottom);
+    d.appendChild(bottom);
     day.el = d;
     return d;
   }
@@ -201,9 +202,30 @@ export class CalendarService {
   private generateCalendars(calendars: AvailableDate[]) {
     const df = document.createDocumentFragment();
     for (const c of calendars) {
-      df.append(this.generateOneCalendar(c));
+      df.appendChild(this.generateOneCalendar(c));
     }
     return df;
+  }
+  private getCalendars(beginDate: string, endDate: string) {
+    const calendars = [];
+    const m = this.getMoment(0, beginDate || endDate || "");
+    if (this.forType != FlightHotelTrainType.Train) {
+      for (let i = 0; i < 2; i++) {
+        const temp = m.clone().add(i, "months");
+        console.log("temp ", temp.year(), temp.month() + 1, beginDate, endDate);
+        calendars.push(
+          this.generateYearNthMonthCalendar(temp.year(), temp.month() + 1)
+        );
+      }
+    } else {
+      for (let i = 0; i < 2; i++) {
+        const im = m.clone().add(i, "months");
+        calendars.push(
+          this.generateYearNthMonthCalendar(im.year(), im.month() + 1)
+        );
+      }
+    }
+    return calendars;
   }
   private onDaySelected(d: DayModel) {
     if (!this.selectedDays) {
@@ -429,7 +451,7 @@ export class CalendarService {
       const weeks = document.createElement("ul");
       const header = document.createElement("div");
       header.classList.add("header");
-      calendarEle.append(header);
+      calendarEle.appendChild(header);
       const backbtn = document.createElement("button");
       backbtn.textContent = "取消";
       const title = document.createElement("div");
@@ -438,8 +460,8 @@ export class CalendarService {
       backbtn.onclick = () => {
         this.closeCalendar(true);
       };
-      header.append(backbtn);
-      header.append(title);
+      header.appendChild(backbtn);
+      header.appendChild(title);
       weeks.classList.add("weeks");
       for (let i = 0; i < 7; i++) {
         const wn = this.dayOfWeekNames[i];
@@ -449,13 +471,13 @@ export class CalendarService {
             ? "var(--ion-color-danger)"
             : "var(--ion-color-secondary)";
         li.textContent = `${wn}`;
-        weeks.append(li);
+        weeks.appendChild(li);
       }
-      calendarEle.append(weeks);
+      calendarEle.appendChild(weeks);
       calendarEle.id = "calendar";
       calendarEle.classList.add("calendar-container");
-      calendarEle.append(c);
-      document.body.querySelector("ion-app").append(calendarEle);
+      calendarEle.appendChild(c);
+      document.body.querySelector("ion-app").appendChild(calendarEle);
       calendarEle.classList.toggle("show", true);
     } else {
       calendarEle.querySelector(".title").textContent =
@@ -524,7 +546,13 @@ export class CalendarService {
     return calendars;
   }
 
-  private openCalendarByNormal(calendars: AvailableDate[], isMulti = false) {
+  private openCalendarByNormal(data?: {
+    isMulti: boolean;
+    beginDate: string;
+    endDate: string;
+  }) {
+    const isMulti = data.isMulti;
+    const calendars = this.getCalendars(data.beginDate, data.endDate);
     this.renderCalendar(calendars);
     return new Promise<DayModel[]>((resolve) => {
       this.subscription.unsubscribe();

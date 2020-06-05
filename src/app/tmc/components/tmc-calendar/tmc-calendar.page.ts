@@ -119,6 +119,9 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     this.st = Date.now();
     const w = this.calendarService.getDayOfWeekNames();
     this.weeks = Object.keys(w).map((k) => w[k]);
+    this.initCalendars();
+  }
+  private initCalendars() {
     this.generateCalendars();
     this.heightLightSelectedDays();
     this.checkYms();
@@ -225,18 +228,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       this.beginDate || this.endDate || ""
     );
     if (this.forType != FlightHotelTrainType.Train) {
-      // for (let i = 1; i <= 2; i++) {
-      //   const temp = m.clone().add(-i, "months");
-      //   if (+temp < new Date().getTime()) {
-      //     break;
-      //   }
-      //   this.calendars.push(
-      //     this.calendarService.generateYearNthMonthCalendar(
-      //       temp.year(),
-      //       temp.month() + 1
-      //     )
-      //   );
-      // }
       for (let i = 0; i < 2; i++) {
         const temp = m.clone().add(i, "months");
         console.log(
