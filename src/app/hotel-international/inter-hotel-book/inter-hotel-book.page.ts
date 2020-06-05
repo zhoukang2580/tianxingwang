@@ -120,6 +120,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   isSubmitDisabled = false;
   isPlaceOrderOk = false;
   isShowFee = false;
+  serviceFee:number;
   checkPayCountIntervalId: any;
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
@@ -302,21 +303,23 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     let totalPrice = infos.reduce((arr, item) => {
       if (item && item.bookInfo && item.bookInfo.roomPlan) {
         const info = item.bookInfo;
-        arr = AppHelper.add(arr, +info.roomPlan.TotalAmount);
+        const roomPrice = +info.roomPlan.TotalAmount;
+        arr = AppHelper.add(arr, roomPrice);
       }
       return arr;
     }, 0);
-    if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-      const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
-        (acc, key) => {
-          const fee = +this.initialBookDto.ServiceFees[key];
-          acc = AppHelper.add(fee, acc);
-          return acc;
-        },
-        0
-      );
+    // if (this.initialBookDto && this.initialBookDto.ServiceFees) {
+      let fees = this.showServiceFees();
+      // const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
+      //   (acc, key) => {
+      //     const fee = +this.initialBookDto.ServiceFees[key];
+      //     acc = AppHelper.add(fee, acc);
+      //     return acc;
+      //   },
+      //   0
+      // );
       totalPrice = AppHelper.add(fees, totalPrice);
-    }
+    // }
     return totalPrice;
   }
   onOrderTravelPayTypeSelect(pt: { value: number }) {
@@ -1180,6 +1183,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onShowFeesDetails() {
     this.isShowFee = !this.isShowFee;
+    this.serviceFee=this.showServiceFees();
     this.initDayPrice();
   }
   private initDayPrice() {
@@ -1236,6 +1240,11 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         acc = AppHelper.add(fee, acc);
         return acc;
       }, 0);
+    }
+    if (this.tmc && !this.tmc.IsShowServiceFee) {
+      if (this.orderTravelPayType != OrderTravelPayType.Person && this.orderTravelPayType != OrderTravelPayType.Credit) {
+        fees = 0;
+      }
     }
     return fees
   }

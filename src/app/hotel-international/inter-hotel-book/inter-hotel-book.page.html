@@ -351,13 +351,13 @@
         <ion-text color="medium">{{d.date}}</ion-text>
         <ion-text>1&times;<small>￥</small>{{d.price}}</ion-text>
       </div>
-      <div class="spacebetween" *ngIf="!notShowServiceFee()" style="margin-top: 2px;">
+      <div class="spacebetween" *ngIf="tmc?.IsShowServiceFee||orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit" style="margin-top: 2px;">
         <ion-text style="font-weight: bold;">
           服务费
           <!-- {{notShowServiceFee()}} -->
         </ion-text>
         <ion-text>
-          {{showServiceFees()}}
+            {{serviceFee}}
         </ion-text>
       </div>
     </div>

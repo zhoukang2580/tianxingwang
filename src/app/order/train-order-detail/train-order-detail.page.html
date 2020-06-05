@@ -37,7 +37,7 @@
               <ion-col size='3'>应付金额:</ion-col>
               <ion-col>
                 <div>
-                  {{getOrderTotalAmount()}}
+                  {{orderDetail.Order.TotalAmount}}
                   <span *ngIf='getInsuranceAmount() as insuranceAmount'>(含保险{{insuranceAmount}})</span>
                   <ion-text color="secondary" style="font-size: 0.7rem;">应付明细</ion-text>
                 </div>

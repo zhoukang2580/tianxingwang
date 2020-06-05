@@ -634,7 +634,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.tmc && !this.tmc.IsShowServiceFee) {
       if (
         this.viewModel &&
-        this.viewModel.orderTravelPayType != OrderTravelPayType.Person
+        this.viewModel.orderTravelPayType != OrderTravelPayType.Person&&
+        this.viewModel.orderTravelPayType != OrderTravelPayType.Credit
       ) {
         fees = 0;
       }

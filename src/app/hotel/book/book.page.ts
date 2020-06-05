@@ -106,6 +106,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
   tmc: TmcEntity;
+  serviceFee:number;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
   expenseTypes: string[];
@@ -275,25 +276,25 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       }
       return arr;
     }, 0);
-    let fees = 0;
-    if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-      fees = Object.keys(this.initialBookDto.ServiceFees).reduce((acc, key) => {
-        const fee = +this.initialBookDto.ServiceFees[key];
-        acc = AppHelper.add(fee, acc);
-        return acc;
-      }, 0);
-    }
-    if (this.notShowServiceFee()) {
-      fees = 0;
-    } else {
-      // 显示服务费
-      if (this.hotelPaymentType == HotelPaymentType.SelfPay) {
-        // 现付
-        roomPlanTotalAmount = 0;
-      } else {
-        // 预付
-      }
-    }
+    let fees = this.showServiceFees();
+    // if (this.initialBookDto && this.initialBookDto.ServiceFees) {
+    //   fees = Object.keys(this.initialBookDto.ServiceFees).reduce((acc, key) => {
+    //     const fee = +this.initialBookDto.ServiceFees[key];
+    //     acc = AppHelper.add(fee, acc);
+    //     return acc;
+    //   }, 0);
+    // }
+    // if (this.notShowServiceFee()) {
+    //   fees = 0;
+    // } else {
+    //   // 显示服务费
+    //   if (this.hotelPaymentType == HotelPaymentType.SelfPay) {
+    //     // 现付
+    //     roomPlanTotalAmount = 0;
+    //   } else {
+    //     // 预付
+    //   }
+    // }
     return AppHelper.add(fees, roomPlanTotalAmount);
   }
   showServiceFees() {
@@ -305,7 +306,12 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         return acc;
       }, 0);
     }
-    return fees;
+    if (this.tmc && !this.tmc.IsShowServiceFee) {
+      if (this.orderTravelPayType != OrderTravelPayType.Person && this.orderTravelPayType != OrderTravelPayType.Credit) {
+        fees = 0;
+      }
+    }
+    return fees as number;
   }
   onOrderTravelPayTypeSelect() {
     const orderTravelPayType = this.orderTravelPayTypes.find((it) => {
@@ -1135,6 +1141,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onShowFeesDetails() {
     this.isShowFee = !this.isShowFee;
+    this.serviceFee=this.showServiceFees();
     this.initDayPrice();
   }
   private initDayPrice() {

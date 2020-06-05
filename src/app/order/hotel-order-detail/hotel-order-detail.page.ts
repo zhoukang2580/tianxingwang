@@ -302,6 +302,7 @@ export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
         (it) => !(it.Tag || "").endsWith("Fee")
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
+   
     return amount < 0 ? 0 : amount;
   }
   getOrderPayAmount() {

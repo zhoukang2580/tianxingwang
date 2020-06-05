@@ -1251,6 +1251,7 @@ export class BookPage implements OnInit, AfterViewInit {
       return null;
     }
     const bookInfos = this.flightService.getPassengerBookInfos();
+    
     const fs = bookInfos.reduce((acc, it) => {
       acc = {
         ...acc,
