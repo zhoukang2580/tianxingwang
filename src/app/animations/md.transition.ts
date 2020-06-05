@@ -2,7 +2,7 @@ import { createAnimation } from "@ionic/core";
 import {
   TransitionOptions,
   getIonPageElement,
-  Animation
+  Animation,
 } from "./animation-interface";
 
 export const mdTransitionAnimation = (
@@ -55,12 +55,17 @@ export const mdTransitionAnimation = (
     const leavingPage = createAnimation();
     leavingPage
       .addElement(getIonPageElement(leavingEl))
-      .afterStyles({ display: "none" })
+      // .afterStyles({ display: "none" })
+      .onFinish((currentStep) => {
+        if (currentStep === 1 && leavingPage.elements.length > 0) {
+          leavingPage.elements[0].style.setProperty("display", "none");
+        }
+      })
       .fromTo("transform", `translateY(${CENTER})`, `translateY(${OFF_BOTTOM})`)
       .fromTo("opacity", 1, 0);
 
     rootTransition.addAnimation(leavingPage);
   }
 
-  return rootTransition as any as Animation;
+  return (rootTransition as any) as Animation;
 };
