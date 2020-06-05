@@ -26,9 +26,9 @@
   <ion-card class='ion-padding'>
     <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>
     <ion-card-content>
-      <ion-segment (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary'
+      <ion-segment mode='ios' (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary'
         *ngIf='showReturnTrip' [disabled]='disabled'>
-        <ion-segment-button value="single">
+        <ion-segment-button  value="single">
           <ion-label><strong>单程</strong></ion-label>
         </ion-segment-button>
         <ion-segment-button value="roundtrip">
