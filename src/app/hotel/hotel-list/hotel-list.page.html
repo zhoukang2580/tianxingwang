@@ -23,13 +23,13 @@
     <div>
       <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" [value]="searchHotelModel?.hotelType"
         color="secondary">
-        <ion-segment-button value="normal">
+        <ion-segment-button mode='ios' value="normal">
           <ion-label>非协议酒店</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="agreement">
+        <ion-segment-button mode='ios' value="agreement">
           <ion-label>协议酒店</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="specialprice">
+        <ion-segment-button mode='ios' value="specialprice">
           <ion-label>特价酒店</ion-label>
         </ion-segment-button>
       </ion-segment>

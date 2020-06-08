@@ -95,12 +95,11 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     private pickerCtrl: PickerController
   ) {
     const sub = route.queryParamMap.subscribe((d) => {
+      const plane = ORDER_TABS.find((it) => it.value == ProductItemType.plane);
+      this.activeTab = plane;
       if (d && d.get("tabId")) {
         const tab = ORDER_TABS.find((it) => it.value == +d.get("tabId"));
         console.log("product-tabs", tab);
-        const plane = ORDER_TABS.find(
-          (it) => it.value == ProductItemType.plane
-        );
         this.activeTab = this.isOpenUrl
           ? this.activeTab
           : this.activeTab || tab || plane;
@@ -551,7 +550,10 @@ export class ProductTabsPage implements OnInit, OnDestroy {
     this.scrollToTop();
   }
   private doLoadMoreTasks() {
-    if (this.activeTab.value != ProductItemType.waitingApprovalTask) {
+    if (
+      this.activeTab &&
+      this.activeTab.value != ProductItemType.waitingApprovalTask
+    ) {
       return;
     }
     const pageSize = 15;
@@ -606,14 +608,17 @@ export class ProductTabsPage implements OnInit, OnDestroy {
       }
       const m = this.transformSearchCondition(this.condition);
       m.PageSize = this.pageSize;
-      m.Type =
-        this.activeTab.value == ProductItemType.plane
-          ? "Flight"
-          : this.activeTab.value == ProductItemType.train
-          ? "Train"
-          : this.activeTab.value == ProductItemType.car
-          ? "Car"
-          : "Hotel";
+      m.Type = "Flight";
+      if (this.activeTab) {
+        m.Type =
+          this.activeTab.value == ProductItemType.plane
+            ? "Flight"
+            : this.activeTab.value == ProductItemType.train
+            ? "Train"
+            : this.activeTab.value == ProductItemType.car
+            ? "Car"
+            : "Hotel";
+      }
       this.orderModel.Type = m.Type;
       if (
         this.orderModel &&
