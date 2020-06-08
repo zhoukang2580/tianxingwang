@@ -106,7 +106,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
   tmc: TmcEntity;
-  serviceFee:number;
+  serviceFee: number;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
   expenseTypes: string[];
@@ -307,7 +307,10 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       }, 0);
     }
     if (this.tmc && !this.tmc.IsShowServiceFee) {
-      if (this.orderTravelPayType != OrderTravelPayType.Person && this.orderTravelPayType != OrderTravelPayType.Credit) {
+      if (
+        this.orderTravelPayType != OrderTravelPayType.Person &&
+        this.orderTravelPayType != OrderTravelPayType.Credit
+      ) {
         fees = 0;
       }
     }
@@ -1141,7 +1144,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onShowFeesDetails() {
     this.isShowFee = !this.isShowFee;
-    this.serviceFee=this.showServiceFees();
+    this.serviceFee = this.showServiceFees();
     this.initDayPrice();
   }
   private initDayPrice() {
@@ -1277,7 +1280,8 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
           if (
             !isSave &&
             isSelf &&
-            this.orderTravelPayType == OrderTravelPayType.Person
+            (this.orderTravelPayType == OrderTravelPayType.Person ||
+              this.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
             this.isCheckingPay = true;
             const canPay = await this.checkPay(res.TradeNo);
