@@ -13,8 +13,7 @@
         <div [style.align-self]='order["checkPay"]?"center":""'>应付</div>
         <div style="display: flex;align-items: center;">
           <ion-text color='danger' class="ion-text-nowrap">
-            <ion-text *ngIf="order.TotalAmount!='0'">￥{{order.TotalAmount}}</ion-text>
-            <ion-text *ngIf="order.TotalAmount=='0'" color="dark">- -</ion-text>
+            <ion-text>￥{{order.TotalAmount}}</ion-text>
             <ion-text *ngIf='order.OrderInsurances?.length'>(含保险)</ion-text>
           </ion-text>
           <span>
@@ -119,8 +118,7 @@
           </ion-col>
           <ion-col>
             <ion-text color='danger'>
-                <ion-text *ngIf="order.TotalAmount!='0'">￥{{order.TotalAmount}}</ion-text>
-                <ion-text *ngIf="order.TotalAmount=='0'" color="dark">- -</ion-text>
+                <ion-text>￥{{order.TotalAmount}}</ion-text>
               <span *ngIf="order.OrderInsurances?.length">
                 (含保险)
               </span>
@@ -218,8 +216,7 @@
           <ion-col>
             <div style="align-items: center;display: flex;">
               <ion-text color='danger'>
-                  <ion-text *ngIf="order.TotalAmount!='0'">￥{{order.TotalAmount}}</ion-text>
-                  <ion-text *ngIf="order.TotalAmount=='0'" color="dark">- -</ion-text>
+                  <ion-text>￥{{order.TotalAmount}}</ion-text>
               </ion-text>
               <ion-text color='medium'>
                 {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
