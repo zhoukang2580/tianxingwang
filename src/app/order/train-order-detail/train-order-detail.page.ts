@@ -775,9 +775,9 @@ export class TrainOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
       }
       let orderItems =
         this.orderDetail.Order && this.orderDetail.Order.OrderItems;
-      if (!Tmc.IsShowServiceFee) {
-        orderItems = orderItems.filter((it) => !(it.Tag || "").endsWith("Fee"));
-      }
+      // if (!Tmc.IsShowServiceFee) {
+      //   orderItems = orderItems.filter((it) => !(it.Tag || "").endsWith("Fee"));
+      // }
       const p = await this.popoverCtrl.create({
         component: TrainOrderPricePopoverComponent,
         cssClass: "ticket-changing",
