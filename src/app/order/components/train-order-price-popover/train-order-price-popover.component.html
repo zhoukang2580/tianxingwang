@@ -4,8 +4,8 @@
       <ion-grid style="font-size:0.9rem;color: var(--ion-color-dark)">
         <div style="display:flex;justify-content: space-between;padding: 2px 0px; border-bottom: 1px dashed #eeeeee;"
           *ngFor="let o of orderItems">
-          <ion-text *ngIf="o.Tag.includes('Fee')">服务费</ion-text>
-          <ion-text *ngIf="!(o.Tag.includes('Fee'))">{{o.Name}}</ion-text>
+          <!-- <ion-text *ngIf="o.Tag.includes('Fee')">服务费</ion-text> -->
+          <ion-text>{{o.Name}}</ion-text>
           <ion-text>{{o.Amount}}</ion-text>
         </div>
       </ion-grid>
