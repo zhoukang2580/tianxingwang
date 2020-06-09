@@ -112,11 +112,11 @@
             <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime}}</span>
           </ion-col>
         </ion-row>
-        <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center;">
+        <ion-row [class.btn-show-margin]="order.VariablesJsonObj.isPay" style="align-items: center;">
           <ion-col size='2'>
             <ion-text color="medium"> 应付</ion-text>
           </ion-col>
-          <ion-col>
+          <ion-col style="display: flex;align-items: center;">
             <ion-text color='danger'>
                 <ion-text>￥{{order.TotalAmount}}</ion-text>
               <span *ngIf="order.OrderInsurances?.length">
@@ -142,10 +142,7 @@
         </ion-row>
         <ng-container *ngFor='let orderTrainTicket of order.OrderTrainTickets;let i=index;'>
           <ng-container *ngIf="orderTrainTicket.VariablesJsonObj.isShow">
-            <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;" class="order-flight-ticket"
-              [class.btn-show-margin]="orderTrainTicket.Status == OrderTrainTicketStatusType.Issued && tmc?.TrainIsAllowExchange && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline||
-            (orderTrainTicket.Status == OrderTrainTicketStatusType.Issued || orderTrainTicket.Status == OrderTrainTicketStatusType.Exchanged) 
-                      &&  tmc?.TrainIsAllowRefund && TrainSupplierType[orderTrainTicket.Supplier] !='0' && orderTrainTicket.BookType != TrainBookType.Offline">
+            <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;" class="order-flight-ticket">
               <ion-col size='2'>
                 <ion-text color="medium"> 旅客</ion-text>
               </ion-col>
