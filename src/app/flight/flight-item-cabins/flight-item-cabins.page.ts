@@ -206,6 +206,7 @@ export class FlightItemCabinsPage implements OnInit {
         } as IFlightSegmentInfo;
         bookInfos[0].bookInfo = info;
         this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
+        isShowPage = true;
       }
       if (isShowPage) {
         await this.onShowSelectedInfosPage();
@@ -333,8 +334,7 @@ export class FlightItemCabinsPage implements OnInit {
       this.hasMoreCabins = false;
       this.vmCabins = this.moreCabins;
     }
-   console.log(this.vmCabins,"cabins");
-
+    console.log(this.vmCabins, "cabins");
   }
   onShowSelectedInfosPage() {
     this.flightService.showSelectedBookInfosPage();
@@ -391,7 +391,6 @@ export class FlightItemCabinsPage implements OnInit {
       );
     this.cabins = this.getPolicyCabins();
     this.initVmCabins(this.cabins);
-   
   }
 
   private getPolicyCabins() {
