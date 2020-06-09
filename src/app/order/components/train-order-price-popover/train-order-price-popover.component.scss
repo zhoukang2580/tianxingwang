@@ -1,0 +1,29 @@
+.price {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .bullets {
+    // background-color: rgba(0, 0, 0, 0.15);
+    padding: 0.5em;
+    border-radius: 4px;
+    height: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 40vw;
+    overflow: auto;
+    overflow-y: hidden;
+    margin: 0 auto;
+    .bullet {
+      margin: 0.5em;
+      min-width: 0.5em;
+      min-height: 0.5em;
+      border-radius: 50%;
+      background-color: #cccccc;
+      &.active {
+        background-color: var(--ion-color-secondary);
+      }
+    }
+  }
+  

@@ -2,23 +2,39 @@
   <ion-slides>
     <ion-slide *ngFor='let t of order?.OrderTrainTickets'>
       <ion-grid style="font-size:0.9rem;color: var(--ion-color-dark)">
-        <div style="display:flex;justify-content: space-between;padding: 2px 0px; border-bottom: 1px dashed #eeeeee;"
+        <div style="font-size:0.9rem">
+          <div *ngIf="t.Id" style="text-align: left;font-size: 1rem;margin-bottom: 5px">
+              事务号
+              <span>{{t.Id}}</span>
+              <ion-text color="medium"> ({{t.StatusName}})</ion-text>
+          </div>
+          <div *ngFor="let o of getOrderFees(t)" class="price">
+              <span>{{o.Name}}</span>
+              <ion-text class="ion-text-nowrap" >{{o.Value}}元</ion-text>
+          </div>
+          <div *ngFor="let insurance of getInsurances(t)" class="price">
+            <ion-text size='7'>{{insurance.Name}}</ion-text>
+            <ion-text class='price'>{{insurance.Premium}}元</ion-text>
+          </div>
+          <div *ngIf="t.StatusName=='废除'" class="price">
+            <ion-text size="7">应付</ion-text>
+            <ion-text class="price">0元</ion-text>
+          </div>
+          <div *ngIf="t.StatusName!='废除'" class="price">
+            <ion-text size='7'>总计</ion-text>
+            <ion-text class='price'>{{getPriceAmount(t)}}元</ion-text>
+          </div>
+        </div>
+        <!-- <div style="display:flex;justify-content: space-between;padding: 2px 0px; border-bottom: 1px dashed #eeeeee;"
           *ngFor="let o of orderItems">
-          <!-- <ion-text *ngIf="o.Tag.includes('Fee')">服务费</ion-text> -->
           <ion-text>{{o.Name}}</ion-text>
           <ion-text>{{o.Amount}}</ion-text>
-        </div>
+        </div> -->
       </ion-grid>
     </ion-slide>
   </ion-slides>
   <div class="bullets" *ngIf='order?.OrderTrainTickets?.length>1'>
-    <!-- <ion-icon name="caret-back-outline" color='secondary'></ion-icon> -->
     <div *ngFor='let b of order?.OrderTrainTickets;let i=index;' class="bullet"
       [class.active]='b.Id==order?.OrderTrainTickets[activeIdx].Id'></div>
-    <!-- <ion-icon name="caret-forward-outline" color='secondary'></ion-icon> -->
   </div>
-  <!--   <div class="bullets" *ngIf='order?.OrderFlightTickets?.length>1'>
-     <div *ngFor='let b of order?.OrderFlightTickets;let i=index;' class="bullet"
-    [class.active]='b.Id==order?.OrderFlightTickets[activeIdx].Id'></div>
-</div> -->
 </ion-content>
