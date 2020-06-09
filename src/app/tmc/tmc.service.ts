@@ -205,7 +205,7 @@ export class TmcService {
         AppHelper.alert(_);
       });
       if (result) {
-        AppHelper.alert(result);
+        AppHelper.alert("支付完成");
         res = true;
       } else {
         // AppHelper.alert("订单处理支付失败");
@@ -251,7 +251,7 @@ export class TmcService {
       });
       if (result) {
         res = true;
-        AppHelper.alert(result);
+        AppHelper.alert("支付完成");
       } else {
         res = false;
         // AppHelper.alert("订单处理支付失败");
