@@ -6,7 +6,7 @@
         <div>编号</div>
         <div class="select-text">
           <span style="font-weight: bold;">{{order.Id}}</span>
-          <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime?.replace("T"," ")?.substr(0,19)}}</span>
+          <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime}}</span>
         </div>
       </div>
       <div class="item">
@@ -76,8 +76,8 @@
                     <span>
                       {{trip.TakeoffDate}}
                     </span>
-                    <span *ngIf='getDateWeekName(trip.TakeoffDate) as n'>
-                      ({{n}})
+                    <span *ngIf='trip["dateWeekName"]'>
+                      ({{trip['dateWeekName']}})
                     </span>
                     <span>
                       {{trip.TakeoffShortTime}}
@@ -109,7 +109,7 @@
             <strong style="user-select:text">{{order.Id}}</strong>
           </ion-col>
           <ion-col>
-            <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime?.replace("T"," ")?.substr(0,19)}}</span>
+            <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime}}</span>
           </ion-col>
         </ion-row>
         <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center;">
@@ -179,8 +179,8 @@
               <ion-col>
                 <div>
                   <div *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
-                    <span>{{orderTrainTrip.StartTime?.substr(0,"yyyy-mm-dd".length)}}</span>
-                    <span style='margin-left:0.5em'>{{getHHmm(orderTrainTrip.StartTime)}}</span>
+                    <span>{{orderTrainTrip.StartTime}}</span>
+                    <span style='margin-left:0.5em'>{{orderTrainTrip["StartTimeGetHHmm"]}}</span>
                     <span>{{orderTrainTrip.TrainNo}}</span>
                     <span class="ion-padding-start">{{orderTrainTrip.TrainCode}}</span>
                     <div>{{orderTrainTrip.FromStationName}}---{{orderTrainTrip.ToStationName}}</div>
@@ -205,7 +205,7 @@
             <strong>{{order.Id}}</strong>
           </ion-col>
           <ion-col>
-            <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime?.replace("T"," ")?.substr(0,19)}}</span>
+            <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime}}</span>
           </ion-col>
 
         </ion-row>
@@ -254,7 +254,7 @@
             <div>
               {{orderHotel.HotelName}}
               <br />
-              {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}&nbsp;{{orderHotel.countDay}}晚
+              {{orderHotel.BeginDate}}&nbsp;{{orderHotel.countDay}}晚
             </div>
           </ion-col>
         </ion-row>

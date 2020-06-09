@@ -101,6 +101,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.order && changes.order.currentValue) {
       if (this.order) {
+        this.order.InsertDateTime = (this.order.InsertDateTime || "")
+          .replace("T", " ")
+          ?.substr(0, 19);
         this.order["checkPay"] = this.checkPay();
         this.order.VariablesJsonObj =
           this.order.VariablesJsonObj ||
@@ -113,6 +116,11 @@ export class OrderItemComponent implements OnInit, OnChanges {
                 (t.Variables ? JSON.parse(t.Variables) : {});
               if (t.OrderFlightTrips) {
                 t.OrderFlightTrips = t.OrderFlightTrips.map((trip) => {
+                  if (trip.TakeoffDate) {
+                    trip["dateWeekName"] = this.getDateWeekName(
+                      trip.TakeoffDate
+                    );
+                  }
                   if (
                     !trip.OrderFlightTicket ||
                     !trip.OrderFlightTicket.Passenger
@@ -153,6 +161,15 @@ export class OrderItemComponent implements OnInit, OnChanges {
               t.VariablesJsonObj.isShowRefundOrExchangeBtn = this.isShowRefundOrExchangeBtn(
                 t
               );
+              if (t.OrderTrainTrips) {
+                t.OrderTrainTrips = t.OrderTrainTrips.map((trip) => {
+                  if (trip.StartTime) {
+                    trip["StartTimeGetHHmm"] = this.getHHmm(trip.StartTime);
+                    trip.StartTime = trip.StartTime.substr(0, 10);
+                  }
+                  return trip;
+                });
+              }
               return t;
             }
           );
@@ -234,7 +251,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
   ) {
     return (
       orderFlightTicket &&
-      orderFlightTicket.OrderFlightTrips&&
+      orderFlightTicket.OrderFlightTrips &&
       orderFlightTicket.TicketType == OrderFlightTicketType.Domestic &&
       orderFlightTicket.OrderFlightTrips.some((trip) =>
         this.isAfterTomorrow(trip.TakeoffTime)
@@ -330,6 +347,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
       }
       if (this.order.OrderHotels) {
         this.order.OrderHotels = this.order.OrderHotels.map((t) => {
+          if (t.BeginDate) {
+            t.BeginDate = t.BeginDate.substr(0, 10);
+          }
           t.Passenger = this.getTicketPassenger(t);
           t.countDay =
             (AppHelper.getDate(t.EndDate).getTime() -
@@ -391,7 +411,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
     const p = (this.order && this.order.OrderPassengers) || [];
     return p.find((it) => it.Id == (ticket.Passenger && ticket.Passenger.Id));
   }
-  getDateWeekName(date: string) {
+  private getDateWeekName(date: string) {
     if (!date) {
       return "";
     }
@@ -499,7 +519,6 @@ export class OrderItemComponent implements OnInit, OnChanges {
           it.Status == OrderTrainTicketStatusType.BookExchanging
       ).length > 0;
     return rev;
-
   }
   // getTotalAmount(order: OrderEntity, key: string) {
   //   let amount = 0;
@@ -611,5 +630,4 @@ export class OrderItemComponent implements OnInit, OnChanges {
   //     []
   //   ).length>0;
   // }
-
 }
