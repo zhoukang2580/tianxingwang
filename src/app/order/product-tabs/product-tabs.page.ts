@@ -96,15 +96,13 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   ) {
     const sub = route.queryParamMap.subscribe((d) => {
       const plane = ORDER_TABS.find((it) => it.value == ProductItemType.plane);
-      // this.activeTab = plane;
+      let tab = plane;
       if (d && d.get("tabId")) {
-        const tab = ORDER_TABS.find((it) => it.value == +d.get("tabId"));
-        console.log("product-tabs", tab);
-        this.activeTab = this.isOpenUrl
-          ? this.activeTab
-          : this.activeTab || tab || plane;
-        this.title = tab.label;
+        tab = ORDER_TABS.find((it) => it.value == +d.get("tabId")) || plane;
       }
+      this.activeTab = this.isOpenUrl ? this.activeTab : this.activeTab || tab;
+      this.title = tab.label;
+      console.log("product-tabs", this.activeTab);
       this.isOpenUrl = false;
       if (d && d.get("doRefresh") == "true") {
         this.doRefresh();
