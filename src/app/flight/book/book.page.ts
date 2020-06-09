@@ -125,7 +125,7 @@ export class BookPage implements OnInit, AfterViewInit {
   passengerServiceFeesObj: { [clientId: string]: string };
   isDingTalk = AppHelper.isDingtalkH5();
   addContacts: AddContact[] = [];
-  isself:boolean;
+  isself: boolean;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -183,9 +183,8 @@ export class BookPage implements OnInit, AfterViewInit {
         console.log("是否可以跳过审批", can);
       })
     );
-    this.isself= await this.staffService.isSelfBookType();
-    console.log(this.isself,"isself");
-    
+    this.isself = await this.staffService.isSelfBookType();
+    console.log(this.isself, "isself");
   }
   private async initOrderTravelPayTypes() {
     const bookInfos = this.flightService.getPassengerBookInfos();
@@ -286,11 +285,11 @@ export class BookPage implements OnInit, AfterViewInit {
     return this.initialBookDtoModel;
   }
   private initialPassengerServiceFeesObj() {
-    this.passengerServiceFeesObj = {}
+    this.passengerServiceFeesObj = {};
     if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
-      Object.keys(this.initialBookDtoModel.ServiceFees).forEach(k=>{
-        this.passengerServiceFeesObj[k]=this.getPassengerServiceFee(k);
-      })
+      Object.keys(this.initialBookDtoModel.ServiceFees).forEach((k) => {
+        this.passengerServiceFeesObj[k] = this.getPassengerServiceFee(k);
+      });
     }
   }
   ngAfterViewInit() {
@@ -593,7 +592,7 @@ export class BookPage implements OnInit, AfterViewInit {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-      }]`;
+    }]`;
   }
   back() {
     this.natCtrl.back();
@@ -659,6 +658,7 @@ export class BookPage implements OnInit, AfterViewInit {
     }
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
+    bookDto.IsForbidAutoIssue = isSave;
     let canBook = false;
     let canBook2 = false;
     const isSelf = await this.staffService.isSelfBookType();
@@ -814,7 +814,7 @@ export class BookPage implements OnInit, AfterViewInit {
     ) => {
       AppHelper.toast(
         `${item.credentialStaff && item.credentialStaff.Name} 【${
-        item.modal.credential && item.modal.credential.Number
+          item.modal.credential && item.modal.credential.Number
         }】 ${msg} 信息不能为空`,
         2000,
         "bottom"
@@ -903,7 +903,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -917,7 +917,7 @@ export class BookPage implements OnInit, AfterViewInit {
           p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1167,7 +1167,10 @@ export class BookPage implements OnInit, AfterViewInit {
       );
     }
     if (this.tmc && !this.tmc.IsShowServiceFee) {
-      if (this.orderTravelPayType != OrderTravelPayType.Person && this.orderTravelPayType != OrderTravelPayType.Credit) {
+      if (
+        this.orderTravelPayType != OrderTravelPayType.Person &&
+        this.orderTravelPayType != OrderTravelPayType.Credit
+      ) {
         fees = 0;
       }
     }
@@ -1255,7 +1258,7 @@ export class BookPage implements OnInit, AfterViewInit {
       return null;
     }
     const bookInfos = this.flightService.getPassengerBookInfos();
-    
+
     const fs = bookInfos.reduce((acc, it) => {
       acc = {
         ...acc,
@@ -1365,28 +1368,28 @@ export class BookPage implements OnInit, AfterViewInit {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
-          item.bookInfo.flightSegment &&
-          item.bookInfo.flightSegment.TakeoffTime
+            item.bookInfo.flightSegment &&
+            item.bookInfo.flightSegment.TakeoffTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
