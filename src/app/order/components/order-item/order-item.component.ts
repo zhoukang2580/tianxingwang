@@ -101,9 +101,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.order && changes.order.currentValue) {
       if (this.order) {
-        this.order.InsertDateTime = (this.order.InsertDateTime || "")
-          .replace("T", " ")
-          ?.substr(0, 19);
+        this.order.InsertDateTime = (this.order.InsertDateTime || "").replace("T", " ").substr(0, 19);
         this.order["checkPay"] = this.checkPay();
         this.order.VariablesJsonObj =
           this.order.VariablesJsonObj ||

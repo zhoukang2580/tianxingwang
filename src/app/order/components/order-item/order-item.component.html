@@ -142,7 +142,8 @@
         </ion-row>
         <ng-container *ngFor='let orderTrainTicket of order.OrderTrainTickets;let i=index;'>
           <ng-container *ngIf="orderTrainTicket.VariablesJsonObj.isShow">
-            <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;" class="order-flight-ticket">
+            <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;" class="order-flight-ticket"
+            [class.btn-show-margin]="orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn||orderTrainTicket.VariablesJsonObj.isShowExchangeButton">
               <ion-col size='2'>
                 <ion-text color="medium"> 旅客</ion-text>
               </ion-col>

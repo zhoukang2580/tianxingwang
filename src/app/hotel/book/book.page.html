@@ -294,9 +294,9 @@
     <ion-button slot='end' color='secondary' [disabled]='isSubmitDisabled' size='small' (click)='onBook(false,$event)'>
       提交
     </ion-button>
-    <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId'>
+    <!-- <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId'>
       <ion-button color='secondary' (click)='onBook(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-footer>
 <div [class.show]='isShowPriceDetail' class="price-list">
