@@ -96,7 +96,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
   ) {
     const sub = route.queryParamMap.subscribe((d) => {
       const plane = ORDER_TABS.find((it) => it.value == ProductItemType.plane);
-      this.activeTab = plane;
+      // this.activeTab = plane;
       if (d && d.get("tabId")) {
         const tab = ORDER_TABS.find((it) => it.value == +d.get("tabId"));
         console.log("product-tabs", tab);
@@ -574,6 +574,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
         (tasks) => {
           if (tasks) {
             if (tasks.length) {
+              this.tasks = this.tasks || [];
               this.tasks = this.tasks.concat(tasks);
               this.curTaskPageIndex++;
             }
