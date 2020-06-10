@@ -898,6 +898,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
             Name: combindInfo.bookInfo.bookInfo.hotelEntity.Name,
             Address: combindInfo.bookInfo.bookInfo.hotelEntity.Address,
             Phone: combindInfo.bookInfo.bookInfo.hotelEntity.Phone,
+            CityCode: combindInfo.bookInfo.bookInfo.hotelEntity.CityCode,
           },
         } as RoomEntity;
       }
