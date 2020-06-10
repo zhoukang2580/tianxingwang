@@ -165,6 +165,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       console.log(t, "ddddd");
       if (t == "Car") {
         this.router.navigate(["rental-car"]);
+        // AppHelper.getRoutePath("")
+        return
       }
       this.flightService.removeAllBookInfos();
       const a = await this.service.getReserve({

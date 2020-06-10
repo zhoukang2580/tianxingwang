@@ -314,7 +314,7 @@
   <div class="wrapper">
     <div *ngFor="let infos of combindInfos" class="ion-padding fee"
       [style.min-width]="combindInfos.length>1?'90%':'100%'">
-      <div *ngIf="infos.bookInfo?.bookInfo?.roomPlan?.TotalAmount" class="spacebetween">
+      <div *ngIf="!(tmc?.IsShowServiceFee&&hotelPaymentType==HotelPaymentType.SelfPay)" class="spacebetween">
         <ion-text style="font-weight: bold;" *ngIf="hotelPaymentType==HotelPaymentType.SelfPay">
           到店支付</ion-text>
         <ion-text style="font-weight: bold;" *ngIf="!(hotelPaymentType==HotelPaymentType.SelfPay)">房费明细</ion-text>
@@ -324,10 +324,12 @@
           </ion-text>
         </ion-text>
       </div>
-      <div *ngFor='let d of dates' class="spacebetween" style="padding: 2px 0px;border-bottom:1px dashed #eee;">
-        <ion-text color="medium">{{d.date}}</ion-text>
-        <ion-text>1&times;<small>￥</small>{{d.price}}</ion-text>
-      </div>
+      <ng-container *ngIf="!(tmc?.IsShowServiceFee&&hotelPaymentType==HotelPaymentType.SelfPay)">
+        <div *ngFor='let d of dates' class="spacebetween" style="padding: 2px 0px;border-bottom:1px dashed #eee;">
+          <ion-text color="medium">{{d.date}}</ion-text>
+          <ion-text>1&times;<small>￥</small>{{d.price}}</ion-text>
+        </div>
+      </ng-container>
       <div class="spacebetween" *ngIf="tmc?.IsShowServiceFee||
       orderTravelPayType==OrderTravelPayType.Person||
       orderTravelPayType==OrderTravelPayType.Credit" 
