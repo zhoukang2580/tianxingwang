@@ -404,7 +404,6 @@ export class SelectPassengerPage
     }
     console.log("onSelect", s);
     this.selectedPassenger = s;
-    this.vmStaffs = null; // 是否显示搜索列表
     this.isShowNewCredential = false; // 页面上显示新增此人其他证件,或者是非白名单的证件
     this.vmNewCredential = null;
     this.selectedCredentialId = null; // 所选择的证件Id
@@ -427,6 +426,7 @@ export class SelectPassengerPage
         );
         const temp2 = staffCredentails.filter(
           (it) =>
+            it.Type != CredentialsType.IdCard &&
             !(
               it.Type == CredentialsType.Passport ||
               CredentialsType.HmPass == it.Type
@@ -471,6 +471,7 @@ export class SelectPassengerPage
       AppHelper.alert("所选乘客尚无可用证件信息");
       return;
     }
+    this.vmStaffs = null; // 是否显示搜索列表
   }
   private initNewCredential(s: StaffEntity) {
     this.vmNewCredential = new MemberCredential();

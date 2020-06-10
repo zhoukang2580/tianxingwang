@@ -153,6 +153,13 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
                 ) {
                   d.topDesc = "入住";
                 }
+                if (
+                  this.forType == FlightHotelTrainType.Flight ||
+                  this.forType == FlightHotelTrainType.InternationalFlight ||
+                  this.forType == FlightHotelTrainType.Train
+                ) {
+                  d.topDesc = "去程";
+                }
                 d.firstSelected = true;
               }
               if (d.date == this.endDate) {
@@ -162,6 +169,12 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
                   this.forType == FlightHotelTrainType.HotelInternational
                 ) {
                   d.topDesc = "离店";
+                }
+                if (
+                  this.forType == FlightHotelTrainType.Flight ||
+                  this.forType == FlightHotelTrainType.InternationalFlight
+                ) {
+                  d.topDesc = "返程";
                 }
               }
               if (begin && end) {

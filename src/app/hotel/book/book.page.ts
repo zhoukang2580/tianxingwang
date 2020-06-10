@@ -850,6 +850,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
             Name: combindInfo.bookInfo.bookInfo.hotelEntity.Name,
             Address: combindInfo.bookInfo.bookInfo.hotelEntity.Address,
             Phone: combindInfo.bookInfo.bookInfo.hotelEntity.Phone,
+            CityCode: combindInfo.bookInfo.bookInfo.hotelEntity.CityCode,
           },
         } as RoomEntity;
         // p.RoomPlan.Room = {

@@ -409,7 +409,7 @@ export class FlightService {
       tripType,
       forType: FlightHotelTrainType.Flight,
       isMulti,
-      beginDate: tripType == TripType.departureTrip ? s.Date : "",
+      beginDate:  s.Date ,
       endDate: tripType == TripType.returnTrip ? s.BackDate : "",
     });
   }
