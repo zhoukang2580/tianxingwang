@@ -19,21 +19,21 @@
   <app-refresher slot='fixed' (ionRefresh)='doRefresh(false)' [disabled]='filterTab&&filterTab.isActive'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
+  <ion-list lines='none'>
+    <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}"
+      color="secondary">
+      <ion-segment-button value="normal">
+        <ion-label>非协议酒店</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="agreement">
+        <ion-label>协议酒店</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="specialprice">
+        <ion-label>特价酒店</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-list>
   <ng-container *ngIf='!isLoadingHotels else fakeList'>
-    <div>
-      <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" [value]="searchHotelModel?.hotelType"
-        color="secondary">
-        <ion-segment-button mode='ios' value="normal">
-          <ion-label>非协议酒店</ion-label>
-        </ion-segment-button>
-        <ion-segment-button mode='ios' value="agreement">
-          <ion-label>协议酒店</ion-label>
-        </ion-segment-button>
-        <ion-segment-button mode='ios' value="specialprice">
-          <ion-label>特价酒店</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-    </div>
     <ion-list>
       <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
         <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
