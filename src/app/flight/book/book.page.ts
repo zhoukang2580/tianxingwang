@@ -691,7 +691,8 @@ export class BookPage implements OnInit, AfterViewInit {
           if (
             !isSave &&
             isSelf &&
-            this.orderTravelPayType == OrderTravelPayType.Person
+            (this.orderTravelPayType == OrderTravelPayType.Person ||
+              this.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
             this.isCheckingPay = true;
             const canPay = await this.checkPay(res.TradeNo);

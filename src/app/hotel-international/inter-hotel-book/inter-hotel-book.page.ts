@@ -120,7 +120,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   isSubmitDisabled = false;
   isPlaceOrderOk = false;
   isShowFee = false;
-  serviceFee:number;
+  serviceFee: number;
   checkPayCountIntervalId: any;
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
@@ -213,7 +213,6 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         this.curSelectedBookInfo.bookInfo.roomPlan &&
         this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate
       ) {
-        
         for (let i = 0; i < n; i++) {
           this.dates.push({
             date: this.calendarService
@@ -309,16 +308,16 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       return arr;
     }, 0);
     // if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-      let fees = this.showServiceFees();
-      // const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
-      //   (acc, key) => {
-      //     const fee = +this.initialBookDto.ServiceFees[key];
-      //     acc = AppHelper.add(fee, acc);
-      //     return acc;
-      //   },
-      //   0
-      // );
-      totalPrice = AppHelper.add(fees, totalPrice);
+    let fees = this.showServiceFees();
+    // const fees = Object.keys(this.initialBookDto.ServiceFees).reduce(
+    //   (acc, key) => {
+    //     const fee = +this.initialBookDto.ServiceFees[key];
+    //     acc = AppHelper.add(fee, acc);
+    //     return acc;
+    //   },
+    //   0
+    // );
+    totalPrice = AppHelper.add(fees, totalPrice);
     // }
     return totalPrice;
   }
@@ -1184,7 +1183,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onShowFeesDetails() {
     this.isShowFee = !this.isShowFee;
-    this.serviceFee=this.showServiceFees();
+    this.serviceFee = this.showServiceFees();
     this.initDayPrice();
   }
   private initDayPrice() {
@@ -1192,7 +1191,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     this.curSelectedBookInfo = bookInfos[0];
     this.dates = [];
     const n = this.calcNights();
-    // debugger  
+    // debugger
     for (let i = 0; i < n; i++) {
       this.dates.push({
         date: moment(this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate)
@@ -1203,8 +1202,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         ),
       });
     }
-    console.log(this.dates,"ddddd");
-    
+    console.log(this.dates, "ddddd");
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
@@ -1243,11 +1241,14 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       }, 0);
     }
     if (this.tmc && !this.tmc.IsShowServiceFee) {
-      if (this.orderTravelPayType != OrderTravelPayType.Person && this.orderTravelPayType != OrderTravelPayType.Credit) {
+      if (
+        this.orderTravelPayType != OrderTravelPayType.Person &&
+        this.orderTravelPayType != OrderTravelPayType.Credit
+      ) {
         fees = 0;
       }
     }
-    return fees
+    return fees;
   }
   checkOrderTravelPayType(pt: string) {
     const payType = OrderTravelPayType[pt];
@@ -1297,7 +1298,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.credential.Type == CredentialsType.Passport)
     );
   }
-  async onBook(isSave: boolean,event:CustomEvent) {
+  async onBook(isSave: boolean, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
     if (this.isSubmitDisabled) {
@@ -1357,7 +1358,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           if (
             !isSave &&
             isSelf &&
-            this.orderTravelPayType == OrderTravelPayType.Person
+            (this.orderTravelPayType == OrderTravelPayType.Person ||
+              this.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
             this.isCheckingPay = true;
             const canPay = await this.checkPay(res.TradeNo);

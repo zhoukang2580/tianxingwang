@@ -575,7 +575,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           if (
             !isSave &&
             isSelf &&
-            this.viewModel.orderTravelPayType == OrderTravelPayType.Person
+           ( this.viewModel.orderTravelPayType == OrderTravelPayType.Person||
+            this.viewModel.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
             this.isCheckingPay = true;
             const canPay = await this.checkPay(res.TradeNo);
