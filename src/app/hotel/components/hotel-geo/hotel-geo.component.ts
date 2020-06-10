@@ -48,7 +48,7 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
       .getHotelQuerySource()
       .subscribe(query => {
         this.hotelQuery = query;
-        console.log("geo filter ", this.hotelQuery);
+        // console.log("geo filter ", this.hotelQuery);
         // this.conditionModel = await this.hotelService.getConditions();
         if (!this.hotelQuery || !this.hotelQuery.locationAreas) {
           this.resetTabs();

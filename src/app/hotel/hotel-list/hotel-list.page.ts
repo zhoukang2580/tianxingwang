@@ -147,6 +147,7 @@ export class HotelListPage
       ...this.hotelService.getSearchHotelModel(),
       hotelType: ev.detail.value,
     });
+    this.hotelDayPrices = [];
     this.doRefresh();
   }
   async ngAfterContentInit() {}
