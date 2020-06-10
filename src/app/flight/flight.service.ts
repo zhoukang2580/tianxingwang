@@ -410,7 +410,7 @@ export class FlightService {
       forType: FlightHotelTrainType.Flight,
       isMulti,
       beginDate:  s.Date ,
-      endDate: tripType == TripType.returnTrip ? s.BackDate : "",
+      endDate: s.isRoundTrip?s.BackDate : "",
     });
   }
 

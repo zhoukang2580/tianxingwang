@@ -398,9 +398,13 @@ export class SearchFlightPage
       if (dates.length && this.searchFlightModel) {
         if (flyTo) {
           this.searchFlightModel.Date = dates[0].date;
+        } else if (this.goDate) {
+          this.searchFlightModel.Date = this.goDate.date;
         }
         if (backDate) {
           this.searchFlightModel.BackDate = dates[0].date;
+        } else if (this.backDate) {
+          this.searchFlightModel.BackDate = this.backDate.date;
         }
       }
     }
