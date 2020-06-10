@@ -267,6 +267,10 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     // console.log("outnumberEles", this.outnumberEles.first);
   }
   get totalPrice() {
+    let fees = this.showServiceFees();
+    if(this.tmc &&this.tmc.IsShowServiceFee&&this.hotelPaymentType==HotelPaymentType.SelfPay){
+      return AppHelper.add(fees);
+    }
     const infos = this.hotelService.getBookInfos();
     let roomPlanTotalAmount = infos.reduce((arr, item) => {
       if (item && item.bookInfo && item.bookInfo.roomPlan) {
@@ -276,25 +280,6 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       }
       return arr;
     }, 0);
-    let fees = this.showServiceFees();
-    // if (this.initialBookDto && this.initialBookDto.ServiceFees) {
-    //   fees = Object.keys(this.initialBookDto.ServiceFees).reduce((acc, key) => {
-    //     const fee = +this.initialBookDto.ServiceFees[key];
-    //     acc = AppHelper.add(fee, acc);
-    //     return acc;
-    //   }, 0);
-    // }
-    // if (this.notShowServiceFee()) {
-    //   fees = 0;
-    // } else {
-    //   // 显示服务费
-    //   if (this.hotelPaymentType == HotelPaymentType.SelfPay) {
-    //     // 现付
-    //     roomPlanTotalAmount = 0;
-    //   } else {
-    //     // 预付
-    //   }
-    // }
     return AppHelper.add(fees, roomPlanTotalAmount);
   }
   showServiceFees() {

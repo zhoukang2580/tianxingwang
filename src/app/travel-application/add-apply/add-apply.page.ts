@@ -462,7 +462,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           return;
         }
       }
-      if (this.tmc && this.tmc.OutNumberNameArray&&this.tmc.OutNumberRequiryNameArray) {
+      if (this.tmc && this.tmc.OutNumberNameArray && this.tmc.OutNumberRequiryNameArray) {
         console.log(this.tmc.OutNumberNameArray, "this.tmc.OutNumberNameArray");
         console.log(this.tmc.OutNumberRequiryNameArray, " this.tmc.OutNumberRequiryNameArray");
         for (let index = 0; index < this.tmc.OutNumberRequiryNameArray.length; index++) {
@@ -488,7 +488,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       });
     } catch (e) {
       console.error(e);
-      
+
       AppHelper.alert(e);
     }
   }
@@ -544,7 +544,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   private getAllTravelDays() {
 
     if (this.searchModel && this.searchModel.TravelForm) {
-      this.searchModel.TravelForm.DayCount = this.getAllDay() + 1;
+      this.searchModel.TravelForm.DayCount = this.getAllDay();
     }
     if (!this.searchModel.TravelForm.DayCount) {
       this.searchModel.TravelForm.DayCount = 0
@@ -553,25 +553,53 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   }
   getAllDay() {
     if (this.searchModel && this.searchModel.TravelForm && this.searchModel.TravelForm.Trips) {
-      let alldate = []
+      let ary = [];
+      let result = [];
       this.searchModel.TravelForm.Trips.forEach(t => {
         if (t.StartDate && t.EndDate) {
-          alldate.push(AppHelper.getDate(t.StartDate.substr(0, 10)).getTime());
-          alldate.push(AppHelper.getDate(t.EndDate.substr(0, 10)).getTime())
+          let sectionTemp = {} as any;
+          sectionTemp.StartDate = new Date(t.StartDate);
+          sectionTemp.EndDate = new Date(t.EndDate);
+          ary.push(sectionTemp);
+          // alldate.push(AppHelper.getDate(t.StartDate.substr(0, 10)).getTime());
+          // alldate.push(AppHelper.getDate(t.EndDate.substr(0, 10)).getTime())
         }
       })
-      alldate.sort((s1, s2) => s1 - s2)
-      // console.log(alldate,"alldate");
-      if (alldate && alldate[alldate.length - 1] && alldate[0]) {
-        let result = (alldate[alldate.length - 1] - alldate[0]) / (1000 * 60 * 60 * 24)
-        // console.log(result,"assssss");
-
-        return result
-      } else {
-        return
+      var days = 0;
+      if (ary.length == 0)
+          return days;
+      else if (ary.length == 1) {
+          var startDate:any = new Date(ary[0].StartDate) as any;
+          var endDate: any = new Date(ary[0].EndDate) as any;
+          var startDate2:any=new Date(startDate.getFullYear().toString());
+          var endDate2 :any=new Date(endDate.getFullYear().toString());
+          var startDay = Math.ceil((startDate - startDate2) / (24 * 60 * 60 * 1000)) + 1;
+          var endDay = Math.ceil((endDate - endDate2) / (24 * 60 * 60 * 1000)) + 1;
+          for (var i = startDay; i <= endDay; i++) {
+              if (result.indexOf(i) == -1) {
+                  result.push(i);
+              }
+          }
       }
-    } else {
-      return
+      else if (ary.length > 1) {
+        for (var s = 0; s < ary.length; s++) {
+          var startDate:any = new Date(ary[s].StartDate) as any;
+          var endDate: any = new Date(ary[s].EndDate) as any;
+          var startDate2:any=new Date(startDate.getFullYear().toString());
+          var endDate2 :any=new Date(endDate.getFullYear().toString());
+          var startDay = Math.ceil((startDate - startDate2) / (24 * 60 * 60 * 1000)) + 1;
+          var endDay = Math.ceil((endDate - endDate2) / (24 * 60 * 60 * 1000)) + 1;
+            for (var i = startDay; i <= endDay; i++) {
+                if (result.indexOf(i) == -1) {
+                    result.push(i);
+                }
+            }
+        }
+    }
+    days=result.length;
+    console.log(days,"days");
+    
+    return days
     }
   }
 }
