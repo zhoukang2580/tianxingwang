@@ -7,19 +7,21 @@
       </ion-button>
     </ion-list-header>
     <ion-item>
-      <div *ngFor='let t of item.Trips'>
-        <ion-label class="ion-text-wrap">
-          {{t}}
-        </ion-label>
-      </div>
-      <div>
+      <div class='row'>
+      <div class='status'>
         <ion-label class='ion-text-wrap'>
           {{item.Subject}}
-          <ion-text color='medium'>{{item.Status}}</ion-text>
+          <ion-text color='medium' style='margin-left:1em'>{{item.Status}}</ion-text>
           <div *ngIf='item.CostCenterCode&&item.CostCenterName'>
             {{item.CostCenterCode}}-{{item.CostCenterName}}
           </div>
         </ion-label>
+      </div>
+      <div *ngFor='let t of item.Trips' class='trip'>
+        <ion-label class="ion-text-wrap">
+          {{t}}
+        </ion-label>
+      </div>
       </div>
     </ion-item>
   </ion-list>
