@@ -32,8 +32,10 @@
         <ion-item *ngFor='let item of vmStaffs' @flyInOut detail (click)='onSelect(item)'>
           <ion-label color='medium' *ngIf='forType != FlightHotelTrainType.InternationalFlight'>
             <ion-text color='dark'>{{item?.Name}}</ion-text>
-            {{item.Number}}<span *ngIf='item.CredentialsInfo'>
-              <ng-container *ngIf='item.Number&&item?.CredentialsInfo'> | </ng-container>
+            <ng-container *ngIf='!item.CredentialsInfo'>
+              {{item.Number}}
+            </ng-container>
+            <span *ngIf='item.CredentialsInfo'>
               {{item?.CredentialsInfo}}
             </span>
           </ion-label>
@@ -64,7 +66,9 @@
           <ng-container *ngIf='item!=vmNewCredential'>
             <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'
               style="border-bottom:0.01rem solid #cccccc">
-              <div style="width: 4em;max-width: 4em;white-space: pre-wrap;text-align: end;margin-left:-0.5em;padding: 0.5em;">{{item.Type|credential}}</div>
+              <div
+                style="width: 4em;max-width: 4em;white-space: pre-wrap;text-align: end;margin-left:-0.5em;padding: 0.5em;">
+                {{item.Type|credential}}</div>
               <div style="flex: 1;font-size: 0.6rem;padding: .5em;">
                 <div>
                   <ion-text color='medium'>
