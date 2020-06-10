@@ -540,6 +540,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   }
   ngDoCheck() {
     this.getAllTravelDays();
+    const days = this.travelService.calcTotalTrvavelDays(this.searchModel && this.searchModel.TravelForm && this.searchModel.TravelForm.Trips);
+    console.log("calcTotalTrvavelDays",days);
   }
   private getAllTravelDays() {
 
@@ -567,39 +569,39 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       })
       var days = 0;
       if (ary.length == 0)
-          return days;
+        return days;
       else if (ary.length == 1) {
-          var startDate:any = new Date(ary[0].StartDate) as any;
-          var endDate: any = new Date(ary[0].EndDate) as any;
-          var startDate2:any=new Date(startDate.getFullYear().toString());
-          var endDate2 :any=new Date(endDate.getFullYear().toString());
-          var startDay = Math.ceil((startDate - startDate2) / (24 * 60 * 60 * 1000)) + 1;
-          var endDay = Math.ceil((endDate - endDate2) / (24 * 60 * 60 * 1000)) + 1;
-          for (var i = startDay; i <= endDay; i++) {
-              if (result.indexOf(i) == -1) {
-                  result.push(i);
-              }
+        var startDate: any = new Date(ary[0].StartDate) as any;
+        var endDate: any = new Date(ary[0].EndDate) as any;
+        var startDate2: any = new Date(startDate.getFullYear().toString());
+        var endDate2: any = new Date(endDate.getFullYear().toString());
+        var startDay = Math.ceil((startDate - startDate2) / (24 * 60 * 60 * 1000)) + 1;
+        var endDay = Math.ceil((endDate - endDate2) / (24 * 60 * 60 * 1000)) + 1;
+        for (var i = startDay; i <= endDay; i++) {
+          if (result.indexOf(i) == -1) {
+            result.push(i);
           }
+        }
       }
       else if (ary.length > 1) {
         for (var s = 0; s < ary.length; s++) {
-          var startDate:any = new Date(ary[s].StartDate) as any;
+          var startDate: any = new Date(ary[s].StartDate) as any;
           var endDate: any = new Date(ary[s].EndDate) as any;
-          var startDate2:any=new Date(startDate.getFullYear().toString());
-          var endDate2 :any=new Date(endDate.getFullYear().toString());
+          var startDate2: any = new Date(startDate.getFullYear().toString());
+          var endDate2: any = new Date(endDate.getFullYear().toString());
           var startDay = Math.ceil((startDate - startDate2) / (24 * 60 * 60 * 1000)) + 1;
           var endDay = Math.ceil((endDate - endDate2) / (24 * 60 * 60 * 1000)) + 1;
-            for (var i = startDay; i <= endDay; i++) {
-                if (result.indexOf(i) == -1) {
-                    result.push(i);
-                }
+          for (var i = startDay; i <= endDay; i++) {
+            if (result.indexOf(i) == -1) {
+              result.push(i);
             }
+          }
         }
-    }
-    days=result.length;
-    console.log(days,"days");
-    
-    return days
+      }
+      days = result.length;
+      console.log(days, "days");
+
+      return days
     }
   }
 }

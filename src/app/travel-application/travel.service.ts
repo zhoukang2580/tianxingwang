@@ -1,3 +1,4 @@
+import { AppHelper } from 'src/app/appHelper';
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import {
@@ -19,10 +20,10 @@ import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 export class TravelService {
   // organization:OrganizationEntity;
   // costCenter:CostCenterEntity;
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) { }
   getlist(dto: SearchModel) {
     const req = new RequestEntity();
-    req.IsShowLoading = dto&&dto.IsShowLoading;
+    req.IsShowLoading = dto && dto.IsShowLoading;
     req.Method = `TmcApiTravelUrl-Home-List`;
     req.Data = {
       ...dto,
@@ -49,6 +50,43 @@ export class TravelService {
       Id: id,
     };
     return this.apiService.getPromiseData<SearchModel>(req);
+  }
+  calcTotalTrvavelDays(trips: TravelFormTripEntity[]) {
+    if (!trips || !trips.length) {
+      return 0;
+    }
+    const temp = trips.map(it => {
+      return {
+        stdate: it.StartDate,
+        eddate: it.EndDate,
+        st: AppHelper.getDate((it.StartDate || "").substr(0, 10)).getTime(),
+        ed: AppHelper.getDate((it.EndDate || "").substr(0, 10)).getTime()
+      }
+    });
+    const tempArr = temp.sort((a, b) => a.st - b.st);
+    let days = 0;
+    for (let i = 0; i < tempArr.length; i++) {
+      const one = tempArr[i];
+      const rang = {
+        st: one.st,
+        ed: one.ed,
+      }
+      const curIdx = i;
+      for (let j = curIdx + 1; j <= tempArr.length - curIdx - 1; j++) {
+        const next = tempArr[j];
+        if (this.intersection(one.st, one.ed, next.st)) {
+          i++;
+          rang.st = Math.min(next.st, one.st);
+          rang.ed = Math.max(next.ed, one.ed);
+        }
+      }
+      days += Math.floor((rang.ed - rang.st)) / 24 / 3600 / 1000;
+    }
+    days += 1;
+    return days;
+  }
+  private intersection(st: number, ed: number, value: number) {
+    return st <= value && value <= ed;
   }
   getReserve(dto: {
     TravelFormId: string;
@@ -99,7 +137,7 @@ export class TravelService {
     const req = new RequestEntity();
     req.Method = `TmcApiTravelUrl-Home-GetCitys`;
     req.Data = {
-      name:data.name,
+      name: data.name,
       Type: data.tripType,
       PageIndex: data.pageIndex,
       PageSize: data.pageSize,
