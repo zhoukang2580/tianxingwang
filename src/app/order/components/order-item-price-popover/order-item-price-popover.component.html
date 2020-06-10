@@ -22,20 +22,20 @@
               <span>{{o.Name}}</span>
             </ion-col>
             <ion-col size='1'>
-              <ion-text class="price ion-text-nowrap" #price>{{o.Value}}元</ion-text>
+              <ion-text class="price ion-text-nowrap" #price>{{o.Value}}</ion-text>
             </ion-col>
           </ion-row>
           <ion-row *ngFor="let insurance of getInsurances(t)">
             <ion-col size='7'>{{insurance.Name}}</ion-col>
-            <ion-col class='price'>{{insurance.Premium}}元</ion-col>
+            <ion-col class='price'>{{insurance.Premium}}</ion-col>
           </ion-row>
           <ion-row *ngIf="t.StatusName=='废除'">
             <ion-col size="7">应付</ion-col>
-            <ion-col class="price">0元</ion-col>
+            <ion-col class="price">0</ion-col>
           </ion-row>
           <ion-row *ngIf="t.StatusName!='废除'">
             <ion-col size='7'>总计</ion-col>
-            <ion-col class='price'>{{getPriceAmount(t)}}元</ion-col>
+            <ion-col class='price'>{{getPriceAmount(t)}}</ion-col>
           </ion-row>
         </div>
       </ion-grid>

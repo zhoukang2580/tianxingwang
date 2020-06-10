@@ -10,19 +10,19 @@
           </div>
           <div *ngFor="let o of getOrderFees(t)" class="price">
               <span>{{o.Name}}</span>
-              <ion-text class="ion-text-nowrap" >{{o.Value}}元</ion-text>
+              <ion-text class="ion-text-nowrap" >{{o.Value}}</ion-text>
           </div>
           <div *ngFor="let insurance of getInsurances(t)" class="price">
             <ion-text size='7'>{{insurance.Name}}</ion-text>
-            <ion-text class='price'>{{insurance.Premium}}元</ion-text>
+            <ion-text class='price'>{{insurance.Premium}}</ion-text>
           </div>
           <div *ngIf="t.StatusName=='废除'" class="price">
             <ion-text size="7">应付</ion-text>
-            <ion-text class="price">0元</ion-text>
+            <ion-text class="price">0</ion-text>
           </div>
           <div *ngIf="t.StatusName!='废除'" class="price">
             <ion-text size='7'>总计</ion-text>
-            <ion-text class='price'>{{getPriceAmount(t)}}元</ion-text>
+            <ion-text class='price'>{{getPriceAmount(t)}}</ion-text>
           </div>
         </div>
         <!-- <div style="display:flex;justify-content: space-between;padding: 2px 0px; border-bottom: 1px dashed #eeeeee;"
