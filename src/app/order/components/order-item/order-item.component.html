@@ -43,22 +43,24 @@
                   </span>
                 </div>
                 <ng-container>
-                  <ion-button *ngIf='t.VariablesJsonObj.isShowRefundButton else showrefunding' size='small'
+                  <ion-button *ngIf='t.VariablesJsonObj.isShowRefundButton' size='small'
                     (click)='onRefundFlightTicket($event,t)' color='danger'>
                     <ion-text color='light'>退票 </ion-text>
                   </ion-button>
-                  <ng-template #showrefunding>
-                    <ion-text color='medium' *ngIf='t.VariablesJsonObj.isCustomApplyRefunding'>
+                  <ng-container
+                    *ngIf='t.VariablesJsonObj.isCustomApplyRefunding&&!t.VariablesJsonObj.isCustomApplyExchanging'>
+                    <ion-text color='medium'>
                       退票申请中
                     </ion-text>
-                  </ng-template>
-                  <ion-button *ngIf='t.VariablesJsonObj.isShowExchangeButton else showExchanging' size='small'
+                  </ng-container>
+                  <ion-button *ngIf='t.VariablesJsonObj.isShowExchangeButton' size='small'
                     (click)='onExchangeFlightTicket($event,t,trip)' color='secondary'>
                     <ion-text color='light'>改签</ion-text>
                   </ion-button>
-                  <ng-template #showExchanging>
-                    <ion-text *ngIf='t.VariablesJsonObj.isCustomApplyExchanging' color='medium'>改签申请中</ion-text>
-                  </ng-template>
+                  <ng-container
+                    *ngIf='t.VariablesJsonObj.isCustomApplyExchanging&&!t.VariablesJsonObj.isCustomApplyRefunding'>
+                    <ion-text color='medium'>改签申请中</ion-text>
+                  </ng-container>
                   <ion-button *ngIf='t.VariablesJsonObj.isShowCancelButton' size='small'
                     (click)='onAbolishFlightOrder($event,t)' color='secondary'>
                     <ion-text color='light'>取消订单</ion-text>
@@ -118,7 +120,7 @@
           </ion-col>
           <ion-col style="display: flex;align-items: center;">
             <ion-text color='danger'>
-                <ion-text>￥{{order.TotalAmount}}</ion-text>
+              <ion-text>￥{{order.TotalAmount}}</ion-text>
               <span *ngIf="order.OrderInsurances?.length">
                 (含保险)
               </span>
@@ -143,7 +145,7 @@
         <ng-container *ngFor='let orderTrainTicket of order.OrderTrainTickets;let i=index;'>
           <ng-container *ngIf="orderTrainTicket.VariablesJsonObj.isShow">
             <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;" class="order-flight-ticket"
-            [class.btn-show-margin]="orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn||orderTrainTicket.VariablesJsonObj.isShowExchangeButton">
+              [class.btn-show-margin]="orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn||orderTrainTicket.VariablesJsonObj.isShowExchangeButton">
               <ion-col size='2'>
                 <ion-text color="medium"> 旅客</ion-text>
               </ion-col>
@@ -214,7 +216,7 @@
           <ion-col>
             <div style="align-items: center;display: flex;">
               <ion-text color='danger'>
-                  <ion-text>￥{{order.TotalAmount}}</ion-text>
+                <ion-text>￥{{order.TotalAmount}}</ion-text>
               </ion-text>
               <ion-text color='medium'>
                 {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
@@ -267,7 +269,7 @@
         <ion-row *ngIf='false'>
           <ion-col *ngIf='false'>
             <!-- <ion-text color='danger'>￥{{getTotalAmount(order,orderHotel.Key)}}</ion-text> -->
-          <ion-text color='danger'>￥{{order.TotalAmount}}</ion-text>
+            <ion-text color='danger'>￥{{order.TotalAmount}}</ion-text>
           </ion-col>
           <ion-col>
             {{orderHotel.StatusName}}
