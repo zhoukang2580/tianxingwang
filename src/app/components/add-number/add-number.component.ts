@@ -22,12 +22,15 @@ import {
 export class AddNumberComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("input") inputEl: ElementRef<HTMLInputElement>;
   @Input() addNumber = 0;
+  @Input() useInput = true;
   @Input() min: number;
   @Input() max: number;
   @Output() addNumberChange: EventEmitter<number>;
+  @Output() focus: EventEmitter<number>;
   private subscriptions: Subscription[] = [];
   constructor() {
     this.addNumberChange = new EventEmitter();
+    this.focus = new EventEmitter();
   }
   onAdd(n: number, evt: CustomEvent) {
     if (evt) {
@@ -48,26 +51,31 @@ export class AddNumberComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
-  ngOnInit() {}
+  onHasFocus() {
+    this.focus.emit();
+  }
+  ngOnInit() { }
   ngAfterViewInit() {
-    this.subscriptions.push(
-      fromEvent(this.inputEl.nativeElement, "focus")
-        .pipe(delay(0))
-        .subscribe(() => {
-          this.inputEl.nativeElement.select();
+    if (this.inputEl) {
+      this.subscriptions.push(
+        fromEvent(this.inputEl.nativeElement, "focus")
+          .pipe(delay(0))
+          .subscribe(() => {
+            this.inputEl.nativeElement.select();
+          })
+      );
+      this.subscriptions.push(
+        fromEvent(this.inputEl.nativeElement, "change").subscribe(() => {
+          this.addNumber = +this.inputEl.nativeElement.value;
+          if (this.min) {
+            this.addNumber = Math.max(this.addNumber, this.min);
+          }
+          if (this.max) {
+            this.addNumber = Math.min(this.addNumber, this.max);
+          }
+          this.addNumberChange.emit(this.addNumber);
         })
-    );
-    this.subscriptions.push(
-      fromEvent(this.inputEl.nativeElement, "change").subscribe(() => {
-        this.addNumber = +this.inputEl.nativeElement.value;
-        if (this.min) {
-          this.addNumber = Math.max(this.addNumber, this.min);
-        }
-        if (this.max) {
-          this.addNumber = Math.min(this.addNumber, this.max);
-        }
-        this.addNumberChange.emit(this.addNumber);
-      })
-    );
+      );
+    }
   }
 }

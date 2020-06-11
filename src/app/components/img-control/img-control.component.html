@@ -1,0 +1,8 @@
+<div class="selector" [class.hidden]='isViewImage' (click)='onSelectFile()'>
+  <ion-icon name='add'>
+  </ion-icon>
+</div>
+<input type="file" #input class="hidden">
+<div class="ion-page" [class.hidden]='!isViewImage' (click)='onHide()'>
+  <img [src]="imgUrl" [class.show]='isShowImage' alt="图片">
+</div>

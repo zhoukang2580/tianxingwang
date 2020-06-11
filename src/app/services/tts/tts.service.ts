@@ -1,7 +1,7 @@
 import { Platform } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
-
+const KEY_TTS_ENABLED = "tts_enabled";
 @Injectable({
   providedIn: 'root'
 })
@@ -9,10 +9,12 @@ export class TTSService implements ITTS {
   private tts: ITTS;
   private showTip = false;
   private options: ITTSOptions = { locale: "zh-CN", rate: 1 } as ITTSOptions;
-  isForbiden = false;
+  private enabled = AppHelper.getStorage<boolean>(KEY_TTS_ENABLED);
+  private lastspeekwords = "";
+  private lastspeektime = 0;
   constructor(private plt: Platform) { }
   async speak(opt: ITTSOptions | string): Promise<void> {
-    if (this.isForbiden) {
+    if (!this.enabled) {
       return;
     }
     await this.plt.ready();
@@ -27,7 +29,12 @@ export class TTSService implements ITTS {
           ...opt
         };
       }
-      return this.tts.speak(options)
+      if (Date.now() - this.lastspeektime < 300 && this.lastspeekwords == options.text) {
+        return;
+      }
+      this.lastspeekwords = options.text;
+      this.lastspeektime = Date.now();
+      return this.tts.speak(options).catch(() => void 0)
       // .catch((e) => {
       //   alert(JSON.stringify(e))
       //   if (this.showTip) {
@@ -39,6 +46,13 @@ export class TTSService implements ITTS {
       // });
     }
   };
+  setEnabled(enabled = false) {
+    this.enabled = enabled;
+    AppHelper.setStorage(KEY_TTS_ENABLED, enabled);
+  }
+  getEnabled() {
+    return this.enabled;
+  }
   setTTSOptions(options: ITTSOptions) {
     this.options = {
       ...this.options,

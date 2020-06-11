@@ -14,6 +14,7 @@ import { LanguageHelper } from "./languageHelper";
 import { TimeoutError } from "rxjs";
 import * as uuidJs from "uuid-js";
 import { FileHelperService } from "./services/file-helper.service";
+import { CONFIG } from "src/app/config";
 export class AppHelper {
   static httpClient: HttpClient;
   private static _deviceName: "ios" | "android";
@@ -22,10 +23,9 @@ export class AppHelper {
   static alertController: AlertController;
   static modalController: ModalController;
   private static fileService: FileHelperService;
-  static _appDomain =
-    environment.production && !environment.mockProBuild
-      ? "sky-trip.com"
-      : "testskytrip.com";
+  static _appDomain = !environment.mockProBuild
+    ? CONFIG.appDomain.production
+    : CONFIG.appDomain.debug;
   constructor() {}
   static _domain;
   static _queryParamers = {};
@@ -115,10 +115,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-        ? msg.message
-        : msg && (msg.message || msg.Message)
-          ? msg.message || msg.Message
-          : JSON.stringify(msg);
+      ? msg.message
+      : msg && (msg.message || msg.Message)
+      ? msg.message || msg.Message
+      : JSON.stringify(msg);
   }
   static alert(
     msg: any,
@@ -168,7 +168,7 @@ export class AppHelper {
     return "assets/images/defaultavatar.jpg";
   }
   static getDefaultLoadingImage() {
-    return "assets/images/loading.gif";
+    return "assets/loading.gif";
   }
   static getRouteData() {
     return this._routeData;
@@ -187,7 +187,7 @@ export class AppHelper {
     if (local) {
       return Promise.resolve(local);
     }
-    local = AppHelper.uuid(64).replace(/-/g, "").substr(0, 32);
+    local = AppHelper.uuid().replace(/-/g, "");
     console.log("新生成的uuid " + local);
     AppHelper.setStorage<string>("_UUId_DeviceId_", local);
     return Promise.resolve(local);
@@ -249,8 +249,11 @@ export class AppHelper {
       console.error(e);
     }
   }
-  static async getWechatUniversalLinks() {
-    return this.getPreferanceValue("WECHAT_UNIVERSAL_LINKS");
+  static getWechatUniversalLinks() {
+    return CONFIG.wechat.universalLinks;
+  }
+  static getAppStoreAppId() {
+    return CONFIG.AppleStoreAppId;
   }
   private static async getPreferanceValue(key: string) {
     let value = "";
@@ -305,7 +308,7 @@ export class AppHelper {
     });
   }
   static getWechatAppId() {
-    return this.getPreferanceValue("WECHATAPPID");
+    return CONFIG.wechat.appId;
   }
   static setDeviceName(name: "ios" | "android") {
     this._deviceName = name;
@@ -315,7 +318,7 @@ export class AppHelper {
       return "H5";
     }
     return new Promise<string>((resolve, reject) => {
-      if (!window['cordova']) {
+      if (!window["cordova"]) {
         resolve("H5");
       }
       document.addEventListener(
@@ -331,18 +334,21 @@ export class AppHelper {
       return "";
     });
   }
-  static async getWechatCode(appId: string) {
+  static async getWechatCode(appId: string = "") {
     await AppHelper.platform.ready();
+    if (!appId) {
+      appId = CONFIG.wechat.appId;
+    }
     const wechat = window["wechat"];
     if (wechat) {
-      return wechat.getCode(appId, await this.getWechatUniversalLinks());
+      return wechat.getCode(appId, this.getWechatUniversalLinks());
     }
     return Promise.reject("cordova wechat plugin is unavailable");
   }
   static async isWXAppInstalled() {
     await AppHelper.platform.ready();
     if (window["wechat"]) {
-      const appId = await AppHelper.getWechatAppId();
+      const appId = AppHelper.getWechatAppId();
       return window["wechat"]
         .isWXAppInstalled(appId)
         .then(() => true)
@@ -538,6 +544,7 @@ export class AppHelper {
       AppHelper.getQueryString("ticket") || AppHelper.getStorage("ticket");
     return ticket == "null" ? "" : ticket;
   }
+
   static getDomain() {
     AppHelper._domain = AppHelper._domain || AppHelper.getQueryString("domain");
     if (AppHelper._domain) {
@@ -579,10 +586,7 @@ export class AppHelper {
     return url.replace(this._appDomain, domain).replace("test.", "");
   }
   static getApiUrl() {
-    if (environment.production && !environment.mockProBuild) {
-      return "https://app." + this._appDomain;
-    }
-    return "http://test.app." + this._appDomain;
+    return CONFIG.getApiUrl();
   }
   static getRoutePath(path: string) {
     const style = AppHelper.getStyle() || "";
@@ -633,12 +637,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;
@@ -714,9 +718,9 @@ export class AppHelper {
     const reg = new RegExp("\\" + oldString, "g");
     return source.replace(reg, newString);
   }
-  static uuid(len: number = 16) {
+  static uuid() {
     const uuid = uuidJs.create();
-    return `${uuid}`.substring(0, len);
+    return `${uuid}`.replace(/-/g, "");
   }
   static add(...args: number[]) {
     // console.log(args);

@@ -70,7 +70,7 @@ export class ConfigService {
           this.config.DefaultImageUrl = res.DefaultImageUrl;
           this.config.FaviconImageUrl = res.FaviconImageUrl;
           this.config.PrerenderImageUrl = res.PrerenderImageUrl;
-          this.config.LogoImageUrl = res.LogoImageUrl||`assets/images/Logodm.png`;
+          this.config.LogoImageUrl = res.LogoImageUrl||`assets/loading.gif`;
           this.config.Icp = res.Icp;
           this.config.Style = res.Style;
         }
@@ -81,7 +81,7 @@ export class ConfigService {
           this.config.DefaultImageUrl = AppHelper.getDefaultAvatar();
           this.config.FaviconImageUrl = AppHelper.getDefaultAvatar();
           this.config.PrerenderImageUrl = AppHelper.getDefaultLoadingImage();
-          this.config.LogoImageUrl=`assets/images/Logodm.png`;
+          this.config.LogoImageUrl=`assets/loading.gif`;
         })
         .finally(() => {
           this.fetchConfig = null;

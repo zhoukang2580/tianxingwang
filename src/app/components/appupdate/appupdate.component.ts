@@ -47,7 +47,7 @@ export class AppUpdateComponent implements OnInit {
         this.isCanIgnore = res.ignore;
         const tip =
           res.updateDescriptions &&
-          res.updateDescriptions.some((it) => it && it.length > 0)
+          res.updateDescriptions.some((it) => it && !!it.length)
             ? res.updateDescriptions.join(";")
             : LanguageHelper.gethcpUpdateBaseDataTip();
         if (res.ignore && !silence) {
@@ -70,7 +70,7 @@ export class AppUpdateComponent implements OnInit {
             this.updateInfo = {
               total: evt.total,
               loaded: evt.loaded,
-              taskDesc: evt.taskDesc,
+              taskDesc: "正在初始化...",
               progress: `${((evt.loaded * 100) / evt.total).toFixed(2)}%`,
             };
           });
@@ -99,7 +99,7 @@ export class AppUpdateComponent implements OnInit {
           this.updateInfo = {
             total: evt.total,
             loaded: evt.loaded,
-            taskDesc: evt.taskDesc,
+            taskDesc: "正在初始化..." || evt.taskDesc,
             progress: `${((evt.loaded * 100) / evt.total).toFixed(2)}%`,
           };
         });
@@ -134,7 +134,7 @@ export class AppUpdateComponent implements OnInit {
             this.updateInfo = {
               total: evt.total,
               loaded: evt.loaded,
-              taskDesc: evt.taskDesc,
+              taskDesc: "正在更新，请稍后..." || evt.taskDesc,
               progress,
             };
           });
@@ -173,7 +173,9 @@ export class AppUpdateComponent implements OnInit {
       );
       if (ok) {
         this.forceUpdate = true;
-        const url = encodeURI(`https://apps.apple.com/cn/app/id1347643172`);
+        const url = encodeURI(
+          `https://apps.apple.com/cn/app/${AppHelper.getAppStoreAppId()}`
+        );
         if (window["cordova.InAppBrowser.open"]) {
           this.iab.create(url, "_system");
         } else {

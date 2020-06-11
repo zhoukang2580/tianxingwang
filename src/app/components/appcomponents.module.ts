@@ -2,7 +2,6 @@ import { PinFabComponent } from "./pin-fab/pin-fab.component";
 import { SlidesComponent } from "./slides/slides.component";
 import { FormsModule } from "@angular/forms";
 import { AppDirectivesModule } from "./../directives/directives.module";
-import { MapComponent } from "./../components/map/map.component";
 import { AppUpdateComponent } from "./appupdate/appupdate.component";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -23,12 +22,19 @@ import { BaseInputComponent } from "./base-input/base-input.component";
 import { SwiperSlidesComponent } from "./swiper-slides/swiper-slides.component";
 import { ScrollerComponent } from "./scroller/scroller.component";
 import { BackButtonComponent } from "./back-button/back-button.component";
-import { AddNumberComponent } from './add-number/add-number.component';
-import { ComboboxComponent } from './combobox/combobox.component';
-import { ComboboxModalComponent } from './combobox-modal/combobox-modal.component';
-import { SelectComponent } from './select/select.component';
+import { AddNumberComponent } from "./add-number/add-number.component";
+import { ComboboxComponent } from "./combobox/combobox.component";
+import { ComboboxModalComponent } from "./combobox-modal/combobox-modal.component";
+import { EchartComponent } from "./echart/echart.component";
+import { MenuPopoverComponent } from "./menu-popover/menu-popover.component";
+import { ListItemComponent } from "./list-item/list-item.component";
+import { ImgControlComponent } from "./img-control/img-control.component";
+import { ImgPickerComponent } from "./img-picker/img-picker.component";
+import { MapComponent } from "./map/map.component";
 @NgModule({
   declarations: [
+    ImgPickerComponent,
+    ImgControlComponent,
     OrComponent,
     SwiperSlidesComponent,
     PinchZoomComponent,
@@ -40,7 +46,6 @@ import { SelectComponent } from './select/select.component';
     TimelineComponent,
     TimelineItemComponent,
     PayComponent,
-    MapComponent,
     SlidesComponent,
     MyCalendarComponent,
     BaseInputComponent,
@@ -50,7 +55,10 @@ import { SelectComponent } from './select/select.component';
     AddNumberComponent,
     ComboboxComponent,
     ComboboxModalComponent,
-    SelectComponent
+    EchartComponent,
+    MenuPopoverComponent,
+    ListItemComponent,
+    MapComponent,
   ],
   imports: [
     CommonModule,
@@ -58,10 +66,11 @@ import { SelectComponent } from './select/select.component';
     FormsModule,
     TreeNgxModule,
     AppDirectivesModule,
-    RefresherModule
+    RefresherModule,
   ],
   exports: [
-    SelectComponent,
+    MapComponent,
+    ImgControlComponent,
     ComboboxComponent,
     AddNumberComponent,
     BackButtonComponent,
@@ -78,13 +87,15 @@ import { SelectComponent } from './select/select.component';
     TimelineComponent,
     TimelineItemComponent,
     PayComponent,
-    MapComponent,
     SlidesComponent,
     AppDirectivesModule,
+    MenuPopoverComponent,
     RefresherModule,
     MyCalendarComponent,
     ScrollerComponent,
-    ComboboxModalComponent
-  ]
+    ComboboxModalComponent,
+    EchartComponent,
+    ListItemComponent,
+  ],
 })
 export class AppComponentsModule {}

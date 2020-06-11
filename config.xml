@@ -28,6 +28,7 @@
     <preference name="FullscreenNotImmersive" value="true" />
     <preference name="Fullscreen" value="true" />
     <preference name="WECHATAPPID" value="wx0839a418ccafdf36" />
+    <preference name="Apple_Store_APP_ID" value="id1347643172" />
     <preference name="WECHAT_UNIVERSAL_LINKS" value="https://app.sky-trip.com/eskytripapp/" />
     <hook src="scripts/before_build.js" type="before_build" />
     <hook src="scripts/zipfile_before_build.js" type="before_build" />

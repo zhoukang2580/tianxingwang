@@ -24,9 +24,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule,
     HotelComponentsModule,
-    AppDirectivesModule
+    AppComponentsModule
   ],
   declarations: [HotelDetailPage]
 })

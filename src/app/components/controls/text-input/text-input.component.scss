@@ -1,17 +1,20 @@
-.item {
-  display: flex;
-  align-items: center;
-  padding: 0.25em 0;
-  .label {
-    width: 4.5em;
-    margin-right: 0.5em;
-  }
-  input {
-    flex: 1;
-    outline: none;
-    border: none;
-    &:focus {
-      border: 1px solid var(--ion-color-scondary);
+.text-input {
+    .label {
+        width: 5em;
     }
-  }
+
+    display    : flex;
+    align-items: center;
+
+    input {
+        padding: .25em .5em;
+        outline: none;
+        &:focus{
+            border:1px solid var(--ion-color-secondary);
+        }
+        &.has-error{
+            border:1px solid var(--ion-color-danger);
+            color: var(--ion-color-danger);
+        }
+    }
 }

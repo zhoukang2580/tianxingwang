@@ -1,7 +1,8 @@
 <div class="container">
   <div class="substract" [class.disabled]='addNumber<=min' (click)='onAdd(-1,$event)'></div>
-  <div class="input">
-    <input type="number" #input [(ngModel)]="addNumber">
+  <div class="input" (click)='onHasFocus()'>
+    <input type="number" *ngIf='useInput' #input [(ngModel)]="addNumber">
+    <label class="ion-text-center" *ngIf='!useInput'>{{addNumber}}</label>
   </div>
   <div class="add" [class.disabled]='addNumber>=max' (click)='onAdd(1,$event)'></div>
 </div>

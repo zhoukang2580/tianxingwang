@@ -13,7 +13,7 @@ type Item = {
 @Component({
   selector: "app-account-Wechat",
   templateUrl: "./account-Wechat.page.html",
-  styleUrls: ["./account-Wechat.page.scss"]
+  styleUrls: ["./account-Wechat.page.scss"],
 })
 export class AccountWechatPage implements OnInit, OnDestroy {
   toggleChecked = false;
@@ -32,7 +32,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
     if (paramters.path == "account-wechat") {
       if (paramters.wechatcode) {
         const data = {
-          Code: paramters.wechatcode
+          Code: paramters.wechatcode,
         };
         this.bindCode(data);
         AppHelper.removeQueryParamers("wechatcode");
@@ -40,7 +40,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         const data = {
           Code: paramters.wechatminicode,
           NickName: paramters.wechatmininickname,
-          SdkType: "Mini"
+          SdkType: "Mini",
         };
         this.bindCode(data);
         AppHelper.removeQueryParamers("wechatminicode");
@@ -51,12 +51,12 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   async bind() {
     try {
       if (AppHelper.isApp()) {
-        const appId = await AppHelper.getWechatAppId();
+        const appId = AppHelper.getWechatAppId();
         const code = await this.getWechatCode(appId).catch(() => null);
         if (code) {
           const data = {
             Code: code,
-            SdkType: "App"
+            SdkType: "App",
           };
           this.bindCode(data);
         }
@@ -65,7 +65,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           url:
             "/pages/login/index?ticket=" +
             AppHelper.getTicket() +
-            "&path=account-wechat&IsForbidOpenId=true"
+            "&path=account-wechat&IsForbidOpenId=true",
         });
       } else if (AppHelper.isWechatH5()) {
         const url =
@@ -89,7 +89,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
     const deviceSubscription = this.apiService
       .getResponse<{ OpenId: string }>(req)
       .subscribe(
-        s => {
+        (s) => {
           if (s.Status) {
             this.load();
           }
@@ -97,7 +97,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
             AppHelper.alert(s.Message);
           }
         },
-        n => {
+        (n) => {
           AppHelper.alert(n);
         },
         () => {
@@ -108,20 +108,16 @@ export class AccountWechatPage implements OnInit, OnDestroy {
       );
   }
   getWechatCode(appId: string) {
-    const wechat = window["wechat"];
-    if (wechat) {
-      return wechat.getCode(appId);
-    }
-    return Promise.reject("cordova wechat plugin is unavailable");
+    return AppHelper.getWechatCode(appId);
   }
   load() {
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Wechat-List";
     const deviceSubscription = this.apiService
       .getResponse<Item[]>(req)
-      .pipe(map(r => r.Data))
+      .pipe(map((r) => r.Data))
       .subscribe(
-        r => {
+        (r) => {
           this.items = r;
         },
         () => {
@@ -136,13 +132,13 @@ export class AccountWechatPage implements OnInit, OnDestroy {
     req.Method = "ApiPasswordUrl-Wechat-Remove";
     req.IsShowLoading = true;
     req.Data = {
-      Id: item.Id
+      Id: item.Id,
     };
     const deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(
-      s => {
-        this.items = this.items.filter(it => it != item);
+      (s) => {
+        this.items = this.items.filter((it) => it != item);
       },
-      n => {
+      (n) => {
         AppHelper.alert(n);
       },
       () => {

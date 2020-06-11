@@ -1,0 +1,52 @@
+<!-- Slider main container -->
+<div class="swiper-container main" [class.has-thumbs]='hasThumbs' #swiperContainer>
+  <!-- Additional required wrapper -->
+  <div class="swiper-wrapper">
+    <!-- Slides -->
+    <div class="swiper-slide" [ngStyle]="slideStyle" #slides *ngFor="let item of images">
+      <ng-container *ngIf='item.url else textTempl'>
+        <div [class.swiper-zoom-container]='false' class='img-wrapper'>
+          <!-- <div [lazyLoad]='item.url' class='divimg' [class.has-thumbs]='hasThumbs'
+            [defaultImage]='prerenderImageUrl'> 
+            <div [lazyLoad]='logoUrl' class='logo' *ngIf='logoUrl||hasLogo'></div> 
+          </div> -->
+          <div class='divimg' [class.has-thumbs]='hasThumbs'>
+            <img [lazyLoad]='item.url' [defaultImage]='prerenderImageUrl' [ngStyle]='imgStyle'>
+            <img [lazyLoad]='logoUrl' class='logo' *ngIf='logoUrl||hasLogo' />
+          </div>
+          <!-- <img class="swiper-lazy" data-src="{{item.url}}" />  -->
+          <!-- <div class="swiper-lazy-preloader"></div> -->
+        </div>
+      </ng-container>
+      <ng-template #textTempl>
+        <span *ngIf='item.text else nodata'>{{item.text}}</span>
+      </ng-template>
+      <ng-template #nodata>
+        <app-or-comp>暂无数据</app-or-comp>
+      </ng-template>
+    </div>
+  </div>
+  <!-- If we need pagination -->
+  <div class="swiper-pagination" #pagination [class.fraction]='paginationType=="fraction"' [style.display]='isShowPagination?"initial":"none"'></div>
+
+  <!-- If we need navigation buttons -->
+  <!-- <div class="swiper-button-prev" #swiperbuttonprev></div>
+  <div class="swiper-button-next" #swiperbuttonnext></div> -->
+
+  <!-- If we need scrollbar -->
+  <!-- <div class="swiper-scrollbar"></div> -->
+</div>
+<div #thumbs class='swiper-container thumbs' [style.display]='hasThumbs?"block":"none"'>
+  <div class="swiper-wrapper">
+    <div class="swiper-slide" *ngFor="let item of images;let i=index;" [attr.dataid]='item.idx'
+      (click)='slidToPage(item.idx)'>
+      <img [lazyLoad]="item.url?.replace('640_960','70_70')" [defaultImage]='prerenderImageUrl' />
+      <!-- <div class="swiper-lazy-preloader"></div> -->
+    </div>
+  </div>
+</div>
+<!-- fab placed to the bottom end -->
+<ion-fab [style.display]='isShowCloseBtn?"initial":"none"' vertical="{{fabvertical}}" horizontal="{{fabhorizontal}}"
+  slot="fixed" (click)='onClose()'>
+  <ion-icon name="close-circle" color='light'></ion-icon>
+</ion-fab>

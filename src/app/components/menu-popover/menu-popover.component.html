@@ -1,0 +1,18 @@
+<div class="menus-wrapper" [class.show]='isShowMenu'>
+  <div class="backdrop" (click)='onHideMenu()'></div>
+  <ion-grid [style.bottom.px]='bottom'>
+    <ion-row>
+      <ion-col size='4' *ngFor='let m of systems' class="menu" (click)='onMenuClick(m)'
+        appAuthority='{{m.appAuthority}}'>
+        <div class="item ion-text-center" [attr.data]='m.id' [show]='isShowMenu' [style.color]='m.iconColor'
+          appLongPressShowpop [showTips]='showTips'>
+          <!-- <img [src]="m.imageUrl" style="width: 2em;height: 2em;" alt=""> -->
+          <i class="icon {{m.icon}}"></i>
+          <div style="font-size: 0.8rem;white-space: nowrap;">
+            <ion-text color="{{m.nameColor}}">{{m.name}}</ion-text>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</div>

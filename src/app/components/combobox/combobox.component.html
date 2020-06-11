@@ -1,6 +1,7 @@
 <div class="container">
-    <ion-input class="input-box" placeholder='{{label}}' [(ngModel)]='value' [value]='keyValue?.Text'
-        [clearInput]='false' (ionChange)='isShowSearchIcon=true' (ionFocus)='isShowSearchIcon=true'></ion-input>
+    <ion-input class="input-box" [class.has-input-border]='hasInputBorder' placeholder='{{label}}' [(ngModel)]='value'
+        [value]='keyValue?.Text' [clearInput]='false' (ionChange)='isShowSearchIcon=true'
+        (ionFocus)='isShowSearchIcon=true'></ion-input>
     <ng-container>
         <ion-icon name="close-circle" *ngIf='value' class="close" (click)='value="";onChange()'></ion-icon>
         <ion-icon name='search' *ngIf='isShowSearchIcon' class="search" color='secondary'

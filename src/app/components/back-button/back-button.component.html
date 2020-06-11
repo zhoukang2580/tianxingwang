@@ -1,4 +1,4 @@
-<ion-buttons>
+<ion-buttons [class.hidden]='!isShow'>
   <ion-button size='small' (click)='back($event)'>
     <ion-icon icon-only name='arrow-back-outline' *ngIf='!isIos' color='{{color}}'></ion-icon>
     <ion-icon icon-only name="chevron-back-outline" *ngIf='isIos' color='{{color}}'></ion-icon>

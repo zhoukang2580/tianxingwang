@@ -1,3 +1,4 @@
+import { AppHelper } from 'src/app/appHelper';
 import { Injectable } from "@angular/core";
 import {
   CanActivate,
@@ -9,13 +10,12 @@ import {
   UrlSegment
 } from "@angular/router";
 import { Observable } from "rxjs";
-import { AppHelper } from '../appHelper';
 
 @Injectable({
   providedIn: "root"
 })
 export class ToDefaultRouteGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot

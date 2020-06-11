@@ -1,0 +1,23 @@
+.selector {
+  height: 5em;
+  width: 5em;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.ion-page img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  transform: scale(0);
+  opacity: 0;
+  transition: all ease-in-out 200ms;
+  &.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.ion-page {
+  background-color: black;
+}

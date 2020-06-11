@@ -178,8 +178,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   async loginByWechat() {
     try {
       if (AppHelper.isApp()) {
-        const appId = await AppHelper.getWechatAppId();
-        const code = await this.getWechatCode(appId).catch(() => null);
+        const code = await AppHelper.getWechatCode().catch(() => null);
         if (code) {
           this.loginType = "wechat";
           this.form.patchValue({ WechatCode: code, SdkType: "App" });
@@ -189,9 +188,6 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     } catch (e) {
       AppHelper.alert(e);
     }
-  }
-  getWechatCode(appId: string) {
-    return AppHelper.getWechatCode(appId);
   }
   switchLoginType(type: string) {
     this.loginType = type;

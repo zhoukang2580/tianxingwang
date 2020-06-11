@@ -1,0 +1,15 @@
+.list-item {
+  padding: 0.25em 0;
+  ion-row {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    ion-col{
+      align-self: flex-start;
+    }
+    ion-col:first-child {
+      text-align: end;
+      color: var(--ion-color-medium);
+    }
+  }
+}

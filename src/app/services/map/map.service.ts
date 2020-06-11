@@ -1,7 +1,6 @@
 import { AppHelper } from "./../../appHelper";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
-import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { Injectable } from "@angular/core";
 import { WechatHelper } from "src/app/wechatHelper";
 export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
@@ -598,4 +597,7 @@ export interface AddressComponents {
   district: string;
   street: string;
   streetNumber: string;
+}
+interface TrafficlineEntity{
+  
 }

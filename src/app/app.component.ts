@@ -132,7 +132,7 @@ export class AppComponent
         setTimeout(async () => {
           this.splashScreen.hide();
           // console.log(`uuid = ${await AppHelper.getUUID()}`);
-        }, 1500);
+        }, 2000);
       }
     });
   }
@@ -151,9 +151,7 @@ export class AppComponent
     if (hash && !path) {
       path = hash.replace("#", "");
     }
-    if (!path) {
-      path = "/tabs/tmc-home";
-    }
+   
     return path;
   }
   initializeApp() {
@@ -176,7 +174,10 @@ export class AppComponent
       this.router.navigate([AppHelper.getRoutePath(unloginPath)]);
     } else if (AppHelper.getTicket() || path) {
       if (AppHelper.getQueryString("unroutehome") != "true") {
-        this.jumpToRoute("").then(() => {
+        const routehome = AppHelper.getQueryString("routehome")
+          ? AppHelper.getQueryString("routehome")
+          : "";
+        this.jumpToRoute(routehome).then(() => {
           this.jumpToRoute(path);
         });
       } else {
@@ -210,23 +211,11 @@ export class AppComponent
         // this.router.navigate(['qrscan']);
         // this.router.navigate(['function-test']);
         // this.router.navigate(['car-order-detail']);
-        // this.router.navigate(["tabs/tmc-home"]);
-        // flight-order-detail
-        //  this.router.navigate(["international-flight-list"],{queryParams:{tabId:"1"}});
-        // this.router.navigate(["hr-invitation"], {
-        //   queryParams: {
-        //     hrid: "163",
-        //     hrName: "上海东美在线旅行社有限公司",
-        //     costCenterId: "6300000001",
-        //     costCenterName: "成本中心财政部",
-        //     organizationId: "6300000005",
-        //     organizationName: "产品中心",
-        //     policyId: "6300000001",
-        //     policyName: "一般政策",
-        //     roleIds: "24,25",
-        //     roleNames: "超级秘书,新秘书",
-        //   },
-        // });
+        // this.router.navigate(["hr-invitation"]);
+        // this.router.navigate(["bpm-home"]);
+        // this.router.navigate(["wms-add-product"]);
+        // this.router.navigate(["wms-inventory-day-report"]);
+        // this.router.navigate(["bpm-product-addmodify"]);
       }
     });
   }

@@ -7,11 +7,10 @@ import {
   Output,
   EventEmitter,
   OnChanges,
-  SimpleChanges,
-  ViewChild
+  SimpleChanges
 } from "@angular/core";
 import { Subject, BehaviorSubject } from "rxjs";
-import { ModalController, IonInput } from "@ionic/angular";
+import { ModalController } from "@ionic/angular";
 export interface IKeyValue {
   Text: string;
   Value?: string;
@@ -24,7 +23,9 @@ export interface IKeyValue {
 })
 export class ComboboxComponent implements OnInit, OnChanges {
   private dataSource: Subject<IKeyValue[]>;
+
   @Input() data: IKeyValue[];
+  @Input() hasInputBorder = true;
   @Input() keyValue: IKeyValue;
   @Input() label: string;
   @Output() keyValueChange: EventEmitter<IKeyValue>;
@@ -39,7 +40,7 @@ export class ComboboxComponent implements OnInit, OnChanges {
   onChange() {
     this.textChange.emit(this.value || "");
   }
-  ngOnInit() {}
+  ngOnInit() { }
   onClick(item: IKeyValue) {
     this.keyValueChange.emit(item);
   }
