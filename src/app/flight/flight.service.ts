@@ -833,6 +833,7 @@ export class FlightService {
       ...this.getSearchFlightModel(),
       tripType: TripType.departureTrip,
       isLocked: false,
+      isExchange:false,
     });
   }
   async onSelectReturnTrip() {

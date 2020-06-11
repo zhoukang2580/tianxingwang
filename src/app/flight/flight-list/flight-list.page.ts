@@ -76,6 +76,7 @@ import {
   CanComponentDeactivate,
 } from "src/app/guards/candeactivate.guard";
 import { THIS_EXPR } from "@angular/compiler/src/output/output_ast";
+import { FlightCabinEntity } from "../models/flight/FlightCabinEntity";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -239,10 +240,20 @@ export class FlightListPage
       const cabin =
         cabins && cabins.find((it) => it.SalesPrice == s.LowestFare);
       if (cabin) {
-        const res = await this.flightService.addOrReplaceSegmentInfo(cabin, s);
-        if (res.isReplace || res.isSelfBookType) {
-          this.onShowSelectedInfos();
-        }
+        const info = {
+          flightSegment: s,
+          flightPolicy: {
+            Cabin: cabin,
+            CabinCode: cabin.Code,
+            IsAllowBook: true,
+          },
+          tripType: TripType.departureTrip,
+          id: AppHelper.uuid(),
+        } as IFlightSegmentInfo;
+        const bookInfos = this.flightService.getPassengerBookInfos();
+        bookInfos[0].bookInfo = info;
+        this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
+        this.onShowSelectedInfos();
       } else {
         AppHelper.alert("超标不可预订");
         s["disabled"] = true;
@@ -250,6 +261,7 @@ export class FlightListPage
       }
     }
   }
+
   getNoMoreDataDesc() {
     const bookInfos = this.flightService.getPassengerBookInfos();
     const go = bookInfos.find(
