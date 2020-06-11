@@ -5,6 +5,8 @@ import { CropAvatarDirective } from "./crop-avatar.directive";
 import { ShowtipDirective } from "./showtip.directive";
 import { AutoGrowDirective } from "./auto-grow.directive";
 import { AuthorizeDirective } from './authorizedirective';
+import { ShowMenusDirective } from './show-menus.directive';
+import { LongPressShowpopDirective } from './long-press-showpop.directive';
 
 @NgModule({
   declarations: [
@@ -12,7 +14,9 @@ import { AuthorizeDirective } from './authorizedirective';
     ShowtipDirective,
     AutoGrowDirective,
     LazyloadDirective,
-    AuthorizeDirective
+    AuthorizeDirective,
+    ShowMenusDirective,
+    LongPressShowpopDirective
   ],
   imports: [CommonModule],
   exports: [
@@ -20,7 +24,9 @@ import { AuthorizeDirective } from './authorizedirective';
     ShowtipDirective,
     AutoGrowDirective,
     LazyloadDirective,
-    AuthorizeDirective
+    LongPressShowpopDirective,
+    AuthorizeDirective,
+    ShowMenusDirective
   ]
 })
-export class AppDirectivesModule {}
+export class AppDirectivesModule { }

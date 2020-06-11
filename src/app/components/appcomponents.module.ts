@@ -31,9 +31,11 @@ import { ListItemComponent } from "./list-item/list-item.component";
 import { ImgControlComponent } from "./img-control/img-control.component";
 import { ImgPickerComponent } from "./img-picker/img-picker.component";
 import { MapComponent } from "./map/map.component";
+import { SelectComponent } from './select/select.component';
 @NgModule({
   declarations: [
     ImgPickerComponent,
+    SelectComponent,
     ImgControlComponent,
     OrComponent,
     SwiperSlidesComponent,

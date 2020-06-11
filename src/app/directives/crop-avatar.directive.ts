@@ -1,21 +1,18 @@
-import { WebView } from "@ionic-native/ionic-webview/ngx";
-import { Directive, HostListener, ElementRef } from "@angular/core";
-import { Router } from "@angular/router";
-import { AppHelper } from "../appHelper";
-import { NavController } from "@ionic/angular";
+import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { Directive, HostListener, ElementRef } from '@angular/core';
+import { Router } from '@angular/router';
+import { AppHelper } from '../appHelper';
+import { NavController } from '@ionic/angular';
 
 @Directive({
-  selector: "[cropAvatar]"
+  selector: '[cropAvatar]'
 })
 export class CropAvatarDirective {
-  constructor(
-    private navCtrl: NavController,
-    private sender: ElementRef,
-    private webView: WebView
-  ) {
+
+  constructor(private navCtrl: NavController, private sender: ElementRef, private webView: WebView) {
     console.dir(sender);
   }
-  @HostListener("click", ["$event"])
+  @HostListener("click", ['$event'])
   onHostClick(evt: MouseEvent) {
     this.croppImage();
     evt.preventDefault();
@@ -27,51 +24,32 @@ export class CropAvatarDirective {
     const fileEle = document.getElementById("file") as HTMLInputElement;
     if (fileEle) {
       fileEle.click();
-      fileEle.onchange = evt => {
+      fileEle.onchange = (evt) => {
         const files = (evt.target as HTMLInputElement).files;
         const file = files[0];
         if (file) {
-          if (AppHelper.isApp()) {
-            window.URL = window.URL || window["webkitURL"];
+          if(AppHelper.isApp()){
+            window.URL = window.URL || window['webkitURL'];
             const objectURL = window.URL.createObjectURL(file);
             AppHelper.setRouteData(this.webView.convertFileSrc(objectURL));
-            const method =
-              self.sender.nativeElement.attributes["upload-method"].value;
-            this.navCtrl
-              .navigateForward([
-                AppHelper.getRoutePath("crop-avatar"),
-                {
-                  cropAvatar: "cropAvatar",
-                  method,
-                  fileName: file.name
-                }
-              ])
-              .then(() => {
-                fileEle.value = null;
-              });
-          } else {
+            const method = self.sender.nativeElement.attributes["upload-method"].value;
+            this.navCtrl.navigateForward([AppHelper.getRoutePath('crop-avatar'), { 'cropAvatar': "cropAvatar", "method": method, "fileName": file.name }], { animated: false }).then(() => {
+              fileEle.value = null;
+            });
+
+          }else{
             const fr = new FileReader();
             fr.onload = () => {
               AppHelper.setRouteData(fr.result);
-              const method =
-                self.sender.nativeElement.attributes["upload-method"].value;
-              this.navCtrl
-                .navigateForward([
-                  AppHelper.getRoutePath("crop-avatar"),
-                  {
-                    cropAvatar: "cropAvatar",
-                    method,
-                    fileName: file.name
-                  }
-                ])
-                .then(() => {
-                  fileEle.value = null;
-                });
-            };
+              const method=self.sender.nativeElement.attributes["upload-method"].value;
+              this.navCtrl.navigateForward([AppHelper.getRoutePath('crop-avatar'),{'cropAvatar':"cropAvatar","method":method,"fileName":file.name}],{animated:false}).then(() => {
+                fileEle.value = null;
+              });
+            }
             fr.readAsDataURL(file);
           }
         }
-      };
+      }
     }
   }
 }
