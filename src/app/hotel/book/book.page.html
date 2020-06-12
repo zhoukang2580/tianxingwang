@@ -241,11 +241,12 @@
         </ion-list-header>
         <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType'
           (ionChange)='onOrderTravelPayTypeSelect()'>
+          <!-- 酒店预付月结 -->
           <ng-container
             *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item
-                *ngIf='checkOrderTravelPayType(pt.value)||(pt.value == OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
+                *ngIf='(pt.value==OrderTravelPayType.Credit||pt.value==OrderTravelPayType.Person)||identity?.Numbers?.AgentId'>
                 <ion-label>{{pt.label}}</ion-label>
                 <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'>
                 </ion-radio>
@@ -253,16 +254,10 @@
             </ng-container>
           </ng-container>
           <ng-template #zhifu2>
-            <ion-item *ngIf='hotelPaymentType==HotelPaymentType.SelfPay&&notShowServiceFee() else zhifu3'>
-              <ion-label>前台现付</ion-label>
-              <ion-radio value="Company">
-              </ion-radio>
-            </ion-item>
-          </ng-template>
-          <ng-template #zhifu3>
+            <!-- 酒店现付 -->
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item
-                *ngIf='checkOrderTravelPayType(pt.value)||(pt.value==OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
+                *ngIf='(tmc?.IsShowServiceFee||(pt.value==OrderTravelPayType.Credit||pt.value==OrderTravelPayType.Person))||identity?.Numbers?.AgentId'>
                 <ion-label>前台现付(服务费:{{pt.label}})</ion-label>
                 <ion-radio [value]="pt.value">
                 </ion-radio>
@@ -332,8 +327,7 @@
       </ng-container>
       <div class="spacebetween" *ngIf="tmc?.IsShowServiceFee||
       orderTravelPayType==OrderTravelPayType.Person||
-      orderTravelPayType==OrderTravelPayType.Credit" 
-      style="margin-top: 2px;">
+      orderTravelPayType==OrderTravelPayType.Credit" style="margin-top: 2px;">
         <ion-text style="font-weight: bold;">
           服务费
         </ion-text>

@@ -61,7 +61,6 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { map, tap, mergeMap } from "rxjs/operators";
-import * as moment from "moment";
 import { trigger, state, style } from "@angular/animations";
 import { HotelPaymentType } from "../models/HotelPaymentType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
@@ -115,6 +114,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   isSubmitDisabled = false;
   isPlaceOrderOk = false;
   isShowFee = false;
+  isNotShowServiceFee = false;
   checkPayCountIntervalId: any;
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
@@ -153,10 +153,13 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate &&
       this.curSelectedBookInfo.bookInfo.roomPlan.EndDate
     ) {
-      return moment(this.curSelectedBookInfo.bookInfo.roomPlan.EndDate).diff(
-        this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate,
-        "days"
+      const ed = AppHelper.getDate(
+        this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate.substr(0, 10)
       );
+      const st = AppHelper.getDate(
+        this.curSelectedBookInfo.bookInfo.roomPlan.EndDate.substr(0, 10)
+      );
+      return Math.floor(ed.getTime() - st.getTime()) / 24 / 3600 / 1000;
     }
   }
   ngOnDestroy() {
@@ -170,9 +173,12 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
           (it) => it.PassengerClientId == item.id
         );
         if (plan && plan.GuaranteeStartTime && plan.GuaranteeEndTime) {
-          const date = moment(item.arrivalHotelTime);
-          const start = moment(plan.GuaranteeStartTime);
-          const end = moment(plan.GuaranteeEndTime);
+          const date = this.calendarService.getMoment(0, item.arrivalHotelTime);
+          const start = this.calendarService.getMoment(
+            0,
+            plan.GuaranteeStartTime
+          );
+          const end = this.calendarService.getMoment(0, plan.GuaranteeEndTime);
           item.creditCardInfo.isShowCreditCard =
             +start <= +date && +date <= +end;
         }
@@ -205,7 +211,11 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       ) {
         for (let i = 0; i < n; i++) {
           this.dates.push({
-            date: moment(this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate)
+            date: this.calendarService
+              .getMoment(
+                0,
+                this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate
+              )
               .add(i, "days")
               .format("YYYY-MM-DD"),
             price: this.hotelService.getAvgPrice(
@@ -267,10 +277,15 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     // console.log("outnumberEles", this.outnumberEles.first);
   }
   get totalPrice() {
-    let fees = this.showServiceFees();
-    if(this.tmc &&this.tmc.IsShowServiceFee&&this.hotelPaymentType==HotelPaymentType.SelfPay){
-      return AppHelper.add(fees);
-    }
+    let fees = this.getServiceFees();
+    // if (
+    //   this.hotelPaymentType == HotelPaymentType.SelfPay &&
+    //   ((this.tmc && this.tmc.IsShowServiceFee) ||
+    //     this.orderTravelPayType == OrderTravelPayType.Person ||
+    //     this.orderTravelPayType == OrderTravelPayType.Credit)
+    // ) {
+    //   return AppHelper.add(fees);
+    // }
     const infos = this.hotelService.getBookInfos();
     let roomPlanTotalAmount = infos.reduce((arr, item) => {
       if (item && item.bookInfo && item.bookInfo.roomPlan) {
@@ -282,7 +297,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     }, 0);
     return AppHelper.add(fees, roomPlanTotalAmount);
   }
-  showServiceFees() {
+  private getServiceFees() {
     let fees = 0;
     if (this.initialBookDto && this.initialBookDto.ServiceFees) {
       fees = Object.keys(this.initialBookDto.ServiceFees).reduce((acc, key) => {
@@ -291,12 +306,14 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         return acc;
       }, 0);
     }
-    if (this.tmc && !this.tmc.IsShowServiceFee) {
-      if (
-        this.orderTravelPayType != OrderTravelPayType.Person &&
-        this.orderTravelPayType != OrderTravelPayType.Credit
-      ) {
-        fees = 0;
+    if (!this.tmcService.isAgent) {
+      if (this.tmc && !this.tmc.IsShowServiceFee) {
+        if (
+          this.orderTravelPayType != OrderTravelPayType.Person &&
+          this.orderTravelPayType != OrderTravelPayType.Credit
+        ) {
+          fees = 0;
+        }
       }
     }
     return fees as number;
@@ -327,6 +344,10 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         });
       }
     });
+    this.orderTravelPayTypes = this.orderTravelPayTypes.filter((t) =>
+      this.checkOrderTravelPayType(`${t.value}`)
+    );
+
     console.log(
       "initOrderTravelPayTypes",
       this.orderTravelPayTypes,
@@ -404,7 +425,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return false;
   }
-  getDate(roomPlan: RoomPlanEntity) {
+  private getDate(roomPlan: RoomPlanEntity) {
     if (!roomPlan || !roomPlan.BeginDate) {
       return "";
     }
@@ -911,6 +932,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     await this.initSelfBookTypeCredentials();
     this.initTmcOutNumberInfos();
     await this.initOrderTravelPayTypes();
+    this.isNotShowServiceFee = this.notShowServiceFee();
     console.log("combindInfos", this.combindInfos);
   }
   private async initCombindInfos() {
@@ -968,13 +990,20 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         const combineInfo: IPassengerHotelBookInfo = {} as any;
         const years = [];
         for (let i = 0; i <= 30; i++) {
-          years.push(moment().clone().add(i, "years").format("YYYY"));
+          years.push(
+            this.calendarService
+              .getMoment(0)
+              .clone()
+              .add(i, "years")
+              .format("YYYY")
+          );
         }
         combineInfo.creditCardInfo = {
           years,
           expirationYear: `${new Date().getFullYear()}`,
           expirationMonth: `1`,
-          creditCardExpirationDate: `${moment()
+          creditCardExpirationDate: `${this.calendarService
+            .getMoment(0)
             .startOf("year")
             .format("YYYY-MM-DD")}`,
         } as any;
@@ -1130,7 +1159,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onShowFeesDetails() {
     this.isShowFee = !this.isShowFee;
-    this.serviceFee = this.showServiceFees();
+    this.serviceFee = this.getServiceFees();
     this.initDayPrice();
   }
   private initDayPrice() {
@@ -1166,7 +1195,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return null;
   }
-  notShowServiceFee() {
+  private notShowServiceFee() {
     let totalFee = 0;
     if (this.initialBookDto && this.initialBookDto.ServiceFees) {
       Object.keys(this.initialBookDto.ServiceFees).forEach((k) => {
@@ -1175,13 +1204,8 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return !(this.tmc && this.tmc.IsShowServiceFee) || totalFee == 0;
   }
-  checkOrderTravelPayType(pt: string) {
+  private checkOrderTravelPayType(pt: string) {
     const payType = OrderTravelPayType[pt];
-    // console.log(
-    //   "checkOrderTravelPayType",
-    //   payType,
-    //   this.tmc && this.tmc.HotelOrderPayType
-    // );
     if (!this.tmc || !this.tmc.HotelOrderPayType) {
       return false;
     }

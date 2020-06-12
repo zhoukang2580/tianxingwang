@@ -60,6 +60,7 @@ export class TmcService {
   private companies: GroupCompanyEntity[];
   // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
+  private identity: IdentityEntity;
   private agent: AgentEntity;
   private mobileTemplateSelectItemList: SelectItem[] = [];
   private emailTemplateSelectItemList: SelectItem[] = [];
@@ -71,7 +72,8 @@ export class TmcService {
     private payService: PayService,
     private platform: Platform
   ) {
-    this.identityService.getIdentitySource().subscribe(() => {
+    this.identityService.getIdentitySource().subscribe((id) => {
+      this.identity = id;
       this.disposal();
     });
     this.selectedCompanySource = new BehaviorSubject(null);
@@ -81,6 +83,11 @@ export class TmcService {
     this.tmc = null;
     this.agent = null;
     this.fetchingTmcPromise = null;
+  }
+  get isAgent() {
+    return (
+      this.identity && this.identity.Numbers && this.identity.Numbers.AgentId
+    );
   }
   getTrips(type: "Flight" | "Train" | "Hotel" = null) {
     const req = new RequestEntity();
@@ -481,7 +488,6 @@ export class TmcService {
       .getPromiseData<{ Text: string; Value: string }[]>(req)
       .catch((_) => []);
   }
-  
 
   searchApprovals(name: string, pageIndex: number, pageSize = 20) {
     const req = new RequestEntity();
@@ -1100,7 +1106,7 @@ export enum TmcHotelFeeType {
   Order = 2,
 }
 export class TmcEntity extends BaseEntity {
-  TravelApprovalContent:string;
+  TravelApprovalContent: string;
   TravelApprovalType: TmcTravelApprovalType;
   GroupCompanyName: string; // "爱普科斯";
   Name: string; // "爱普科斯（上海）产品服务有限公司";
