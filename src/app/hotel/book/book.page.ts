@@ -289,10 +289,8 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     }, 0);
     if (this.hotelPaymentType == HotelPaymentType.SelfPay) {
       if (
-        !(
-          this.orderTravelPayType == OrderTravelPayType.Person ||
-          this.orderTravelPayType == OrderTravelPayType.Credit
-        )
+        this.orderTravelPayType == OrderTravelPayType.Person ||
+        this.orderTravelPayType == OrderTravelPayType.Credit
       ) {
         roomPlanTotalAmount = 0;
       }
