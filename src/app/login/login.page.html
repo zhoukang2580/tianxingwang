@@ -1,6 +1,6 @@
 <ion-toolbar class='ion-text-center' [ngClass]='{"keyboard-show":isKeyboardShow,"is-app":isApp}'>
   <img [lazyLoad]="config?.LogoImageUrl" alt="公司logo" class='logo'
-    [defaultImage]='config?.PrerenderImageUrl||"assets/images/Logodm.png"' />
+    [defaultImage]='config?.PrerenderImageUrl||defaultLogoUrl' />
 </ion-toolbar>
 <div class="container" >
   <ion-list class="container">
