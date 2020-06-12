@@ -16,7 +16,7 @@ export const CONFIG = {
     return "http://test.app." + this.appDomain.debug;
   },
   accountSetting: {
-    isShow: false,
+    isShowTTS: false,
   },
   getDefaultLogoUrl() {
     if (!environment.mockProBuild && environment.production) {

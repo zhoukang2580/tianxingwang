@@ -28,7 +28,7 @@ export class AccountSettingPage implements OnInit, OnDestroy {
   ) {
     this.ttsEnabled = ttsService.getEnabled();
     if (CONFIG["accountSetting"]) {
-      this.isShowTTsOption = CONFIG["accountSetting"].isShow;
+      this.isShowTTsOption = CONFIG["accountSetting"].isShowTTS;
     }
   }
   back() {
