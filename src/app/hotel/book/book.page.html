@@ -245,8 +245,7 @@
           <ng-container
             *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
-              <ion-item
-                *ngIf='(pt.value==OrderTravelPayType.Credit||pt.value==OrderTravelPayType.Person)||identity?.Numbers?.AgentId'>
+              <ion-item>
                 <ion-label>{{pt.label}}</ion-label>
                 <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'>
                 </ion-radio>
@@ -256,8 +255,7 @@
           <ng-template #zhifu2>
             <!-- 酒店现付 -->
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
-              <ion-item
-                *ngIf='(tmc?.IsShowServiceFee||(pt.value==OrderTravelPayType.Credit||pt.value==OrderTravelPayType.Person))||identity?.Numbers?.AgentId'>
+              <ion-item>
                 <ion-label>前台现付(服务费:{{pt.label}})</ion-label>
                 <ion-radio [value]="pt.value">
                 </ion-radio>

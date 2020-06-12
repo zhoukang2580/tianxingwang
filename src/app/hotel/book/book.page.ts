@@ -153,10 +153,10 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate &&
       this.curSelectedBookInfo.bookInfo.roomPlan.EndDate
     ) {
-      const ed = AppHelper.getDate(
+      const st = AppHelper.getDate(
         this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate.substr(0, 10)
       );
-      const st = AppHelper.getDate(
+      const ed = AppHelper.getDate(
         this.curSelectedBookInfo.bookInfo.roomPlan.EndDate.substr(0, 10)
       );
       return Math.floor(ed.getTime() - st.getTime()) / 24 / 3600 / 1000;
