@@ -255,15 +255,15 @@
             <!-- 酒店现付 -->
             <ng-container *ngIf='(!tmc?.IsShowServiceFee||!serviceFee) else zhifu3'>
               <ng-container
-                *ngIf='!serviceFee||(tmc?.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc?.HotelPayType) else zf'>
+                *ngIf='!serviceFee||(tmc?.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc?.HotelPayType) else zfTpl'>
                 <ion-item>
                   <ion-label>前台现付</ion-label>
                   <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
                 </ion-item>
               </ng-container>
-              <ng-container *ngIf='serviceFee' #zf>
-                <ng-container [ngTemplateOutlet]='configPayTpl'> </ng-container>
-              </ng-container>
+              <ng-template #zfTpl>
+                <ng-container *ngIf='serviceFee' [ngTemplateOutlet]='configPayTpl'> </ng-container>
+              </ng-template>
             </ng-container>
           </ng-template>
           <ng-template #zhifu3>
