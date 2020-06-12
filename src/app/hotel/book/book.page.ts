@@ -277,15 +277,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     // console.log("outnumberEles", this.outnumberEles.first);
   }
   get totalPrice() {
-    let fees = this.getServiceFees();
-    // if (
-    //   this.hotelPaymentType == HotelPaymentType.SelfPay &&
-    //   ((this.tmc && this.tmc.IsShowServiceFee) ||
-    //     this.orderTravelPayType == OrderTravelPayType.Person ||
-    //     this.orderTravelPayType == OrderTravelPayType.Credit)
-    // ) {
-    //   return AppHelper.add(fees);
-    // }
+    const fees = this.getServiceFees();
     const infos = this.hotelService.getBookInfos();
     let roomPlanTotalAmount = infos.reduce((arr, item) => {
       if (item && item.bookInfo && item.bookInfo.roomPlan) {
@@ -295,6 +287,16 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       }
       return arr;
     }, 0);
+    if (this.hotelPaymentType == HotelPaymentType.SelfPay) {
+      if (
+        !(
+          this.orderTravelPayType == OrderTravelPayType.Person ||
+          this.orderTravelPayType == OrderTravelPayType.Credit
+        )
+      ) {
+        roomPlanTotalAmount = 0;
+      }
+    }
     return AppHelper.add(fees, roomPlanTotalAmount);
   }
   private getServiceFees() {
