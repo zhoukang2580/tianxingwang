@@ -1294,15 +1294,17 @@ export class FlightTicketReservePage
         0
       );
     }
-    if (this.tmc && !this.tmc.IsShowServiceFee) {
-      if (
-        this.orderTravelPayType != OrderTravelPayType.Person &&
-        this.orderTravelPayType != OrderTravelPayType.Credit
-      ) {
-        fees = 0;
+    if (!this.tmcService.isAgent) {
+      if (this.tmc && !this.tmc.IsShowServiceFee) {
+        if (
+          this.orderTravelPayType != OrderTravelPayType.Person &&
+          this.orderTravelPayType != OrderTravelPayType.Credit
+        ) {
+          fees = 0;
+        }
       }
     }
-    if ((this.searchModel.voyageType = FlightVoyageType.GoBack)) {
+    if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
       return (fees / 2) as number;
     }
     return fees as number;

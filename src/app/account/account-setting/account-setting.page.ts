@@ -6,6 +6,7 @@ import { Router } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { ThemeService } from "src/app/services/theme/theme.service";
 import { TTSService } from "src/app/services/tts/tts.service";
+import { CONFIG } from "src/app/config";
 
 @Component({
   selector: "app-setting",
@@ -17,6 +18,7 @@ export class AccountSettingPage implements OnInit, OnDestroy {
   appVersion: string = "3.0.1";
   isDarkMode: boolean;
   ttsEnabled = false;
+  isShowTTsOption = true;
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -25,6 +27,9 @@ export class AccountSettingPage implements OnInit, OnDestroy {
     private ttsService: TTSService
   ) {
     this.ttsEnabled = ttsService.getEnabled();
+    if (CONFIG["accountSetting"]) {
+      this.isShowTTsOption = CONFIG["accountSetting"].isShow;
+    }
   }
   back() {
     this.navCtrl.pop();

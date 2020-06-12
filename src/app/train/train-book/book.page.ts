@@ -73,7 +73,7 @@ import { PayService } from "src/app/services/pay/pay.service";
 import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
-import { CredentialsType } from 'src/app/member/pipe/credential.pipe';
+import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 
 @Component({
   selector: "app-train-book",
@@ -99,7 +99,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   tmc: TmcEntity;
   totalPriceSource: Subject<number>;
   isCanSave$ = of(false);
-  OrderTravelPayType= OrderTravelPayType;
+  OrderTravelPayType = OrderTravelPayType;
   addContacts: AddContact[] = [];
   isCheckingPay = false;
   isShowFee = false;
@@ -108,7 +108,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  CredentialsType=CredentialsType;
+  CredentialsType = CredentialsType;
   constructor(
     private trainService: TrainService,
     private storage: Storage,
@@ -158,8 +158,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.tmc = this.initialBookDto.Tmc;
       await this.initializeViewModel();
-      console.log(this.viewModel.combindInfos,"this.viewModel.combindInfos");
-      
+      console.log(this.viewModel.combindInfos, "this.viewModel.combindInfos");
     } catch (e) {
       console.log(e);
       this.error = e;
@@ -575,8 +574,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           if (
             !isSave &&
             isSelf &&
-           ( this.viewModel.orderTravelPayType == OrderTravelPayType.Person||
-            this.viewModel.orderTravelPayType == OrderTravelPayType.Credit)
+            (this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
+              this.viewModel.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
             this.isCheckingPay = true;
             const canPay = await this.checkPay(res.TradeNo);
@@ -632,13 +631,15 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         return acc;
       }, 0);
     }
-    if (this.tmc && !this.tmc.IsShowServiceFee) {
-      if (
-        this.viewModel &&
-        this.viewModel.orderTravelPayType != OrderTravelPayType.Person&&
-        this.viewModel.orderTravelPayType != OrderTravelPayType.Credit
-      ) {
-        fees = 0;
+    if (!this.tmcService.isAgent) {
+      if (this.tmc && !this.tmc.IsShowServiceFee) {
+        if (
+          this.viewModel &&
+          this.viewModel.orderTravelPayType != OrderTravelPayType.Person &&
+          this.viewModel.orderTravelPayType != OrderTravelPayType.Credit
+        ) {
+          fees = 0;
+        }
       }
     }
     return fees as number;

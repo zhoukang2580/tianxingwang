@@ -1167,12 +1167,14 @@ export class BookPage implements OnInit, AfterViewInit {
         0
       );
     }
-    if (this.tmc && !this.tmc.IsShowServiceFee) {
-      if (
-        this.orderTravelPayType != OrderTravelPayType.Person &&
-        this.orderTravelPayType != OrderTravelPayType.Credit
-      ) {
-        fees = 0;
+    if (!this.tmcService.isAgent) {
+      if (this.tmc && !this.tmc.IsShowServiceFee) {
+        if (
+          this.orderTravelPayType != OrderTravelPayType.Person &&
+          this.orderTravelPayType != OrderTravelPayType.Credit
+        ) {
+          fees = 0;
+        }
       }
     }
     return fees as number;

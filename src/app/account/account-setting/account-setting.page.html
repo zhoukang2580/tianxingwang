@@ -27,7 +27,7 @@
       <ion-toggle (ionChange)='onToggleDarkMode($event)'  color='secondary' [checked]='isDarkMode'></ion-toggle>
     </ion-item>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf='isShowTTsOption'>
     <ion-item>
       <ion-label>语音播报</ion-label>
       <ion-toggle (ionChange)='onTts()'  color='secondary' [checked]='ttsEnabled'></ion-toggle>
