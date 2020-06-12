@@ -18,4 +18,10 @@ export const CONFIG = {
   accountSetting: {
     isShow: false,
   },
+  getDefaultLogoUrl() {
+    if (!environment.mockProBuild && environment.production) {
+      return "http://shared." + this.appDomain.production + "/img/logo.png";
+    }
+    return "http://test.shared." + this.appDomain.debug + "/img/logo.png";
+  }
 };
