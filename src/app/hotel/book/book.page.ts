@@ -347,7 +347,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     this.orderTravelPayTypes = this.orderTravelPayTypes.filter((t) =>
       this.checkOrderTravelPayType(`${t.value}`)
     );
-
+    this.serviceFee = this.getServiceFees();
     console.log(
       "initOrderTravelPayTypes",
       this.orderTravelPayTypes,

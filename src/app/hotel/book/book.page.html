@@ -253,9 +253,17 @@
           </ng-container>
           <ng-template #zhifu2>
             <!-- 酒店现付 -->
-            <ng-container *ngIf='!tmc?.IsShowServiceFee||!serviceFee else zhifu3'>
-              <ion-label>前台现付</ion-label>
-              <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
+            <ng-container *ngIf='(!tmc?.IsShowServiceFee||!serviceFee) else zhifu3'>
+              <ng-container
+                *ngIf='!serviceFee||(tmc?.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc?.HotelPayType) else zf'>
+                <ion-item>
+                  <ion-label>前台现付</ion-label>
+                  <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
+                </ion-item>
+              </ng-container>
+              <ng-container *ngIf='serviceFee' #zf>
+                <ng-container [ngTemplateOutlet]='configPayTpl'> </ng-container>
+              </ng-container>
             </ng-container>
           </ng-template>
           <ng-template #zhifu3>
@@ -264,8 +272,10 @@
                 <ng-container *ngIf='tmc?.HotelPayType else configPayTpl'>
                   <ng-container
                     *ngIf='tmc.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc.HotelPayType else configPayTpl'>
-                    <ion-label>前台现付</ion-label>
-                    <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
+                    <ion-item>
+                      <ion-label>前台现付</ion-label>
+                      <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
+                    </ion-item>
                   </ng-container>
                 </ng-container>
               </ng-container>
@@ -273,14 +283,14 @@
                 <ng-container [ngTemplateOutlet]='configPayTpl'> </ng-container>
               </ng-template>
             </ng-container>
-            <ng-template #configPayTpl>
-              <ng-container *ngFor='let pt of orderTravelPayTypes'>
-                <ion-item>
-                  <ion-label>前台现付（服务费:{{pt.label}}）</ion-label>
-                  <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'> </ion-radio>
-                </ion-item>
-              </ng-container>
-            </ng-template>
+          </ng-template>
+          <ng-template #configPayTpl>
+            <ng-container *ngFor='let pt of orderTravelPayTypes'>
+              <ion-item>
+                <ion-label>前台现付（服务费:{{pt.label}}）</ion-label>
+                <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'> </ion-radio>
+              </ion-item>
+            </ng-container>
           </ng-template>
         </ion-radio-group>
       </ion-list>
