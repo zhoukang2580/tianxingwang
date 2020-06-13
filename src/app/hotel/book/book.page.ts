@@ -106,6 +106,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   bookInfos: PassengerBookInfo<IHotelInfo>[];
   tmc: TmcEntity;
   serviceFee: number;
+  detailServiceFee: number;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
   expenseTypes: string[];
@@ -1154,7 +1155,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onShowFeesDetails() {
     this.isShowFee = !this.isShowFee;
-    this.serviceFee = this.getServiceFees();
+    this.detailServiceFee = this.getServiceFees();
     this.initDayPrice();
   }
   private initDayPrice() {
