@@ -7,43 +7,47 @@ import { AppHelper } from "./appHelper";
 import { FileHelperService } from "./services/file-helper.service";
 
 export class AppErrorHandler implements ErrorHandler {
+  private flileService: FileHelperService = AppHelper.fileService;
   constructor(
     private logService: LogService,
     private loadingCtrl: LoadingController,
     private plt: Platform,
-    private flileService: FileHelperService
-  ) {}
+  ) { }
   async handleError(error: any) {
-    console.error(error);
-    setTimeout(() => {
-      this.loadingCtrl.getTop().then((t) => {
-        if (t) {
-          t.dismiss();
+    try {
+      console.error(error);
+      setTimeout(() => {
+        this.loadingCtrl.getTop().then((t) => {
+          if (t) {
+            t.dismiss();
+          }
+        });
+      }, 5000);
+      if (environment.production) {
+        const hcpversion = this.flileService.getLocalHcpVersion();
+        const appversion = await this.flileService
+          .getAppVersion()
+          .catch(() => "");
+        let channel = `${this.plt.is("ios") ? "ios" : "android"}`;
+        if (AppHelper.isApp()) {
+          channel += ` app(appversion=${appversion},hcpversion=${hcpversion})`;
+        } else if (AppHelper.isWechatH5()) {
+          channel += " wechatH5";
+        } else if (AppHelper.isDingtalkH5()) {
+          channel += " DingtalkH5";
+        } else if (AppHelper.isWechatMini()) {
+          channel += " WechatMini";
+        } else if (!AppHelper.isApp()) {
+          channel += " H5";
         }
-      });
-    }, 5000);
-    if (environment.production) {
-      const hcpversion = this.flileService.getLocalHcpVersion();
-      const appversion = await this.flileService
-        .getAppVersion()
-        .catch(() => "");
-      let channel = `${this.plt.is("ios") ? "ios" : "android"}`;
-      if (AppHelper.isApp()) {
-        channel += ` app(appversion=${appversion},hcpversion=${hcpversion})`;
-      } else if (AppHelper.isWechatH5()) {
-        channel += " wechatH5";
-      } else if (AppHelper.isDingtalkH5()) {
-        channel += " DingtalkH5";
-      } else if (AppHelper.isWechatMini()) {
-        channel += " WechatMini";
-      } else if (!AppHelper.isApp()) {
-        channel += " H5";
+        this.logService.addException({
+          Message: LanguageHelper.getApiMobileAppError() + `,来自 ${channel}`,
+          Method: "AppErrorHandler",
+          Error: error,
+        });
       }
-      this.logService.addException({
-        Message: LanguageHelper.getApiMobileAppError() + `,来自 ${channel}`,
-        Method: "AppErrorHandler",
-        Error: error,
-      });
+    } catch (e) {
+      console.error(e);
     }
   }
 }
