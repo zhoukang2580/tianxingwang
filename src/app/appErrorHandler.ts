@@ -1,18 +1,20 @@
-import { ErrorHandler } from "@angular/core";
+import { ErrorHandler ,Injectable} from "@angular/core";
 import { LogService } from "./services/log/log.service";
 import { environment } from "src/environments/environment";
 import { LoadingController, Platform } from "@ionic/angular";
 import { LanguageHelper } from "./languageHelper";
 import { AppHelper } from "./appHelper";
 import { FileHelperService } from "./services/file-helper.service";
-
+@Injectable({providedIn:"root"})
 export class AppErrorHandler implements ErrorHandler {
+  private flileService: FileHelperService = AppHelper.fileService;
   constructor(
     private logService: LogService,
     private loadingCtrl: LoadingController,
     private plt: Platform,
-    private flileService: FileHelperService
-  ) { }
+  ) {
+    // console.log(plt,this.flileService,logService,loadingCtrl)
+  }
   async handleError(error: any) {
     try {
       console.error(error);
@@ -23,8 +25,11 @@ export class AppErrorHandler implements ErrorHandler {
           }
         });
       }, 5000);
+      if (!this.flileService) {
+        this.flileService = AppHelper.fileService;
+      }
       if (environment.production) {
-        const hcpversion = this.flileService.getLocalHcpVersion();
+        const hcpversion = await this.flileService.getRunningVersion();
         const appversion = await this.flileService
           .getAppVersion()
           .catch(() => "");
