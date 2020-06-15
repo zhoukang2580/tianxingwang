@@ -1,6 +1,6 @@
 import { mdTransitionAnimation } from "./animations/md.transition";
 import { iosTransitionAnimation } from "./animations/ios-transition";
-import { NgModule, ErrorHandler } from "@angular/core";
+import { NgModule, ErrorHandler, Injector } from "@angular/core";
 import { BrowserModule } from "@angular/platform-browser";
 import { RouteReuseStrategy, Router } from "@angular/router";
 import {
@@ -26,6 +26,8 @@ import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { IonicStorageModule } from "@ionic/storage";
 import { Animation } from "./animations/animation-interface";
+import { FileHelperService } from './services/file-helper.service';
+import { AppHelper } from './appHelper';
 let curPlt: "ios" | "md";
 export function navAnimations(baseEl, opts) {
   const animation =
@@ -62,7 +64,7 @@ export function navAnimations(baseEl, opts) {
     {
       provide: ErrorHandler,
       useClass: AppErrorHandler,
-      deps: [LogService, LoadingController]
+      deps: [LogService,LoadingController,Platform]
     },
     Zip,
     File,
@@ -72,7 +74,8 @@ export function navAnimations(baseEl, opts) {
   bootstrap: [AppComponent]
 })
 export class AppModule {
-  constructor(router: Router, plt: Platform) {
+  constructor(router: Router, plt: Platform,fileService:FileHelperService) {
+    AppHelper.setFileService(fileService);
     curPlt = plt.is("ios") ? "ios" : "md";
     console.log("AppModule", router.config);
   }

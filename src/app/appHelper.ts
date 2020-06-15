@@ -22,11 +22,11 @@ export class AppHelper {
   static toastController: ToastController;
   static alertController: AlertController;
   static modalController: ModalController;
-  private static fileService: FileHelperService;
+  static fileService: FileHelperService;
   static _appDomain = !environment.mockProBuild
     ? CONFIG.appDomain.production
     : CONFIG.appDomain.debug;
-  constructor() {}
+  constructor() { }
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -115,10 +115,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-      ? msg.message
-      : msg && (msg.message || msg.Message)
-      ? msg.message || msg.Message
-      : JSON.stringify(msg);
+        ? msg.message
+        : msg && (msg.message || msg.Message)
+          ? msg.message || msg.Message
+          : JSON.stringify(msg);
   }
   static alert(
     msg: any,
@@ -637,12 +637,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static getQueryParamers() {
     return this._queryParamers as any;

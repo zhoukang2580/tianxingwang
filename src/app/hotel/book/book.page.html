@@ -247,18 +247,49 @@
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item>
                 <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'>
-                </ion-radio>
+                <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'> </ion-radio>
               </ion-item>
             </ng-container>
           </ng-container>
           <ng-template #zhifu2>
             <!-- 酒店现付 -->
+            <ng-container *ngIf='(!tmc?.IsShowServiceFee||!serviceFee) else zhifu3'>
+              <ng-container *ngIf='!serviceFee else zfTpl'>
+                <ion-item>
+                  <ion-label>前台现付</ion-label>
+                  <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
+                </ion-item>
+              </ng-container>
+              <ng-template #zfTpl>
+                <ng-container
+                  *ngIf='!(tmc?.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc?.HotelPayType)'
+                  [ngTemplateOutlet]='configPayTpl'> </ng-container>
+              </ng-template>
+            </ng-container>
+          </ng-template>
+          <ng-template #zhifu3>
+            <ng-container *ngIf='serviceFee'>
+              <ng-container *ngIf='tmc?.IsShowServiceFee else notShowserviceFeeTpl'>
+                <ng-container *ngIf='tmc?.HotelPayType else configPayTpl'>
+                  <ng-container
+                    *ngIf='tmc.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc.HotelPayType else configPayTpl'>
+                    <ion-item>
+                      <ion-label>前台现付</ion-label>
+                      <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
+                    </ion-item>
+                  </ng-container>
+                </ng-container>
+              </ng-container>
+              <ng-template #notShowserviceFeeTpl>
+                <ng-container [ngTemplateOutlet]='configPayTpl'> </ng-container>
+              </ng-template>
+            </ng-container>
+          </ng-template>
+          <ng-template #configPayTpl>
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item>
-                <ion-label>前台现付(服务费:{{pt.label}})</ion-label>
-                <ion-radio [value]="pt.value">
-                </ion-radio>
+                <ion-label>前台现付（服务费:{{pt.label}}）</ion-label>
+                <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'> </ion-radio>
               </ion-item>
             </ng-container>
           </ng-template>
@@ -307,7 +338,7 @@
   <div class="wrapper">
     <div *ngFor="let infos of combindInfos" class="ion-padding fee"
       [style.min-width]="combindInfos.length>1?'90%':'100%'">
-      <div *ngIf="!(tmc?.IsShowServiceFee&&hotelPaymentType==HotelPaymentType.SelfPay)" class="spacebetween">
+      <div class="spacebetween">
         <ion-text style="font-weight: bold;" *ngIf="hotelPaymentType==HotelPaymentType.SelfPay">
           到店支付</ion-text>
         <ion-text style="font-weight: bold;" *ngIf="!(hotelPaymentType==HotelPaymentType.SelfPay)">房费明细</ion-text>
@@ -317,20 +348,18 @@
           </ion-text>
         </ion-text>
       </div>
-      <ng-container *ngIf="!(tmc?.IsShowServiceFee&&hotelPaymentType==HotelPaymentType.SelfPay)">
-        <div *ngFor='let d of dates' class="spacebetween" style="padding: 2px 0px;border-bottom:1px dashed #eee;">
-          <ion-text color="medium">{{d.date}}</ion-text>
-          <ion-text>1&times;<small>￥</small>{{d.price}}</ion-text>
-        </div>
-      </ng-container>
+      <div *ngFor='let d of dates' class="spacebetween" style="padding: 2px 0px;border-bottom:1px dashed #eee;">
+        <ion-text color="medium">{{d.date}}</ion-text>
+        <ion-text>1&times;<small>￥</small>{{d.price}}</ion-text>
+      </div>
       <div class="spacebetween" *ngIf="tmc?.IsShowServiceFee||
-      orderTravelPayType==OrderTravelPayType.Person||
-      orderTravelPayType==OrderTravelPayType.Credit" style="margin-top: 2px;">
+      (orderTravelPayType==OrderTravelPayType.Person||
+      orderTravelPayType==OrderTravelPayType.Credit)" style="margin-top: 2px;">
         <ion-text style="font-weight: bold;">
           服务费
         </ion-text>
         <ion-text>
-          {{serviceFee}}
+          {{detailServiceFee}}
         </ion-text>
       </div>
     </div>

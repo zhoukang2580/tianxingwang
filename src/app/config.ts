@@ -11,12 +11,12 @@ export const CONFIG = {
   },
   getApiUrl() {
     if (!environment.mockProBuild && environment.production) {
-      return "http://app." + this.appDomain.production;
+      return "https://app." + this.appDomain.production;
     }
     return "http://test.app." + this.appDomain.debug;
   },
   accountSetting: {
-    isShow: false,
+    isShowTTS: false,
   },
   getDefaultLogoUrl() {
     if (!environment.mockProBuild && environment.production) {

@@ -106,6 +106,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   bookInfos: PassengerBookInfo<IHotelInfo>[];
   tmc: TmcEntity;
   serviceFee: number;
+  detailServiceFee: number;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
   expenseTypes: string[];
@@ -277,15 +278,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     // console.log("outnumberEles", this.outnumberEles.first);
   }
   get totalPrice() {
-    let fees = this.getServiceFees();
-    // if (
-    //   this.hotelPaymentType == HotelPaymentType.SelfPay &&
-    //   ((this.tmc && this.tmc.IsShowServiceFee) ||
-    //     this.orderTravelPayType == OrderTravelPayType.Person ||
-    //     this.orderTravelPayType == OrderTravelPayType.Credit)
-    // ) {
-    //   return AppHelper.add(fees);
-    // }
+    const fees = this.getServiceFees();
     const infos = this.hotelService.getBookInfos();
     let roomPlanTotalAmount = infos.reduce((arr, item) => {
       if (item && item.bookInfo && item.bookInfo.roomPlan) {
@@ -295,6 +288,9 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       }
       return arr;
     }, 0);
+    if (this.hotelPaymentType == HotelPaymentType.SelfPay) {
+      roomPlanTotalAmount = 0;
+    }
     return AppHelper.add(fees, roomPlanTotalAmount);
   }
   private getServiceFees() {
@@ -347,7 +343,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     this.orderTravelPayTypes = this.orderTravelPayTypes.filter((t) =>
       this.checkOrderTravelPayType(`${t.value}`)
     );
-
+    this.serviceFee = this.getServiceFees();
     console.log(
       "initOrderTravelPayTypes",
       this.orderTravelPayTypes,
@@ -1159,7 +1155,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onShowFeesDetails() {
     this.isShowFee = !this.isShowFee;
-    this.serviceFee = this.getServiceFees();
+    this.detailServiceFee = this.getServiceFees();
     this.initDayPrice();
   }
   private initDayPrice() {
