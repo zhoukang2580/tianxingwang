@@ -191,6 +191,7 @@ export class LoginService {
       req.Data = {};
     }
     req.Data.LoginType = this.getLoginType();
+    req.Data.AloneTag =  AppHelper.getQueryParamers()["AloneTag"];
     return this.apiService
       .getResponse<{
         Ticket: string; // "";
@@ -335,7 +336,7 @@ export class LoginService {
     if (this.isAutoLoginPromise) {
       return this.isAutoLoginPromise;
     }
-    try{
+    try {
       const device = await AppHelper.getDeviceId();
       if (AppHelper.getStorage<string>("loginToken")) {
         const req = new RequestEntity();
@@ -371,7 +372,7 @@ export class LoginService {
             this.isAutoLoginPromise = null;
           });
       }
-    }catch(e){
+    } catch (e) {
       console.error(e);
     }
     // 切记，返回一个promise，否则，需要在此之前，await this.isAutoLoginPromise
