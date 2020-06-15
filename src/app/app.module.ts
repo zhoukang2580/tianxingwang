@@ -59,6 +59,7 @@ export function navAnimations(baseEl, opts) {
     StatusBar,
     SplashScreen,
     Keyboard,
+    FileHelperService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     {
       provide: ErrorHandler,
