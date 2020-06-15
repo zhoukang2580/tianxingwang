@@ -7,11 +7,11 @@ import { AppHelper } from "./appHelper";
 import { FileHelperService } from "./services/file-helper.service";
 
 export class AppErrorHandler implements ErrorHandler {
-  private flileService: FileHelperService = AppHelper.fileService;
   constructor(
     private logService: LogService,
     private loadingCtrl: LoadingController,
     private plt: Platform,
+    private flileService: FileHelperService
   ) { }
   async handleError(error: any) {
     try {
