@@ -86,7 +86,7 @@ App({
       })
   },
   getSign(timestamp,token,data) {
-    return md5(
+    return md5.hexMD5(
       `${typeof data=== "string" ? data : JSON.stringify(data)}${
         timestamp
       }${token}`
