@@ -3,14 +3,18 @@
     <ion-buttons slot='start'>
       <app-scan-comp [isAutoCloseScanPage]='true' (scanResult)='onScanResult($event)'></app-scan-comp>
     </ion-buttons>
-    <ion-title>欢迎您 <ng-container *ngIf='identity?.Name'>，{{identity.Name}}</ng-container>
-    </ion-title>
+    <!-- <ion-title>欢迎您 <ng-container *ngIf='identity?.Name'>，{{identity.Name}}</ng-container>
+    </ion-title> -->
     <ion-buttons slot='end'>
-      <ion-button (click)='onSetting()'  color='secondary'>设置</ion-button>
+      <ion-button (click)='onSetting()' color='secondary'>设置</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
   <!-- 扫码结果：{{scanresult}} -->
+  <div class='wrapper' *ngIf='homeUrl'>
+    <iframe [src]="homeUrl" #iframe></iframe>
+  </div>
+  <ion-button (click)='onGo()' *ngIf='isWechatMini' expand='block' class="go" color='primary'>立即体验</ion-button>
 </ion-content>

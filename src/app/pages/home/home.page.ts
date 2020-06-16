@@ -4,6 +4,11 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
 import { QrScanService } from "src/app/services/qrScan/qrscan.service";
+import { Subject } from "rxjs";
+import { DomSanitizer } from "@angular/platform-browser";
+import { CONFIG } from "src/app/config";
+import { ApiService } from "src/app/services/api/api.service";
+import { WechatHelper } from "src/app/wechatHelper";
 
 @Component({
   selector: "app-home",
@@ -13,15 +18,32 @@ import { QrScanService } from "src/app/services/qrScan/qrscan.service";
 export class HomePage implements OnInit {
   identity: IdentityEntity;
   scanresult: string;
+  homeUrl: any;
+  isWechatMini = AppHelper.isWechatMini();
   constructor(
     private identityService: IdentityService,
     private router: Router,
-    private scanService: QrScanService
+    private scanService: QrScanService,
+    private domSanitize: DomSanitizer,
+    private apiService: ApiService
   ) {}
 
   ngOnInit() {
     this.identityService.getIdentityAsync().then((identity) => {
       this.identity = identity;
+    });
+    this.homeUrl = this.domSanitize.bypassSecurityTrustResourceUrl(
+      `${AppHelper.getApiUrl()}`.replace("app.", "m.")
+    );
+  }
+  onGo() {
+    const token =
+      (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
+    const key = AppHelper.uuid();
+    const url = "/pages/login/index?key=" + key + "&token=" + token;
+    WechatHelper.wx.miniProgram.navigateTo({ url: url });
+    WechatHelper.checkStep(key, this.apiService, (val) => {
+      this.router.navigate([""]);
     });
   }
   onSetting() {

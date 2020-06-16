@@ -42,7 +42,7 @@ App({
     userInfo: null
   },
   urls:{
-    homeUrl: "http://test.ionic.testskytrip.com",
+    homeUrl: "http://test.app.testskytrip.com",
     stepUrl:"http://test.app.testskytrip.com/home/CreateStep"
   },
   setStep:function(wx,args,value){

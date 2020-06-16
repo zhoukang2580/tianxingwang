@@ -25,6 +25,7 @@ import {
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
+import { Clipboard } from "@ionic-native/clipboard/ngx";
 import {
   InAppBrowser,
   InAppBrowserObject,
@@ -35,7 +36,13 @@ import {
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"],
   animations: [flyInOut],
-  providers: [AndroidPermissions, Geolocation, InAppBrowser, CallNumber],
+  providers: [
+    AndroidPermissions,
+    Geolocation,
+    InAppBrowser,
+    CallNumber,
+    Clipboard,
+  ],
 })
 export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("mobileInput") mobileInput: IonInput;
@@ -68,7 +75,8 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     private callNumber: CallNumber,
     private androidPermissions: AndroidPermissions,
     private geolocation: Geolocation,
-    private iab: InAppBrowser
+    private iab: InAppBrowser,
+    private clipboard: Clipboard
   ) {}
   onModify() {
     this.isModify = true;
@@ -90,7 +98,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       toolbar: "yes",
       zoom: "no",
       footer: "no",
-      beforeload: "yes",// 设置后，beforeload事件才能触发
+      beforeload: "yes", // 设置后，beforeload事件才能触发
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: "#2596D9",
       navigationbuttoncolor: "#2596D9",
@@ -128,6 +136,19 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
         console.log("loadstart", evt);
         console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
         if (evt.url) {
+          if (evt.url.toLowerCase().includes("sharetrips")) {
+            this.clipboard.clear();
+            this.clipboard.copy(evt.url);
+            AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
+            // this.clipboard.paste().then(
+            //   (resolve: string) => {
+            //     alert(resolve);
+            //   },
+            //   (reject: string) => {
+            //     alert("Error: " + reject);
+            //   }
+            // );
+          }
           const m = evt.url.match(/tel:(\d+)/i);
           if (m && m.length >= 2) {
             const phoneNumber = m[1];
