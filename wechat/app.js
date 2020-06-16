@@ -39,5 +39,46 @@ App({
   },
   globalData: {
     userInfo: null
+  },
+  urls:{
+    homeUrl: "http://test.app.eskytrip.com/?AloneTag=4",
+    stepUrl:"http://test.app.eskytrip.com/home/CreateStep"
+  },
+  setStep:function(wx,args,value){
+    wx.navigateBack();
+    if(!args || !args.key || !args.token)
+    {
+      return;
+    }
+    var url=this.urls.stepUrl;
+    wx.request({
+        url: url,
+        data: {
+          Key: args.key,
+          Token:args.token,
+          Value: value
+        },
+        timeout:5000,
+        header: {},
+        method: 'GET',
+        dataType: 'json',
+        complete: (r) => {
+          // if (!r || !r.data || !r.data.Status) {
+          //   wx.showModal({
+          //     cancelColor: '',
+          //     cancelText: '',
+          //     complete: (res) => {},
+          //     confirmColor: '',
+          //     confirmText: '确认',
+          //     content: '网络超时请重试',
+          //     fail: (res) => {},
+          //     showCancel: true,
+          //     success: (result) => {},
+          //     title: '网络超时',
+          //   })
+          // }           
+      
+        }
+      })
   }
 })
