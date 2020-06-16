@@ -1,3 +1,4 @@
+import { ApiService } from './services/api/api.service';
 import { delay } from 'rxjs/operators';
 import { BehaviorSubject } from 'rxjs';
 import * as md5 from "md5";
@@ -207,27 +208,29 @@ export class WechatHelper {
     });
   }
   
-  static checkStep(key,token,callback,timeout=3000,count=0) {
+  static checkStep(key,apiService:ApiService,callback,timeout=3000,count=0) {
     if(count>30)
     {
       AppHelper.alert("操作超时,请重新操作");
       return;
     }
     setTimeout(async () => {
-      let result=await this.getMiniResult(key,token);
+      let result=await this.getMiniResult(key,apiService);
       if(result)
       {
         callback(result);
       }
       else{
-        this.checkStep(key,token,callback,1000,count++);
+        this.checkStep(key,apiService,callback,1000,count++);
       }
     }, timeout);
   }
 
-  static async getMiniResult(key,token) {
+  static async getMiniResult(key,apiService:ApiService) {
     const req = new RequestEntity();
-    req.Url = AppHelper.getApiUrl()+"/home/CheckStep?key="+key+"&token="+token;
+    var token = (apiService.apiConfig && apiService.apiConfig.Token) || "";
+    var sign=apiService.getSign(req);
+    req.Url = AppHelper.getApiUrl()+"/home/CheckStep?key="+key+"&token="+token+"&sign="+sign;
     req.Data = {};
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
@@ -237,6 +240,7 @@ export class WechatHelper {
       req.Data = JSON.stringify(req.Data);
     }
     req.Timeout=2000;
+
     const formObj = Object.keys(req)
       .map(k => `${k}=${req[k]}`)
       .join("&");

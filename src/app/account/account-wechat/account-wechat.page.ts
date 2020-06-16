@@ -61,13 +61,13 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           this.bindCode(data);
         }
       } else if (AppHelper.isWechatMini()) {
-        WechatHelper.wx.miniProgram.navigateTo({
-          url: "/pages/login/index",
-        });
         const key = AppHelper.uuid();
         const token =
           (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
-        WechatHelper.checkStep(key, token, (val) => {
+        WechatHelper.wx.miniProgram.navigateTo({
+          url: "/pages/login/index?key="+key+"&token="+token,
+        });
+        WechatHelper.checkStep(key, this.apiService, (val) => {
           try {
             const wechatMiniUser = JSON.parse(val);
             const data = {

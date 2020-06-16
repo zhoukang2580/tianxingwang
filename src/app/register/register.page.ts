@@ -81,7 +81,7 @@ export class RegisterPage implements OnInit {
       var key = AppHelper.uuid();
       const url = "/pages/login/index?key=" + key + "&token=" + token;
       WechatHelper.wx.miniProgram.navigateTo({ url: url });
-      WechatHelper.checkStep(key, token, (val) => {
+      WechatHelper.checkStep(key, this.apiService, (val) => {
         try {
           this.wechatMiniUser = JSON.parse(val);
         } catch (e) {
@@ -262,7 +262,7 @@ export class RegisterPage implements OnInit {
       url = url + "&isLogin=true";
     }
     WechatHelper.wx.miniProgram.navigateTo({ url: url });
-    WechatHelper.checkStep(key, token, (val) => {
+    WechatHelper.checkStep(key, this.apiService, (val) => {
       try {
         this.wechatMiniMobile = JSON.parse(val);
       } catch (e) {

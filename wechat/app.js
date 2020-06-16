@@ -1,3 +1,4 @@
+const md5=require("./utils/md5.js")
 //app.js
 App({
   onLaunch: function() {
@@ -50,12 +51,15 @@ App({
     {
       return;
     }
+    const timestamp = Math.floor(Date.now() / 1000);
+    const sign=this.getSign(timestamp,args.token,"");
     var url=this.urls.stepUrl;
     wx.request({
         url: url,
         data: {
           Key: args.key,
           Token:args.token,
+          Sign:sign,
           Value: value
         },
         timeout:5000,
@@ -80,5 +84,12 @@ App({
       
         }
       })
+  },
+  getSign(timestamp,token,data) {
+    return md5(
+      `${typeof data=== "string" ? data : JSON.stringify(data)}${
+        timestamp
+      }${token}`
+    );
   }
 })
