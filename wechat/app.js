@@ -42,8 +42,8 @@ App({
     userInfo: null
   },
   urls:{
-    homeUrl: "http://test.app.eskytrip.com/?AloneTag=4",
-    stepUrl:"http://test.app.eskytrip.com/home/CreateStep"
+    homeUrl: "http://test.ionic.testskytrip.com",
+    stepUrl:"http://test.app.testskytrip.com/home/CreateStep"
   },
   setStep:function(wx,args,value){
     wx.navigateBack();

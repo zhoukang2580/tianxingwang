@@ -4,7 +4,7 @@ import {
   finalize,
   debounceTime,
   distinctUntilChanged,
-  tap
+  tap,
 } from "rxjs/operators";
 import { LoginService } from "./../../services/login/login.service";
 import { Subscription, interval, of } from "rxjs";
@@ -13,25 +13,29 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { TmcService } from "./../../tmc/tmc.service";
 import { NavController, IonInput, Platform, IonItem } from "@ionic/angular";
 import { CarService } from "./../car.service";
-import { CallNumber } from '@ionic-native/call-number/ngx';
+import { CallNumber } from "@ionic-native/call-number/ngx";
 import {
   Component,
   OnInit,
   OnDestroy,
   ViewChild,
   ElementRef,
-  AfterViewInit
+  AfterViewInit,
 } from "@angular/core";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
-import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx';
+import {
+  InAppBrowser,
+  InAppBrowserObject,
+  InAppBrowserOptions,
+} from "@ionic-native/in-app-browser/ngx";
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"],
   animations: [flyInOut],
-  providers: [AndroidPermissions, Geolocation, InAppBrowser, CallNumber]
+  providers: [AndroidPermissions, Geolocation, InAppBrowser, CallNumber],
 })
 export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("mobileInput") mobileInput: IonInput;
@@ -65,7 +69,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     private androidPermissions: AndroidPermissions,
     private geolocation: Geolocation,
     private iab: InAppBrowser
-  ) { }
+  ) {}
   onModify() {
     this.isModify = true;
     this.mobile = "";
@@ -77,8 +81,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private openInAppBrowser(url: string) {
     if (this.browser) {
-      this.subscriptions.forEach(sub => sub.unsubscribe());
-      this.browser.close();
+      this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
     const color = "#2596D9";
     const options: InAppBrowserOptions = {
@@ -87,7 +90,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       toolbar: "yes",
       zoom: "no",
       footer: "no",
-      // beforeload: "yes",// 设置后，beforeload事件才能触发
+      beforeload: "yes",// 设置后，beforeload事件才能触发
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: "#2596D9",
       navigationbuttoncolor: "#2596D9",
@@ -107,58 +110,68 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     //     console.log("无法加载url");
     //   }
     // }))
-    this.subscriptions.push(this.browser.on("loaderror").subscribe(evt => {
-      console.log("loaderror");
-      console.log(evt);
-      console.log("loaderror", evt);
-      console.log("loaderror", evt.message, evt.data, evt.code, evt.url);
-      
-
-    }))
-    this.subscriptions.push(this.browser.on("loadstart").subscribe(evt => {
-      console.log("loadstart");
-      console.log(evt);
-      console.log("loadstart", evt);
-      console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
-      if (evt.url) {
-        const m = evt.url.match(/tel:(\d+)/i);
-        if (m && m.length >= 2) {
-          const phoneNumber = m[1];
-          console.log("phoneNumber" + phoneNumber);
-          if (phoneNumber) {
-            // window.location.href=`tel:${phoneNumber}`;
-            this.callNumber.callNumber(phoneNumber, true)
-              .then(res => console.log('Launched dialer!', res))
-              .catch(err => console.log('Error launching dialer', err));
+    this.subscriptions.push(
+      this.browser.on("loaderror").subscribe((evt) => {
+        console.log("loaderror");
+        console.log(evt);
+        console.log("loaderror", evt);
+        console.log("loaderror", evt.message, evt.data, evt.code, evt.url);
+      })
+    );
+    this.subscriptions.push(
+      this.browser.on("loadstart").subscribe((evt) => {
+        if (this.browser) {
+          this.browser.show();
+        }
+        console.log("loadstart");
+        console.log(evt);
+        console.log("loadstart", evt);
+        console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
+        if (evt.url) {
+          const m = evt.url.match(/tel:(\d+)/i);
+          if (m && m.length >= 2) {
+            const phoneNumber = m[1];
+            console.log("phoneNumber" + phoneNumber);
+            if (phoneNumber) {
+              // window.location.href=`tel:${phoneNumber}`;
+              this.callNumber
+                .callNumber(phoneNumber, true)
+                .then((res) => console.log("Launched dialer!", res))
+                .catch((err) => console.log("Error launching dialer", err));
+            }
           }
         }
-      }
-    }))
-    this.subscriptions.push(this.browser.on("loadstop").subscribe(evt => {
-      console.log("loadstop");
-      console.log(evt);
-      console.log("loadstop", evt);
-      console.log("loadstop", evt.message, evt.data, evt.code, evt.url);
-    }))
-    this.subscriptions.push(this.browser.on("message").subscribe(evt => {
-      console.log("message");
-      console.log(evt);
-      console.log("message", evt);
-      console.log("message", evt.message, evt.data, evt.code, evt.url);
-    }))
+      })
+    );
+    this.subscriptions.push(
+      this.browser.on("loadstop").subscribe((evt) => {
+        console.log("loadstop");
+        console.log(evt);
+        console.log("loadstop", evt);
+        console.log("loadstop", evt.message, evt.data, evt.code, evt.url);
+      })
+    );
+    this.subscriptions.push(
+      this.browser.on("message").subscribe((evt) => {
+        console.log("message");
+        console.log(evt);
+        console.log("message", evt);
+        console.log("message", evt.message, evt.data, evt.code, evt.url);
+      })
+    );
     const sub = this.browser.on("exit").subscribe(() => {
       setTimeout(() => {
         if (sub) {
           sub.unsubscribe();
         }
         if (this.browser) {
-          this.browser.hide();
+          this.browser.close();
         }
       }, 100);
     });
   }
   onOpenTest() {
-    const url = 'https://open.es.xiaojukeji.com/webapp/feESWebappLogin/index';
+    const url = "https://open.es.xiaojukeji.com/webapp/feESWebappLogin/index";
     // this.router.navigate(["open-url"], {
     //   queryParams: {
     //     url,
@@ -169,7 +182,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     // });
     this.openInAppBrowser(url);
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
   private setTop() {
     if (this.isSetTop) {
       return;
@@ -200,14 +213,14 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     if (mobile) {
-      this.carService.checkIfMobileIsVerified(mobile).then(res => {
+      this.carService.checkIfMobileIsVerified(mobile).then((res) => {
         this.isMobileVerified = res;
       });
     }
   }
   private startCountDonw(count: number) {
     this.countDown = count;
-    const intervalSubscribtion = interval(1000).subscribe(v => {
+    const intervalSubscribtion = interval(1000).subscribe((v) => {
       this.countDown--;
       if (this.countDown <= 0) {
         this.countDown = 0;
@@ -228,11 +241,11 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     this.searchMobiles = [];
     this.inputMobuleSubscription = of(this.mobile)
       .pipe(debounceTime(240), distinctUntilChanged())
-      .subscribe(_ => {
+      .subscribe((_) => {
         if (this.verifiedMobiles && this.verifiedMobiles.length) {
-          const one = this.verifiedMobiles.find(it => it == this.mobile);
+          const one = this.verifiedMobiles.find((it) => it == this.mobile);
           if (!one) {
-            this.searchMobiles = this.verifiedMobiles.filter(it =>
+            this.searchMobiles = this.verifiedMobiles.filter((it) =>
               it.includes(this.mobile)
             );
           } else {
@@ -253,18 +266,18 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
           .checkPermission(
             this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
           )
-          .then(r => r.hasPermission)
+          .then((r) => r.hasPermission)
           .catch(() => false)) ||
         (await this.androidPermissions
           .checkPermission(
             this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION
           )
-          .then(r => r.hasPermission)
+          .then((r) => r.hasPermission)
           .catch(() => false));
       if (!ok) {
         await this.androidPermissions.requestPermissions([
           this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION,
-          this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION
+          this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION,
         ]);
       }
       // AppHelper.alert((geo && geo.coords) || "无定位信息");
@@ -282,13 +295,13 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     this.senSmsCodeSubscription = this.carService
       .validateMobileCode(this.mobile, this.verifySmsCode)
       .subscribe(
-        res => {
+        (res) => {
           this.isMobileVerified = res.Status;
           if (res.Message) {
             AppHelper.alert(res.Message);
           }
         },
-        e => {
+        (e) => {
           this.isMobileVerified = false;
           AppHelper.alert(e.Message || e.message || "验证码验证失败");
         }
@@ -313,7 +326,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
         })
       )
       .subscribe(
-        r => {
+        (r) => {
           if (!r.Status && r.Message) {
             AppHelper.alert(r.Message);
             return;
@@ -323,7 +336,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
           }
           this.message = r.Message;
         },
-        e => {
+        (e) => {
           this.message =
             e instanceof Error ? e.message : typeof e === "string" ? e : e;
         }
@@ -355,7 +368,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
             () => {
               this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);
             },
-            error => {
+            (error) => {
               if (error.code) {
                 //          0  :  不包括其他错误编号中的错误
                 // ​		     1  :  用户拒绝浏览器获取位置信息
@@ -374,7 +387,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
             {
               enableHighAccuracy: false,
               maximumAge: 1000 * 60,
-              timeout: 5 * 1000
+              timeout: 5 * 1000,
             }
           );
         } else {
@@ -387,12 +400,12 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.unsubscribe();
   }
   private initLocalMobiles() {
-    this.carService.getLocalMobiles().then(res => {
+    this.carService.getLocalMobiles().then((res) => {
       this.verifiedMobiles = Object.keys(res) || [];
     });
   }
   ngOnInit() {
-    this.subscription = this.route.queryParamMap.subscribe(p => {
+    this.subscription = this.route.queryParamMap.subscribe((p) => {
       this.initLocalMobiles();
       this.getAccountInfo();
     });
@@ -403,7 +416,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   private async getAccountInfo() {
     const info = await this.carService
       .getAccountInfo()
-      .catch(_ => ({ Mobile: "" }));
+      .catch((_) => ({ Mobile: "" }));
     this.fetching = "";
     if (info) {
       this.defaultMobile = info.Mobile;

@@ -1,6 +1,6 @@
-import { ApiService } from './services/api/api.service';
-import { delay } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
+import { ApiService } from "./services/api/api.service";
+import { delay } from "rxjs/operators";
+import { BehaviorSubject } from "rxjs";
 import * as md5 from "md5";
 import { LanguageHelper } from "./languageHelper";
 import { AppHelper } from "./appHelper";
@@ -49,7 +49,7 @@ const jsApiList = [
   "openProductSpecificView",
   "addCard",
   "chooseCard",
-  "openCard"
+  "openCard",
 ];
 export class WechatHelper {
   private static isFirstTime = true;
@@ -77,7 +77,7 @@ export class WechatHelper {
   }
   static async getJssdk() {
     if (!this.jssdkUrlConfig) {
-      const jssdkInfo = await this.requestJssdk().catch(_ => null);
+      const jssdkInfo = await this.requestJssdk().catch((_) => null);
       console.log("接口获取 jssdkInfo", jssdkInfo);
       if (jssdkInfo) {
         this.jssdkUrlConfig = jssdkInfo;
@@ -97,14 +97,20 @@ export class WechatHelper {
   }
   static requestJssdk() {
     const req = new RequestEntity();
-    if (window.navigator.userAgent.indexOf('iPhone') == -1 && window.navigator.userAgent.indexOf('miniProgram') == -1) {
+    if (
+      window.navigator.userAgent.indexOf("iPhone") == -1 &&
+      window.navigator.userAgent.indexOf("miniProgram") == -1
+    ) {
       this.LaunchUrl = window.location.href;
     }
-    let pageUrl = this.LaunchUrl.indexOf("#") > -1 ? this.LaunchUrl.substring(0, this.LaunchUrl.indexOf("#")) : this.LaunchUrl;
+    let pageUrl =
+      this.LaunchUrl.indexOf("#") > -1
+        ? this.LaunchUrl.substring(0, this.LaunchUrl.indexOf("#"))
+        : this.LaunchUrl;
     pageUrl = window.btoa(pageUrl);
     req.Method = "ApiPasswordUrl-wechat-jssdk";
     req.Data = {
-      Url: pageUrl
+      Url: pageUrl,
     };
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
@@ -114,7 +120,7 @@ export class WechatHelper {
       req.Data = JSON.stringify(req.Data);
     }
     const formObj = Object.keys(req)
-      .map(k => `${k}=${req[k]}`)
+      .map((k) => `${k}=${req[k]}`)
       .join("&");
     const url =
       req.Url ||
@@ -123,7 +129,7 @@ export class WechatHelper {
       AppHelper.httpClient
         .post(url, formObj, {
           headers: { "content-type": "application/x-www-form-urlencoded" },
-          observe: "body"
+          observe: "body",
         })
         .subscribe((r: any) => {
           if (!r.Status || !r.Data) {
@@ -133,7 +139,7 @@ export class WechatHelper {
         });
     });
   }
- 
+
   static async ready() {
     console.log("window.location.href ", window.location.href);
     if (!this.wx) {
@@ -141,7 +147,7 @@ export class WechatHelper {
       return Promise.reject(LanguageHelper.getJSSDKNotExistsTip());
     }
     let err;
-    const info = await this.getJssdk().catch(_ => {
+    const info = await this.getJssdk().catch((_) => {
       err = _;
       this.jssdkUrlConfig = null;
       return null;
@@ -151,14 +157,14 @@ export class WechatHelper {
       console.log("接口请求错误");
       return Promise.reject(err || "获取jssdk 失败");
     }
-    return new Promise<boolean>(resove => {
+    return new Promise<boolean>((resove) => {
       this.wx.config({
         debug: false && !environment.production, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
         appId: info.appid, // 必填，公众号的唯一标识
         timestamp: info.timestamp, // 必填，生成签名的时间戳
         nonceStr: info.noncestr, // 必填，生成签名的随机串
         signature: info.signature, // 必填，签名
-        jsApiList: jsApiList // 必填，需要使用的JS接口列表
+        jsApiList: jsApiList, // 必填，需要使用的JS接口列表
       });
       // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，
       // config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，
@@ -177,9 +183,9 @@ export class WechatHelper {
         //   }
         // } else {
         // }
-        WechatHelper.isReadyFinishSource.next(true)
+        WechatHelper.isReadyFinishSource.next(true);
       });
-      this.wx.error(err => {
+      this.wx.error((err) => {
         // config信息验证失败会执行error函数，如签名过期导致验证失败，
         // 具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
         resove(false);
@@ -194,43 +200,45 @@ export class WechatHelper {
       WechatHelper.wx.scanQRCode({
         needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
         scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
-        success: res => {
+        success: (res) => {
           resolve(res.resultStr);
           return false;
         },
-        fail: err => {
+        fail: (err) => {
           // AppHelper.alert(err);
           console.error(err);
           reject(err);
           return false;
-        }
+        },
       });
     });
   }
-  
-  static checkStep(key,apiService:ApiService,callback,timeout=3000,count=0) {
-    if(count>30)
-    {
+
+  static checkStep(
+    key,
+    apiService: ApiService,
+    callback,
+    timeout = 3000,
+    count = 0
+  ) {
+    if (count > 30) {
       AppHelper.alert("操作超时,请重新操作");
       return;
     }
     setTimeout(async () => {
-      let result=await this.getMiniResult(key,apiService);
-      if(result)
-      {
+      let result = await this.getMiniResult(key, apiService);
+      if (result) {
         callback(result);
-      }
-      else{
-        this.checkStep(key,apiService,callback,1000,count++);
+      } else {
+        this.checkStep(key, apiService, callback, 1000, count++);
       }
     }, timeout);
   }
 
-  static async getMiniResult(key,apiService:ApiService) {
+  static async getMiniResult(key, apiService: ApiService) {
     const req = new RequestEntity();
     var token = (apiService.apiConfig && apiService.apiConfig.Token) || "";
-    var sign=apiService.getSign(req);
-    req.Url = AppHelper.getApiUrl()+"/home/CheckStep?key="+key+"&token="+token+"&sign="+sign;
+    console.log("token " + token, "key=" + key);
     req.Data = {};
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
@@ -239,25 +247,37 @@ export class WechatHelper {
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
-    req.Timeout=2000;
-
+    req.Token=token;
+    req.Timeout = 2000;
+    var sign = apiService.getSign(req);
+    req.Url =
+      AppHelper.getApiUrl() +
+      "/home/CheckStep?key=" +
+      key +
+      "&token=" +
+      token +
+      "&sign=" +
+      sign;
     const formObj = Object.keys(req)
-      .map(k => `${k}=${req[k]}`)
+      .map((k) => `${k}=${req[k]}`)
       .join("&");
     return new Promise<any>((resolve, reject) => {
       AppHelper.httpClient
         .post(req.Url, formObj, {
           headers: { "content-type": "application/x-www-form-urlencoded" },
-          observe: "body"
+          observe: "body",
         })
-        .subscribe((r: any) => {
-          if (!r.Status) {
+        .subscribe(
+          (r: any) => {
+            if (!r.Status) {
+              return resolve(null);
+            }
+            resolve(r.Data);
+          },
+          (err) => {
             return resolve(null);
           }
-          resolve(r.Data);
-        },err=>{
-          return resolve(null);
-        });
+        );
     });
   }
 }
