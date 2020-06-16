@@ -13,6 +13,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { TmcService } from "./../../tmc/tmc.service";
 import { NavController, IonInput, Platform, IonItem } from "@ionic/angular";
 import { CarService } from "./../car.service";
+import { CallNumber } from '@ionic-native/call-number/ngx';
 import {
   Component,
   OnInit,
@@ -24,18 +25,21 @@ import {
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
+import { InAppBrowser, InAppBrowserObject, InAppBrowserOptions } from '@ionic-native/in-app-browser/ngx';
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"],
   animations: [flyInOut],
-  providers: [AndroidPermissions, Geolocation]
+  providers: [AndroidPermissions, Geolocation, InAppBrowser, CallNumber]
 })
 export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("mobileInput") mobileInput: IonInput;
   private subscription = Subscription.EMPTY;
   private senSmsCodeSubscription = Subscription.EMPTY;
   private inputMobuleSubscription = Subscription.EMPTY;
+  private subscriptions: Subscription[] = [];
+  private browser: InAppBrowserObject;
   private defaultMobile = "";
   private verifiedMobiles: string[];
   private isSetTop = false;
@@ -57,9 +61,11 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private plt: Platform,
+    private callNumber: CallNumber,
     private androidPermissions: AndroidPermissions,
-    private geolocation: Geolocation
-  ) {}
+    private geolocation: Geolocation,
+    private iab: InAppBrowser
+  ) { }
   onModify() {
     this.isModify = true;
     this.mobile = "";
@@ -69,7 +75,101 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       }, 200);
     }
   }
-  ngAfterViewInit() {}
+  private openInAppBrowser(url: string) {
+    if (this.browser) {
+      this.subscriptions.forEach(sub => sub.unsubscribe());
+      this.browser.close();
+    }
+    const color = "#2596D9";
+    const options: InAppBrowserOptions = {
+      usewkwebview: "yes",
+      location: "no",
+      toolbar: "yes",
+      zoom: "no",
+      footer: "no",
+      // beforeload: "yes",// 设置后，beforeload事件才能触发
+      closebuttoncaption: "关闭(CLOSE)",
+      closebuttoncolor: "#2596D9",
+      navigationbuttoncolor: "#2596D9",
+      // toolbarcolor:"#2596D90f"
+    };
+    url = `http://test.version.testskytrip.com/download/test.html`;
+    this.browser = this.iab.create(encodeURI(url), "_blank", options);
+    // this.subscriptions.push(this.browser.on("beforeload").subscribe((evt,callback)=>{
+    //   console.log("beforeload");
+    //   console.log(evt);
+    //   console.log("beforeload",evt);
+    //   console.log("beforeload",evt.message,evt.data,evt.code,evt.url);
+    //   if(evt.url){
+    //     // Load this URL in the inAppBrowser.
+    //     callback(evt.url);
+    //   }else{
+    //     console.log("无法加载url");
+    //   }
+    // }))
+    this.subscriptions.push(this.browser.on("loaderror").subscribe(evt => {
+      console.log("loaderror");
+      console.log(evt);
+      console.log("loaderror", evt);
+      console.log("loaderror", evt.message, evt.data, evt.code, evt.url);
+      
+
+    }))
+    this.subscriptions.push(this.browser.on("loadstart").subscribe(evt => {
+      console.log("loadstart");
+      console.log(evt);
+      console.log("loadstart", evt);
+      console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
+      if (evt.url) {
+        const m = evt.url.match(/tel:(\d+)/i);
+        if (m && m.length >= 2) {
+          const phoneNumber = m[1];
+          console.log("phoneNumber" + phoneNumber);
+          if (phoneNumber) {
+            // window.location.href=`tel:${phoneNumber}`;
+            this.callNumber.callNumber(phoneNumber, true)
+              .then(res => console.log('Launched dialer!', res))
+              .catch(err => console.log('Error launching dialer', err));
+          }
+        }
+      }
+    }))
+    this.subscriptions.push(this.browser.on("loadstop").subscribe(evt => {
+      console.log("loadstop");
+      console.log(evt);
+      console.log("loadstop", evt);
+      console.log("loadstop", evt.message, evt.data, evt.code, evt.url);
+    }))
+    this.subscriptions.push(this.browser.on("message").subscribe(evt => {
+      console.log("message");
+      console.log(evt);
+      console.log("message", evt);
+      console.log("message", evt.message, evt.data, evt.code, evt.url);
+    }))
+    const sub = this.browser.on("exit").subscribe(() => {
+      setTimeout(() => {
+        if (sub) {
+          sub.unsubscribe();
+        }
+        if (this.browser) {
+          this.browser.hide();
+        }
+      }, 100);
+    });
+  }
+  onOpenTest() {
+    const url = 'https://open.es.xiaojukeji.com/webapp/feESWebappLogin/index';
+    // this.router.navigate(["open-url"], {
+    //   queryParams: {
+    //     url,
+    //     title: "用车",
+    //     isOpenInAppBrowser: AppHelper.isApp(),
+    //     isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
+    //   }
+    // });
+    this.openInAppBrowser(url);
+  }
+  ngAfterViewInit() { }
   private setTop() {
     if (this.isSetTop) {
       return;
@@ -95,7 +195,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private checkIfMobileVerified(mobile: string) {
     this.validateMobile(mobile);
-    if(mobile==this.defaultMobile){
+    if (mobile == this.defaultMobile) {
       this.isMobileVerified = mobile == this.defaultMobile;
       return;
     }
@@ -239,14 +339,15 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     if (url) {
       if (AppHelper.isApp()) {
         await this.checkPermission();
-        this.router.navigate(["open-url"], {
-          queryParams: {
-            url,
-            title: "用车",
-            isOpenInAppBrowser: AppHelper.isApp(),
-            isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
-          }
-        });
+        // this.router.navigate(["open-url"], {
+        //   queryParams: {
+        //     url,
+        //     title: "用车",
+        //     isOpenInAppBrowser: AppHelper.isApp(),
+        //     isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
+        //   }
+        // });
+        this.openInAppBrowser(url);
       } else {
         this.carService.setOpenUrlSource(url);
         if (window.navigator.geolocation) {
