@@ -8,11 +8,12 @@ import { NavController } from "@ionic/angular";
 import { Router } from "@angular/router";
 import { LanguageHelper } from "src/app/languageHelper";
 import { LoginService } from "../services/login/login.service";
+import { WechatHelper } from "../wechatHelper";
 
 @Component({
   selector: "app-register",
   templateUrl: "./register.page.html",
-  styleUrls: ["./register.page.scss"]
+  styleUrls: ["./register.page.scss"],
 })
 export class RegisterPage implements OnInit {
   isMobileNumberOk = false;
@@ -25,6 +26,10 @@ export class RegisterPage implements OnInit {
   mobileChangeSubscription = Subscription.EMPTY;
   mobileNewPasswordSubscription = Subscription.EMPTY;
   mobileSurePasswordSubscription = Subscription.EMPTY;
+  wechatMiniUser: any;
+  wechatMiniMobile: any;
+  isWechatMini: boolean;
+  isGetWechatMiniMobile: boolean;
   constructor(
     private apiService: ApiService,
     private loginService: LoginService,
@@ -38,7 +43,7 @@ export class RegisterPage implements OnInit {
       MobileCode: [null], // 手机验证码
       Mobile: [null], // 手机号
       Password: [null],
-      SurePassword: [null]
+      SurePassword: [null],
     });
     this.codeSubscription = this.form.controls["Mobile"].valueChanges.subscribe(
       (m: string) => {
@@ -69,6 +74,21 @@ export class RegisterPage implements OnInit {
         this.form.value.Password &&
         this.form.value.SurePassword;
     });
+    if (AppHelper.isWechatMini()) {
+      this.isWechatMini = true;
+      var token =
+        (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
+      var key = AppHelper.uuid();
+      const url = "/pages/login/index?key=" + key + "&token=" + token;
+      WechatHelper.wx.miniProgram.navigateTo({ url: url });
+      WechatHelper.checkStep(key, token, (val) => {
+        try {
+          this.wechatMiniUser = JSON.parse(val);
+        } catch (e) {
+          this.wechatMiniUser = null;
+        }
+      });
+    }
   }
   showImageCode(type: string) {
     this.isShowImageCode = true;
@@ -90,14 +110,14 @@ export class RegisterPage implements OnInit {
         ExpiredInterval?: number;
       }>(req)
       .subscribe(
-        res => {
+        (res) => {
           if (!res.Status && res.Message) {
             AppHelper.alert(res.Message);
             return;
           }
           this.startCountDonw(res.Data.SendInterval);
         },
-        e => {
+        (e) => {
           AppHelper.alert(e);
         },
         () => {
@@ -111,7 +131,7 @@ export class RegisterPage implements OnInit {
   }
   register() {
     if (this.form.value.Password !== this.form.value.SurePassword) {
-      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip());
+      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip);
       return;
     }
     const req = new RequestEntity();
@@ -121,26 +141,50 @@ export class RegisterPage implements OnInit {
       Mobile: this.form.value.Mobile,
       MobileCode: this.form.value.MobileCode,
       Password: this.form.value.Password,
-      SurePassword: this.form.value.SurePassword
+      SurePassword: this.form.value.SurePassword,
     };
+    if (this.wechatMiniUser) {
+      req.Data.WechatMiniCode = this.wechatMiniUser.wechatminicode;
+      req.Data.Nickname = this.wechatMiniUser.nickName;
+      req.Data.Gender = this.wechatMiniUser.gender;
+      req.Data.Province = this.wechatMiniUser.province;
+      req.Data.City = this.wechatMiniUser.city;
+      req.Data.Country = this.wechatMiniUser.country;
+      req.Data.HeadUrl = this.wechatMiniUser.avatarUrl;
+    }
+    if (this.wechatMiniMobile) {
+      req.Data.RegisterType = "WechatMiniMobile";
+      req.Data.WechatMiniEncryptedData = this.wechatMiniMobile.encryptedData;
+      req.Data.WechatMiniEncryptedIv = this.wechatMiniMobile.iv;
+      if (this.wechatMiniMobile.wechatminicode) {
+        req.Data.WechatMiniCode = this.wechatMiniMobile.wechatminicode;
+      }
+    }
+    req.Data.AloneTag =  AppHelper.getQueryParamers()["AloneTag"];
+  
+    this.isCodeOk = true;
     const sub = this.apiService
       .getResponse<{
-        SendInterval: number;
-        ExpiredInterval: number;
+        Mobile: string;
       }>(req)
       .subscribe(
-        res => {
+        (res) => {
           if (res.Status) {
+            this.isCodeOk = true;
             if (AppHelper.isApp()) {
               this.bindDevice();
             }
+            if (res.Data && res.Data.Mobile) {
+              this.form.patchValue({ Mobile: res.Data.Mobile });
+            }
             this.login();
           } else if (!res.Status && res.Message) {
+            this.isCodeOk = false;
             AppHelper.alert(res.Message);
             return;
           }
         },
-        e => {},
+        (e) => {},
         () => {
           sub.unsubscribe();
         }
@@ -151,20 +195,19 @@ export class RegisterPage implements OnInit {
     loginEntity.Data = {};
     loginEntity.Data.Name = this.form.value.Mobile;
     loginEntity.Data.Password = this.form.value.Password;
+    loginEntity.Data.AloneTag =  AppHelper.getQueryParamers()["AloneTag"];
     var sub = this.loginService
       .login("ApiLoginUrl-Home-Login", loginEntity)
       .subscribe(
-        r => {
+        (r) => {
           if (!r.Ticket) {
-            AppHelper.setStorage("loginname", loginEntity.Data.Name);
-            this.router.navigate([AppHelper.getRoutePath("login")]);
           } else {
             AppHelper.setStorage("loginname", loginEntity.Data.Name);
-            this.router.navigate([AppHelper.getRoutePath("home")]);
+            this.router.navigate([AppHelper.getRoutePath("")]);
           }
         },
-        e => {
-          this.back();
+        (e) => {
+          this.navController.back();
           AppHelper.alert(e);
           sub.unsubscribe();
         },
@@ -173,19 +216,16 @@ export class RegisterPage implements OnInit {
         }
       );
   }
-  back() {
-    this.navController.back();
-  }
   async bindDevice() {
-    var uuid = await AppHelper.getDeviceId();
-    var name = await AppHelper.getDeviceName();
+    let uuid = await AppHelper.getDeviceId();
+    let name = await AppHelper.getDeviceName();
     const req = new RequestEntity();
     req.Method = "ApiPasswordUrl-Device-Bind";
     req.Data = {
       Mobile: this.form.value.Mobile,
       MobileCode: this.form.value.MobileCode,
       DeviceNumber: uuid,
-      DeviceName: name
+      DeviceName: name,
     };
     const sub = this.apiService
       .getResponse<{
@@ -193,8 +233,8 @@ export class RegisterPage implements OnInit {
         ExpiredInterval: number;
       }>(req)
       .subscribe(
-        res => {},
-        e => {},
+        (res) => {},
+        (e) => {},
         () => {
           sub.unsubscribe();
         }
@@ -213,7 +253,24 @@ export class RegisterPage implements OnInit {
       }
     }, 1000);
   }
-
+  getWechatMiniMobile() {
+    let token =
+      (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
+    let key = AppHelper.uuid();
+    let url = "/pages/phonenumber/index?key=" + key + "&token=" + token;
+    if (!this.wechatMiniUser) {
+      url = url + "&isLogin=true";
+    }
+    WechatHelper.wx.miniProgram.navigateTo({ url: url });
+    WechatHelper.checkStep(key, token, (val) => {
+      try {
+        this.wechatMiniMobile = JSON.parse(val);
+      } catch (e) {
+        this.wechatMiniMobile = null;
+      }
+    });
+    this.isGetWechatMiniMobile = true;
+  }
   ngOnDestroy() {
     this.codeSubscription.unsubscribe();
     this.mobileChangeSubscription.unsubscribe();
