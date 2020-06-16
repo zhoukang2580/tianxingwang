@@ -1,7 +1,11 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/share/index",
     "pages/login/index",
+    "pages/location/index",
+    "pages/phonenumber/index",
+    "pages/address/index",
     "pages/pay/index",
     "pages/map/map",
     "pages/logs/logs"

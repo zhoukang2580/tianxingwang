@@ -1,13 +1,6 @@
 <!--index.wxml-->
-<view wx:if="{{showAuthorization}}" class="container">
-<image src='Logodm.png'></image>
-<button  open-type="getUserInfo" lang="zh_CN"   class="login"  bindgetuserinfo="onLogin">授权应用</button>
-<navigator open-type="exit" target="miniProgram" >
-<button class="cancel">取消授权</button>
-</navigator>
-</view>
 
-
-<view wx:if="{{!showAuthorization}}">
-  <web-view src="{{url}}"></web-view>
+<view>
+ <web-view src="{{url}}"></web-view>
 </view>
+ 

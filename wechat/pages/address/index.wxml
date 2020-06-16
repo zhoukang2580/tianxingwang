@@ -1,0 +1,5 @@
+<!--index.wxml-->
+<view class="wrapper">
+<button class="auth-button" type='primary' wx:if="{{isOpenSetting}}" open-type="openSetting" bindopensetting='onOpenSetting'>授权获取收货地址</button>
+<button lang="zh_CN" class="cancel" type='default' wx:if="{{isShowCancel||isOpenSetting}}" bindtap="onCancel">取消</button>
+</view>

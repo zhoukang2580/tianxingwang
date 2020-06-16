@@ -1,0 +1,5 @@
+<!-- <button class="button" type='primary' wx:if="{{!isOpenSetting}}" bindtap='onUserCurPos'>使用当前位置</button> -->
+<view class="wrapper">
+<button class="auth-button" type='primary' open-type='getPhoneNumber'  bindgetphonenumber='onGetPhoneNumber'>授权获取手机号</button>
+<button lang="zh_CN" type='default'  class="cancel"  wx:if="{{isShowCancel||isOpenSetting}}" bindtap="onCancel">取消</button>
+</view>

@@ -901,7 +901,7 @@ export class FileHelperService {
     });
     this.logMessage(`checkAppUpdate ${new Date().toLocaleString()}`, up);
     this.localVersion = await this.getInstallAppVersionNumber();
-    if (!up || !up.Version || !up.DownloadUrl) {
+    if (!up || !up.Version || !up.DownloadUrl||!up.EnabledAppUpdate) {
       this.logMessage(
         `checkAppUpdate 服务器没有最新文件或者DownloadUrl错误`,
         up
