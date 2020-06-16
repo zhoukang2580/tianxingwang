@@ -60,6 +60,7 @@ App({
           Key: args.key,
           Token:args.token,
           Sign:sign,
+          Timestamp:timestamp,
           Value: value
         },
         timeout:5000,
