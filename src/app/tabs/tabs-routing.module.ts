@@ -17,7 +17,7 @@ const routes: Routes = [
     children: [
       {
         path: "",
-        redirectTo: isWechatMini ? "home" : "/tabs/tmc-home",
+        redirectTo: "/tabs/tmc-home",
         pathMatch: "full",
       },
       {
@@ -54,7 +54,7 @@ const routes: Routes = [
   },
   {
     path: "",
-    redirectTo: isWechatMini ? "home" : "/tabs/tmc-home",
+    redirectTo: "/tabs/tmc-home",
     pathMatch: "full",
   },
 ];
