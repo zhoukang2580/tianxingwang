@@ -62,10 +62,21 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         }
       } else if (AppHelper.isWechatMini()) {
         WechatHelper.wx.miniProgram.navigateTo({
-          url:
-            "/pages/login/index?ticket=" +
-            AppHelper.getTicket() +
-            "&path=account-wechat&IsForbidOpenId=true",
+          url: "/pages/login/index",
+        });
+        const key = AppHelper.uuid();
+        const token =
+          (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
+        WechatHelper.checkStep(key, token, (val) => {
+          try {
+            const wechatMiniUser = JSON.parse(val);
+            const data = {
+              Code: wechatMiniUser.wechatminicode,
+              NickName: wechatMiniUser.nickName,
+              SdkType: "Mini",
+            };
+            this.bindCode(data);
+          } catch (e) {}
         });
       } else if (AppHelper.isWechatH5()) {
         const url =
