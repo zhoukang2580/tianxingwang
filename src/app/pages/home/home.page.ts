@@ -37,14 +37,14 @@ export class HomePage implements OnInit {
     );
   }
   onGo() {
-    const token =
-      (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
-    const key = AppHelper.uuid();
-    const url = "/pages/login/index?key=" + key + "&token=" + token;
-    WechatHelper.wx.miniProgram.navigateTo({ url: url });
-    WechatHelper.checkStep(key, this.apiService, (val) => {
-      this.router.navigate([""]);
-    });
+    this.router.navigate([""]);
+    // const token =
+    //   (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
+    // const key = AppHelper.uuid();
+    // const url = "/pages/login/index?key=" + key + "&token=" + token;
+    // WechatHelper.wx.miniProgram.navigateTo({ url: url });
+    // WechatHelper.checkStep(key, this.apiService, (val) => {
+    // });
   }
   onSetting() {
     this.router.navigate(["account-setting"]);
