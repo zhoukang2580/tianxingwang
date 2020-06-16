@@ -14,8 +14,7 @@ try {
   AppHelper.initlizeQueryParamers();
   processPath();
   console.log("url,locationurl", window.location.href);
-  if (true||
-    window["VConsole"] &&
+  if ( window["VConsole"] &&
     (AppHelper.isApp() || AppHelper.isWechatH5()) &&
     (location.href.toLowerCase().includes("test") || environment.mockProBuild)
   ) {

@@ -93,7 +93,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       navigationbuttoncolor: "#2596D9",
       // toolbarcolor:"#2596D90f"
     };
-    url = `http://test.version.testskytrip.com/download/test.html`;
+    // url = `http://test.version.testskytrip.com/download/test.html`;
     this.browser = this.iab.create(encodeURI(url), "_blank", options);
     // this.subscriptions.push(this.browser.on("beforeload").subscribe((evt,callback)=>{
     //   console.log("beforeload");
