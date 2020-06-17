@@ -37,11 +37,11 @@ export class HomePage implements OnInit {
     });
     setTimeout(() => {
       this.route.queryParamMap.subscribe((q) => {
+        console.log("identity ",this.identity);
         if (
           AppHelper.isWechatMini() &&
           this.identity &&
-          this.identity.Ticket &&
-          this.identity.Id
+          this.identity.Ticket
         ) {
           this.goHome();
           return;
@@ -49,7 +49,7 @@ export class HomePage implements OnInit {
       });
     }, 0);
     this.homeUrl = this.domSanitize.bypassSecurityTrustResourceUrl(
-      `m.${AppHelper._appDomain}`
+      `${AppHelper.getApiUrl()}`.replace("app.", "m.")
     );
   }
   onGo() {

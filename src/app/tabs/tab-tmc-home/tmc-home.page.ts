@@ -94,13 +94,6 @@ export class TmcHomePage implements OnInit, OnDestroy {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.queryParamMap.subscribe(async (p) => {
-      if (
-        AppHelper.isWechatMini() &&
-        (!this.identity || !this.identity.Ticket || !this.identity.Id)
-      ) {
-        this.router.navigate(["home"]);
-        return;
-      }
       this.clearBookInfos();
       this.check();
       this.canSelectCompany$ = from(this.staffService.isSelfBookType()).pipe(
