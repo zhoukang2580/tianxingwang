@@ -89,6 +89,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private openInAppBrowser(url: string) {
     if (this.browser) {
+      this.browser.close();
       this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
     const color = "#2596D9";
@@ -128,9 +129,9 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     );
     this.subscriptions.push(
       this.browser.on("loadstart").subscribe((evt) => {
-        if (this.browser) {
-          this.browser.show();
-        }
+        // if (this.browser) {
+        //   this.browser.show();
+        // }
         console.log("loadstart");
         console.log(evt);
         console.log("loadstart", evt);
