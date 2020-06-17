@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { AppHelper } from "src/app/appHelper";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { QrScanService } from "src/app/services/qrScan/qrscan.service";
 import { Subject } from "rxjs";
 import { DomSanitizer } from "@angular/platform-browser";
@@ -25,19 +25,35 @@ export class HomePage implements OnInit {
     private router: Router,
     private scanService: QrScanService,
     private domSanitize: DomSanitizer,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private route: ActivatedRoute
   ) {}
-
+  private goHome() {
+    this.router.navigate(["tabs/tmc-home"]);
+  }
   ngOnInit() {
     this.identityService.getIdentityAsync().then((identity) => {
       this.identity = identity;
     });
+    setTimeout(() => {
+      this.route.queryParamMap.subscribe((q) => {
+        if (
+          AppHelper.isWechatMini() &&
+          this.identity &&
+          this.identity.Ticket &&
+          this.identity.Id
+        ) {
+          this.goHome();
+          return;
+        }
+      });
+    }, 0);
     this.homeUrl = this.domSanitize.bypassSecurityTrustResourceUrl(
-      `${AppHelper.getApiUrl()}`.replace("app.", "m.")
+      `m.${AppHelper._appDomain}`
     );
   }
   onGo() {
-    this.router.navigate([""]);
+    this.router.navigate(["tabs/tmc-home"]);
     // const token =
     //   (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
     // const key = AppHelper.uuid();
