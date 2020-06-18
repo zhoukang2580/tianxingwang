@@ -5,9 +5,10 @@ import { Injectable } from "@angular/core";
 import { ApiService } from "../api/api.service";
 import { of, throwError } from "rxjs";
 import { finalize } from "rxjs/operators";
+import { IdentityEntity } from "../identity/identity.entity";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class ImageRecoverService {
   Failover: any;
@@ -17,7 +18,7 @@ export class ImageRecoverService {
     private apiService: ApiService,
     private identityService: IdentityService
   ) {
-    identityService.getIdentitySource().subscribe(identity => {
+    identityService.getIdentitySource().subscribe((identity) => {
       if (!identity || !identity.Ticket) {
         this.disposal();
       }
@@ -30,7 +31,7 @@ export class ImageRecoverService {
   }
   async initialize(container: HTMLElement) {
     if (!this.imageRecover) {
-      this.imageRecover = await this.get().catch(_ => null);
+      this.imageRecover = await this.get().catch((_) => null);
       if (this.imageRecover) {
         this.imageRecover.Initialize(container);
       }
@@ -38,14 +39,17 @@ export class ImageRecoverService {
       this.imageRecover.Initialize(container);
     }
   }
-  get() {
+  async get() {
     if (this.imageRecover) {
-      return Promise.resolve(this.imageRecover);
+      return this.imageRecover;
     }
     if (this.fetchingReq) {
       return this.fetchingReq;
     }
-    if (!this.identityService.getStatus()) {
+    const identity: IdentityEntity = await this.identityService
+      .checkTicketAsync()
+      .catch(() => null);
+    if (!identity || !identity.Ticket || !identity.Id) {
       return Promise.resolve(null);
     }
     this.fetchingReq = new Promise<any>((resolve, reject) => {
@@ -56,7 +60,7 @@ export class ImageRecoverService {
           })
         )
         .subscribe(
-          r => {
+          (r) => {
             if (r && r.Status && r.Data && window["Winner"]) {
               this.Failover = r.Data;
               this.imageRecover = new window["Winner"].ImageRecover(r.Data);
@@ -64,7 +68,7 @@ export class ImageRecoverService {
             }
             reject("");
           },
-          error => {
+          (error) => {
             reject(error);
           },
           () => {
