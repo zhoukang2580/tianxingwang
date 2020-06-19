@@ -14,11 +14,13 @@ export class ImageRecoverService {
   Failover: any;
   imageRecover: any;
   private fetchingReq: Promise<any>;
+  private identity: IdentityEntity;
   constructor(
     private apiService: ApiService,
-    private identityService: IdentityService
+    identityService: IdentityService
   ) {
     identityService.getIdentitySource().subscribe((identity) => {
+      this.identity = identity;
       if (!identity || !identity.Ticket) {
         this.disposal();
       }
@@ -46,10 +48,7 @@ export class ImageRecoverService {
     if (this.fetchingReq) {
       return this.fetchingReq;
     }
-    const identity: IdentityEntity = await this.identityService
-      .checkTicketAsync()
-      .catch(() => null);
-    if (!identity || !identity.Ticket || !identity.Id) {
+    if (!this.identity || !this.identity.Ticket) {
       return Promise.resolve(null);
     }
     this.fetchingReq = new Promise<any>((resolve, reject) => {
