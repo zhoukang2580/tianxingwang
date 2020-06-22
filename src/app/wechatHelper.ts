@@ -58,7 +58,7 @@ export class WechatHelper {
   static LaunchUrl: string;
   static jssdkUrlConfig: JssdkResult;
   static wx = window["wx"];
-
+  private static timeoutids: { [key: string]: any } = {};
   static getOpenId() {
     return AppHelper.getCookieValue("wechatopenid");
   }
@@ -223,22 +223,32 @@ export class WechatHelper {
   ) {
     if (count > 30) {
       AppHelper.alert("操作超时,请重新操作");
+      if (this.timeoutids[key]) {
+        clearTimeout(this.timeoutids[key]);
+      }
+      if (typeof callback == "function") {
+        callback();
+      }
       return;
     }
-    setTimeout(async () => {
-      let result = await this.getMiniResult(key, apiService);
+    const tid = setTimeout(async () => {
+      const result = await this.getMiniResult(key, apiService);
       if (result) {
+        if (this.timeoutids[key]) {
+          clearTimeout(this.timeoutids[key]);
+        }
         callback(result);
       } else {
         this.checkStep(key, apiService, callback, 1000, count++);
       }
     }, timeout);
+    this.timeoutids[key] = tid;
   }
 
-  static async getMiniResult(key, apiService: ApiService) {
+  private static async getMiniResult(key, apiService: ApiService) {
     const req = new RequestEntity();
-    var token = (apiService.apiConfig && apiService.apiConfig.Token) || "";
-    console.log("token " + token, "key=" + key);
+    const token = (apiService.apiConfig && apiService.apiConfig.Token) || "";
+    // console.log("token " + token, "key=" + key);
     req.Data = {};
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
@@ -247,9 +257,9 @@ export class WechatHelper {
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
-    req.Token=token;
+    req.Token = token;
     req.Timeout = 2000;
-    var sign = apiService.getSign(req);
+    const sign = apiService.getSign(req);
     req.Url =
       AppHelper.getApiUrl() +
       "/home/CheckStep?key=" +
