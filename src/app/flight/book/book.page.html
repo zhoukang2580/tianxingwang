@@ -45,7 +45,7 @@
                   [flightPolicy]='s.flightPolicy'>
                 </app-fly-list-item>
                 <div class='price'>
-                  <ion-label color='danger'>机票票价:￥{{s.flightPolicy?.Cabin?.TicketPrice}}</ion-label>
+                  <ion-label color='danger'>机票票价:￥{{s.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
                   <ion-label color='danger' class='ion-margin-start'>税费:￥{{s.flightSegment?.Tax}}
                   </ion-label>
                 </div>
@@ -314,30 +314,32 @@
     <!-- <div *ngFor="let vm of vmCombindInfos" style="    min-width: 90%;"> -->
     <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee"
       [style.min-width]='vmCombindInfos.length>1?"90%":"100%"'>
-      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmModal?.credential?.Number}})</div>
+      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmModal?.credential?.Number}})
+      </div>
       <div class="spacebetween">
-        <ion-text color="secondary">{{infos.modal.bookInfo.flightSegment.FromCityName}}</ion-text>
-        <ion-text color="secondary">{{infos.modal.bookInfo.flightSegment.ToCityName}}</ion-text>
+        <ion-text color="secondary">{{infos.modal?.bookInfo?.flightSegment?.FromCityName}}</ion-text>
+        <ion-text color="secondary">{{infos.modal?.bookInfo?.flightSegment?.ToCityName}}</ion-text>
       </div>
-      <div class="spacebetween" *ngIf="infos.modal.bookInfo.flightSegment.LowestFare">
+      <div class="spacebetween" *ngIf="infos.modal?.bookInfo?.flightPolicy?.Cabin?.SalesPrice">
         <ion-text style="color: #ccc;">机票票价</ion-text>
-        <ion-text>{{infos?.modal?.bookInfo?.flightSegment?.LowestFare}}元</ion-text>
+        <ion-text>{{infos?.modal?.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}元</ion-text>
       </div>
-      <div class="spacebetween" *ngIf="infos.modal.bookInfo.flightSegment.Tax">
-        <ion-text  style="color: #ccc;">税费</ion-text>
+      <div class="spacebetween" *ngIf="infos.modal?.bookInfo?.flightSegment?.Tax">
+        <ion-text style="color: #ccc;">税费</ion-text>
         <ion-text>{{infos?.modal?.bookInfo?.flightSegment?.Tax}}元</ion-text>
       </div>
       <ng-container>
         <div *ngFor='let insurance of infos?.insuranceProducts'>
           <div class="spacebetween" *ngIf="insurance.insuranceResult?.Id==infos.selectedInsuranceProductId">
-            <ion-text  style="color: #ccc;">{{insurance.insuranceResult?.Name}}</ion-text>
+            <ion-text style="color: #ccc;">{{insurance.insuranceResult?.Name}}</ion-text>
             <ion-text>{{insurance?.insuranceResult?.Price}}元</ion-text>
           </div>
         </div>
       </ng-container>
-      <div class="spacebetween" *ngIf="tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)">
-        <ion-text  style="color: #ccc;">服务费</ion-text>
-        <ion-text>{{passengerServiceFeesObj[infos.modal.id]}}元</ion-text>
+      <div class="spacebetween"
+        *ngIf="tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)">
+        <ion-text style="color: #ccc;">服务费</ion-text>
+        <ion-text>{{passengerServiceFeesObj[infos.modal?.id]}}元</ion-text>
       </div>
     </div>
   </div>
