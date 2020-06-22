@@ -337,7 +337,7 @@
         </div>
       </ng-container>
       <div class="spacebetween"
-        *ngIf="tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)">
+        *ngIf="identity?.Numbers?.AgentId||tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)">
         <ion-text style="color: #ccc;">服务费</ion-text>
         <ion-text>{{passengerServiceFeesObj[infos.modal?.id]}}元</ion-text>
       </div>
