@@ -184,7 +184,7 @@ export class FileHelperService {
     if (this.plt.is("android")) {
       return this.hcpPlugin && this.hcpPlugin.getWebViewUrl();
     }
-    return  AppHelper.getQueryParamers()['path'];
+    return AppHelper.getQueryParamers()["path"];
   }
   private async clearLocalHcpVersionIfAppUpdated() {
     if (AppHelper.isApp()) {
@@ -283,7 +283,7 @@ export class FileHelperService {
     req.Data = {
       Name: `${pkgName}.${
         this.plt.is("ios") ? "ios" : "android"
-        }`.toLowerCase(),
+      }`.toLowerCase(),
     };
     req.IsShowLoading = true;
     // this.logMessage("apiconfig", this.apiService.apiConfig);
@@ -443,18 +443,18 @@ export class FileHelperService {
         const unZipOk = !AppHelper.isApp()
           ? 0
           : await this.zip.unzip(
-            zipFile.nativePath,
-            direntry.toInternalURL(),
-            (evt) => {
-              this.ngZone.run(() => {
-                onprogress({
-                  total: evt.total,
-                  loaded: evt.loaded,
-                  taskDesc: LanguageHelper.getHcpUnZipTip(),
-                } as IHcpUpdateModel);
-              });
-            }
-          );
+              zipFile.nativePath,
+              direntry.toInternalURL(),
+              (evt) => {
+                this.ngZone.run(() => {
+                  onprogress({
+                    total: evt.total,
+                    loaded: evt.loaded,
+                    taskDesc: LanguageHelper.getHcpUnZipTip(),
+                  } as IHcpUpdateModel);
+                });
+              }
+            );
         if (unZipOk !== 0) {
           reject(`解压文件失败`);
           return false;
@@ -596,7 +596,7 @@ export class FileHelperService {
       );
       const curUsingVersionDir = `${
         this.www
-        }_${this.getLocalHcpVersion()}`.replace(/\./g, "_");
+      }_${this.getLocalHcpVersion()}`.replace(/\./g, "_");
       const downloadedLatestApk =
         `${this.serverVersion}`.replace(/\./g, "_") + ".apk";
       for (let i = 0; i < versionFiles.length; i++) {
@@ -816,7 +816,7 @@ export class FileHelperService {
               destFilePathDir.endsWith("/")
                 ? destFilePathDir
                 : destFilePathDir + "/"
-              }${fileName}`,
+            }${fileName}`,
           } as IHcpUpdateModel);
         } else {
           reject("文件写入失败");
@@ -901,7 +901,7 @@ export class FileHelperService {
     });
     this.logMessage(`checkAppUpdate ${new Date().toLocaleString()}`, up);
     this.localVersion = await this.getInstallAppVersionNumber();
-    if (!up || !up.Version || !up.DownloadUrl||!up.EnabledAppUpdate) {
+    if (!up || !up.Version || !up.DownloadUrl || !up.EnabledAppUpdate) {
       this.logMessage(
         `checkAppUpdate 服务器没有最新文件或者DownloadUrl错误`,
         up
@@ -1004,7 +1004,7 @@ export class FileHelperService {
     this.logMessage(`要下载的应用地址: ` + apkUrl);
     const apkPath = `${this.dataDirectory}${
       this.updateDirectoryName
-      }/${this.serverVersion.replace(/\./g, "_")}.apk`;
+    }/${this.serverVersion.replace(/\./g, "_")}.apk`;
     onprogress({
       total: 100,
       loaded: 90,
@@ -1150,7 +1150,7 @@ export class FileHelperService {
       .catch((e) => {
         this.logMessage(
           `列出文件夹${path}/${dir}下面的所有文件抛出异常` +
-          JSON.stringify(e, null, 2)
+            JSON.stringify(e, null, 2)
         );
         return [] as Entry[];
       });
@@ -1235,12 +1235,7 @@ export class FileHelperService {
     const lmain = +lVs[0];
     const lMinor = +lVs[1];
     const lPatch = +lVs[sVs.length - 1];
-    return (
-      smain == lmain &&
-      sMinor == lMinor &&
-      sPatch > lPatch &&
-      serverVersion !== this.getLocalHcpVersion()
-    );
+    return smain == lmain && sVs.slice(1).join(".") != lVs.slice(1).join(".");
   }
   /**
    *
@@ -1269,8 +1264,8 @@ export class FileHelperService {
     const lMinor = lVs[1];
     // 主版本不等或者次版本不等
     // this.logMessage(`比较应用主版本，判断是否需要升级,serverVersion=${serverVersion}<=>localVersion=${localVersion} `);
-
-    return smain !== lmain || sMinor !== lMinor;
+    // return smain !== lmain || sMinor !== lMinor;
+    return smain !== lmain;
   }
   private checkPathFileExists(
     path: string,
@@ -1297,7 +1292,7 @@ export class FileHelperService {
   private checkDirExists(path: string, dirName: string) {
     this.logMessage(
       `检查路径${path}${
-      (path || "").endsWith("/") ? "" : "/"
+        (path || "").endsWith("/") ? "" : "/"
       }${dirName}是否存在`
     );
     return this.file
@@ -1305,7 +1300,7 @@ export class FileHelperService {
       .then((_) => {
         this.logMessage(
           `路径${path}${
-          (path || "").endsWith("/") ? "" : "/"
+            (path || "").endsWith("/") ? "" : "/"
           }${dirName}是否存在?${_}】`
         );
         return true;
@@ -1395,8 +1390,8 @@ export class FileHelperService {
         const origiFileMd5 = originFile.hash;
         const path = dirEntry.toInternalURL().endsWith("/")
           ? dirEntry
-            .toInternalURL()
-            .substring(0, dirEntry.toInternalURL().lastIndexOf("/"))
+              .toInternalURL()
+              .substring(0, dirEntry.toInternalURL().lastIndexOf("/"))
           : dirEntry.toInternalURL();
         const donwloadmd5 = await this.getFileMd5(path, f.name);
         if (!donwloadmd5) {
@@ -1420,13 +1415,13 @@ export class FileHelperService {
       this.logMessage(`-----------完成文件校验-----------`);
       this.logMessage(
         `总共有${
-        checkMd5Failures.filter((item) => !item.downloadMd5 || !item.md5)
-          .length
+          checkMd5Failures.filter((item) => !item.downloadMd5 || !item.md5)
+            .length
         }个文件md5不存在`
       );
       this.logMessage(
         `总共校验${files.length}个文件，其中${
-        checkMd5Failures.length
+          checkMd5Failures.length
         }个校验失败，校验详细结果:${JSON.stringify(checkMd5Failures, null, 2)}`
       );
       return checkMd5Failures.length === 0;

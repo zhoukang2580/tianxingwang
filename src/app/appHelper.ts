@@ -1,4 +1,5 @@
 ﻿import * as md5 from "md5";
+import Big from 'big.js';
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
 import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
@@ -723,21 +724,17 @@ export class AppHelper {
     return `${uuid}`.replace(/-/g, "");
   }
   static add(...args: number[]) {
-    // console.log(args);
     if (args && args.length) {
-      const maxdigits = args
-        .filter((it) => `${it}`.includes("."))
-        .sort((a, b) => `${b}`.length - `${a}`.length)[0];
-      if (maxdigits) {
-        const len = `${maxdigits}`.split(".")[1].length;
-        const base = Math.pow(10, len + 1);
-        const result = args.reduce((acc, n) => (acc += n * base), 0);
-        return result / base;
-      } else {
-        return args.reduce((acc, n) => (acc += n), 0);
+      let res = 0;
+      for (let i = 0; i < args.length; i++) {
+        res = new Big(args[i]).add(res);
       }
+      return res;
     }
     return 0;
+  }
+  static multiply(op1: number, op2: number) {
+    return new Big(op1).times(op2);
   }
   static getDate(datestr: string | number) {
     if (datestr && typeof datestr == "string") {
