@@ -13,7 +13,7 @@
     <ion-item>
       <ion-label class='ion-padding-vertical'>成人</ion-label>
       <ion-label slot='end'>
-        <app-add-number min="0" [(addNumber)]='searchCondition.adultCount'></app-add-number>
+        <app-add-number min="0" max='3' [(addNumber)]='searchCondition.adultCount'></app-add-number>
       </ion-label>
     </ion-item>
     <ion-item-sliding *ngFor='let c of searchCondition?.children;let idx=index;' @flyInOut>

@@ -4,7 +4,7 @@ import { ActionSheetController, NavController } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import {
   InternationalHotelService,
-  IInterHotelSearchCondition
+  IInterHotelSearchCondition,
 } from "./../international-hotel.service";
 import { Component, OnInit, Optional, ViewChild } from "@angular/core";
 import { flyInOut } from "src/app/animations/flyInOut";
@@ -13,7 +13,7 @@ import { flyInOut } from "src/app/animations/flyInOut";
   selector: "app-room-count-children",
   templateUrl: "./room-count-children.page.html",
   styleUrls: ["./room-count-children.page.scss"],
-  animations: [flyInOut]
+  animations: [flyInOut],
 })
 export class RoomCountChildrenPage implements OnInit {
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
@@ -26,7 +26,7 @@ export class RoomCountChildrenPage implements OnInit {
 
   ngOnInit() {
     this.subscriptions.push(
-      this.hotelService.getSearchConditionSource().subscribe(c => {
+      this.hotelService.getSearchConditionSource().subscribe((c) => {
         this.searchCondition = c;
       })
     );
@@ -34,7 +34,7 @@ export class RoomCountChildrenPage implements OnInit {
   onRemove(c: any) {
     if (this.searchCondition && this.searchCondition.children) {
       this.searchCondition.children = this.searchCondition.children.filter(
-        it => it != c
+        (it) => it != c
       );
     }
   }
@@ -43,6 +43,10 @@ export class RoomCountChildrenPage implements OnInit {
       this.searchCondition.children = this.searchCondition.children || [];
       if (this.searchCondition.children.length == 0) {
         AppHelper.toast("左滑删除新增项", 1000, "middle");
+      }
+      if (this.searchCondition.children.length >= 3) {
+        AppHelper.toast("不能添加更多", 1000, "middle");
+        return;
       }
       this.searchCondition.children.push({ age: 1 });
     }
@@ -72,9 +76,9 @@ export class RoomCountChildrenPage implements OnInit {
           handler: () => {
             c.age = idx;
             a.dismiss(idx);
-          }
+          },
         };
-      })
+      }),
     });
     a.present();
   }
