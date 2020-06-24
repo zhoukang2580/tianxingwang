@@ -1,4 +1,4 @@
-<ion-item detail lines='none' (click)='searchCostCenter()'>
+<ion-item detail lines='none' (click)='searchCostCenter()' [disabled]='isOtherCostCenter'>
   <ion-label><strong>成本中心:</strong></ion-label>
   <ion-label class='ion-text-end'>{{costCenter?.name}}</ion-label>
 </ion-item>

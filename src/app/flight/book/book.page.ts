@@ -549,7 +549,7 @@ export class BookPage implements OnInit, AfterViewInit {
           );
         }
         if (item.insuranceProducts) {
-          arr += item.insuranceProducts
+          const insuranceSum = item.insuranceProducts
             .filter(
               (it) =>
                 it.insuranceResult &&
@@ -559,6 +559,7 @@ export class BookPage implements OnInit, AfterViewInit {
               sum = AppHelper.add(+it.insuranceResult.Price, sum);
               return sum;
             }, 0);
+          arr = AppHelper.add(arr, insuranceSum);
         }
         return arr;
       }, 0);

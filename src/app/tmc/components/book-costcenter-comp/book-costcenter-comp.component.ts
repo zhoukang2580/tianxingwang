@@ -5,14 +5,14 @@ import {
   Input,
   Output,
   EventEmitter,
-  ElementRef
+  ElementRef,
 } from "@angular/core";
 import { SearchCostcenterComponent } from "../search-costcenter/search-costcenter.component";
 
 @Component({
   selector: "app-book-costcenter-comp",
   templateUrl: "./book-costcenter-comp.component.html",
-  styleUrls: ["./book-costcenter-comp.component.scss"]
+  styleUrls: ["./book-costcenter-comp.component.scss"],
 })
 export class BookCostcenterCompComponent implements OnInit {
   nativeElement: HTMLElement;
@@ -29,8 +29,11 @@ export class BookCostcenterCompComponent implements OnInit {
     this.ionChange = new EventEmitter();
   }
   async searchCostCenter() {
+    if (this.isOtherCostCenter) {
+      return;
+    }
     const modal = await this.modalCtrl.create({
-      component: SearchCostcenterComponent
+      component: SearchCostcenterComponent,
     });
     modal.backdropDismiss = false;
     await modal.present();
@@ -39,7 +42,7 @@ export class BookCostcenterCompComponent implements OnInit {
       const res = result.data as { Text: string; Value: string };
       this.costCenter = {
         code: res.Value,
-        name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1)
+        name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1),
       };
       this.onValueChange();
     }
@@ -53,7 +56,7 @@ export class BookCostcenterCompComponent implements OnInit {
       isOtherCostCenter: this.isOtherCostCenter,
       otherCostCenterCode: this.otherCostCenterCode,
       otherCostCenterName: this.otherCostCenterName,
-      costCenter: this.costCenter
+      costCenter: this.costCenter,
     });
   }
   ngOnInit() {}

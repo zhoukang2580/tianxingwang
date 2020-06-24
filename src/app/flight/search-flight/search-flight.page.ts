@@ -16,7 +16,6 @@ import { CalendarService } from "../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
-import * as moment from "moment";
 import { Subscription, of, from } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
 import {
@@ -70,31 +69,6 @@ export class SearchFlightPage
       this.isSelf = await this.staffService.isSelfBookType();
       this.isleave = false;
       this.isCanleave = false;
-      const identity = await this.identityService.getIdentityAsync();
-      // this.disabled = this.searchFlightModel && this.searchFlightModel.isLocked;
-      let lastSelectedGoDate = await this.storage.get(
-        `last_selected_flight_goDate_${identity && identity.Id}`
-      );
-      const nextDate = moment().add(1, "days").format("YYYY-MM-DD");
-      lastSelectedGoDate =
-        lastSelectedGoDate &&
-        this.calendarService.generateDayModelByDate(lastSelectedGoDate)
-          .timeStamp >=
-          this.calendarService.generateDayModelByDate(nextDate).timeStamp
-          ? lastSelectedGoDate
-          : nextDate;
-      const lastSelectedBackDate = moment(lastSelectedGoDate)
-        .add(1, "days")
-        .format("YYYY-MM-DD");
-      const s = this.flightService.getSearchFlightModel();
-      // this.vmFromCity = s.fromCity;
-      // this.vmToCity = s.toCity;
-      s.Date = lastSelectedGoDate;
-      s.BackDate = lastSelectedBackDate;
-      if (!s.isLocked) {
-        this.flightService.setSearchFlightModelSource(s);
-      }
-      // this.calendarService.setSelectedDaysSource([this.goDate, this.backDate]);
       this.showReturnTrip = await this.isStaffTypeSelf();
     });
     this.subscriptions.push(sub);
@@ -117,7 +91,7 @@ export class SearchFlightPage
       this.backDate =
         this.goDate.timeStamp > this.backDate.timeStamp
           ? this.calendarService.generateDayModel(
-              moment(this.goDate.date).add(1, "days")
+              this.calendarService.getMoment(1, this.goDate.date)
             )
           : this.backDate;
     }
@@ -159,15 +133,6 @@ export class SearchFlightPage
       cssClass: "ticket-changing",
     });
     p.present();
-  }
-  private calcTotalFlyDays() {
-    if (this.backDate && this.goDate) {
-      const nums = Math.abs(
-        moment(this.backDate.date).diff(moment(this.goDate.date), "days")
-      );
-      return nums <= 0 ? 1 : nums;
-    }
-    return `1`;
   }
   back() {
     this.isleave = true;
@@ -328,14 +293,15 @@ export class SearchFlightPage
       //   s.tripType = TripType.departureTrip;
       // }
       if (go) {
-        const arrivalDate = moment(
+        const arrivalDate = this.calendarService.getMoment(
+          0,
           go.bookInfo &&
             go.bookInfo.flightSegment &&
             go.bookInfo.flightSegment.ArrivalTime
         );
         if (
-          +moment(this.backDate.date) <
-          +moment(arrivalDate.format("YYYY-MM-DD"))
+          +this.calendarService.getMoment(0, this.backDate.date) <
+          +this.calendarService.getMoment(0, arrivalDate.format("YYYY-MM-DD"))
         ) {
           AppHelper.alert("返程时间不能在去程时间之前");
           return;

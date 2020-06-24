@@ -20,6 +20,9 @@ export class BookIllegalReasonCompComponent implements OnInit {
     this.ionchange = new EventEmitter();
   }
   async onOpenSelect() {
+    if (this.isOtherIllegalReason) {
+      return;
+    }
     const p = await this.popoverCtrl.create({
       component: SelectComponent,
       cssClass: "vw-70",

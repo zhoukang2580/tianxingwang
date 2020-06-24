@@ -61,6 +61,7 @@ export class SearchFlightModel {
   providedIn: "root",
 })
 export class FlightService {
+  private identity: IdentityEntity;
   private fetchPassengerCredentials: { promise: Promise<any> };
   private selfCredentials: CredentialsEntity[];
   private searchFlightModelSource: Subject<SearchFlightModel>;
@@ -71,6 +72,7 @@ export class FlightService {
   private filterConditionSources: Subject<FilterConditionModel>;
   private passengerBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]; // 记录乘客及其研究选择的航班
   private isInitializingSelfBookInfos = false;
+  private isInitDate = false;
   private filterCondition: FilterConditionModel;
   currentViewtFlightSegment: FlightSegmentEntity;
   policyFlights: PassengerPolicyFlights[];
@@ -93,23 +95,39 @@ export class FlightService {
     this.filterConditionSources = new BehaviorSubject(
       FilterConditionModel.init()
     );
-    // this.worker = window["Worker"]
-    //   ? new Worker("../../assets/worker.js", { type: "module" })
-    //   : null;
     identityService.getIdentitySource().subscribe((res) => {
+      this.identity = res;
+      this.isInitDate = !res || !res.Id || !res.Ticket;
+      if (res && res.Id && !this.isInitDate) {
+        this.isInitDate = true;
+        this.initLastSelectDate();
+      }
       this.disposal();
     });
-    // combineLatest([
-    //   identityService.getIdentitySource(),
-    //   this.getPassengerBookInfoSource()
-    // ]).subscribe(async ([identity, infos]) => {
-    //   if (identity && identity.Id && identity.Ticket && infos.length == 0) {
-    //     if (this.isInitializingSelfBookInfos) {
-    //       return;
-    //     }
-    //     await this.initSelfBookTypeBookInfos();
-    //   }
-    // });
+  }
+  private async initLastSelectDate() {
+    if (!this.identity || !this.identity.Id) {
+      return;
+    }
+    const identity = this.identity;
+    let lastSelectedGoDate = await this.storage.get(
+      `last_selected_flight_goDate_${identity && identity.Id}`
+    );
+    const nextDate = this.calendarService.getMoment(1).format("YYYY-MM-DD");
+    lastSelectedGoDate =
+      lastSelectedGoDate &&
+      this.calendarService.generateDayModelByDate(lastSelectedGoDate)
+        .timeStamp >=
+        this.calendarService.generateDayModelByDate(nextDate).timeStamp
+        ? lastSelectedGoDate
+        : nextDate;
+    const lastSelectedBackDate = this.calendarService
+      .getMoment(1, lastSelectedGoDate)
+      .format("YYYY-MM-DD");
+    const s = this.getSearchFlightModel();
+    s.Date = lastSelectedGoDate;
+    s.BackDate = lastSelectedBackDate;
+    this.setSearchFlightModelSource(s);
   }
   async initSelfBookTypeBookInfos(isShowLoading = true) {
     await this.checkOrAddSelfBookTypeBookInfo(isShowLoading);
@@ -119,6 +137,7 @@ export class FlightService {
     this.removeAllBookInfos();
     this.selfCredentials = null;
     this.isInitializingSelfBookInfos = false;
+    this.identity = null;
   }
   getFilterCondition() {
     return this.filterCondition;
@@ -409,8 +428,8 @@ export class FlightService {
       tripType,
       forType: FlightHotelTrainType.Flight,
       isMulti,
-      beginDate:  s.Date ,
-      endDate: s.isRoundTrip?s.BackDate : "",
+      beginDate: s.Date,
+      endDate: s.isRoundTrip ? s.BackDate : "",
     });
   }
 
@@ -833,7 +852,7 @@ export class FlightService {
       ...this.getSearchFlightModel(),
       tripType: TripType.departureTrip,
       isLocked: false,
-      isExchange:false,
+      isExchange: false,
     });
   }
   async onSelectReturnTrip() {

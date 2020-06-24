@@ -5,7 +5,7 @@ import {
   Input,
   Output,
   EventEmitter,
-  SimpleChanges
+  SimpleChanges,
 } from "@angular/core";
 import { OrganizationComponent } from "../organization/organization.component";
 import { OrganizationEntity } from "src/app/hr/staff.service";
@@ -13,7 +13,7 @@ import { OrganizationEntity } from "src/app/hr/staff.service";
 @Component({
   selector: "app-book-organization-comp",
   templateUrl: "./book-organization-comp.component.html",
-  styleUrls: ["./book-organization-comp.component.scss"]
+  styleUrls: ["./book-organization-comp.component.scss"],
 })
 export class BookOrganizationCompComponent implements OnInit {
   @Input() isOtherOrganization: boolean;
@@ -24,8 +24,11 @@ export class BookOrganizationCompComponent implements OnInit {
     this.ionChange = new EventEmitter();
   }
   async searchOrganization() {
+    if (this.isOtherOrganization) {
+      return;
+    }
     const modal = await this.modalCtrl.create({
-      component: OrganizationComponent
+      component: OrganizationComponent,
     });
     modal.backdropDismiss = false;
     await modal.present();
@@ -36,7 +39,7 @@ export class BookOrganizationCompComponent implements OnInit {
       this.organization = {
         ...this.organization,
         Code: res.Code,
-        Name: res.Name
+        Name: res.Name,
       };
       this.onValueChange();
     }
@@ -45,7 +48,7 @@ export class BookOrganizationCompComponent implements OnInit {
     this.ionChange.emit({
       isOtherOrganization: this.isOtherOrganization,
       organization: this.organization,
-      otherOrganizationName: this.otherOrganizationName
+      otherOrganizationName: this.otherOrganizationName,
     });
   }
   ngOnInit() {}
