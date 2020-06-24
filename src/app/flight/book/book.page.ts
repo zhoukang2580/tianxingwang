@@ -461,6 +461,9 @@ export class BookPage implements OnInit, AfterViewInit {
     info.isOtherIllegalReason = reason.isOtherIllegalReason;
     info.illegalReason = reason.illegalReason;
     info.otherIllegalReason = reason.otherIllegalReason;
+    if (info.isOtherIllegalReason) {
+      info.illegalReason = null;
+    }
   }
   onShowFriendlyReminder(item: ICombindInfo) {
     item.showFriendlyReminder = !item.showFriendlyReminder;
