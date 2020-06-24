@@ -29,7 +29,7 @@
     </div>
     <!-- <div>{{colors|json}} {{getRoomPlanUniqueId(roomPlan)}}</div> -->
     <div class="price" *ngIf='colors[getRoomPlanUniqueId(roomPlan)] as color'
-      [class.can-not-be-book]='color.includes("danger")' [attr.color]='color.includes("danger")?"danger":color'>
+      [class.can-not-be-book]='color.includes("danger")||color.includes("medium")' [attr.color]='color.includes("danger")?"danger":color'>
       <ion-text color='danger' class='avg-price'>￥{{getAvgPrice(roomPlan)}}</ion-text>
       <div class="btn-book" (click)='onBook(roomPlan,color)'>
         <ion-button slot='end' class='ion-no-margin' [disabled]='color.includes("danger")' expand='full'>

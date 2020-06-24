@@ -188,7 +188,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
                     color = "danger_full";
                   }
                   if (this.hotelService.isNoPermission(plan)) {
-                    color = "medium_nopermission";
+                    color = "danger_nopermission";
                   }
                   this.colors[p.UniqueIdId] = color;
                 }
