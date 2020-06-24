@@ -166,17 +166,25 @@ export class HotelService {
     }
   }
   getFullHouseOrCanBook(plan: RoomPlanEntity): string {
+    return this.getVariablesObjValue(plan, "FullHouseOrCanBook");
+  }
+  private getVariablesObjValue(plan: RoomPlanEntity, key: string) {
     if (plan && plan.VariablesJsonObj) {
-      return plan.VariablesJsonObj["FullHouseOrCanBook"];
+      return plan.VariablesJsonObj[key];
     }
     if (plan && plan.Variables) {
       plan.VariablesJsonObj = JSON.parse(plan.Variables);
-      return plan.VariablesJsonObj["FullHouseOrCanBook"];
+      return plan.VariablesJsonObj[key];
     }
+    return null;
   }
   isFull(p: RoomPlanEntity) {
     const res = this.getFullHouseOrCanBook(p);
     return res && res.toLowerCase().includes("full");
+  }
+  isNoPermission(p: RoomPlanEntity) {
+    const res = this.getFullHouseOrCanBook(p);
+    return res&&res.toLowerCase().includes("nopermission");
   }
   getRoomArea(room: RoomEntity) {
     return (

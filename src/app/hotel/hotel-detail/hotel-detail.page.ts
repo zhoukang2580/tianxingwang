@@ -187,6 +187,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
                   if (this.hotelService.isFull(plan)) {
                     color = "danger_full";
                   }
+                  if (this.hotelService.isNoPermission(plan)) {
+                    color = "danger_nopermission";
+                  }
                   this.colors[p.UniqueIdId] = color;
                 }
               });
@@ -486,6 +489,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
       AppHelper.alert(
         `超标不可预订,${p && p.Rules ? p.Rules.join(",") : ""}${tip}`
       );
+      return;
+    }
+    if (color.includes("nopermission")) {
+      AppHelper.alert("您没有权限预订该类型产品！");
       return;
     }
     if (color.includes("full")) {
