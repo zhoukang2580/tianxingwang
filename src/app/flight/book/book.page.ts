@@ -159,6 +159,22 @@ export class BookPage implements OnInit, AfterViewInit {
         .then((id) => {
           return !!(id && id.Numbers && id.Numbers["AgentId"]);
         });
+      try {
+        if (this.isCanSave) {
+          const bookInfos = this.flightService.getPassengerBookInfos();
+          if (bookInfos && bookInfos.length) {
+            if (
+              bookInfos.some(
+                (it) =>
+                  it.bookInfo.flightSegment.Carrier == "9C" ||
+                  it.bookInfo.flightSegment.AirlineName.includes("春秋航空")
+              )
+            ) {
+              this.isCanSave = false;
+            }
+          }
+        }
+      } catch {}
       setTimeout(() => {
         if (!this.isShowInsuranceBack) {
           this.refresh(false);
