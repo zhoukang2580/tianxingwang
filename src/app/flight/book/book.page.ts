@@ -1046,6 +1046,11 @@ export class BookPage implements OnInit, AfterViewInit {
       if (p.FlightCabin) {
         p.FlightCabin.InsuranceProducts = p.InsuranceProducts;
         p.InsuranceProducts = null;
+        if (p.FlightSegment) {
+          if (p.FlightCabin.CabinCodes && !p.FlightCabin.Code) {
+            p.FlightCabin.Code = p.FlightCabin.CabinCodes[p.FlightSegment.Id];
+          }
+        }
       }
       p.Policy = combindInfo.modal.passenger.Policy;
       bookDto.Passengers.push(p);

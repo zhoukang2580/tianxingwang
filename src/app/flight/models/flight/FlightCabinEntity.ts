@@ -45,7 +45,7 @@ export class FlightCabinEntity {
   /// 违规
   /// </summary>
   Rules: { [key: string]: string };
-
+  CabinCodes: { [segmentId: string]: string };
   BookType: FlightBookType;
   BookCode: string;
   /// <summary>
