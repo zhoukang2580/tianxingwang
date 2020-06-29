@@ -82,6 +82,9 @@
                 </div>
                 <p [innerHTML]='getExplain(s?.flightPolicy?.Cabin?.Explain)' [@flyInOut] *ngIf='combindInfo?.openrules'>
                 </p>
+                <p *ngIf='s.flightSegment.Carrier=="9C"' style="font-size: 0.7rem;">
+                 <ion-text color='medium'> 温馨提醒： 无论何种原因航班延误或取消，春秋航空不提供任何补偿。</ion-text>
+                </p>
               </div>
             </ion-item>
           </div>
