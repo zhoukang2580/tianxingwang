@@ -254,10 +254,11 @@ export class RegisterPage implements OnInit {
     }, 1000);
   }
   getWechatMiniMobile() {
-    let token =
+    const token =
       (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
-    let key = AppHelper.uuid();
-    let url = "/pages/phonenumber/index?key=" + key + "&token=" + token;
+    const key = AppHelper.uuid();
+    const desc="小程序需要获取你的手机号码来完成注册功能";
+    let url = `/pages/phonenumber/index?key=${key}&token=${token}&description=${desc}`;
     if (!this.wechatMiniUser) {
       url = url + "&isLogin=true";
     }

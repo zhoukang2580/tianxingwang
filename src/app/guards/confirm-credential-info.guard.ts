@@ -37,8 +37,8 @@ export class ConfirmCredentialInfoGuard
         // console.log("ConfirmCredentialInfoGuard", staff,this.staffService.staffCredentials);
         if (
           staff &&
-          (staff.BookType == StaffBookType.Secretary ||
-            staff.BookType == StaffBookType.Self) &&
+          // (staff.BookType == StaffBookType.Secretary ||
+          //   staff.BookType == StaffBookType.Self) &&
           staff.IsConfirmInfo != undefined &&
           staff.IsModifyPassword != undefined
         ) {

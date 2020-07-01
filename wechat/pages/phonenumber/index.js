@@ -5,7 +5,8 @@ let argsOnLoad;
 Page({
   data: {
     isOpenSetting: false,
-    isShowCancel: true
+    isShowCancel: true,
+    description:""
   },
 
   onShow: function (args) {
@@ -13,6 +14,11 @@ Page({
   },
   onLoad: function (args) {
     argsOnLoad = args;
+    if(args&&args.description){
+      this.setData({
+        description:args.description||""
+      })
+    }
     if (args && args.isLogin) {
       const that = this;
       wx.login({

@@ -250,7 +250,7 @@ export class TmcService {
       req1.Method = "TmcApiOrderUrl-Pay-Process";
       req1.Version = "2.0";
       req1.Data = {
-        OutTradeNo: r,
+        OutTradeNo: tradeNo,
         Type: "2",
       };
       const result = await this.payService.process(req1).catch((_) => {

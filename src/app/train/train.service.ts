@@ -85,7 +85,6 @@ export class TrainService {
     identityService.getIdentitySource().subscribe((res) => {
       this.disposal();
     });
-    this.initSearchTrainModel();
   }
   private async initSearchTrainModel() {
     const { fromStation, toStation } = await this.initTrainCities();
@@ -556,8 +555,14 @@ export class TrainService {
     return bookInfos;
   }
   disposal() {
-    this.initSearchTrainModel();
-    this.setBookInfoSource([]);
+    if (
+      this.identityService.getIdentityAsync().then((i) => {
+        if (i && i.Ticket) {
+          this.initSearchTrainModel();
+        }
+      })
+    )
+      this.setBookInfoSource([]);
     this.selfCredentials = null;
     this.isInitializingSelfBookInfos = false;
   }

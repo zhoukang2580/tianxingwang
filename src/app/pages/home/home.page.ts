@@ -1,10 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { QrScanService } from "src/app/services/qrScan/qrscan.service";
-import { Subject } from "rxjs";
+import { Subject, Subscription } from "rxjs";
 import { DomSanitizer } from "@angular/platform-browser";
 import { CONFIG } from "src/app/config";
 import { ApiService } from "src/app/services/api/api.service";
@@ -15,11 +15,14 @@ import { WechatHelper } from "src/app/wechatHelper";
   templateUrl: "./home.page.html",
   styleUrls: ["./home.page.scss"],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   identity: IdentityEntity;
   scanresult: string;
   homeUrl: any;
   isWechatMini = AppHelper.isWechatMini();
+  private subscriptions: Subscription[] = [];
+  private timeId: any;
+  private count = 10;
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -29,31 +32,72 @@ export class HomePage implements OnInit {
     private route: ActivatedRoute
   ) {}
   private goHome() {
-    this.router.navigate(["tabs/tmc-home"]);
+    this.router.navigate([""]);
+  }
+  private check() {
+    if (this.timeId) {
+      clearTimeout(this.timeId);
+    }
+    this.timeId = setTimeout(async () => {
+      if (!this.identity) {
+        this.identity = await this.identityService
+          .getIdentityAsync()
+          .catch(() => null);
+      }
+      if (this.identity && this.identity.Ticket) {
+        clearTimeout(this.timeId);
+        this.goHome();
+      } else {
+        if (--this.count > 0) {
+          this.check();
+        } else {
+          this.goHome();
+        }
+      }
+    }, 200);
   }
   ngOnInit() {
-    this.identityService.getIdentityAsync().then((identity) => {
-      this.identity = identity;
-    });
-    setTimeout(() => {
-      this.route.queryParamMap.subscribe((q) => {
-        console.log("identity ",this.identity);
-        if (
-          AppHelper.isWechatMini() &&
-          this.identity &&
-          this.identity.Ticket
-        ) {
-          this.goHome();
-          return;
-        }
-      });
-    }, 0);
+    if (AppHelper.isWechatMini()) {
+      this.check();
+    }
+    this.subscriptions.push(
+      this.identityService.getIdentitySource().subscribe((identity) => {
+        this.identity = identity;
+      })
+    );
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe(async (q) => {
+        // if (!this.identity) {
+        //   this.identity = await this.identityService
+        //     .getIdentityAsync()
+        //     .catch(() => null);
+        // }
+        // console.log("identity HomePage", this.identity);
+        // if (AppHelper.isWechatMini()) {
+        //   if (this.identity && this.identity.Ticket) {
+        //     this.goHome();
+        //     return;
+        //   }
+        // }
+        this.check();
+      })
+    );
     this.homeUrl = this.domSanitize.bypassSecurityTrustResourceUrl(
       `${AppHelper.getApiUrl()}`.replace("app.", "m.")
     );
   }
-  onGo() {
-    this.router.navigate(["tabs/tmc-home"]);
+  async onGo() {
+    if (!this.identity) {
+      this.identity = await this.identityService
+        .getIdentityAsync()
+        .catch(() => null);
+    }
+    if (!this.identity || !this.identity.Ticket) {
+      alert(
+        "用户尚未登录，请使用天行商旅员工账号密码或绑定过账号的手机号系统登录（注意，不是微信的账号和密码）"
+      );
+    }
+    this.goHome();
     // const token =
     //   (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
     // const key = AppHelper.uuid();
@@ -64,6 +108,9 @@ export class HomePage implements OnInit {
   }
   onSetting() {
     this.router.navigate(["account-setting"]);
+  }
+  ngOnDestroy() {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   onScanResult(txt: string) {
     this.scanresult = txt;

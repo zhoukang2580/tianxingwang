@@ -336,9 +336,9 @@ export class MemberService {
           (it) => it.Name.toLowerCase() == pro.toLowerCase()
         );
         const input = container.querySelector(
-          `input[ValidateName=${pro}]`
+          `input[ValidateName='${pro}']`
         ) as HTMLInputElement;
-        console.log(`input[ValidateName=${pro}]`, input);
+        console.log(`input[ValidateName='${pro}']`, input);
 
         if (rule) {
           AppHelper.alert(rule.Message, true).then((_) => {

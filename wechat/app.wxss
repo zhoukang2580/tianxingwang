@@ -20,3 +20,9 @@
 .cancel,.auth-button{
   width: 80%;
 }
+.desc{
+  font-size: .8rem;
+  text-align: justify;
+  color: rgba(0,0,0,0.5);
+  padding-bottom: 1em;
+}

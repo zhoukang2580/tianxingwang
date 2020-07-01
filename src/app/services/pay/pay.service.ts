@@ -8,12 +8,12 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { WechatHelper } from "src/app/wechatHelper";
 import {
   PayComponent,
-  IPayWayItem
+  IPayWayItem,
 } from "src/app/components/pay/pay.component";
-import { finalize } from 'rxjs/operators';
+import { finalize } from "rxjs/operators";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class PayService {
   ali: Ali;
@@ -29,9 +29,14 @@ export class PayService {
       this.wechat = window["wechat"];
     });
   }
-  async selectPayWay(): Promise<IPayWayItem> {
+  async selectPayWay(
+    paytypes?: { label: string; value: string }[]
+  ): Promise<IPayWayItem> {
     const m = await this.popoverCtrl.create({
-      component: PayComponent
+      component: PayComponent,
+      componentProps: {
+        payWays: paytypes,
+      },
     });
     m.backdropDismiss = false;
     await m.present();
@@ -42,8 +47,8 @@ export class PayService {
     return {
       timeStamp: Date.now(),
       message,
-      remark
-    } as IPayMessage
+      remark,
+    } as IPayMessage;
   }
   async alipay(req: RequestEntity, path: string): Promise<boolean> {
     let result = false;
@@ -60,7 +65,13 @@ export class PayService {
       req.Data.DataType = "json";
       req.Data.CreateType = "App";
       await this.plt.ready();
-      const r: { Body: string; Number: string, Status: boolean; Code: string; Message: string; } = await this.apiService.getPromiseData<any>(req).catch(_ => {
+      const r: {
+        Body: string;
+        Number: string;
+        Status: boolean;
+        Code: string;
+        Message: string;
+      } = await this.apiService.getPromiseData<any>(req).catch((_) => {
         messages.push({ timeStamp: Date.now(), message: _, remark: "ali" });
         return null;
       });
@@ -68,24 +79,27 @@ export class PayService {
         messages.push(this.addPayMessage(r.Message));
       }
       if (r && r.Body) {
-        const payresult: IAliPayPluginPayResult = await this.ali.pay(r.Body).catch(_ => {
-          messages.push(this.addPayMessage(_));
-          return null;
-        });
-        console.log('支付宝支付，payresult ', payresult);
+        const payresult: IAliPayPluginPayResult = await this.ali
+          .pay(r.Body)
+          .catch((_) => {
+            messages.push(this.addPayMessage(_));
+            return null;
+          });
+        console.log("支付宝支付，payresult ", payresult);
         if (payresult) {
-          if (payresult.resultStatus == '9000') {
+          if (payresult.resultStatus == "9000") {
             messages.push(this.addPayMessage("订单支付成功"));
             result = true;
           } else {
-            const info = payresult.memo || payresult.result || payresult.resultStatus;
+            const info =
+              payresult.memo || payresult.result || payresult.resultStatus;
             if (info) {
               messages.push(this.addPayMessage(`${info}`));
             }
           }
         }
-      };
-      if (messages.filter(it => !!it.message).length) {
+      }
+      if (messages.filter((it) => !!it.message).length) {
         messages.sort((a, b) => b.timeStamp - a.timeStamp);
         for (let i = 0; i < messages.length; i++) {
           if (messages[i].message) {
@@ -106,19 +120,22 @@ export class PayService {
       AppHelper.isWechatMini() ||
       AppHelper.isWechatH5()
     ) {
-      req.Data.OpenId = AppHelper.isWechatMini() ? WechatHelper.getMiniOpenId() : WechatHelper.getOpenId();
+      req.Data.OpenId = AppHelper.isWechatMini()
+        ? WechatHelper.getMiniOpenId()
+        : WechatHelper.getOpenId();
       req.IsShowLoading = true;
       if (AppHelper.isApp()) {
         req.Data.CreateType = "App";
         req.Data.DataType = "json";
-        const isWecahtInstalled = await AppHelper.isWXAppInstalled().then(() => true).catch(() => false);
+        const isWecahtInstalled = await AppHelper.isWXAppInstalled()
+          .then(() => true)
+          .catch(() => false);
         if (!isWecahtInstalled) {
           req.Data.CreateType = "Mobile";
           this.payMobile(req, path);
           return;
         }
-      }
-      else if (AppHelper.isWechatMini()) {
+      } else if (AppHelper.isWechatMini()) {
         req.Data.CreateType = "Mini";
         req.Data.DataType = "json";
       } else if (AppHelper.isWechatH5()) {
@@ -127,24 +144,29 @@ export class PayService {
       }
       return new Promise<any>((resolve, reject) => {
         const messages: IPayMessage[] = [];
-        const sub = this.apiService.getResponse<any>(req)
-          .pipe(finalize(() => {
-            setTimeout(async () => {
-              if (messages.filter(it => !!it.message).length) {
-                messages.sort((a, b) => b.timeStamp - a.timeStamp);
-                for (let i = 0; i < messages.length; i++) {
-                  if (messages[i].message) {
-                    await AppHelper.alert(messages[i].message, true);
+        const sub = this.apiService
+          .getResponse<any>(req)
+          .pipe(
+            finalize(() => {
+              setTimeout(async () => {
+                if (messages.filter((it) => !!it.message).length) {
+                  messages.sort((a, b) => b.timeStamp - a.timeStamp);
+                  for (let i = 0; i < messages.length; i++) {
+                    if (messages[i].message) {
+                      await AppHelper.alert(messages[i].message, true);
+                    }
                   }
                 }
-              }
-            }, 200);
-          }))
+              }, 200);
+            })
+          )
           .subscribe(
-            async r => {
+            async (r) => {
               if (r.Status && r.Data) {
                 if (!r.Data.Status) {
-                  messages.push(this.addPayMessage(r.Data.Message, "wechatPay"));
+                  messages.push(
+                    this.addPayMessage(r.Data.Message, "wechatPay")
+                  );
                 }
                 if (AppHelper.isWechatMini()) {
                   const url =
@@ -168,7 +190,7 @@ export class PayService {
                     r.Data.Number;
                   WechatHelper.wx.miniProgram.navigateTo({ url: url });
                 } else if (AppHelper.isWechatH5()) {
-                  const ok = await WechatHelper.ready().catch(e => {
+                  const ok = await WechatHelper.ready().catch((e) => {
                     return false;
                   });
                   WechatHelper.wx.chooseWXPay({
@@ -177,7 +199,7 @@ export class PayService {
                     package: r.Data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
                     signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                     paySign: r.Data.paySign, // 支付签名
-                    success: res => {
+                    success: (res) => {
                       resolve(r.Data.Number || "支付操作完成");
                       //  if(res.errMsg=="chooseWXPay:ok")
                       //  {
@@ -186,7 +208,7 @@ export class PayService {
                       //  else{
                       //     reject(res.errMsg);
                       //  }
-                    }
+                    },
                   });
                 } else {
                   if (!r.Data.appid) {
@@ -199,19 +221,29 @@ export class PayService {
                     packageValue: r.Data.package,
                     nonceStr: r.Data.noncestr,
                     timeStamp: r.Data.timestamp,
-                    sign: r.Data.sign
+                    sign: r.Data.sign,
                   };
                   this.wechat
                     .pay(payInfo as any)
-                    .then(n => {
-                      console.log("wechat 支付成功返回结果：" + JSON.stringify(n));
+                    .then((n) => {
+                      console.log(
+                        "wechat 支付成功返回结果：" + JSON.stringify(n)
+                      );
                       resolve(r.Data.Number || "支付操作完成");
                     })
-                    .catch(e => {
+                    .catch((e) => {
                       console.log("wechat 支付成功返回结果：" + typeof e);
-                      console.log("wechat 支付成功返回结果：" + JSON.stringify(e));
+                      console.log(
+                        "wechat 支付成功返回结果：" + JSON.stringify(e)
+                      );
                       // AppHelper.alert(e.message || e);
-                      reject(e.message || `${e}`.includes("-2") ? "用户取消" : `${e}`.includes("-1") ? "签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配" : `微信支付结果：${e}`.replace(",(null)", ""));
+                      reject(
+                        e.message || `${e}`.includes("-2")
+                          ? "用户取消"
+                          : `${e}`.includes("-1")
+                          ? "签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配"
+                          : `微信支付结果：${e}`.replace(",(null)", "")
+                      );
                     });
                 }
               } else {
@@ -219,8 +251,8 @@ export class PayService {
                 reject(r.Message);
               }
             },
-            e => {
-              this.addPayMessage(e, "wechatpay")
+            (e) => {
+              this.addPayMessage(e, "wechatpay");
               reject(e);
             },
             () => {
@@ -239,15 +271,17 @@ export class PayService {
   payMobile(req: RequestEntity, path: string) {
     let url =
       AppHelper.getApiUrl() +
-      "/home/Pay?ticket=" + AppHelper.getTicket() + "&path=" +
+      "/home/Pay?ticket=" +
+      AppHelper.getTicket() +
+      "&path=" +
       encodeURIComponent(
         AppHelper.getRedirectUrl() +
-        "?path=" +
-        path +
-        "&ticket=" +
-        AppHelper.getTicket() +
-        "&openid" +
-        (WechatHelper.getOpenId() || "")
+          "?path=" +
+          path +
+          "&ticket=" +
+          AppHelper.getTicket() +
+          "&openid" +
+          (WechatHelper.getOpenId() || "")
       );
     for (let r in req) {
       url +=
@@ -262,14 +296,14 @@ export class PayService {
   process(req: RequestEntity) {
     return new Promise<any>((resolve, reject) => {
       const sub = this.apiService.getResponse<{}>(req).subscribe(
-        r => {
+        (r) => {
           if (r && r.Status) {
             resolve(r.Data);
           } else {
             reject(r.Message);
           }
         },
-        e => {
+        (e) => {
           reject(e);
         },
         () => {
@@ -317,19 +351,17 @@ export interface IAliPayPluginPayResult {
       其它	 其它支付错误
    */
   resultStatus:
-  | "9000"
-  | "8000"
-  | "4000"
-  | "5000"
-  | "6001"
-  | "6002"
-  | "6004"
-  | "其它"; // 9000
+    | "9000"
+    | "8000"
+    | "4000"
+    | "5000"
+    | "6001"
+    | "6002"
+    | "6004"
+    | "其它"; // 9000
 }
 export interface Ali {
-  pay: (
-    payInfo: string
-  ) => Promise<IAliPayPluginPayResult>;
+  pay: (payInfo: string) => Promise<IAliPayPluginPayResult>;
 }
 interface Wechat {
   pay: (payInfo: any) => Promise<any>;

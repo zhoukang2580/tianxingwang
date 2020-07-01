@@ -20,6 +20,7 @@ import {
   ElementRef,
   ViewChild,
   Renderer2,
+  AfterViewInit,
 } from "@angular/core";
 import {
   Observable,
@@ -42,7 +43,7 @@ import { InternationalFlightService } from "src/app/flight-international/interna
   templateUrl: "tmc-home.page.html",
   styleUrls: ["tmc-home.page.scss"],
 })
-export class TmcHomePage implements OnInit, OnDestroy {
+export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   private intervalIds: any[] = [];
   private staffCredentials: MemberCredential[];
   private subscription = Subscription.EMPTY;
@@ -94,6 +95,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.queryParamMap.subscribe(async (p) => {
+      // this.updateSwiper();
       this.clearBookInfos();
       this.check();
       this.canSelectCompany$ = from(this.staffService.isSelfBookType()).pipe(
@@ -113,6 +115,11 @@ export class TmcHomePage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.destroySwiper();
+  }
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.updateSwiper();
+    }, 200);
   }
   private destroySwiper() {
     if (this.swiper) {
@@ -148,7 +155,7 @@ export class TmcHomePage implements OnInit, OnDestroy {
       this.slidesEle.startAutoplay();
     }
   }
-  ngOnInit() {
+  private initSwiper() {
     this.options = {
       loop: true,
       autoplay: {
@@ -159,6 +166,23 @@ export class TmcHomePage implements OnInit, OnDestroy {
       freeMode: true,
       isShowText: true,
     };
+    if (this.containerEl && this.containerEl.nativeElement) {
+      this.swiper = new Swiper(this.containerEl.nativeElement, {
+        loop: true,
+        // autoplay:true,//等同于以下设置
+        autoplay: {
+          delay: 3000,
+          stopOnLastSlide: false,
+          disableOnInteraction: true,
+        },
+      });
+      this.swiper.on("touchEnd", () => {
+        this.onTouchEnd();
+      });
+    }
+  }
+  async ngOnInit() {
+    this.initSwiper();
     this.subscription = this.identityService
       .getIdentitySource()
       .subscribe((_) => {
@@ -175,21 +199,8 @@ export class TmcHomePage implements OnInit, OnDestroy {
       };
       this.payService.process(req1);
     }
-
-    this.initializeSelfBookInfos();
-    if (this.containerEl && this.containerEl.nativeElement) {
-      this.swiper = new Swiper(this.containerEl.nativeElement, {
-        loop: true,
-        // autoplay:true,//等同于以下设置
-        autoplay: {
-          delay: 3000,
-          stopOnLastSlide: false,
-          disableOnInteraction: true,
-        },
-      });
-      this.swiper.on("touchEnd", () => {
-        this.onTouchEnd();
-      });
+    if (await this.hasTicket()) {
+      this.initializeSelfBookInfos();
     }
   }
   private onTouchEnd() {
@@ -203,6 +214,9 @@ export class TmcHomePage implements OnInit, OnDestroy {
   }
 
   private async getAgentNotices() {
+    if (!(await this.hasTicket())) {
+      return;
+    }
     const agentNotices = await this.cmsService
       .getAgentNotices(0)
       .catch((_) => [] as Notice[]);
@@ -274,14 +288,31 @@ export class TmcHomePage implements OnInit, OnDestroy {
       queryParams: { bulletinType: params },
     });
   }
-  private clearBookInfos() {
-    this.flightService.removeAllBookInfos();
-    this.trainService.removeAllBookInfos();
-    this.hotelService.removeAllBookInfos();
-    this.interFlightService.removeAllBookInfos();
-    this.interHotelService.removeAllBookInfos();
+  private async clearBookInfos() {
+    if (await this.hasTicket()) {
+      this.flightService.removeAllBookInfos();
+      this.trainService.removeAllBookInfos();
+      this.hotelService.removeAllBookInfos();
+      this.interFlightService.removeAllBookInfos();
+      this.interHotelService.removeAllBookInfos();
+    }
+  }
+  private async hasTicket() {
+    this.identity = await this.identityService.getIdentityAsync();
+    return this.identity && !!this.identity.Ticket;
+  }
+  private updateSwiper() {
+    if (this.swiper) {
+      setTimeout(() => {
+        this.swiper.update();
+        this.startAutoPlay();
+      }, 200);
+    }
   }
   async check() {
+    if (!(await this.hasTicket())) {
+      return;
+    }
     let retryCount = 0;
     try {
       this.agentNotices = [];

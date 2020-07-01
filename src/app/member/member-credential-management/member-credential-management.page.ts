@@ -14,6 +14,7 @@ import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { MemberCredential, MemberService } from "../member.service";
 import { CredentialsComponent } from "../components/credentials/credentials.component";
+import { Keyboard } from "@ionic-native/keyboard/ngx";
 @Component({
   selector: "app-member-credential-management",
   templateUrl: "./member-credential-management.page.html",
@@ -30,7 +31,12 @@ export class MemberCredentialManagementPage
   loading = false;
   isCanDeactive = false;
   isModify = false;
-  constructor(private memberService: MemberService, route: ActivatedRoute) {
+  isKeyBoardShow = false;
+  constructor(
+    private memberService: MemberService,
+    route: ActivatedRoute,
+    private keyboard: Keyboard
+  ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe((p) => {
         this.isCanDeactive = false;
@@ -82,6 +88,7 @@ export class MemberCredentialManagementPage
     this.modifyCredential.isAdd = false;
     this.modifyCredential.isModified = false;
     this.credentials = [this.modifyCredential];
+    this.backBtn.popToPrePage();
   }
   async saveModify(c: MemberCredential) {
     const ok = this.credentialsCom && (await this.credentialsCom.saveModify());
@@ -108,7 +115,14 @@ export class MemberCredentialManagementPage
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  ngOnInit() {}
+  ngOnInit() {
+    this.keyboard.onKeyboardWillShow().subscribe(() => {
+      this.isKeyBoardShow = true;
+    });
+    this.keyboard.onKeyboardWillHide().subscribe(() => {
+      this.isKeyBoardShow = false;
+    });
+  }
 
   onRemoveCredential(c: MemberCredential) {
     if (c && c.isAdd) {

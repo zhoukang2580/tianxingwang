@@ -542,7 +542,7 @@ export class AppHelper {
   }
   static getTicket() {
     const ticket =
-      AppHelper.getQueryString("ticket") || AppHelper.getStorage("ticket");
+      AppHelper.getQueryString("ticket") || AppHelper.getStorage("ticket") || AppHelper.getCookieValue("ticket");
     return ticket == "null" ? "" : ticket;
   }
 

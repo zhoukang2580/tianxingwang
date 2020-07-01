@@ -14,6 +14,11 @@ Page({
   onLoad: function(args) {
     argsOnLoad=args;
     console.log(args);
+    if(args&&args.description){
+      this.setData({
+        description:args.description||""
+      })
+    }
     this.checkAuth();
   },
   checkAuth: function() {

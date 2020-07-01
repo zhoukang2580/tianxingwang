@@ -16,10 +16,9 @@ try {
   console.log("url,locationurl", window.location.href);
   if (
     // true ||
-    (window["VConsole"] &&
-      (AppHelper.isApp() || AppHelper.isWechatH5()) &&
-      (location.href.toLowerCase().includes("test") ||
-        environment.mockProBuild))
+    window["VConsole"] &&
+    (AppHelper.isApp() || AppHelper.isWechatH5()) &&
+    (location.href.toLowerCase().includes("test") || environment.mockProBuild)
   ) {
     if (window["vConsole"]) {
       window["vConsole"].destroy();
@@ -38,8 +37,8 @@ function processPath() {
   let hrefPath = AppHelper.getNormalizedPath(window.location.href);
   if (query) {
     if (hrefPath) {
-      if (!query.path) {
-        query.path = hrefPath;
+      if (!query.path && hrefPath) {
+        query.path = hrefPath.startsWith("http") ? "" : hrefPath;
       }
     }
     if (
