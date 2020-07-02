@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
- 
+
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
     <ion-title>信息确认</ion-title>
@@ -36,9 +36,9 @@
       <ion-col>{{c.Name}}</ion-col>
     </ion-row>
     <ion-row>
-        <ion-col>性别：</ion-col>
-        <ion-col>{{c.Gender=="M"?"男":"女"}}</ion-col>
-      </ion-row>
+      <ion-col>性别：</ion-col>
+      <ion-col>{{c.Gender=="M"?"男":"女"}}</ion-col>
+    </ion-row>
     <ion-row>
       <ion-col>证件类型：</ion-col>
       <ion-col>{{c.Type|credential}}</ion-col>
@@ -64,14 +64,15 @@
       <ion-col>{{c.IssueCountry}}</ion-col>
     </ion-row>
     <ion-row>
-        <ion-col class='ion-text-center'>
-          <ion-button class='ion-margin-bottom ion-margin-top' color='secondary' (click)='confirmCredentials()' *ngIf='credentials?.length'>
-            确认证件
-          </ion-button>
-        </ion-col>
-      </ion-row>
+      <ion-col class='ion-text-center'>
+        <ion-button class='ion-margin-bottom ion-margin-top' color='secondary' (click)='confirmCredentials()'
+          *ngIf='credentials?.length'>
+          确认证件
+        </ion-button>
+      </ion-col>
+    </ion-row>
   </ion-grid>
-  <ion-toolbar *ngIf='credentials?.length==0' class='ion-text-center'>
-    <ion-label color="medium" >请维护您的证件信息</ion-label>
+  <ion-toolbar *ngIf='credentials?.length==0&&!identity?.Numbers?.AgentId' class='ion-text-center'>
+    <ion-label color="medium">请维护您的证件信息</ion-label>
   </ion-toolbar>
 </ion-content>

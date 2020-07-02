@@ -403,7 +403,10 @@ export class SelectPassengerPage
       }
     }
     console.log("onSelect", s);
-    this.selectedPassenger = s;
+    this.selectedPassenger = {
+      ...s,
+      isNotWhiteList: s.isNotWhiteList || !s.Policy,
+    };
     this.isShowNewCredential = false; // 页面上显示新增此人其他证件,或者是非白名单的证件
     this.vmNewCredential = null;
     this.selectedCredentialId = null; // 所选择的证件Id
@@ -612,7 +615,8 @@ export class SelectPassengerPage
       credential: ({
         ...selectedCredential,
       } as any) as CredentialsEntity,
-      isNotWhitelist: this.selectedPassenger.isNotWhiteList,
+      isNotWhitelist:
+        this.selectedPassenger.isNotWhiteList || !this.selectedPassenger.Policy,
       passenger: {
         ...this.selectedPassenger,
         Name: this.selectedPassenger.Name,

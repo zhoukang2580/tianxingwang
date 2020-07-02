@@ -3,7 +3,7 @@ import { IdentityEntity } from "../identity/identity.entity";
 import { RequestEntity } from "../api/Request.entity";
 import { ApiService } from "../api/api.service";
 import { IdentityService } from "../identity/identity.service";
-import { Injectable } from "@angular/core";
+import { Injectable, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
 import { tap, switchMap, map, finalize } from "rxjs/operators";
 import { of, throwError } from "rxjs";
@@ -32,13 +32,16 @@ export class LoginService {
     private router: Router,
     private apiService: ApiService,
     private http: HttpClient,
-    private storage: Storage
+    private storage: Storage,
+    private ngZone: NgZone
   ) {
     this.identityService.getIdentitySource().subscribe((id) => {
       this.identity = id;
-      setTimeout(() => {
-        this.check();
-      }, 30000);
+      this.ngZone.runOutsideAngular(() => {
+        setTimeout(() => {
+          this.check();
+        }, 30000);
+      });
     });
   }
   setToPageRouter(pageRouter: string) {
@@ -191,7 +194,7 @@ export class LoginService {
       req.Data = {};
     }
     req.Data.LoginType = this.getLoginType();
-    req.Data.AloneTag =  AppHelper.getQueryParamers()["AloneTag"];
+    req.Data.AloneTag = AppHelper.getQueryParamers()["AloneTag"];
     return this.apiService
       .getResponse<{
         Ticket: string; // "";
@@ -299,9 +302,11 @@ export class LoginService {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           });
         } else {
-          setTimeout(() => {
-            this.check();
-          }, 30000);
+          this.ngZone.runOutsideAngular(() => {
+            setTimeout(() => {
+              this.check();
+            }, 30000);
+          });
         }
       });
   }

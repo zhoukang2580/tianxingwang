@@ -40,7 +40,7 @@ export class InternationalHotelBookinfosPage implements OnInit {
   roomImages: string[];
   config: ConfigEntity;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
-  dates: { date: string; price: string }[] = [];
+  dates: { date: string; price: string|number }[] = [];
   constructor(
     private modalCtrl: ModalController,
     private hotelService: InternationalHotelService,

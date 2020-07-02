@@ -23,5 +23,7 @@ export const CONFIG = {
       return "http://shared." + this.appDomain.production + "/img/logo.png";
     }
     return "http://test.shared." + this.appDomain.debug + "/img/logo.png";
-  }
+  },
+  /** 设置 true 小程序多跳转一个页面，用于审核,审核通过后，关闭即可 */
+  forMiniApproval: false,
 };

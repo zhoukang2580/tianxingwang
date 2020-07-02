@@ -2,8 +2,8 @@
   <div class="swiper-wrapper">
     <div class="swiper-slide" #slide *ngFor='let it of vmItems'>
       <div class="inner" *ngIf='!options?.isShowText||it.imageUrl||isShowImage'>
-        <img #img [lazyLoad]='it.imageUrl' *ngIf='!options.notlayzLoad' class="pic" [defaultImage]='defaultImage' alt="图片">
-        <img  [src]='it.imageUrl' class="pic" *ngIf='options.notlayzLoad' alt="图片">
+        <img #img [lazyLoad]='it.imageUrl' *ngIf='!options?.notlayzLoad' class="pic" [defaultImage]='defaultImage' alt="图片">
+        <img  [src]='it.imageUrl' class="pic" *ngIf='options?.notlayzLoad' alt="图片">
         <ion-text color='light'>
           <div>{{it.desc}}</div>
         </ion-text>

@@ -8,17 +8,19 @@ import { Component, OnInit } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { MemberCredential } from "src/app/member/member.service";
-import { NavController } from '@ionic/angular';
+import { NavController } from "@ionic/angular";
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
 
 @Component({
   selector: "app-comfirm-info",
   templateUrl: "./confirm-information.page.html",
-  styleUrls: ["./confirm-information.page.scss"]
+  styleUrls: ["./confirm-information.page.scss"],
 })
 export class ConfirmInformationPage implements OnInit {
   credentials: MemberCredential[];
   staff: StaffEntity;
   password: string;
+  identity: IdentityEntity;
   constructor(
     private staffService: StaffService,
     private apiService: ApiService,
@@ -27,12 +29,12 @@ export class ConfirmInformationPage implements OnInit {
     private route: ActivatedRoute,
     private identityService: IdentityService
   ) {
-    route.paramMap.subscribe(async p => {
+    route.paramMap.subscribe(async (p) => {
       this.staff = await this.staffService.getStaff();
       const staff = this.staff;
-      const identity = await this.identityService.getIdentityAsync();
+      this.identity = await this.identityService.getIdentityAsync();
       this.credentials = await this.getCredentials(
-        identity && identity.Id
+        this.identity && this.identity.Id
       );
       if (
         staff &&
@@ -40,6 +42,14 @@ export class ConfirmInformationPage implements OnInit {
         staff.IsModifyPassword != undefined
       ) {
         if (staff.IsConfirmInfo && staff.IsModifyPassword) {
+          if (
+            this.identity &&
+            this.identity.Numbers &&
+            this.identity.Numbers.AgentId
+          ) {
+            this.router.navigate([""]);
+            return;
+          }
           if (!this.credentials || this.credentials.length == 0) {
             await this.checkIfHasCredentials();
           }
@@ -54,17 +64,17 @@ export class ConfirmInformationPage implements OnInit {
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-List";
     req.Data = {
-      accountId
+      accountId,
     };
     return this.apiService
       .getPromiseData<{ Credentials: MemberCredential[] }>(req)
-      .then(r => r.Credentials)
-      .catch(_ => []);
+      .then((r) => r.Credentials)
+      .catch((_) => []);
   }
   back() {
     this.navCtrl.pop();
   }
-  async ngOnInit() { }
+  async ngOnInit() {}
   async confirmPassword() {
     if (!this.password) {
       AppHelper.alert(LanguageHelper.getEnterPasswordTip());
@@ -76,7 +86,7 @@ export class ConfirmInformationPage implements OnInit {
     const ok = await this.modifyPassword({
       OldPassword: (this.staff && this.staff.Password) || "",
       NewPassword: this.password,
-      SurePassword: this.password
+      SurePassword: this.password,
     });
     if (ok) {
       const r = await this.staffService.comfirmInfoModifyPassword();
@@ -96,9 +106,16 @@ export class ConfirmInformationPage implements OnInit {
   private async checkIfHasCredentials() {
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
+      if (identity && identity.Numbers && identity.Numbers.AgentId) {
+        return;
+      }
       const cs = await this.getCredentials(identity && identity.Id);
       if (!cs || cs.length == 0) {
-        const ok = await AppHelper.alert("请维护证件", true, LanguageHelper.getConfirmTip());
+        const ok = await AppHelper.alert(
+          "请维护证件",
+          true,
+          LanguageHelper.getConfirmTip()
+        );
         if (ok) {
           this.maintainCredentials();
         } else {
@@ -127,10 +144,10 @@ export class ConfirmInformationPage implements OnInit {
     req.IsShowLoading = true;
     return this.apiService
       .getPromiseData(req)
-      .then(_ => {
+      .then((_) => {
         return true;
       })
-      .catch(e => {
+      .catch((e) => {
         AppHelper.alert(e);
         return false;
       });
@@ -149,7 +166,7 @@ export class ConfirmInformationPage implements OnInit {
             LanguageHelper.getComfirmInfoModifyCredentialsSuccessTip(),
             true,
             LanguageHelper.getConfirmTip()
-          ).then(confirm => {
+          ).then((confirm) => {
             if (confirm) {
               this.router.navigate([""]); // 回到首页
             }
@@ -160,12 +177,10 @@ export class ConfirmInformationPage implements OnInit {
           LanguageHelper.getComfirmInfoModifyCredentialsFailureTip()
         );
       }
-    } catch { }
+    } catch {}
   }
   maintainCredentials() {
-    this.router.navigate([
-      AppHelper.getRoutePath("member-credential-list")
-    ]);
+    this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
     // if (this.credentials.length) {
     //   this.router.navigate([AppHelper.getRoutePath("")]);
     // } else {

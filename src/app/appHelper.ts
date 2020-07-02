@@ -1,5 +1,5 @@
 ﻿import * as md5 from "md5";
-import Big from 'big.js';
+import Big from "big.js";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
 import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
@@ -27,7 +27,7 @@ export class AppHelper {
   static _appDomain = !environment.mockProBuild
     ? CONFIG.appDomain.production
     : CONFIG.appDomain.debug;
-  constructor() { }
+  constructor() {}
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -116,10 +116,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-        ? msg.message
-        : msg && (msg.message || msg.Message)
-          ? msg.message || msg.Message
-          : JSON.stringify(msg);
+      ? msg.message
+      : msg && (msg.message || msg.Message)
+      ? msg.message || msg.Message
+      : JSON.stringify(msg);
   }
   static alert(
     msg: any,
@@ -542,7 +542,9 @@ export class AppHelper {
   }
   static getTicket() {
     const ticket =
-      AppHelper.getQueryString("ticket") || AppHelper.getStorage("ticket") || AppHelper.getCookieValue("ticket");
+      AppHelper.getQueryString("ticket") ||
+      AppHelper.getStorage("ticket") ||
+      AppHelper.getCookieValue("ticket");
     return ticket == "null" ? "" : ticket;
   }
 
@@ -638,12 +640,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;
@@ -735,6 +737,9 @@ export class AppHelper {
   }
   static multiply(op1: number, op2: number) {
     return new Big(op1).times(op2);
+  }
+  static div(op1: number, op2: number) {
+    return new Big(op1).div(op2);
   }
   static getDate(datestr: string | number) {
     if (datestr && typeof datestr == "string") {

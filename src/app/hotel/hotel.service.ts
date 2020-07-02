@@ -138,13 +138,25 @@ export class HotelService {
     return roomPlan.RoomPlanRules.map((it) => it.Description).join(",");
   }
   getAvgPrice(plan: RoomPlanEntity) {
+    let price = 0;
     if (plan && plan.VariablesJsonObj) {
-      return plan.VariablesJsonObj["AvgPrice"];
+      price = plan.VariablesJsonObj["AvgPrice"];
     }
-    if (plan && plan.Variables) {
-      plan.VariablesJsonObj = JSON.parse(plan.Variables);
-      return plan.VariablesJsonObj["AvgPrice"];
+    if (!price) {
+      if (plan && plan.Variables) {
+        plan.VariablesJsonObj = JSON.parse(plan.Variables);
+        price = plan.VariablesJsonObj["AvgPrice"];
+      }
     }
+    if (price) {
+      return price;
+    }
+    price = (plan.RoomPlanPrices || []).reduce(
+      (acc, it) => (acc = +AppHelper.add(acc, +it.Price)),
+      0
+    );
+    price = +AppHelper.div(price, (plan.RoomPlanPrices || []).length || 1);
+    return price;
   }
   private getRoomRateRule(plan: RoomPlanEntity) {
     // 限时取消 不可取消 规则
@@ -184,7 +196,7 @@ export class HotelService {
   }
   isNoPermission(p: RoomPlanEntity) {
     const res = this.getFullHouseOrCanBook(p);
-    return res&&res.toLowerCase().includes("nopermission");
+    return res && res.toLowerCase().includes("nopermission");
   }
   getRoomArea(room: RoomEntity) {
     return (

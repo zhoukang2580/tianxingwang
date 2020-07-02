@@ -121,7 +121,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   checkPayCountIntervalTime = 5 * 1000;
   curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
-  dates: { date: string; price: string }[] = [];
+  dates: { date: string; price: string |number}[] = [];
   constructor(
     private navCtrl: NavController,
     private identityService: IdentityService,

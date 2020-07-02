@@ -222,9 +222,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
               )
               .add(i, "days")
               .format("YYYY-MM-DD"),
-            price: this.hotelService.getAvgPrice(
+            price: `${this.hotelService.getAvgPrice(
               this.curSelectedBookInfo.bookInfo.roomPlan
-            ),
+            )}`,
           });
         }
       }
@@ -1197,9 +1197,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
         date: moment(this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate)
           .add(i, "days")
           .format("YYYY-MM-DD"),
-        price: this.hotelService.getAvgPrice(
+        price: `${this.hotelService.getAvgPrice(
           this.curSelectedBookInfo.bookInfo.roomPlan
-        ),
+        )}`,
       });
     }
     console.log(this.dates, "ddddd");

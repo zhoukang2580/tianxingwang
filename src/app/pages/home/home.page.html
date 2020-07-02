@@ -6,7 +6,7 @@
     <ion-title *ngIf='identity?.Name&&identity?.Ticket'>欢迎您 <ng-container *ngIf='identity?.Name'>，{{identity.Name}}
       </ng-container>
     </ion-title>
-    <ion-title *ngIf='!identity.Ticket'>您尚未登录 </ion-title>
+    <ion-title *ngIf='!identity?.Ticket'>您尚未登录 </ion-title>
     <ion-buttons slot='end'>
       <ion-button (click)='onSetting()' color='secondary' *ngIf='identity?.Ticket'>设置</ion-button>
       <ion-button (click)='onLogin()' color='secondary' fill='solid' *ngIf='!identity?.Ticket'>登录</ion-button>
@@ -15,10 +15,6 @@
 </ion-header>
 
 <ion-content>
-  <!-- 扫码结果：{{scanresult}} -->
-  <div class='wrapper' *ngIf='homeUrl&&!isWechatMini'>
-    <iframe [src]="homeUrl" #iframe></iframe>
-  </div>
   <ng-container *ngIf='isWechatMini'>
     <div class="img">
       <div class="swiper-container" #container>

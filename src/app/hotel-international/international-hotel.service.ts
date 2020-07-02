@@ -766,13 +766,25 @@ export class InternationalHotelService {
     }
   }
   getAvgPrice(plan: RoomPlanEntity) {
+    let price = 0;
     if (plan && plan.VariablesJsonObj) {
-      return plan.VariablesJsonObj["AvgPrice"];
+      price = plan.VariablesJsonObj["AvgPrice"];
     }
-    if (plan && plan.Variables) {
-      plan.VariablesJsonObj = JSON.parse(plan.Variables);
-      return plan.VariablesJsonObj["AvgPrice"];
+    if (!price) {
+      if (plan && plan.Variables) {
+        plan.VariablesJsonObj = JSON.parse(plan.Variables);
+        price = plan.VariablesJsonObj["AvgPrice"];
+      }
     }
+    if (price) {
+      return price;
+    }
+    price = (plan.RoomPlanPrices || []).reduce(
+      (acc, it) => (acc = +AppHelper.add(acc, +it.Price)),
+      0
+    );
+    price = +AppHelper.div(price, (plan.RoomPlanPrices || []).length || 1);
+    return price;
   }
   getBreakfast(plan: RoomPlanEntity) {
     if (plan && plan.VariablesJsonObj) {

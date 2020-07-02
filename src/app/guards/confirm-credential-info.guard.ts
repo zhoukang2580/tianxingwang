@@ -38,7 +38,8 @@ export class ConfirmCredentialInfoGuard
         if (
           staff &&
           // (staff.BookType == StaffBookType.Secretary ||
-          //   staff.BookType == StaffBookType.Self) &&
+          //   staff.BookType == StaffBookType.Self ||
+          //   staff.BookType == StaffBookType.All) &&
           staff.IsConfirmInfo != undefined &&
           staff.IsModifyPassword != undefined
         ) {

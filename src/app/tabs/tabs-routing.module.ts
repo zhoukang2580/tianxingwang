@@ -8,6 +8,9 @@ import { AgentGuard } from "../guards/agent.guard";
 import { TmcGuard } from "../guards/tmc.guard";
 import { ConfirmCredentialInfoGuard } from "../guards/confirm-credential-info.guard";
 import { AppHelper } from "../appHelper";
+import { CONFIG } from "../config";
+const isRedirectToMiniHomePage =
+  AppHelper.isWechatMini() && CONFIG.forMiniApproval;
 const routes: Routes = [
   {
     path: "tabs",
@@ -16,7 +19,7 @@ const routes: Routes = [
     children: [
       {
         path: "",
-        redirectTo: "home",
+        redirectTo: isRedirectToMiniHomePage ? "home" : "/tabs/tmc-home",
         pathMatch: "full",
       },
       {
@@ -53,7 +56,7 @@ const routes: Routes = [
   },
   {
     path: "",
-    redirectTo: "home",
+    redirectTo: isRedirectToMiniHomePage ? "home" : "/tabs/tmc-home",
     pathMatch: "full",
   },
 ];

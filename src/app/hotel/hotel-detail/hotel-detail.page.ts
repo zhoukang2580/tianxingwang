@@ -324,7 +324,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
           if (hotel) {
             this.hotel = hotel.Hotel;
             if (this.hotel) {
-              this.hotelDayPrice.Hotel = this.hotel;
+              if (this.hotelDayPrice) {
+                this.hotelDayPrice.Hotel = this.hotel;
+              }
               this.hotelPolicy = await this.getPolicy();
               this.content.scrollToTop();
               this.initFilterPolicy();
@@ -458,7 +460,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     const color = evt.color || "";
     const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
-    const policies = this.hotelPolicy || (await this.getPolicy());
+    const policies = this.hotelPolicy || (await this.getPolicy()) || [];
     const policy =
       policies &&
       policies.find(
@@ -582,10 +584,13 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     if (!roomPlan || !passengerAccountId) {
       return false;
     }
+    policies = policies || [];
     const p = policies.find((it) => it.PassengerKey == passengerAccountId);
-    const policy = p.HotelPolicies.find(
-      (it) => this.hotelService.getRoomPlanUniqueId(roomPlan) == it.UniqueIdId
-    );
+    const policy =
+      p &&
+      p.HotelPolicies.find(
+        (it) => this.hotelService.getRoomPlanUniqueId(roomPlan) == it.UniqueIdId
+      );
     const passenger = this.hotelService
       .getBookInfos()
       .find((it) => it.passenger && it.passenger.AccountId == p.PassengerKey);
