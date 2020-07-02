@@ -43,6 +43,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   environment = environment;
   isApp = AppHelper.isApp();
   defaultLogoUrl: string;
+  isWechatMini=AppHelper.isWechatMini();
   private mockDeviceInfo = {
     Device: `accw125487df1254accw125487df1254`,
     DeviceName: `pc模拟测试`,
