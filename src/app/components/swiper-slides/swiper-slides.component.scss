@@ -7,6 +7,32 @@
   .swiper-wrapper {
     height: inherit;
   }
+  .bullets {
+    // background: rgba(0, 0, 0, 0.13);
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+    height: 1em;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  .bullet {
+    width: 1em;
+    height: 0.1em;
+    border-radius: 2px;
+    opacity: 0.5;
+    display: inline-block;
+    margin: 0 0.2em;
+    opacity: 0.5;
+    background-color: black;
+    &.active {
+      background-color: tomato;
+      opacity: 1;
+    }
+  }
 }
 img.pic {
   width: 100%;

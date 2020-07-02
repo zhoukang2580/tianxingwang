@@ -15,14 +15,14 @@ import {
   AfterContentInit,
   OnDestroy,
   Output,
-  EventEmitter
+  EventEmitter,
 } from "@angular/core";
 import Swiper from "swiper";
 const TAG = "swiper-slides";
 @Component({
   selector: "app-swiper-slides",
   templateUrl: "./swiper-slides.component.html",
-  styleUrls: ["./swiper-slides.component.scss"]
+  styleUrls: ["./swiper-slides.component.scss"],
 })
 export class SwiperSlidesComponent
   implements OnInit, OnChanges, AfterViewInit, AfterContentInit, OnDestroy {
@@ -53,20 +53,21 @@ export class SwiperSlidesComponent
     this.curIndex = this.initialPos + 1;
     this.vmItems = [];
     if (this.items) {
-      this.isShowImage = !!this.items.some(it => it.imageUrl);
+      this.isShowImage = !!this.items.some((it) => it.imageUrl);
     }
     // console.log(TAG + " this.initialPos ", this.initialPos);
     if (this.containerEl && this.containerEl.nativeElement) {
       let options = {
         direction: "horizontal", // 垂直切换选项
         // loop: true, // 循环模式选项
-        ...this.getDefaultOptions()
+        ...this.getDefaultOptions(),
         // autoplay: true
         // freeMode : true,
         // 如果需要分页器
-        // pagination: {
-        //   el: ".swiper-pagination"
-        // },
+        pagination: {
+          // el: ".swiper-pagination"
+          // bulletClass: "my-bullet", // 需设置.my-bullet样式
+        },
         // 如果需要前进后退按钮
         // navigation: {
         //   nextEl: ".swiper-button-next",
@@ -81,13 +82,13 @@ export class SwiperSlidesComponent
       if (this.options) {
         options = {
           ...options,
-          ...this.options
+          ...this.options,
         };
       }
       // console.log(TAG, options);
       const self = this;
       this.swiper = new Swiper(this.containerEl.nativeElement, {
-        ...options
+        ...options,
       });
       this.stopAutoPlay();
       // console.log("swiper", this.swiper);
@@ -114,7 +115,7 @@ export class SwiperSlidesComponent
     console.log("正在加载数据，", this.slides.length);
     this.loadMore();
   }
-  private onReachBeginning() { }
+  private onReachBeginning() {}
   private onReachEnd() {
     // this.loadMore();
   }
@@ -125,7 +126,7 @@ export class SwiperSlidesComponent
     }, 1000);
   }
   private slideToSlide(idx: number) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (this.swiper) {
         // console.log("切换到", idx);
         idx = idx - 1;
@@ -182,14 +183,14 @@ export class SwiperSlidesComponent
     if (this.isFirstEntry) {
       this.isFirstEntry = false;
       setTimeout(() => {
-        this.slideToSlide(this.initialPos + 1).then(_ => {
+        this.slideToSlide(this.initialPos + 1).then((_) => {
           this.startAutoPlay();
         });
       }, 100);
     }
   }
   ngAfterViewInit() {
-    const sub = this.slides.changes.subscribe(_ => {
+    const sub = this.slides.changes.subscribe((_) => {
       setTimeout(() => {
         // console.log(
         //   "slides.changes.subscribe ",
@@ -207,7 +208,7 @@ export class SwiperSlidesComponent
     this.subscriptions.push(sub);
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
     this.destroySwiper();
   }
   private destroySwiper() {
@@ -253,7 +254,7 @@ export class SwiperSlidesComponent
           return {
             idx,
             imageUrl: it.imageUrl,
-            text: it.text
+            text: it.text,
           };
         });
         setTimeout(() => {
@@ -272,15 +273,15 @@ export class SwiperSlidesComponent
     // }
   }
   private update() {
-    try{
+    try {
       if (this.swiper) {
         this.swiper.update();
         setTimeout(() => {
           this.startAutoPlay();
         }, 3000);
       }
-    }catch(e){
-      console.error("swiper slides update ",e)
+    } catch (e) {
+      console.error("swiper slides update ", e);
     }
     // console.log("swiper update");
   }
@@ -331,7 +332,7 @@ export class SwiperSlidesComponent
       //   minRatio: 1,
       //   toggle: false
       // },
-      zoom:false,
+      zoom: false,
       touchRatio: 1,
       touchAngle: 45,
       simulateTouch: true,
@@ -361,27 +362,27 @@ export class SwiperSlidesComponent
         stretch: 0,
         depth: 100,
         modifier: 1,
-        slideShadows: true
+        slideShadows: true,
       },
       flipEffect: {
         slideShadows: true,
-        limitRotation: true
+        limitRotation: true,
       },
       cubeEffect: {
         slideShadows: true,
         shadow: true,
         shadowOffset: 20,
-        shadowScale: 0.94
+        shadowScale: 0.94,
       },
       fadeEffect: {
-        crossfade: false
+        crossfade: false,
       },
       a11y: {
         prevSlideMessage: "Previous slide",
         nextSlideMessage: "Next slide",
         firstSlideMessage: "This is the first slide",
-        lastSlideMessage: "This is the last slide"
-      }
+        lastSlideMessage: "This is the last slide",
+      },
     };
     return swiperOptions;
   }

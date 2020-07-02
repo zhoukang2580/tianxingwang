@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+} from "@angular/core";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { AppHelper } from "src/app/appHelper";
@@ -9,20 +16,26 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { CONFIG } from "src/app/config";
 import { ApiService } from "src/app/services/api/api.service";
 import { WechatHelper } from "src/app/wechatHelper";
-
+import Swiper from "swiper";
 @Component({
   selector: "app-home",
   templateUrl: "./home.page.html",
   styleUrls: ["./home.page.scss"],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   identity: IdentityEntity;
   scanresult: string;
   homeUrl: any;
   isWechatMini = AppHelper.isWechatMini();
+  @ViewChild("container", { static: true }) containerEl: ElementRef<
+    HTMLElement
+  >;
   private subscriptions: Subscription[] = [];
   private timeId: any;
   private count = 10;
+  private swiper: any;
+  private options: any;
+  private isLoginByUser = false;
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -32,7 +45,33 @@ export class HomePage implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
   private goHome() {
-    this.router.navigate([""]);
+    if (!this.identity || !this.identity.Ticket) {
+      if (this.isLoginByUser) {
+        return this.router.navigate([AppHelper.getRoutePath("login")]);
+      }
+    }
+    this.router.navigate([AppHelper.getRoutePath("tabs/tmc-home")]);
+  }
+  ngAfterViewInit() {
+    this.updateSwiper();
+  }
+  private updateSwiper() {
+    if (this.swiper) {
+      setTimeout(() => {
+        this.swiper.update();
+        this.startAutoPlay();
+      }, 200);
+    }
+  }
+  private startAutoPlay() {
+    if (this.swiper && this.swiper.autoplay && this.swiper.autoplay.start) {
+      this.swiper.autoplay.start();
+    }
+  }
+  private destroySwiper() {
+    if (this.swiper) {
+      this.swiper.destroy();
+    }
   }
   private check() {
     if (this.timeId) {
@@ -57,6 +96,7 @@ export class HomePage implements OnInit, OnDestroy {
     }, 200);
   }
   ngOnInit() {
+    this.initSwiper();
     if (AppHelper.isWechatMini()) {
       this.check();
     }
@@ -67,18 +107,7 @@ export class HomePage implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (q) => {
-        // if (!this.identity) {
-        //   this.identity = await this.identityService
-        //     .getIdentityAsync()
-        //     .catch(() => null);
-        // }
-        // console.log("identity HomePage", this.identity);
-        // if (AppHelper.isWechatMini()) {
-        //   if (this.identity && this.identity.Ticket) {
-        //     this.goHome();
-        //     return;
-        //   }
-        // }
+        this.isLoginByUser = false;
         this.check();
       })
     );
@@ -106,10 +135,59 @@ export class HomePage implements OnInit, OnDestroy {
     // WechatHelper.checkStep(key, this.apiService, (val) => {
     // });
   }
+  async goToPage() {
+    if (!this.identity) {
+      this.identity = await this.identityService
+        .getIdentityAsync()
+        .catch(() => null);
+    }
+    if (!this.identity || !this.identity.Ticket) {
+      AppHelper.alert(
+        "您尚未登录，请点击右上角登录按钮进行登录，退出请点击小程序右上角小圆按钮退出小程序"
+      );
+    }
+  }
   onSetting() {
     this.router.navigate(["account-setting"]);
   }
+  onLogin() {
+    this.isLoginByUser = true;
+    this.goHome();
+  }
+  private initSwiper() {
+    this.options = {
+      loop: true,
+      autoplay: {
+        delay: 3000,
+      },
+      speed: 1000,
+      direction: "vertical",
+      freeMode: true,
+      isShowText: true,
+    };
+    if (this.containerEl && this.containerEl.nativeElement) {
+      this.swiper = new Swiper(this.containerEl.nativeElement, {
+        loop: true,
+        // autoplay:true,//等同于以下设置
+        autoplay: {
+          delay: 3000,
+          stopOnLastSlide: false,
+          disableOnInteraction: true,
+        },
+      });
+      this.swiper.on("touchEnd", () => {
+        this.onTouchEnd();
+      });
+    }
+  }
+  private onTouchEnd() {
+    // console.log("touchEnd");
+    setTimeout(() => {
+      this.startAutoPlay();
+    }, 1000);
+  }
   ngOnDestroy() {
+    this.destroySwiper();
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   onScanResult(txt: string) {

@@ -8,11 +8,6 @@ import { FormsModule } from "@angular/forms";
 import { TmcHomePage } from "./tmc-home.page";
 import { TmcGuard } from "src/app/guards/tmc.guard";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
-import { AppHelper } from "src/app/appHelper";
-const canActivate = [];
-if (!AppHelper.isWechatMini()) {
-  canActivate.push(TmcGuard);
-}
 @NgModule({
   imports: [
     IonicModule,
@@ -24,7 +19,7 @@ if (!AppHelper.isWechatMini()) {
       {
         path: "",
         component: TmcHomePage,
-        canActivate,
+        canActivate: [TmcGuard],
       },
     ]),
   ],

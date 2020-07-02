@@ -6,7 +6,7 @@ import {
   RouterStateSnapshot,
   Router,
   UrlTree,
-  CanActivateChild
+  CanActivateChild,
 } from "@angular/router";
 import { Observable } from "rxjs";
 import { IdentityService } from "../services/identity/identity.service";
@@ -15,7 +15,7 @@ import { LoginService } from "../services/login/login.service";
 import { IdentityEntity } from "../services/identity/identity.entity";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class TmcGuard implements CanActivate, CanActivateChild {
   constructor(
@@ -42,12 +42,14 @@ export class TmcGuard implements CanActivate, CanActivateChild {
     // }
     return this.identityService
       .getIdentityAsync()
-      .then(identity => {
-        console.log("tmc guard", identity);
+      .then((identity) => {
+        console.log("tmc guard identity ", identity);
         if (
-          identity &&
-          identity.Id &&
-          (!identity.Numbers || !identity.Numbers.HrId)
+          !identity ||
+          !identity.Id ||
+          !identity.Ticket ||
+          !identity.Numbers ||
+          !identity.Numbers.HrId
         ) {
           this.router.navigate([AppHelper.getRoutePath("home")]);
           return false;
@@ -67,6 +69,6 @@ export class TmcGuard implements CanActivate, CanActivateChild {
         this.router.navigate([AppHelper.getRoutePath("login")]);
         return false;
       })
-      .catch(_ => false);
+      .catch((_) => false);
   }
 }

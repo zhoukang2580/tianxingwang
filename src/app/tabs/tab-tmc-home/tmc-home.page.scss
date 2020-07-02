@@ -54,6 +54,7 @@ ion-header ion-title {
     }
   }
 }
+
 ion-col {
   &:not(:nth-of-type(3n)) {
     border-right: 1px solid var(--ion-color-light);
@@ -79,16 +80,6 @@ ion-grid ion-row ion-col {
         width: 58px;
         height: 49px;
       }
-
-      // background     : var(--ion-color-primary);
-      // padding        : 0;
-      // margin         : 0;
-      // width          : 4rem;
-      // height         : 4rem;
-      // display        : flex;
-      // align-items    : center;
-      // justify-content: center;
-      // border-radius  : 50%;
       [class*="icon-"] {
         font-size: 2.5rem;
         color: var(--ion-color-secondary);

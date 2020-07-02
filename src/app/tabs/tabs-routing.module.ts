@@ -8,21 +8,15 @@ import { AgentGuard } from "../guards/agent.guard";
 import { TmcGuard } from "../guards/tmc.guard";
 import { ConfirmCredentialInfoGuard } from "../guards/confirm-credential-info.guard";
 import { AppHelper } from "../appHelper";
-const isWechatMini = AppHelper.isWechatMini();
-const canActivateChild = [];
-if (!isWechatMini) {
-  canActivateChild.push(AuthorityGuard);
-}
-canActivateChild.push(ConfirmCredentialInfoGuard);
 const routes: Routes = [
   {
     path: "tabs",
     component: TabsPage,
-    canActivateChild,
+    canActivateChild: [AuthorityGuard, ConfirmCredentialInfoGuard],
     children: [
       {
         path: "",
-        redirectTo: "/tabs/tmc-home",
+        redirectTo: "home",
         pathMatch: "full",
       },
       {
@@ -59,7 +53,7 @@ const routes: Routes = [
   },
   {
     path: "",
-    redirectTo: "/tabs/tmc-home",
+    redirectTo: "home",
     pathMatch: "full",
   },
 ];

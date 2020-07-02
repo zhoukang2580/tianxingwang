@@ -210,7 +210,9 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     }, 1000);
   }
   private startAutoPlay() {
-    this.swiper.autoplay.start();
+    if (this.swiper && this.swiper.autoplay && this.swiper.autoplay.start) {
+      this.swiper.autoplay.start();
+    }
   }
 
   private async getAgentNotices() {

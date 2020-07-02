@@ -2,7 +2,8 @@
   <div class="swiper-wrapper">
     <div class="swiper-slide" #slide *ngFor='let it of vmItems'>
       <div class="inner" *ngIf='!options?.isShowText||it.imageUrl||isShowImage'>
-        <img #img [lazyLoad]='it.imageUrl' class="pic" [defaultImage]='defaultImage' alt="图片">
+        <img #img [lazyLoad]='it.imageUrl' *ngIf='!options.notlayzLoad' class="pic" [defaultImage]='defaultImage' alt="图片">
+        <img  [src]='it.imageUrl' class="pic" *ngIf='options.notlayzLoad' alt="图片">
         <ion-text color='light'>
           <div>{{it.desc}}</div>
         </ion-text>
@@ -24,6 +25,15 @@
 
   <!-- 如果需要滚动条 -->
   <!-- <div class="swiper-scrollbar"></div> -->
-  <ion-text color='light' *ngIf='!options?.isShowText&&items?.length' class="indicator">{{curIndex}}/{{items?.length}}
-  </ion-text>
+  <ng-container *ngIf='!options?.indicator'>
+    <ion-text color='light' *ngIf='!options?.isShowText&&items?.length' class="indicator">{{curIndex}}/{{items?.length}}
+    </ion-text>
+  </ng-container>
+  <ng-container *ngIf='options?.indicator' class="paginations">
+    <ng-container *ngIf='options.indicator=="line"'>
+      <div class="swiper-pagination " [class.bullets]='vmItems?.length'>
+        <span class="bullet" [class.active]='curIndex==idx+1' *ngFor='let it of vmItems;let idx=index'></span>
+      </div>
+    </ng-container>
+  </ng-container>
 </div>

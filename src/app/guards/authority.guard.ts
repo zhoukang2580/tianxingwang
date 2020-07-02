@@ -10,20 +10,20 @@ import {
   CanLoad,
   Route,
   CanActivateChild,
-  UrlTree
+  UrlTree,
 } from "@angular/router";
 import { Observable, of } from "rxjs";
 import { IdentityService } from "../services/identity/identity.service";
 import {
   AlertController,
   LoadingController,
-  ModalController
+  ModalController,
 } from "@ionic/angular";
 import { finalize, switchMap, map, catchError } from "rxjs/operators";
 import { LoginSkeletonPageComponent } from "../components/login-skeleton-page/login-skeleton-page.component";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
   // private identity: IdentityEntity;
@@ -56,17 +56,20 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
     //   );
     // });
     return this.identityService.getStatus().pipe(
+      catchError((e) => {
+        return of(false);
+      }),
       map((status) => {
         if (status) {
           return true;
         }
         this.loginService.setToPageRouter(state.url);
+        if (AppHelper.isWechatMini()) {
+          this.router.navigate(["home"]);
+          return false;
+        }
         this.router.navigate([AppHelper.getRoutePath("login")]);
         return false;
-      }),
-      catchError((e) => {
-        this.router.navigate([AppHelper.getRoutePath("login")]);
-        return of(false);
       })
     );
   }

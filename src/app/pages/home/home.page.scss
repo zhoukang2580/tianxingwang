@@ -24,3 +24,60 @@
   left: 10%;
   right: 10%;
 }
+.img {
+  --background: white;
+  --border-width: 0;
+  position: relative;
+  max-height: 45vh;
+  width: 100vw;
+  height: 45vh;
+}
+ion-col {
+  &:not(:nth-of-type(3n)) {
+    border-right: 1px solid var(--ion-color-light);
+  }
+  border-bottom: 1px solid var(--ion-color-light);
+}
+ion-grid ion-row ion-col {
+  outline: none;
+  .item {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    outline: none;
+
+    ion-text {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    ion-label {
+      img {
+        width: 58px;
+        height: 49px;
+      }
+      [class*="icon-"] {
+        font-size: 2.5rem;
+        color: var(--ion-color-secondary);
+      }
+    }
+  }
+}
+.products {
+  ion-row {
+    &.md {
+      border-radius: 5px;
+      margin-top: 2%;
+      margin-bottom: 10%;
+      padding: 0.5em;
+      background-color: rgba(var(--ion-color-secondary-rgb), 0.1);
+    }
+    &.ios {
+      border-radius: 5px;
+      margin-top: 6%;
+      margin-bottom: 10%;
+      padding: 0.5em;
+      background-color: rgba(var(--ion-color-secondary-rgb), 0.1);
+    }
+  }
+}
