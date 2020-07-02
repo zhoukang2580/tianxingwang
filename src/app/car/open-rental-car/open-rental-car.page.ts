@@ -68,7 +68,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       toolbar: "yes",
       zoom: "no",
       footer: "no",
-      beforeload: "yes", // 设置后，beforeload事件才能触发
+      // beforeload: "yes", // 设置后，beforeload事件才能触发
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: "#2596D9",
       navigationbuttoncolor: "#2596D9",
