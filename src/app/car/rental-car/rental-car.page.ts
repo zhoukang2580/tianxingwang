@@ -23,34 +23,21 @@ import {
   AfterViewInit,
 } from "@angular/core";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
-import { Clipboard } from "@ionic-native/clipboard/ngx";
-import {
-  InAppBrowser,
-  InAppBrowserObject,
-  InAppBrowserOptions,
-} from "@ionic-native/in-app-browser/ngx";
+import { Geolocation } from "@ionic-native/geolocation/ngx";
+
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
   styleUrls: ["./rental-car.page.scss"],
   animations: [flyInOut],
-  providers: [
-    AndroidPermissions,
-    Geolocation,
-    InAppBrowser,
-    CallNumber,
-    Clipboard,
-  ],
+  providers: [AndroidPermissions, Geolocation],
 })
 export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("mobileInput") mobileInput: IonInput;
   private subscription = Subscription.EMPTY;
   private senSmsCodeSubscription = Subscription.EMPTY;
   private inputMobuleSubscription = Subscription.EMPTY;
-  private subscriptions: Subscription[] = [];
-  private browser: InAppBrowserObject;
   private defaultMobile = "";
   private verifiedMobiles: string[];
   private isSetTop = false;
@@ -72,11 +59,8 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private plt: Platform,
-    private callNumber: CallNumber,
     private androidPermissions: AndroidPermissions,
-    private geolocation: Geolocation,
-    private iab: InAppBrowser,
-    private clipboard: Clipboard
+    private geolocation: Geolocation
   ) {}
   onModify() {
     this.isModify = true;
@@ -87,111 +71,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       }, 200);
     }
   }
-  private openInAppBrowser(url: string) {
-    if (this.browser) {
-      this.browser.close();
-      this.subscriptions.forEach((sub) => sub.unsubscribe());
-    }
-    const color = "#2596D9";
-    const options: InAppBrowserOptions = {
-      usewkwebview: "yes",
-      location: "no",
-      toolbar: "yes",
-      zoom: "no",
-      footer: "no",
-      beforeload: "yes", // 设置后，beforeload事件才能触发
-      closebuttoncaption: "关闭(CLOSE)",
-      closebuttoncolor: "#2596D9",
-      navigationbuttoncolor: "#2596D9",
-      // toolbarcolor:"#2596D90f"
-    };
-    // url = `http://test.version.testskytrip.com/download/test.html`;
-    this.browser = this.iab.create(encodeURI(url), "_blank", options);
-    // this.subscriptions.push(this.browser.on("beforeload").subscribe((evt,callback)=>{
-    //   console.log("beforeload");
-    //   console.log(evt);
-    //   console.log("beforeload",evt);
-    //   console.log("beforeload",evt.message,evt.data,evt.code,evt.url);
-    //   if(evt.url){
-    //     // Load this URL in the inAppBrowser.
-    //     callback(evt.url);
-    //   }else{
-    //     console.log("无法加载url");
-    //   }
-    // }))
-    this.subscriptions.push(
-      this.browser.on("loaderror").subscribe((evt) => {
-        console.log("loaderror");
-        console.log(evt);
-        console.log("loaderror", evt);
-        console.log("loaderror", evt.message, evt.data, evt.code, evt.url);
-      })
-    );
-    this.subscriptions.push(
-      this.browser.on("loadstart").subscribe((evt) => {
-        // if (this.browser) {
-        //   this.browser.show();
-        // }
-        console.log("loadstart");
-        console.log(evt);
-        console.log("loadstart", evt);
-        console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
-        if (evt.url) {
-          if (evt.url.toLowerCase().includes("sharetrips")) {
-            this.clipboard.clear();
-            this.clipboard.copy(evt.url);
-            AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
-            // this.clipboard.paste().then(
-            //   (resolve: string) => {
-            //     alert(resolve);
-            //   },
-            //   (reject: string) => {
-            //     alert("Error: " + reject);
-            //   }
-            // );
-          }
-          const m = evt.url.match(/tel:(\d+)/i);
-          if (m && m.length >= 2) {
-            const phoneNumber = m[1];
-            console.log("phoneNumber" + phoneNumber);
-            if (phoneNumber) {
-              // window.location.href=`tel:${phoneNumber}`;
-              this.callNumber
-                .callNumber(phoneNumber, true)
-                .then((res) => console.log("Launched dialer!", res))
-                .catch((err) => console.log("Error launching dialer", err));
-            }
-          }
-        }
-      })
-    );
-    this.subscriptions.push(
-      this.browser.on("loadstop").subscribe((evt) => {
-        console.log("loadstop");
-        console.log(evt);
-        console.log("loadstop", evt);
-        console.log("loadstop", evt.message, evt.data, evt.code, evt.url);
-      })
-    );
-    this.subscriptions.push(
-      this.browser.on("message").subscribe((evt) => {
-        console.log("message");
-        console.log(evt);
-        console.log("message", evt);
-        console.log("message", evt.message, evt.data, evt.code, evt.url);
-      })
-    );
-    const sub = this.browser.on("exit").subscribe(() => {
-      setTimeout(() => {
-        if (sub) {
-          sub.unsubscribe();
-        }
-        if (this.browser) {
-          this.browser.close();
-        }
-      }, 100);
-    });
-  }
+
   onOpenTest() {
     const url = "https://open.es.xiaojukeji.com/webapp/feESWebappLogin/index";
     // this.router.navigate(["open-url"], {
@@ -202,7 +82,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     //     isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
     //   }
     // });
-    this.openInAppBrowser(url);
+    // this.openInAppBrowser(url);
   }
   ngAfterViewInit() {}
   private setTop() {
@@ -382,7 +262,9 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
         //     isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
         //   }
         // });
-        this.openInAppBrowser(url);
+        this.router.navigate([AppHelper.getRoutePath("open-rental-car")], {
+          queryParams: { url },
+        });
       } else {
         this.carService.setOpenUrlSource(url);
         if (window.navigator.geolocation) {

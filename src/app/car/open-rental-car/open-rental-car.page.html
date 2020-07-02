@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header [class.hidden]='isApp'>
   <ion-toolbar>
     <ion-buttons slot='start'>
       <app-back-button [backFn]='back.bind(this)'></app-back-button>
@@ -6,6 +6,6 @@
     <ion-title>用车</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content [class.hidden]='isApp'>
   <iframe [src]="url" name='iframe-dd' *ngIf=' url$|async as url' frameborder="0"></iframe>
 </ion-content>
