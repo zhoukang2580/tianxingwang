@@ -122,8 +122,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
         .catch(() => null);
     }
     if (!this.identity || !this.identity.Ticket) {
-      alert(
-        "用户尚未登录，请使用天行商旅员工账号密码或绑定过账号的手机号系统登录（注意，不是微信的账号和密码）"
+      AppHelper.alert(
+        "用户尚未登录，请使用天行商旅员工账号密码或绑定过账号的手机号登录系统（注意，请勿使用微信的账号和密码登录）,退出请点击小程序右上角小圆按钮退出小程序"
       );
     }
     this.goHome();
@@ -142,7 +142,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
         .catch(() => null);
     }
     if (!this.identity || !this.identity.Ticket) {
-      AppHelper.alert(
+      await AppHelper.alert(
         "您尚未登录，请点击右上角登录按钮进行登录，退出请点击小程序右上角小圆按钮退出小程序"
       );
     }
@@ -150,9 +150,18 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   onSetting() {
     this.router.navigate(["account-setting"]);
   }
-  onLogin() {
+  async onLogin() {
+    const ok = await AppHelper.alert(
+      "您是否确定登录系统？",
+      true,
+      "立即登录",
+      "暂不登录"
+    );
+    if (!ok) {
+      return;
+    }
     this.isLoginByUser = true;
-    this.goHome();
+    this.onGo();
   }
   private initSwiper() {
     this.options = {
