@@ -13,7 +13,7 @@ import { IResponse } from "src/app/services/api/IResponse";
 @Component({
   selector: "app-account-mobile",
   templateUrl: "./account-mobile.page.html",
-  styleUrls: ["./account-mobile.page.scss"]
+  styleUrls: ["./account-mobile.page.scss"],
 })
 export class AccountMobilePage implements OnInit, OnDestroy {
   action: string;
@@ -30,12 +30,12 @@ export class AccountMobilePage implements OnInit, OnDestroy {
     private navController: NavController,
     private apiService: ApiService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
       Mobile: [null, Validators.required],
-      Code: [null, Validators.required]
+      Code: [null, Validators.required],
     });
     this.load();
   }
@@ -49,10 +49,10 @@ export class AccountMobilePage implements OnInit, OnDestroy {
         IsActiveMobile?: boolean;
       }>(req)
       .subscribe(
-        r => {
+        (r) => {
           this.setResult(r);
         },
-        e => { },
+        (e) => {},
         () => {
           scription.unsubscribe();
         }
@@ -68,7 +68,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
     req.Data = {
       Mobile: this.form.value.Mobile,
       Code: this.form.value.Code,
-      Action: this.action
+      Action: this.action,
     };
     const scription = this.apiService
       .getResponse<{
@@ -77,9 +77,9 @@ export class AccountMobilePage implements OnInit, OnDestroy {
         IsActiveMobile?: boolean;
       }>(req)
       .subscribe(
-        r => {
+        (r) => {
           if (!r.Status) {
-            AppHelper.alert("验证码错误!");
+            AppHelper.alert(r.Message || "绑定错误");
             return;
           }
           if (r.Data) {
@@ -87,7 +87,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
               AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true);
               this.back();
               setTimeout(() => {
-                if (this.router.url == '/account-mobile') {
+                if (this.router.url == "/account-mobile") {
                   this.router.navigate([""]);
                 }
               }, 300);
@@ -98,7 +98,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
           }
           this.setResult(r);
         },
-        e => { },
+        (e) => {},
         () => {
           scription.unsubscribe();
         }
@@ -143,14 +143,14 @@ export class AccountMobilePage implements OnInit, OnDestroy {
         ExpiredInterval: number;
       }>(req)
       .subscribe(
-        res => {
+        (res) => {
           if (!res.Status && res.Message) {
             AppHelper.alert(res.Message || "请稍后重试");
             return;
           }
           this.startCountDonw(res.Data.SendInterval);
         },
-        e => {
+        (e) => {
           AppHelper.alert(e);
         }
       );
