@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button [backFn]='back.bind(this)'></app-back-button>
+    <ion-buttons slot='start' [class.hidden]='!company'>
+      <app-back-button  [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title>选择客户</ion-title>
     <ion-buttons slot='end'>

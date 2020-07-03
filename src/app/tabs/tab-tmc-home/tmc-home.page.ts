@@ -104,7 +104,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
         })
       );
       if (p.get("selectedCompany")) {
-        this.tmcService.setSelectedCompany(p.get("selectedCompany"));
+        this.tmcService.setSelectedCompanySource(p.get("selectedCompany"));
       }
       this.identity = await this.identityService
         .getIdentityAsync()

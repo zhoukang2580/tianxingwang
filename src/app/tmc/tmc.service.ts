@@ -72,17 +72,18 @@ export class TmcService {
     private payService: PayService,
     private platform: Platform
   ) {
+    this.selectedCompanySource = new BehaviorSubject(null);
     this.identityService.getIdentitySource().subscribe((id) => {
       this.identity = id;
       this.disposal();
     });
-    this.selectedCompanySource = new BehaviorSubject(null);
   }
   private disposal() {
     this.companies = null;
     this.tmc = null;
     this.agent = null;
     this.fetchingTmcPromise = null;
+    this.setSelectedCompanySource("");
   }
   get isAgent() {
     return (
@@ -272,7 +273,7 @@ export class TmcService {
   getSelectedCompanySource() {
     return this.selectedCompanySource.asObservable();
   }
-  setSelectedCompany(company: string) {
+  setSelectedCompanySource(company: string) {
     this.selectedCompanySource.next(company);
   }
   async sendEmail(

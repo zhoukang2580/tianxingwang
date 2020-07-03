@@ -19,19 +19,21 @@ import { RefresherComponent } from "src/app/components/refresher";
   styleUrls: ["./select-customer.page.scss"],
 })
 export class SelectCustomerPage implements OnInit, OnDestroy {
+  private subscriptions: Subscription[] = [];
   private subscription = Subscription.EMPTY;
   private pageIndex = 0;
   @ViewChild(BackButtonComponent, { static: true })
+  // private selectedItem: TmcEntity;
   backbtn: BackButtonComponent;
   keyword = "";
   customers: any[] = [];
   loading: boolean;
-  selectedItem: TmcEntity;
   identityEntity: IdentityEntity;
   identitySubscription = Subscription.EMPTY;
   @ViewChild(RefresherComponent, { static: true })
   ionrefresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
+  company: any;
   constructor(
     private agentService: AgentService,
     private identityService: IdentityService,
@@ -53,36 +55,43 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
     this.loginService.logout();
   }
   ngOnDestroy() {
-    this.identitySubscription.unsubscribe();
-    this.subscription.unsubscribe();
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   ngOnInit() {
+    this.subscriptions.push(this.identitySubscription);
+    this.subscriptions.push(this.subscription);
+    this.subscriptions.push(
+      this.tmcService.getSelectedCompanySource().subscribe((c) => {
+        this.company = c;
+      })
+    );
     if (this.scroller) {
       this.scroller.disabled = true;
     }
   }
   async onSelect(item: TmcEntity) {
-    this.selectedItem = item;
     const ok = await this.agentService.onSelect(item);
     if (ok) {
-      this.tmcService.setSelectedCompany(this.selectedItem.Name);
+      this.tmcService.setSelectedCompanySource(item.Name);
       this.router.navigate([AppHelper.getRoutePath("")]);
     }
   }
   goToOrderListPage() {
     this.router.navigate([AppHelper.getRoutePath("order-list")]);
   }
-  async doRefresh() {
+  doRefresh() {
     this.customers = [];
+    this.pageIndex = 0;
     if (this.scroller) {
       this.scroller.disabled = true;
     }
     if (this.ionrefresher) {
-      if (this.keyword.trim()) {
-        this.onSearch();
-      }
-      // console.log(this.ionrefresher);
       this.ionrefresher.complete();
+    }
+    if (this.keyword.trim()) {
+      this.onSearch();
+    } else {
+      this.loadMore();
     }
   }
   onSearch() {

@@ -32,8 +32,8 @@ export class ConfirmInformationPage implements OnInit {
     private loginService: LoginService,
     private identityService: IdentityService
   ) {
-    route.paramMap.subscribe(async (p) => {
-      this.staff = await this.staffService.getStaff();
+    route.queryParamMap.subscribe(async (p) => {
+      this.staff = await this.staffService.getStaff(true);
       const staff = this.staff;
       this.identity = await this.identityService.getIdentityAsync();
       this.credentials = await this.getCredentials(
@@ -74,8 +74,8 @@ export class ConfirmInformationPage implements OnInit {
       .then((r) => r.Credentials)
       .catch((_) => []);
   }
-  back() {
-    this.loginService.logout();
+  async back() {
+    this.router.navigate([""]);
   }
   async ngOnInit() {}
   async confirmPassword() {
@@ -90,19 +90,21 @@ export class ConfirmInformationPage implements OnInit {
       OldPassword: (this.staff && this.staff.Password) || "",
       NewPassword: this.password,
       SurePassword: this.password,
-    });
-    if (ok) {
-      const r = await this.staffService.comfirmInfoModifyPassword();
-      if (r) {
-        this.staff = await this.staffService.getStaff(true);
-        AppHelper.toast(
-          LanguageHelper.getComfirmInfoModifyPasswordSuccessTip()
-        );
-      } else {
-        AppHelper.toast(
-          LanguageHelper.getComfirmInfoModifyPasswordFailureTip()
-        );
-      }
+    })
+      .then(() => true)
+      .catch((e) => {
+        AppHelper.alert(e);
+        return false;
+      });
+    if (!ok) {
+      return;
+    }
+    const r = await this.staffService.comfirmInfoModifyPassword();
+    if (r) {
+      this.staff = await this.staffService.getStaff(true);
+      AppHelper.toast(LanguageHelper.getComfirmInfoModifyPasswordSuccessTip());
+    } else {
+      AppHelper.toast(LanguageHelper.getComfirmInfoModifyPasswordFailureTip());
     }
     await this.checkIfHasCredentials();
   }
@@ -184,7 +186,12 @@ export class ConfirmInformationPage implements OnInit {
     } catch {}
   }
   maintainCredentials() {
-    this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
+    this.router.navigate(
+      [AppHelper.getRoutePath("member-credential-management")],
+      {
+        queryParams: { fromConformCredentials: true, addNew: true },
+      }
+    );
     // if (this.credentials.length) {
     //   this.router.navigate([AppHelper.getRoutePath("")]);
     // } else {

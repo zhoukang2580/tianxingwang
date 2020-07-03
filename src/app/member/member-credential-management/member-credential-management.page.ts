@@ -8,7 +8,7 @@ import {
   AfterViewInit,
   OnDestroy,
 } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
@@ -32,10 +32,12 @@ export class MemberCredentialManagementPage
   isCanDeactive = false;
   isModify = false;
   isKeyBoardShow = false;
+  isFromConformCredentials = false;
   constructor(
     private memberService: MemberService,
     route: ActivatedRoute,
-    private keyboard: Keyboard
+    private keyboard: Keyboard,
+    private router: Router
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe((p) => {
@@ -52,6 +54,8 @@ export class MemberCredentialManagementPage
             this.credentials = [this.modifyCredential];
           }
         }
+        this.isFromConformCredentials =
+          p.get("fromConformCredentials") == "true";
       })
     );
   }
@@ -88,6 +92,10 @@ export class MemberCredentialManagementPage
     this.modifyCredential.isAdd = false;
     this.modifyCredential.isModified = false;
     this.credentials = [this.modifyCredential];
+    if (this.isFromConformCredentials) {
+      this.router.navigate([AppHelper.getRoutePath("")]);
+      return;
+    }
     this.backBtn.popToPrePage();
   }
   async saveModify(c: MemberCredential) {
