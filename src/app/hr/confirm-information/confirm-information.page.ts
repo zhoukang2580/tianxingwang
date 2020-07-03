@@ -10,6 +10,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { MemberCredential } from "src/app/member/member.service";
 import { NavController } from "@ionic/angular";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
+import { LoginService } from "src/app/services/login/login.service";
 
 @Component({
   selector: "app-comfirm-info",
@@ -21,12 +22,14 @@ export class ConfirmInformationPage implements OnInit {
   staff: StaffEntity;
   password: string;
   identity: IdentityEntity;
+  accountName = AppHelper.getStorage("loginname");
   constructor(
     private staffService: StaffService,
     private apiService: ApiService,
     private navCtrl: NavController,
     private router: Router,
     private route: ActivatedRoute,
+    private loginService: LoginService,
     private identityService: IdentityService
   ) {
     route.paramMap.subscribe(async (p) => {
@@ -72,7 +75,7 @@ export class ConfirmInformationPage implements OnInit {
       .catch((_) => []);
   }
   back() {
-    this.navCtrl.pop();
+    this.loginService.logout();
   }
   async ngOnInit() {}
   async confirmPassword() {
@@ -107,6 +110,7 @@ export class ConfirmInformationPage implements OnInit {
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
       if (identity && identity.Numbers && identity.Numbers.AgentId) {
+        this.router.navigate([AppHelper.getRoutePath("")]);
         return;
       }
       const cs = await this.getCredentials(identity && identity.Id);

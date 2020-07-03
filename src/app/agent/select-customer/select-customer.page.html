@@ -1,23 +1,26 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button></app-back-button>
+      <app-back-button [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title>选择客户</ion-title>
+    <ion-buttons slot='end'>
+      <ion-button color='secondary' (click)='onSwitchAccount()'>换账号登录</ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
     <!-- Searchbar with a custom debounce -->
-    <ion-searchbar debounce="300" animated placeholder="搜索" style='padding:0' (ionChange)='onSearch()' [(ngModel)]='keyword'>
+    <ion-searchbar debounce="300" animated placeholder="搜索" style='padding:0' (ionChange)='onSearch()'
+      [(ngModel)]='keyword'>
     </ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
-    <ion-refresher-content 
-      refreshingText="正在加载...">
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
+    <ion-refresher-content refreshingText="正在加载...">
     </ion-refresher-content>
-  </ion-refresher>
+  </app-refresher>
   <ion-list *ngIf='!loading;else loadingTemp'>
     <ng-container *ngIf='customers.length;else nodata'>
       <ion-item *ngFor='let item of customers' detail (click)='onSelect(item)'>
@@ -34,6 +37,9 @@
   <ng-template #loadingTemp>
     正在加载...
   </ng-template>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>
 <ion-footer *ngIf=''>
   <ion-button expand='block' color='secondary' (click)='goToOrderListPage()'>查看所有订单</ion-button>

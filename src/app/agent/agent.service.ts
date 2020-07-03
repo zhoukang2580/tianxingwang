@@ -4,10 +4,10 @@ import { TmcEntity, TmcService } from "../tmc/tmc.service";
 import { RequestEntity } from "../services/api/Request.entity";
 import { IdentityEntity } from "../services/identity/identity.entity";
 import { IdentityService } from "../services/identity/identity.service";
-import { OrderModel } from '../order/models/OrderModel';
+import { OrderModel } from "../order/models/OrderModel";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class AgentService {
   tmc: TmcEntity;
@@ -21,12 +21,12 @@ export class AgentService {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Agent-SelectTmc";
     req.Data = {
-      TmcId: item.Id
+      TmcId: item.Id,
     };
     req.IsShowLoading = true;
     const result = await this.apiService
       .getPromiseData<IdentityEntity>(req)
-      .catch(e => {
+      .catch((e) => {
         console.log(e);
         return null;
       });
@@ -34,18 +34,19 @@ export class AgentService {
       const identityEntity = await this.identityService.getIdentityAsync();
       this.identityService.setIdentity({
         ...identityEntity,
-        ...result
+        ...result,
       });
       res = true;
       this.tmc = await this.tmcService.getTmc(true);
     }
     return res;
   }
-  queryTmc(name: string) {
+  queryTmc(name: string, pageIndex: number) {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Agent-QueryTmc";
     req.Data = {
-      Name: name
+      Name: name,
+      PageIndex: pageIndex,
     };
     return this.apiService.getResponse<TmcEntity[]>(req);
   }

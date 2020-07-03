@@ -2,11 +2,11 @@
   <ion-toolbar>
     <ion-buttons slot='start'>
 
-      <app-back-button defaultHref=""></app-back-button>
+      <app-back-button defaultHref="" [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title>信息确认</ion-title>
     <ion-buttons slot='end'>
-      <ion-button color='secondary' fill='clear' (click)='maintainCredentials()'>
+      <ion-button color='secondary' fill='clear' *ngIf='!identity?.Numbers?.AgentId' (click)='maintainCredentials()'>
         <ion-label>证件维护</ion-label>
       </ion-button>
     </ion-buttons>
@@ -15,7 +15,7 @@
 
 <ion-content>
   <ion-toolbar class='ion-padding-start ion-padding-end' *ngIf='!staff?.IsModifyPassword'>
-    <ion-text color='danger'>您的密码还是初始密码，请及时修改。</ion-text>
+    <ion-text color='danger'>您的<ng-container *ngIf='accountName'>账号{{accountName}}</ng-container>密码还是初始密码，请及时修改。</ion-text>
     <ion-item>
       <ion-label position='floating' class='label-password'>
         请输入新密码
