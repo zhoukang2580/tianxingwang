@@ -692,28 +692,29 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
               info.trainEntity.TrainNo == info.trainPolicy.TrainNo
           );
 
-          arr = AppHelper.add(arr, +((seat && seat.SalesPrice) || 0));
+          arr = +AppHelper.add(arr, +((seat && seat.SalesPrice) || 0));
         }
         if (!exchange) {
           if (item.insuranceProducts) {
-            arr += item.insuranceProducts
+            const psum = item.insuranceProducts
               .filter(
                 (it) => it.insuranceResult == item.selectedInsuranceProduct
               )
               .reduce((sum, it) => {
                 sum = AppHelper.add(+it.insuranceResult.Price, sum);
-                return sum;
+                return +sum;
               }, 0);
+            arr = +AppHelper.add(+arr, psum);
           }
         }
-        return arr;
+        return +arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
       let fees = this.getTotalServiceFees();
       if (fees && exchange) {
         fees = +(this.tmc && this.tmc.TrainExchangeOnlineFee) || 0;
       }
-      totalPrice = AppHelper.add(fees, totalPrice);
+      totalPrice = +AppHelper.add(fees, totalPrice);
       const info = this.trainService
         .getBookInfos()
         .find((it) => !!it.exchangeInfo);
