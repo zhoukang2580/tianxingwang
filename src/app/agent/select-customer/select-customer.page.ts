@@ -49,6 +49,10 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
       });
   }
   back() {
+    if (this.company) {
+      this.goHome();
+      return;
+    }
     this.backbtn.popToPrePage();
   }
   onSwitchAccount() {
@@ -69,11 +73,14 @@ export class SelectCustomerPage implements OnInit, OnDestroy {
       this.scroller.disabled = true;
     }
   }
+  private goHome() {
+    this.router.navigate([AppHelper.getRoutePath("")]);
+  }
   async onSelect(item: TmcEntity) {
     const ok = await this.agentService.onSelect(item);
     if (ok) {
       this.tmcService.setSelectedCompanySource(item.Name);
-      this.router.navigate([AppHelper.getRoutePath("")]);
+      this.goHome();
     }
   }
   goToOrderListPage() {
