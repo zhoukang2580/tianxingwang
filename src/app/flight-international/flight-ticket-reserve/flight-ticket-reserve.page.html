@@ -228,9 +228,11 @@
 <div class="zz" *ngIf="isShowFee" (click)="isShowFee=!isShowFee"></div>
 <div [class.show]="isShowFee" class="transfrom">
   <div class="wrapper">
-    <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee" [style.min-width]="vmCombindInfos.length>1?'90%':'100%'">
-      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmModal?.credential?.Number}})</div>
-      <div *ngFor="let trip of searchModel?.trips" >
+    <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee"
+      [style.min-width]="vmCombindInfos.length>1?'90%':'100%'">
+      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmModal?.credential?.Number}})
+      </div>
+      <div *ngFor="let trip of searchModel?.trips">
         <div class="spacebetween">
           <ion-text color="secondary">{{trip?.fromCity?.Name}}</ion-text>
           <ion-text color="secondary">{{trip?.toCity?.Name}}</ion-text>
@@ -244,9 +246,11 @@
         <ion-text style="color: #ccc;">税费</ion-text>
         <ion-text>{{infos?.bookInfo?.bookInfo?.flightRoute?.selectFlightFare?.Tax}}</ion-text>
       </div>
-      <div *ngIf="tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)" class="spacebetween">
+      <div
+        *ngIf="tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)||identity?.Numbers?.AgentId"
+        class="spacebetween">
         <ion-text style="color: #ccc;">服务费</ion-text>
-      <ion-text>{{infos.serviceFee}}</ion-text>
+        <ion-text>{{infos.serviceFee}}</ion-text>
       </div>
     </div>
   </div>

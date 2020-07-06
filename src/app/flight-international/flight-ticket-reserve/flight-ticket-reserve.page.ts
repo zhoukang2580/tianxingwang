@@ -554,29 +554,30 @@ export class FlightTicketReservePage
           item.bookInfo.bookInfo.flightRoute.selectFlightFare
         ) {
           const info = item.bookInfo;
-          arr = AppHelper.add(
+          arr = +AppHelper.add(
             arr,
             +info.bookInfo.flightRoute.selectFlightFare.SalesPrice,
             +info.bookInfo.flightRoute.selectFlightFare.Tax
           );
         }
         if (item.insuranceProducts) {
-          arr += item.insuranceProducts
+          const p1 = +item.insuranceProducts
             .filter(
               (it) =>
                 it.insuranceResult &&
                 it.insuranceResult.Id == item.selectedInsuranceProductId
             )
             .reduce((sum, it) => {
-              sum = AppHelper.add(+it.insuranceResult.Price, sum);
+              sum = +AppHelper.add(+it.insuranceResult.Price, sum);
               return sum;
             }, 0);
+          arr = +AppHelper.add(arr, p1);
         }
-        return arr;
+        return +arr;
       }, 0);
       // console.log("totalPrice ", totalPrice);
       const fees = this.getTotalServiceFees();
-      totalPrice = AppHelper.add(fees, totalPrice);
+      totalPrice = +AppHelper.add(fees, totalPrice);
       this.totalPriceSource.next(totalPrice);
     }
     // console.timeEnd("总计");
@@ -1288,7 +1289,7 @@ export class FlightTicketReservePage
       fees = Object.keys(this.initialBookDtoModel.ServiceFees).reduce(
         (acc, key) => {
           const fee = +this.initialBookDtoModel.ServiceFees[key];
-          acc = AppHelper.add(fee, acc);
+          acc = +AppHelper.add(fee, acc);
           return acc;
         },
         0
@@ -1304,9 +1305,9 @@ export class FlightTicketReservePage
         }
       }
     }
-    if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
-      return (fees / 2) as number;
-    }
+    // if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
+    //   return +AppHelper.div(fees, 2);
+    // }
     return fees as number;
   }
   getInsuranceDetails(detail: string) {
@@ -1585,11 +1586,14 @@ export class FlightTicketReservePage
             this.initialBookDtoModel &&
             this.initialBookDtoModel.ServiceFees
           ) {
-            const showTotalFees = group[key].reduce(
+            let showTotalFees = group[key].reduce(
               (acc, it) =>
-                (acc = AppHelper.add(acc, this.getOneServiceFee(it))),
+                (acc = +AppHelper.add(acc, this.getOneServiceFee(it))),
               0
             );
+            // if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
+            //   showTotalFees = +AppHelper.div(showTotalFees, 2);
+            // }
             group[key][idx].serviceFee = showTotalFees;
           }
         }
