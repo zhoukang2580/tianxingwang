@@ -512,8 +512,15 @@ export class BookPage implements OnInit, AfterViewInit {
       }
     }
   }
-  onOpenrules(item: ICombindInfo) {
-    console.log("CombineedSelectedInfo", item);
+  async onOpenrules(item: ICombindInfo) {
+    try {
+      console.log("CombineedSelectedInfo", item);
+      if (!item.modal.bookInfo.flightPolicy.Cabin.Explain) {
+        item.modal.bookInfo.flightPolicy.Cabin.Explain = await this.flightService.getTravelNDCFlightCabinRuleResult(
+          item.modal.bookInfo.flightPolicy.Cabin as any
+        );
+      }
+    } catch (e) {}
     item.openrules = !item.openrules;
   }
   private async getTmc() {

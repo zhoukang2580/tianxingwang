@@ -340,6 +340,15 @@ export class FlightItemCabinsPage implements OnInit {
     this.flightService.showSelectedBookInfosPage();
   }
   async openrules(cabin: any) {
+    console.log("cabin", cabin);
+    if (cabin && cabin.Cabin && !cabin.Cabin.Explain) {
+      cabin.Explain = await this.flightService
+        .getTravelNDCFlightCabinRuleResult(cabin.Cabin)
+        .catch(() => "");
+      if (cabin.Explain) {
+        cabin.Cabin.Explain  = cabin.Explain;
+      }
+    }
     // this.popoverController.dismiss().catch(_ => {});
     const m = await this.popoverController.create({
       component: TicketchangingComponent,

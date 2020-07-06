@@ -41,6 +41,7 @@ export class SwitchCompanyPage implements OnInit, OnDestroy {
       .getIdentitySource()
       .subscribe(id => {
         this.identity = id;
+        this.keyword="";
       });
   }
   ngOnInit() {}

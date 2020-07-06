@@ -41,6 +41,7 @@ import {
 } from "./models/PassengerFlightInfo";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DayModel } from "../tmc/models/DayModel";
+import { FlightFareEntity } from './models/FlightFareEntity';
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -1382,6 +1383,16 @@ export class FlightService {
   }
   async getAllLocalAirports() {
     return this.tmcService.getAllLocalAirports();
+  }
+  async getTravelNDCFlightCabinRuleResult(flightCabin: FlightFareEntity) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiBookUrl-Flight-GetTravelNDCFlightCabinRuleResult";
+    req.Data = {
+      FlightCabin: flightCabin,
+    };
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    return this.apiService.getPromiseData<string>(req);
   }
   async bookFlight(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();

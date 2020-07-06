@@ -5,7 +5,7 @@ import { FlightPolicy } from "../../models/PassengerFlightInfo";
 @Component({
   selector: "app-ticketchanging-comp",
   templateUrl: "./ticketchanging.component.html",
-  styleUrls: ["./ticketchanging.component.scss"]
+  styleUrls: ["./ticketchanging.component.scss"],
 })
 export class TicketchangingComponent implements OnInit {
   cabin: FlightPolicy;
@@ -16,7 +16,7 @@ export class TicketchangingComponent implements OnInit {
     m.dismiss();
   }
   ngOnInit() {
-    if (this.cabin && this.cabin.Cabin) {
+    if (this.cabin && this.cabin.Cabin && this.cabin.Cabin.Explain) {
       this.explain = this.cabin.Cabin.Explain.replace(/\\n/g, "<br/>");
     }
   }

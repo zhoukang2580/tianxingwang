@@ -731,12 +731,25 @@ export class SelectPassengerPage
     if (this.isCanDeactive) {
       return true;
     }
-    return await AppHelper.alert(
+    const ok = await AppHelper.alert(
       LanguageHelper.getModifyUnSavedTip(),
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
     );
+    if (!ok) {
+      if (this.vmStaffs) {
+        this.vmStaffs = [];
+        this.doRefresh(this.vmKeyword);
+        return false;
+      }
+      if (this.vmNewCredential) {
+        this.vmNewCredential = null;
+        this.doRefresh(this.vmKeyword);
+        return false;
+      }
+    }
+    return ok;
   }
   private async getCredentials(accountId: string, orderPassengerId: string) {
     this.loading = true;
