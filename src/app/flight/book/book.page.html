@@ -83,7 +83,7 @@
                     <ion-icon name="caret-up-outline" *ngIf='!combindInfo?.openrules'></ion-icon>
                   </ion-button>
                 </div>
-                <p [innerHTML]='getExplain(s?.flightPolicy?.Cabin?.Explain)' (click)='onOpenrules(combindInfo)' [@flyInOut] *ngIf='combindInfo?.openrules'>
+                <p class="small-font ion-text-justify" [innerHTML]='getExplain(s?.flightPolicy?.Cabin?.Explain)' (click)='onOpenrules(combindInfo)' [@flyInOut] *ngIf='combindInfo?.openrules'>
                 </p>
               </div>
             </ion-item>
