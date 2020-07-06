@@ -82,7 +82,9 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     //     isHideTitle: AppHelper.isDingtalkH5() || AppHelper.isWechatH5()
     //   }
     // });
-    // this.openInAppBrowser(url);
+    this.router.navigate([AppHelper.getRoutePath("open-rental-car")], {
+      queryParams: { url },
+    });
   }
   ngAfterViewInit() {}
   private setTop() {

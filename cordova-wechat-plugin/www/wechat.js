@@ -27,3 +27,12 @@ exports.pay = function (payInfo, universalLink) {
         }, 'Wechat', 'pay', [payInfo, universalLink]);
     });
 };
+exports.share = function (shareInfo, universalLink) {
+    return new Promise(function (resolve, reject) {
+        exec(function () {
+            resolve();
+        }, function (error) {
+            reject(error)
+        }, 'Wechat', 'share', [shareInfo, universalLink]);
+    });
+};

@@ -135,11 +135,11 @@
       "cordova-plugin-android-permissions": {},
       "cordova-qrscanner-plugin": {},
       "cordova-hcp-plugin": {},
-      "cordova-wechat-plugin": {},
       "cordova-ali-plugin": {},
       "cordova-plugin-inappbrowser": {},
       "mx.ferreyra.callnumber": {},
-      "cordova-clipboard": {}
+      "cordova-clipboard": {},
+      "cordova-wechat-plugin": {}
     },
     "platforms": [
       "android",

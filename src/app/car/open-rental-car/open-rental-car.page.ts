@@ -20,8 +20,9 @@ import {
   InAppBrowserObject,
   InAppBrowserOptions,
 } from "@ionic-native/in-app-browser/ngx";
-import { CallNumber } from '@ionic-native/call-number/ngx';
+import { CallNumber } from "@ionic-native/call-number/ngx";
 import { Clipboard } from "@ionic-native/clipboard/ngx";
+import { WechatHelper } from "src/app/wechatHelper";
 
 @Component({
   selector: "app-open-rental-car",
@@ -45,6 +46,14 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
+  private isIphoneX() {
+    // 刘海屏
+    return (
+      /iphone/gi.test(navigator.userAgent) &&
+      screen.height == 812 &&
+      screen.width == 375
+    );
+  }
   async back() {
     const ok = await AppHelper.alert(
       "是否退出当前页面？",
@@ -64,7 +73,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     const color = "#2596D9";
     const options: InAppBrowserOptions = {
       usewkwebview: "yes",
-      location: "no",
+      location: this.isIphoneX() ? "yes" : "no",
       toolbar: "yes",
       zoom: "no",
       footer: "no",
@@ -97,7 +106,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       })
     );
     this.subscriptions.push(
-      this.browser.on("loadstart").subscribe((evt) => {
+      this.browser.on("loadstart").subscribe(async (evt) => {
         // if (this.browser) {
         //   this.browser.show();
         // }
@@ -109,7 +118,15 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
           if (evt.url.toLowerCase().includes("sharetrips")) {
             this.clipboard.clear();
             this.clipboard.copy(evt.url);
-            AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
+            if (!(await AppHelper.isWXAppInstalled())) {
+              AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
+            } else {
+              await WechatHelper.shareWebpage({
+                webTitle: "分享行程",
+                webDescription: "行程分享",
+                webpageUrl: evt.url,
+              });
+            }
             // this.clipboard.paste().then(
             //   (resolve: string) => {
             //     alert(resolve);

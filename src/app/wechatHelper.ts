@@ -65,6 +65,33 @@ export class WechatHelper {
   static getMiniOpenId() {
     return AppHelper.getCookieValue("wechatminiopenid");
   }
+  static async shareText(text: string) {}
+  static async getCode() {
+    return AppHelper.getWechatCode();
+  }
+  static async getAppId() {
+    return AppHelper.getWechatAppId();
+  }
+  static async shareWebpage(data: {
+    webTitle: string;
+    webpageUrl: string;
+    webDescription: string;
+  }) {
+    const openId = this.getOpenId();
+    await AppHelper.platform.ready();
+    const wechat = window["wechat"];
+    const appId = await this.getAppId();
+    if (wechat) {
+      return wechat.share({
+        appId,
+        shareType: "WXWebpageObject",
+        data: {
+          ...data,
+          openId,
+        },
+      });
+    }
+  }
   static getHashedCurPageUrl() {
     const href = window.location.href;
     const url = href.substring(0, href.indexOf("#")).trim();

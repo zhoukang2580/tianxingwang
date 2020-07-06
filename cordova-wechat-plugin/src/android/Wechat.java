@@ -3,6 +3,10 @@ package com.beeant.plugin.wechat;
 import android.text.TextUtils;
 
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.opensdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.opensdk.modelmsg.WXTextObject;
+import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -23,6 +27,12 @@ public class Wechat extends CordovaPlugin {
         if(TextUtils.equals("isWXAppInstalled",action)){
             cordova.getThreadPool().execute(()->{
                 isWXAppInstalled(args.optString(0),callbackContext);
+            });
+            return true;
+        }
+        if(TextUtils.equals("share",action)){
+            cordova.getThreadPool().execute(()->{
+                share(args.optJSONObject(0),callbackContext);
             });
             return true;
         }
@@ -114,11 +124,84 @@ public class Wechat extends CordovaPlugin {
         if(sWxApi.isWXAppInstalled()){
             callbackContext.success("ok");
         }else {
-         callbackContext.error("uninstalled");
+            callbackContext.error("uninstalled");
         }
 
     }
+    private void share(JSONObject shareInfo,CallbackContext callbackContext){
+        try{
+            String appId=shareInfo.optString("appId");
+            regToWx(appId);
+            String type=shareInfo.optString("shareType");
+            if(TextUtils.equals("WXTextObject",type)){
+                //初始化一个 WXTextObject 对象，填写分享的文本内容
+                WXTextObject wxTextObject=new WXTextObject();
+                wxTextObject.text=shareInfo.optString("data");
+                shareWXTextObject(callbackContext,wxTextObject);
+                return;
+            }
+            if(TextUtils.equals("WXWebpageObject",type)){
+                //初始化一个 WXTextObject 对象，填写分享的文本内容
+                WXWebpageObject webpageObject=new WXWebpageObject();
+                JSONObject data=shareInfo.optJSONObject("data");
+                webpageObject.webpageUrl=data.optString("webpageUrl");
+                shareWXWebpageObject(callbackContext,webpageObject,data.optString("webTitle"),data.optString("webDescription"),data.optString("openId"));
+                return;
+            }
+        }catch (Exception ex){
+            callbackContext.error(ex.getMessage());
+        }
 
+    }
+    private void shareWXMediaMessage(CallbackContext callbackContext, WXMediaMessage wxMediaMessage){
+        callbackContext.success();
+    }
+    private void shareWXTextObject(CallbackContext callbackContext, WXTextObject textObj){
+        //用 WXTextObject 对象初始化一个 WXMediaMessage 对象
+        WXMediaMessage msg = new WXMediaMessage();
+        msg.mediaObject = textObj;
+        msg.description = textObj.text;
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        // 对应该请求的事务 ID，通常由 Req 发起，回复 Resp 时应填入对应事务 ID
+        req.transaction = buildTransaction("text");
+        req.message = msg;
+        // 分享到对话
+        req.scene = SendMessageToWX.Req.WXSceneSession;
+        //调用api接口，发送数据到微信
+        cordova.getThreadPool().execute(() -> {
+            callbackContext.success();
+            sWxApi.sendReq(req);
+        });
+    }
+    private void shareWXWebpageObject (CallbackContext callbackContext, WXWebpageObject webpage,String title,String webDescription,String openId){
+
+        // 用 WXWebpageObject 对象初始化一个 WXMediaMessage 对象
+        WXMediaMessage msg = new WXMediaMessage(webpage);
+        msg.title =TextUtils.isEmpty(title)? "分享页面":title;
+        msg.description =TextUtils.isEmpty(webDescription)? "网页描述":webDescription;
+        //构造一个Req
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = buildTransaction("webpage");
+        req.message =msg;
+        req.scene =SendMessageToWX.Req.WXSceneSession;
+        if(!TextUtils.isEmpty(openId)){
+            req.userOpenId = openId;
+        }
+        //调用api接口，发送数据到微信
+        cordova.getThreadPool().execute(() -> {
+            callbackContext.success();
+            sWxApi.sendReq(req);
+        });
+    }
+    /**
+     * 构建一个唯一标志
+     *
+     * @param type 分享的类型分字符串
+     * @return 返回唯一字符串
+     */
+    private static String buildTransaction(String type) {
+        return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
+    }
     private void regToWx(String appId) {
         // 通过WXAPIFactory工厂，获取IWXAPI的实例
         sWxApi = WXAPIFactory.createWXAPI(cordova.getContext(), appId, true);
