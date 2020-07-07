@@ -83,6 +83,7 @@ export class FileHelperService {
     private splashScreen: SplashScreen,
     private zip: Zip
   ) {
+    AppHelper.setHttpClient(httpClient);
     AppHelper.setFileService(this);
     this.plt.ready().then(async () => {
       this.hcpPlugin = window["hcp"];
