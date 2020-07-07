@@ -26,7 +26,6 @@
     "@capacitor/core": "^1.5.0",
     "@ionic-native/android-permissions": "^5.21.6",
     "@ionic-native/app-version": "^5.21.4",
-    "@ionic-native/call-number": "^5.26.0",
     "@ionic-native/clipboard": "^5.26.0",
     "@ionic-native/core": "^5.21.5",
     "@ionic-native/file": "^5.21.5",
@@ -42,6 +41,7 @@
     "animate.css": "^3.7.2",
     "call-number": "file:cordova-callnumber-plugin",
     "cordova-ali-plugin": "file:cordova-ali-plugin",
+    "cordova-android": "^8.1.0",
     "cordova-clipboard": "^1.3.0",
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "^5.1.1",
@@ -141,7 +141,8 @@
       "cordova-callnumber-plugin": {}
     },
     "platforms": [
-      "ios"
+      "ios",
+      "android"
     ]
   }
 }
