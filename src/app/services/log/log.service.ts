@@ -40,7 +40,7 @@ export class LogService {
         Address: ex.Method,
         Message: ex.Message,
         Detail: detail,
-        AccountId: !identity ? identity.Id : "",
+        AccountId: identity ? identity.Id : "",
         Device: await AppHelper.getDeviceId()
       });
       console.log("发送错误,detail " + detail);
