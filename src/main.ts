@@ -63,6 +63,7 @@ const bootstrap = () =>
   platformBrowserDynamic()
     .bootstrapModule(AppModule)
     .then((moduleRef) => {
+      AppHelper.setHttpClient(moduleRef.injector.get(HttpClient));
       // 为了设置模式
       moduleRef.injector.get(ThemeService);
       moduleRef.injector.get(MapService);
