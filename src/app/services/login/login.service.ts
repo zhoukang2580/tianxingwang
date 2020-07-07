@@ -180,6 +180,12 @@ export class LoginService {
       req.ImageValue = this.ImageValue;
     }
     req.Data = JSON.stringify({ Mobile: mobile });
+    var paramters = AppHelper.getQueryParamers();
+    if (paramters) {
+      for (var p in paramters) {
+        req[p] = paramters[p];
+      }
+    }
     return this.apiService.getResponse<{
       SendInterval: number;
       ExpiredInterval: number;

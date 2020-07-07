@@ -104,6 +104,14 @@ export class RegisterPage implements OnInit {
     req.IsShowLoading = true;
     req.Method = "ApiRegisterUrl-Home-SendMobileCode";
     req.Data = JSON.stringify({ Mobile: this.form.value.Mobile });
+    var paramters= AppHelper.getQueryParamers();
+    if(paramters)
+    {
+      for(var p in paramters)
+      {
+        req[p]=paramters[p];
+      }
+    }
     const sub = this.apiService
       .getResponse<{
         SendInterval?: number;

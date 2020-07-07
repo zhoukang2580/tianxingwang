@@ -95,6 +95,12 @@ export class PasswordValidPage implements OnInit {
     req.Method = "ApiPasswordUrl-Home-SendCode";
     req.IsShowLoading = true;
     req.Data = { ValidateType: this.model, Name: this.name };
+    var paramters = AppHelper.getQueryParamers();
+    if (paramters) {
+      for (var p in paramters) {
+        req[p] = paramters[p];
+      }
+    }
     const sub = this.apiService
       .getResponse<{
         SendInterval: number;
