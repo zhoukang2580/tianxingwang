@@ -546,34 +546,14 @@ export class FileHelperService {
     );
     this.logMessage(`index.html 文件写入完成，内容`, indexHtml);
   }
-  private getMockPkgNameAndVersion() {
-    return new Promise<{ pkgName: string; version: string }>((s) => {
-      const sub = this.httpClient
-        .get("assets/config.xml", { responseType: "text" })
-        .pipe(
-          map((res) => {
-            const arr = res.match(/id="(.+?)"/i);
-            const versions = res.match(/version="(.+?)"/i);
-            return {
-              pkgName: arr && arr[1],
-              version: versions && versions[1],
-            };
-          })
-        )
-        .pipe(
-          finalize(() => {
-            setTimeout(() => {
-              sub.unsubscribe();
-            }, 1000);
-          })
-        )
-        .subscribe(
-          (res) => {
-            s(res);
-          },
-          () => s({} as any)
-        );
-    });
+  private async getMockPkgNameAndVersion() {
+    const xml = await AppHelper.getConfigXmlStr();
+    const arr = xml.match(/id="(.+?)"/i);
+    const versions = xml.match(/version="(.+?)"/i);
+    return {
+      pkgName: arr && arr[1],
+      version: versions && versions[1],
+    };
   }
   private async getInstallAppVersionNumber() {
     await this.plt.ready();

@@ -3,7 +3,7 @@ import Big from "big.js";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
 import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpResponseBase } from "@angular/common/http";
 import {
   AlertController,
   ToastController,
@@ -20,6 +20,7 @@ export class AppHelper {
   static httpClient: HttpClient;
   private static _deviceName: "ios" | "android";
   private static _routeData: any;
+  private static configXmlText: string;
   static toastController: ToastController;
   static alertController: AlertController;
   static modalController: ModalController;
@@ -113,6 +114,9 @@ export class AppHelper {
     return typeof fun === "function";
   }
   private static getMsg(msg: any) {
+    if (this.isHttpFailureMsg(msg)) {
+      return "网络错误";
+    }
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
@@ -120,6 +124,25 @@ export class AppHelper {
       : msg && (msg.message || msg.Message)
       ? msg.message || msg.Message
       : JSON.stringify(msg);
+  }
+  private static isHttpFailureMsg(msg: any) {
+    if (msg) {
+      if (msg instanceof HttpResponseBase) {
+        if (msg.statusText) {
+          if (msg.statusText.toLowerCase().includes("unknown error")) {
+            return true;
+          }
+        }
+      }
+      if (
+        (msg.message || msg || "")
+          .toLowerCase()
+          .includes("http failure response")
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
   static alert(
     msg: any,
@@ -272,7 +295,10 @@ export class AppHelper {
     }
     return value;
   }
-  private static getConfigXmlStr() {
+  static getConfigXmlStr() {
+    if (this.configXmlText) {
+      return Promise.resolve(this.configXmlText);
+    }
     return new Promise<string>((resolve, reject) => {
       const subscription = this.httpClient
         .get("assets/config.xml", { responseType: "arraybuffer" })
@@ -289,6 +315,7 @@ export class AppHelper {
               // console.log("读取完成", fr.result);
               if (fr.result) {
                 const configXmlStr = (fr.result || "") as string;
+                this.configXmlText = configXmlStr;
                 resolve(configXmlStr);
               } else {
                 reject("config.xml file does not exist");
