@@ -65,7 +65,20 @@ export class WechatHelper {
   static getMiniOpenId() {
     return AppHelper.getCookieValue("wechatminiopenid");
   }
-  static async shareText(text: string) {}
+  static async shareText(text: string) { 
+    const openId = this.getOpenId();
+    await AppHelper.platform.ready();
+    const wechat = window["wechat"];
+    const appId = await this.getAppId();
+    if (wechat) {
+      return wechat.share({
+        appId,
+        shareType: "WXTextObject",
+        universalLink:AppHelper.getWechatUniversalLinks(),
+        data: text
+      });
+    }
+  }
   static async getCode() {
     return AppHelper.getWechatCode();
   }
@@ -76,6 +89,7 @@ export class WechatHelper {
     webTitle: string;
     webpageUrl: string;
     webDescription: string;
+    universalLink?: string;
   }) {
     const openId = this.getOpenId();
     await AppHelper.platform.ready();
@@ -85,6 +99,7 @@ export class WechatHelper {
       return wechat.share({
         appId,
         shareType: "WXWebpageObject",
+        universalLink: data.universalLink || AppHelper.getWechatUniversalLinks(),
         data: {
           ...data,
           openId,

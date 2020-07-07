@@ -28,6 +28,7 @@ import { IonicStorageModule } from "@ionic/storage";
 import { Animation } from "./animations/animation-interface";
 import { FileHelperService } from './services/file-helper.service';
 import { AppHelper } from './appHelper';
+import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 let curPlt: "ios" | "md";
 export function navAnimations(baseEl, opts) {
   const animation =
@@ -68,6 +69,7 @@ export function navAnimations(baseEl, opts) {
     },
     Zip,
     File,
+    InAppBrowser,
     AppVersion,
     WebView
   ],

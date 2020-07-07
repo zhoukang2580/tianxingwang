@@ -1,25 +1,25 @@
 var exec = require("cordova/exec");
-exports.getStatusBarHeight=function(){
-  return new Promise((resolve,reject)=>{
-    exec(height=>{
-      if(height&&window.devicePixelRatio){
-        height=height/window.devicePixelRatio;
+exports.getStatusBarHeight = function () {
+  return new Promise(function (resolve, reject) {
+    exec(function (height) {
+      if (height && window.devicePixelRatio) {
+        height = height / window.devicePixelRatio;
       }
       resolve(height);
-    },error=>{
+    }, function (error) {
       reject(error)
     },
-    "Hcp",
-    "getStatusBarHeight",[])
+      "Hcp",
+      "getStatusBarHeight", [])
   })
 }
-exports.getUUID = function(arg0) {
-  return new Promise((resolve, reject) => {
+exports.getUUID = function (arg0) {
+  return new Promise(function (resolve, reject) {
     exec(
-      uuid => {
+      function (uuid) {
         resolve(uuid);
       },
-      error => {
+      function (error) {
         reject(error);
       },
       "Hcp",
@@ -28,13 +28,13 @@ exports.getUUID = function(arg0) {
     );
   });
 };
-exports.loadHcpPage = function(arg0) {
-  return new Promise((resolve, reject) => {
+exports.loadHcpPage = function (arg0) {
+  return new Promise(function (resolve, reject) {
     exec(
-      openId => {
+      function (openId) {
         resolve(openId);
       },
-      error => {
+      function (error) {
         reject(error);
       },
       "Hcp",
@@ -43,13 +43,13 @@ exports.loadHcpPage = function(arg0) {
     );
   });
 };
-exports.openHcpPage = function(arg0) {
-  return new Promise((resolve, reject) => {
+exports.openHcpPage = function (arg0) {
+  return new Promise(function(resolve, reject) {
     exec(
-      openId => {
+      function(openId) {
         resolve(openId);
       },
-      error => {
+      function(error){
         reject(error);
       },
       "Hcp",
@@ -58,13 +58,13 @@ exports.openHcpPage = function(arg0) {
     );
   });
 };
-exports.getHash = function(arg0) {
-  return new Promise((resolve, reject) => {
+exports.getHash = function (arg0) {
+  return new Promise(function(resolve, reject) {
     exec(
-      openId => {
+      function(openId) {
         resolve(openId);
       },
-      error => {
+      function(error) {
         reject(error);
       },
       "Hcp",
@@ -73,13 +73,13 @@ exports.getHash = function(arg0) {
     );
   });
 };
-exports.getWebViewUrl = function() {
-  return new Promise((resolve, reject) => {
+exports.getWebViewUrl = function () {
+  return new Promise(function(resolve, reject) {
     exec(
-      webviewUrl => {
+      function(webviewUrl) {
         resolve(webviewUrl);
       },
-      error => {
+      function(error) {
         reject(error);
       },
       "Hcp",
@@ -88,13 +88,13 @@ exports.getWebViewUrl = function() {
     );
   });
 };
-exports.getStartIndexPath = function() {
-  return new Promise((resolve, reject) => {
+exports.getStartIndexPath = function () {
+  return new Promise(function(resolve, reject) {
     exec(
-      startIndex => {
+      function(startIndex) {
         resolve(startIndex);
       },
-      error => {
+      function(error ){
         reject(error);
       },
       "Hcp",
@@ -103,13 +103,13 @@ exports.getStartIndexPath = function() {
     );
   });
 };
-exports.loadHcpPage = function() {
-  return new Promise((resolve, reject) => {
+exports.loadHcpPage = function () {
+  return new Promise(function(resolve, reject){
     exec(
-      () => {
+      function(){
         resolve();
       },
-      error => {
+      function(error){
         reject(error);
       },
       "Hcp",
@@ -118,13 +118,13 @@ exports.loadHcpPage = function() {
     );
   });
 };
-exports.checkPathOrFileExists = function(arg0) {
-  return new Promise((resolve, reject) => {
+exports.checkPathOrFileExists = function (arg0) {
+  return new Promise(function(resolve, reject){
     exec(
-      openId => {
+      function(openId) {
         resolve(openId);
       },
-      error => {
+      function(error) {
         reject(error);
       },
       "Hcp",
@@ -133,13 +133,13 @@ exports.checkPathOrFileExists = function(arg0) {
     );
   });
 };
-exports.openAPK = function(arg0) {
-  return new Promise((resolve, reject) => {
+exports.openAPK = function (arg0) {
+  return new Promise(function(resolve, reject) {
     exec(
-      openId => {
+      function(openId){
         resolve(openId);
       },
-      error => {
+      function(error){
         reject(error);
       },
       "Hcp",
@@ -148,13 +148,13 @@ exports.openAPK = function(arg0) {
     );
   });
 };
-exports.saveHcpPath = function(arg0) {
-  return new Promise((resolve, reject) => {
+exports.saveHcpPath = function (arg0) {
+  return new Promise(function(resolve, reject){
     exec(
-      openId => {
+      function(openId) {
         resolve(openId);
       },
-      error => {
+      function(error){
         reject(error);
       },
       "Hcp",

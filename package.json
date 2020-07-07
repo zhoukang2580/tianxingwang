@@ -40,9 +40,8 @@
     "@ionic/angular": "^5.0.0",
     "@ionic/storage": "^2.2.0",
     "animate.css": "^3.7.2",
-    "call-number": "^1.0.1",
+    "call-number": "file:cordova-callnumber-plugin",
     "cordova-ali-plugin": "file:cordova-ali-plugin",
-    "cordova-android": "^8.1.0",
     "cordova-clipboard": "^1.3.0",
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "^5.1.1",
@@ -137,12 +136,11 @@
       "cordova-hcp-plugin": {},
       "cordova-ali-plugin": {},
       "cordova-plugin-inappbrowser": {},
-      "mx.ferreyra.callnumber": {},
       "cordova-clipboard": {},
-      "cordova-wechat-plugin": {}
+      "cordova-wechat-plugin": {},
+      "cordova-callnumber-plugin": {}
     },
     "platforms": [
-      "android",
       "ios"
     ]
   }

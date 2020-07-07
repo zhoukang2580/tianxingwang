@@ -123,6 +123,61 @@ NSString* _appId;
     }
  
 }
+-(void) share:(CDVInvokedUrlCommand *)command{
+    [self.commandDelegate runInBackground:^{
+        NSDictionary* args=[command argumentAtIndex:(0)];
+            NSString* appId=[args valueForKey:@"appId"];
+            NSString* universalLink=[args valueForKey:@"universalLink"];
+            [WXApi startLogByLevel:WXLogLevelDetail logBlock:(WXLogBolock)^{
+                
+            }];
+            _appId=appId;
+            [WXApi registerApp:appId universalLink:universalLink];
+            NSString* type=[args valueForKey:@"shareType"];
+            if([@"WXTextObject" isEqualToString:type]){
+                SendMessageToWXReq *req = [[SendMessageToWXReq alloc] init];
+                req.bText = YES;
+                req.text = [args valueForKey:@"data"];
+                req.scene = WXSceneSession;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                 [WXApi sendReq:req completion:^(BOOL success){
+                      
+                  }];
+                  [self sendSuccessResult:nil :command];
+                });
+                
+                return;
+            }
+            if([@"WXWebpageObject" isEqualToString:type]){
+                WXWebpageObject *webpageObject = [WXWebpageObject object];
+                NSDictionary* args=[command argumentAtIndex:(0)];
+                NSDictionary* data=[args valueForKey:@"data"];
+                webpageObject.webpageUrl = [data valueForKey:@"webpageUrl"];
+                WXMediaMessage *message = [WXMediaMessage message];
+                message.title = [data valueForKey:@"webTitle"];
+                message.description = [data valueForKey:@"webDescription"];
+        //        [message setThumbImage:[UIImage imageNamed:@"缩略图.jpg"]];
+                message.mediaObject = webpageObject;
+                SendMessageToWXReq *req = [[SendMessageToWXReq alloc] init];
+                req.bText = NO;
+                req.message = message;
+                req.scene = WXSceneSession;
+                NSString* openId=[data valueForKey:@"openId"];
+        //        if(!(openId==nil||[openId length]==0)){
+        //            req.openID=openId;
+        //        }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                   [WXApi sendReq:req completion:^(BOOL success){
+                         NSLog(@"分享 %d",success);
+                     }];
+                   [self sendSuccessResult:nil :command];
+                });
+                
+              return;
+            }
+    }];
+    
+}
 - (void)isWXAppInstalled:(CDVInvokedUrlCommand *)command{
     if ([self booWeixin]){
         //安装了微信的处理
@@ -174,7 +229,7 @@ NSString* _appId;
     
 //    if ([url isKindOfClass:[NSURL class]])
 //     {
-//         NSLog(@"notification,url scheme=%@,url query=%@",url.scheme,url.query);
+//         NSLog(@"notification,url scheme=%@,url query=%@,appid=%@",url.scheme,url.query,_appId);
 //     }
     if ([url isKindOfClass:[NSURL class]] && [url.scheme isEqualToString:_appId])
     {

@@ -200,20 +200,28 @@ export class AppHelper {
   static setHttpClient(httpClient: HttpClient) {
     this.httpClient = httpClient;
   }
-  static getDeviceId() {
+  static async getDeviceId() {
     if (this.isH5()) {
       return Promise.resolve(
         `${environment.mockProBuild ? "_test_app_uuid_123456" : ""}`
       );
     }
-    let local = AppHelper.getStorage<string>("_UUId_DeviceId_");
+    let local ="";// AppHelper.getStorage<string>("_UUId_DeviceId_");
+    await this.platform.ready();
+    const wechat=window['hcp'];
+    if(wechat&&wechat.getUUID){
+      local=await wechat.getUUID();
+    }
+    if(local){
+      local=md5(local);
+    }
     console.log("local uuid " + local);
     if (local) {
       return Promise.resolve(local);
     }
-    local = AppHelper.uuid().replace(/-/g, "");
-    console.log("新生成的uuid " + local);
-    AppHelper.setStorage<string>("_UUId_DeviceId_", local);
+    // local = AppHelper.uuid().replace(/-/g, "");
+    console.log(" 获取到的 uuid " + local);
+    // AppHelper.setStorage<string>("_UUId_DeviceId_", local);
     return Promise.resolve(local);
   }
   static verifyIdNumber(id: string) {

@@ -8,6 +8,6 @@ import { Clipboard } from "@ionic-native/clipboard/ngx";
   declarations: [],
   imports: [CommonModule, CarRoutingModule],
   exports: [CarRoutingModule],
-  providers: [InAppBrowser, CallNumber, Clipboard],
+  providers: [ CallNumber, Clipboard],
 })
 export class CarModule {}

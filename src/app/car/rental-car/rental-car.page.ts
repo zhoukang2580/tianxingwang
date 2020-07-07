@@ -13,7 +13,6 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { TmcService } from "./../../tmc/tmc.service";
 import { NavController, IonInput, Platform, IonItem } from "@ionic/angular";
 import { CarService } from "./../car.service";
-import { CallNumber } from "@ionic-native/call-number/ngx";
 import {
   Component,
   OnInit,
@@ -25,6 +24,7 @@ import {
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
+import { WechatHelper } from 'src/app/wechatHelper';
 
 @Component({
   selector: "app-rental-car",
@@ -85,6 +85,16 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate([AppHelper.getRoutePath("open-rental-car")], {
       queryParams: { url },
     });
+  }
+  async onTestShare(){
+    await AppHelper.platform.ready();
+    const url=`https://common.diditaxi.com.cn/webapp/sharetrips/page?oid=TWpnNU5qTTNOemsxTVRBNE9UTTRNRFEy&productType=262&uid=862019777772141&sign=d7641ed5c1fefb5c1d915bdf5afde3fe&lang=zh-CN&originId=1&webappChannel=es_webapp&statArg=manual&carProductid=260&isSendBeReadIM=1&newVersion=true&es_banner_hide=1&showShareTips=true`;
+    WechatHelper.shareWebpage({webTitle:"测试分享",webDescription:"分享",webpageUrl:url});
+  }
+  async onTestShareText(){
+    await AppHelper.platform.ready();
+    const url=`testskytrip.com`;
+    WechatHelper.shareText("测试分享内容");
   }
   ngAfterViewInit() {}
   private setTop() {

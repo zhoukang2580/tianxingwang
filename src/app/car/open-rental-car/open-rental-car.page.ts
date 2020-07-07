@@ -1,5 +1,5 @@
 import { DomSanitizer } from "@angular/platform-browser";
-import { Observable } from "rxjs";
+import { Observable, BehaviorSubject } from "rxjs";
 import { Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { CarService } from "./../car.service";
@@ -20,7 +20,6 @@ import {
   InAppBrowserObject,
   InAppBrowserOptions,
 } from "@ionic-native/in-app-browser/ngx";
-import { CallNumber } from "@ionic-native/call-number/ngx";
 import { Clipboard } from "@ionic-native/clipboard/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
 
@@ -32,6 +31,7 @@ import { WechatHelper } from "src/app/wechatHelper";
 export class OpenRentalCarPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private browser: InAppBrowserObject;
+  private shareWebUrl$ = new BehaviorSubject(null);
   isApp = AppHelper.isApp();
   url$: Observable<string>;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
@@ -41,9 +41,9 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     private domSanitizer: DomSanitizer,
     private iab: InAppBrowser,
     private clipboard: Clipboard,
-    private callNumber: CallNumber
-  ) {}
+  ) { }
   ngOnDestroy() {
+    console.log("open-rental-car ondestroy");
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   private isIphoneX() {
@@ -63,6 +63,15 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     );
     if (ok) {
       this.backBtn.popToPrePage();
+    }
+  }
+  private shareWebPage(url: string) {
+    if(url){
+      WechatHelper.shareWebpage({
+        webTitle: "分享行程",
+        webDescription: "行程分享",
+        webpageUrl: url,
+      });
     }
   }
   private openInAppBrowser(url: string) {
@@ -118,14 +127,11 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
           if (evt.url.toLowerCase().includes("sharetrips")) {
             this.clipboard.clear();
             this.clipboard.copy(evt.url);
+            AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
             if (!(await AppHelper.isWXAppInstalled())) {
-              AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
             } else {
-              await WechatHelper.shareWebpage({
-                webTitle: "分享行程",
-                webDescription: "行程分享",
-                webpageUrl: evt.url,
-              });
+              // this.shareWebUrl$.next(evt.url);
+              this.shareWebPage(evt.url);
             }
             // this.clipboard.paste().then(
             //   (resolve: string) => {
@@ -141,11 +147,15 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
             const phoneNumber = m[1];
             console.log("phoneNumber" + phoneNumber);
             if (phoneNumber) {
+              await AppHelper.platform.ready();
+              const callNumber = window['call'];
               // window.location.href=`tel:${phoneNumber}`;
-              this.callNumber
-                .callNumber(phoneNumber, true)
-                .then((res) => console.log("Launched dialer!", res))
-                .catch((err) => console.log("Error launching dialer", err));
+              if (callNumber) {
+                callNumber
+                  .callNumber(phoneNumber, true)
+                  .then((res) => console.log("Launched dialer!", res))
+                  .catch((err) => console.log("Error launching dialer", err));
+              }
             }
           }
         }
@@ -180,11 +190,18 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     });
   }
   ngOnInit() {
+    this.subscriptions.push(this.shareWebUrl$.subscribe(url => {
+      this.shareWebPage(url);
+    }))
     if (AppHelper.isApp()) {
       this.subscriptions.push(
         this.route.queryParamMap.subscribe((q) => {
           if (q.get("url")) {
             this.openInAppBrowser(q.get("url"));
+          } else if (AppHelper.getQueryParamers()['path'] && AppHelper.getQueryParamers()['path'].includes("rental-car")) {
+            if (AppHelper.getQueryParamers()['url']) {
+              this.openInAppBrowser(AppHelper.getQueryParamers()['url'])
+            }
           }
         })
       );

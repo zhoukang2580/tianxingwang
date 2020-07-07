@@ -9,6 +9,7 @@ import { ThemeService } from "./app/services/theme/theme.service";
 import { AppHelper } from "./app/appHelper";
 import { LoadingController } from "@ionic/angular";
 import { MapService } from "./app/services/map/map.service";
+import { HttpClient } from '@angular/common/http';
 // const module = window["module"];
 try {
   AppHelper.initlizeQueryParamers();
