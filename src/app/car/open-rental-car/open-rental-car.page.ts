@@ -66,7 +66,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     }
   }
   private shareWebPage(url: string) {
-    if(url){
+    if (url) {
       WechatHelper.shareWebpage({
         webTitle: "分享行程",
         webDescription: "行程分享",
@@ -94,32 +94,37 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     };
     // url = `http://test.version.testskytrip.com/download/test.html`;
     this.browser = this.iab.create(encodeURI(url), "_blank", options);
-    this.subscriptions.push(this.browser.on("beforeload").subscribe((evt)=>{
+    this.subscriptions.push(this.browser.on("beforeload").subscribe((evt) => {
       console.log("beforeload");
       console.log(evt);
-      console.log("beforeload",evt);
-      console.log("beforeload",evt.message,evt.data,evt.code,evt.url);
-      if(evt.url){
-        if(AppHelper.platform.is("ios")){
+      console.log("beforeload", evt);
+      console.log("beforeload", evt.message, evt.data, evt.code, evt.url);
+      if (evt.url) {
+        if (AppHelper.platform.is("ios")) {
           if (evt.url.toLowerCase().includes("sharetrips")) {
             this.clipboard.clear();
             this.clipboard.copy(evt.url);
             AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
-            AppHelper.isWXAppInstalled().then((ok)=>{
-              if(ok){
-                this.shareWebPage(evt.url);
+            AppHelper.isWXAppInstalled().then(async (installed) => {
+              if (installed) {
+                const  ok = await AppHelper.alert("分享行程",true,"确定","取消");
+                if(ok){
+                  this.shareWebPage(evt.url);
+                }else{
+                  this.browser._loadAfterBeforeload(evt.url);
+                }
               }
             })
           }
           // Load this URL in the inAppBrowser.
-          if(!evt.url.toLowerCase().includes("sharetrips")){
+          if (!evt.url.toLowerCase().includes("sharetrips")) {
             this.browser._loadAfterBeforeload(evt.url);
           }
-        }else{
+        } else {
           this.shareWebPage(evt.url);
           this.browser._loadAfterBeforeload(evt.url);
         }
-      }else{
+      } else {
         console.log("无法加载url");
       }
     }))
@@ -141,7 +146,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         console.log("loadstart", evt);
         console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
         if (evt.url) {
-          
+
           const m = evt.url.match(/tel:(\d+)/i);
           if (m && m.length >= 2) {
             const phoneNumber = m[1];
