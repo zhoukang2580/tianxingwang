@@ -107,7 +107,9 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
             AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
             AppHelper.isWXAppInstalled().then(async (installed) => {
               if (installed) {
+                this.browser.hide();
                 const  ok = await AppHelper.alert("分享行程",true,"确定","取消");
+                this.browser.show();
                 if(ok){
                   this.shareWebPage(evt.url);
                 }else{
