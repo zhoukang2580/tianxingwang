@@ -100,26 +100,23 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       console.log("beforeload",evt);
       console.log("beforeload",evt.message,evt.data,evt.code,evt.url);
       if(evt.url){
-        if (evt.url.toLowerCase().includes("sharetrips")) {
-          this.clipboard.clear();
-          this.clipboard.copy(evt.url);
-          AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
-          AppHelper.isWXAppInstalled().then((ok)=>{
-            if(ok){
-              this.shareWebPage(evt.url);
-            }
-          })
-          // this.clipboard.paste().then(
-          //   (resolve: string) => {
-          //     alert(resolve);
-          //   },
-          //   (reject: string) => {
-          //     alert("Error: " + reject);
-          //   }
-          // );
-        }
-        // Load this URL in the inAppBrowser.
-        if(!evt.url.toLowerCase().includes("sharetrips")){
+        if(AppHelper.platform.is("ios")){
+          if (evt.url.toLowerCase().includes("sharetrips")) {
+            this.clipboard.clear();
+            this.clipboard.copy(evt.url);
+            AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
+            AppHelper.isWXAppInstalled().then((ok)=>{
+              if(ok){
+                this.shareWebPage(evt.url);
+              }
+            })
+          }
+          // Load this URL in the inAppBrowser.
+          if(!evt.url.toLowerCase().includes("sharetrips")){
+            this.browser._loadAfterBeforeload(evt.url);
+          }
+        }else{
+          this.shareWebPage(evt.url);
           this.browser._loadAfterBeforeload(evt.url);
         }
       }else{
