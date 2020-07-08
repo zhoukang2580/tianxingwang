@@ -94,7 +94,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     };
     // url = `http://test.version.testskytrip.com/download/test.html`;
     this.browser = this.iab.create(encodeURI(url), "_blank", options);
-    this.subscriptions.push(this.browser.on("beforeload").subscribe((evt) => {
+    this.subscriptions.push(this.browser.on("beforeload").subscribe(async (evt) => {
       console.log("beforeload");
       console.log(evt);
       console.log("beforeload", evt);
@@ -102,19 +102,25 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       if (evt.url) {
         if (AppHelper.platform.is("ios")) {
           if (evt.url.toLowerCase().includes("sharetrips")) {
-            this.clipboard.clear();
-            this.clipboard.copy(evt.url);
-            AppHelper.toast("链接已经拷贝到剪切板", 1400, "middle");
             AppHelper.isWXAppInstalled().then(async (installed) => {
               if (installed) {
+                // const rs = await this.browser.executeScript({
+                //   code: `
+                //   confirm("是否分享当前行程？");
+                // `});
+                // const ok = rs && !!rs[0];
+                // if (ok) {
+                //   this.shareWebPage(evt.url);
+                // } else {
+                //   this.browser._loadAfterBeforeload(evt.url);
+                // }
+                this.shareWebPage(evt.url);
+              } else {
+                this.clipboard.clear();
+                await this.clipboard.copy(evt.url);
                 this.browser.hide();
-                const  ok = await AppHelper.alert("分享行程",true,"确定","取消");
+                await AppHelper.toast("行程链接已拷贝到剪切板", 1400, "middle");
                 this.browser.show();
-                if(ok){
-                  this.shareWebPage(evt.url);
-                }else{
-                  this.browser._loadAfterBeforeload(evt.url);
-                }
               }
             })
           }
