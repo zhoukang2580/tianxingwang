@@ -121,7 +121,7 @@
               <ion-thumbnail (click)='onShowRoomImages(room)'>
                 <ng-container *ngIf='getRoomImages(room) as images'>
                   <img [lazyLoad]='images[0]?.replace("Mobile640_960", "Hotel70_70")||(config?.DefaultImageUrl)'
-                    [defaultImage]='config?.PrerenderImageUrl' />
+                    [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' />
                   <div class='images-nums' *ngIf='images.length as len'>{{len}}张</div>
                 </ng-container>
               </ion-thumbnail>
