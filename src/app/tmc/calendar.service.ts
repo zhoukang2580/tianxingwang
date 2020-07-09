@@ -615,7 +615,7 @@ export class CalendarService {
     }
 
     const req = new RequestEntity();
-    req.IsShowLoading = true;
+    // req.IsShowLoading = true;
     req.Method = `ApiHomeUrl-Home-GetCalendar`;
     req.Timeout = 5 * 1000;
     req.Data = {
