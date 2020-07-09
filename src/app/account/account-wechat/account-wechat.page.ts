@@ -65,7 +65,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
         const token =
           (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
         WechatHelper.wx.miniProgram.navigateTo({
-          url: "/pages/login/index?key="+key+"&token="+token,
+          url: "/pages/login/index?key=" + key + "&token=" + token,
         });
         WechatHelper.checkStep(key, this.apiService, (val) => {
           try {
@@ -79,18 +79,40 @@ export class AccountWechatPage implements OnInit, OnDestroy {
           } catch (e) {}
         });
       } else if (AppHelper.isWechatH5()) {
-        const url =
+        let url =
           AppHelper.getApiUrl() +
           "/home/GetWechatCode?domain=" +
           AppHelper.getDomain() +
           "&ticket=" +
           AppHelper.getTicket() +
           "&path=account-wechat";
+        const filterKeys = [
+          "domain",
+          "ticket",
+          "path",
+          "IsLogin",
+          "wechatcode",
+        ];
+        url = this.concatParams(url, filterKeys);
         AppHelper.redirect(url);
       }
     } catch (e) {
       AppHelper.alert(e);
     }
+  }
+  private concatParams(url: string, filterKeys: string[]) {
+    const paramters = AppHelper.getQueryParamers();
+    if (paramters && Object.keys(paramters).length) {
+      url +=
+        "&" +
+        Object.keys(paramters)
+          .filter(
+            (k) => !filterKeys.find((it) => it.toLowerCase() == k.toLowerCase())
+          )
+          .map((k) => `${k}=${paramters[k]}`)
+          .join("&");
+    }
+    return url;
   }
   bindCode(data) {
     const req = new RequestEntity();

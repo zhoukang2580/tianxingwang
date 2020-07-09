@@ -13,7 +13,7 @@ type Item = {
 @Component({
   selector: "app-account-dingtalk",
   templateUrl: "./account-dingtalk.page.html",
-  styleUrls: ["./account-dingtalk.page.scss"]
+  styleUrls: ["./account-dingtalk.page.scss"],
 })
 export class AccountDingtalkPage implements OnInit, OnDestroy {
   toggleChecked = false;
@@ -31,7 +31,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
     if (paramters.path == "account-dingtalk") {
       if (paramters.dingtalkcode) {
         const data = {
-          Code: paramters.dingtalkcode
+          Code: paramters.dingtalkcode,
         };
         this.bindCode(data);
         AppHelper.removeQueryParamers("dingtalkcode");
@@ -40,15 +40,31 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
   }
   async bind() {
     if (AppHelper.isDingtalkH5()) {
-      var url =
+      let url =
         AppHelper.getApiUrl() +
         "/home/GetDingTalkCode?domain=" +
         AppHelper.getDomain() +
         "&ticket=" +
         AppHelper.getTicket() +
-        "&path=account-dingtalk&IsForbidOpenId=true";
+        "&path=account-dingtalk";
+      const filterKeys = ["domain", "ticket", "path","IsLogin","wechatcode"];
+      url = this.concatParams(url, filterKeys);
       AppHelper.redirect(url);
     }
+  }
+  private concatParams(url: string, filterKeys: string[]) {
+    const paramters = AppHelper.getQueryParamers();
+    if (paramters && Object.keys(paramters).length) {
+      url +=
+        "&" +
+        Object.keys(paramters)
+          .filter(
+            (k) => !filterKeys.find((it) => it.toLowerCase() == k.toLowerCase())
+          )
+          .map((k) => `${k}=${paramters[k]}`)
+          .join("&");
+    }
+    return url;
   }
   bindCode(data) {
     const req = new RequestEntity();
@@ -56,15 +72,15 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
     req.IsShowLoading = true;
     req.Data = data;
     let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(
-      s => {
+      (s) => {
         if (s.Status) {
           this.load();
-        } 
+        }
         if (s.Message) {
           AppHelper.alert(s.Message);
         }
       },
-      n => {
+      (n) => {
         AppHelper.alert(n);
       },
       () => {
@@ -86,9 +102,9 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
     req.Method = "ApiPasswordUrl-DingTalk-List";
     let deviceSubscription = this.apiService
       .getResponse<Item[]>(req)
-      .pipe(map(r => r.Data))
+      .pipe(map((r) => r.Data))
       .subscribe(
-        r => {
+        (r) => {
           this.items = r;
         },
         () => {
@@ -103,13 +119,13 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
     req.Method = "ApiPasswordUrl-DingTalk-Remove";
     req.IsShowLoading = true;
     req.Data = {
-      Id: item.Id
+      Id: item.Id,
     };
     let deviceSubscription = this.apiService.getResponse<{}>(req).subscribe(
-      s => {
-        this.items = this.items.filter(it => it != item);
+      (s) => {
+        this.items = this.items.filter((it) => it != item);
       },
-      n => {
+      (n) => {
         AppHelper.alert(n);
       },
       () => {

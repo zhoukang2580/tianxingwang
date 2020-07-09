@@ -14,7 +14,7 @@ import { AppHelper } from "src/app/appHelper";
 @Component({
   selector: "app-account-email",
   templateUrl: "./account-email.page.html",
-  styleUrls: ["./account-email.page.scss"]
+  styleUrls: ["./account-email.page.scss"],
 })
 export class AccountEmailPage implements OnInit {
   action: string;
@@ -25,16 +25,19 @@ export class AccountEmailPage implements OnInit {
   form: FormGroup;
   countDownInterval: any;
   isShowImageCode: boolean;
+  isChange = false;
   constructor(
     private fb: FormBuilder,
     private navController: NavController,
     private apiService: ApiService
   ) {}
-
+  onChange() {
+    this.isChange = true;
+  }
   ngOnInit() {
     this.form = this.fb.group({
       Email: [null, Validators.required],
-      Code: [null]
+      Code: [null],
     });
     this.load();
   }
@@ -46,10 +49,10 @@ export class AccountEmailPage implements OnInit {
         req
       )
       .subscribe(
-        r => {
+        (r) => {
           this.setResult(r);
         },
-        e => {},
+        (e) => {},
         () => {
           scription.unsubscribe();
         }
@@ -62,14 +65,14 @@ export class AccountEmailPage implements OnInit {
     req.Data = {
       Email: this.form.value.Email,
       Code: this.form.value.Code,
-      Action: this.action
+      Action: this.action,
     };
     const scription = this.apiService
       .getResponse<{ Action: string; Email: string; IsActiveEmail?: boolean }>(
         req
       )
       .subscribe(
-        r => {
+        (r) => {
           if (r.Status && r.Data) {
             if ((r.Data.Action as string).toLowerCase() == "finish") {
               AppHelper.alert(LanguageHelper.getBindEmailSuccess(), true).then(
@@ -84,7 +87,7 @@ export class AccountEmailPage implements OnInit {
           }
           this.setResult(r);
         },
-        e => {},
+        (e) => {},
         () => {
           scription.unsubscribe();
         }
@@ -127,14 +130,14 @@ export class AccountEmailPage implements OnInit {
         ExpiredInterval: number;
       }>(req)
       .subscribe(
-        res => {
+        (res) => {
           if (!res.Status && res.Message) {
             AppHelper.alert(res.Message);
             return;
           }
           this.startCountDonw(res.Data.SendInterval);
         },
-        e => {
+        (e) => {
           AppHelper.alert(e);
         },
         () => {

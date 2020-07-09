@@ -9,15 +9,24 @@
 
 <ion-content>
   <ion-list>
-    <form [formGroup]='form' >
-      <ion-item>
-        <ion-label position="floating" class='email-address'>
-          <span *ngIf="isFinish">绑定邮箱</span>
-          <span *ngIf="!isFinish">邮箱地址</span>
-        </ion-label>
-        <ion-input placeholder="邮箱地址" formControlName="Email" [color]='isModiy?"":"medium"' type="text" [readonly]='!isModiy'></ion-input>
-      </ion-item>
+    <form [formGroup]='form'>
       <ion-row>
+        <ion-col size="3">
+          <ion-label position="floating" class='email-address'>
+            <span *ngIf="isFinish">绑定邮箱</span>
+            <span *ngIf="!isFinish">邮箱地址</span>
+          </ion-label>
+        </ion-col>
+        <ion-col size='6'>
+          <ion-input placeholder="邮箱地址" formControlName="Email" [color]='isModiy?"":"medium"' type="text"
+            [readonly]='!isModiy'></ion-input>
+        </ion-col>
+        <ion-col *ngIf='!isModiy&&!isChange' size='3'>
+          <ion-button style="font-size: 0.7rem;" color='secondary' size='small' fill='outline' (click)='onChange()'>更换邮箱
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row [class.hidden]='!isModiy&&!isChange'>
         <ion-col size="3.5">
           <ion-label position="floating">邮箱验证码</ion-label>
         </ion-col>
@@ -33,7 +42,7 @@
         </ion-col>
         <ng-template #countdown>
           <ion-col size='3' class='down-count'>
-            <ion-label color='medium' >{{ countDown }} s</ion-label>
+            <ion-label color='medium'>{{ countDown }} s</ion-label>
           </ion-col>
         </ng-template>
       </ion-row>

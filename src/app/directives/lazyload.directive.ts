@@ -23,6 +23,7 @@ export class LazyloadDirective
   @Input() lazyLoad: string;
   @Input() recoverImage = true;
   @Input() defaultImage;
+  @Input() loadingImage;
   private time = 0;
   constructor(
     private imageRecoverService: ImageRecoverService,
@@ -35,17 +36,18 @@ export class LazyloadDirective
     this.ngZone.runOutsideAngular(() => {
       this.addIO();
     });
-    console.log(
-      "default image ",
-      this.defaultImage,
-      "lazyLoad ",
-      this.lazyLoad
-    );
+    // console.log(
+    //   "default image ",
+    //   this.defaultImage,
+    //   "lazyLoad ",
+    //   this.lazyLoad
+    // );
   }
   ngAfterContentInit() {
     // console.log("ngAfterContentInit", this.defaultImage);
   }
   ngOnInit() {
+    this.loadingImage = this.loadingImage || `assets/loading.gif`;
     this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
       this.setDefaultImage();
@@ -55,11 +57,7 @@ export class LazyloadDirective
     });
   }
   private setDefaultImage() {
-    if (this.defaultImage) {
-      this.load(this.defaultImage);
-    } else {
-      this.load("assets/loading.gif");
-    }
+    this.load(this.loadingImage);
   }
   private async setupImageRecover() {
     // Do something
