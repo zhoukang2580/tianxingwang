@@ -39,7 +39,7 @@
       <app-back-button color='light'></app-back-button>
     </div>
     <app-swiper-slides (click)='onShowHotelImages()' (slideChange)='onSlideChange($event)' [options]='{autoplay:true}'
-      [items]='hotelImages' [defaultImage]='config?.DefaultImageUrl'>
+      [items]='hotelImages' [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl'>
     </app-swiper-slides>
   </div>
   <ion-card *ngIf='hotel else fakeCard'>
