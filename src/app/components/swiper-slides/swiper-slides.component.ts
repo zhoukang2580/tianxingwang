@@ -42,6 +42,7 @@ export class SwiperSlidesComponent
   @Input() logoUrl;
   @Input() bgColorBlack;
   @Input() defaultImage = "assets/loading.gif";
+  @Input() loadingImage;
   @Input() initialPos = 0;
   isShowImage = true;
   @Output() slideChange: EventEmitter<any>;

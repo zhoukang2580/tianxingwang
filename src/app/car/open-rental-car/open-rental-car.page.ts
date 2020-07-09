@@ -105,16 +105,6 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
             if (evt.url.toLowerCase().includes("sharetrips")) {
               AppHelper.isWXAppInstalled().then(async (installed) => {
                 if (installed) {
-                  // const rs = await this.browser.executeScript({
-                  //   code: `
-                  //   confirm("是否分享当前行程？");
-                  // `});
-                  // const ok = rs && !!rs[0];
-                  // if (ok) {
-                  //   this.shareWebPage(evt.url);
-                  // } else {
-                  //   this.browser._loadAfterBeforeload(evt.url);
-                  // }
                   this.shareWebPage(evt.url);
                 } else {
                   this.clipboard.clear();
@@ -131,13 +121,22 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
             }
             // Load this URL in the inAppBrowser.
             if (!evt.url.toLowerCase().includes("sharetrips")) {
-              this.browser._loadAfterBeforeload(evt.url);
+              if (!evt.url.toLowerCase().includes("tel:")) {
+                this.browser._loadAfterBeforeload(evt.url);
+              } else {
+                this.callNumber(evt.url);
+              }
             }
           } else {
             if (evt.url.toLowerCase().includes("sharetrips")) {
               this.shareWebPage(evt.url);
+              this.browser._loadAfterBeforeload(evt.url);
             }
-            this.browser._loadAfterBeforeload(evt.url);
+            if (!evt.url.toLowerCase().includes("tel:")) {
+              this.browser._loadAfterBeforeload(evt.url);
+            } else {
+              this.callNumber(evt.url);
+            }
           }
         } else {
           console.log("无法加载url");
@@ -209,6 +208,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       }, 100);
     });
   }
+  private callNumber(url: string) {}
   ngOnInit() {
     this.subscriptions.push(
       this.shareWebUrl$.subscribe((url) => {
