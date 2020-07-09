@@ -4,7 +4,7 @@ import { AppHelper } from "./../../appHelper";
 import { ConfigService } from "src/app/services/config/config.service";
 import {
   InterHotelQueryComponent,
-  IInterHotelQueryTab
+  IInterHotelQueryTab,
 } from "./../components/inter-hotel-query/inter-hotel-query.component";
 import { Router, ActivatedRoute, NavigationStart } from "@angular/router";
 import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
@@ -15,13 +15,13 @@ import {
   map,
   mergeMap,
   tap,
-  filter
+  filter,
 } from "rxjs/operators";
 import { Subscription, fromEvent, from, interval, of } from "rxjs";
 import {
   InternationalHotelService,
   IInterHotelSearchCondition,
-  ISearchTextValue
+  ISearchTextValue,
 } from "./../international-hotel.service";
 import {
   Component,
@@ -31,25 +31,26 @@ import {
   AfterViewInit,
   ElementRef,
   ViewContainerRef,
-  TemplateRef
+  TemplateRef,
 } from "@angular/core";
 import {
   IonInfiniteScroll,
   IonContent,
   IonRefresher,
   Platform,
-  DomController
+  DomController,
 } from "@ionic/angular";
 import {
   trigger,
   transition,
   animate,
   style,
-  state
+  state,
 } from "@angular/animations";
 import { HotelEntity } from "src/app/hotel/models/HotelEntity";
 import { IRankItem } from "src/app/hotel/models/HotelQueryEntity";
 import { PinFabComponent } from "src/app/components/pin-fab/pin-fab.component";
+import { ConfigEntity } from "src/app/services/config/config.entity";
 
 @Component({
   selector: "app-international-hotel-list",
@@ -64,7 +65,7 @@ import { PinFabComponent } from "src/app/components/pin-fab/pin-fab.component";
           willChange: "auto",
           transform: "translate3d(0,0,0)",
           opacity: 1,
-          zIndex: 100
+          zIndex: 100,
         })
       ),
       state(
@@ -73,12 +74,15 @@ import { PinFabComponent } from "src/app/components/pin-fab/pin-fab.component";
           willChange: "auto",
           transform: "translate3d(0,200%,0)",
           opacity: 0,
-          zIndex: -100
+          zIndex: -100,
         })
       ),
       transition("false=>true", [
         style({ zIndex: 1, willChange: "transform,opacity" }),
-        animate("200ms", style({ transform: "translate3d(0,0,0)", opacity: 1 }))
+        animate(
+          "200ms",
+          style({ transform: "translate3d(0,0,0)", opacity: 1 })
+        ),
       ]),
       transition(
         "true=>false",
@@ -87,12 +91,12 @@ import { PinFabComponent } from "src/app/components/pin-fab/pin-fab.component";
           style({
             willChange: "transform,opacity",
             transform: "translate3d(0,200%,0)",
-            opacity: 0
+            opacity: 0,
           })
         )
-      )
-    ])
-  ]
+      ),
+    ]),
+  ],
 })
 export class InternationalHotelListPage
   implements OnInit, OnDestroy, AfterViewInit {
@@ -113,9 +117,11 @@ export class InternationalHotelListPage
   hotels: HotelEntity[];
   pageIndex = 0;
   defaultImage = "";
+  loadingImage = "";
   searchCondition: IInterHotelSearchCondition;
   classMode: "ios" | "md";
   totalHotels = 0;
+  config: ConfigEntity;
   constructor(
     private hotelService: InternationalHotelService,
     private imageRecoverService: ImageRecoverService,
@@ -181,29 +187,29 @@ export class InternationalHotelListPage
     if (
       query &&
       query.starAndPrices &&
-      query.starAndPrices.some(it => it.hasItemSelected)
+      query.starAndPrices.some((it) => it.hasItemSelected)
     ) {
       const customeprice = query.starAndPrices.find(
-        it => it.tag == "customeprice"
+        (it) => it.tag == "customeprice"
       );
       const starAndPrices = query.starAndPrices
-        .filter(it => it.hasItemSelected)
-        .filter(it => !!it);
+        .filter((it) => it.hasItemSelected)
+        .filter((it) => !!it);
       console.log("onStarPriceChange starAndPrices ", starAndPrices);
       const tabs = starAndPrices.filter(
-        it => it.tag == "price" || it.tag == "customeprice"
+        (it) => it.tag == "price" || it.tag == "customeprice"
       );
-      if (tabs.filter(it => it.hasItemSelected).length == 0) {
+      if (tabs.filter((it) => it.hasItemSelected).length == 0) {
         delete query.BeginPrice;
         delete query.EndPrice;
       }
       console.log("price customeprice", tabs, query);
       let { lower, upper } = tabs
-        .map(tab => tab.items)
+        .map((tab) => tab.items)
         .reduce((p, items) => {
           items
-            .filter(it => it.isSelected)
-            .forEach(item => {
+            .filter((it) => it.isSelected)
+            .forEach((item) => {
               p.lower = Math.min(item.minPrice, p.lower) || item.minPrice;
               p.upper = Math.max(item.maxPrice, p.upper) || item.maxPrice;
             });
@@ -220,19 +226,19 @@ export class InternationalHotelListPage
       if (upper) {
         query.EndPrice = upper == Infinity ? "10000000" : `${upper}`;
       }
-      const stars = starAndPrices.find(it => it.tag == "stars");
+      const stars = starAndPrices.find((it) => it.tag == "stars");
       query.Stars = null;
-      if (stars && stars.items && stars.items.some(it => it.isSelected)) {
+      if (stars && stars.items && stars.items.some((it) => it.isSelected)) {
         query.Stars = stars.items
-          .filter(it => it.isSelected)
-          .map(it => it.value);
+          .filter((it) => it.isSelected)
+          .map((it) => it.value);
       }
-      const types = starAndPrices.find(it => it.tag == "types");
+      const types = starAndPrices.find((it) => it.tag == "types");
       query.Categories = null;
-      if (types && types.items && types.items.some(it => it.isSelected)) {
+      if (types && types.items && types.items.some((it) => it.isSelected)) {
         query.Categories = types.items
-          .filter(it => it.isSelected)
-          .map(it => it.value);
+          .filter((it) => it.isSelected)
+          .map((it) => it.value);
       }
     } else {
       query.Stars = null;
@@ -255,14 +261,19 @@ export class InternationalHotelListPage
   }
   ngOnInit() {
     this.subscriptions.push(
+      this.configService.getConfigSource().subscribe((c) => {
+        this.config = c;
+      })
+    );
+    this.subscriptions.push(
       this.router.events
-        .pipe(filter(e => e instanceof NavigationStart))
+        .pipe(filter((e) => e instanceof NavigationStart))
         .subscribe(() => {
           this.hideQueryPannel();
         })
     );
     this.subscriptions.push(
-      this.route.queryParamMap.subscribe(q => {
+      this.route.queryParamMap.subscribe((q) => {
         if (this.checkSearchTextChanged() || this.checkDestinationChanged()) {
           setTimeout(
             () => {
@@ -274,7 +285,7 @@ export class InternationalHotelListPage
       })
     );
     this.observeSearchCondition();
-    this.imageRecoverService.get().then(res => {
+    this.imageRecoverService.get().then((res) => {
       if (res) {
         this.defaultImage = res.DefaultUrl;
       }
@@ -314,7 +325,7 @@ export class InternationalHotelListPage
   }
   private observeSearchCondition() {
     this.subscriptions.push(
-      this.hotelService.getSearchConditionSource().subscribe(cond => {
+      this.hotelService.getSearchConditionSource().subscribe((cond) => {
         this.searchCondition = cond;
       })
     );
@@ -322,10 +333,10 @@ export class InternationalHotelListPage
   private loadConfig() {
     this.configService
       .getConfigAsync()
-      .then(c => {
+      .then((c) => {
         this.defaultImage = c.PrerenderImageUrl || c.DefaultImageUrl;
       })
-      .catch(_ => null);
+      .catch((_) => null);
   }
   doRefresh(keepFilterCondition = false) {
     this.loadConfig();
@@ -339,13 +350,13 @@ export class InternationalHotelListPage
     if (!keepFilterCondition) {
       this.hotelService.setSearchConditionSource({
         ...this.hotelService.getSearchCondition(),
-        searchText: null
+        searchText: null,
       });
       this.hotelService.setHotelQuerySource({
         ...this.hotelService.getHotelQueryModel(),
         Stars: null,
         Categories: null,
-        starAndPrices: null
+        starAndPrices: null,
       });
       if (this.queryComp) {
         this.queryComp.onResetFilters();
@@ -360,7 +371,7 @@ export class InternationalHotelListPage
     }
     this.hotelService.setSearchConditionSource({
       ...this.hotelService.getSearchCondition(),
-      searchText: null
+      searchText: null,
     });
     this.doRefresh(true);
   }
@@ -384,7 +395,7 @@ export class InternationalHotelListPage
         })
       )
       .subscribe(
-        r => {
+        (r) => {
           this.totalHotels = r && r.Data && r.Data.DataCount;
           const arr = (r && r.Data && r.Data.HotelDayPrices) || [];
           this.completeScroller();
@@ -394,10 +405,10 @@ export class InternationalHotelListPage
           }
           if (arr.length) {
             this.pageIndex++;
-            this.hotels = this.hotels.concat(arr.map(it => it.Hotel));
+            this.hotels = this.hotels.concat(arr.map((it) => it.Hotel));
           }
         },
-        e => {
+        (e) => {
           this.enableScroller(false);
         }
       );

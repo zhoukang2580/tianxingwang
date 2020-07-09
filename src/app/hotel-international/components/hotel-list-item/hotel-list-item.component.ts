@@ -12,6 +12,7 @@ import { fadeInOut } from 'src/app/animations/fadeInOut';
 export class HotelListItemComponent implements OnInit {
   @Input() hotel: any;
   @Input() defaultImage: any;
+  @Input() loadingImage:any;
   constructor() {}
 
   ngOnInit() {

@@ -75,8 +75,8 @@
     </ng-template>
     <ng-container *ngIf='hotels?.length else nodata'>
       <ion-list lines='full' *ngIf='hotels?.length else nodata'>
-        <app-hotel-list-item *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel'
-          [defaultImage]='defaultImage'></app-hotel-list-item>
+        <app-hotel-list-item [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels'
+          (click)='onViewHotel(hotel)' [hotel]='hotel' [defaultImage]='config?.DefaultImageUrl'></app-hotel-list-item>
       </ion-list>
     </ng-container>
   </ng-template>
@@ -90,7 +90,7 @@
       </div>
     </app-pin-fab>
   </ion-fab>
-  <ion-infinite-scroll (ionInfinite)='loadMore()' >
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
     <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>

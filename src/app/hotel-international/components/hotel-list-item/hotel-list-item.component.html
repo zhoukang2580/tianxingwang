@@ -1,6 +1,7 @@
 <div class="hotel-item">
   <!-- <div class="hotel-img" [lazyLoad]='hotel?.FileName' [defaultImage]='defaultImage'></div> -->
-  <img class="hotel-img" [lazyLoad]='hotel?.FileName' [recoverImage]='false' [defaultImage]='defaultImage' alt="酒店图片">
+  <img class="hotel-img" [lazyLoad]='hotel?.FileName' [loadingImage]='loadingImage' [recoverImage]='false'
+    [defaultImage]='defaultImage' alt="酒店图片">
   <div class="right-side ion-padding-end">
     <div class='name'>{{hotel?.Name}}</div>
     <div class='sub-name' *ngIf='hotel?.enName as n'>{{n}}</div>
@@ -15,9 +16,9 @@
       <ion-icon name='location' color='secondary'> </ion-icon>
       {{hotel?.Address}}
     </div>
-    <div class="ion-text-end price" >
+    <div class="ion-text-end price">
       <small>￥</small>
-      <span >{{hotel?.avgPrice}}</span>
+      <span>{{hotel?.avgPrice}}</span>
       <small>起</small>
     </div>
   </div>
