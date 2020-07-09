@@ -203,45 +203,49 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   async onScanResult(txt: string) {
-    this.isScanning = true;
-    await this.scanService.scan();
-    console.log("onScanResult", txt);
-    this.scanService.setScanResultSource("");
-    this.scanresult = txt;
-    if (txt && txt.toLowerCase().includes("app_path")) {
-      const path = AppHelper.getValueFromQueryString("app_path", txt);
-      console.log("txt " + txt);
-      // tslint:disable-next-line: max-line-length
-      // http://test.app.testskytrip.com/Home/www/index.html?hrid=163&hrName=上海东美在线旅行社有限公司&App_Path=hr-invitation&costCenterId=6300000001&costCenterName=财务部&organizationId=6300000007&organizationName=(A007)综合业务部&policyId=6300000001&policyName=一般政策&roleIds=25&roleNames=新秘书
-      const params = {
-        hrid: "",
-        hrName: "",
-        App_Path: "",
-        costCenterId: "",
-        costCenterName: "",
-        organizationId: "",
-        organizationName: "",
-        policyId: "",
-        policyName: "",
-        roleIds: "",
-        roleNames: "",
-      };
-      const query = { autoClose: true };
-      Object.keys(params).forEach((k) => {
-        query[k] = AppHelper.getValueFromQueryString(k, txt);
-      });
-      setTimeout(() => {
-        this.router.navigate([AppHelper.getRoutePath(path)], {
-          queryParams: query,
+    try {
+      this.isScanning = true;
+      // await this.scanService.scan();
+      console.log("onScanResult", txt);
+      this.scanresult = txt;
+      if (txt && txt.toLowerCase().includes("app_path")) {
+        this.scanService.setScanResultSource("");
+        const path = AppHelper.getValueFromQueryString("app_path", txt);
+        console.log("txt " + txt);
+        // tslint:disable-next-line: max-line-length
+        // http://test.app.testskytrip.com/Home/www/index.html?hrid=163&hrName=上海东美在线旅行社有限公司&App_Path=hr-invitation&costCenterId=6300000001&costCenterName=财务部&organizationId=6300000007&organizationName=(A007)综合业务部&policyId=6300000001&policyName=一般政策&roleIds=25&roleNames=新秘书
+        const params = {
+          hrid: "",
+          hrName: "",
+          App_Path: "",
+          costCenterId: "",
+          costCenterName: "",
+          organizationId: "",
+          organizationName: "",
+          policyId: "",
+          policyName: "",
+          roleIds: "",
+          roleNames: "",
+        };
+        const query = { autoClose: true };
+        Object.keys(params).forEach((k) => {
+          query[k] = AppHelper.getValueFromQueryString(k, txt);
         });
-      }, 100);
-    } else {
-      if (txt && txt.length) {
-        this.router.navigate([
-          AppHelper.getRoutePath("scan-result"),
-          { scanResult: txt },
-        ]);
+        setTimeout(() => {
+          this.router.navigate([AppHelper.getRoutePath(path)], {
+            queryParams: query,
+          });
+        }, 100);
+      } else {
+        if (txt && txt.length) {
+          this.router.navigate([
+            AppHelper.getRoutePath("scan-result"),
+            { scanResult: txt },
+          ]);
+        }
       }
+    } catch (e) {
+      console.error(e);
     }
   }
 }

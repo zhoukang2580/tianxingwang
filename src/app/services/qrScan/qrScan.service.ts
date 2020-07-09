@@ -16,7 +16,7 @@ export interface IQRScanner {
   openSettings: () => Promise<IQrScannerStatus>;
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class QrScanService implements IQRScanner {
   private qrScanner: { [key in keyof IQRScanner]: any };
@@ -33,7 +33,9 @@ export class QrScanService implements IQRScanner {
   setScanResultSource(txt: string) {
     this.scanResultSource.next(txt);
   }
-  prepare() {
+  async prepare() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<IQrScannerStatus>((resolve, reject) => {
       this.qrScanner.prepare(resolve, reject);
     });
@@ -59,17 +61,23 @@ export class QrScanService implements IQRScanner {
       this.qrScanner.disableLight(resolve, reject);
     });
   }
-  scan() {
+  async scan() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<string>((resolve, reject) => {
       this.qrScanner.scan(resolve, reject);
     });
   }
-  resumePreview() {
+  async resumePreview() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<IQrScannerStatus>((resolve, reject) => {
       this.qrScanner.resumePreview(resolve, reject);
     });
   }
-  pausePreview() {
+  async pausePreview() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<IQrScannerStatus>((resolve, reject) => {
       this.qrScanner.pausePreview(resolve, reject);
     });
