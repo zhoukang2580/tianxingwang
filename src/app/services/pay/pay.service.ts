@@ -114,7 +114,7 @@ export class PayService {
     }
     return result;
   }
-  async wechatpay(req: RequestEntity, path: string) {
+  async wechatpay(req: RequestEntity, path: string,callback?:Function) {
     if (
       AppHelper.isApp() ||
       AppHelper.isWechatMini() ||
@@ -169,6 +169,11 @@ export class PayService {
                   );
                 }
                 if (AppHelper.isWechatMini()) {
+                  const key = AppHelper.uuid();
+                  const token =
+                    (this.apiService.apiConfig &&
+                      this.apiService.apiConfig.Token) ||
+                    "";
                   const url =
                     "/pages/pay/index?timeStamp=" +
                     r.Data.timeStamp +
@@ -187,8 +192,20 @@ export class PayService {
                     "&path=" +
                     path +
                     "&number=" +
-                    r.Data.Number;
+                    r.Data.Number +
+                    "&key=" +
+                    key +
+                    "&token=" +
+                    token;
                   WechatHelper.wx.miniProgram.navigateTo({ url: url });
+                  WechatHelper.checkStep(key, this.apiService, (val) => {
+                    try {
+                      callback(r.Data.Number || "支付操作完成");
+                    } catch (e) {
+                   
+                    }
+                  });
+                  resolve(r.Data.Number || "支付操作完成");
                 } else if (AppHelper.isWechatH5()) {
                   const ok = await WechatHelper.ready().catch((e) => {
                     return false;

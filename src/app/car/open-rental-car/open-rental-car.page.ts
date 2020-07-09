@@ -40,8 +40,8 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private domSanitizer: DomSanitizer,
     private iab: InAppBrowser,
-    private clipboard: Clipboard,
-  ) { }
+    private clipboard: Clipboard
+  ) {}
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
     this.subscriptions.forEach((sub) => sub.unsubscribe());
@@ -94,48 +94,56 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     };
     // url = `http://test.version.testskytrip.com/download/test.html`;
     this.browser = this.iab.create(encodeURI(url), "_blank", options);
-    this.subscriptions.push(this.browser.on("beforeload").subscribe(async (evt) => {
-      console.log("beforeload");
-      console.log(evt);
-      console.log("beforeload", evt);
-      console.log("beforeload", evt.message, evt.data, evt.code, evt.url);
-      if (evt.url) {
-        if (AppHelper.platform.is("ios")) {
-          if (evt.url.toLowerCase().includes("sharetrips")) {
-            AppHelper.isWXAppInstalled().then(async (installed) => {
-              if (installed) {
-                // const rs = await this.browser.executeScript({
-                //   code: `
-                //   confirm("是否分享当前行程？");
-                // `});
-                // const ok = rs && !!rs[0];
-                // if (ok) {
-                //   this.shareWebPage(evt.url);
-                // } else {
-                //   this.browser._loadAfterBeforeload(evt.url);
-                // }
-                this.shareWebPage(evt.url);
-              } else {
-                this.clipboard.clear();
-                await this.clipboard.copy(evt.url);
-                this.browser.hide();
-                await AppHelper.toast("行程链接已拷贝到剪切板", 1400, "middle");
-                this.browser.show();
-              }
-            })
-          }
-          // Load this URL in the inAppBrowser.
-          if (!evt.url.toLowerCase().includes("sharetrips")) {
+    this.subscriptions.push(
+      this.browser.on("beforeload").subscribe(async (evt) => {
+        console.log("beforeload");
+        console.log(evt);
+        console.log("beforeload", evt);
+        console.log("beforeload", evt.message, evt.data, evt.code, evt.url);
+        if (evt.url) {
+          if (AppHelper.platform.is("ios")) {
+            if (evt.url.toLowerCase().includes("sharetrips")) {
+              AppHelper.isWXAppInstalled().then(async (installed) => {
+                if (installed) {
+                  // const rs = await this.browser.executeScript({
+                  //   code: `
+                  //   confirm("是否分享当前行程？");
+                  // `});
+                  // const ok = rs && !!rs[0];
+                  // if (ok) {
+                  //   this.shareWebPage(evt.url);
+                  // } else {
+                  //   this.browser._loadAfterBeforeload(evt.url);
+                  // }
+                  this.shareWebPage(evt.url);
+                } else {
+                  this.clipboard.clear();
+                  await this.clipboard.copy(evt.url);
+                  this.browser.hide();
+                  await AppHelper.toast(
+                    "行程链接已拷贝到剪切板",
+                    1400,
+                    "middle"
+                  );
+                  this.browser.show();
+                }
+              });
+            }
+            // Load this URL in the inAppBrowser.
+            if (!evt.url.toLowerCase().includes("sharetrips")) {
+              this.browser._loadAfterBeforeload(evt.url);
+            }
+          } else {
+            if (evt.url.toLowerCase().includes("sharetrips")) {
+              this.shareWebPage(evt.url);
+            }
             this.browser._loadAfterBeforeload(evt.url);
           }
         } else {
-          this.shareWebPage(evt.url);
-          this.browser._loadAfterBeforeload(evt.url);
+          console.log("无法加载url");
         }
-      } else {
-        console.log("无法加载url");
-      }
-    }))
+      })
+    );
     this.subscriptions.push(
       this.browser.on("loaderror").subscribe((evt) => {
         console.log("loaderror");
@@ -154,14 +162,13 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         console.log("loadstart", evt);
         console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
         if (evt.url) {
-
           const m = evt.url.match(/tel:(\d+)/i);
           if (m && m.length >= 2) {
             const phoneNumber = m[1];
             console.log("phoneNumber" + phoneNumber);
             if (phoneNumber) {
               await AppHelper.platform.ready();
-              const callNumber = window['call'];
+              const callNumber = window["call"];
               // window.location.href=`tel:${phoneNumber}`;
               if (callNumber) {
                 callNumber
@@ -203,17 +210,22 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     });
   }
   ngOnInit() {
-    this.subscriptions.push(this.shareWebUrl$.subscribe(url => {
-      this.shareWebPage(url);
-    }))
+    this.subscriptions.push(
+      this.shareWebUrl$.subscribe((url) => {
+        this.shareWebPage(url);
+      })
+    );
     if (AppHelper.isApp()) {
       this.subscriptions.push(
         this.route.queryParamMap.subscribe((q) => {
           if (q.get("url")) {
             this.openInAppBrowser(q.get("url"));
-          } else if (AppHelper.getQueryParamers()['path'] && AppHelper.getQueryParamers()['path'].includes("rental-car")) {
-            if (AppHelper.getQueryParamers()['url']) {
-              this.openInAppBrowser(AppHelper.getQueryParamers()['url'])
+          } else if (
+            AppHelper.getQueryParamers()["path"] &&
+            AppHelper.getQueryParamers()["path"].includes("rental-car")
+          ) {
+            if (AppHelper.getQueryParamers()["url"]) {
+              this.openInAppBrowser(AppHelper.getQueryParamers()["url"]);
             }
           }
         })

@@ -21,9 +21,12 @@
           <ion-input placeholder="手机号" formControlName="Mobile" type="number" min="11" [readonly]='!isModiy'>
           </ion-input>
         </ion-col>
-
+        <ion-col *ngIf='!isModiy&&!isChangeMobile'>
+          <ion-button color='secondary' size='small' fill='outline'
+            (click)='onChangeMobile()'>更换手机号</ion-button>
+        </ion-col>
       </ion-row>
-      <ion-row>
+      <ion-row [class.hidden]='!isModiy&&!isChangeMobile'>
         <ion-col size="4">
           <ion-label position="floating">短信验证码</ion-label>
         </ion-col>

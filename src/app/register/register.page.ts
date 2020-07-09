@@ -179,9 +179,7 @@ export class RegisterPage implements OnInit {
         (res) => {
           if (res.Status) {
             this.isCodeOk = true;
-            if (AppHelper.isApp()) {
-              this.bindDevice();
-            }
+           
             if (res.Data && res.Data.Mobile) {
               this.form.patchValue({ Mobile: res.Data.Mobile });
             }
@@ -210,6 +208,9 @@ export class RegisterPage implements OnInit {
         (r) => {
           if (!r.Ticket) {
           } else {
+            if (AppHelper.isApp()) {
+              this.bindDevice();
+            }
             AppHelper.setStorage("loginname", loginEntity.Data.Name);
             this.router.navigate([AppHelper.getRoutePath("")]);
           }

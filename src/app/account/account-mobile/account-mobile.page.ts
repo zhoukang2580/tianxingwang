@@ -25,13 +25,16 @@ export class AccountMobilePage implements OnInit, OnDestroy {
   countDownInterval: any;
   senSmsCodeSubscription = Subscription.EMPTY;
   isShowImageCode: boolean;
+  isChangeMobile = false;
   constructor(
     private fb: FormBuilder,
     private navController: NavController,
     private apiService: ApiService,
     private router: Router
   ) {}
-
+  onChangeMobile() {
+    this.isChangeMobile = true;
+  }
   ngOnInit() {
     this.form = this.fb.group({
       Mobile: [null, Validators.required],

@@ -36,6 +36,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   private swiper: any;
   private options: any;
   private isLoginByUser = false;
+  isScanning = false;
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -108,7 +109,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (q) => {
         this.isLoginByUser = false;
-        this.check();
+        if (AppHelper.isWechatMini()) {
+          this.check();
+        }
       })
     );
     this.homeUrl = this.domSanitize.bypassSecurityTrustResourceUrl(
@@ -199,10 +202,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
     this.destroySwiper();
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  onScanResult(txt: string) {
+  async onScanResult(txt: string) {
+    this.isScanning = true;
+    await this.scanService.scan();
+    console.log("onScanResult", txt);
+    this.scanService.setScanResultSource("");
     this.scanresult = txt;
     if (txt && txt.toLowerCase().includes("app_path")) {
-      this.scanService.setScanResultSource("");
       const path = AppHelper.getValueFromQueryString("app_path", txt);
       console.log("txt " + txt);
       // tslint:disable-next-line: max-line-length
@@ -220,7 +226,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
         roleIds: "",
         roleNames: "",
       };
-      const query = {};
+      const query = { autoClose: true };
       Object.keys(params).forEach((k) => {
         query[k] = AppHelper.getValueFromQueryString(k, txt);
       });
@@ -230,7 +236,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
         });
       }, 100);
     } else {
-      if (txt) {
+      if (txt && txt.length) {
         this.router.navigate([
           AppHelper.getRoutePath("scan-result"),
           { scanResult: txt },
