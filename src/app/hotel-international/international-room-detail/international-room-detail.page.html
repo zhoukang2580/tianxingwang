@@ -8,7 +8,7 @@
 </ion-header>
 <ion-content>
   <div class="images" *ngIf='roomImages?.length'>
-    <app-swiper-slides [items]='images' [defaultImage]='config?.PrerenderImageUrl' [options]="{autoplay:true}">
+    <app-swiper-slides [loadingImage]='config?.PrerenderImageUrl' [items]='images' [defaultImage]='config?.DefaultImageUrl' [options]="{autoplay:true}">
     </app-swiper-slides>
   </div>
   <ion-list class="house-info">
