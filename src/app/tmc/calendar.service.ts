@@ -32,7 +32,7 @@ export class CalendarService {
   private calendars: AvailableDate[];
   private selectedDays: DayModel[];
   private holidays: ICalendarEntity[] = [];
-  private fetchingHolidaysPromise: { promise: Promise<ICalendarEntity[]> };
+  private fetchingHolidaysPromise:Promise<ICalendarEntity[]> ;
   private dayOfWeekNames = {
     0: LanguageHelper.getSundayTip(),
     1: LanguageHelper.getMondayTip(),
@@ -611,9 +611,8 @@ export class CalendarService {
       }
     }
     if (this.fetchingHolidaysPromise) {
-      return this.fetchingHolidaysPromise.promise;
+      return this.fetchingHolidaysPromise;
     }
-
     const req = new RequestEntity();
     // req.IsShowLoading = true;
     req.Method = `ApiHomeUrl-Home-GetCalendar`;
@@ -624,22 +623,20 @@ export class CalendarService {
         .add(-3, "months")
         .format("YYYY-MM-DD"),
     };
-    this.fetchingHolidaysPromise = {
-      promise: this.apiService
-        .getPromiseData<ICalendarEntity[]>(req)
-        .then((data) => {
-          this.holidays = data;
-          this.holidays = Array.isArray(this.holidays) ? this.holidays : [];
-          if (this.holidays.length) {
-            this.cacheHolidays(this.holidays);
-          }
-          return data;
-        })
-        .finally(() => {
-          this.fetchingHolidaysPromise = null;
-        }),
-    };
-    return this.fetchingHolidaysPromise.promise;
+    this.fetchingHolidaysPromise = this.apiService
+    .getPromiseData<ICalendarEntity[]>(req)
+    .then((data) => {
+      this.holidays = data;
+      this.holidays = Array.isArray(this.holidays) ? this.holidays : [];
+      if (this.holidays.length) {
+        this.cacheHolidays(this.holidays);
+      }
+      return data;
+    })
+    .finally(() => {
+      this.fetchingHolidaysPromise = null;
+    })
+    return this.fetchingHolidaysPromise;
   }
   private async cacheHolidays(holidays: ICalendarEntity[]) {
     if (holidays && holidays.length) {
