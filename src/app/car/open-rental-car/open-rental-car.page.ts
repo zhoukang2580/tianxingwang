@@ -152,7 +152,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       })
     );
     this.subscriptions.push(
-      this.browser.on("loadstart").subscribe(async (evt) => {
+      this.browser.on("loadstart").subscribe((evt) => {
         // if (this.browser) {
         //   this.browser.show();
         // }
@@ -161,22 +161,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         console.log("loadstart", evt);
         console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
         if (evt.url) {
-          const m = evt.url.match(/tel:(\d+)/i);
-          if (m && m.length >= 2) {
-            const phoneNumber = m[1];
-            console.log("phoneNumber" + phoneNumber);
-            if (phoneNumber) {
-              await AppHelper.platform.ready();
-              const callNumber = window["call"];
-              // window.location.href=`tel:${phoneNumber}`;
-              if (callNumber) {
-                callNumber
-                  .callNumber(phoneNumber, true)
-                  .then((res) => console.log("Launched dialer!", res))
-                  .catch((err) => console.log("Error launching dialer", err));
-              }
-            }
-          }
+          this.callNumber(evt.url);
         }
       })
     );
@@ -208,7 +193,24 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       }, 100);
     });
   }
-  private callNumber(url: string) {}
+  private async callNumber(url: string) {
+    const m = url && url.match(/tel:(\d+)/i);
+    if (m && m.length >= 2) {
+      const phoneNumber = m[1];
+      console.log("phoneNumber" + phoneNumber);
+      if (phoneNumber) {
+        await AppHelper.platform.ready();
+        const callNumber = window["call"];
+        // window.location.href=`tel:${phoneNumber}`;
+        if (callNumber) {
+          callNumber
+            .callNumber(phoneNumber, true)
+            .then((res) => console.log("Launched dialer!", res))
+            .catch((err) => console.log("Error launching dialer", err));
+        }
+      }
+    }
+  }
   ngOnInit() {
     this.subscriptions.push(
       this.shareWebUrl$.subscribe((url) => {
