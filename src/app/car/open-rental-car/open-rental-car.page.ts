@@ -77,7 +77,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   private openInAppBrowser(url: string) {
     if (this.browser) {
       this.browser.close();
-      this.subscriptions.forEach((sub) => sub.unsubscribe());
+      this.subscriptions.forEach((s) => s.unsubscribe());
     }
     const color = "#2596D9";
     const options: InAppBrowserOptions = {
