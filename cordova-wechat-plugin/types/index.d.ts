@@ -26,6 +26,7 @@ interface Wechat {
     shareType: "WXTextObject"|"WXWebpageObject";
     appId: string;
     data: any;
+    universalLink:string;
   }) => Promise<any>;
 }
 
