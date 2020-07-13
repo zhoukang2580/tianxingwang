@@ -1133,6 +1133,19 @@ export class InternationalFlightService {
       result = await this.apiService.getPromiseData<FlightResultEntity>(req);
     } else {
       if (notWhitelist.length) {
+        if (result) {
+          // 非白名单的人直接可以预定
+          if (result.FlightFares) {
+            result.FlightFares.forEach((f) => {
+              f.IsAllowOrder = true;
+            });
+          }
+          if(result.FlightRoutes){
+            result.FlightRoutes.forEach(r=>{
+              r.IsAllowOrder=true;
+            })
+          }
+        }
       }
     }
     return result;

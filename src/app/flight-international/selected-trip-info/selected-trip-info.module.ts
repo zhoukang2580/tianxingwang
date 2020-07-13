@@ -8,6 +8,7 @@ import { SelectedTripInfoPageRoutingModule } from './selected-trip-info-routing.
 
 import { SelectedTripInfoPage } from './selected-trip-info.page';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
+import { MemberPipesModule } from 'src/app/member/pipe/pipe.module';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { AppComponentsModule } from 'src/app/components/appcomponents.module';
     FormsModule,
     IonicModule,
     AppComponentsModule,
-    SelectedTripInfoPageRoutingModule
+    SelectedTripInfoPageRoutingModule,
+    MemberPipesModule
   ],
   declarations: [SelectedTripInfoPage]
 })

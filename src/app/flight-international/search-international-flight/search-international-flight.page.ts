@@ -105,7 +105,10 @@ export class SearchInternationalFlightPage
         }
       }
     }
-    this.router.navigate([AppHelper.getRoutePath("international-flight-list")]);
+    this.router.navigate(
+      [AppHelper.getRoutePath("international-flight-list")],
+      {  queryParams: { doRefresh: "true" } }
+    );
   }
   onSegmentChanged(evt: CustomEvent) {
     const voyageType: FlightVoyageType = evt.detail.value;

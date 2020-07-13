@@ -110,7 +110,7 @@
         <h2>
           {{item.credential?.Name}}
         </h2>
-        <p>{{item.credential?.TypeName}}:{{item.credential?.Number}}</p>
+        <p>{{item.credential?.Type|credential}}:{{item.credential?.Number}}</p>
       </ion-label>
     </ion-item>
   </ion-list>
