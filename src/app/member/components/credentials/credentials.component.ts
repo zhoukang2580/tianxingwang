@@ -45,6 +45,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     | "expireDate";
   @Input() credential: MemberCredential; // 新增的证件
   @Output() credentialChange: EventEmitter<MemberCredential>;
+  @Input() filteredCredentialsTypes: CredentialsType[];
   CredentialsType = CredentialsType;
   identityTypes: { key: string; value: string }[];
   @ViewChild(IonDatetime) datetimeComp: IonDatetime;
@@ -84,6 +85,11 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   private getIdentityTypes() {
     this.identityTypes = Object.keys(CredentialsType)
       .filter((k) => +k)
+      .filter((k) =>
+        !this.filteredCredentialsTypes || !this.filteredCredentialsTypes.length
+          ? true
+          : !this.filteredCredentialsTypes.find((t) => t == +k)
+      )
       .map((k) => {
         return {
           key: k,

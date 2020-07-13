@@ -99,6 +99,7 @@ export class SelectPassengerPage
   requestCode: "issueNationality" | "identityNationality";
   title = "选择旅客";
   selectedPassengerPolicy: PolicyEntity;
+  filteredCredentialsTypes: CredentialsType[];
   constructor(
     public modalController: ModalController,
     private navCtrl: NavController,
@@ -157,12 +158,21 @@ export class SelectPassengerPage
         this.initCredentialsRemarks();
         this.initRemoveitem();
         this.initBookInfos();
+        this.initFilteredCredentialsTypes();
         this.isCanDeactive = false;
       })
     );
     this.doRefresh(null);
   }
-
+  private initFilteredCredentialsTypes() {
+    this.filteredCredentialsTypes = [];
+    if (
+      this.forType == FlightHotelTrainType.InternationalFlight ||
+      this.forType == FlightHotelTrainType.HotelInternational
+    ) {
+      this.filteredCredentialsTypes = [CredentialsType.IdCard];
+    }
+  }
   private initRemoveitem() {
     this.removeitemSubscription = this.removeitem.subscribe(async (info) => {
       let ok = false;
@@ -387,17 +397,29 @@ export class SelectPassengerPage
         () => {}
       );
   }
+  private checkSamePolicy(s: StaffEntity) {
+    const one = this.interFlightService.getBookInfos()[0];
+    if (one) {
+      if (
+        (one.isNotWhitelist && !s.isNotWhiteList) ||
+        (s.isNotWhiteList && !one.isNotWhitelist) ||
+        (one.passenger.Policy &&
+          one.passenger.Policy.Id != (s.Policy && s.Policy.Id))
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }
   async onSelect(s: StaffEntity) {
     if (this.forType == FlightHotelTrainType.InternationalFlight) {
-      if (s.Policy && s.Policy.Id) {
-        const one = this.interFlightService.getBookInfos()[0];
+      const one = this.interFlightService.getBookInfos()[0];
+      if (!this.checkSamePolicy(s)) {
         if (
-          one &&
-          !one.isNotWhitelist &&
           one.passenger.Policy &&
-          one.passenger.Policy.Id != s.Policy.Id
+          one.passenger.Policy.Id != (s.Policy && s.Policy.Id)
         ) {
-          AppHelper.toast("不能选择此旅客，其差标与已选旅客差标不一致");
+          AppHelper.toast("不能选择此旅客，其差标与已选旅客差标不一致",1400,'middle');
           return;
         }
       }
@@ -487,7 +509,11 @@ export class SelectPassengerPage
       this.selectedCredentialId = this.vmNewCredential.Id;
     }
     this.vmNewCredential.CredentialsRemark = "客户";
-    this.vmNewCredential.Type = CredentialsType.IdCard;
+    this.vmNewCredential.Type =
+      this.forType == FlightHotelTrainType.HotelInternational ||
+      this.forType == FlightHotelTrainType.InternationalFlight
+        ? CredentialsType.Passport
+        : CredentialsType.IdCard;
     this.vmNewCredential.Gender = "M";
     this.vmNewCredential.showIssueCountry = { Code: "CN", Name: "中国" };
     this.vmNewCredential.IssueCountry = "CN";
@@ -573,7 +599,9 @@ export class SelectPassengerPage
         return;
       }
       this.vmNewCredential.Name =
-        this.vmNewCredential.Surname.replace(/\s/g, "") +
+        ((this.vmNewCredential.Surname && this.vmNewCredential.Surname) || "")
+          .trim()
+          .replace(/\s/g, "") +
         ((this.vmNewCredential.Givenname &&
           this.vmNewCredential.Givenname.trim()) ||
           "");
