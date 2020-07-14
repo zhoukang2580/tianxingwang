@@ -50,6 +50,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   identityTypes: { key: string; value: string }[];
   @ViewChild(IonDatetime) datetimeComp: IonDatetime;
   maxYear = new Date().getFullYear() + 80;
+  minYear = 1901;
   constructor(
     private validatorService: ValidatorService,
     private el: ElementRef<HTMLElement>,
@@ -144,6 +145,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   async onSelectBirthDate() {
     if (this.datetimeComp) {
       this.datetimeComp.value = "";
+      this.maxYear = new Date().getFullYear();
       this.datetimeComp.open();
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value = d.detail.value;
@@ -208,6 +210,8 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.datetimeComp) {
       this.datetimeComp.value = "";
       this.datetimeComp.open();
+      this.maxYear = new Date().getFullYear() + 100;
+      this.minYear = new Date().getFullYear();
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value: string = d.detail.value;
         if (value && this.credential) {

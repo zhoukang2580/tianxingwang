@@ -206,14 +206,14 @@ export class ApiService {
     }
     return req.Url;
   }
-  async tryAutoLogin(res: IResponse<any>) {    
+  async tryAutoLogin(res: IResponse<any>) {
     const req = this.createRequest();
     const device = await AppHelper.getDeviceId();
-      req.Method = "ApiLoginUrl-Home-DeviceLogin";
-      req.Data = JSON.stringify({
-        Device: device,
-        Token: AppHelper.getStorage("loginToken"),
-      });
+    req.Method = "ApiLoginUrl-Home-DeviceLogin";
+    req.Data = JSON.stringify({
+      Device: device,
+      Token: AppHelper.getStorage("loginToken"),
+    });
     const formObj = Object.keys(req)
       .filter((it) => it != "Url" && it != "IsShowLoading")
       .map((k) => `${k}=${req[k]}`)
@@ -308,7 +308,12 @@ export class ApiService {
       tap((r) => console.log(r)),
       map((r) => r as any),
       switchMap((r: IResponse<any>) => {
-        if (isCheckLogin && r.Code && r.Code.toUpperCase()=== "NOLOGIN" && AppHelper.isApp()) {
+        if (
+          isCheckLogin &&
+          r.Code &&
+          r.Code.toUpperCase() === "NOLOGIN" &&
+          AppHelper.isApp()
+        ) {
           return from(this.tryAutoLogin(r)).pipe(
             map((r) => r as any),
             switchMap((r: IResponse<any>) => {
@@ -319,7 +324,7 @@ export class ApiService {
               if (r.Message && req.IsShowMessage) {
                 AppHelper.alert(r.Message);
               }
-              if (req.IsRedirctLogin!=false) {
+              if (req.IsRedirctLogin != false) {
                 this.router.navigate([AppHelper.getRoutePath("login")]);
               }
               return of(r);
@@ -330,11 +335,13 @@ export class ApiService {
           if (r.Message && req.IsShowMessage) {
             AppHelper.alert(r.Message);
           }
-          if (req.IsRedirctLogin!=false) {
+          if (req.IsRedirctLogin != false) {
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
         } else if (r.Code && r.Code.toUpperCase() === "NOAUTHORIZE") {
-          this.router.navigate([AppHelper.getRoutePath("no-authorize")]);
+          if (req.IsRedirctNoAuthorize != false) {
+            this.router.navigate([AppHelper.getRoutePath("no-authorize")]);
+          }
         } else if (r.Code && r.Code.toLowerCase() == "systemerror") {
           if (req.IsShowMessage) {
             AppHelper.alert("接口请求异常，系统错误");

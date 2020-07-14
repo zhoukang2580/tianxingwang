@@ -16,6 +16,7 @@ export class RequestEntity {
   IsShowMessage?: boolean;
   LoadingMsg?: string;
   IsRedirctLogin?: boolean;
+  IsRedirctNoAuthorize?: boolean;
   IsForward?: boolean;
   Timeout?: number;
 }
