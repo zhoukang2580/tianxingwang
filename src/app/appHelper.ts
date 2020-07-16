@@ -135,7 +135,7 @@ export class AppHelper {
         }
       }
       if (
-        (msg.message || msg || "")
+        (msg.message || msg.Message || "")
           .toLowerCase()
           .includes("http failure response")
       ) {

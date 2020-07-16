@@ -13,7 +13,7 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { Subscription, Observable, of, from, combineLatest } from "rxjs";
 import { Platform, ActionSheetController } from "@ionic/angular";
 import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
-import { StaffService } from "src/app/hr/staff.service";
+import { StaffService, StaffEntity } from "src/app/hr/staff.service";
 import { tap, map } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
@@ -41,6 +41,7 @@ export class MyPage implements OnDestroy, OnInit {
   isShowMyOrderTabs = true;
   config: ConfigEntity;
   isAgent = false;
+  staff: StaffEntity;
   get isShowDeveloperOption() {
     if (
       (environment.production &&
@@ -77,6 +78,9 @@ export class MyPage implements OnDestroy, OnInit {
         this.isAgent =
           identity && identity.Numbers && !!identity.Numbers.AgentId;
         this.Model = null;
+        this.staffService.getStaff().then((s) => {
+          this.staff = s;
+        });
       })
     );
   }

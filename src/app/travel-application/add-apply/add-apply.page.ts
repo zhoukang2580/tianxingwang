@@ -42,7 +42,7 @@ import { log } from "util";
 import { delay } from "rxjs/operators";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { TreeDataComponent } from "src/app/pages/components/tree-data/tree-data.component";
-import { toLower } from 'ionicons/dist/types/components/icon/utils';
+import { toLower } from "ionicons/dist/types/components/icon/utils";
 
 @Component({
   selector: "app-add-apply",
@@ -134,9 +134,11 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     this.travelService.getStaff().then((s) => {
       if (this.searchModel && this.searchModel.TravelForm) {
         this.searchModel.TravelForm.CostCenterName =
-          this.searchModel.TravelForm.CostCenterName || s.staff.CostCenter.Name;
+          this.searchModel.TravelForm.CostCenterName ||
+          (s.staff && s.staff.CostCenter.Name);
         this.searchModel.TravelForm.CostCenterCode =
-          this.searchModel.TravelForm.CostCenterCode || s.staff.CostCenter.Code;
+          this.searchModel.TravelForm.CostCenterCode ||
+          (s.staff && s.staff.CostCenter.Code);
         if (s.approvalStaff && s.approvalStaff.Name) {
           this.appovalStaff = s.approvalStaff.Name;
           this.searchModel.AccountId = s.approvalStaff.Account.Id;
@@ -145,11 +147,14 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           this.searchModel.TravelForm.Organization = {} as any;
         }
         this.searchModel.TravelForm.Organization.Code =
-          this.searchModel.TravelForm.Organization.Code || s.staff.Organization.Code;
+          this.searchModel.TravelForm.Organization.Code ||
+          (s.staff && s.staff.Organization && s.staff.Organization.Code);
         this.searchModel.TravelForm.Organization.Name =
-          this.searchModel.TravelForm.Organization.Name || s.staff.Organization.Name;
+          this.searchModel.TravelForm.Organization.Name ||
+          (s.staff && s.staff.Organization && s.staff.Organization.Name);
         this.searchModel.TravelForm.Organization.Id =
-          this.searchModel.TravelForm.Organization.Id || s.staff.Organization.Id;
+          this.searchModel.TravelForm.Organization.Id ||
+          (s.staff && s.staff.Organization && s.staff.Organization.Id);
       }
     });
   }
@@ -167,18 +172,17 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         );
       if (this.tmc.OutNumberNameArray) {
         for (const n of this.tmc.OutNumberNameArray) {
-
           this.outNumbers[n] = (this.searchModel.OutNumbers && obj[n]) || "";
           console.log(this.outNumbers[n], "this.outNumbers[n]");
-
         }
       }
       if (this.tmc && this.tmc.RegionTypeValue) {
         this.regionTypes = [];
-        const names = this.tmc.RegionTypeName && this.tmc.RegionTypeName.split(",") || [];
+        const names =
+          (this.tmc.RegionTypeName && this.tmc.RegionTypeName.split(",")) || [];
         this.tmc.RegionTypeValue.split(",").forEach((v, idx) => {
-          this.regionTypes.push({ value: v, label: names[idx] })
-        })
+          this.regionTypes.push({ value: v, label: names[idx] });
+        });
         this.regionTypes = this.regionTypes.filter((t) =>
           this.tmc.RegionTypeValue.match(new RegExp(t.value, "i"))
         );
@@ -186,13 +190,18 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         let t = this.tmc.TravelApprovalContent || "";
         if (t) {
           if (t.toLowerCase().includes("international")) {
-            this.international = true
+            this.international = true;
           }
-          if (t.toLowerCase().includes("flight") || t.toLowerCase().includes("hotel") || t.toLowerCase().includes("train") || t.toLowerCase().includes("car")) {
-            this.domestic = true
+          if (
+            t.toLowerCase().includes("flight") ||
+            t.toLowerCase().includes("hotel") ||
+            t.toLowerCase().includes("train") ||
+            t.toLowerCase().includes("car")
+          ) {
+            this.domestic = true;
           }
         }
-        this.vmTravelApprovalContent = this.tmc.TravelApprovalContent
+        this.vmTravelApprovalContent = this.tmc.TravelApprovalContent;
       }
     });
     this.initValidateRule();
@@ -210,10 +219,10 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             this.enable = false;
           }
           if (this.searchModel.StatusType == ApprovalStatusType.WaiteSubmit) {
-            this.waiting = true
+            this.waiting = true;
           }
           if (this.searchModel.StatusType == ApprovalStatusType.Pass) {
-            this.pass = true
+            this.pass = true;
           }
           this.appovalStaff = this.searchModel.ApprovalStaffName;
           if (
@@ -364,7 +373,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   }
   async onSubmit() {
     try {
-
       if (this.searchModel.TravelForm) {
         if (!this.searchModel.TravelForm.Organization) {
           const el = this.getEleByAttr("organization", "organization");
@@ -387,10 +395,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             const trip = this.searchModel.TravelForm.Trips[index];
             if (trip && trip.travelTools) {
               trip.TravelTool = trip.travelTools.join(",");
-            }
-            else if (
-              !trip.TripType
-            ) {
+            } else if (!trip.TripType) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
               AppHelper.toast("请输入出差类别");
@@ -404,33 +409,22 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             //   AppHelper.toast("请输入交通住宿");
             //   return;
             // }
-            else if (
-              !trip.FromCityName
-            ) {
+            else if (!trip.FromCityName) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
               AppHelper.toast("请输入开始城市");
               return;
-            }
-            else if (
-              !trip.ToCityName
-            ) {
+            } else if (!trip.ToCityName) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
               AppHelper.toast("请输入目的城市");
               return;
-            }
-            else if (
-              !trip.StartDate
-            ) {
+            } else if (!trip.StartDate) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
               AppHelper.toast("请输入开始时间");
               return;
-            }
-            else if (
-              !trip.EndDate
-            ) {
+            } else if (!trip.EndDate) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
               AppHelper.toast("请输入结束时间");
@@ -440,10 +434,13 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
               AppHelper.toast("出差结束时间不能早于出差开始时间");
-              return
+              return;
             }
             if (trip.StartDate && trip.EndDate) {
-              trip.StartDate = trip.StartDate.replace("T", " ").substring(0, 10);
+              trip.StartDate = trip.StartDate.replace("T", " ").substring(
+                0,
+                10
+              );
               trip.EndDate = trip.EndDate.replace("T", " ").substring(0, 10);
             }
             // this.searchModel.TravelForm.Trips.some()
@@ -462,16 +459,29 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           return;
         }
       }
-      if (this.tmc && this.tmc.OutNumberNameArray && this.tmc.OutNumberRequiryNameArray) {
+      if (
+        this.tmc &&
+        this.tmc.OutNumberNameArray &&
+        this.tmc.OutNumberRequiryNameArray
+      ) {
         console.log(this.tmc.OutNumberNameArray, "this.tmc.OutNumberNameArray");
-        console.log(this.tmc.OutNumberRequiryNameArray, " this.tmc.OutNumberRequiryNameArray");
-        for (let index = 0; index < this.tmc.OutNumberRequiryNameArray.length; index++) {
+        console.log(
+          this.tmc.OutNumberRequiryNameArray,
+          " this.tmc.OutNumberRequiryNameArray"
+        );
+        for (
+          let index = 0;
+          index < this.tmc.OutNumberRequiryNameArray.length;
+          index++
+        ) {
           const element = this.tmc.OutNumberRequiryNameArray[index];
           if (!this.outNumbers[element]) {
             const el = this.getEleByAttr("OutNumberName", element);
             this.moveRequiredEleToViewPort(el);
-            AppHelper.toast(`请输入${this.tmc.OutNumberNameArray.find(f => f == element)}`);
-            return
+            AppHelper.toast(
+              `请输入${this.tmc.OutNumberNameArray.find((f) => f == element)}`
+            );
+            return;
           }
         }
       }
@@ -540,68 +550,19 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   }
   ngDoCheck() {
     this.getAllTravelDays();
-    const days = this.travelService.calcTotalTrvavelDays(this.searchModel && this.searchModel.TravelForm && this.searchModel.TravelForm.Trips);
-    console.log("calcTotalTrvavelDays",days);
+
+    // console.log("calcTotalTrvavelDays", days);
   }
   private getAllTravelDays() {
-
     if (this.searchModel && this.searchModel.TravelForm) {
-      this.searchModel.TravelForm.DayCount = this.getAllDay();
+      const days = this.travelService.calcTotalTrvavelDays(
+        this.searchModel.TravelForm.Trips
+      );
+      this.searchModel.TravelForm.DayCount = days;
     }
     if (!this.searchModel.TravelForm.DayCount) {
-      this.searchModel.TravelForm.DayCount = 0
+      this.searchModel.TravelForm.DayCount = 0;
     }
     return this.searchModel.TravelForm.DayCount;
-  }
-  getAllDay() {
-    if (this.searchModel && this.searchModel.TravelForm && this.searchModel.TravelForm.Trips) {
-      let ary = [];
-      let result = [];
-      this.searchModel.TravelForm.Trips.forEach(t => {
-        if (t.StartDate && t.EndDate) {
-          let sectionTemp = {} as any;
-          sectionTemp.StartDate = new Date(t.StartDate);
-          sectionTemp.EndDate = new Date(t.EndDate);
-          ary.push(sectionTemp);
-          // alldate.push(AppHelper.getDate(t.StartDate.substr(0, 10)).getTime());
-          // alldate.push(AppHelper.getDate(t.EndDate.substr(0, 10)).getTime())
-        }
-      })
-      var days = 0;
-      if (ary.length == 0)
-        return days;
-      else if (ary.length == 1) {
-        var startDate: any = new Date(ary[0].StartDate) as any;
-        var endDate: any = new Date(ary[0].EndDate) as any;
-        var startDate2: any = new Date(startDate.getFullYear().toString());
-        var endDate2: any = new Date(endDate.getFullYear().toString());
-        var startDay = Math.ceil((startDate - startDate2) / (24 * 60 * 60 * 1000)) + 1;
-        var endDay = Math.ceil((endDate - endDate2) / (24 * 60 * 60 * 1000)) + 1;
-        for (var i = startDay; i <= endDay; i++) {
-          if (result.indexOf(i) == -1) {
-            result.push(i);
-          }
-        }
-      }
-      else if (ary.length > 1) {
-        for (var s = 0; s < ary.length; s++) {
-          var startDate: any = new Date(ary[s].StartDate) as any;
-          var endDate: any = new Date(ary[s].EndDate) as any;
-          var startDate2: any = new Date(startDate.getFullYear().toString());
-          var endDate2: any = new Date(endDate.getFullYear().toString());
-          var startDay = Math.ceil((startDate - startDate2) / (24 * 60 * 60 * 1000)) + 1;
-          var endDay = Math.ceil((endDate - endDate2) / (24 * 60 * 60 * 1000)) + 1;
-          for (var i = startDay; i <= endDay; i++) {
-            if (result.indexOf(i) == -1) {
-              result.push(i);
-            }
-          }
-        }
-      }
-      days = result.length;
-      console.log(days, "days");
-
-      return days
-    }
   }
 }
