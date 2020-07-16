@@ -90,6 +90,13 @@ export class TmcService {
       this.identity && this.identity.Numbers && this.identity.Numbers.AgentId
     );
   }
+  async getBanners() {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Banner-List";
+    return this.apiService.getPromiseData<
+      { Url: string; Title: string; Id: string }[]
+    >(req);
+  }
   getTrips(type: "Flight" | "Train" | "Hotel" = null) {
     const req = new RequestEntity();
     req.Method = `TmcApiOrderUrl-Travel-List`;

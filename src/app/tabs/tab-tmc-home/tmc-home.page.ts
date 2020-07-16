@@ -38,6 +38,8 @@ import { tap, shareReplay, map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
 import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
+import { ConfigService } from "src/app/services/config/config.service";
+import { ConfigEntity } from "src/app/services/config/config.entity";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home.page.html",
@@ -52,13 +54,14 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     HTMLElement
   >;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
+  private swiper: any;
+  private isLoadingBanners = false;
   identity: IdentityEntity;
   isLoadingNotice = false;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
   selectedCompany$: Observable<string>;
   companies: any[];
-  private swiper: any;
   agentNotices: { text: string; active?: boolean; id: number }[];
   canSelectCompany$ = of(false);
   staff: StaffEntity;
@@ -75,6 +78,8 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   };
   isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaHotel = environment.mockProBuild || !environment.production;
+  banners: { Url: string; Title: string; Id: string }[];
+  config: ConfigEntity;
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -90,7 +95,8 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     private interHotelService: InternationalHotelService,
     private interFlightService: InternationalFlightService,
     private flightService: FlightService,
-    route: ActivatedRoute
+    route: ActivatedRoute,
+    private configService: ConfigService
   ) {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
@@ -115,6 +121,27 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.destroySwiper();
+  }
+  private async loadBanners() {
+    if (!this.banners || this.banners.length == 0) {
+      if (!(await this.hasTicket())) {
+        return;
+      }
+      if (this.isLoadingBanners) {
+        return;
+      }
+      this.isLoadingBanners = true;
+      this.tmcService
+        .getBanners()
+        .catch(() => [])
+        .then((res) => {
+          this.banners = res || [];
+          this.updateSwiper();
+        })
+        .finally(() => {
+          this.isLoadingBanners = false;
+        });
+    }
   }
   ngAfterViewInit() {
     setTimeout(() => {
@@ -186,7 +213,13 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.subscription = this.identityService
       .getIdentitySource()
       .subscribe((_) => {
+        this.configService.getConfigAsync().then((c) => {
+          this.config = c;
+        });
+        this.banners=[];
         this.staffCredentials = null;
+        this.loadBanners();
+        this.loadNotices();
       });
     const paramters = AppHelper.getQueryParamers();
     if (paramters.wechatPayResultNumber) {
@@ -311,19 +344,29 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       }, 200);
     }
   }
+  private async loadNotices() {
+    if (!this.agentNotices || !this.agentNotices.length) {
+      if (this.isLoadingNotice) {
+        return;
+      }
+      if (!(await this.hasTicket())) {
+        return;
+      }
+      this.agentNotices = [];
+      this.isLoadingNotice = true;
+      this.getAgentNotices().finally(() => {
+        this.isLoadingNotice = false;
+      });
+    }
+  }
   async check() {
     if (!(await this.hasTicket())) {
       return;
     }
     let retryCount = 0;
     try {
-      this.agentNotices = [];
-      this.isLoadingNotice = true;
-      setTimeout(() => {
-        this.getAgentNotices().finally(() => {
-          this.isLoadingNotice = false;
-        });
-      }, 1000);
+      this.loadNotices();
+      this.loadBanners();
       this.staff = await this.staffService.getStaff();
       console.log("home check", this.staffCredentials);
       if (this.staff && this.staff.AccountId) {

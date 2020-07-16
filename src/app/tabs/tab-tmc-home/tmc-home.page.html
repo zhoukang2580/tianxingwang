@@ -7,19 +7,18 @@
       <ng-container *ngIf='canSelectCompany$|async'>
         <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
       </ng-container>
-      <ion-text class="ion-margin-start">欢迎你 <ng-container *ngIf='identity?.Name'>,{{identity?.Name}}</ng-container></ion-text>
+      <ion-text class="ion-margin-start">欢迎你 <ng-container *ngIf='identity?.Name'>,{{identity?.Name}}</ng-container>
+      </ion-text>
     </ion-title>
     <ion-buttons slot='end'>
-      <ion-button fill='clear' size='small' (click)='onSwitchCustomer()'
-        *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
+      <ion-button fill='clear' size='small' (click)='onSwitchCustomer()' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
         <ion-chip color='success'>
           <ion-label>切换客户</ion-label>
         </ion-chip>
       </ion-button>
     </ion-buttons>
     <ng-template #selectCompany>
-      <ion-button fill='clear' size='small' (click)='onSwitchCompany()'
-        *ngIf="(canSelectCompany$|async)&&companies?.length>1">
+      <ion-button fill='clear' size='small' (click)='onSwitchCompany()' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
         <ion-chip color='success'>
           <ion-label>切换公司</ion-label>
         </ion-chip>
@@ -32,13 +31,20 @@
   <div class="img">
     <div class="swiper-container" #container>
       <div class="swiper-wrapper">
-        <div class="swiper-slide" #slide><img src="assets/images/hotelBanner.jpg"
-            style="object-fit: cover;-o-object-fit: cover; max-height: 40vh;width: 100vw; height: 40vh;" /></div>
-        <div class="swiper-slide" #slide><img src="assets/images/useCarBanner.jpg" style="object-fit: cover;
+
+        <ng-container *ngIf='banners?.length else deftpl'>
+          <div class="swiper-slide" *ngFor='let pic of banners'>
+            <img [lazyLoad]='pic.Url' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'
+              style="object-fit: cover;-o-object-fit: cover; max-height: 40vh;width: 100vw; height: 40vh;" /></div>
+        </ng-container>
+        <ng-template #deftpl>
+          <div class="swiper-slide">
+            <img [lazyLoad]='config?.DefaultImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' style="object-fit: cover;
             -o-object-fit: cover;
             max-height: 40vh;
             width: 100vw;
             height: 40vh;" /></div>
+        </ng-template>
       </div>
     </div>
   </div>
