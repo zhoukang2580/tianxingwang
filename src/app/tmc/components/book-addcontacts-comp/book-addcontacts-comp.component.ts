@@ -18,6 +18,7 @@ import { AddContact } from "../../models/AddContact";
   styleUrls: ["./book-addcontacts-comp.component.scss"],
 })
 export class BookAddcontactsCompComponent implements OnInit {
+  @Input() buttonText = "添加联系人";
   @Input() contacts: AddContact[];
   @Output() contactsChange: EventEmitter<any>;
   constructor(private modalCtrl: ModalController) {
@@ -45,6 +46,9 @@ export class BookAddcontactsCompComponent implements OnInit {
     }
     const m = await this.modalCtrl.create({
       component: AddcontactsModalComponent,
+      componentProps: {
+        title: this.buttonText,
+      },
     });
     if (m) {
       m.backdropDismiss = false;

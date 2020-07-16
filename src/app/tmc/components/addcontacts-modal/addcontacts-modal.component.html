@@ -1,38 +1,36 @@
 <ion-header>
-    <ion-toolbar>
-      <ion-buttons slot='start'>
-        <app-back-button [backFn]='back.bind(this)'>
-        </app-back-button>
-      </ion-buttons>
-      <ion-title>选择联系人</ion-title>
-    </ion-toolbar>
-  </ion-header>
-  
-  <ion-content>
-    <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
-      <ion-refresher-content 
-        refreshingText="正在加载...">
-      </ion-refresher-content>
-    </ion-refresher>
-    <ion-toolbar #toolbar>
-      <!-- Searchbar with a custom debounce -->
-      <ion-searchbar class='ion-no-margin ion-no-padding' style='padding:0' debounce="400" animated placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='doSearch()'
-        [(ngModel)]='vmKeyword'>
-      </ion-searchbar>
-    </ion-toolbar>
-    <ion-list *ngIf='!loading;else loadingTemp'>
-      <ng-container *ngIf='items?.length;else nodata'>
-        <ion-item *ngFor='let item of items' detail (click)='onSelect(item)'>
-          <ion-label color='medium'>
-            {{item?.Text}}
-          </ion-label>
-        </ion-item>
-      </ng-container>
-      <ng-template #nodata>
-        <app-or-comp>暂无数据</app-or-comp>
-      </ng-template>
-    </ion-list>
-    <ng-template #loadingTemp>
-      正在加载...
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button [backFn]='back.bind(this)'>
+      </app-back-button>
+    </ion-buttons>
+    <ion-title>{{title||"选择联系人"}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+    <ion-refresher-content refreshingText="正在加载...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-toolbar #toolbar>
+    <!-- Searchbar with a custom debounce -->
+    <ion-searchbar class='ion-no-margin ion-no-padding' style='padding:0' debounce="400" animated placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='doSearch()' [(ngModel)]='vmKeyword'>
+    </ion-searchbar>
+  </ion-toolbar>
+  <ion-list *ngIf='!loading;else loadingTemp'>
+    <ng-container *ngIf='items?.length;else nodata'>
+      <ion-item *ngFor='let item of items' detail (click)='onSelect(item)'>
+        <ion-label color='medium'>
+          {{item?.Text}}
+        </ion-label>
+      </ion-item>
+    </ng-container>
+    <ng-template #nodata>
+      <app-or-comp>暂无数据</app-or-comp>
     </ng-template>
-  </ion-content>
+  </ion-list>
+  <ng-template #loadingTemp>
+    正在加载...
+  </ng-template>
+</ion-content>

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
-import { IonRefresher, ModalController } from '@ionic/angular';
-import { TmcService } from 'src/app/tmc/tmc.service';
+import { IonRefresher, ModalController } from "@ionic/angular";
+import { TmcService } from "src/app/tmc/tmc.service";
 interface OptionItem {
   Text: string;
   Value: string;
@@ -8,13 +8,14 @@ interface OptionItem {
 @Component({
   selector: "app-addcontacts-modal",
   templateUrl: "./addcontacts-modal.component.html",
-  styleUrls: ["./addcontacts-modal.component.scss"]
+  styleUrls: ["./addcontacts-modal.component.scss"],
 })
 export class AddcontactsModalComponent implements OnInit {
   private selectedOptionItem: OptionItem;
   items: OptionItem[];
   loading = false;
   vmKeyword = "";
+  title: string;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
@@ -40,7 +41,7 @@ export class AddcontactsModalComponent implements OnInit {
   async back() {
     const t = await this.modalCtrl.getTop();
     if (t) {
-      t.dismiss(this.selectedOptionItem).catch(_ => {});
+      t.dismiss(this.selectedOptionItem).catch((_) => {});
     }
   }
 }
