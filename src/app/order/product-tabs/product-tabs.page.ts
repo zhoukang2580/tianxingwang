@@ -699,6 +699,7 @@ export class ProductTabsPage implements OnInit, OnDestroy {
             url,
             title: task && task.Name,
             tabId: this.activeTab.value,
+            isOpenInAppBrowser:AppHelper.isApp()
           },
         })
         .then((_) => {
