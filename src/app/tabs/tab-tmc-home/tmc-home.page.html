@@ -34,7 +34,7 @@
 
         <ng-container *ngIf='banners?.length else deftpl'>
           <div class="swiper-slide" *ngFor='let pic of banners'>
-            <img [lazyLoad]='pic.Url' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'
+            <img [lazyLoad]='pic.ImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'
               style="object-fit: cover;-o-object-fit: cover; max-height: 40vh;width: 100vw; height: 40vh;" /></div>
         </ng-container>
         <ng-template #deftpl>

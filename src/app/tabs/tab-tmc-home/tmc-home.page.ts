@@ -78,7 +78,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   };
   isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaHotel = environment.mockProBuild || !environment.production;
-  banners: { Url: string; Title: string; Id: string }[];
+  banners: { ImageUrl: string; Title: string; Id: string }[];
   config: ConfigEntity;
   constructor(
     private identityService: IdentityService,

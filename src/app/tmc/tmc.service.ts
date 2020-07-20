@@ -94,7 +94,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Banner-List";
     return this.apiService.getPromiseData<
-      { Url: string; Title: string; Id: string }[]
+      { ImageUrl: string; Title: string; Id: string }[]
     >(req);
   }
   getTrips(type: "Flight" | "Train" | "Hotel" = null) {
