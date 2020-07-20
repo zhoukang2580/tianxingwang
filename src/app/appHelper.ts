@@ -206,14 +206,14 @@ export class AppHelper {
         `${environment.mockProBuild ? "_test_app_uuid_123456" : ""}`
       );
     }
-    let local ="";// AppHelper.getStorage<string>("_UUId_DeviceId_");
+    let local = ""; // AppHelper.getStorage<string>("_UUId_DeviceId_");
     await this.platform.ready();
-    const wechat=window['hcp'];
-    if(wechat&&wechat.getUUID){
-      local=await wechat.getUUID();
+    const wechat = window["hcp"];
+    if (wechat && wechat.getUUID) {
+      local = await wechat.getUUID();
     }
-    if(local){
-      local=md5(local);
+    if (local) {
+      local = md5(local);
     }
     console.log("local uuid " + local);
     if (local) {
@@ -655,6 +655,29 @@ export class AppHelper {
       return `${md5(content)}`.toLowerCase();
     }
     return md5(content);
+  }
+  static processPath() {
+    const query = AppHelper.getQueryParamers();
+    const hrefPath = AppHelper.getNormalizedPath(window.location.href);
+    if (query) {
+      if (hrefPath) {
+        if (!query.path) {
+          query.path = hrefPath;
+        }
+      }
+      if (
+        query.unroutehome &&
+        (query.unroutehome as string).toLowerCase().includes("true")
+      ) {
+        if ((query.unroutehome as string).includes("#")) {
+          const [unroutehome, path] = (query.unroutehome as string).split("#");
+          query.unroutehome = unroutehome;
+          query.path = path;
+        }
+      }
+      const path2 = query.path;
+      query.path = AppHelper.getNormalizedPath(path2);
+    }
   }
   static initlizeQueryParamers() {
     let name: string = "";
