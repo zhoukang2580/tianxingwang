@@ -250,10 +250,13 @@ export class FlightListPage
           tripType: TripType.departureTrip,
           id: AppHelper.uuid(),
         } as IFlightSegmentInfo;
+        await this.flightService.initSelfBookTypeBookInfos();
         const bookInfos = this.flightService.getPassengerBookInfos();
-        bookInfos[0].bookInfo = info;
-        this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
-        this.onShowSelectedInfos();
+        if (bookInfos && bookInfos.length) {
+          bookInfos[0].bookInfo = info;
+          this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
+          this.onShowSelectedInfos();
+        }
       } else {
         AppHelper.alert("超标不可预订");
         s["disabled"] = true;

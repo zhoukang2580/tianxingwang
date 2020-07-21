@@ -252,10 +252,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
       this.route.queryParamMap.subscribe(async (q) => {
         this.hotelDayPrice = this.hotelService.curViewHotel;
         const isSelf = await this.staffService.isSelfBookType();
-        if (
-          !this.hotelPolicy ||
-          (isSelf && this.hotelService.getBookInfos().length == 0)
-        ) {
+        if (!this.hotelPolicy || this.hotelPolicy.length == 0) {
           this.onSearch();
         }
       })
@@ -449,6 +446,16 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
       this.isAutoOpenMap = false;
     }
   }
+  async onShowRoomPlans(room) {
+    const isSelf = await this.staffService.isSelfBookType();
+    if (!isSelf && this.hotelService.getBookInfos().length == 0) {
+      const ok = await AppHelper.alert("请先添加旅客", true, "确定");
+      if (ok) {
+        this.onSelectPassenger();
+      }
+    }
+    room["isShowRoomPlans"] = !room["isShowRoomPlans"];
+  }
   async onBookRoomPlan(evt: {
     roomPlan: RoomPlanEntity;
     room: RoomEntity;
@@ -488,14 +495,18 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
           tip = `(${info.passenger.Policy.HotelIllegalTip})`;
         }
       }
-      AppHelper.alert(
-        `超标不可预订,${p && p.Rules ? p.Rules.join(",") : ""}${tip}`
-      );
-      return;
+      if (!this.tmcService.isAgent) {
+        AppHelper.alert(
+          `超标不可预订,${p && p.Rules ? p.Rules.join(",") : ""}${tip}`
+        );
+        return;
+      }
     }
     if (color.includes("nopermission")) {
-      AppHelper.alert("您没有权限预订该类型产品！");
-      return;
+      if (!this.tmcService.isAgent) {
+        AppHelper.alert("您没有权限预订该类型产品！");
+        return;
+      }
     }
     if (color.includes("full")) {
       AppHelper.alert("已满房，不可预订");
@@ -581,6 +592,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     passengerAccountId: string,
     isAlert = false
   ) {
+    if (this.tmcService.isAgent) {
+      return true;
+    }
     if (!roomPlan || !passengerAccountId) {
       return false;
     }

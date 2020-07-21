@@ -41,7 +41,7 @@ import {
 } from "./models/PassengerFlightInfo";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DayModel } from "../tmc/models/DayModel";
-import { FlightFareEntity } from './models/FlightFareEntity';
+import { FlightFareEntity } from "./models/FlightFareEntity";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -587,8 +587,10 @@ export class FlightService {
             return;
           }
           if (info.isDontAllowBook) {
-            AppHelper.alert("超标不可预订");
-            return;
+            if (!this.tmcService.isAgent) {
+              AppHelper.alert("超标不可预订");
+              return;
+            }
           }
           info.tripType = s.tripType;
           if (info.lowerSegmentInfo) {
@@ -666,7 +668,9 @@ export class FlightService {
           return item;
         });
         if (cannotArr.length) {
-          AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`);
+          if (!this.tmcService.isAgent) {
+            AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`);
+          }
         }
       } else {
         const ok = await AppHelper.alert(

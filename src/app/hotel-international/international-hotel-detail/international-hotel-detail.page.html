@@ -131,7 +131,7 @@
                   </ion-text>
                 </h3>
                 <h4 *ngIf='room.RoomDetails' class='show-desc'
-                  (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
+                  (click)='onShowRoomPlans(room)'>
                   <ion-label class='ion-text-wrap'>
                     <div class="room-detail-desc">
                       <div *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</div>
@@ -148,7 +148,7 @@
                   详情
                 </ion-text>
                 <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 2em;"
-                  (click)='room["isShowRoomPlans"]=!room["isShowRoomPlans"]'>
+                  (click)='onShowRoomPlans(room)'>
                   <ng-container *ngIf='!isFullOnly(room.RoomPlans)'>
                     <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
                       <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span

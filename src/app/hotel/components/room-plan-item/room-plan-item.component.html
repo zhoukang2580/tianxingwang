@@ -5,13 +5,13 @@
         <ion-text color='success'>{{it}}</ion-text>
       </span>
       <ng-container *ngIf='getBedType(room) as it'>
-        <span *ngIf='it.Description as d'>{{it.Description}}</span>
+        <span *ngIf='it.Description'>{{it.Description}}</span>
       </ng-container>
       <ng-container *ngIf='getCapacity(room) as it'>
-        <span *ngIf='it.Description as d'>可住{{d}}人</span>
+        <span *ngIf='it.Description'>可住{{it.Description}}人</span>
       </ng-container>
       <ng-container *ngIf='getRoomArea(room) as it'>
-        <span *ngIf='it.Description as d'>{{it.Description}}m²</span>
+        <span *ngIf='it.Description'>{{it.Description}}m²</span>
       </ng-container>
     </div>
     <div class="room-detail-desc">
@@ -32,7 +32,7 @@
       [class.can-not-be-book]='color.includes("danger")||color.includes("medium")' [attr.color]='color.includes("danger")?"danger":color'>
       <ion-text color='danger' class='avg-price'>￥{{getAvgPrice(roomPlan)}}</ion-text>
       <div class="btn-book" (click)='onBook(roomPlan,color)'>
-        <ion-button slot='end' class='ion-no-margin' [disabled]='color.includes("danger")' expand='full'>
+        <ion-button slot='end' class='ion-no-margin' [class.disabled]='color.includes("danger")' expand='full'>
           <ion-text color='light'>{{color.includes('danger_full')?"满房":color.includes("disabled")?"超标":"预订"}}
           </ion-text>
         </ion-button>

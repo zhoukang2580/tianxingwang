@@ -517,6 +517,16 @@ export class InternationalHotelDetailPage
   onSearch() {
     this.doRefresh();
   }
+  async onShowRoomPlans(room) {
+    const isSelf = await this.staffService.isSelfBookType();
+    if (!isSelf && this.hotelService.getBookInfos().length == 0) {
+      const ok = await AppHelper.alert("请先添加旅客", true, "确定");
+      if (ok) {
+        this.onSelectPassenger();
+      }
+    }
+    room["isShowRoomPlans"] = !room["isShowRoomPlans"];
+  }
   async onSelectPassenger(room?: {
     roomPlan: RoomPlanEntity;
     room: RoomEntity;

@@ -86,7 +86,7 @@ export class TmcService {
     this.setSelectedCompanySource("");
   }
   get isAgent() {
-    return (
+    return !!(
       this.identity && this.identity.Numbers && this.identity.Numbers.AgentId
     );
   }
