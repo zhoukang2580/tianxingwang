@@ -3,6 +3,7 @@ import { IFlightSegmentInfo } from "./../models/PassengerFlightInfo";
 import {
   PassengerBookInfo,
   FlightHotelTrainType,
+  TmcService,
 } from "./../../tmc/tmc.service";
 import { environment } from "src/environments/environment";
 import { ApiService } from "src/app/services/api/api.service";
@@ -168,7 +169,8 @@ export class FlightListPage
     private identityService: IdentityService,
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
-    private storage: Storage
+    private storage: Storage,
+    private tmcService: TmcService
   ) {
     this.selectedPassengersNumbers$ = flightService
       .getPassengerBookInfoSource()
@@ -256,11 +258,19 @@ export class FlightListPage
           bookInfos[0].bookInfo = info;
           this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
           this.onShowSelectedInfos();
+        } else {
+          const isself = await this.staffService.isSelfBookType();
+          if (!isself) {
+            await AppHelper.alert("请先添加旅客", true);
+            this.onSelectPassenger();
+          }
         }
       } else {
-        AppHelper.alert("超标不可预订");
-        s["disabled"] = true;
-        this.goToFlightCabinsDetails(s);
+        if (!this.tmcService.isAgent) {
+          AppHelper.alert("超标不可预订");
+          s["disabled"] = true;
+          this.goToFlightCabinsDetails(s);
+        }
       }
     }
   }
