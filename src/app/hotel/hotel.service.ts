@@ -84,6 +84,9 @@ export class HotelService {
   private testData: {
     [pageIndex: number]: { HotelDayPrices: any[]; DataCount?: number };
   };
+  get isAgent(){
+    return this.tmcService.isAgent;
+  }
   curViewHotel: HotelDayPriceEntity;
   showImages: any[];
   showRoomDetailInfo: {

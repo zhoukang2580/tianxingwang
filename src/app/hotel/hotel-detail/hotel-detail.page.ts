@@ -478,7 +478,13 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
               this.hotelService.getRoomPlanUniqueId(evt.roomPlan)
           )
       );
-    const p = policy && policy.HotelPolicies[0] && policy.HotelPolicies[0];
+    const p =
+      policy &&
+      policy.HotelPolicies &&
+      policy.HotelPolicies.find(
+        (it) =>
+          it.UniqueIdId == this.hotelService.getRoomPlanUniqueId(evt.roomPlan)
+      );
     console.log("onBookRoomPlan", evt.roomPlan, p);
     if (color.includes("disabled")) {
       let tip = "";
@@ -486,6 +492,12 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
         const info = this.hotelService
           .getBookInfos()
           .find((it) => it.isFilterPolicy);
+        const rules =
+          p.Rules ||
+          (evt.roomPlan.Rules as any) ||
+          (info.bookInfo &&
+            info.bookInfo.roomPlan &&
+            info.bookInfo.roomPlan.Rules);
         if (
           info &&
           info.passenger &&
@@ -494,12 +506,19 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
         ) {
           tip = `(${info.passenger.Policy.HotelIllegalTip})`;
         }
+        if (rules) {
+          const msg = (Array.isArray(rules)
+            ? rules
+            : Object.keys(rules).map((k) => rules[k])
+          ).join(",");
+          tip = `${msg}${tip}`;
+        }
       }
       if (!this.tmcService.isAgent) {
-        AppHelper.alert(
-          `超标不可预订,${p && p.Rules ? p.Rules.join(",") : ""}${tip}`
-        );
+        AppHelper.alert(`超标不可预订,${tip}`);
         return;
+      } else {
+        await AppHelper.alert(`超标,${tip}`);
       }
     }
     if (color.includes("nopermission")) {

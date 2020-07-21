@@ -28,6 +28,9 @@ export class InterRoomPlanItemComponent implements OnInit {
   HotelBookType = HotelBookType;
   HotelPaymentType = HotelPaymentType;
   @Input() colors: { [k: string]: string };
+  get isAgent(){
+    return this.hotelService.isAgent;
+  }
   constructor(
     private hotelService: InternationalHotelService,
     private popoverCtrl: PopoverController

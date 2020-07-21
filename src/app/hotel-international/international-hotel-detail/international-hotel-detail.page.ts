@@ -556,6 +556,7 @@ export class InternationalHotelDetailPage
     await m.onDidDismiss();
     sub.unsubscribe();
     if (room) {
+      await this.initFilterPolicy();
       await this.onBookRoomPlan(room);
     }
   }
@@ -568,6 +569,7 @@ export class InternationalHotelDetailPage
     color: string;
   }) {
     console.log("onBookRoomPlan", evt.roomPlan);
+
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
@@ -600,7 +602,13 @@ export class InternationalHotelDetailPage
               this.hotelService.getRoomPlanUniqueId(evt.roomPlan)
           )
       );
-    const p = policy && policy.HotelPolicies[0] && policy.HotelPolicies[0];
+    const p =
+      policy &&
+      policy.HotelPolicies &&
+      policy.HotelPolicies.find(
+        (it) =>
+          it.UniqueIdId == this.hotelService.getRoomPlanUniqueId(evt.roomPlan)
+      );
     console.log("onBookRoomPlan", evt.roomPlan, p);
     if (color.includes("disabled")) {
       let tip = "";
@@ -616,11 +624,24 @@ export class InternationalHotelDetailPage
         ) {
           tip = `(${info.passenger.Policy.HotelIllegalTip})`;
         }
+        if (!p.Rules) {
+          const r =
+            info &&
+            info.bookInfo &&
+            info.bookInfo.roomPlan &&
+            info.bookInfo.roomPlan.Rules;
+          p.Rules = Object.keys(r).map((k) => r[k]);
+        }
+        if (p.Rules) {
+          tip = p.Rules.join(",") + "," + tip;
+        }
       }
-      AppHelper.alert(
-        `超标不可预订,${p && p.Rules ? p.Rules.join(",") : ""}${tip}`
-      );
-      return;
+      if (!this.hotelService.isAgent) {
+        AppHelper.alert(`超标不可预订,$${tip}`);
+        return;
+      } else {
+        AppHelper.alert(`超标,${tip}`);
+      }
     }
     if (color.includes("full")) {
       AppHelper.alert("已满房，不可预订");
@@ -630,10 +651,9 @@ export class InternationalHotelDetailPage
     const isSelf = await this.staffService.isSelfBookType();
     if (bookInfos.length === 0) {
       if (!isSelf) {
-        const a = await AppHelper.alert("请先添加房客", true, "确定");
-        if (a) {
-          this.onSelectPassenger();
-        }
+        await AppHelper.alert("请先添加房客", true, "确定");
+        this.onSelectPassenger();
+        return;
       }
     } else {
       const s = this.hotelService.getSearchCondition();
@@ -701,6 +721,9 @@ export class InternationalHotelDetailPage
   ) {
     if (!roomPlan || !passengerAccountId) {
       return false;
+    }
+    if (this.hotelService.isAgent) {
+      return true;
     }
     const p = policies.find((it) => it.PassengerKey == passengerAccountId);
     if (!p || !p.HotelPolicies) {

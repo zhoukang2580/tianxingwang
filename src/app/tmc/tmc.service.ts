@@ -93,6 +93,8 @@ export class TmcService {
   async getBanners() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Banner-List";
+    req.IsRedirctNoAuthorize=false;
+    req.IsRedirctLogin=false;
     return this.apiService.getPromiseData<
       { ImageUrl: string; Title: string; Id: string }[]
     >(req);

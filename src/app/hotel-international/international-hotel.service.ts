@@ -58,7 +58,7 @@ export class InternationalHotelService {
   private fetchPassengerCredentials: {
     promise: Promise<{ [accountId: string]: CredentialsEntity[] }>;
   };
-  private isInitializingSelfBookInfos: { promise: Promise<any> };
+  private isInitializingSelfBookInfos:Promise<any> ;
   private bookInfos: PassengerBookInfo<IInterHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IInterHotelInfo>[]>;
   private hotelQuerySource: Subject<HotelQueryEntity>;
@@ -77,6 +77,9 @@ export class InternationalHotelService {
     : null; // 查看详情的hotel;
   showRoomDetailInfo: IshowRoomDetailInfo;
   showImages: any[];
+  get isAgent() {
+    return this.tmcService.isAgent;
+  }
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -492,42 +495,40 @@ export class InternationalHotelService {
   }
   private async initSelfBookTypeBookInfos(isShowLoading = false) {
     if (this.isInitializingSelfBookInfos) {
-      return this.isInitializingSelfBookInfos.promise;
+      return this.isInitializingSelfBookInfos;
     } else {
-      this.isInitializingSelfBookInfos = {
-        promise: new Promise(async (resolve) => {
-          const isSelf = await this.staffService.isSelfBookType(isShowLoading);
-          const infos = this.getBookInfos();
-          if (infos.length === 0 && isSelf) {
-            let passportOrHmTwPass: any;
-            const staff = await this.staffService.getStaff(
-              false,
-              isShowLoading
-            );
-            const res = await this.getPassengerCredentials(
-              [staff.AccountId],
-              isShowLoading
-            ).catch((_) => ({ [staff.AccountId]: [] }));
-            this.selfCredentials = res[staff.AccountId];
-            passportOrHmTwPass =
-              this.selfCredentials &&
-              this.selfCredentials.find((c) => this.isPassportHmTwPass(c.Type));
-            const i: PassengerBookInfo<IInterHotelInfo> = {
-              id: AppHelper.uuid(),
-              passenger: staff,
-              credential: passportOrHmTwPass,
-            };
-            this.addBookInfo(i);
-            resolve();
-          } else {
-            resolve();
-          }
-        }).finally(() => {
-          this.isInitializingSelfBookInfos = null;
-        }),
-      };
+      this.isInitializingSelfBookInfos =new Promise(async (resolve) => {
+        const isSelf = await this.staffService.isSelfBookType(isShowLoading);
+        const infos = this.getBookInfos();
+        if (infos.length === 0 && isSelf) {
+          let passportOrHmTwPass: any;
+          const staff = await this.staffService.getStaff(
+            false,
+            isShowLoading
+          );
+          const res = await this.getPassengerCredentials(
+            [staff.AccountId],
+            isShowLoading
+          ).catch((_) => ({ [staff.AccountId]: [] }));
+          this.selfCredentials = res[staff.AccountId];
+          passportOrHmTwPass =
+            this.selfCredentials &&
+            this.selfCredentials.find((c) => this.isPassportHmTwPass(c.Type));
+          const i: PassengerBookInfo<IInterHotelInfo> = {
+            id: AppHelper.uuid(),
+            passenger: staff,
+            credential: passportOrHmTwPass,
+          };
+          this.addBookInfo(i);
+          resolve();
+        } else {
+          resolve();
+        }
+      }).finally(() => {
+        this.isInitializingSelfBookInfos = null;
+      })
     }
-    return this.isInitializingSelfBookInfos.promise;
+    return this.isInitializingSelfBookInfos;
   }
   addBookInfo(bookInfo: PassengerBookInfo<IInterHotelInfo>) {
     console.log("hotel,addbookinfo", bookInfo);
