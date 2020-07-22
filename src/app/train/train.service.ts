@@ -69,6 +69,9 @@ export class TrainService {
   private searchModelSource: Subject<SearchTrainModel>;
   private isInitializingSelfBookInfos = false;
   totalPolicies: TrainPassengerModel[];
+  get isAgent() {
+    return this.tmcService.isAgent;
+  }
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -464,7 +467,7 @@ export class TrainService {
       const unselectBookInfos = this.getBookInfos().filter(
         (it) => !it.bookInfo || !it.bookInfo.trainPolicy
       );
-      let cannotArr: string[] = [];
+      const cannotArr: string[] = [];
       if (unselectBookInfos.length) {
         bookInfos = bookInfos.map((item) => {
           if (unselectBookInfos.find((it) => it.id == item.id)) {
@@ -477,7 +480,11 @@ export class TrainService {
                 }(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
-              item.bookInfo = null;
+              if (!this.isAgent) {
+                item.bookInfo = null;
+              } else {
+                item.bookInfo = info;
+              }
             } else {
               item.bookInfo = info;
             }
@@ -485,20 +492,27 @@ export class TrainService {
           return item;
         });
         if (cannotArr.length) {
-          AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`);
+          if (!this.tmcService.isAgent) {
+            await AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`);
+          } else {
+            await AppHelper.alert(`超标:${cannotArr.join(",")}`);
+          }
         }
       } else {
-        const ok = await AppHelper.alert(
-          "是否替换旅客的车次信息？",
-          true,
-          LanguageHelper.getConfirmTip(),
-          LanguageHelper.getCancelTip()
-        );
-        if (ok) {
-          bookInfos = await this.selectAndReplaceBookInfos(
-            currentViewtTainItem,
-            bookInfos
+        bookInfos = this.getBookInfos();
+        if (bookInfos.length) {
+          const ok = await AppHelper.alert(
+            "是否替换旅客的车次信息？",
+            true,
+            LanguageHelper.getConfirmTip(),
+            LanguageHelper.getCancelTip()
           );
+          if (ok) {
+            bookInfos = await this.selectAndReplaceBookInfos(
+              currentViewtTainItem,
+              bookInfos
+            );
+          }
         }
       }
     }
@@ -542,7 +556,11 @@ export class TrainService {
         }
       }
       if (cannotArr.length) {
-        AppHelper.alert(`${cannotArr.join(",")}，超标不可替换`);
+        if (!this.tmcService.isAgent) {
+          AppHelper.alert(`${cannotArr.join(",")}，超标不可替换`);
+        } else {
+          AppHelper.alert(`超标:${cannotArr.join(",")}`);
+        }
       }
     }
     bookInfos = bookInfos.map((it) => {
@@ -847,6 +865,9 @@ export class TrainService {
     seat: TrainSeatEntity,
     train: TrainEntity
   ) {
+    if (this.isAgent) {
+      return true;
+    }
     const trainInfo = this.getTrainInfo({ selectedSeat: seat, train }, info);
     return trainInfo && trainInfo.isAllowBook;
   }

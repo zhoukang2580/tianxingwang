@@ -21,6 +21,7 @@ export class TrainListItemComponent implements OnInit {
   @Output() bookTicket: EventEmitter<TrainSeatEntity>;
   @Output() seatPicker: EventEmitter<string>;
   TrainSeatType = TrainSeatType;
+
   constructor(private trainService: TrainService) {
     this.scheduleEmit = new EventEmitter();
     this.bookTicket = new EventEmitter();
@@ -74,9 +75,7 @@ export class TrainListItemComponent implements OnInit {
               : "";
           }
         }
-        AppHelper.alert(seat.Policy.Rules.join(",") + tip);
       }
-      return;
     }
     if (this.train) {
       this.train.BookSeatType = seat.SeatType;
