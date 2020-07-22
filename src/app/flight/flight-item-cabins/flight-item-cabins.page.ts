@@ -147,6 +147,9 @@ export class FlightItemCabinsPage implements OnInit {
   async onBookTicket(flightCabin: FlightCabinEntity) {
     const bookInfos = this.flightService.getPassengerBookInfos();
     let isShowPage = false;
+    if (!bookInfos.length) {
+      await this.flightService.initSelfBookTypeBookInfos();
+    }
     if (bookInfos[0]) {
       if (!bookInfos[0].exchangeInfo) {
         if (
@@ -161,7 +164,9 @@ export class FlightItemCabinsPage implements OnInit {
             !this.flightService.policyFlights.length
           ) {
             AppHelper.alert("差标获取失败");
-            return;
+            if (!this.flightService.isAgent) {
+              return;
+            }
           }
         }
         const isSelf = await this.staffService.isSelfBookType();
@@ -174,18 +179,27 @@ export class FlightItemCabinsPage implements OnInit {
           );
           const rules =
             (info && info.flightPolicy && info.flightPolicy.Rules) || [];
-          if (info && info.isDontAllowBook) {
-            let msg = rules.join(";");
-            if (rules.length) {
-              msg += ",不可预订";
+          let msg = rules.join(";");
+          if (!this.flightService.isAgent) {
+            if (info && info.isDontAllowBook) {
+              if (rules.length) {
+                msg += ",不可预订";
+              }
+              AppHelper.alert(
+                msg,
+                true,
+                LanguageHelper.getConfirmTip(),
+                LanguageHelper.getCancelTip()
+              );
+              return;
             }
+          } else {
             AppHelper.alert(
               msg,
               true,
               LanguageHelper.getConfirmTip(),
               LanguageHelper.getCancelTip()
             );
-            return;
           }
         }
         const res = await this.flightService.addOrReplaceSegmentInfo(
@@ -346,7 +360,7 @@ export class FlightItemCabinsPage implements OnInit {
         .getTravelNDCFlightCabinRuleResult(cabin.Cabin)
         .catch(() => "");
       if (cabin.Explain) {
-        cabin.Cabin.Explain  = cabin.Explain;
+        cabin.Cabin.Explain = cabin.Explain;
       }
     }
     // this.popoverController.dismiss().catch(_ => {});

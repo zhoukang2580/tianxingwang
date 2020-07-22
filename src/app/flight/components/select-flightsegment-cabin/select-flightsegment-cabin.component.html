@@ -57,7 +57,7 @@
             <h3 class='book ion-text-end'>
               <ion-text color='danger'>￥{{cabin?.Cabin?.SalesPrice}}</ion-text>
               <ion-button [color]='bookColor(cabin)' class='ion-margin-top' expand='block'
-                [disabled]='!cabin?.IsAllowBook' (click)='onBookTicket(cabin)'>
+                [class.disabled]='!cabin?.IsAllowBook' (click)='onBookTicket(cabin)'>
                 <ion-text color='light'>预订</ion-text>
               </ion-button>
             </h3>

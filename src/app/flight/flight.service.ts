@@ -78,6 +78,9 @@ export class FlightService {
   currentViewtFlightSegment: FlightSegmentEntity;
   policyFlights: PassengerPolicyFlights[];
   flightJourneyList: FlightJourneyEntity[]; // 保持和后台返回的数据一致
+  get isAgent() {
+    return this.tmcService.isAgent;
+  }
   constructor(
     private apiService: ApiService,
     private staffService: StaffService,
@@ -705,6 +708,9 @@ export class FlightService {
     flightCabin: FlightCabinEntity,
     flightSegment: FlightSegmentEntity
   ) {
+    if (this.isAgent) {
+      return true;
+    }
     const info = this.getPolicyCabinBookInfo(
       bookInfo,
       flightCabin,
@@ -819,6 +825,9 @@ export class FlightService {
         } as IFlightSegmentInfo;
         if (!flihgtPolicyCabin.IsAllowBook) {
           info.isDontAllowBook = true;
+        }
+        if (this.isAgent) {
+          info.isDontAllowBook = false;
         }
         info.lowerSegmentInfo = this.getLowerFlight({
           ...bookInfo,
