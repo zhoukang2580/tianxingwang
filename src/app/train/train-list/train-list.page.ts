@@ -231,13 +231,20 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   async onSelectStation(isFrom: boolean) {
     this.scrollToTop();
     if (this.searchTrainModel) {
-      if (isFrom && !this.searchTrainModel?.isExchange && !this.searchTrainModel?.isLocked) {
+      if (
+        isFrom &&
+        !this.searchTrainModel?.isExchange &&
+        !this.searchTrainModel?.isLocked
+      ) {
         this.trainService.onSelectCity(isFrom);
       }
-      if (!isFrom && (this.searchTrainModel?.isExchange || !this.searchTrainModel?.isLocked)) {
+      if (
+        !isFrom &&
+        (this.searchTrainModel?.isExchange || !this.searchTrainModel?.isLocked)
+      ) {
         this.trainService.onSelectCity(isFrom);
       }
-     return;  
+      return;
     }
     return;
   }
@@ -423,34 +430,19 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async onBookTicket(train: TrainEntity, seat: TrainSeatEntity) {
+    let showResult = true;
     if (await this.trainService.checkCanAdd()) {
       const currentViewtTainItem: ICurrentViewtTainItem = {
         selectedSeat: seat,
         train,
       };
-      // const isSelf = await this.staffService.isSelfBookType();
-      // if (isSelf) {
-      //   const bookInfos = this.trainService.getBookInfos();
-      //   const bookInfo = this.trainService.getTrainInfo(currentViewtTainItem, {
-      //     ...bookInfos[0],
-      //   });
-      //   if (
-      //     bookInfo &&
-      //     bookInfo.trainPolicy &&
-      //     !bookInfo.trainPolicy.IsAllowBook
-      //   ) {
-      //     const rules = bookInfo.trainPolicy.Rules || [];
-      //     AppHelper.alert(
-      //       `${rules.join("; ") + rules.length ? "," : ""}不可预订`,
-      //       true,
-      //       LanguageHelper.getConfirmTip()
-      //     );
-      //     return;
-      //   }
-      // }
-      await this.trainService.addOrReselectBookInfo(currentViewtTainItem);
+      showResult = await this.trainService.addOrReselectBookInfo(
+        currentViewtTainItem
+      );
     }
-    await this.showSelectedInfos();
+    if(showResult){
+      await this.showSelectedInfos();
+    }
   }
   private async showSelectedInfos() {
     const m = await this.modalCtrl.create({
@@ -467,7 +459,10 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onSwapStation() {
     // debugger
-    if (!this.searchTrainModel?.isExchange && !this.searchTrainModel?.isLocked) {
+    if (
+      !this.searchTrainModel?.isExchange &&
+      !this.searchTrainModel?.isLocked
+    ) {
       const s = this.trainService.getSearchTrainModel();
       this.trainService.setSearchTrainModelSource({
         ...s,

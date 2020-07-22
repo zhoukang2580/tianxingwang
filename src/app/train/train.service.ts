@@ -309,8 +309,11 @@ export class TrainService {
   async addOrReselectBookInfo(currentViewtTainItem: ICurrentViewtTainItem) {
     console.log("add or reselect book info ", currentViewtTainItem);
     const isSelftBookType = await this.staffService.isSelfBookType();
+    let showResult = true;
     if (isSelftBookType) {
-      await this.addOrReselectSelfBookTypeBookInfo(currentViewtTainItem);
+      showResult = await this.addOrReselectSelfBookTypeBookInfo(
+        currentViewtTainItem
+      );
     } else {
       await this.addOrReselectNotSelfBookTypeBookInfo(currentViewtTainItem);
     }
@@ -320,6 +323,7 @@ export class TrainService {
         return it;
       })
     );
+    return showResult;
   }
   private async addOrReselectSelfBookTypeBookInfo(
     currentViewtTainItem: ICurrentViewtTainItem
@@ -334,50 +338,38 @@ export class TrainService {
       const bookInfo = this.getTrainInfo(currentViewtTainItem, {
         ...bookInfos[0],
       });
-      if (
-        bookInfo &&
-        bookInfo.trainPolicy &&
-        !bookInfo.trainPolicy.IsAllowBook
-      ) {
-        let rules = bookInfo.trainPolicy.Rules || [];
-        AppHelper.alert(
-          `${rules.join("; ") + rules ? "," : ""}不可预订`,
-          true,
-          LanguageHelper.getConfirmTip()
-        );
-        return;
+      if (!bookInfo) {
+        return false;
+      }
+      if (bookInfo.trainPolicy && !bookInfo.trainPolicy.IsAllowBook) {
+        const rules = bookInfo.trainPolicy.Rules || [];
+        let tip = rules.join(",");
+        if (tip) {
+          tip = `${tip},不可预订`;
+        }
+        await AppHelper.alert(`${tip}`, true, LanguageHelper.getConfirmTip());
+        return false;
       }
       const s = this.getSearchTrainModel();
-      if (bookInfo) {
-        if (s.isRoundTrip) {
-          // 往返
-          const selected = bookInfos.filter((it) => !!it.bookInfo);
-          if (selected.length) {
-            const go = selected.find(
-              (it) => it.bookInfo.tripType == TripType.departureTrip
-            );
-            if (go) {
-              if (s.tripType == TripType.returnTrip) {
-                bookInfo.tripType = TripType.returnTrip;
-                bookInfos = [
-                  go,
-                  {
-                    ...bookInfos[0],
-                    bookInfo,
-                    id: AppHelper.uuid(),
-                  },
-                ];
-              } else {
-                bookInfos = [
-                  {
-                    ...bookInfos[0],
-                    bookInfo,
-                    id: AppHelper.uuid(),
-                  },
-                ];
-              }
+      if (s.isRoundTrip) {
+        // 往返
+        const selected = bookInfos.filter((it) => !!it.bookInfo);
+        if (selected.length) {
+          const go = selected.find(
+            (it) => it.bookInfo.tripType == TripType.departureTrip
+          );
+          if (go) {
+            if (s.tripType == TripType.returnTrip) {
+              bookInfo.tripType = TripType.returnTrip;
+              bookInfos = [
+                go,
+                {
+                  ...bookInfos[0],
+                  bookInfo,
+                  id: AppHelper.uuid(),
+                },
+              ];
             } else {
-              bookInfo.tripType = TripType.departureTrip;
               bookInfos = [
                 {
                   ...bookInfos[0],
@@ -397,17 +389,26 @@ export class TrainService {
             ];
           }
         } else {
-          // 单程,直接替换
-          if (bookInfos.length) {
-            bookInfo.tripType = TripType.departureTrip;
-            bookInfos = [
-              {
-                ...bookInfos[0],
-                bookInfo,
-                id: AppHelper.uuid(),
-              },
-            ];
-          }
+          bookInfo.tripType = TripType.departureTrip;
+          bookInfos = [
+            {
+              ...bookInfos[0],
+              bookInfo,
+              id: AppHelper.uuid(),
+            },
+          ];
+        }
+      } else {
+        // 单程,直接替换
+        if (bookInfos.length) {
+          bookInfo.tripType = TripType.departureTrip;
+          bookInfos = [
+            {
+              ...bookInfos[0],
+              bookInfo,
+              id: AppHelper.uuid(),
+            },
+          ];
         }
       }
       if (s.isRoundTrip) {
@@ -420,7 +421,9 @@ export class TrainService {
         }
       }
       this.setBookInfoSource(bookInfos);
+      return true;
     }
+    return false;
   }
   getTrainInfo(
     currentViewtTainItem: ICurrentViewtTainItem,
