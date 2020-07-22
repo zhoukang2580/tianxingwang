@@ -544,6 +544,10 @@ export class InternationalHotelDetailPage
         this.hotelService.removeBookInfo(info, true);
       }
     });
+    const olds = this.hotelService
+      .getBookInfos()
+      .filter((it) => it.passenger && it.passenger.AccountId)
+      .map((it) => it.passenger && it.passenger.AccountId);
     const m = await this.modalController.create({
       component: SelectPassengerPage,
       componentProps: {
@@ -554,9 +558,33 @@ export class InternationalHotelDetailPage
     });
     m.present();
     await m.onDidDismiss();
+    const news = this.hotelService
+      .getBookInfos()
+      .filter((it) => it.passenger && it.passenger.AccountId)
+      .map((it) => it.passenger && it.passenger.AccountId);
+    let newId = "";
+    for (const id of news) {
+      if (!olds.find((it) => it == id)) {
+        newId = id;
+        break;
+      }
+    }
+    if(!newId){
+      newId = news[news.length - 1];
+    }
+    if (newId) {
+      this.hotelService.setBookInfos(
+        this.hotelService.getBookInfos().map((it) => {
+          if(it.passenger){
+            it.isFilterPolicy = it.passenger.AccountId == newId;
+          }
+          return it;
+        })
+      );
+    }
     sub.unsubscribe();
+    await this.initFilterPolicy();
     if (room) {
-      await this.initFilterPolicy();
       await this.onBookRoomPlan(room);
     }
   }
