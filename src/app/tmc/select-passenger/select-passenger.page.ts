@@ -419,7 +419,11 @@ export class SelectPassengerPage
           one.passenger.Policy &&
           one.passenger.Policy.Id != (s.Policy && s.Policy.Id)
         ) {
-          AppHelper.toast("不能选择此旅客，其差标与已选旅客差标不一致",1400,'middle');
+          AppHelper.toast(
+            "不能选择此旅客，其差标与已选旅客差标不一致",
+            1400,
+            "middle"
+          );
           return;
         }
       }
@@ -572,7 +576,8 @@ export class SelectPassengerPage
     if (this.forType == FlightHotelTrainType.HotelInternational) {
       const isPsssportOrHmPass =
         selectedCredential.Type == CredentialsType.Passport ||
-        selectedCredential.Type == CredentialsType.HmPass;
+        selectedCredential.Type == CredentialsType.HmPass ||
+        selectedCredential.Type == CredentialsType.TaiwanEp;
       if (!isPsssportOrHmPass) {
         await AppHelper.alert(
           "需要维护护照或者港澳台通行证",
