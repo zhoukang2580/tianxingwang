@@ -42,8 +42,8 @@ App({
     userInfo: null
   },
   urls:{
-    homeUrl: "https://app.sky-trip.com",
-    stepUrl:"https://app.sky-trip.com/home/CreateStep"
+    homeUrl: "http://test.ionic.eskytrip.com?MmsId=2&HrId=2&AloneTag=19",
+    stepUrl:"http://test.app.eskytrip.com/home/CreateStep"
   },
   setStep:function(wx,args,value){
     wx.navigateBack();

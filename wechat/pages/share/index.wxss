@@ -6,6 +6,7 @@
   align-items: center;
 }
 
+/* 
 .share {
   background-color: #2596d9;
   position: absolute;
@@ -18,6 +19,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
+} */
+.share-image {
+  border-radius: 50%;
+  width: 5rem;
+  height: 5rem;
+}
+
+.save-button {
+  position: relative;
+}
+
+.share {
+  margin: 0 1rem;
+  position: fixed;
+  bottom: 0.5rem;
+  left: 10%;
+  right: 10%;
+  /* height: 2.5rem; */
 }
 
 .userinfo-avatar {
@@ -50,10 +69,20 @@
   color: white;
 }
 
-image {
-  width: 120px;
-  height: 80px;
-  margin-bottom: 2em;
+.share-info {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  justify-content: center;
+}
+.share-info image{
+  width: 96%;
+  object-fit: contain;
+}
+.share-info .title {
+  margin: 0.5rem 0;
+  font-size: 1.9rem;
+  align-self: flex-start;
 }
 
 navigator {

@@ -1,7 +1,7 @@
 //index.js
 //获取应用实例
 const app = getApp()
-
+let argsOnLoad;
 Page({
   data: {
     motto: 'Hello World',
@@ -16,7 +16,8 @@ Page({
     })
   },
   onLoad: function(args) {
-    debugger;
+    argsOnLoad = args;
+    let that=this;
     if (args) {
       wx.requestPayment({
         timeStamp: args.timeStamp,
@@ -25,14 +26,16 @@ Page({
         signType: args.signType,
         paySign: args.paySign,
         success: (res) => {
-          //var payResult = res.errMsg == "requestPayment:ok" ? "success" : res.errMsg;
-          wx.setStorageSync("args", {
-            wechatPayResultNumber: args.number,
-            openid: args.openid,
-            ticket: args.ticket,
-            path: args.path
-          });
-          wx.navigateBack();
+          var payResult = res.errMsg == "requestPayment:ok" ? "success" : res.errMsg;
+          if(payResult=="success") {
+              that.setStep(args.number);
+          }
+          else{
+            that.setStep("false");
+          }
+        },
+        fail:function(res){
+          that.setStep("false");
         }
       })
     }
@@ -70,5 +73,12 @@ Page({
       userInfo: e.detail.userInfo,
       hasUserInfo: true
     })
+  },
+  setStep: function (value) {
+    try {
+      app.setStep(wx, argsOnLoad, value);
+    } catch (e) {
+      console.error(e);
+    }
   }
 })

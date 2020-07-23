@@ -40,6 +40,7 @@ import { InternationalHotelService } from "src/app/hotel-international/internati
 import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
+import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home.page.html",
@@ -216,7 +217,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
         this.configService.getConfigAsync().then((c) => {
           this.config = c;
         });
-        this.banners=[];
+        this.banners = [];
         this.staffCredentials = null;
         this.loadBanners();
         this.loadNotices();

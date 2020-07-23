@@ -22,6 +22,7 @@ import {
 } from "@ionic-native/in-app-browser/ngx";
 import { Clipboard } from "@ionic-native/clipboard/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
+import { url } from "inspector";
 
 @Component({
   selector: "app-open-rental-car",
@@ -44,6 +45,14 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   ) {}
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
+    try {
+      if (this.browser) {
+        this.browser.hide();
+        this.browser.close();
+      }
+    } catch (e) {
+      console.error(e);
+    }
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   private isIphoneX() {
@@ -82,7 +91,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     const color = "#2596D9";
     const options: InAppBrowserOptions = {
       usewkwebview: "yes",
-      location: this.isIphoneX() ? "yes" : "no",
+      location: "no",
       toolbar: "yes",
       zoom: "no",
       footer: "no",
@@ -93,16 +102,33 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       // toolbarcolor:"#2596D90f"
     };
     // url = `http://test.version.testskytrip.com/download/test.html`;
-    this.browser = this.iab.create(encodeURI(url), "_blank", options);
-    this.subscriptions.push(
-      this.browser.on("beforeload").subscribe(async (evt) => {
-        console.log("beforeload");
-        console.log(evt);
-        console.log("beforeload", evt);
-        console.log("beforeload", evt.message, evt.data, evt.code, evt.url);
-        if (evt.url) {
-          if (AppHelper.platform.is("ios")) {
-            if (evt.url.toLowerCase().includes("sharetrips")) {
+    if (url.startsWith("weixin") || url.startsWith("alipays")) {
+      this.openWechatOrAliApp(url);
+    } else {
+      this.browser = this.iab.create(encodeURI(url), "_blank", options);
+    }
+    this.addListeners();
+  }
+  private addListeners() {
+    if (this.browser) {
+      this.subscriptions.push(
+        this.browser.on("beforeload").subscribe(async (evt) => {
+          console.log("beforeload");
+          console.log(evt);
+          console.log("beforeload", evt);
+          console.log("beforeload", evt.message, evt.data, evt.code, evt.url);
+          if (evt.url) {
+            const toUrl = evt.url.toLowerCase();
+            if (
+              toUrl.startsWith("weixin") ||
+              toUrl.startsWith("wechat") ||
+              toUrl.startsWith("alipays")
+            ) {
+              // 微信或者支付宝支付
+              this.openWechatOrAliApp(toUrl);
+              return;
+            }
+            if (toUrl.includes("sharetrips")) {
               AppHelper.isWXAppInstalled().then(async (installed) => {
                 if (installed) {
                   this.shareWebPage(evt.url);
@@ -118,80 +144,84 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
                   this.browser.show();
                 }
               });
-            }
-            // Load this URL in the inAppBrowser.
-            if (!evt.url.toLowerCase().includes("sharetrips")) {
-              if (!evt.url.toLowerCase().includes("tel:")) {
+            } else {
+              if (!toUrl.includes("tel:")) {
+                // Load this URL in the inAppBrowser.
                 this.browser._loadAfterBeforeload(evt.url);
               } else {
                 this.callNumber(evt.url);
               }
             }
           } else {
-            if (evt.url.toLowerCase().includes("sharetrips")) {
-              this.shareWebPage(evt.url);
-              this.browser._loadAfterBeforeload(evt.url);
-            }
-            if (!evt.url.toLowerCase().includes("tel:")) {
-              this.browser._loadAfterBeforeload(evt.url);
-            } else {
-              this.callNumber(evt.url);
-            }
+            console.log("无法加载url");
           }
-        } else {
-          console.log("无法加载url");
-        }
-      })
-    );
-    this.subscriptions.push(
-      this.browser.on("loaderror").subscribe((evt) => {
-        console.log("loaderror");
-        console.log(evt);
-        console.log("loaderror", evt);
-        console.log("loaderror", evt.message, evt.data, evt.code, evt.url);
-      })
-    );
-    this.subscriptions.push(
-      this.browser.on("loadstart").subscribe((evt) => {
-        // if (this.browser) {
-        //   this.browser.show();
-        // }
-        console.log("loadstart");
-        console.log(evt);
-        console.log("loadstart", evt);
-        console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
-        if (evt.url) {
-          this.callNumber(evt.url);
-        }
-      })
-    );
-    this.subscriptions.push(
-      this.browser.on("loadstop").subscribe((evt) => {
-        console.log("loadstop");
-        console.log(evt);
-        console.log("loadstop", evt);
-        console.log("loadstop", evt.message, evt.data, evt.code, evt.url);
-      })
-    );
-    this.subscriptions.push(
-      this.browser.on("message").subscribe((evt) => {
-        console.log("message");
-        console.log(evt);
-        console.log("message", evt);
-        console.log("message", evt.message, evt.data, evt.code, evt.url);
-      })
-    );
-    const sub = this.browser.on("exit").subscribe(() => {
-      setTimeout(() => {
-        if (sub) {
-          sub.unsubscribe();
-        }
-        if (this.browser) {
-          this.browser.close();
-        }
-        this.backBtn.popToPrePage();
-      }, 100);
-    });
+        })
+      );
+      this.subscriptions.push(
+        this.browser.on("loaderror").subscribe((evt) => {
+          console.log("loaderror");
+          console.log(evt);
+          console.log("loaderror", evt);
+          console.log("loaderror", evt.message, evt.data, evt.code, evt.url);
+        })
+      );
+      this.subscriptions.push(
+        this.browser.on("loadstart").subscribe((evt) => {
+          // if (this.browser) {
+          //   this.browser.show();
+          // }
+          console.log("loadstart");
+          console.log(evt);
+          console.log("loadstart", evt);
+          console.log("loadstart", evt.message, evt.data, evt.code, evt.url);
+          if (evt.url) {
+            this.callNumber(evt.url);
+          }
+        })
+      );
+      this.subscriptions.push(
+        this.browser.on("loadstop").subscribe((evt) => {
+          console.log("loadstop");
+          console.log(evt);
+          console.log("loadstop", evt);
+          console.log("loadstop", evt.message, evt.data, evt.code, evt.url);
+        })
+      );
+      this.subscriptions.push(
+        this.browser.on("message").subscribe((evt) => {
+          console.log("message");
+          console.log(evt);
+          console.log("message", evt);
+          console.log("message", evt.message, evt.data, evt.code, evt.url);
+        })
+      );
+      const sub = this.browser.on("exit").subscribe(() => {
+        setTimeout(() => {
+          if (sub) {
+            sub.unsubscribe();
+          }
+          if (this.browser) {
+            this.browser.close();
+          }
+          this.backBtn.popToPrePage();
+        }, 100);
+      });
+    }
+  }
+  private async openWechatOrAliApp(uri: string) {
+    if (uri.startsWith("weixin")) {
+      if (!(await AppHelper.isWXAppInstalled())) {
+        AppHelper.alert("尚未安装微信，请继续使用h5完成支付");
+        return;
+      }
+    }
+    if (uri.startsWith("alipays")) {
+      if (!(await AppHelper.isAliPayAppInstalled())) {
+        AppHelper.alert("尚未安装支付宝，请继续使用h5完成支付");
+        return;
+      }
+    }
+    this.browser = this.iab.create(uri, "_system");
   }
   private async callNumber(url: string) {
     const m = url && url.match(/tel:(\d+)/i);
@@ -209,6 +239,13 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
             .catch((err) => console.log("Error launching dialer", err));
         }
       }
+    }
+  }
+  private browserExecuteJs(js: string) {
+    if (this.browser) {
+      const browser = this.iab.create("", "_system");
+      browser.hide();
+      browser.executeScript({ code: js });
     }
   }
   ngOnInit() {

@@ -15,7 +15,7 @@ const routes: Routes = [
   {
     path: "tabs",
     component: TabsPage,
-    canActivateChild: [AuthorityGuard, ConfirmCredentialInfoGuard],
+    canActivateChild: [AuthorityGuard],
     children: [
       {
         path: "",

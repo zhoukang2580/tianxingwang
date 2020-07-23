@@ -1,6 +1,6 @@
 var exec = require("cordova/exec");
 exports.isAliPayInstalled = (appName) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(function(resolve, reject){
       exec(function(res) {
           resolve(res);
       }, function(error) {
