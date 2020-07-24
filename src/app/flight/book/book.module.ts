@@ -9,16 +9,18 @@ import { IonicModule } from "@ionic/angular";
 
 import { BookPage } from "./book.page";
 import { FlightPipesModule } from "../pipes/Pipes.module";
-import { TmcComponentsModule } from 'src/app/tmc/components/tmcComponents.module';
-import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
-import { AppComponentsModule } from 'src/app/components/appcomponents.module';
+import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
+import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
+import { AppComponentsModule } from "src/app/components/appcomponents.module";
+import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: BookPage,
-    canActivate: [ConfirmCredentialInfoGuard]
-  }
+    canActivate: [ConfirmCredentialInfoGuard],
+    canDeactivate:[CandeactivateGuard]
+  },
 ];
 
 @NgModule({
@@ -31,8 +33,8 @@ const routes: Routes = [
     MemberPipesModule,
     FlightPipesModule,
     TmcComponentsModule,
-    AppComponentsModule
+    AppComponentsModule,
   ],
-  declarations: [BookPage]
+  declarations: [BookPage],
 })
 export class FlightBookPageModule {}

@@ -2,7 +2,12 @@ import { flyInOut } from "./../../animations/flyInOut";
 import { PriceDetailComponent } from "./../components/price-detail/price-detail.component";
 import { PayService } from "./../../services/pay/pay.service";
 import { OrderBookDto } from "./../../order/models/OrderBookDto";
-import { ActivatedRoute, Router } from "@angular/router";
+import {
+  ActivatedRoute,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from "@angular/router";
 import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
 import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
@@ -83,6 +88,10 @@ import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { IHotelInfo } from "src/app/hotel/hotel.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { BookCredentialCompComponent } from "src/app/tmc/components/book-credential-comp/book-credential-comp.component";
+import {
+  CandeactivateGuard,
+  CanComponentDeactivate,
+} from "src/app/guards/candeactivate.guard";
 
 @Component({
   selector: "app-book",
@@ -90,8 +99,9 @@ import { BookCredentialCompComponent } from "src/app/tmc/components/book-credent
   styleUrls: ["./book.page.scss"],
   animations: [flyInOut],
 })
-export class BookPage implements OnInit, AfterViewInit {
+export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   private isShowInsuranceBack = false;
+  private isPlaceOrderOk = false;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
@@ -201,6 +211,21 @@ export class BookPage implements OnInit, AfterViewInit {
     );
     this.isself = await this.staffService.isSelfBookType();
     console.log(this.isself, "isself");
+  }
+  canDeactivate(
+    currentRoute: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState?: RouterStateSnapshot
+  ) {
+    if (
+      // this.isPlaceOrderOk &&
+      nextState.url.includes("selected-flight-bookinfos")
+    ) {
+      this.natCtrl.navigateRoot("", { animated: true });
+      return false;
+    }
+    // console.log(currentRoute.url, currentState.url, nextState.url);
+    return true;
   }
   private async initOrderTravelPayTypes() {
     const bookInfos = this.flightService.getPassengerBookInfos();
@@ -713,7 +738,7 @@ export class BookPage implements OnInit, AfterViewInit {
       if (res) {
         if (res.TradeNo) {
           AppHelper.toast("下单成功!", 1400, "top");
-          this.natCtrl.setDirection("root");
+          this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
           if (
