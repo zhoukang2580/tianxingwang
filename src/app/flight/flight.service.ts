@@ -697,6 +697,7 @@ export class FlightService {
             AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`);
           }
         }
+        result.isProcessOk = true;
       } else {
         const ok = await AppHelper.alert(
           "是否替换旅客的航班信息？",
@@ -710,8 +711,9 @@ export class FlightService {
             flightSegment,
             bookInfos
           );
-          result.isReplace = res.isRePlace;
           bookInfos = res.bookInfos;
+          result.isProcessOk = res.isRePlace;
+          result.isReplace = res.isRePlace;
         }
       }
     }
@@ -722,7 +724,7 @@ export class FlightService {
       item.isReselect = false;
       return item;
     });
-    result.isProcessOk = true;
+
     this.setPassengerBookInfosSource(arr);
     return result;
   }

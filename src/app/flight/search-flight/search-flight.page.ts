@@ -325,9 +325,7 @@ export class SearchFlightPage
     console.log("search-flight", s);
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModelSource(s);
-    this.router.navigate([AppHelper.getRoutePath("flight-list")], {
-      queryParams: { doRefresh: true },
-    });
+    this.router.navigate([AppHelper.getRoutePath("flight-list")]);
     this.cachLastSelectedFlightGoDate(s.Date);
   }
   private async cachLastSelectedFlightGoDate(date: string) {

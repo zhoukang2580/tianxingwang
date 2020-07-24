@@ -119,6 +119,7 @@ export class FlightListPage
   implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
+  private lastFetchTime = 0;
   lowestPriceSegments: FlightSegmentEntity[];
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
@@ -213,8 +214,15 @@ export class FlightListPage
       this.isCanLeave = !this.flightService.getSearchFlightModel().isExchange;
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.showAddPassenger = await this.canShowAddPassenger();
-      console.log("this.route.queryParamMap", this.searchFlightModel, d);
-      if (d && d.get("doRefresh") == "true") {
+      const delta = Math.floor((Date.now() - this.lastFetchTime) / 1000);
+      console.log("this.route.queryParamMap deltaTime=", delta);
+      const isFetch = delta >= 60;
+      if (
+        (d && d.get("doRefresh") == "true") ||
+        !this.vmFlights ||
+        !this.vmFlights.length ||
+        isFetch
+      ) {
         this.doRefresh(true, false);
       }
       const filteredBookInfo = this.flightService
@@ -254,7 +262,7 @@ export class FlightListPage
         } as IFlightSegmentInfo;
 
         const bookInfos = this.flightService.getPassengerBookInfos();
-        if(!bookInfos.length){
+        if (!bookInfos.length) {
           await this.flightService.initSelfBookTypeBookInfos();
         }
         if (bookInfos && bookInfos.length) {
@@ -376,6 +384,7 @@ export class FlightListPage
     try {
       this.lowestPriceSegments = [];
       if (loadDataFromServer) {
+        this.lastFetchTime = Date.now();
         this.scrollToTop();
         setTimeout(() => {
           this.flyDayService.setSelectedDaysSource([

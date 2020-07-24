@@ -713,6 +713,7 @@ export class BookPage implements OnInit, AfterViewInit {
       if (res) {
         if (res.TradeNo) {
           AppHelper.toast("下单成功!", 1400, "top");
+          this.natCtrl.setDirection("root");
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
           if (
