@@ -119,7 +119,9 @@ export class TripPage implements OnInit, OnDestroy {
       });
     const sub = this.route.queryParamMap.subscribe((_) => {
       setTimeout(() => {
-        this.doRefresh();
+        if(!this.trips||!this.trips.length){
+          this.doRefresh();
+        }
       }, 200);
     });
     this.subscriptions.push(sub0);
