@@ -559,75 +559,79 @@ export class FlightService {
     }
     console.log("getPassengerBookInfos", this.getPassengerBookInfos());
   }
-  async addOrReplaceSegmentInfo(
+  private async addOrRelaceSelf(
     flightCabin: FlightCabinEntity,
     flightSegment: FlightSegmentEntity
   ) {
-    const isSelfBookType = await this.staffService.isSelfBookType();
     const result = {
-      isSelfBookType,
+      isSelfBookType: true,
       isReplace: false,
+      isProcessOk: false,
     };
+    const s = this.getSearchFlightModel();
     let bookInfos = this.getPassengerBookInfos();
-    let s = this.getSearchFlightModel();
-    if (isSelfBookType) {
-      if (s.isRoundTrip) {
-        if (!bookInfos.length) {
-          await this.addOneBookInfoToSelfBookType();
+    if (s.isRoundTrip) {
+      if (!bookInfos.length) {
+        await this.addOneBookInfoToSelfBookType();
+      }
+      bookInfos = this.getPassengerBookInfos();
+      if (bookInfos.length) {
+        const go = bookInfos.find(
+          (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
+        );
+        const info = this.getPolicyCabinBookInfo(
+          bookInfos[0],
+          flightCabin,
+          flightSegment
+        );
+        if (!info) {
+          return result;
         }
-        bookInfos = this.getPassengerBookInfos();
-        if (bookInfos.length) {
-          const go = bookInfos.find(
-            (it) =>
-              it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
-          );
-          const info = this.getPolicyCabinBookInfo(
-            bookInfos[0],
-            flightCabin,
-            flightSegment
-          );
-          if (!info) {
-            return;
+        if (info.isDontAllowBook) {
+          if (!this.tmcService.isAgent) {
+            AppHelper.alert("超标不可预订");
+            return result;
           }
-          if (info.isDontAllowBook) {
-            if (!this.tmcService.isAgent) {
-              AppHelper.alert("超标不可预订");
-              return;
-            }
-          }
-          info.tripType = s.tripType;
-          if (info.lowerSegmentInfo) {
-            info.lowerSegmentInfo.tripType = s.tripType;
-          }
-          if (go) {
-            if (s.tripType == TripType.departureTrip) {
-              bookInfos = [
-                { ...go, bookInfo: info },
-                { ...go, bookInfo: null, id: AppHelper.uuid() },
-              ];
-            } else {
-              // 判断机场
-              const showTip =
-                flightSegment.FromAirport !=
-                go.bookInfo.flightSegment.ToAirport;
-              if (showTip) {
-                await AppHelper.alert(
-                  `回程航班出发机场与去程航班抵达机场不同`,
-                  true,
-                  "继续"
-                );
-              }
-              bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
-            }
-          } else {
-            info.tripType = TripType.departureTrip;
+        }
+        info.tripType = s.tripType;
+        if (info.lowerSegmentInfo) {
+          info.lowerSegmentInfo.tripType = s.tripType;
+        }
+        if (go) {
+          if (s.tripType == TripType.departureTrip) {
             bookInfos = [
-              { ...bookInfos[0], bookInfo: info },
-              { ...bookInfos[0], bookInfo: null, id: AppHelper.uuid() },
+              { ...go, bookInfo: info },
+              { ...go, bookInfo: null, id: AppHelper.uuid() },
             ];
+          } else {
+            // 判断机场
+            const showTip =
+              flightSegment.FromAirport != go.bookInfo.flightSegment.ToAirport;
+            if (showTip) {
+              await AppHelper.alert(
+                `回程航班出发机场与去程航班抵达机场不同`,
+                true,
+                "继续"
+              );
+            }
+            bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
           }
+        } else {
+          info.tripType = TripType.departureTrip;
+          bookInfos = [
+            { ...bookInfos[0], bookInfo: info },
+            { ...bookInfos[0], bookInfo: null, id: AppHelper.uuid() },
+          ];
         }
-      } else {
+        this.setPassengerBookInfosSource(bookInfos);
+        result.isProcessOk = true;
+      }
+    } else {
+      if (!bookInfos.length) {
+        await this.addOneBookInfoToSelfBookType();
+      }
+      bookInfos = this.getPassengerBookInfos();
+      if (bookInfos.length) {
         bookInfos = [bookInfos[0]];
         bookInfos = bookInfos.map((it) => {
           it.bookInfo = this.getPolicyCabinBookInfo(
@@ -640,14 +644,32 @@ export class FlightService {
           }
           return it;
         });
+        this.setPassengerBookInfosSource(bookInfos);
+        result.isProcessOk = true;
       }
+    }
+    return result;
+  }
+  async addOrReplaceSegmentInfo(
+    flightCabin: FlightCabinEntity,
+    flightSegment: FlightSegmentEntity
+  ) {
+    const isSelfBookType = await this.staffService.isSelfBookType();
+    const result = {
+      isSelfBookType,
+      isReplace: false,
+      isProcessOk: false,
+    };
+    let bookInfos = this.getPassengerBookInfos();
+
+    if (isSelfBookType) {
+      return  this.addOrRelaceSelf(flightCabin, flightSegment);
     } else {
       const unselectBookInfos = this.getPassengerBookInfos().filter(
         (it) => !it.bookInfo || !it.bookInfo.flightPolicy
       );
-      let cannotArr: string[] = [];
+      const cannotArr: string[] = [];
       if (unselectBookInfos.length) {
-        result.isReplace = true;
         bookInfos = bookInfos.map((item) => {
           if (unselectBookInfos.find((it) => it.id == item.id)) {
             const info = this.getPolicyCabinBookInfo(
@@ -700,6 +722,7 @@ export class FlightService {
       item.isReselect = false;
       return item;
     });
+    result.isProcessOk = true;
     this.setPassengerBookInfosSource(arr);
     return result;
   }

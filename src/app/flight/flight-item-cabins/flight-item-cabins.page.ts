@@ -206,7 +206,7 @@ export class FlightItemCabinsPage implements OnInit {
           flightCabin,
           this.vmFlightSegment
         );
-        isShowPage = res.isReplace || res.isSelfBookType;
+        isShowPage = res.isReplace || res.isSelfBookType || res.isProcessOk;
       } else {
         const info = {
           flightSegment: this.vmFlightSegment,

@@ -508,7 +508,7 @@ export class SelectPassengerPage
     this.vmNewCredential.variables = s.isNotWhiteList
       ? NOT_WHITE_LIST
       : "OtherCredential";
-    this.vmNewCredential.Id = this.getNewCredentialId();
+    this.vmNewCredential.Id = "0";
     if (this.staffCredentails.length == 0 || s.isNotWhiteList) {
       this.selectedCredentialId = this.vmNewCredential.Id;
     }
@@ -524,18 +524,6 @@ export class SelectPassengerPage
     this.vmNewCredential.showCountry = { Code: "CN", Name: "中国" };
     this.vmNewCredential.Country = "CN";
     this.isShowNewCredential = true;
-  }
-  private getNewCredentialId() {
-    const uuid = AppHelper.uuid();
-    const id = uuid
-      .substr(0, 8)
-      .split("")
-      .map((i) => {
-        return +i || +i === 0 ? i : i.charCodeAt(0);
-      })
-      .join("");
-    const id2 = uuid.match(/\d+/g) ? uuid.match(/\d+/g).join("") : "";
-    return id2 || id;
   }
 
   onSelectCredential(credentialId: string) {
@@ -672,23 +660,7 @@ export class SelectPassengerPage
       this.doRefresh("");
     }
   }
-  private checkNewCredentialId(
-    passengerBookInfo: PassengerBookInfo<any>,
-    bookInfos: PassengerBookInfo<any>[]
-  ) {
-    const action = () => {
-      const one = bookInfos.find(
-        (item) =>
-          item.isNotWhitelist &&
-          item.credential.Id == passengerBookInfo.credential.Id
-      );
-      if (one) {
-        passengerBookInfo.credential.Id = this.getNewCredentialId();
-        action();
-      }
-    };
-    action();
-  }
+  
   private async onAddPassengerBookInfo(
     passengerBookInfo: PassengerBookInfo<any>
   ) {
@@ -699,8 +671,6 @@ export class SelectPassengerPage
         );
         return false;
       }
-      const bookInfos = this.interHotelService.getBookInfos();
-      this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.interHotelService.addBookInfo(passengerBookInfo);
     }
     if (this.forType == FlightHotelTrainType.Hotel) {
@@ -710,8 +680,6 @@ export class SelectPassengerPage
         );
         return false;
       }
-      const bookInfos = this.hotelService.getBookInfos();
-      this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.hotelService.addBookInfo(passengerBookInfo);
     }
     if (this.forType == FlightHotelTrainType.Flight) {
@@ -720,8 +688,6 @@ export class SelectPassengerPage
         AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
         return false;
       }
-      const bookInfos = this.flightService.getPassengerBookInfos();
-      this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.flightService.addPassengerBookInfo(passengerBookInfo);
     }
     if (this.forType == FlightHotelTrainType.InternationalFlight) {
@@ -731,7 +697,6 @@ export class SelectPassengerPage
         return false;
       }
       const bookInfos = this.interFlightService.getBookInfos();
-      this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.interFlightService.addPassengerBookInfo(passengerBookInfo);
     }
     if (this.forType == FlightHotelTrainType.Train) {
@@ -739,8 +704,6 @@ export class SelectPassengerPage
         AppHelper.alert(LanguageHelper.Train.getCannotBookMorePassengerTip());
         return false;
       }
-      const bookInfos = this.trainService.getBookInfos();
-      this.checkNewCredentialId(passengerBookInfo, bookInfos);
       this.trainService.addBookInfo(passengerBookInfo);
     }
     return true;

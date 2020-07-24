@@ -252,12 +252,16 @@ export class FlightListPage
           tripType: TripType.departureTrip,
           id: AppHelper.uuid(),
         } as IFlightSegmentInfo;
-        await this.flightService.initSelfBookTypeBookInfos();
+
         const bookInfos = this.flightService.getPassengerBookInfos();
+        if(!bookInfos.length){
+          await this.flightService.initSelfBookTypeBookInfos();
+        }
         if (bookInfos && bookInfos.length) {
-          bookInfos[0].bookInfo = info;
-          this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
-          this.onShowSelectedInfos();
+          const r = await this.flightService.addOrReplaceSegmentInfo(cabin, s);
+          if (r.isProcessOk) {
+            this.onShowSelectedInfos();
+          }
         } else {
           const isself = await this.staffService.isSelfBookType();
           if (!isself) {
