@@ -41,8 +41,10 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       return;
     }
     if (!this.customeback && !this.customeBack) {
-      this.popToPrePage(evt);
+      this.backToPrePage();
+      return;
     }
+    this.popToPrePage(evt);
   }
   onBackHome() {
     this.navCtrl.setDirection("root", true);
@@ -56,53 +58,41 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       evt.preventDefault();
       evt.stopPropagation();
     }
-    // console.log(
-    //   "app-back-button curUrl:",
-    //   this.curUrl,
-    //   "customeback = " + this.customeback,
-    //   this.router.url.split("?")[0]
-    // );
     this.navCtrl.pop().then(() => {
-      // console.log(
-      //   "app-back-button pop 后 curUrl:",
-      //   this.router.url.split("?")[0],
-      //   "customeback " + this.customeback
-      // );
-      if(!this.forceback){
+      if (!this.forceback) {
         return;
       }
       requestAnimationFrame(() => {
         try {
-          const path = AppHelper.getNormalizedPath(this.router.url)
+          const path = AppHelper.getNormalizedPath(this.router.url);
           const curPath = AppHelper.getNormalizedPath(this.curUrl);
           const isBack = path == curPath;
           if (isBack) {
             const query = AppHelper.getQueryParamers();
             this.navCtrl.navigateBack(
               this.defaultHref ||
-              query.routehome ||
-              (query.unroutehome == "true" && query.path) ||
-              ""
+                query.routehome ||
+                (query.unroutehome == "true" && query.path) ||
+                ""
             );
           }
-        } catch{
-
+        } catch (e) {
+          console.error(e);
         }
       });
     });
   }
-  ngOnInit() { }
+  ngOnInit() {}
   ngAfterViewInit() {
-    this.curUrl = this.router.url;// /mms-goods-detail?id=54340000001351
+    this.curUrl = this.router.url; // /mms-goods-detail?id=54340000001351
     const query = AppHelper.getQueryParamers();
     if (query && query.unroutehome == "true" && query.path) {
       const curPath = AppHelper.getNormalizedPath(this.curUrl);
       const queryPath: string = AppHelper.getNormalizedPath(query.path);
-      console.log("unroutehome curPath =" + curPath, `query.path=${queryPath}`)
+      console.log("unroutehome curPath =" + curPath, `query.path=${queryPath}`);
       this.isShow =
         !this.curUrl.toLowerCase().includes(queryPath.toLowerCase()) ||
         (queryPath as string).toLowerCase() != curPath;
     }
   }
-
 }
