@@ -2,7 +2,8 @@ import { createAnimation } from "@ionic/core";
 import {
   TransitionOptions,
   getIonPageElement,
-  Animation
+  Animation,
+  getImageElements,
 } from "./animation-interface";
 
 export const iosTransitionAnimation = (
@@ -17,6 +18,7 @@ export const iosTransitionAnimation = (
   const leavingEl = opts.leavingEl;
 
   const ionPageElement = getIonPageElement(enteringEl);
+  const leavingImageElements = getImageElements(leavingEl);
   const enteringHeaderEle = ionPageElement.querySelector("ion-header");
   const leavingHeaderEle = leavingEl && leavingEl.querySelector("ion-header");
   const rootTransition = createAnimation();
@@ -46,6 +48,16 @@ export const iosTransitionAnimation = (
     const enteringToolBar = createAnimation();
     enteringToolBar.addElement(enteringHeaderEle);
     rootTransition.addAnimation(enteringToolBar);
+  }
+  if (leavingImageElements) {
+    const leavingImagesAni = createAnimation();
+    leavingImagesAni
+      .duration(0)
+      .easing("cubic-bezier(0.36,0.66,0.04,1)")
+      .delay(16)
+      .fromTo("opacity", 1, 0);
+    leavingImagesAni.addElement(leavingImageElements);
+    rootTransition.addAnimation(leavingImagesAni);
   }
   if (leavingHeaderEle) {
     const backEl = leavingHeaderEle.querySelector("app-back-button");

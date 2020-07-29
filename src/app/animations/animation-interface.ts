@@ -1,6 +1,5 @@
 import { AnimationBuilder } from "@angular/animations";
 
-
 export declare type AnimationLifecycle = (
   currentStep: 0 | 1,
   animation: Animation
@@ -83,6 +82,9 @@ export function getIonPageElement(element: HTMLElement) {
   }
   // idk, return the original element so at least something animates and we don't have a null pointer
   return element;
+}
+export function getImageElements(element: HTMLElement) {
+  return element.querySelectorAll("img");
 }
 export interface Animation {
   parentAnimation: Animation | undefined;
@@ -297,5 +299,8 @@ export interface Animation {
    * Add a callback to be run
    * upon the animation ending
    */
-  onFinish(callback: AnimationLifecycle, opts?: AnimationCallbackOptions): Animation;
+  onFinish(
+    callback: AnimationLifecycle,
+    opts?: AnimationCallbackOptions
+  ): Animation;
 }

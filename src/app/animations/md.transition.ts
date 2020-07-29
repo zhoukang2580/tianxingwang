@@ -3,6 +3,7 @@ import {
   TransitionOptions,
   getIonPageElement,
   Animation,
+  getImageElements,
 } from "./animation-interface";
 
 export const mdTransitionAnimation = (
@@ -44,7 +45,17 @@ export const mdTransitionAnimation = (
     enteringToolBar.addElement(enteringToolbarEle);
     rootTransition.addAnimation(enteringToolBar);
   }
-
+  const leavingImageElements = getImageElements(leavingEl);
+  if (leavingImageElements) {
+    const leavingImagesAni = createAnimation();
+    leavingImagesAni
+      .duration(0)
+      .easing("cubic-bezier(0.36,0.66,0.04,1)")
+      .delay(16)
+      .fromTo("opacity", 1, 0);
+    leavingImagesAni.addElement(leavingImageElements);
+    rootTransition.addAnimation(leavingImagesAni);
+  }
   // setup leaving view
   if (leavingEl && backDirection) {
     // leaving content
