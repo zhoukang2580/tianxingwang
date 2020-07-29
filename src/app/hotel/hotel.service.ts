@@ -127,7 +127,7 @@ export class HotelService {
     }
     if (window["hotelHours"]) {
       if (!environment.production || environment.mockProBuild) {
-        return !!(window["hotelHours"] >= 0 && window["hotelHours"] <= hours);
+        return !!(window["hotelHours"] >= hours);
       }
     }
     return false;
