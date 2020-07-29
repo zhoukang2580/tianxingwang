@@ -117,7 +117,21 @@ export class HotelService {
       this.disposal();
     });
   }
-
+  hotelIsCanSelectYesterday() {
+    const hours = new Date().getHours();
+    if (environment.production && !environment.mockProBuild) {
+      return hours <= 6 && hours >= 0;
+    }
+    if (hours <= 6 && hours >= 0) {
+      return true;
+    }
+    if (window["hotelHours"]) {
+      if (!environment.production || environment.mockProBuild) {
+        return !!(window["hotelHours"] >= 0 && window["hotelHours"] <= hours);
+      }
+    }
+    return false;
+  }
   setHotelQuerySource(query: HotelQueryEntity) {
     this.hotelQueryModel = query;
     this.hotelQuerySource.next(query);
@@ -441,7 +455,7 @@ export class HotelService {
     if (!data.checkInDate) {
       data.checkInDate = this.calendarService.generateDayModel(moment());
     }
-    const isCan = 0 <= new Date().getHours() && new Date().getHours() <= 6;
+    const isCan = this.hotelIsCanSelectYesterday();
     const res = await this.calendarService.openCalendar({
       goArrivalTime: "",
       tripType: data.tripType || TripType.checkIn,

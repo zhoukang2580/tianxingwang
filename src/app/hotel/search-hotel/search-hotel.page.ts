@@ -42,18 +42,19 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   searchHotelModel: SearchHotelModel;
   interHotelSearchCondition: IInterHotelSearchCondition;
   get changeDateTipMsg() {
-    if (this.searchHotelModel) {
-      if (this.searchHotelModel.checkInDate) {
-        const hours = new Date().getHours();
-        if (hours <= 6 && hours >= 0) {
-          const m = this.calendarService.getMoment(0);
-          return `如需00:00-06:00入住，请选择${m
-            .add(-1, "days")
-            .format("MM月DD日")}入住`;
-        }
-      }
+    if (this.getHoursCondition()) {
+      const m = this.calendarService.getMoment(0);
+      return `如需00:00-06:00入住，请选择${m
+        .add(-1, "days")
+        .format("MM月DD日")}入住`;
     }
     return "";
+  }
+  disabled: boolean;
+  isPositioning = false;
+  isLeavePage = false;
+  private getHoursCondition() {
+    return this.hotelService.hotelIsCanSelectYesterday();
   }
   get selectedBookInfosNumber() {
     return this.hotelService.getBookInfos().filter((it) => !!it.bookInfo)
@@ -80,9 +81,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     }
     return 0;
   }
-  disabled: boolean;
-  isPositioning = false;
-  isLeavePage = false;
+
   constructor(
     private router: Router,
     private hotelService: HotelService,
@@ -168,6 +167,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       this.router.navigate([AppHelper.getRoutePath("select-inter-city")]);
     }
   }
+
   async onPosition() {
     this.isPositioning = true;
     if (this.isLeavePage) {
