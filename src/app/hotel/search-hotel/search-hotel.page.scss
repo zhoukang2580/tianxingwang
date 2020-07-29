@@ -96,3 +96,28 @@ ion-card-header {
     }
   }
 }
+.show-select-yeasterday-date-tip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 0.7rem;
+  border-radius: 0.3em;
+  padding: 0.25em;
+  background-color: rgba(var(--ion-color-secondary-rgb), 0.8);
+  color: var(--ion-color-light);
+  width: 88%;
+  margin-top: 0.5em;
+  .moon {
+    font-size: 1rem;
+    transform: rotate(40deg);
+    color: #f9f195;
+  }
+  .up {
+    position: absolute;
+    left: 1.7em;
+    top: -0.6em;
+    color: rgba(var(--ion-color-secondary-rgb), 0.8);
+    z-index: 999;
+    font-size: 1rem;
+  }
+}

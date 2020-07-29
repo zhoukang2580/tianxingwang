@@ -737,7 +737,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   async onOpenCalendar() {
     const checkInDate = this.queryModel && this.queryModel.checkInDate;
     const checkOutDate = this.queryModel && this.queryModel.checkOutDate;
-    await this.hotelService.openCalendar();
+    await this.hotelService.openCalendar({});
     if (
       this.queryModel &&
       (checkInDate != this.queryModel.checkInDate ||

@@ -60,7 +60,7 @@
       <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;" class="ion-margin-top">
         <section class="flight-date">
           <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkinDate'
-            [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>
+            [isCheckIn]='true'  (click)="onSelecDate(true)" [disabled]='false'>
           </app-search-day-comp>
           <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
           <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkOutDate:interHotelSearchCondition?.checkoutDate'
@@ -68,6 +68,13 @@
           </app-search-day-comp>
         </section>
       </ion-item>
+      <ng-container *ngIf='changeDateTipMsg as msg'>
+        <div class="show-select-yeasterday-date-tip">
+          <ion-icon name="caret-up-outline" class="up"></ion-icon>
+          <ion-icon name="moon" class="moon"></ion-icon>
+          <span>{{msg}}</span>  
+        </div>
+      </ng-container>
       <div class='destination' lines='none' detail *ngIf='isDomestic' (click)='onSearchCity()'>
         <ion-item lines='none'>
           <ion-label>目的地</ion-label>

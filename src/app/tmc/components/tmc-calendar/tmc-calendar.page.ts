@@ -30,6 +30,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   private forType: FlightHotelTrainType;
   private goArrivalTime: string;
   private isCurrentSelectedOk = false;
+  private isCanSelectYesterday = false;
   private days: DayModel[] = [];
   private timeoutId: any;
   private isSrollToCurYm = false;
@@ -310,10 +311,18 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
         const endDay = this.calendarService.generateDayModel(
           this.calendarService.getMoment(30)
         );
+        const yesterdayM = this.calendarService.generateDayModel(
+          this.calendarService.getMoment(-1)
+        );
         this.calendars.forEach((day) => {
           if (day.dayList) {
             day.dayList.forEach((d) => {
-              d.enabled = d.timeStamp > today.timeStamp || d.date == today.date;
+              d.enabled =
+                d.timeStamp > today.timeStamp ||
+                d.date == today.date ||
+                (this.isCanSelectYesterday &&
+                  type == FlightHotelTrainType.Hotel &&
+                  d.date==yesterdayM.date);
               if (type == FlightHotelTrainType.Train) {
                 d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
               }

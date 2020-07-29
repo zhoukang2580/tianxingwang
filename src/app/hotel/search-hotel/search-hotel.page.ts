@@ -1,6 +1,6 @@
 import {
   InternationalHotelService,
-  IInterHotelSearchCondition
+  IInterHotelSearchCondition,
 } from "./../../hotel-international/international-hotel.service";
 import { LanguageHelper } from "./../../languageHelper";
 import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
@@ -9,7 +9,7 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import {
   FlightHotelTrainType,
-  PassengerBookInfo
+  PassengerBookInfo,
 } from "./../../tmc/tmc.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService, IHotelInfo, SearchHotelModel } from "./../hotel.service";
@@ -24,24 +24,40 @@ import * as moment from "moment";
 import { TripType } from "src/app/tmc/models/TripType";
 import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
-import { OverHotelComponent } from '../components/over-hotel/over-hotel.component';
+import { OverHotelComponent } from "../components/over-hotel/over-hotel.component";
+import { environment } from "src/environments/environment";
 @Component({
   selector: "app-search-hotel",
   templateUrl: "./search-hotel.page.html",
-  styleUrls: ["./search-hotel.page.scss"]
+  styleUrls: ["./search-hotel.page.scss"],
 })
 export class SearchHotelPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   get isShowSelectedInfos() {
-    return this.hotelService.getBookInfos().some(it => !!it.bookInfo);
+    return this.hotelService.getBookInfos().some((it) => !!it.bookInfo);
   }
   canAddPassengers = false;
   isSelf = false;
   isDomestic = true;
   searchHotelModel: SearchHotelModel;
   interHotelSearchCondition: IInterHotelSearchCondition;
+  get changeDateTipMsg() {
+    if (this.searchHotelModel) {
+      if (this.searchHotelModel.checkInDate) {
+        const hours = new Date().getHours();
+        if (hours <= 6 && hours >= 0) {
+          const m = this.calendarService.getMoment(0);
+          return `如需00:00-06:00入住，请选择${m
+            .add(-1, "days")
+            .format("MM月DD日")}入住`;
+        }
+      }
+    }
+    return "";
+  }
   get selectedBookInfosNumber() {
-    return this.hotelService.getBookInfos().filter(it => !!it.bookInfo).length;
+    return this.hotelService.getBookInfos().filter((it) => !!it.bookInfo)
+      .length;
   }
   get selectedPassengers() {
     return this.hotelService.getBookInfos().length;
@@ -77,7 +93,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     private popoverCtrl: PopoverController,
     private internationalHotelService: InternationalHotelService
   ) {
-    const sub = route.queryParamMap.subscribe(async _ => {
+    const sub = route.queryParamMap.subscribe(async (_) => {
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
       this.isSelf = await this.staffService.isSelfBookType();
@@ -86,12 +102,14 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   }
   private observeSearchCondition() {
     this.subscriptions.push(
-      this.internationalHotelService.getSearchConditionSource().subscribe(s => {
-        this.interHotelSearchCondition = s;
-      })
+      this.internationalHotelService
+        .getSearchConditionSource()
+        .subscribe((s) => {
+          this.interHotelSearchCondition = s;
+        })
     );
     this.subscriptions.push(
-      this.hotelService.getSearchHotelModelSource().subscribe(m => {
+      this.hotelService.getSearchHotelModelSource().subscribe((m) => {
         this.searchHotelModel = m;
       })
     );
@@ -114,9 +132,9 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
       componentProps: {
-        details: s.Policy.HotelDescription.split("。")
+        details: s.Policy.HotelDescription.split("。"),
       },
-      cssClass: "ticket-changing"
+      cssClass: "ticket-changing",
     });
     p.present();
   }
@@ -124,15 +142,15 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     // console.log("Segment changed", ev);
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
-      hotelType: ev.detail.value
+      hotelType: ev.detail.value,
     });
     this.internationalHotelService.setSearchConditionSource({
       ...this.internationalHotelService.getSearchCondition(),
-      hotelType: ev.detail.value
+      hotelType: ev.detail.value,
     });
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => {
+    this.subscriptions.forEach((sub) => {
       if (sub) {
         sub.unsubscribe();
       }
@@ -159,7 +177,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       const cities = await this.hotelService.getHotelCityAsync();
       if (cities) {
         const c = cities.find(
-          it =>
+          (it) =>
             it.Code ==
             (this.searchHotelModel.destinationCity &&
               this.searchHotelModel.destinationCity.Code)
@@ -167,7 +185,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
         if (c) {
           this.hotelService.setSearchHotelModel({
             ...this.hotelService.getSearchHotelModel(),
-            destinationCity: c
+            destinationCity: c,
           });
           await this.hotelService.getConditions(true);
         }
@@ -183,8 +201,8 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       queryParams: {
         forType: this.isDomestic
           ? FlightHotelTrainType.Hotel
-          : FlightHotelTrainType.HotelInternational
-      }
+          : FlightHotelTrainType.HotelInternational,
+      },
     });
   }
   async onOpenSelectedPassengers() {
@@ -204,18 +222,17 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       component: SelectedPassengersComponent,
       componentProps: {
         bookInfos$: this.hotelService.getBookInfoSource(),
-        removeitem
-      }
+        removeitem,
+      },
     });
     await m.present();
     await m.onDidDismiss();
     removeitem.unsubscribe();
   }
   async onSelecDate(isCheckIn: boolean) {
-    const days = await this.hotelService.openCalendar(
-      null,
-      isCheckIn ? TripType.checkIn : TripType.checkOut
-    );
+    const days = await this.hotelService.openCalendar({
+      tripType: isCheckIn ? TripType.checkIn : TripType.checkOut,
+    });
     if (days && days.length >= 2) {
       const checkInDate = days[0];
       const checkOutDate = days[1];
@@ -223,22 +240,22 @@ export class SearchHotelPage implements OnInit, OnDestroy {
         this.hotelService.setSearchHotelModel({
           ...this.hotelService.getSearchHotelModel(),
           checkInDate: checkInDate.date,
-          checkOutDate: checkOutDate.date
+          checkOutDate: checkOutDate.date,
         });
       } else {
         this.internationalHotelService.setSearchConditionSource({
           ...this.internationalHotelService.getSearchCondition(),
           checkinDate: checkInDate.date,
-          checkoutDate: checkOutDate.date
+          checkoutDate: checkOutDate.date,
         });
       }
     }
   }
   async onSearchHotel() {
-    if(this.totalFlyDays>=15){
+    if (this.totalFlyDays >= 15) {
       const popover = await this.popoverCtrl.create({
         component: OverHotelComponent,
-        translucent: true
+        translucent: true,
       });
       return await popover.present();
     }
@@ -250,16 +267,16 @@ export class SearchHotelPage implements OnInit, OnDestroy {
         Geos: null,
         locationAreas: null,
         searchGeoId: null,
-        filters: null
+        filters: null,
       });
       this.hotelService.getConditions();
       this.isLeavePage = true;
       this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
     } else {
       this.router.navigate([
-        AppHelper.getRoutePath("international-hotel-list")
+        AppHelper.getRoutePath("international-hotel-list"),
       ]);
-    } 
+    }
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("")]);

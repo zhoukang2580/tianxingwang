@@ -32,7 +32,7 @@ export class CalendarService {
   private calendars: AvailableDate[];
   private selectedDays: DayModel[];
   private holidays: ICalendarEntity[] = [];
-  private fetchingHolidaysPromise:Promise<ICalendarEntity[]> ;
+  private fetchingHolidaysPromise: Promise<ICalendarEntity[]>;
   private dayOfWeekNames = {
     0: LanguageHelper.getSundayTip(),
     1: LanguageHelper.getMondayTip(),
@@ -76,6 +76,7 @@ export class CalendarService {
   async openCalendar(data: {
     goArrivalTime: string;
     beginDate: string;
+    isCanSelectYesterday?: boolean;
     endDate: string;
     title?: string;
     isMulti: boolean;
@@ -533,47 +534,6 @@ export class CalendarService {
     }
     console.log(`checkYms ${Date.now() - st} ms`);
   }
-  private generateYearCalendar() {
-    const m = this.getMoment(0);
-    const calendars = [];
-    const len = this.forType == FlightHotelTrainType.Train ? 2 : 12;
-    for (let i = 0; i < len; i++) {
-      const im = m.clone().add(i, "months");
-      calendars.push(
-        this.generateYearNthMonthCalendar(im.year(), im.month() + 1)
-      );
-    }
-    return calendars;
-  }
-
-  private openCalendarByNormal(data?: {
-    isMulti: boolean;
-    beginDate: string;
-    endDate: string;
-  }) {
-    const isMulti = data.isMulti;
-    const calendars = this.getCalendars(data.beginDate, data.endDate);
-    this.renderCalendar(calendars);
-    return new Promise<DayModel[]>((resolve) => {
-      this.subscription.unsubscribe();
-      this.subscription = this.getSelectedDaysSource()
-        .pipe(
-          filter((it) => (isMulti ? it.length >= 2 : it.length > 0)),
-          tap((days) => {
-            console.log(" getSelectedDaysSource ", days);
-          }),
-          distinct()
-        )
-        .subscribe(
-          (days) => {
-            resolve(days);
-          },
-          () => {
-            this.subscription.unsubscribe();
-          }
-        );
-    });
-  }
   getMoment(addDays: number = 0, date: string | number = "") {
     let m = moment();
     if (date) {
@@ -624,18 +584,18 @@ export class CalendarService {
         .format("YYYY-MM-DD"),
     };
     this.fetchingHolidaysPromise = this.apiService
-    .getPromiseData<ICalendarEntity[]>(req)
-    .then((data) => {
-      this.holidays = data;
-      this.holidays = Array.isArray(this.holidays) ? this.holidays : [];
-      if (this.holidays.length) {
-        this.cacheHolidays(this.holidays);
-      }
-      return data;
-    })
-    .finally(() => {
-      this.fetchingHolidaysPromise = null;
-    })
+      .getPromiseData<ICalendarEntity[]>(req)
+      .then((data) => {
+        this.holidays = data;
+        this.holidays = Array.isArray(this.holidays) ? this.holidays : [];
+        if (this.holidays.length) {
+          this.cacheHolidays(this.holidays);
+        }
+        return data;
+      })
+      .finally(() => {
+        this.fetchingHolidaysPromise = null;
+      });
     return this.fetchingHolidaysPromise;
   }
   private async cacheHolidays(holidays: ICalendarEntity[]) {

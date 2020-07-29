@@ -84,7 +84,7 @@ export class HotelService {
   private testData: {
     [pageIndex: number]: { HotelDayPrices: any[]; DataCount?: number };
   };
-  get isAgent(){
+  get isAgent() {
     return this.tmcService.isAgent;
   }
   curViewHotel: HotelDayPriceEntity;
@@ -433,33 +433,35 @@ export class HotelService {
   calcTotalNights(d1: string, d2: string) {
     return Math.abs(moment(d1).diff(moment(d2), "days"));
   }
-  async openCalendar(
-    checkInDate?: DayModel,
-    tripType: TripType = TripType.checkIn,
-    title = "请选择入离店日期"
-  ): Promise<DayModel[]> {
-    if (!checkInDate) {
-      checkInDate = this.calendarService.generateDayModel(moment());
+  async openCalendar(data: {
+    checkInDate?: DayModel;
+    tripType?: TripType;
+    title?: string;
+  }): Promise<DayModel[]> {
+    if (!data.checkInDate) {
+      data.checkInDate = this.calendarService.generateDayModel(moment());
     }
-    const data = await this.calendarService.openCalendar({
+    const isCan = 0 <= new Date().getHours() && new Date().getHours() <= 6;
+    const res = await this.calendarService.openCalendar({
       goArrivalTime: "",
-      tripType,
+      tripType: data.tripType || TripType.checkIn,
       isMulti: true,
-      title,
+      isCanSelectYesterday: isCan,
+      title: data.title || "请选择入离店日期",
       forType: FlightHotelTrainType.Hotel,
       beginDate: this.searchHotelModel && this.searchHotelModel.checkInDate,
       endDate: this.searchHotelModel && this.searchHotelModel.checkOutDate,
     });
-    if (data) {
-      if (data.length == 2) {
+    if (res) {
+      if (res.length == 2) {
         this.setSearchHotelModel({
           ...this.getSearchHotelModel(),
-          checkInDate: data[0].date,
-          checkOutDate: data[1].date,
+          checkInDate: res[0].date,
+          checkOutDate: res[1].date,
         });
       }
     }
-    return data;
+    return res;
   }
   async getHotelCityAsync(forceRefresh = false) {
     if (

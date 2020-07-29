@@ -336,7 +336,7 @@ export class HotelListPage
     this.doRefresh();
   }
   async onDateChange() {
-    const days = await this.hotelService.openCalendar();
+    const days = await this.hotelService.openCalendar({});
     if (days.length) {
       this.hotelQueryModel.BeginDate = days[0].date;
       this.hotelQueryModel.EndDate = days[days.length - 1].date;

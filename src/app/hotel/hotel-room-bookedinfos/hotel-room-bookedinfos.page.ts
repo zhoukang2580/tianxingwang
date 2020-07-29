@@ -230,9 +230,9 @@ export class HotelRoomBookedinfosPage implements OnInit {
     await this.doRefresh();
   }
   async onOpenCalendar(checkInDate: string) {
-    const days = await this.hotelService.openCalendar(
-      this.calendarService.generateDayModelByDate(checkInDate)
-    );
+    const days = await this.hotelService.openCalendar({
+      checkInDate: this.calendarService.generateDayModelByDate(checkInDate),
+    });
     if (days && days.length) {
       setTimeout(() => {
         console.log("选择的日期", days, "onConfirm");
