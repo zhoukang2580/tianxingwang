@@ -41,10 +41,10 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
       return;
     }
     if (!this.customeback && !this.customeBack) {
-      this.backToPrePage();
+      this.popToPrePage(evt);
       return;
     }
-    this.popToPrePage(evt);
+    this.backToPrePage();
   }
   onBackHome() {
     this.navCtrl.setDirection("root", true);
