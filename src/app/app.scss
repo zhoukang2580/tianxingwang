@@ -221,7 +221,10 @@ input {
   display: inline-block;
   padding: 0.1em;
 }
-
+ion-input .validerrormess{
+  position: absolute;
+  bottom: 0;
+}
 .validsucessmess {
   //   background: url(assets/validator/img/secondary.gif) no-repeat;
   font-size: 0.7rem;

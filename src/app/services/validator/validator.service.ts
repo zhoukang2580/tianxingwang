@@ -41,7 +41,7 @@ export class ValidatorService {
       const pro = Object.keys(obj).find((k) => !obj[k]);
       if (pro) {
         const oneEl = container.querySelector(
-          `[ValidateName='${pro}']`
+          `[validatename='${pro}']`
         ) as HTMLInputElement;
         if (oneEl) {
           const rect = oneEl.getBoundingClientRect();
@@ -56,7 +56,7 @@ export class ValidatorService {
         if (msg && msg.Message) {
           setTimeout(() => {
             const el = container.querySelector(
-              `[ValidateName='${pro}']`
+              `[validatename='${pro}']`
             ) as HTMLInputElement;
             if (el) {
               el.focus();
@@ -81,11 +81,64 @@ export class ValidatorService {
           Style: "",
         });
         validator.Initialize();
-        validator.InitializeControl(r.rule, container);
+        const allIonInputs = container.querySelectorAll("ion-input");
+        const allInputs = container.querySelectorAll("input");
+        const allIonTextarea = container.querySelectorAll("ion-textarea");
+        const allTextarea = container.querySelectorAll("textarea");
+        const wrapper = [];
+        if (allIonTextarea) {
+          allIonTextarea.forEach((it) => {
+            const vn = it.getAttribute("validatename");
+            if (vn) {
+              const textarea = it.querySelector("textarea");
+              if (textarea) {
+                this.addValidateName(textarea, vn);
+                wrapper.push(textarea);
+              }
+            }
+          });
+        }
+        if (allTextarea) {
+          allTextarea.forEach((it) => {
+            if (it.getAttribute("validatename")) {
+              wrapper.push(it);
+            }
+          });
+        }
+        if (allInputs) {
+          allInputs.forEach((it) => {
+            if (it.getAttribute("validatename")) {
+              wrapper.push(it);
+            }
+          });
+        }
+        if (allIonInputs) {
+          allIonInputs.forEach((it) => {
+            const vn = it.getAttribute("validatename");
+            if (vn) {
+              const input = it.querySelector("input");
+              if (input) {
+                this.addValidateName(input, vn);
+                wrapper.push(input);
+              }
+            }
+          });
+        }
+
+        validator.InitializeControl(r.rule, { childNodes: wrapper });
       })
       .catch((_) => {
         console.error(_);
       });
+  }
+  private addValidateName(
+    el: HTMLElement,
+    attrv: string,
+    attr: string = "validatename"
+  ) {
+    if (el) {
+      el.setAttribute(attr, attrv);
+    }
   }
   add(validateInfo: ValidateInfo) {
     if (!validateInfo) {
