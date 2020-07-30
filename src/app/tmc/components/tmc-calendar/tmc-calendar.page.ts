@@ -322,7 +322,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
                 d.date == today.date ||
                 (this.isCanSelectYesterday &&
                   type == FlightHotelTrainType.Hotel &&
-                  d.date==yesterdayM.date);
+                  d.date == yesterdayM.date);
               if (type == FlightHotelTrainType.Train) {
                 d.enabled = d.timeStamp <= endDay.timeStamp ? d.enabled : false;
               }
@@ -336,6 +336,17 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   onDaySelected(d: DayModel) {
     if (!d || !d.date || this.isCurrentSelectedOk) {
       return;
+    }
+    if (
+      this.forType == FlightHotelTrainType.Hotel ||
+      this.forType == FlightHotelTrainType.HotelInternational
+    ) {
+      if (
+        this.selectedDays &&
+        this.selectedDays.find((it) => it.date == d.date)
+      ) {
+        return;
+      }
     }
     if (!d.enabled) {
       AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
