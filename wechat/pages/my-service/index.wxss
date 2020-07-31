@@ -1,0 +1,16 @@
+/**index.wxss**/
+
+
+
+.button,.cancel {
+  background-color: #2596d9;
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  transform: translateY(-50%);
+}
+.cancel{
+  margin-top: 4em;
+}
