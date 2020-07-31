@@ -119,10 +119,11 @@ export class HotelService {
   }
   hotelIsCanSelectYesterday() {
     const hours = new Date().getHours();
+    const h = 5;
     if (environment.production && !environment.mockProBuild) {
-      return hours <= 6 && hours >= 0;
+      return hours <= h && hours >= 0;
     }
-    if (hours <= 6 && hours >= 0) {
+    if (hours <= h && hours >= 0) {
       return true;
     }
     if (window["hotelHours"]) {
