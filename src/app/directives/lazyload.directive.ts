@@ -57,7 +57,7 @@ export class LazyloadDirective
     });
   }
   private setDefaultImage() {
-    this.load(this.loadingImage);
+    this.load(this.lazyLoad ? this.loadingImage : this.defaultImage);
   }
   private async setupImageRecover() {
     // Do something

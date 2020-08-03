@@ -67,6 +67,8 @@ const bootstrap = () =>
       AppHelper.setHttpClient(moduleRef.injector.get(HttpClient));
       // 为了设置模式
       moduleRef.injector.get(ThemeService);
+      AppHelper.Router = moduleRef.injector.get(Router);
+      AppHelper.ActivatedRoute = moduleRef.injector.get(ActivatedRoute);
       moduleRef.injector.get(MapService);
       AppHelper.loadingController = moduleRef.injector.get(LoadingController);
       return moduleRef;
@@ -108,6 +110,7 @@ if (environment.production) {
   } else {
     console.log("Amm..HMR is not enabled for webpack");
     bootstrap().then((moduleRef) => {
+    
       const applicationRef = moduleRef.injector.get(ApplicationRef);
       const appComponent = applicationRef.components[0];
       enableDebugTools(appComponent);

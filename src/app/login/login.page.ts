@@ -1,4 +1,4 @@
-import { CONFIG } from 'src/app/config';
+import { CONFIG } from "src/app/config";
 import { IdentityEntity } from "./../services/identity/identity.entity";
 import { LoginService } from "../services/login/login.service";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
@@ -43,7 +43,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   environment = environment;
   isApp = AppHelper.isApp();
   defaultLogoUrl: string;
-  isWechatMini=AppHelper.isWechatMini();
+  isWechatMini = AppHelper.isWechatMini();
   private mockDeviceInfo = {
     Device: `accw125487df1254accw125487df1254`,
     DeviceName: `pc模拟测试`,
@@ -122,7 +122,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngOnInit() {
-    this.defaultLogoUrl=CONFIG.getDefaultLogoUrl();
+    this.defaultLogoUrl = CONFIG.getDefaultLogoUrl();
     this.identitySubscription = this.identityService
       .getIdentitySource()
       .subscribe((r) => {
@@ -431,7 +431,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   async jump(
     isCheckDevice: boolean // 跳转
   ) {
-    const toPageRouter = this.loginService.getToPageRouter() || "";
+    const toPageRouter = AppHelper.getToPageAfterAuthorize();
     try {
       this.loginType = "user";
       this.isLogining = false;
@@ -446,8 +446,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     } catch (e) {
       console.error(e);
     } finally {
-      this.router.navigate([AppHelper.getRoutePath(toPageRouter)]).then(() => {
-        this.loginService.setToPageRouter("");
+      this.router.navigate([AppHelper.getRoutePath(toPageRouter.path)]).then(() => {
+        AppHelper.setToPageAfterAuthorize({ path: "" });
       });
     }
   }

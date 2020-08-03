@@ -2,7 +2,13 @@
 import Big from "big.js";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
-import { UrlSegment, UrlSegmentGroup, Route } from "@angular/router";
+import {
+  UrlSegment,
+  UrlSegmentGroup,
+  Route,
+  Router,
+  ActivatedRoute,
+} from "@angular/router";
 import { HttpClient, HttpResponseBase } from "@angular/common/http";
 import {
   AlertController,
@@ -21,6 +27,7 @@ export class AppHelper {
   private static _deviceName: "ios" | "android";
   private static _routeData: any;
   private static configXmlText: string;
+  private static toPage: { path: string; queryParams?: any };
   static toastController: ToastController;
   static alertController: AlertController;
   static modalController: ModalController;
@@ -32,6 +39,8 @@ export class AppHelper {
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
+  static Router: Router;
+  static ActivatedRoute: ActivatedRoute;
   static loadingController: LoadingController;
   static _events: {
     name: string;
@@ -494,8 +503,20 @@ export class AppHelper {
   static getStyle() {
     return AppHelper.getStorage("style") || this._queryParamers["style"] || "";
   }
+  static setStyle(style: string) {
+    if (style) {
+      this._queryParamers["style"] = style || "";
+      AppHelper.setStorage("style", style);
+    }
+  }
   static getLanguage() {
     return AppHelper.getStorage<string>("language");
+  }
+  static getToPageAfterAuthorize() {
+    return this.toPage || { path: "" };
+  }
+  static setToPageAfterAuthorize(data: { path: string; queryParams?: any }) {
+    this.toPage = { ...data };
   }
   static checkQueryString(name) {
     const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");

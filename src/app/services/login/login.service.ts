@@ -44,13 +44,6 @@ export class LoginService {
       });
     });
   }
-  setToPageRouter(pageRouter: string) {
-    this.toPageRouter = pageRouter;
-  }
-  getToPageRouter() {
-    return this.toPageRouter || "";
-  }
-
   checkIsDeviceBinded(deviceNumber: string) {
     const req = new RequestEntity();
     console.log("uuid " + deviceNumber);
@@ -80,7 +73,7 @@ export class LoginService {
             {
               IsActiveMobile: res.Data.IsActiveMobile,
               Mobile: res.Data.Mobile,
-              Path: this.getToPageRouter(),
+              Path: AppHelper.getToPageAfterAuthorize(),
             },
           ]);
         }
@@ -259,17 +252,21 @@ export class LoginService {
         .subscribe(
           (r) => {
             this.identityService.removeIdentity();
-            this.router.navigate([AppHelper.getRoutePath("login")]);
+            this.goToLoginPage();
           },
           (_) => {
             this.identityService.removeIdentity();
-            this.router.navigate([AppHelper.getRoutePath("login")]);
+            this.goToLoginPage();
           }
         );
     } else {
       this.identityService.removeIdentity();
-      this.router.navigate([AppHelper.getRoutePath("login")]);
+      this.goToLoginPage();
     }
+  }
+  private goToLoginPage() {
+    AppHelper.setToPageAfterAuthorize({ path: this.router.url });
+    this.router.navigate([AppHelper.getRoutePath("login")]);
   }
   async check() {
     const ticket = AppHelper.getTicket();

@@ -50,7 +50,16 @@ export class BackButtonComponent implements OnInit, AfterViewInit {
     this.navCtrl.setDirection("root", true);
     this.router.navigate([""]);
   }
-  backToPrePage() {
+  backToPrePage(args?: any) {
+    if (args) {
+      const nav = this.router.getCurrentNavigation();
+      if (nav && nav.extras) {
+        nav.extras.state = {
+          ...nav.extras.state,
+          ...args,
+        };
+      }
+    }
     this.navCtrl.back({ animated: true });
   }
   popToPrePage(evt?: CustomEvent) {

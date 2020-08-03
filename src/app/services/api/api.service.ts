@@ -325,6 +325,7 @@ export class ApiService {
                 AppHelper.alert(r.Message);
               }
               if (req.IsRedirctLogin != false) {
+                AppHelper.setToPageAfterAuthorize({ path: this.router.url });
                 this.router.navigate([AppHelper.getRoutePath("login")]);
               }
               return of(r);
