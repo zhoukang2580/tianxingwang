@@ -492,7 +492,7 @@ export class AppHelper {
     return false;
   }
   static getStyle() {
-    return AppHelper.getStorage("style") || "";
+    return AppHelper.getStorage("style") || this._queryParamers["style"] || "";
   }
   static getLanguage() {
     return AppHelper.getStorage<string>("language");
