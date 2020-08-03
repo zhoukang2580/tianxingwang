@@ -37,12 +37,14 @@
 ## 模块、页面命名及层级
 所有的模块单独一个文件夹
 所有的模块下面的功能界面名称用改模块名称做前缀
-所有的模块功能界面下面的子页面，名字用杠分割，和功能模块子页面平级，前缀是当前功能子页面的页面名称
+所有的模块功能界面下面的子页面，名字用杠(-)分割，和功能模块子页面平级，前缀是当前功能子页面的页面名称
 比如，account 模块，
-
 --- account
    |----account-password 该页面是account模块下面的修改密码功能页面
    |----account-password-by-sms-code 该页面是account-password的子页面
+文件单词以-切分，比如，account.service, mms-order.service
+service 以.service 结尾，文件名以 - 切分 比如 mms-shopcart.service
+页面名称和对应的ts文件的class名一致，页面对应的路由和页面的名称保持一致
    
 简单理解，就是要前缀一致
 
