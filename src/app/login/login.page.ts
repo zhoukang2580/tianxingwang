@@ -60,13 +60,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     AppHelper.isWXAppInstalled().then((installed) => {
       this.isShowWechatLogin = installed;
     });
-    route.queryParamMap.subscribe((_) => {
-      setTimeout(() => {
-        this.configService.getConfigAsync().then((c) => {
-          this.config = c;
-        });
-      }, 1000);
-    });
+    route.queryParamMap.subscribe((_) => {});
   }
   onToggleEye() {
     this.eyeOn = !this.eyeOn;
@@ -123,6 +117,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnInit() {
     this.defaultLogoUrl = CONFIG.getDefaultLogoUrl();
+    this.configService.getConfigSource().subscribe((c) => {
+      this.config = c;
+    });
     this.identitySubscription = this.identityService
       .getIdentitySource()
       .subscribe((r) => {
@@ -446,9 +443,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     } catch (e) {
       console.error(e);
     } finally {
-      this.router.navigate([AppHelper.getRoutePath(toPageRouter.path)]).then(() => {
-        AppHelper.setToPageAfterAuthorize({ path: "" });
-      });
+      this.router
+        .navigate([AppHelper.getRoutePath(toPageRouter.path)])
+        .then(() => {
+          AppHelper.setToPageAfterAuthorize({ path: "" });
+        });
     }
   }
   forgetPassword() {
