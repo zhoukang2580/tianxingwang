@@ -9,7 +9,7 @@ import { AppHelper } from "../appHelper";
 import { LanguageHelper } from "../languageHelper";
 import { ConfigEntity } from "../services/config/config.entity";
 import { ConfigService } from "../services/config/config.service";
-import { Config, ModalController } from "@ionic/angular";
+import { Config, ModalController, NavController } from "@ionic/angular";
 import { finalize } from "rxjs/operators";
 import { RequestEntity } from "../services/api/Request.entity";
 import { IdentityService } from "../services/identity/identity.service";
@@ -55,6 +55,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private fb: FormBuilder,
     private router: Router,
     route: ActivatedRoute,
+    private navCtrl: NavController,
     private modalCtrl: ModalController
   ) {
     AppHelper.isWXAppInstalled().then((installed) => {
@@ -153,6 +154,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.setLoginButton();
   }
   private autoLogin() {
+    if (!AppHelper.isApp()) {
+      return;
+    }
     this.identityService.getStatus().subscribe((ok) => {
       console.log("this.identityService.getStatus() ok = " + ok);
       if (!ok) {
@@ -443,11 +447,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     } catch (e) {
       console.error(e);
     } finally {
-      this.router
-        .navigate([AppHelper.getRoutePath(toPageRouter.path)])
-        .then(() => {
-          AppHelper.setToPageAfterAuthorize({ path: "" });
-        });
+      this.navCtrl.navigateRoot(toPageRouter.path, {
+        queryParams: toPageRouter.queryParams,
+      });
     }
   }
   forgetPassword() {
