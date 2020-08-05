@@ -92,10 +92,10 @@ export class LazyloadDirective
     });
   }
   private addVersion(url: string) {
-    if (url.includes("data:image")) {
-      return url;
-    }
     if (url) {
+      if (url.includes("data:image")) {
+        return url;
+      }
       url = url.includes("?v")
         ? `${url.split("?v")[0]}?v=${Date.now()}`
         : `${url}?v=${Date.now()}`;
