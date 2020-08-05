@@ -86,7 +86,7 @@ export class LazyloadDirective
     // console.log('load url:', url);
     this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
-      this.el.nativeElement.style.opacity = `0.25`;
+      this.el.nativeElement.style.opacity = `0.01`;
       // console.log("加载图片耗时：", Date.now() - this.time);
       if (this.el.nativeElement instanceof HTMLDivElement) {
         // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
