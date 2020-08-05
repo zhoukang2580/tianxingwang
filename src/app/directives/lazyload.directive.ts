@@ -55,6 +55,10 @@ export class LazyloadDirective
         this.setupImageRecover();
       }
     });
+    this.el.nativeElement.style.transition = "all ease-in-out 200ms";
+    this.el.nativeElement.onload = () => {
+      this.el.nativeElement.style.opacity = `1`;
+    };
   }
   private setDefaultImage() {
     this.load(this.lazyLoad ? this.loadingImage : this.defaultImage);
@@ -82,6 +86,7 @@ export class LazyloadDirective
     // console.log('load url:', url);
     this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
+      this.el.nativeElement.style.opacity = `0.25`;
       // console.log("加载图片耗时：", Date.now() - this.time);
       if (this.el.nativeElement instanceof HTMLDivElement) {
         // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
