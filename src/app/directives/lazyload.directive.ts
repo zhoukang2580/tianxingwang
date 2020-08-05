@@ -76,7 +76,7 @@ export class LazyloadDirective
   }
   private load(src: string = null) {
     // console.log("进入load ", Date.now() - this.time);
-    let url = decodeURIComponent(src || this.lazyLoad || this.defaultImage);
+    let url = src || this.lazyLoad || this.defaultImage;
     // url = `${url}`.replace(/\?v=\d+/g, "");
     url = this.addVersion(url);
     // console.log('load url:', url);
