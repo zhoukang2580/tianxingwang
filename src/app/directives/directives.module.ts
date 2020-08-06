@@ -4,7 +4,7 @@ import { CommonModule } from "@angular/common";
 import { CropAvatarDirective } from "./crop-avatar.directive";
 import { ShowtipDirective } from "./showtip.directive";
 import { AutoGrowDirective } from "./auto-grow.directive";
-import { AuthorizeDirective } from './authorizedirective';
+import { AuthorizeDirective } from './authorize.directive';
 import { ShowMenusDirective } from './show-menus.directive';
 import { LongPressShowpopDirective } from './long-press-showpop.directive';
 
