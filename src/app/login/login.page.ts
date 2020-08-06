@@ -448,7 +448,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       console.error(e);
     } finally {
       this.navCtrl.navigateRoot(
-        toPageRouter.path == "login" ? "" : toPageRouter.path,
+        (toPageRouter.path || "").includes("login") ? "" : toPageRouter.path,
         {
           queryParams: toPageRouter.queryParams,
         }
