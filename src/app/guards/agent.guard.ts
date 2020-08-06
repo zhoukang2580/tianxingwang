@@ -8,13 +8,13 @@ import {
   RouterStateSnapshot,
   Router,
   CanActivateChild,
-  UrlTree
+  UrlTree,
 } from "@angular/router";
 import { Observable } from "rxjs";
 import { LoginService } from "../services/login/login.service";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class AgentGuard implements CanActivate, CanActivateChild {
   identityEntity: IdentityEntity;
@@ -23,7 +23,7 @@ export class AgentGuard implements CanActivate, CanActivateChild {
     private loginService: LoginService,
     private router: Router
   ) {
-    this.identityService.getIdentitySource().subscribe(id => {
+    this.identityService.getIdentitySource().subscribe((id) => {
       this.identityEntity = id;
     });
   }
@@ -31,7 +31,10 @@ export class AgentGuard implements CanActivate, CanActivateChild {
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ):
-    | boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
+    | boolean
+    | UrlTree
+    | Observable<boolean | UrlTree>
+    | Promise<boolean | UrlTree> {
     return this.canActivate(childRoute, state);
   }
   canActivate(
@@ -45,7 +48,7 @@ export class AgentGuard implements CanActivate, CanActivateChild {
     ) {
       return true;
     }
-    this.loginService.setToPageRouter(state.url);
+    AppHelper.setToPageAfterAuthorize({ path: state.url });
     // this.router.navigate([AppHelper.getRoutePath("")]);
     return false;
   }

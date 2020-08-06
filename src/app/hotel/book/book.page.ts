@@ -904,8 +904,8 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          tmc.TrainApprovalType != 0 &&
-          tmc.TrainApprovalType != TmcApprovalType.None &&
+          tmc.HotelApprovalType != 0 &&
+          tmc.HotelApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
         );

@@ -65,7 +65,7 @@ export class TmcGuard implements CanActivate, CanActivateChild {
           }
           return true;
         }
-        this.loginService.setToPageRouter(state.url);
+        AppHelper.setToPageAfterAuthorize({ path:state.url});
         this.router.navigate([AppHelper.getRoutePath("login")]);
         return false;
       })

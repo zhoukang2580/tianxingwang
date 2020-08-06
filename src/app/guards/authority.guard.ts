@@ -30,7 +30,6 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
   private isShowModel = false;
   constructor(
     private identityService: IdentityService,
-    private loginService: LoginService,
     private router: Router,
     private modalCtrl: ModalController
   ) {}
@@ -63,7 +62,7 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
         if (status) {
           return true;
         }
-        this.loginService.setToPageRouter(state.url);
+        AppHelper.setToPageAfterAuthorize({ path: state.url});
         if (AppHelper.isWechatMini()) {
           this.router.navigate(["home"]);
           return false;

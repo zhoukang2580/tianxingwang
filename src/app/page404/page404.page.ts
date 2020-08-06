@@ -1,14 +1,14 @@
-import { LoginService } from './../services/login/login.service';
-import { AppHelper } from './../appHelper';
-import { IdentityService } from './../services/identity/identity.service';
+import { LoginService } from "./../services/login/login.service";
+import { AppHelper } from "./../appHelper";
+import { IdentityService } from "./../services/identity/identity.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Component, OnInit } from "@angular/core";
-import { IdentityEntity } from '../services/identity/identity.entity';
+import { IdentityEntity } from "../services/identity/identity.entity";
 
 @Component({
   selector: "app-page404",
   templateUrl: "./page404.page.html",
-  styleUrls: ["./page404.page.scss"]
+  styleUrls: ["./page404.page.scss"],
 })
 export class Page404Page implements OnInit {
   curRoute: { url: string } = { url: null };
@@ -16,22 +16,27 @@ export class Page404Page implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private loginService: LoginService,
-    private router: Router, private identityService: IdentityService) {
-  }
+    private router: Router,
+    private identityService: IdentityService
+  ) {}
 
   async ngOnInit() {
-    console.log(`未找到的路由：${(this.curRoute.url = this.router.routerState.snapshot.url)}`);
-    const identity: IdentityEntity = await this.identityService.getIdentityAsync().catch(_ => null);
+    console.log(
+      `未找到的路由：${(this.curRoute.url = this.router.routerState.snapshot.url)}`
+    );
+    const identity: IdentityEntity = await this.identityService
+      .getIdentityAsync()
+      .catch((_) => null);
     if (identity) {
       if (identity.Ticket) {
         this.router.navigate([AppHelper.getRoutePath("")]);
       } else {
-        this.loginService.setToPageRouter("");
+        AppHelper.setToPageAfterAuthorize({ path: "" });
         this.router.navigate([AppHelper.getRoutePath("login")]);
       }
     } else {
-      this.router.navigate([AppHelper.getRoutePath("login")]).then(_ => {
-        this.loginService.setToPageRouter("");
+      this.router.navigate([AppHelper.getRoutePath("login")]).then((_) => {
+        AppHelper.setToPageAfterAuthorize({ path: "" });
       });
     }
   }
