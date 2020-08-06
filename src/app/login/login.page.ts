@@ -447,9 +447,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     } catch (e) {
       console.error(e);
     } finally {
-      this.navCtrl.navigateRoot(toPageRouter.path, {
-        queryParams: toPageRouter.queryParams,
-      });
+      this.navCtrl.navigateRoot(
+        toPageRouter.path == "login" ? "" : toPageRouter.path,
+        {
+          queryParams: toPageRouter.queryParams,
+        }
+      );
     }
   }
   forgetPassword() {
