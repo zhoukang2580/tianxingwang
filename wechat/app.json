@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/my-service/index",
     "pages/share/index",
     "pages/login/index",
     "pages/location/index",

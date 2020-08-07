@@ -1,7 +1,8 @@
-const md5=require("./utils/md5.js")
+const md5 = require("./utils/md5.js");
+const utils = require("./utils/util.js");
 //app.js
 App({
-  onLaunch: function() {
+  onLaunch: function () {
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
@@ -39,58 +40,72 @@ App({
     })
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    appId: null
   },
-  urls:{
-    homeUrl: "http://test.ionic.eskytrip.com?MmsId=2&HrId=2&AloneTag=19",
-    stepUrl:"http://test.app.eskytrip.com/home/CreateStep"
+  urls: {
+    homeUrl: utils.getLaunchUrl(wx), //"http://test.ionic.eskytrip.com?MmsId=5&AloneTag=30&HrId=4",
+    stepUrl: "http://test.app.eskytrip.com/home/CreateStep"
   },
-  setStep:function(wx,args,value){
+  getBaseUrl: function () {
+    return this.urls.stepUrl.substring(0, this.urls.stepUrl.indexOf("/home"));
+  },
+  setLaunchUrl: function (shopUrl) {
+    return utils.setLaunchUrl(shopUrl, wx);
+  },
+  getLaunchUrl: function () {
+    return utils.getLaunchUrl(wx)
+  },
+  setStep: function (wx, args, value) {
     wx.navigateBack();
-    if(!args || !args.key || !args.token)
-    {
+    if (!args || !args.key || !args.token) {
       return;
     }
     const timestamp = Math.floor(Date.now() / 1000);
-    const sign=this.getSign(timestamp,args.token,"");
-    var url=this.urls.stepUrl;
+    const sign = this.getSign(timestamp, args.token, "");
+    var url = this.urls.stepUrl;
     wx.request({
-        url: url,
-        data: {
-          Key: args.key,
-          Token:args.token,
-          Sign:sign,
-          Timestamp:timestamp,
-          Value: value
-        },
-        timeout:5000,
-        header: {},
-        method: 'GET',
-        dataType: 'json',
-        complete: (r) => {
-          // if (!r || !r.data || !r.data.Status) {
-          //   wx.showModal({
-          //     cancelColor: '',
-          //     cancelText: '',
-          //     complete: (res) => {},
-          //     confirmColor: '',
-          //     confirmText: '确认',
-          //     content: '网络超时请重试',
-          //     fail: (res) => {},
-          //     showCancel: true,
-          //     success: (result) => {},
-          //     title: '网络超时',
-          //   })
-          // }           
-      
-        }
-      })
+      url: url,
+      data: {
+        Key: args.key,
+        Token: args.token,
+        Sign: sign,
+        Timestamp: timestamp,
+        Value: value
+      },
+      timeout: 5000,
+      header: {},
+      method: 'GET',
+      dataType: 'json',
+      complete: (r) => {
+        // if (!r || !r.data || !r.data.Status) {
+        //   wx.showModal({
+        //     cancelColor: '',
+        //     cancelText: '',
+        //     complete: (res) => {},
+        //     confirmColor: '',
+        //     confirmText: '确认',
+        //     content: '网络超时请重试',
+        //     fail: (res) => {},
+        //     showCancel: true,
+        //     success: (result) => {},
+        //     title: '网络超时',
+        //   })
+        // }           
+
+      }
+    })
   },
-  getSign(timestamp,token,data) {
+  getAppId: function () {
+    const appId = this.globalData.appId || (this.globalData.appId = wx.getAccountInfoSync().miniProgram.appId);
+    return appId;
+  },
+  getSign(timestamp, token, data) {
     return md5.hexMD5(
-      `${typeof data=== "string" ? data : JSON.stringify(data)}${
-        timestamp
+      `${typeof data === "string" ? data : JSON.stringify(data)}${
+      timestamp
       }${token}`
     );
   }
 })
+
