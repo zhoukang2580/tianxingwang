@@ -1,0 +1,8 @@
+<div class="container {{isSegments?'hidden':''}}" [ngStyle]='containerStyle' #containerEle [ngClass]='{"horizontal":direction=="horizontal","vertical":direction=="vertical"}'>
+  <div class="tab" #tabEle [attr.tabid]='t.value' *ngFor='let t of tabs' [class.active]='t.isActive' (click)='onTab(t)'>
+    {{t.name}}
+  </div>
+</div>
+<ion-segment #segmentEle mode='ios' [class]='isSegments?"":"hidden"' [value]='activeTab?.value' scrollable (ionChange)='onActiveSegment($event)'>
+  <ion-segment-button *ngFor='let t of tabs' [value]='t.value' [attr.tabid]='t.value' #segmentbtnEle>{{t.name}}</ion-segment-button>
+</ion-segment>

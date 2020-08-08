@@ -16,6 +16,7 @@ import {
   OnDestroy,
   Output,
   EventEmitter,
+  Renderer2,
 } from "@angular/core";
 import Swiper from "swiper";
 const TAG = "swiper-slides";
@@ -30,7 +31,9 @@ export class SwiperSlidesComponent
   private swiper: any;
   private pageSize = 20;
   private isFirstEntry = true;
-  curIndex = 1;
+  private isOpenAsModel = false;
+  // 索引统一从0开始
+  curIndex = 0;
   @ViewChild("container", { static: true }) containerEl: ElementRef<
     HTMLElement
   >;
@@ -41,20 +44,25 @@ export class SwiperSlidesComponent
   @Input() direction = "horizontal";
   @Input() logoUrl;
   @Input() bgColorBlack;
-  @Input() defaultImage = "assets/loading.gif";
-  @Input() loadingImage;
+  @Input() defaultImage;
+  @Input() loadingImage = "assets/loading.gif";
   @Input() initialPos = 0;
   isShowImage = true;
   @Output() slideChange: EventEmitter<any>;
-  constructor() {
+  @Output() tap: EventEmitter<any>;
+  constructor(private render: Renderer2) {
     this.slideChange = new EventEmitter();
+    this.tap = new EventEmitter();
   }
 
   ngOnInit() {
-    this.curIndex = this.initialPos + 1;
+    this.curIndex = this.initialPos;
     this.vmItems = [];
     if (this.items) {
       this.isShowImage = !!this.items.some((it) => it.imageUrl);
+      if (this.isOpenAsModel) {
+        this.initVmItems();
+      }
     }
     // console.log(TAG + " this.initialPos ", this.initialPos);
     if (this.containerEl && this.containerEl.nativeElement) {
@@ -112,6 +120,12 @@ export class SwiperSlidesComponent
       });
     }
   }
+  onItemClick(itm, idx) {
+    this.tap.emit({
+      itm,
+      idx,
+    });
+  }
   private loopLoad() {
     console.log("正在加载数据，", this.slides.length);
     this.loadMore();
@@ -130,7 +144,6 @@ export class SwiperSlidesComponent
     return new Promise((resolve) => {
       if (this.swiper) {
         // console.log("切换到", idx);
-        idx = idx - 1;
         if (idx > 0) {
           this.swiper.slideTo(idx <= 0 ? 0 : idx, 0, () => {
             // console.log("成功切换到 " + idx);
@@ -179,12 +192,36 @@ export class SwiperSlidesComponent
   }
   ngAfterContentInit() {
     // console.log(this.slides);
+    setTimeout(() => {
+      try {
+        if (this.containerEl.nativeElement.parentElement.clientHeight) {
+          this.render.setStyle(
+            this.containerEl.nativeElement,
+            "height",
+            `${this.containerEl.nativeElement.parentElement.clientHeight}px`
+          );
+        }
+        if (this.containerEl.nativeElement.parentElement.clientWidth) {
+          this.render.setStyle(
+            this.containerEl.nativeElement,
+            "width",
+            `${this.containerEl.nativeElement.parentElement.clientWidth}px`
+          );
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      if (this.isOpenAsModel) {
+        this.update();
+        this.slideToSlide(this.initialPos);
+      }
+    }, 0);
   }
   private slideToInitialPos() {
     if (this.isFirstEntry) {
       this.isFirstEntry = false;
       setTimeout(() => {
-        this.slideToSlide(this.initialPos + 1).then((_) => {
+        this.slideToSlide(this.initialPos).then((_) => {
           this.startAutoPlay();
         });
       }, 100);
@@ -219,7 +256,7 @@ export class SwiperSlidesComponent
   }
   private onChangeCurIndex(realIndex: number) {
     try {
-      this.curIndex = realIndex + 1;
+      this.curIndex = realIndex;
       this.slideChange.emit(realIndex);
       if (this.vmItems && this.vmItems.length) {
         if (
