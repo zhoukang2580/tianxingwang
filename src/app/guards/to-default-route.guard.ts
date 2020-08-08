@@ -25,21 +25,25 @@ export class ToDefaultRouteGuard implements CanActivate {
     if (this.router.config.find((it) => it.path == `${url}`)) {
       return true;
     }
-    const defaultR = this.getDefaultRoute(url, state.url);
+    const defaultR = this.getDefaultRoute(url, state.url, next.queryParams);
     if (defaultR) {
-      this.router.navigate([defaultR]);
+      this.router.navigate([defaultR], { queryParams: next.queryParams });
       return false;
     }
     return true;
   }
-  private getDefaultRoute(styledRoute: string, toRuote: string) {
+  private getDefaultRoute(
+    styledRoute: string,
+    toRuote: string,
+    queryParams: any
+  ) {
     const idx = styledRoute.lastIndexOf("_");
     const defaultRoute = styledRoute.substring(0, idx);
     if (
       defaultRoute &&
       this.router.config.find((it) => it.path == `${defaultRoute}`)
     ) {
-      this.router.navigate([defaultRoute]);
+      this.router.navigate([defaultRoute], { queryParams });
       return false;
     }
     return defaultRoute;
