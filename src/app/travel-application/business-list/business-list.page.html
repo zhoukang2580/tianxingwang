@@ -4,7 +4,7 @@
       <app-back-button></app-back-button>
     </ion-buttons>
     <ion-title>我的出差申请</ion-title>
-    <ion-button color="secondary" style="height: 2em;width: 3.3em;font-size: 0.9rem;" slot="end" (click)="goAddApply()">
+    <ion-button mode='ios' style="height: 2em;width: 3.3em;font-size: 0.9rem;" slot="end" (click)="goAddApply()">
       添加</ion-button>
   </ion-toolbar>
 </ion-header>
@@ -13,27 +13,25 @@
   <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
+  <form action="javascript:void(0)" (ngSubmit)='onSearch(true)'>
+    <ion-searchbar name='searchbar' placeholder="申请单号、出差事由等内容搜索" mode='ios' animated='true' [(ngModel)]="searchModel.SearchContent"></ion-searchbar>
+    <ion-item style="display: none;" >
+      <ion-select cancelText='取消' okText='确定' backdrop-dismiss='true' #statusSelect translucent='true' [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn"
+        placeholder="请选择" [(ngModel)]="searchModel.StatusType" name='status' (ionChange)="onSearch(false)">
+        <ion-select-option value="0">全部</ion-select-option>
+        <ion-select-option value="{{ApprovalStatusType.Pass}}">通过</ion-select-option>
+        <ion-select-option value="{{ApprovalStatusType.Refuse}}">拒绝</ion-select-option>
+        <ion-select-option value="{{ApprovalStatusType.Waiting}}">待审核</ion-select-option>
+        <ion-select-option value="{{ApprovalStatusType.WaiteSubmit}}">待提交</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <img src="assets/images/shaixuan.png" (click)='statusSelect.open()' style="width: 1em;
+    height: 1em;
+    flex-basis: 3em;
+    object-fit: contain;
+    padding-right: 1em;" alt="">
+  </form>
   <ion-list>
-    <div style="    display: flex;
-      flex-flow: column;
-      align-items: center;
-      margin-top: 1em;">
-      <ion-input placeholder="申请单号、出差事由等内容搜索" style="border: 1px solid #eeeeee;width: 94%;" [(ngModel)]="searchModel.SearchContent" (ionChange)="onSearch(true)"></ion-input>
-      <div style="display:flex;
-      width: 94%;
-      justify-content: space-between;
-      margin-top: 0.5em;">
-        <ion-select slot="end" class="ion-text-end" okText="确定" cancelText="取消" [compareWith]="compareWithFn"
-          style="border: 1px solid #eeeeee;width: 75%;" placeholder="请选择申请单" [(ngModel)]="searchModel.StatusType" (ionChange)="onSearch(false)">
-          <ion-select-option value="0">请选择</ion-select-option>
-          <ion-select-option value="{{ApprovalStatusType.Pass}}">通过</ion-select-option>
-          <ion-select-option value="{{ApprovalStatusType.Refuse}}">拒绝</ion-select-option>
-          <ion-select-option value="{{ApprovalStatusType.Waiting}}">待审核</ion-select-option>
-          <ion-select-option value="{{ApprovalStatusType.WaiteSubmit}}">待提交</ion-select-option>
-        </ion-select>
-        <!-- <ion-button color="secondary" style="height:2em" (click)="onSearch()">搜索</ion-button> -->
-      </div>
-    </div>
     <ion-item *ngFor='let item of items' style="border-radius: 0.5em;
       width: 96%;
       margin: 0.5em auto;
@@ -62,7 +60,7 @@
             <ion-text color="medium">申请状态</ion-text>
           </ion-col>
           <ion-col>
-            {{item.StatusTypeName}} 
+            {{item.StatusTypeName}}
             <ion-button color="secondary" *ngIf="item.StatusTypeName=='待审核'" (click)="onCancel(item.Id,$event)">撤销</ion-button>
           </ion-col>
         </ion-row>
@@ -80,9 +78,9 @@
           </ion-col>
           <ion-col>
             <div>
-            <div *ngFor="let i of item.Trips">
-            {{i?.StartDate?.replace("T"," ")?.substring(0,10)}} {{i.FromCityName}}--{{i.ToCityName}}
-            </div>
+              <div *ngFor="let i of item.Trips">
+                {{i?.StartDate?.replace("T"," ")?.substring(0,10)}} {{i.FromCityName}}--{{i.ToCityName}}
+              </div>
             </div>
           </ion-col>
         </ion-row>

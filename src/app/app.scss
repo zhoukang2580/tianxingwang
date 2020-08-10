@@ -7,7 +7,10 @@ body:not(.dark) {
   }
   ion-content {
     // --border-color: #d6d6d6;
-    --background: #f2f2f2;
+    --background: #F5F7F9;
+    ion-searchbar{
+      --background: #F5F7F9;
+    }
     // ion-list.list-ios,
     // ion-list.list-md {
     //   margin: 1em 0;

@@ -4,8 +4,14 @@
   align-items: center;
   width: 100%;
   min-height: 2.5em;
+  height: 2.5em;
+  &.disabled {
+    opacity: 0.8;
+    .input {
+      border-color: var(--ion-color-medium);
+    }
+  }
   .input {
-
     border: 1.5px solid var(--ion-color-secondary);
     min-width: 3em;
     // width: 50%;
@@ -24,14 +30,16 @@
   .input,
   .add,
   .substract {
-    min-height: 2em;
+    min-height: 2.5em;
+    height: 2.5em;
   }
   .add,
   .substract {
     position: relative;
+    height: 100%;
     min-width: 2em;
     width: calc((30% - 1em) / 2);
-    border: 2px solid var(--ion-color-secondary);
+    border: 1.5px solid var(--ion-color-secondary);
     &::after {
       content: "";
       position: absolute;
@@ -76,6 +84,6 @@
     }
   }
 }
-.hidden{
+.hidden {
   display: none !important;
 }

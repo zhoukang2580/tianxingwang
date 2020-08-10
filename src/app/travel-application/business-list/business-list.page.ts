@@ -25,6 +25,11 @@ export class BusinessListPage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   items: TravelFormEntity[];
   searchModel: SearchModel;
+  customPopoverOptions: any = {
+    header: '选择审批单状态',
+    // subHeader: 'Select your hair color',
+    // message: 'Only select your dominant hair color'
+  };
   constructor(
     private router: Router,
     private route: ActivatedRoute,

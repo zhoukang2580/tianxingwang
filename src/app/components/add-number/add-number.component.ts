@@ -10,23 +10,25 @@ import {
   ElementRef,
   ChangeDetectionStrategy,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 
 @Component({
   selector: "app-add-number",
   templateUrl: "./add-number.component.html",
   styleUrls: ["./add-number.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddNumberComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild("input") inputEl: ElementRef<HTMLInputElement>;
   @Input() addNumber = 0;
   @Input() useInput = true;
+  @Input() disabled;
   @Input() min: number;
   @Input() max: number;
   @Output() addNumberChange: EventEmitter<number>;
   @Output() focus: EventEmitter<number>;
+  private preValue: any;
   private subscriptions: Subscription[] = [];
   constructor() {
     this.addNumberChange = new EventEmitter();
@@ -36,7 +38,10 @@ export class AddNumberComponent implements OnInit, AfterViewInit, OnDestroy {
     if (evt) {
       evt.stopPropagation();
     }
-    this.addNumber += n;
+    if (this.disabled) {
+      return;
+    }
+    this.addNumber = +this.addNumber + n;
     if (n < 0) {
       if (this.min) {
         this.addNumber = Math.max(this.addNumber, this.min);
@@ -46,15 +51,26 @@ export class AddNumberComponent implements OnInit, AfterViewInit, OnDestroy {
         this.addNumber = Math.min(this.addNumber, this.max);
       }
     }
-    this.addNumberChange.emit(this.addNumber);
+    if (this.preValue != this.addNumber) {
+      this.preValue = this.addNumber;
+      this.addNumberChange.emit(this.addNumber);
+    }
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  onHasFocus() {
+  onHasFocus(evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    if (this.disabled) {
+      return;
+    }
     this.focus.emit();
   }
-  ngOnInit() { }
+  ngOnInit() {
+    this.preValue=this.addNumber;
+  }
   ngAfterViewInit() {
     if (this.inputEl) {
       this.subscriptions.push(
