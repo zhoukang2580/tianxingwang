@@ -25,9 +25,19 @@ export class ToDefaultRouteGuard implements CanActivate {
     if (this.router.config.find((it) => it.path == `${url}`)) {
       return true;
     }
-    const defaultR = this.getDefaultRoute(url, state.url, next.queryParams);
+    const rp = this.router.parseUrl(decodeURIComponent(state.url));
+    let queryParams = next.queryParams;
+    if (Object.keys(rp.queryParams).length) {
+      queryParams = {
+        ...queryParams,
+        ...rp.queryParams,
+      };
+    }
+    const defaultR = this.getDefaultRoute(url, state.url, queryParams);
     if (defaultR) {
-      this.router.navigate([defaultR], { queryParams: next.queryParams });
+      this.router.navigate([defaultR], {
+        queryParams: { ...next.queryParams },
+      });
       return false;
     }
     return true;

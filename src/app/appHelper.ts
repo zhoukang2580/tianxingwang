@@ -504,10 +504,8 @@ export class AppHelper {
     return AppHelper.getStorage("style") || this._queryParamers["style"] || "";
   }
   static setStyle(style: string) {
-    if (style) {
-      this._queryParamers["style"] = style || "";
-      AppHelper.setStorage("style", style);
-    }
+    this._queryParamers["style"] = style || "";
+    AppHelper.setStorage("style", style);
   }
   static getLanguage() {
     return AppHelper.getStorage<string>("language");
@@ -652,9 +650,16 @@ export class AppHelper {
     if (path.lastIndexOf("_") != -1) {
       path = path.substring(0, path.lastIndexOf("_"));
     }
+    const query = path.includes("?") ? path.substr(path.indexOf("?")) : "";
+    if (query) {
+      path = path.substr(0, path.indexOf("?"));
+    }
+    path = this.getNormalizedPath(path);
     path =
       path && path.length > 0 ? `${path}${style ? "_" + style : ""}` : path;
-    path = this.getNormalizedPath(path);
+    // if (query) {
+    //   path += query;
+    // }
     console.log(`get style=${style}, Route Path=${path}`);
     if (path) {
       return `/${path}`;
