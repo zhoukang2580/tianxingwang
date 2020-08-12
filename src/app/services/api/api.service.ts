@@ -24,7 +24,7 @@ import {
   TimeoutError,
 } from "rxjs";
 import { ExceptionEntity } from "../log/exception.entity";
-import { Router } from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { IdentityService } from "../identity/identity.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { environment } from "src/environments/environment";
@@ -53,7 +53,8 @@ export class ApiService {
     private http: HttpClient,
     private router: Router,
     private identityService: IdentityService,
-    private storage: Storage
+    private storage: Storage,
+    private route: ActivatedRoute
   ) {
     this.loadingSubject = new BehaviorSubject({ isLoading: false, msg: "" });
     this.storage.get(`KEY_API_CONFIG`).then((config) => {
@@ -325,7 +326,10 @@ export class ApiService {
                 AppHelper.alert(r.Message);
               }
               if (req.IsRedirctLogin != false) {
-                AppHelper.setToPageAfterAuthorize({ path: this.router.url });
+                AppHelper.setToPageAfterAuthorize({
+                  path: this.router.url,
+                  queryParams: this.route.snapshot.queryParams,
+                });
                 this.router.navigate([AppHelper.getRoutePath("login")]);
               }
               return of(r);
@@ -337,6 +341,10 @@ export class ApiService {
             AppHelper.alert(r.Message);
           }
           if (req.IsRedirctLogin != false) {
+            AppHelper.setToPageAfterAuthorize({
+              path: this.router.url,
+              queryParams: this.route.snapshot.queryParams,
+            });
             this.router.navigate([AppHelper.getRoutePath("login")]);
           }
         } else if (r.Code && r.Code.toUpperCase() === "NOAUTHORIZE") {
