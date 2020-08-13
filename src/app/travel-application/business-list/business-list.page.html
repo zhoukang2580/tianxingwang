@@ -15,7 +15,7 @@
   </app-refresher>
   <form action="javascript:void(0)" (ngSubmit)='onSearch(true)'>
     <ion-searchbar name='searchbar' placeholder="申请单号、出差事由等内容搜索" mode='ios' animated='true' [(ngModel)]="searchModel.SearchContent"></ion-searchbar>
-    <ion-item style="display: none;" >
+    <ion-item style="display: none;">
       <ion-select cancelText='取消' okText='确定' backdrop-dismiss='true' #statusSelect translucent='true' [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn"
         placeholder="请选择" [(ngModel)]="searchModel.StatusType" name='status' (ionChange)="onSearch(false)">
         <ion-select-option value="0">全部</ion-select-option>
@@ -25,67 +25,138 @@
         <ion-select-option value="{{ApprovalStatusType.WaiteSubmit}}">待提交</ion-select-option>
       </ion-select>
     </ion-item>
-    <img src="assets/images/shaixuan.png" (click)='statusSelect.open()' style="width: 1em;
-    height: 1em;
-    flex-basis: 3em;
-    object-fit: contain;
-    padding-right: 1em;" alt="">
+    <img src="assets/images/shaixuan.png" (click)='statusSelect.open()' alt="">
   </form>
-  <ion-list>
-    <ion-item *ngFor='let item of items' style="border-radius: 0.5em;
-      width: 96%;
-      margin: 0.5em auto;
-      font-size: 0.9rem;
-      border: 1px solid #eeeeee;" lines="none">
-      <div class="ion-padding-bottom ion-padding-top" style="width: 100%" (click)="onTravelEdit(item.Id)">
-        <ion-row>
-          <ion-col size='3'>
-            <ion-text color="medium">序号</ion-text>
-          </ion-col>
-          <ion-col>
-            {{item.Id}}
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size='3'>
-            <ion-text color="medium">申请时间</ion-text>
-          </ion-col>
-          <ion-col>
-            <!-- .startsWith("1800") -->
-            {{item?.ApplyTime?.startsWith("1800")||item?.ApplyTime?.startsWith("0001")?" ":item?.ApplyTime?.replace("T"," ")?.substring(0,16)}}
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size='3'>
-            <ion-text color="medium">申请状态</ion-text>
-          </ion-col>
-          <ion-col>
-            {{item.StatusTypeName}}
-            <ion-button color="secondary" *ngIf="item.StatusTypeName=='待审核'" (click)="onCancel(item.Id,$event)">撤销</ion-button>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col size='3'>
-            <ion-text color="medium">审批时间</ion-text>
-          </ion-col>
-          <ion-col>
-            {{item?.ApprovalTime?.startsWith("1800")||item?.ApprovalTime?.startsWith("0001")?" ":item?.ApprovalTime?.replace("T"," ")?.substring(0,16)}}
-          </ion-col>
-        </ion-row>
-        <ion-row *ngIf="item.Trips">
-          <ion-col size='3'>
-            <ion-text color="medium">行程</ion-text>
-          </ion-col>
-          <ion-col>
-            <div>
-              <div *ngFor="let i of item.Trips">
-                {{i?.StartDate?.replace("T"," ")?.substring(0,10)}} {{i.FromCityName}}--{{i.ToCityName}}
-              </div>
-            </div>
-          </ion-col>
-        </ion-row>
+  <div class="list" *ngFor='let item of items' (click)="onTravelEdit(item.Id)">
+    <div class="item">
+      <div class="row">
+        <div class="title">
+          <div>
+            出行人：
+          </div>
+          <div>
+            {{staff?.Name}}
+          </div>
+        </div>
+        <div class="time">
+          {{item.ApplyTime}}
+        </div>
       </div>
-    </ion-item>
+      <div class="row" *ngIf='item.Trips?.length'>
+        <div class="title ">
+          <div class="trip">
+            行程：
+          </div>
+          <div>
+            <div class="trip" *ngFor='let trip of item.Trips'>
+              {{trip.FromCityName}}~{{trip.ToCityName}}
+            </div>
+            {{staff?.Name}}
+          </div>
+        </div>
+        <div class="time">
+          {{item.startDate}}
+        </div>
+      </div>
+      <div class="row" *ngIf='item.ApprovalTime'>
+        <div class="title">
+          <div>
+            审批时间：
+          </div>
+          <div>
+            {{item.ApprovalTime}}
+          </div>
+        </div>
+      </div>
+      <div class="row" *ngIf='item.ApplyTime'>
+        <div class="title">
+          <div>
+            申请时间：
+          </div>
+          <div>
+            {{item.ApplyTime}}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="title">
+          <div>
+            <ng-container *ngIf='(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType) else apTpl'>
+              审批状态：
+            </ng-container>
+            <ng-template #apTpl>
+              申请状态：
+            </ng-template>
+          </div>
+          <ng-container *ngIf='(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType) else statusTpl'>
+            <ion-text color='secondary' *ngIf='ApprovalStatusType.Pass==item.StatusType'>{{item.StatusTypeName}}</ion-text>
+            <ion-text color='danger' *ngIf='ApprovalStatusType.Refuse==item.StatusType'>{{item.StatusTypeName}}</ion-text>
+          </ng-container>
+          <ng-template #statusTpl>
+            <ion-text>{{item.StatusTypeName}}</ion-text>
+          </ng-template>
+          <button *ngIf="item.StatusType==ApprovalStatusType.Waiting" (click)="onCancel(item.Id,$event)">撤销</button>
+        </div>
+      </div>
+      <img src="assets/images/pass.png" *ngIf='ApprovalStatusType.Pass==item.StatusType' alt="">
+      <img src="assets/images/deny.png" *ngIf='ApprovalStatusType.Refuse==item.StatusType' alt="">
+    </div>
+  </div>
+  <ion-item *ngFor='let item of items' style="border-radius: 0.5em;
+    width: 96%;
+    margin: 0.5em auto;
+    font-size: 0.9rem;
+    border: 1px solid #eeeeee;" lines="none">
+    <div class="ion-padding-bottom ion-padding-top" style="width: 100%">
+      <ion-row>
+        <ion-col size='3'>
+          <ion-text color="medium">序号</ion-text>
+        </ion-col>
+        <ion-col>
+          {{item.Id}}
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='3'>
+          <ion-text color="medium">申请时间</ion-text>
+        </ion-col>
+        <ion-col>
+          <!-- .startsWith("1800") -->
+          {{item?.ApplyTime?.startsWith("1800")||item?.ApplyTime?.startsWith("0001")?" ":item?.ApplyTime?.replace("T"," ")?.substring(0,16)}}
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='3'>
+          <ion-text color="medium">申请状态</ion-text>
+        </ion-col>
+        <ion-col>
+          {{item.StatusTypeName}}
+          <ion-button color="secondary" *ngIf="item.StatusTypeName=='待审核'" (click)="onCancel(item.Id,$event)">撤销</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size='3'>
+          <ion-text color="medium">审批时间</ion-text>
+        </ion-col>
+        <ion-col>
+          {{item?.ApprovalTime?.startsWith("1800")||item?.ApprovalTime?.startsWith("0001")?" ":item?.ApprovalTime?.replace("T"," ")?.substring(0,16)}}
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="item.Trips">
+        <ion-col size='3'>
+          <ion-text color="medium">行程</ion-text>
+        </ion-col>
+        <ion-col>
+          <div>
+            <div *ngFor="let i of item.Trips">
+              {{i?.StartDate?.replace("T"," ")?.substring(0,10)}} {{i.FromCityName}}--{{i.ToCityName}}
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+    </div>
+  </ion-item>
+  <ion-list class="ion-padding-horizontal">
   </ion-list>
   <ion-infinite-scroll (ionInfinite)='gettravel()'>
     <ion-infinite-scroll-content>加载更多</ion-infinite-scroll-content>

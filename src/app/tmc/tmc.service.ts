@@ -31,6 +31,7 @@ import { BaseVariablesEntity } from "../models/BaseVariablesEntity";
 import {
   TravelFormTripEntity,
   TmcTravelApprovalType,
+  ApprovalStatusType,
 } from "../travel-application/travel.service";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
@@ -913,11 +914,12 @@ export class TravelFormEntity extends BaseVariablesEntity {
   Numbers: TravelInfoNumberEntity[];
   ApplyTime: string;
   StatusTypeName: string;
+  StatusType: ApprovalStatusType;
   ApprovalTime: string;
+  startDate: string;
   CompanyName: string;
   DayCount: number;
   Id: string;
-  TripType: string;
 }
 export class TravelInfoFlightEntity {
   /// <summary>

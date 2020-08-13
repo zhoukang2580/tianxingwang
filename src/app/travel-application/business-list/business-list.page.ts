@@ -11,6 +11,7 @@ import { TravelFormEntity } from "src/app/tmc/tmc.service";
 import { finalize } from "rxjs/operators";
 import { RefresherComponent } from "src/app/components/refresher";
 import { IonInfiniteScroll } from "@ionic/angular";
+import { StaffService, StaffEntity } from "src/app/hr/staff.service";
 
 @Component({
   selector: "app-business-list",
@@ -26,15 +27,17 @@ export class BusinessListPage implements OnInit, OnDestroy {
   items: TravelFormEntity[];
   searchModel: SearchModel;
   customPopoverOptions: any = {
-    header: '选择审批单状态',
+    header: "选择审批单状态",
     // subHeader: 'Select your hair color',
     // message: 'Only select your dominant hair color'
   };
+  staff: StaffEntity;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private service: TravelService
-  ) { }
+    private service: TravelService,
+    private staffService: StaffService
+  ) {}
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((q) => {
@@ -56,8 +59,9 @@ export class BusinessListPage implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   goAddApply() {
-
-    this.router.navigate([AppHelper.getRoutePath("add-apply")], { queryParams: { tabId: "1" } });
+    this.router.navigate([AppHelper.getRoutePath("add-apply")], {
+      queryParams: { tabId: "1" },
+    });
   }
   gettravel() {
     this.subscription = this.service
@@ -77,13 +81,42 @@ export class BusinessListPage implements OnInit, OnDestroy {
           this.scroller.disabled = arr.length < this.searchModel.PageSize;
         }
         if (arr.length) {
-          this.items = this.items.concat(arr);
+          this.items = this.items.concat(arr).map((it) => {
+            if (it.ApplyTime) {
+              it.ApplyTime =
+                it.ApplyTime.startsWith("1800") ||
+                it.ApplyTime.startsWith("0001")
+                  ? ""
+                  : it.ApplyTime.replace("T", " ")
+                      .substring(0, 16)
+                      .replace(/-/g, ".");
+            }
+            if (it.ApprovalTime) {
+              it.ApprovalTime =
+                it.ApprovalTime.startsWith("1800") ||
+                it.ApprovalTime.startsWith("0001")
+                  ? ""
+                  : it.ApprovalTime.replace("T", " ")
+                      .substring(0, 16)
+                      .replace(/-/g, ".");
+            }
+            if (it.Trips && it.Trips.length) {
+              it.startDate = it.Trips[0].StartDate.substring(0, 10).replace(
+                /-/g,
+                "."
+              );
+            }
+            return it;
+          });
           this.searchModel.PageIndex++;
         }
       });
   }
 
   doRefresh(isKeepCondition = false) {
+    this.staffService.getStaff().then((s) => {
+      this.staff = s;
+    });
     if (this.searchModel) {
       if (!isKeepCondition) {
         this.searchModel.StatusType = 0;
@@ -119,12 +152,12 @@ export class BusinessListPage implements OnInit, OnDestroy {
     }
   }
   onCancel(id, event: CustomEvent) {
-    event.stopPropagation()
+    event.stopPropagation();
     try {
-      const m = this.service.travelCancel(id).then(t => {
-        AppHelper.alert(t.Message)
-        this.doRefresh()
-      })
+      const m = this.service.travelCancel(id).then((t) => {
+        AppHelper.alert(t.Message);
+        this.doRefresh();
+      });
     } catch (e) {
       AppHelper.alert(e);
     }

@@ -12,6 +12,7 @@ import {
   AfterViewInit,
   OnDestroy,
 } from "@angular/core";
+import { IonInput } from "@ionic/angular";
 
 @Component({
   selector: "app-add-number",
@@ -20,9 +21,11 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddNumberComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild("input") inputEl: ElementRef<HTMLInputElement>;
+  // @ViewChild("input") inputEl: ElementRef<HTMLInputElement>;
+  @ViewChild(IonInput) ionInputEle: IonInput;
   @Input() addNumber = 0;
   @Input() useInput = true;
+  @Input() type = "tel";
   @Input() disabled;
   @Input() min: number;
   @Input() max: number;
@@ -69,20 +72,31 @@ export class AddNumberComponent implements OnInit, AfterViewInit, OnDestroy {
     this.focus.emit();
   }
   ngOnInit() {
-    this.preValue=this.addNumber;
+    this.preValue = this.addNumber;
   }
-  ngAfterViewInit() {
-    if (this.inputEl) {
+  async ngAfterViewInit() {
+    if (this.ionInputEle) {
+      const el = await this.ionInputEle.getInputElement();
       this.subscriptions.push(
-        fromEvent(this.inputEl.nativeElement, "focus")
+        fromEvent(el, "focus")
           .pipe(delay(0))
           .subscribe(() => {
-            this.inputEl.nativeElement.select();
+            el.value = "";
           })
       );
       this.subscriptions.push(
-        fromEvent(this.inputEl.nativeElement, "change").subscribe(() => {
-          this.addNumber = +this.inputEl.nativeElement.value;
+        fromEvent(el, "blur")
+          .pipe(delay(0))
+          .subscribe(() => {
+            if (!el.value) {
+              el.value = `${this.min || ""}`;
+            }
+          })
+      );
+
+      this.subscriptions.push(
+        fromEvent(el, "change").subscribe(() => {
+          this.addNumber = +el.value;
           if (this.min) {
             this.addNumber = Math.max(this.addNumber, this.min);
           }
