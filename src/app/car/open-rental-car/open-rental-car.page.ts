@@ -32,9 +32,11 @@ import { url } from "inspector";
 export class OpenRentalCarPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private browser: InAppBrowserObject;
+  private openSystemBrowser: InAppBrowserObject;
   private shareWebUrl$ = new BehaviorSubject(null);
   isApp = AppHelper.isApp();
   url$: Observable<string>;
+  payUrl:string;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   constructor(
     private carService: CarService,
@@ -42,9 +44,10 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     private domSanitizer: DomSanitizer,
     private iab: InAppBrowser,
     private clipboard: Clipboard
-  ) {}
+  ) { }
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
+    this.payUrl="";
     try {
       if (this.browser) {
         this.browser.hide();
@@ -71,7 +74,16 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       LanguageHelper.getNegativeTip()
     );
     if (ok) {
+      this.closeBrowser();
       this.backBtn.popToPrePage();
+    }
+  }
+  private closeBrowser(){
+    if(this.browser){
+      this.browser.close();
+    }
+    if(this.openSystemBrowser){
+      this.openSystemBrowser.close();
     }
   }
   private shareWebPage(url: string) {
@@ -102,7 +114,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       // toolbarcolor:"#2596D90f"
     };
     // url = `http://test.version.testskytrip.com/download/test.html`;
-    if (url.startsWith("weixin") || url.startsWith("alipays")) {
+    if (url.startsWith("weixin") || url.startsWith("alipays")||this.checkIfAliPay(url)) {
       this.openWechatOrAliApp(url);
     } else {
       this.browser = this.iab.create(encodeURI(url), "_blank", options);
@@ -113,16 +125,13 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     if (this.browser) {
       this.subscriptions.push(
         this.browser.on("beforeload").subscribe(async (evt) => {
-          console.log("beforeload");
-          console.log(evt);
-          console.log("beforeload", evt);
           console.log("beforeload", evt.message, evt.data, evt.code, evt.url);
           if (evt.url) {
             const toUrl = evt.url.toLowerCase();
             if (
               toUrl.startsWith("weixin") ||
               toUrl.startsWith("wechat") ||
-              toUrl.startsWith("alipays")
+              toUrl.startsWith("alipays") || this.checkIfAliPay(toUrl)
             ) {
               // 微信或者支付宝支付
               this.openWechatOrAliApp(toUrl);
@@ -200,15 +209,33 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
           if (sub) {
             sub.unsubscribe();
           }
-          if (this.browser) {
-            this.browser.close();
-          }
+          this.closeBrowser();
           this.backBtn.popToPrePage();
         }, 100);
       });
     }
   }
+  private checkIfAliPay(uri: string) {
+    if (uri.includes("mclient.alipay.com")) {// ios 打开支付宝支付
+      return true;
+    }
+    if (uri.startsWith("alipays")) {
+      return true;
+    }
+    return false;
+  }
   private async openWechatOrAliApp(uri: string) {
+    this.payUrl=uri;
+    // https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx0515512304565038c0d556b61957171400&package=1739803123&redirect_url=https%3A%2F%2Fopen.es.xiaojukeji.com%2Fwebapp%2FfeESWebapp%2FpaymentCompleted&redirect_url=https%3A%2F%2Fopen.es.xiaojukeji.com%2Fwebapp%2FfeESWebapp%2FpaymentCompleted
+    if (uri.includes("mclient.alipay.com")) {// ios 打开支付宝支付
+      if (this.browser) {
+        // https://mclient.alipay.com/home/exterfaceassign.htm?_input_charset=utf-8&subject=%e6%bb%b4%e6%bb%b4%e5%bf%ab%e8%bd%a6-%e4%b9%94%e5%b8%88%e5%82%85&sign=bviqyjizkf1n%2f95zp2e24dluzqy1q%2blz8l3dsidfry3ei5%2ffat84z8nxlk8ksxoqiq6ztjirerzeauqxu19xudm1j1ui1iex%2bj%2fvood9fb%2btd5rlze42%2b0dxrb0trkbkonozq0efz%2b471oxmh2cotnrohlh%2foh54fr39pa4akfo%3d&body=%e6%bb%b4%e6%bb%b4%e5%bf%ab%e8%bd%a6-%e4%b9%94%e5%b8%88%e5%82%85&notify_url=http%3a%2f%2fpay.diditaxi.com.cn%2fshield%2falipay%2fnotifypay&alipay_exterface_invoke_assign_model=cashier&alipay_exterface_invoke_assign_target=mapi_direct_trade.htm&payment_type=1&out_trade_no=233_202008056832823201616503&partner=2088021541607785&alipay_exterface_invoke_assign_sign=_p841%2f_srlaa%2b%2ba4b_y_ht_w_fh_e7lv%2fx_m8_b_x_up_bx_g_d_mz_c_x_j3bhpz_uo%2b1w4_a%3d%3d&service=alipay.wap.create.direct.pay.by.user&total_fee=3.0&return_url=https%3a%2f%2fopen.es.xiaojukeji.com%2fwebapp%2ffeeswebapp%2fpaymentcompleted&sign_type=rsa&seller_id=2088021541607785&alipay_exterface_invoke_assign_client_ip=117.136.8.145
+        // await AppHelper.alipayH5PayWebUrl(uri);
+        setTimeout(() => {
+        }, 5000);
+        this.browser._loadAfterBeforeload(uri);
+      }
+    }
     if (uri.startsWith("weixin")) {
       if (!(await AppHelper.isWXAppInstalled())) {
         AppHelper.alert("尚未安装微信，请继续使用h5完成支付");
@@ -221,7 +248,18 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         return;
       }
     }
-    this.browser = this.iab.create(uri, "_system");
+    // this.openInSystemBrowser(uri);
+  }
+  private openInSystemBrowser(uri:string){
+    if(this.openSystemBrowser){
+      this.openSystemBrowser.close();
+    }
+    var encodedUri=encodeURI(uri);
+    console.log("要打开的uri",uri);
+    console.log("打开的uri地址 encoded",encodeURI(uri));
+    this.openSystemBrowser = this.iab.create(encodeURI(uri), "_system");
+    this.openSystemBrowser.hide();
+    // window.open(uri,"_blank");
   }
   private async callNumber(url: string) {
     const m = url && url.match(/tel:(\d+)/i);
@@ -254,9 +292,19 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         this.shareWebPage(url);
       })
     );
+    this.subscriptions.push(this.route.queryParamMap.subscribe(q=>{
+      if(this.openSystemBrowser){
+        this.openSystemBrowser.close();
+      }
+      if(this.payUrl){
+        window.open(this.payUrl);
+        this.payUrl="";
+      }
+    }))
     if (AppHelper.isApp()) {
       this.subscriptions.push(
         this.route.queryParamMap.subscribe((q) => {
+          
           if (q.get("url")) {
             this.openInAppBrowser(q.get("url"));
           } else if (

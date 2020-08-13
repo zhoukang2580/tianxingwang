@@ -10,7 +10,7 @@ import { AppHelper } from "./app/appHelper";
 import { LoadingController } from "@ionic/angular";
 import { MapService } from "./app/services/map/map.service";
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 // const module = window["module"];
 try {
   AppHelper.initlizeQueryParamers();

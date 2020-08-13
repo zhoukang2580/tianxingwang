@@ -8,6 +8,15 @@ exports.isAliPayInstalled = (appName) => {
       }, 'Ali', 'isAliPayInstalled', [appName]);
   })
 }
+exports.payWebUrl = (webUrl) => {
+  return new Promise(function(resolve, reject){
+      exec(function(res) {
+          resolve(res);
+      }, function(error) {
+          reject(error)
+      }, 'Ali', 'payWebUrl', [webUrl]);
+  })
+}
 exports.pay = function (arg0) {
   return new Promise(function (resolve, reject) {
     exec(

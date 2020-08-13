@@ -62,7 +62,8 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
         if (status) {
           return true;
         }
-        AppHelper.setToPageAfterAuthorize({ path: state.url});
+        // this.loginService.setToPageRouter(state.url);
+        AppHelper.setToPageAfterAuthorize({path:state.url,queryParams:next.queryParams});
         if (AppHelper.isWechatMini()) {
           this.router.navigate(["home"]);
           return false;

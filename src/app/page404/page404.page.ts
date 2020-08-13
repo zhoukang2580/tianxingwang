@@ -31,12 +31,12 @@ export class Page404Page implements OnInit {
       if (identity.Ticket) {
         this.router.navigate([AppHelper.getRoutePath("")]);
       } else {
-        AppHelper.setToPageAfterAuthorize({ path: "" });
+        AppHelper.setToPageAfterAuthorize({path:""});
         this.router.navigate([AppHelper.getRoutePath("login")]);
       }
     } else {
-      this.router.navigate([AppHelper.getRoutePath("login")]).then((_) => {
-        AppHelper.setToPageAfterAuthorize({ path: "" });
+      this.router.navigate([AppHelper.getRoutePath("login")]).then(_ => {
+        AppHelper.setToPageAfterAuthorize({path:""});
       });
     }
   }

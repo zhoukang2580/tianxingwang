@@ -297,7 +297,8 @@ export class FileHelperService {
       } as IHcpUpdateModel);
     }
     return new Promise<IUpdateList>((resolve, reject) => {
-      const sub = this.apiService.getResponse<string>(req).subscribe(
+      const sub = this.apiService.getResponse<string>(req)
+      .subscribe(
         (r) => {
           if (AppHelper.isFunction(onprogress)) {
             onprogress({

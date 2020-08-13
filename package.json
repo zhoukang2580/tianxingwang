@@ -134,11 +134,11 @@
       "cordova-plugin-android-permissions": {},
       "cordova-qrscanner-plugin": {},
       "cordova-hcp-plugin": {},
-      "cordova-ali-plugin": {},
       "cordova-plugin-inappbrowser": {},
       "cordova-clipboard": {},
       "cordova-wechat-plugin": {},
-      "cordova-callnumber-plugin": {}
+      "cordova-callnumber-plugin": {},
+      "cordova-ali-plugin": {}
     },
     "platforms": [
       "ios",

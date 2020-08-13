@@ -67,7 +67,32 @@ CDVInvokedUrlCommand *cdvCommand;
     }
     [self sendSuccessStringResult:@"Ok" :command];
 }
-
+-(void) payWebUrl:(CDVInvokedUrlCommand *)command{
+    NSString *alipay =[command argumentAtIndex:0];
+    NSURL* url=[NSURL URLWithString:alipay];
+    UIApplication *application = [UIApplication sharedApplication];
+    if ([application respondsToSelector:@selector(openURL:options:completionHandler:)]) {
+      [application openURL:url options:@{}
+         completionHandler:^(BOOL success) {
+//        NSLog(@"Open %@: %d",scheme,success);
+          if(success){
+              [self sendSuccessStringResult:@"唤起成功" :command];
+          }else{
+              [self sendErrorResult:@"唤起失败" :command];
+          }
+      }];
+    } else {
+      BOOL success = [application openURL:url];
+        if(success){
+            [self sendSuccessStringResult:@"唤起成功" :command];
+        }else{
+            [self sendErrorResult:@"唤起失败" :command];
+        }
+        
+//      NSLog(@"Open %@: %d",scheme,success);
+    }
+    
+}
 - (void)handleOpenURL:(NSNotification *)notification{
     NSURL* url = [notification object];
     if ([url.host isEqualToString:@"safepay"]) {
