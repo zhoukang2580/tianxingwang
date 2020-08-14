@@ -4,6 +4,9 @@ ion-col {
 form {
   display: flex;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   datalist {
     flex-basis: 10%;
   }
@@ -59,5 +62,6 @@ form {
     background-color: var(--ion-color-secondary);
     color: white;
     font-size: 0.7rem;
+    margin-left: .5em;
   }
 }
