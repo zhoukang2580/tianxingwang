@@ -83,28 +83,40 @@ export class BusinessListPage implements OnInit, OnDestroy {
         if (arr.length) {
           this.items = this.items.concat(arr).map((it) => {
             if (it.ApplyTime) {
-              it.ApplyTime =
-                it.ApplyTime.startsWith("1800") ||
-                it.ApplyTime.startsWith("0001")
-                  ? ""
-                  : it.ApplyTime.replace("T", " ")
-                      .substring(0, 16)
-                      .replace(/-/g, ".");
+              it.ApplyTime = this.transformDataTime({
+                time: it.ApplyTime,
+                hasTime: true,
+                withDot: true,
+              });
             }
             if (it.ApprovalTime) {
-              it.ApprovalTime =
-                it.ApprovalTime.startsWith("1800") ||
-                it.ApprovalTime.startsWith("0001")
-                  ? ""
-                  : it.ApprovalTime.replace("T", " ")
-                      .substring(0, 16)
-                      .replace(/-/g, ".");
+              it.ApprovalTime = this.transformDataTime({
+                time: it.ApprovalTime,
+                hasTime: true,
+                withDot: true,
+              });
             }
             if (it.Trips && it.Trips.length) {
-              it.startDate = it.Trips[0].StartDate.substring(0, 10).replace(
-                /-/g,
-                "."
-              );
+              it.Trips = it.Trips.map((trip) => {
+                trip.StartDate = this.transformDataTime({
+                  time: trip.StartDate,
+                  hasTime: false,
+                  withDot: false,
+                });
+                trip.EndDate = this.transformDataTime({
+                  time: trip.EndDate,
+                  hasTime: false,
+                  withDot: false,
+                });
+                trip.ToCityName=this.strip(trip.ToCityName);
+                trip.FromCityName=this.strip(trip.FromCityName);
+                return trip;
+              });
+              it.startDate = this.transformDataTime({
+                time: it.Trips[0].StartDate,
+                hasTime: false,
+                withDot: true,
+              });
             }
             return it;
           });
@@ -112,7 +124,39 @@ export class BusinessListPage implements OnInit, OnDestroy {
         }
       });
   }
-
+  private strip(name: string) {
+    if (!name) {
+      return name;
+    }
+    let idx = name.indexOf("(");
+    if (idx > -1) {
+      return name.substring(0, idx);
+    }
+    idx = name.indexOf("（");
+    if (idx > -1) {
+      return name.substring(0, idx);
+    }
+  }
+  private transformDataTime({
+    time,
+    hasTime,
+    withDot,
+  }: {
+    time: string;
+    hasTime: boolean;
+    withDot: boolean;
+  }) {
+    if (time) {
+      time =
+        time.startsWith("1800") || time.startsWith("0001")
+          ? ""
+          : time.replace("T", " ").substring(0, hasTime ? 16 : 10);
+      if (withDot) {
+        time = time.replace(/-/g, ".");
+      }
+    }
+    return time;
+  }
   doRefresh(isKeepCondition = false) {
     this.staffService.getStaff().then((s) => {
       this.staff = s;

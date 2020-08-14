@@ -16,54 +16,48 @@ form {
     padding-right: 1em;
   }
 }
-.list {
-  font-family: "PingFang SC", verdana, "Microsoft Yahei";
+.item {
   margin: 0.5em 0;
-  padding: 0.5em 1em;
+  padding: 0.5em;
+  position: relative;
   background-color: var(--ion-color-light);
-
-  .item {
-    position: relative;
-    .row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.3em;
-      .btn {
-        padding: 0.5em;
-        border-radius: 5px;
-        background-color: var(--ion-color-secondary);
-      }
+  .row {
+    padding: 0.4em 0.5em;
+    font-size: 0.8rem;
+    background-color: var(--ion-color-light);
+    .start,
+    .end {
+      align-self: flex-start;
     }
-    img {
-      position: absolute;
-      right: 0;
-      top: 0;
-      width: 4em;
-      z-index: 10;
+    .start {
+      flex-basis: 20%;
     }
-    button {
-      background-color: var(--ion-color-secondary);
-      color: white;
-      border-radius: 5px;
-      padding: 0.35em 0.5em;
-      margin-left: 1em;
-      justify-content: center;
-      align-items: center;
-      display: flex;
-      outline: none;
+    .end {
+      flex-basis: 30%;
+      margin-left: auto;
     }
-    .title {
-      :first-child {
-        width: 90px;
-        color: rgba(102, 102, 102, 1);
-      }
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      .trip {
-        align-self: flex-start;
-      }
+    display: flex;
+    justify-content: space-between;
+    .main {
+      flex: 1;
     }
+    &.first,
+    &.last {
+      padding-top: 0.5em;
+    }
+  }
+  img {
+    position: absolute;
+    right: 1em;
+    top: 0;
+    width: 3em;
+    z-index: 10;
+  }
+  button {
+    padding: 0.5em;
+    border-radius: 4px;
+    background-color: var(--ion-color-secondary);
+    color: white;
+    font-size: 0.7rem;
   }
 }
