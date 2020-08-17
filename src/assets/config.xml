@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.skytrip.dmonline" version="3.16.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.eskytrip.zhaozuomingios" version="4.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>天行商旅</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
@@ -64,6 +64,17 @@
         <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
         <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
             <string>（需要获取地理位置来获取周边位置）need location access to find things nearby</string>
+        </edit-config>
+        <edit-config file="*-Info.plist" mode="merge" target="LSApplicationQueriesSchemes">
+            <array>
+                <string>skytripAlipay</string>
+                <string>alipay</string>
+                <string>alipays</string>
+                <string>alipayshare</string>
+                <string>wechat</string>
+                <string>weixin</string>
+                <string>weixinULAPI</string>
+            </array>
         </edit-config>
         <preference name="errorUrl" value="ionic://app/cordovaError.html" />
         <allow-intent href="itms:*" />

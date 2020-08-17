@@ -1,6 +1,6 @@
 export const CONFIG = {
   // 该变量用于 启用 --prod 编译，若为true，访问的是测试库的地址，否则访问生产地址
-  mockProBuild:false,
+  mockProBuild:!false,
   production:true,
   appDomain: {
     production: "sky-trip.com",
@@ -27,7 +27,5 @@ export const CONFIG = {
       return "http://shared." + this.appDomain.production + "/img/logo.png";
     }
     return "http://test.shared." + this.appDomain.debug + "/img/logo.png";
-  },
-  /** 设置 true 小程序多跳转一个页面，用于审核,审核通过后，关闭即可 */
-  forMiniApproval: false,
+  }
 };
