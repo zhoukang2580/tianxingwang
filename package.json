@@ -92,10 +92,10 @@
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "^6.1.0",
     "cordova-plugin-file-transfer": "file:cordova-filetransfer-plugin",
-    "cordova-plugin-inappbrowser": "file:cordova-inappbrowser-plugin",
     "cordova-plugin-ionic-webview": "^5.0.0",
     "cordova-plugin-safariviewcontroller": "^1.6.0",
     "cordova-plugin-splashscreen": "^6.0.0",
+    "cordova-plugin-themeablebrowser": "file:cordova-themeablebrowser-plugin",
     "cordova-qrscanner-plugin": "file:cordova-qrscanner-plugin",
     "cordova-wechat-plugin": "file:cordova-wechat-plugin",
     "fs-readdir-recursive": "^1.1.0",
@@ -139,7 +139,8 @@
       "cordova-plugin-safariviewcontroller": {},
       "cordova-filetransfer-plugin": {},
       "cordova-hcp-plugin": {},
-      "cordova-inappbrowser-plugin": {}
+      "cordova-plugin-themeablebrowser": {},
+      "cordova-themeablebrowser-plugin": {}
     },
     "platforms": [
       "ios",
