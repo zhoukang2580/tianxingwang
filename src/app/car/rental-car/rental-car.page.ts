@@ -278,7 +278,10 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     const url = await this.carService.verifyStaff({ Mobile: this.mobile });
-
+    if (AppHelper.isWechatH5()) {
+      window.location.href = url;
+      return;
+    }
     if (url) {
       if (AppHelper.isApp()) {
         await this.checkPermission();
