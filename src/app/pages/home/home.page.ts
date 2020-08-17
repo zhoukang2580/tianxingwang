@@ -17,6 +17,8 @@ import { CONFIG } from "src/app/config";
 import { ApiService } from "src/app/services/api/api.service";
 import { WechatHelper } from "src/app/wechatHelper";
 import Swiper from "swiper";
+import { ConfigService } from 'src/app/services/config/config.service';
+import { ConfigEntity } from 'src/app/services/config/config.entity';
 @Component({
   selector: "app-home",
   templateUrl: "./home.page.html",
@@ -37,14 +39,18 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   private options: any;
   private isLoginByUser = false;
   isScanning = false;
+  isLoadingBanners = false;
+  banners: { ImageUrl: string; Title?: string; Id?: string }[];
+  config: ConfigEntity;
   constructor(
     private identityService: IdentityService,
     private router: Router,
     private scanService: QrScanService,
     private domSanitize: DomSanitizer,
     private apiService: ApiService,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private configService: ConfigService
+  ) { }
   private goHome() {
     if (!this.identity || !this.identity.Ticket) {
       if (this.isLoginByUser) {
@@ -55,6 +61,20 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit() {
     this.updateSwiper();
+  }
+  private async hasTicket() {
+    this.identity = await this.identityService.getIdentityAsync();
+    return this.identity && !!this.identity.Ticket;
+  }
+  private async loadBanners() {
+    if (!this.banners || this.banners.length == 0) {
+      if (this.isLoadingBanners) {
+        return;
+      }
+      this.isLoadingBanners = true;
+      
+      
+    }
   }
   private updateSwiper() {
     if (this.swiper) {
@@ -97,6 +117,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
     }, 200);
   }
   ngOnInit() {
+    this.configService.getConfigAsync().then(c => {
+      this.config = c;
+    });
+    this.loadBanners();
     this.initSwiper();
     if (AppHelper.isWechatMini()) {
       this.check();

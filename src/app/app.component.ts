@@ -12,6 +12,7 @@ import {
   OnChanges,
   ContentChild,
   ViewChild,
+  OnInit,
 } from "@angular/core";
 
 import {
@@ -77,7 +78,7 @@ export interface App {
   ],
 })
 export class AppComponent
-  implements AfterViewInit, AfterContentInit, OnChanges {
+  implements AfterViewInit, AfterContentInit, OnChanges ,OnInit{
   app: App = window.navigator["app"];
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
@@ -100,7 +101,7 @@ export class AppComponent
     private http: HttpClient,
     private imageRecoverService: ImageRecoverService,
     messageService: MessageService,
-    private fileService: FileHelperService
+    fileService: FileHelperService
   ) {
     window["isAndroid"] = this.platform.is("android");
     this.message$ = messageService.getMessage();
@@ -118,7 +119,9 @@ export class AppComponent
     AppHelper.setModalController(this.modalController);
     this.initializeApp();
     this.platform.ready().then(() => {
-      this.splashScreen.show();
+      if(this.platform.is("ios")&&AppHelper.isApp()){
+        this.splashScreen.show();
+      }
       console.log(`platform ready`);
       this.app = navigator["app"];
       document.addEventListener(
@@ -128,17 +131,17 @@ export class AppComponent
         },
         false
       );
-      if (AppHelper.isApp()) {
-        setTimeout(async () => {
-          this.splashScreen.hide();
-          // console.log(`uuid = ${await AppHelper.getUUID()}`);
-        }, 2000);
-      }
     });
   }
-  ngOnChanges() {}
+  async ngOnInit(){
+  }
+  ngOnChanges() { }
   ngAfterViewInit() {
-    this.splashScreen.hide();
+   if(AppHelper.isApp()){
+     this.platform.ready().then(()=>{
+       this.splashScreen.hide();
+     })
+   }
   }
   ngAfterContentInit() {
     console.log("ngAfterContentInit");
@@ -151,7 +154,7 @@ export class AppComponent
     if (hash && !path) {
       path = hash.replace("#", "");
     }
-   
+
     return path;
   }
   initializeApp() {

@@ -1,8 +1,12 @@
-import { environment } from "../environments/environment";
 export const CONFIG = {
+  // 该变量用于 启用 --prod 编译，若为true，访问的是测试库的地址，否则访问生产地址
+  mockProBuild:false,
+  production:true,
   appDomain: {
     production: "sky-trip.com",
     debug: "testskytrip.com",
+    // production: "okoktrip.com",
+    // debug: "okoktrip.com",
   },
   AppleStoreAppId: "id1347643172",
   wechat: {
@@ -10,7 +14,7 @@ export const CONFIG = {
     universalLinks: "https://app.sky-trip.com/eskytripapp/",
   },
   getApiUrl() {
-    if (!environment.mockProBuild && environment.production) {
+    if (!this.mockProBuild && this.production) {
       return "https://app." + this.appDomain.production;
     }
     return "http://test.app." + this.appDomain.debug;
@@ -19,7 +23,7 @@ export const CONFIG = {
     isShowTTS: false,
   },
   getDefaultLogoUrl() {
-    if (!environment.mockProBuild && environment.production) {
+    if (!this.mockProBuild && this.production) {
       return "http://shared." + this.appDomain.production + "/img/logo.png";
     }
     return "http://test.shared." + this.appDomain.debug + "/img/logo.png";

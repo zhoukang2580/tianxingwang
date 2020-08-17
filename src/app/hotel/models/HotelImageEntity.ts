@@ -27,4 +27,5 @@ export class HotelImageEntity extends BaseVariablesEntity {
   FileByte: any[];
 
   FullFileName: string;
+  ImageUrl: string;
 }

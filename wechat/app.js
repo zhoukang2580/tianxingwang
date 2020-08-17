@@ -44,8 +44,8 @@ App({
     appId: null
   },
   urls: {
-    homeUrl: utils.getLaunchUrl(wx), //"http://test.ionic.eskytrip.com?MmsId=5&AloneTag=30&HrId=4",
-    stepUrl: "http://test.app.eskytrip.com/home/CreateStep"
+    homeUrl: "https://app.okoktrip.com",//utils.getLaunchUrl(wx), //"http://test.ionic.eskytrip.com?MmsId=5&AloneTag=30&HrId=4",
+    stepUrl: "https://app.okoktrip.com/home/CreateStep"
   },
   getBaseUrl: function () {
     return this.urls.stepUrl.substring(0, this.urls.stepUrl.indexOf("/home"));

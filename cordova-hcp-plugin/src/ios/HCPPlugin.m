@@ -23,7 +23,7 @@ NSString * const KEY_UDID_INSTEAD = @"com.beeant.ios.uuid";
 BOOL destroyed;
 -(void)pluginInitialize {
     NSLog(@"pluginInitialize");
-//    [self loadHcpPageUrl];
+    [self loadHcpPageUrl];
 }
 - (void)handleOpenURL:(NSNotification *)notification{
     NSLog(@"handleOpenURL,notification: %@",notification);
@@ -141,6 +141,11 @@ BOOL destroyed;
         }];
         
     }
+}
+-(void) getWebViewUrl:(CDVInvokedUrlCommand *)command{
+     NSURL* url = [self.webViewEngine URL];
+    NSString * path=[url absoluteString];
+    [self sendSuccessStringResult:path :command];
 }
 - (void)onReset{
   

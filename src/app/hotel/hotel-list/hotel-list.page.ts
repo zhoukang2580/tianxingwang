@@ -96,10 +96,6 @@ export class HotelListPage
   conditionModel: HotelConditionModel;
   config: ConfigEntity;
   agent: AgentEntity;
-  status: {
-    isLoading: boolean;
-    disabled: boolean;
-  };
   hotelType = [
     {
       value: "normal",
@@ -150,7 +146,7 @@ export class HotelListPage
     this.hotelDayPrices = [];
     this.doRefresh();
   }
-  async ngAfterContentInit() {}
+  async ngAfterContentInit() { }
   async ngAfterViewInit() {
     this.autofocusSearchBarInput();
     this.setQueryConditionEleTop();
@@ -213,18 +209,11 @@ export class HotelListPage
   }
   doRefresh(isKeepQueryCondition = false) {
     this.hideQueryPannel();
-    this.status = {
-      isLoading: false,
-      disabled: false,
-    };
     if (!isKeepQueryCondition) {
       if (this.queryComp) {
         this.queryComp.onReset();
       }
-      this.hotelService.setSearchHotelModel({
-        ...this.hotelService.getSearchHotelModel(),
-        searchText: null,
-      });
+      this.searchHotelModel.searchText = null;
       this.hotelQueryModel = new HotelQueryEntity();
       this.hotelService.setHotelQuerySource(this.hotelQueryModel);
     }
@@ -267,9 +256,6 @@ export class HotelListPage
             if (this.scroller) {
               this.scroller.complete();
             }
-            if (this.status) {
-              this.status.isLoading = false;
-            }
           }, 200);
         })
       )
@@ -294,8 +280,6 @@ export class HotelListPage
               this.scroller.disabled =
                 arr.length < (this.hotelQueryModel.PageSize || 20);
             }
-            this.status.disabled =
-              arr.length < (this.hotelQueryModel.PageSize || 20);
             if (arr.length) {
               this.hotelQueryModel.PageIndex++;
               this.hotelDayPrices = [

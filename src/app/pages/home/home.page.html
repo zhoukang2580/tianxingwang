@@ -19,13 +19,19 @@
     <div class="img">
       <div class="swiper-container" #container>
         <div class="swiper-wrapper">
-          <div class="swiper-slide" #slide><img src="assets/images/hotelBanner.jpg"
-              style="object-fit: cover;-o-object-fit: cover; max-height: 40vh;width: 100vw; height: 40vh;" /></div>
-          <div class="swiper-slide" #slide><img src="assets/images/useCarBanner.jpg" style="object-fit: cover;
+          <ng-container *ngIf='banners?.length else deftpl'>
+            <div class="swiper-slide" *ngFor='let pic of banners'>
+              <img [lazyLoad]='pic.ImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'
+                style="object-fit: cover;-o-object-fit: cover; max-height: 40vh;width: 100vw; height: 40vh;" /></div>
+          </ng-container>
+          <ng-template #deftpl>
+            <div class="swiper-slide">
+              <img [lazyLoad]='config?.DefaultImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' style="object-fit: cover;
               -o-object-fit: cover;
               max-height: 40vh;
               width: 100vw;
               height: 40vh;" /></div>
+          </ng-template>
         </div>
       </div>
     </div>

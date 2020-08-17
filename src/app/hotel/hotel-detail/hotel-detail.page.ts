@@ -264,7 +264,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     urls =
       this.hotel &&
       this.hotel.HotelImages &&
-      this.hotel.HotelImages.map((it) => it.FullFileName || it.FileName);
+      this.hotel.HotelImages.map((it) => it.ImageUrl || it.FullFileName || it.FileName);
     if (!urls || urls.length == 0) {
       if (this.config && this.config.DefaultImageUrl) {
         urls = [this.config.DefaultImageUrl];
@@ -298,6 +298,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
         })
         .catch(() => 0);
     }
+    if (this.ionRefresher) {
+      this.ionRefresher.complete();
+    }
     if (this.hotelDetailSub) {
       this.hotelDetailSub.unsubscribe();
     }
@@ -311,9 +314,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
       )
       .pipe(
         finalize(() => {
-          if (this.ionRefresher) {
-            this.ionRefresher.complete();
-          }
+
         })
       )
       .subscribe(
@@ -346,7 +347,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   private checkIfBookedRoomPlan() {
-    if (this.bookedRoomPlan && this.hotel.Rooms) {
+    if (this.bookedRoomPlan && this.bookedRoomPlan.roomPlan && this.hotel.Rooms) {
       for (let i = 0; i < this.hotel.Rooms.length; i++) {
         const r = this.hotel.Rooms[i];
         const rp = r.RoomPlans.find(
@@ -368,7 +369,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     if (room && images) {
       const roomImages = images
         .filter((it) => it.Room && it.Room.Id == room.Id)
-        .map((it) => it.FullFileName && it.FullFileName);
+        .map((it) => it.ImageUrl || it.FullFileName && it.FullFileName);
       return roomImages;
     }
   }

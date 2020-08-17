@@ -1,7 +1,9 @@
+import { CONFIG } from 'src/app/config';
+
 export const environment = {
-  production: true,
+  production: CONFIG.production,
   localhost: false,
   disableNetWork: false,
   enableLocalData: false,
-  mockProBuild: !true
+  mockProBuild: CONFIG.mockProBuild
 };

@@ -263,9 +263,9 @@ export class HotelService {
     forceFetch =
       forceFetch ||
       city.Code !=
-        (this.conditionModel &&
-          this.conditionModel.city &&
-          this.conditionModel.city.Code);
+      (this.conditionModel &&
+        this.conditionModel.city &&
+        this.conditionModel.city.Code);
     if (
       forceFetch ||
       !this.conditionModel ||
@@ -347,8 +347,8 @@ export class HotelService {
         m.hotelType == "normal"
           ? ""
           : m.hotelType == "agreement"
-          ? "Agreement"
-          : "SpecialPrice";
+            ? "Agreement"
+            : "SpecialPrice";
       this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
@@ -592,7 +592,7 @@ export class HotelService {
       } else {
         console.log(
           `大约加载本地${Object.keys(this.testData).length * 20}条记录，返回第${
-            query.PageIndex + 1
+          query.PageIndex + 1
           }批数据,已经加载${20 * query.PageIndex || 20}条记录`
         );
         const test = this.testData[query.PageIndex];
@@ -608,6 +608,7 @@ export class HotelService {
     }
     const cond = this.getSearchHotelModel();
     const city = cond.destinationCity;
+    req.IsShowLoading = query.PageIndex <= 1;
     hotelquery.CityCode = city && city.Code;
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
@@ -638,17 +639,17 @@ export class HotelService {
             }
             return it;
           });
-          if (this.testData) {
-            this.testData[query.PageIndex] = {
-              HotelDayPrices: result.Data.HotelDayPrices,
-              DataCount: result.Data.DataCount,
-            };
-            if (!environment.production) {
-              this.storage.set("test_big_hote_list", this.testData);
-            }
-          } else {
-            this.testData = {} as any;
-          }
+          // if (this.testData) {
+          //   this.testData[query.PageIndex] = {
+          //     HotelDayPrices: result.Data.HotelDayPrices,
+          //     DataCount: result.Data.DataCount,
+          //   };
+          //   if (!environment.production) {
+          //     this.storage.set("test_big_hote_list", this.testData);
+          //   }
+          // } else {
+          //   this.testData = {} as any;
+          // }
         }
         return result;
       })
@@ -904,7 +905,7 @@ export class HotelService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch((_) => {});
+      await top.dismiss().catch((_) => { });
       top = await this.modalCtrl.getTop();
     }
   }

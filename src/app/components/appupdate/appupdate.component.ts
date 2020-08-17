@@ -7,12 +7,13 @@ import { Platform } from "@ionic/angular";
 import { LogService } from "src/app/services/log/log.service";
 import { ExceptionEntity } from "src/app/services/log/exception.entity";
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
+import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
 
 @Component({
   selector: "app-update-comp",
   templateUrl: "./appupdate.component.html",
   styleUrls: ["./appupdate.component.scss"],
-  providers: [InAppBrowser],
+  providers: [InAppBrowser, SafariViewController],
 })
 export class AppUpdateComponent implements OnInit {
   updateInfo: {
@@ -28,8 +29,9 @@ export class AppUpdateComponent implements OnInit {
     private logService: LogService,
     private iab: InAppBrowser,
     private ngZone: NgZone,
-    private plt: Platform
-  ) {}
+    private plt: Platform,
+    private safariViewController: SafariViewController
+  ) { }
   async ngOnInit() {
     if (AppHelper.isApp()) {
       this.appUpdate();
@@ -47,7 +49,7 @@ export class AppUpdateComponent implements OnInit {
         this.isCanIgnore = res.ignore;
         const tip =
           res.updateDescriptions &&
-          res.updateDescriptions.some((it) => it && !!it.length)
+            res.updateDescriptions.some((it) => it && !!it.length)
             ? res.updateDescriptions.join(";")
             : LanguageHelper.gethcpUpdateBaseDataTip();
         if (res.ignore && !silence) {
@@ -75,7 +77,8 @@ export class AppUpdateComponent implements OnInit {
             };
           });
         });
-        if (this.forceUpdate && filePath.includes("index.html")) {
+        // alert("filePath"+filePath)
+        if (this.forceUpdate&&filePath && filePath.includes("index.html")) {
           await this.fileService.openNewVersion(filePath);
         }
         // await this.fileService.loadHcpPage();
@@ -141,7 +144,7 @@ export class AppUpdateComponent implements OnInit {
         });
         console.log(
           `AppUpdateComponent appUpdate apkPath=${apkPath} ${
-            apkPath && apkPath.includes(".apk")
+          apkPath && apkPath.includes(".apk")
           }`
         );
         if (apkPath && apkPath.includes(".apk")) {
@@ -176,11 +179,13 @@ export class AppUpdateComponent implements OnInit {
         const url = encodeURI(
           `https://apps.apple.com/cn/app/${AppHelper.getAppStoreAppId()}`
         );
-        if (window["cordova.InAppBrowser.open"]) {
-          this.iab.create(url, "_system");
-        } else {
-          window.open(url, "_blank");
-        }
+        await AppHelper.platform.ready();
+        // this.iab.create(url, "_system");
+        // if (window["cordova.InAppBrowser.open"]) {
+        // } else {
+        //   window.open(url, "_blank");
+        // }
+        this.safariViewController.show({ url }).subscribe();
         this.forceUpdate = false;
       } else {
         this.forceUpdate = false;
@@ -199,9 +204,9 @@ export class AppUpdateComponent implements OnInit {
         e instanceof Error
           ? e.message
           : typeof e === "string"
-          ? e
-          : JSON.stringify(e)
-      }`;
+            ? e
+            : JSON.stringify(e)
+        }`;
       ex.Method = "app update";
       this.logService.addException(ex);
     } catch (e) {

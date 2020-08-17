@@ -78,6 +78,11 @@ ng serve --disableHostCheck
 2. 用 xcode 打开 platforms/ios/项目名称.xcodeproj/项目名称.xcworkspace
 3. 到xcode target 的选项卡中打开 info，修改打包的bundle identifier为： `com.eskytrip.zhaozuomingios`，如果要修改微信appid ,修改最底下的url types 的schema `https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5`,位置访问，需要在info标签下面新增 key =`Privacy - Location Always Usage Description`和`Privacy - Location Usage Description`
 4. 执行archive打包，传到iTunes,提交审核
+## 支付宝唤起
+在xcode打包时候，找到 info，找到 LSApplicationQueriesSchemes 添加 alipay ，alipays
+## 微信唤起
+在xcode打包时候，找到 info，找到 LSApplicationQueriesSchemes 添加 weixinULAPI
+在info标签下，找到最下面的URL Types 添加 微信的 url type wechat 或者 weixin 否则跳转微信后无法返回APP
 ## 热更新打包
 1. 确定环境变量
 2. 执行打包命令

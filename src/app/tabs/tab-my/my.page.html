@@ -8,7 +8,7 @@
   <ion-list lines='none' class='top-panal'>
     <ion-item detail (click)='goToMyDetail()'>
       <ion-thumbnail slot='start'>
-        <img alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.PrerenderImageUrl'>
+        <img alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'>
         <!-- <ion-img [src]='Model?.HeadUrl'></ion-img> -->
       </ion-thumbnail>
       <ion-label class='ion-padding-start'>
@@ -61,7 +61,7 @@
         我的待办</ion-label>
     </ion-item>
   </ion-list>
-  <ion-list *ngIf='!isAgent&&staff?.StaffNumber'>
+  <ion-list *ngIf='isShowWorkflow&&!isAgent&&staff?.StaffNumber'>
     <ion-item (click)="goBusiness()" detail>
       <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
       <ion-label class="has-left-icon">

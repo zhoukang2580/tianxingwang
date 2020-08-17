@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons>
-      <app-back-button defaultHref="" (click)='back()' customeBack='true'></app-back-button>
+      <app-back-button defaultHref="" [backFn]='back.bind(this)' customeBack='true'></app-back-button>
       <div class="query">
         <app-date-city [checkInDate]='searchHotelModel?.checkInDate' [checkOutDate]='searchHotelModel?.checkOutDate'
           [city]='searchHotelModel?.destinationCity' (cityClick)='onCityClick()' (dateChange)='onDateChange()'
