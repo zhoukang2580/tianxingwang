@@ -44,10 +44,7 @@ export class ApiService {
   }[] = [];
   private loadingSubject: Subject<{ isLoading: boolean; msg: string }>;
   public apiConfig: ApiConfig;
-  private fetchingReq: {
-    isFetching: boolean;
-    promise: Promise<any>;
-  } = {} as any;
+  private fetchApiConfigPromise: Promise<any>;
   private tryAutoLoginPromise: Promise<IResponse<any>>;
   constructor(
     private http: HttpClient,
@@ -468,54 +465,51 @@ export class ApiService {
         return Promise.resolve(this.apiConfig);
       }
     }
-    if (this.fetchingReq && this.fetchingReq.isFetching) {
-      return this.fetchingReq.promise;
+    if (this.fetchApiConfigPromise) {
+      return this.fetchApiConfigPromise;
     }
     const url = AppHelper.getApiUrl() + "/Home/ApiConfig";
     const due = 30 * 1000;
-    this.fetchingReq = {
-      isFetching: true,
-      promise: new Promise<ApiConfig>((s) => {
-        const sub = this.http
-          .get(url)
-          .pipe(
-            timeout(due),
-            finalize(() => {
-              setTimeout(() => {
-                this.fetchingReq = null;
-                if (sub) {
-                  console.log("loadUrls unsubscribe");
-                  sub.unsubscribe();
-                }
-              }, 3000);
-            })
-          )
-          .subscribe(
-            async (r: IResponse<ApiConfig>) => {
-              if (r.Data) {
-                const local = r.Data;
-                if (typeof local == "string") {
-                  this.apiConfig = JSON.parse(window.atob(local));
-                } else {
-                  this.apiConfig = local;
-                }
-                this.storage.set(`KEY_API_CONFIG`, this.apiConfig);
-                const identityEntity = await this.identityService.getIdentityAsync();
-                if (identityEntity) {
-                  this.identityService.setIdentity(identityEntity);
-                }
-                s(this.apiConfig);
-              } else {
-                s(null);
+    this.fetchApiConfigPromise=new Promise<ApiConfig>((s) => {
+      const sub = this.http
+        .get(url)
+        .pipe(
+          timeout(due),
+          finalize(() => {
+            this.fetchApiConfigPromise = null;
+            setTimeout(() => {
+              if (sub) {
+                console.log("loadUrls unsubscribe");
+                sub.unsubscribe();
               }
-            },
-            () => {
+            }, 3000);
+          })
+        )
+        .subscribe(
+          async (r: IResponse<ApiConfig>) => {
+            if (r.Data) {
+              const local = r.Data;
+              if (typeof local == "string") {
+                this.apiConfig = JSON.parse(window.atob(local));
+              } else {
+                this.apiConfig = local;
+              }
+              this.storage.set(`KEY_API_CONFIG`, this.apiConfig);
+              const identityEntity = await this.identityService.getIdentityAsync();
+              if (identityEntity) {
+                this.identityService.setIdentity(identityEntity);
+              }
+              s(this.apiConfig);
+            } else {
               s(null);
             }
-          );
-      }),
-    };
-    return this.fetchingReq.promise;
+          },
+          () => {
+            s(null);
+          }
+        );
+    })
+    return this.fetchApiConfigPromise;
   }
   getSign(req: RequestEntity) {
     return md5(

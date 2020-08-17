@@ -1,0 +1,11 @@
+{
+  "DownloadUrl": "",
+  "ApkDownloadUrl": "",
+  "Ignore": true,
+  "EnabledHcpUpdate": true,
+  "EnabledAppUpdate": true,
+  "Md5": "ccc",
+  "ApkMd5": "ddd",
+  "Version": "4.0.0",
+  "UpdateDescriptions": []
+}

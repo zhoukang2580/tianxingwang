@@ -307,6 +307,7 @@ export class FileHelperService {
         }`.toLowerCase(),
     };
     req.IsShowLoading = true;
+    req.LoadingMsg="正在初始化";
     // this.logMessage("apiconfig", this.apiService.apiConfig);
     // this.logMessage("requrl", await this.apiService.getUrl(req));
     if (AppHelper.isFunction(onprogress)) {
