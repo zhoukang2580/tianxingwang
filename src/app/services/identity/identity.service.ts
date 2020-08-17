@@ -70,7 +70,7 @@ export class IdentityService {
     if (
       this.identityEntity &&
       this.identityEntity.Ticket &&
-      this.identityEntity.Id
+      this.identityEntity.Id &&this.identityEntity.Id !="0"
     ) {
       return Promise.resolve(this.identityEntity);
     }
