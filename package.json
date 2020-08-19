@@ -92,6 +92,7 @@
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "^6.1.0",
     "cordova-plugin-file-transfer": "file:cordova-filetransfer-plugin",
+    "cordova-plugin-inappbrowser": "^4.0.0",
     "cordova-plugin-ionic-webview": "^5.0.0",
     "cordova-plugin-safariviewcontroller": "^1.6.0",
     "cordova-plugin-splashscreen": "^6.0.0",
@@ -137,7 +138,8 @@
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-safariviewcontroller": {},
       "cordova-filetransfer-plugin": {},
-      "cordova-hcp-plugin": {}
+      "cordova-hcp-plugin": {},
+      "cordova-plugin-inappbrowser": {}
     },
     "platforms": [
       "ios",
