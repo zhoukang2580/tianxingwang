@@ -19,7 +19,7 @@ try {
   console.log("url,locationurl", window.location.href);
   changeAppTitle();
   if (
-    // true||
+    true||
     window["VConsole"] &&
     (AppHelper.isApp() || AppHelper.isWechatH5()) &&
     (location.href.toLowerCase().includes("test") || environment.mockProBuild)
@@ -39,7 +39,7 @@ try {
 function changeAppTitle() {
   const title = CONFIG.appTitle;
   if (title) {
-    const el = document.body.querySelector("title");
+    const el = document.querySelector("title");
     if (el) {
       el.textContent = title;
     }
