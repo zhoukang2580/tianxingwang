@@ -9,15 +9,17 @@ import { ThemeService } from "./app/services/theme/theme.service";
 import { AppHelper } from "./app/appHelper";
 import { LoadingController } from "@ionic/angular";
 import { MapService } from "./app/services/map/map.service";
-import { HttpClient } from '@angular/common/http';
-import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient } from "@angular/common/http";
+import { Router, ActivatedRoute } from "@angular/router";
+import { CONFIG } from "./app/config";
 // const module = window["module"];
 try {
   AppHelper.initlizeQueryParamers();
   processPath();
   console.log("url,locationurl", window.location.href);
+  changeAppTitle();
   if (
-    // true||
+    true||
     window["VConsole"] &&
     (AppHelper.isApp() || AppHelper.isWechatH5()) &&
     (location.href.toLowerCase().includes("test") || environment.mockProBuild)
@@ -33,6 +35,15 @@ try {
   );
 } catch (e) {
   console.error(e);
+}
+function changeAppTitle() {
+  const title = CONFIG.appTitle;
+  if (title) {
+    const el = document.querySelector("title");
+    if (el) {
+      el.textContent = title;
+    }
+  }
 }
 function processPath() {
   const query = AppHelper.getQueryParamers();
@@ -111,7 +122,6 @@ if (environment.production) {
   } else {
     console.log("Amm..HMR is not enabled for webpack");
     bootstrap().then((moduleRef) => {
-    
       const applicationRef = moduleRef.injector.get(ApplicationRef);
       const appComponent = applicationRef.components[0];
       enableDebugTools(appComponent);

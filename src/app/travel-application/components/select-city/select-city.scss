@@ -1,10 +1,30 @@
 .hot {
-  font-size: 0.7rem;
+    font-size: 0.7rem;
 }
 
 form {
-  ion-searchbar {
-    margin: 0;
-    padding: 0 1em 0 0;
-  }
+    ion-searchbar {
+        margin: 0;
+        padding: 0 1em 0 0;
+    }
+}
+
+.check-city {
+    display: flex;
+    flex-wrap: wrap;
+    width: 375px;
+    height: 54px;
+    background-color: #bdc7d2;
+    justify-content: space-between;
+}
+
+.sea-history {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn_del {
+    border: none;
+    background-color: white;
+    color: #7d5d5d;
 }

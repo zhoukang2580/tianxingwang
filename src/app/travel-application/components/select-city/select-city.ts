@@ -29,6 +29,11 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 import { RefresherComponent } from "src/app/components/refresher";
 import { TravelService } from "../../travel.service";
 import { finalize } from "rxjs/operators";
+interface ICity{
+  Id: string;
+  // tslint:disable-next-line: ban-types
+  Name: String;
+}
 @Component({
   selector: "app-select-city",
   templateUrl: "./select-city.html",
@@ -46,6 +51,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   private pageSize = 20;
   private pageIndex = 0;
   private tripType = "";
+  // selectedCitys: ICity[];
   textSearchResults: TrafficlineEntity[] = [];
   vmKeyowrds = "";
   isSearching = false;
@@ -127,5 +133,11 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
           this.textSearchResults = this.textSearchResults.concat(arr);
         }
       });
-  }
+    }
+    onDeleteSelectedTag(city: ICity) {
+      if (this.textSearchResults) {
+        // tslint:disable-next-line: triple-equals
+        this.textSearchResults = this.textSearchResults.filter((it) => it.Id != city.Id)
+      }
+    }
 }

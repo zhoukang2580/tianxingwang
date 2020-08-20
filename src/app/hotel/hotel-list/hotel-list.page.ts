@@ -388,8 +388,8 @@ export class HotelListPage
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
       this.isLoadingHotels = true;
-      const changed = this.checkSearchTextChanged();
-      if (changed || this.checkDestinationChanged()) {
+      const changed = this.checkSearchTextChanged()|| this.checkDestinationChanged();
+      if (changed ) {
         requestAnimationFrame(() => {
           this.doRefresh(true);
         });

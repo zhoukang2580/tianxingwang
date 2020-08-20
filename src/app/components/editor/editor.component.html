@@ -1,0 +1,44 @@
+<!-- Create the toolbar container -->
+<div #toolbar class="ql-toolbar ql-snow">
+    <select class="ql-font"></select>
+    <select class="ql-size"></select>
+    <button class="ql-bold"></button>
+    <button class="ql-italic"></button>
+    <button class="ql-underline"></button>
+    <button class="ql-strike"></button>
+    <select class="ql-color"></select>
+    <select class="ql-background"></select>
+    <button class="ql-script" value="sub"></button>
+    <button class="ql-script" value="super"></button>
+    <button class="ql-header" value="1"></button>
+    <button class="ql-header" value="2"></button>
+    <button class="ql-blockquote"></button>
+    <button class="ql-code-block"></button>
+    <button class="ql-list" value="ordered"></button>
+    <button class="ql-list" value="bullet"></button>
+    <button class="ql-indent" value="-1"></button>
+    <button class="ql-indent" value="+1"></button>
+    <button class="ql-direction" value="rtl"></button>
+    <select class="ql-align"></select>
+    <button class="ql-link"></button>
+    <button class="my-upload-image" (click)='onUploadImage()'>
+        <ion-icon name="image-outline" style="font-size: 1.2rem;font-weight:bold"></ion-icon>
+    </button>
+    <button class="ql-video"></button>
+    <button class="ql-formula"></button>
+
+    <button class="ql-clean"></button>
+
+    <span>
+        <ion-icon name="arrow-undo-outline" (click)='onUndo()'></ion-icon>
+    </span>
+    <span style="margin-left: 0.5em;">
+        <ion-icon name="arrow-redo-outline" (click)='onRedo()'></ion-icon>
+    </span>
+    <ion-button style="margin-left: auto;" color='secondary' size='small' (click)='onDone()'>完成</ion-button>
+</div>
+<app-img-control style="display: none;" [chooseScene]='true' (fileChange)='onImageChange($event)'></app-img-control>
+<!-- Create the editor container -->
+<div #editor class="my-editor">
+    
+</div>

@@ -3,6 +3,6 @@
   </ion-icon>
 </div>
 <input type="file" #input class="hidden">
-<div class="ion-page" [class.hidden]='!isViewImage' (click)='onHide()'>
-  <img [src]="imgUrl" [class.show]='isShowImage' alt="图片">
+<div class="ion-page swipers" [class.show]='isViewImage' *ngIf='imageUrls?.length&&isViewImage' (click)='onHide()'>
+  <app-swiper-slides [defaultImage]='defaultImage' [options]='{imageStyle:{objectFit:"contain"}}' [loadingImage]='loadingImage' [items]='imageUrls' [initialPos]='pos'></app-swiper-slides>
 </div>

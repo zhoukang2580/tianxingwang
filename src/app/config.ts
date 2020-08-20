@@ -8,6 +8,8 @@ export const CONFIG = {
     // production: "okoktrip.com",
     // debug: "okoktrip.com",
   },
+  appTitle: "天行商旅",
+  // appTitle: "毅博商旅",
   AppleStoreAppId: "id1347643172",
   wechat: {
     appId: "wx0839a418ccafdf36",
