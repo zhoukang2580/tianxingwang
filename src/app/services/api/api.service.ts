@@ -63,8 +63,8 @@ export class ApiService {
       })
       .finally(() => {
         this.loadApiConfig(true)
-          .then((_) => {})
-          .catch(() => {});
+          .then((_) => { })
+          .catch(() => { });
       });
   }
   getLoading() {
@@ -471,14 +471,16 @@ export class ApiService {
     if (!forceRefresh) {
       if (!this.apiConfig || !this.apiConfig.Urls) {
         const local = await this.storage.get(`KEY_API_CONFIG`);
-        if (typeof local == "string") {
-          this.apiConfig = JSON.parse(local);
-        } else {
-          this.apiConfig = local;
+        if (local) {
+          if (typeof local == "string") {
+            this.apiConfig = JSON.parse(local);
+          } else {
+            this.apiConfig = local;
+          }
         }
       }
       if (this.apiConfig && this.apiConfig.Urls) {
-        return Promise.resolve(this.apiConfig);
+        return this.apiConfig;
       }
     }
     if (this.fetchApiConfigPromise) {
@@ -530,7 +532,7 @@ export class ApiService {
   getSign(req: RequestEntity) {
     return md5(
       `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
-        req.Timestamp
+      req.Timestamp
       }${req.Token}`
     ) as string;
   }
