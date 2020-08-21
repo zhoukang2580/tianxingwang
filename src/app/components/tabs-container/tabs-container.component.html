@@ -3,10 +3,10 @@
     <ng-container *ngIf='options.tabRef else tabTpl'>
       <ng-container [ngTemplateOutlet]='options.tabRef' [ngTemplateOutletContext]='{tab:t}'></ng-container>
     </ng-container>
+    <ng-template #tabTpl>
+      {{t.name}}
+    </ng-template>
   </div>
-  <ng-template #tabTpl let-t='tab'>
-    {{t.name}}
-  </ng-template>
 </div>
 <ion-segment #segmentEle mode='ios' [class]='isSegments?"":"hidden"' [value]='activeTab?.value' scrollable (ionChange)='onActiveSegment($event)'>
   <ion-segment-button *ngFor='let t of tabs' [value]='t.value' [attr.tabid]='t.value' #segmentbtnEle>{{t.name}}</ion-segment-button>
