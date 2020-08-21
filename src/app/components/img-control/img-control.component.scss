@@ -18,6 +18,11 @@
     transform: scale(1);
   }
 }
-.ion-page {
+.ion-page,
+.swipers {
   background-color: black;
+}
+app-swiper-slides {
+  height: 100%;
+  width: 100%;
 }

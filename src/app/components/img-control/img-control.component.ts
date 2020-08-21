@@ -1,6 +1,6 @@
 import { EventEmitter } from "@angular/core";
 import { ImgPickerComponent } from "./../img-picker/img-picker.component";
-import { ModalController } from "@ionic/angular";
+import { ModalController, ActionSheetController } from "@ionic/angular";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { Platform } from "@ionic/angular";
 import { Subscription, fromEvent } from "rxjs";
@@ -9,6 +9,7 @@ import { ElementRef } from "@angular/core";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import Cropper from "cropperjs";
 import { AppHelper } from "src/app/appHelper";
+import { PhotoGalleryComponent } from "../photo-gallary/photo-gallery.component";
 @Component({
   selector: "app-img-control",
   templateUrl: "./img-control.component.html",
@@ -18,18 +19,28 @@ export class ImgControlComponent implements OnInit, OnDestroy {
   @ViewChild("input", { static: true }) inputFile: ElementRef<HTMLInputElement>;
   private subscription = Subscription.EMPTY;
   isViewImage = false;
-  result: { name: string; fileValue: string };
+  result: {
+    name: string;
+    fileValue: string;
+    imageUrl: string;
+    fileName: string;
+  };
   cropper: Cropper;
   isShowImage = false;
   showCropBox = false;
   uploaded = false;
-  imgUrl = "";
+  @Input() defaultImage: any;
+  @Input() loadingImage: any;
   @Input() file: any;
+  @Input() chooseScene = false;
   @Output() fileChange: EventEmitter<any>;
+  pos = 0;
+  imageUrls: { imageUrl: string; isActive?: boolean }[];
   constructor(
     private plt: Platform,
     private webView: WebView,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private actionSheetCtrl: ActionSheetController
   ) {
     this.fileChange = new EventEmitter();
   }
@@ -42,10 +53,16 @@ export class ImgControlComponent implements OnInit, OnDestroy {
     });
   }
   ngOnInit() {
-    setTimeout(() => {
-      this.isShowImage = !!this.isViewImage;
-    }, 100);
-    this.result = { fileValue: "", name: "" };
+    this.listenChange();
+    this.isShowImage = !!this.isViewImage;
+    if (this.isShowImage) {
+      if (this.imageUrls) {
+        this.pos = this.imageUrls.findIndex((it) => it.isActive);
+      }
+    }
+    this.result = { fileValue: "", name: "", imageUrl: "", fileName: "" };
+  }
+  private listenChange() {
     this.subscription = fromEvent(
       this.inputFile.nativeElement,
       "change"
@@ -75,9 +92,47 @@ export class ImgControlComponent implements OnInit, OnDestroy {
       }
     });
   }
-  onSelectFile() {
-    this.inputFile.nativeElement.click();
+  async onSelectFile() {
+    if (!this.chooseScene) {
+      this.inputFile.nativeElement.click();
+    } else {
+      const a = await this.actionSheetCtrl.create({
+        buttons: [
+          {
+            text: "从图库中选择",
+            handler: () => {
+              a.dismiss();
+              this.openPhotoGallery();
+            },
+          },
+          {
+            text: "手机上选择",
+            handler: () => {
+              a.dismiss();
+              this.inputFile.nativeElement.click();
+            },
+          },
+        ],
+      });
+      a.present();
+    }
   }
+  private async openPhotoGallery() {
+    const m = await this.modalCtrl.create({ component: PhotoGalleryComponent });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      this.result = {
+        name: d.data,
+        imageUrl: d.data,
+        fileValue: "",
+        fileName: d.data,
+      };
+      this.fileChange.emit(this.result);
+      // this.onHide();
+    }
+  }
+
   private async openCropper(src: string) {
     const m = await this.modalCtrl.create({
       component: ImgPickerComponent,
@@ -90,6 +145,8 @@ export class ImgControlComponent implements OnInit, OnDestroy {
     if (result && result.data) {
       this.result = {
         ...this.result,
+        imageUrl: src,
+        fileName: this.result.name,
         fileValue: result.data.fileValue,
       };
       this.file = this.result;

@@ -32,14 +32,15 @@ import { ImgControlComponent } from "./img-control/img-control.component";
 import { ImgPickerComponent } from "./img-picker/img-picker.component";
 import { MapComponent } from "./map/map.component";
 import { SelectComponent } from './select/select.component';
+import { PhotoGalleryComponent } from './photo-gallary/photo-gallery.component';
 @NgModule({
   declarations: [
     ImgPickerComponent,
     SelectComponent,
-    ImgControlComponent,
     OrComponent,
     SwiperSlidesComponent,
     PinchZoomComponent,
+    ImgControlComponent,
     SlidvalidateComponent,
     ScanComponent,
     AppUpdateComponent,
@@ -57,6 +58,7 @@ import { SelectComponent } from './select/select.component';
     AddNumberComponent,
     ComboboxComponent,
     ComboboxModalComponent,
+    PhotoGalleryComponent,
     EchartComponent,
     MenuPopoverComponent,
     ListItemComponent,
@@ -71,6 +73,7 @@ import { SelectComponent } from './select/select.component';
     RefresherModule,
   ],
   exports: [
+    PhotoGalleryComponent,
     MapComponent,
     ImgControlComponent,
     ComboboxComponent,
