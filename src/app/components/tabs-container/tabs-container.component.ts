@@ -13,6 +13,7 @@ import {
   AfterViewInit,
   OnDestroy,
   Renderer2,
+  TemplateRef,
 } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { Subscription, fromEvent } from "rxjs";
@@ -45,6 +46,7 @@ export class TabsContainerComponent
   @Input() options: {
     displayNameKey: string;
     valueKey: string;
+    tabRef: TemplateRef<HTMLElement>;
   };
   activeTab: ITab;
   private isFirstActive = false;
