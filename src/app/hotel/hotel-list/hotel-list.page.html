@@ -44,25 +44,25 @@
   </ng-container>
   <ng-template #noMoreData>
     <ion-list></ion-list>
-    <div class='ion-margin-top'>
+    <div class='ion-margin-top' *ngIf='!isLoadingHotels'>
       <app-or-comp>暂无数据</app-or-comp>
     </div>
   </ng-template>
   <ng-template #fakeList>
     <ion-list class='fakelist' *ngIf='isLoadingHotels else noMoreData'>
-      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11]'>
+      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11];let odd=odd'>
         <ion-thumbnail style="margin-bottom: 0.25em;">
-          <ion-skeleton-text animated style='height:100%;width:100%'></ion-skeleton-text>
+          <ion-skeleton-text [animated]='odd' style='height:100%;width:100%'></ion-skeleton-text>
         </ion-thumbnail>
         <ion-label class="ion-margin-start">
           <h1>
-            <ion-skeleton-text animated style="width:90%"></ion-skeleton-text>
+            <ion-skeleton-text  style="width:90%"></ion-skeleton-text>
           </h1>
           <h1>
             <ion-skeleton-text style="width:40%"></ion-skeleton-text>
           </h1>
           <h1 style="display:flex;justify-content:space-between;align-items: center;">
-            <ion-skeleton-text animated style="width:70%"></ion-skeleton-text>
+            <ion-skeleton-text  style="width:70%"></ion-skeleton-text>
             <ion-skeleton-text style="width:10%"></ion-skeleton-text>
           </h1>
         </ion-label>
@@ -72,7 +72,7 @@
   <ion-infinite-scroll (ionInfinite)="loadMore()" threshold='100px'>
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
-  <ion-fab>
+  <!-- <ion-fab>
     <app-pin-fab horizontal="end" vertical="bottom">
       <div *ngIf='hotelDayPrices?.length&&totalHotels'>
         <ion-text color='light'>
@@ -81,20 +81,20 @@
         </ion-text>
       </div>
     </app-pin-fab>
-  </ion-fab>
+  </ion-fab> -->
 </ion-content>
 <div class="backdrop " (click)='onBackdropClick($event)' [class.show]='filterTab?.isActive'></div>
 <div #queryconditoneleContainer>
-  <app-recommend-rank class="filter-condition  " (rank)='onRank()'
+  <app-recommend-rank class="filter-condition" (rank)='onRank()'
     [class.show]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
   </app-recommend-rank>
-  <app-hotel-starprice class="filter-condition  " [class.show]='filterTab?.label=="星级价格"&&filterTab.isActive'
+  <app-hotel-starprice class="filter-condition" [class.show]='filterTab?.label=="星级价格"&&filterTab.isActive'
     (starPriceChange)='onStarPriceChange()'>
   </app-hotel-starprice>
-  <app-hotel-filter class="filter-condition  " [class.show]='filterTab?.label=="筛选"&&filterTab.isActive'
+  <app-hotel-filter class="filter-condition" [class.show]='filterTab?.label=="筛选"&&filterTab.isActive'
     (filter)='onFilter()'>
   </app-hotel-filter>
-  <app-hotel-geo class="filter-condition  " [class.show]='filterTab?.label=="位置区域"&&filterTab.isActive'
+  <app-hotel-geo class="filter-condition" [class.show]='filterTab?.label=="位置区域"&&filterTab.isActive'
     (geoFilterChange)='onFilterGeo()'>
   </app-hotel-geo>
 </div>

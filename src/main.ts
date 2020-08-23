@@ -19,7 +19,7 @@ try {
   console.log("url,locationurl", window.location.href);
   changeAppTitle();
   if (
-    true||
+    // true||
     window["VConsole"] &&
     (AppHelper.isApp() || AppHelper.isWechatH5()) &&
     (location.href.toLowerCase().includes("test") || environment.mockProBuild)

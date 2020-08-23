@@ -33,10 +33,8 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   private openSystemBrowser: InAppBrowserObject;
   private shareWebUrl$ = new BehaviorSubject(null);
   private isSafariAvailable = false;
-  private entryUrl: string;
   isApp = AppHelper.isApp();
   url$: Observable<string>;
-  payUrl: string;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   constructor(
     private carService: CarService,
@@ -45,10 +43,9 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     private iab: InAppBrowser,
     private clipboard: Clipboard,
     private safariViewController: SafariViewController
-  ) {}
+  ) { }
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
-    this.payUrl = "";
     try {
       if (this.browser) {
         this.browser.hide();
@@ -83,6 +80,20 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       this.closeBrowser();
       this.backBtn.popToPrePage();
     }
+  }
+  private getQueryParams(url: string) {
+    const obj = {};
+    if (url) {
+      if (url.includes("?")) {
+        const tmp = url.substr(url.indexOf("?") + 1);
+        const arr = tmp.split("&");
+        arr.forEach(kv => {
+          const it = kv.split("=");
+          obj[it[0]] = it[1];
+        })
+      }
+    }
+    return obj;
   }
   private closeBrowser() {
     if (this.browser) {
@@ -161,12 +172,15 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       toolbar: "yes",
       zoom: "no",
       footer: "no",
-      beforeload: "yes", // 设置后，beforeload事件才能触发
+      // beforeload:AppHelper.platform.is("ios")? "yes":"get", // 设置后，beforeload事件才能触发
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: "#2596D9",
       navigationbuttoncolor: "#2596D9",
       // toolbarcolor:"#2596D90f"
     };
+    if (AppHelper.platform.is("ios")) {
+      options.beforeload = 'yes';
+    }
     // url = `http://test.version.testskytrip.com/download/test.html`;
     if (
       url.startsWith("weixin") ||
@@ -189,16 +203,6 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       this.subscriptions.push(
         this.browser.on("beforeload").subscribe(async (evt) => {
           console.log("beforeload", evt.message, evt.data, evt.code, evt.url);
-          this.isSafariAvailable = await this.safariViewController
-            .isAvailable()
-            .catch(() => false);
-          if (this.isSafariAvailable) {
-            this.subscriptions.push(
-              this.safariViewController
-                .show({ url: evt.url, hidden: true })
-                .subscribe()
-            );
-          }
           if (evt.url) {
             const toUrl = evt.url.toLowerCase();
             if (
@@ -253,6 +257,26 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
           // if (this.browser) {
           //   this.browser.show();
           // }
+          const toUrl = evt.url;
+          if (AppHelper.platform.is("android")) {
+            if (toUrl.includes("sharetrips")) {
+              AppHelper.isWXAppInstalled().then(async (installed) => {
+                if (installed) {
+                  this.shareWebPage(evt.url);
+                } else {
+                  this.clipboard.clear();
+                  await this.clipboard.copy(evt.url);
+                  this.browser.hide();
+                  await AppHelper.toast(
+                    "行程链接已拷贝到剪切板",
+                    2000,
+                    "middle"
+                  );
+                  this.browser.show();
+                }
+              });
+            }
+          }
           console.log("loadstart");
           console.log(evt);
           console.log("loadstart", evt);
@@ -304,7 +328,6 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     return false;
   }
   private async openWechatOrAliApp(uri: string) {
-    this.payUrl = uri;
     // https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx0515512304565038c0d556b61957171400&package=1739803123&redirect_url=https%3A%2F%2Fopen.es.xiaojukeji.com%2Fwebapp%2FfeESWebapp%2FpaymentCompleted&redirect_url=https%3A%2F%2Fopen.es.xiaojukeji.com%2Fwebapp%2FfeESWebapp%2FpaymentCompleted
     if (uri.includes("mclient.alipay.com")) {
       // ios 打开支付宝支付
@@ -332,22 +355,14 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       .isAvailable()
       .catch((e) => false);
     if (ok) {
-      this.subscriptions.push(
-        this.safariViewController
-          .show({ url: this.entryUrl, hidden: true })
-          .subscribe(
-            (evt) => {
-              if (evt.event == "loaded") {
-                this.openInSafari(uri);
-              }
-            },
-            () => {
-              this.openInSafari(uri);
-            }
-          )
-      );
+      this.openInSafari(uri);
     } else {
-      this.openInSystemBrowser(uri);
+      // this.openInSystemBrowser(uri);
+      if(uri.startsWith("weixin:")){
+       this.iab.create(uri,'_system');
+      }else{
+        window.open(uri, "_blank");
+      }
     }
   }
   private async openInSystemBrowser(uri: string) {
@@ -357,11 +372,6 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     const encodedUri = encodeURI(uri);
     console.log("要打开的uri", uri);
     console.log("打开的uri地址 encoded", encodeURI(uri));
-    // window.opener = 'https://open.es.xiaojukeji.com';
-    if (this.browser) {
-      this.browser.executeScript({ code: `alert(document.referrer)` });
-    }
-
     window.open(uri, "_system");
 
     // this.openSystemBrowser = this.iab.create(uri);
@@ -387,13 +397,6 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       }
     }
   }
-  private browserExecuteJs(js: string) {
-    if (this.browser) {
-      const browser = this.iab.create("", "_system");
-      browser.hide();
-      browser.executeScript({ code: js });
-    }
-  }
   ngOnInit() {
     this.subscriptions.push(
       this.shareWebUrl$.subscribe((url) => {
@@ -405,10 +408,6 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         if (this.openSystemBrowser) {
           this.openSystemBrowser.close();
         }
-        if (this.payUrl) {
-          window.open(this.payUrl);
-          this.payUrl = "";
-        }
       })
     );
     if (AppHelper.isApp()) {
@@ -417,7 +416,6 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
           this.isSafariAvailable = await this.safariViewController
             .isAvailable()
             .catch((e) => false);
-          this.entryUrl = q.get("url");
           if (q.get("url")) {
             if (this.isSafariAvailable) {
               this.openInSafari(q.get("url"));
