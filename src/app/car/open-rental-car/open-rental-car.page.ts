@@ -22,6 +22,7 @@ import {
 import { Clipboard } from "@ionic-native/clipboard/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
 import { SafariViewController } from "@ionic-native/safari-view-controller/ngx";
+import { IAliPayPluginPayResult } from 'src/app/services/pay/pay.service';
 @Component({
   selector: "app-open-rental-car",
   templateUrl: "./open-rental-car.page.html",
@@ -172,7 +173,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       toolbar: "yes",
       zoom: "no",
       footer: "no",
-      // beforeload:AppHelper.platform.is("ios")? "yes":"get", // 设置后，beforeload事件才能触发
+      beforeload: "get", // 设置后，beforeload事件才能触发
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: "#2596D9",
       navigationbuttoncolor: "#2596D9",
@@ -189,13 +190,28 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     ) {
       this.openWechatOrAliApp(url);
     } else {
-      if (this.isSafariAvailable) {
-        this.subscriptions.push(
-          this.safariViewController.show({ url, hidden: true }).subscribe()
-        );
-      }
       this.browser = this.iab.create(encodeURI(url), "_blank", options);
       this.addListeners();
+    }
+  }
+  private async aliPay(url: string) {
+    try {
+      const payresult: IAliPayPluginPayResult = await window['ali']
+        .pay(url)
+      console.log("支付宝支付，payresult ", payresult);
+      if (payresult) {
+        if (payresult.resultStatus == "9000") {
+          AppHelper.alert("订单支付成功")
+        } else {
+          const info =
+            payresult.memo || payresult.result || payresult.resultStatus;
+          if (info) {
+            AppHelper.alert(JSON.stringify(info));
+          }
+        }
+      }
+    } catch (e) {
+      AppHelper.alert(e);
     }
   }
   private addListeners() {
@@ -338,6 +354,8 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       // }, 5000);
       // this.browser._loadAfterBeforeload(uri);
       // }
+      await this.aliPay(uri);
+      return;
     }
     if (uri.startsWith("weixin")) {
       if (!(await AppHelper.isWXAppInstalled())) {
@@ -358,11 +376,14 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       this.openInSafari(uri);
     } else {
       // this.openInSystemBrowser(uri);
-      if(uri.startsWith("weixin:")){
-       this.iab.create(uri,'_system');
-      }else{
-        window.open(uri, "_blank");
+      if (this.openSystemBrowser) {
+        this.openSystemBrowser.close();
       }
+      this.openSystemBrowser = this.iab.create(uri, '_system');
+      // if(uri.startsWith("weixin:")){
+      // }else{
+      //   window.open(uri, "_blank");
+      // }
     }
   }
   private async openInSystemBrowser(uri: string) {
@@ -411,6 +432,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       })
     );
     if (AppHelper.isApp()) {
+      this.closeBrowser();
       this.subscriptions.push(
         this.route.queryParamMap.subscribe(async (q) => {
           this.isSafariAvailable = await this.safariViewController
