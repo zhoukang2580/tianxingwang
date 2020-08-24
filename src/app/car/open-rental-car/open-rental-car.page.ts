@@ -200,9 +200,17 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       if (this.browser) {
         this.browser.hide();
       }
-      const res = await AppHelper.payH5Url(url);
-      AppHelper.alert(res.resultCode);
-      if(this.browser){
+      const res = await AppHelper.payH5Url(url).catch(() => {
+        if (this.browser) {
+          this.browser._loadAfterBeforeload(url);
+          this.browser.show();
+        }
+        return null;
+      });
+      if (res) {
+        await AppHelper.alert(res.resultCode == '9000' ? "支付完成" : res.resultCode);
+      }
+      if (this.browser) {
         this.browser.show();
       }
     } catch (e) {
