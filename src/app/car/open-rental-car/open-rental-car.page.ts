@@ -23,6 +23,7 @@ import { Clipboard } from "@ionic-native/clipboard/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
 import { SafariViewController } from "@ionic-native/safari-view-controller/ngx";
 import { IAliPayPluginPayResult } from "src/app/services/pay/pay.service";
+
 @Component({
   selector: "app-open-rental-car",
   templateUrl: "./open-rental-car.page.html",
@@ -44,7 +45,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     private iab: InAppBrowser,
     private clipboard: Clipboard,
     private safariViewController: SafariViewController
-  ) {}
+  ) { }
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
     try {
@@ -196,18 +197,13 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   }
   private async aliPay(url: string) {
     try {
-      const payresult: IAliPayPluginPayResult = await window["ali"].pay(url);
-      console.log("支付宝支付，payresult ", payresult);
-      if (payresult) {
-        if (payresult.resultStatus == "9000") {
-          AppHelper.alert("订单支付成功");
-        } else {
-          const info =
-            payresult.memo || payresult.result || payresult.resultStatus;
-          if (info) {
-            AppHelper.alert(JSON.stringify(info));
-          }
-        }
+      if (this.browser) {
+        this.browser.hide();
+      }
+      const res = await AppHelper.payH5Url(url);
+      AppHelper.alert(res.resultCode);
+      if(this.browser){
+        this.browser.show();
       }
     } catch (e) {
       AppHelper.alert(e);

@@ -1,5 +1,5 @@
 var exec = require("cordova/exec");
-exports.isAliPayInstalled = (appName) => {
+exports.isAliPayInstalled = function(appName) {
   return new Promise(function(resolve, reject){
       exec(function(res) {
           resolve(res);
@@ -8,13 +8,13 @@ exports.isAliPayInstalled = (appName) => {
       }, 'Ali', 'isAliPayInstalled', [appName]);
   })
 }
-exports.payWebUrl = (webUrl) => {
+exports.payH5Url = function(webUrl)  {
   return new Promise(function(resolve, reject){
       exec(function(res) {
           resolve(res);
       }, function(error) {
           reject(error)
-      }, 'Ali', 'payWebUrl', [webUrl]);
+      }, 'Ali', 'payH5Url', [webUrl]);
   })
 }
 exports.pay = function (arg0) {

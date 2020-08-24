@@ -9,6 +9,20 @@
 
     <!-- android -->
     <platform name="android">
+       <!-- <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <activity
+                android:name="com.alipay.sdk.app.H5PayActivity"
+                android:configChanges="orientation|keyboardHidden|navigation"
+                android:exported="false"
+                android:screenOrientation="behind" >
+            </activity>
+            <activity
+                android:name="com.alipay.sdk.auth.AuthActivity"
+                android:configChanges="orientation|keyboardHidden|navigation"
+                android:exported="false"
+                android:screenOrientation="behind" >
+            </activity>
+       </config-file> -->
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="Ali">
                 <param name="android-package" value="com.beeant.plugin.ali.Ali"/>

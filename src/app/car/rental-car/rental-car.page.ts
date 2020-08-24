@@ -25,7 +25,6 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
-
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",

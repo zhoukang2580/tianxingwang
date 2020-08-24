@@ -35,7 +35,7 @@ export class AppHelper {
   static _appDomain = !environment.mockProBuild
     ? CONFIG.appDomain.production
     : CONFIG.appDomain.debug;
-  constructor() {}
+  constructor() { }
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -129,10 +129,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-      ? msg.message
-      : msg && (msg.message || msg.Message)
-      ? msg.message || msg.Message
-      : JSON.stringify(msg);
+        ? msg.message
+        : msg && (msg.message || msg.Message)
+          ? msg.message || msg.Message
+          : JSON.stringify(msg);
   }
   private static isHttpFailureMsg(msg: any) {
     if (msg) {
@@ -410,6 +410,14 @@ export class AppHelper {
         .catch(() => false);
     }
     return false;
+  }
+  static async payH5Url(url: string): Promise<{ url: string; resultCode: string }> {
+    await AppHelper.platform.ready();
+    if (window["ali"]) {
+      return window["ali"]
+        .payH5Url(url)
+    }
+    return null;
   }
   static isApp() {
     return !!window["cordova"];
@@ -724,12 +732,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static getQueryParamers() {
     return this._queryParamers as any;
