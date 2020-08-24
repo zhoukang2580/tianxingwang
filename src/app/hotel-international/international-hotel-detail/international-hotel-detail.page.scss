@@ -22,13 +22,13 @@
   .back-button {
     position: absolute;
     left: 1em;
-    top: 2em;
-    width: 3em;
-    height: 3em;
+    top: 1em;
+    width: 2em;
+    height: 2em;
     z-index: 99;
     color: var(--ion-color-light);
     background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;

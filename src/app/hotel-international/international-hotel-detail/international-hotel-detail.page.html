@@ -49,14 +49,14 @@
       </ion-card-header>
       <ion-card-subtitle>
         <div class='grade-stars'>
-          <span *ngIf='hotel?.Grade as grade else nograde'>
-            <ion-text color='secondary'>评分</ion-text>{{grade}}
+          <span *ngIf='hotel?.Grade else nograde'>
+            <ion-text color='secondary'>评分</ion-text>{{hotel?.Grade}}
           </span>
           <ng-template #nograde>
             暂无评分
           </ng-template>
-          <div class='stars' *ngIf='getStars(hotel?.Category) as stars'>
-            <ng-container *ngFor='let s of stars'>
+          <div class='stars' *ngIf='hotel?.stars'>
+            <ng-container *ngFor='let s of hotel?.stars'>
               <ion-icon name="star" color='danger' *ngIf='s>=1'></ion-icon>
               <ion-icon name='star-half' color='danger' *ngIf='s<1'></ion-icon>
             </ng-container>
@@ -199,7 +199,7 @@
         </ion-grid>
       </ng-container>
     </ion-list>
-    <ion-list #trafficInfo class='traffic-info'>
+    <!-- <ion-list #trafficInfo class='traffic-info'>
       <ng-container>
         <ion-item-divider (click)='onToggleOpenStatus(hotel,"isShowMap")'>交通信息
           <ng-container *ngIf='hotel'>
@@ -213,10 +213,10 @@
           </div>
         </ng-container>
       </ng-container>
-    </ion-list>
+    </ion-list> -->
   </ng-container>
   <ng-template #retry>
     <ion-label>请重新刷新</ion-label>
   </ng-template>
-  <div #divforscroll [class.div-for-scroll]='!isHeaderHide||!hotel["isShowMap"]'></div>
+  <div  class='div-for-scroll'></div>
 </ion-content>

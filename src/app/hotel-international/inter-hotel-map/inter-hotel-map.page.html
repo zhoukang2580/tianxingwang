@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button ></app-back-button>
+    </ion-buttons>
+    <ion-title>{{hotel?.Name}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<ion-list>
+  <app-amap [latLng]='latLng' [zoom]='17'></app-amap>
+</ion-list>
+</ion-content>

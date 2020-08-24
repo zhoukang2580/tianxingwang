@@ -127,7 +127,12 @@ export class InternationalHotelDetailPage
         });
         setTimeout(
           () => {
-            if (!this.colors || !Object.keys(this.colors).length) {
+            const infos = this.hotelService.getBookInfos();
+            if (
+              infos &&
+              infos.length &&
+              (!this.colors || !Object.keys(this.colors).length)
+            ) {
               this.doRefresh();
             }
           },
@@ -140,6 +145,7 @@ export class InternationalHotelDetailPage
         this.selectedPassengers = bookinfos;
       })
     );
+    this.doRefresh();
   }
   async onOpenSelectedPassengers() {
     const removeitem = new EventEmitter();
@@ -472,18 +478,19 @@ export class InternationalHotelDetailPage
       this.subscription.unsubscribe();
       this.subscription = this.hotelService
         .getHotelDetail(this.hotel.Id)
-        .pipe(
-          finalize(() => {
-            if (this.refresher) {
-              this.refresher.complete();
-            }
-          })
-        )
+        // .pipe(
+        //   finalize(() => {
+        //     if (this.refresher) {
+        //       this.refresher.complete();
+        //     }
+        //   })
+        // )
         .subscribe((res) => {
           console.log("getHotelDetail", res);
           if (res) {
             this.hotel = res;
             if (this.hotel) {
+              this.hotel.stars = this.getStars(this.hotel.Category);
               const name = this.hotel.Name;
               const enName = this.hotel.HotelSummaries.find(
                 (it) => it.Tag == "Name" && it.Lang == "en"
@@ -498,10 +505,9 @@ export class InternationalHotelDetailPage
             this.initFilterPolicy();
           }
         });
-    } else {
-      if (this.refresher) {
-        this.refresher.complete();
-      }
+    }
+    if (this.refresher) {
+      this.refresher.complete();
     }
   }
   ngAfterViewInit() {
@@ -569,13 +575,13 @@ export class InternationalHotelDetailPage
         break;
       }
     }
-    if(!newId){
+    if (!newId) {
       newId = news[news.length - 1];
     }
     if (newId) {
       this.hotelService.setBookInfos(
         this.hotelService.getBookInfos().map((it) => {
-          if(it.passenger){
+          if (it.passenger) {
             it.isFilterPolicy = it.passenger.AccountId == newId;
           }
           return it;
@@ -800,18 +806,19 @@ export class InternationalHotelDetailPage
     }
   }
   onOpenMap() {
-    const el = this.trafficInfo && this.trafficInfo["el"];
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      if (rect) {
-        if (this.hotel && !this.hotel["isShowMap"]) {
-          this.hotel["isShowMap"] = true;
-        }
-        setTimeout(() => {
-          this.content.scrollByPoint(0, rect.top, 100);
-        }, 100);
-      }
-    }
+    // const el = this.trafficInfo && this.trafficInfo["el"];
+    // if (el) {
+    //   const rect = el.getBoundingClientRect();
+    //   if (rect) {
+    //     if (this.hotel && !this.hotel["isShowMap"]) {
+    //       this.hotel["isShowMap"] = true;
+    //     }
+    //     setTimeout(() => {
+    //       this.content.scrollByPoint(0, rect.top, 100);
+    //     }, 100);
+    //   }
+    // }
+    this.router.navigate(["inter-hotel-map"]);
   }
   getWeekName(date: string) {
     return;

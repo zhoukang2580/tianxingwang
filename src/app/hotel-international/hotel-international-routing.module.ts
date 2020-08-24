@@ -60,6 +60,10 @@ export const routes: Routes = [
   },  {
     path: 'select-nationality',
     loadChildren: () => import('./select-nationality/select-nationality.module').then( m => m.SelectNationalityPageModule)
+  },
+  {
+    path: 'inter-hotel-map',
+    loadChildren: () => import('./inter-hotel-map/inter-hotel-map.module').then( m => m.InterHotelMapPageModule)
   }
 
 ];

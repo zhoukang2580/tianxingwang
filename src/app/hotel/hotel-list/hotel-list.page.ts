@@ -259,7 +259,7 @@ export class HotelListPage
         (result) => {
           this.oldSearchText = this.searchHotelModel.searchText;
           this.oldDestinationCode = this.searchHotelModel.destinationCity &&
-            this.searchHotelModel.destinationCity.CityCode;
+            this.searchHotelModel.destinationCity.Code;
           if (this.refresher) {
             if (this.hotelQueryModel.PageIndex < 1) {
               console.log("refresher complete");

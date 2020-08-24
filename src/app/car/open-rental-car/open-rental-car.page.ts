@@ -22,7 +22,7 @@ import {
 import { Clipboard } from "@ionic-native/clipboard/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
 import { SafariViewController } from "@ionic-native/safari-view-controller/ngx";
-import { IAliPayPluginPayResult } from 'src/app/services/pay/pay.service';
+import { IAliPayPluginPayResult } from "src/app/services/pay/pay.service";
 @Component({
   selector: "app-open-rental-car",
   templateUrl: "./open-rental-car.page.html",
@@ -44,7 +44,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     private iab: InAppBrowser,
     private clipboard: Clipboard,
     private safariViewController: SafariViewController
-  ) { }
+  ) {}
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
     try {
@@ -88,10 +88,10 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       if (url.includes("?")) {
         const tmp = url.substr(url.indexOf("?") + 1);
         const arr = tmp.split("&");
-        arr.forEach(kv => {
+        arr.forEach((kv) => {
           const it = kv.split("=");
           obj[it[0]] = it[1];
-        })
+        });
       }
     }
     return obj;
@@ -180,7 +180,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       // toolbarcolor:"#2596D90f"
     };
     if (AppHelper.platform.is("ios")) {
-      options.beforeload = 'yes';
+      options.beforeload = "yes";
     }
     // url = `http://test.version.testskytrip.com/download/test.html`;
     if (
@@ -196,12 +196,11 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   }
   private async aliPay(url: string) {
     try {
-      const payresult: IAliPayPluginPayResult = await window['ali']
-        .pay(url)
+      const payresult: IAliPayPluginPayResult = await window["ali"].pay(url);
       console.log("支付宝支付，payresult ", payresult);
       if (payresult) {
         if (payresult.resultStatus == "9000") {
-          AppHelper.alert("订单支付成功")
+          AppHelper.alert("订单支付成功");
         } else {
           const info =
             payresult.memo || payresult.result || payresult.resultStatus;
@@ -379,7 +378,8 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       if (this.openSystemBrowser) {
         this.openSystemBrowser.close();
       }
-      this.openSystemBrowser = this.iab.create(uri, '_system');
+      this.openSystemBrowser = this.iab.create(uri, "_system");
+      this.openSystemBrowser.hide();
       // if(uri.startsWith("weixin:")){
       // }else{
       //   window.open(uri, "_blank");

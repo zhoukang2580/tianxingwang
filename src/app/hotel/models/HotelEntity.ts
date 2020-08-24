@@ -32,6 +32,7 @@ export class HotelEntity extends BaseVariablesEntity {
   /// 总体等级
   /// </summary>
   Grade: string;
+  stars: number[];
   /// <summary>
   /// 品牌
   /// </summary>

@@ -274,7 +274,12 @@ export class InternationalHotelListPage
     );
     this.subscriptions.push(
       this.route.queryParamMap.subscribe((q) => {
-        if (this.checkSearchTextChanged() || this.checkDestinationChanged()) {
+        const isRefresh =
+          this.checkSearchTextChanged() ||
+          this.checkDestinationChanged() ||
+          !this.hotels ||
+          !this.hotels.length;
+        if (isRefresh) {
           setTimeout(
             () => {
               this.doRefresh(true);
@@ -303,8 +308,8 @@ export class InternationalHotelListPage
   private checkDestinationChanged() {
     if (this.searchCondition) {
       return (
-        !this.searchCondition.destinationCity ||
-        this.searchCondition.destinationCity.Code != this.oldDestinationCode
+        (this.searchCondition.destinationCity &&
+          this.searchCondition.destinationCity.Code) != this.oldDestinationCode
       );
     }
     return false;
@@ -312,10 +317,10 @@ export class InternationalHotelListPage
   private checkSearchTextChanged() {
     if (this.searchCondition) {
       return (
-        !this.searchCondition.searchText ||
-        !this.oldSearchText ||
-        this.searchCondition.searchText.Value != this.oldSearchText.Value ||
-        this.searchCondition.searchText.Text != this.oldSearchText.Text
+        this.searchCondition.searchText &&
+        this.oldSearchText &&
+        (this.searchCondition.searchText.Value != this.oldSearchText.Value ||
+          this.searchCondition.searchText.Text != this.oldSearchText.Text)
       );
     }
     return false;
@@ -390,12 +395,15 @@ export class InternationalHotelListPage
       .getHotelList(this.pageIndex)
       .pipe(
         finalize(() => {
-          this.oldSearchText = this.searchCondition.searchText;
           this.isLoading = false;
         })
       )
       .subscribe(
         (r) => {
+          this.oldSearchText = this.searchCondition.searchText;
+          this.oldDestinationCode =
+            this.searchCondition.destinationCity &&
+            this.searchCondition.destinationCity.Code;
           this.totalHotels = r && r.Data && r.Data.DataCount;
           const arr = (r && r.Data && r.Data.HotelDayPrices) || [];
           this.completeScroller();
