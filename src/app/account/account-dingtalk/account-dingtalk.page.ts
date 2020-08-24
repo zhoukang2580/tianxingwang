@@ -32,6 +32,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
       if (paramters.dingtalkcode) {
         const data = {
           Code: paramters.dingtalkcode,
+          AloneTag:paramters.AloneTag
         };
         this.bindCode(data);
         AppHelper.removeQueryParamers("dingtalkcode");
