@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-ali-plugin" version="1.0.0" 
+<plugin id="cordova-ali-plugin" version="2.0.0" 
     xmlns="http://apache.org/cordova/ns/plugins/1.0" 
     xmlns:android="http://schemas.android.com/apk/res/android">
     <name>cordova-ali-plugin</name>
@@ -30,6 +30,7 @@
         </config-file>
 
         <source-file src="src/android/Ali.java" target-dir="src/com/beeant/plugin/ali" />
+        <source-file src="src/android/MyH5PayActivity.java" target-dir="src/com/beeant/plugin/ali" />
         <framework src="src/android/alipay.gradle" custom="true" type="gradleReference"/>
         <lib-file src="src/android/alipaySdk-15.7.6-20200521195109.aar"/>
     </platform>
