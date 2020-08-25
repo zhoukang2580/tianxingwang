@@ -116,6 +116,9 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     }
   }
   private async openInSafari(uri: string) {
+    if (this.browser) {
+      this.browser.hide();
+    }
     const ok = await this.safariViewController.isAvailable().catch(() => false);
     if (ok) {
       const sub = this.safariViewController
@@ -163,6 +166,10 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     // }
   }
   private async openInAppBrowser(url: string) {
+    if (AppHelper.platform.is("android")) {
+      this.aliPay(url)
+      return;
+    }
     if (this.browser) {
       this.browser.close();
       this.subscriptions.forEach((s) => s.unsubscribe());
@@ -175,15 +182,15 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       toolbar: "yes",
       zoom: "no",
       footer: "no",
-      beforeload: "get", // 设置后，beforeload事件才能触发
+      beforeload: "yes", // 设置后，beforeload事件才能触发
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: "#2596D9",
       navigationbuttoncolor: "#2596D9",
       // toolbarcolor:"#2596D90f"
     };
-    if (AppHelper.platform.is("ios")) {
-      options.beforeload = "yes";
-    }
+    // if (AppHelper.platform.is("ios")) {
+    //   options.beforeload = "yes";
+    // }
     // url = `http://test.version.testskytrip.com/download/test.html`;
     if (
       url.startsWith("weixin") ||
@@ -202,17 +209,13 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         this.browser.hide();
       }
       const res = await AppHelper.payH5Url(url).catch(async (e) => {
-        console.log(e)
+        console.log("aliPay error", e)
         await AppHelper.alert(e)
-        if (this.browser) {
-          this.browser._loadAfterBeforeload(url);
-          this.browser.show();
-        }
         return null;
       });
-      console.log("payres",res)
+      console.log("payres", res)
       if (res) {
-        alert(JSON.stringify(res));
+        await AppHelper.alert(res);
         await AppHelper.alert(res.payResultCode == '9000' ? "支付完成" : res.payResultCode);
       }
       if (this.browser) {
@@ -352,6 +355,10 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     return false;
   }
   private async openWechatOrAliApp(uri: string) {
+    alert(uri);
+    if (this.browser) {
+      this.browser.hide();
+    }
     // https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx0515512304565038c0d556b61957171400&package=1739803123&redirect_url=https%3A%2F%2Fopen.es.xiaojukeji.com%2Fwebapp%2FfeESWebapp%2FpaymentCompleted&redirect_url=https%3A%2F%2Fopen.es.xiaojukeji.com%2Fwebapp%2FfeESWebapp%2FpaymentCompleted
     if (uri.includes("mclient.alipay.com") || uri.startsWith("alipays")) {
       // ios 打开支付宝支付
@@ -363,10 +370,13 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       // this.browser._loadAfterBeforeload(uri);
       // }
       // if (uri.startsWith("alipays")) {
-      //   if (!(await AppHelper.isAliPayAppInstalled())) {
-      //     AppHelper.alert("尚未安装支付宝，请继续使用h5完成支付");
-      //     return;
-      //   }
+      if (!(await AppHelper.isAliPayAppInstalled())) {
+        AppHelper.alert("尚未安装支付宝，请继续使用h5完成支付");
+        if (this.browser) {
+          this.browser.show();
+        }
+        return;
+      }
       //   // this.openInSystemBrowser(uri);
       //   if (this.openSystemBrowser) {
       //     this.openSystemBrowser.close();
@@ -381,6 +391,9 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     if (uri.startsWith("weixin")) {
       if (!(await AppHelper.isWXAppInstalled())) {
         AppHelper.alert("尚未安装微信，请继续使用h5完成支付");
+        if (this.browser) {
+          this.browser.show();
+        }
         return;
       }
     }
