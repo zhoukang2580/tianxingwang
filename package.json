@@ -87,7 +87,6 @@
     "call-number": "file:cordova-callnumber-plugin",
     "codelyzer": "^5.2.2",
     "compressing": "^1.5.1",
-    "cordova-ali-plugin": "file:cordova-ali-plugin",
     "cordova-android": "^9.0.0",
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "^6.1.0",
@@ -138,8 +137,7 @@
       "cordova-plugin-safariviewcontroller": {},
       "cordova-filetransfer-plugin": {},
       "cordova-hcp-plugin": {},
-      "cordova-plugin-inappbrowser": {},
-      "cordova-ali-plugin": {}
+      "cordova-plugin-inappbrowser": {}
     },
     "platforms": [
       "ios",

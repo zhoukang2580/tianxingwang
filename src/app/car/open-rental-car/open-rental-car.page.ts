@@ -23,6 +23,7 @@ import { Clipboard } from "@ionic-native/clipboard/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
 import { SafariViewController } from "@ionic-native/safari-view-controller/ngx";
 import { IAliPayPluginPayResult } from "src/app/services/pay/pay.service";
+import { __awaiter } from 'tslib';
 
 @Component({
   selector: "app-open-rental-car",
@@ -200,8 +201,8 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       if (this.browser) {
         this.browser.hide();
       }
-      const res = await AppHelper.payH5Url(url).catch((e) => {
-        AppHelper.alert(e)
+      const res = await AppHelper.payH5Url(url).catch(async (e) => {
+        await AppHelper.alert(e)
         if (this.browser) {
           this.browser._loadAfterBeforeload(url);
           this.browser.show();
