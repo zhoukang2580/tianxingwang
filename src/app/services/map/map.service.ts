@@ -12,7 +12,7 @@ export interface MapPoint {
   cityName?: string;
 }
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class MapService {
   private static TAG = "map 定位";
@@ -24,7 +24,7 @@ export class MapService {
     this.querys = AppHelper.getQueryParamers();
     console.log("MapService,tree", this.querys);
     this.st = Date.now();
-    AppHelper.isWechatMiniAsync().then(isMini => {
+    AppHelper.isWechatMiniAsync().then((isMini) => {
       console.log("map service 是否是小程序环境：", isMini);
       if (!isMini) {
         this.initBMap();
@@ -79,6 +79,10 @@ export class MapService {
     });
   }
   private initGaoDeMap() {
+    window["onAmapLoad"] = () => {
+      // this.getAMap({ lat: "36.675807", lng: "117.000923" });
+      console.log("高德地图加载完毕");
+    };
     setTimeout(() => {
       try {
         // const script = document.createElement("script");
@@ -89,18 +93,15 @@ export class MapService {
         //   console.log("加载脚本完成", Date.now() - st);
         // };
         // document.body.appendChild(script);
-        window["onLoad"] = () => {
-          // this.getAMap({ lat: "36.675807", lng: "117.000923" });
-        };
-        const url = `https://webapi.amap.com/maps?v=1.4.15&key=${GaodeMapKey}&callback=onLoad`;
+        const url = `https://webapi.amap.com/maps?v=1.4.15&key=${GaodeMapKey}&callback=onAmapLoad`;
         const jsapi = document.createElement("script");
         jsapi.charset = "utf-8";
         jsapi.src = url;
-        document.head.appendChild(jsapi);
+        document.body.appendChild(jsapi);
       } catch (e) {
         console.error(e);
       }
-    }, 3000);
+    }, 3 * 1000);
   }
   getBMap(container: HTMLElement) {
     let bmap;
@@ -139,7 +140,7 @@ export class MapService {
         zoom: 13, // 级别
         resizeEnable: true,
         vectorMapForeign: "English",
-        center: [lnglat.lng, lnglat.lat] // 中心点坐标
+        center: [lnglat.lng, lnglat.lat], // 中心点坐标
         // viewMode: "3D" // 使用3D视图
       });
     }
@@ -155,7 +156,7 @@ export class MapService {
         resizeEnable: true,
         vectorMapForeign: "English",
         lang: "zh_en",
-        center: [lnglat.lng, lnglat.lat] // 中心点坐标
+        center: [lnglat.lng, lnglat.lat], // 中心点坐标
         // viewMode: "3D" // 使用3D视图
       });
       AMap.plugin(["AMap.ToolBar"], () => {
@@ -177,7 +178,7 @@ export class MapService {
         icon:
           "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
         // offset: new AMap.Pixel(-13, -30),
-        position // 位置
+        position, // 位置
       });
       amap.add(marker); // 添加到地图
     }
@@ -203,7 +204,7 @@ export class MapService {
       const convertor = new window["BMap"].Convertor();
       const pointArr = [];
       pointArr.push(curPoint);
-      convertor.translate(pointArr, 1, 5, data => {
+      convertor.translate(pointArr, 1, 5, (data) => {
         if (data && data.status == 0) {
           s(data.points[0]);
         } else {
@@ -233,7 +234,7 @@ export class MapService {
       5: `非法请求`,
       6: `没有权限`,
       7: `服务不可用`,
-      8: `超时`
+      8: `超时`,
     };
     if (!window["BMap"]) {
       return Promise.reject("地图加载失败");
@@ -269,7 +270,7 @@ export class MapService {
                 lat: point.lat,
                 lng: point.lng,
                 cityName: r.address && r.address.city,
-                province: r.address && r.address.province
+                province: r.address && r.address.province,
               });
             } else {
               reject(
@@ -295,7 +296,7 @@ export class MapService {
     }
     const geoc = new window["BMap"].Geocoder();
     return new Promise<AddressComponents>((s, reject) => {
-      geoc.getLocation(p, rs => {
+      geoc.getLocation(p, (rs) => {
         const addComp: AddressComponents = rs && rs.addressComponents;
         s(addComp);
       });
@@ -327,15 +328,15 @@ export class MapService {
     }
     const latLng = {
       longitude: this.querys["lng"],
-      latitude: this.querys["lat"]
+      latitude: this.querys["lat"],
     };
     console.log("getCurrentCityPositionInWechatMini ", latLng);
     if (latLng.latitude && latLng.longitude) {
       const p: MapPoint = {
         lng: latLng.longitude,
-        lat: latLng.latitude
+        lat: latLng.latitude,
       };
-      const city = await this.getCityByMap(p).catch(_ => {
+      const city = await this.getCityByMap(p).catch((_) => {
         console.error("getCityByMap", _);
         return null;
       });
@@ -343,9 +344,9 @@ export class MapService {
         result = {
           city: {
             CityName: city.CityName,
-            CityCode: city.CityCode
+            CityCode: city.CityCode,
           } as any,
-          position: latLng
+          position: latLng,
         };
       }
     } else {
@@ -358,10 +359,10 @@ export class MapService {
     latitude: string;
   }> {
     await WechatHelper.ready();
-    return new Promise<{ longitude: string; latitude: string }>(resolve => {
+    return new Promise<{ longitude: string; latitude: string }>((resolve) => {
       WechatHelper.wx.getLocation({
         type: "wgs84", //默认为 wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标
-        success: function(res) {
+        success: function (res) {
           //  res中longitude和latitude就是所获的的用户位置
           const longitude = res.longitude;
           const latitude = res.latitude;
@@ -369,10 +370,10 @@ export class MapService {
           console.log("wxGetLocation,success", res);
           resolve({ longitude, latitude });
         },
-        fail: function(e) {
+        fail: function (e) {
           console.error(e);
           resolve(null);
-        }
+        },
       });
     });
   }
@@ -389,7 +390,7 @@ export class MapService {
     let lats = z * Math.sin(theta) + 0.006;
     return {
       lng: lngs,
-      lat: lats
+      lat: lats,
     };
   }
 
@@ -406,7 +407,7 @@ export class MapService {
     let lats = z * Math.sin(theta);
     return {
       longitude: lngs,
-      latitude: lats
+      latitude: lats,
     };
   }
   async getLatLng() {
@@ -422,7 +423,7 @@ export class MapService {
       return result;
     }
     const latLng: MapPoint =
-      (await this.getCurrentPosition().catch(_ => {
+      (await this.getCurrentPosition().catch((_) => {
         console.error("getLatLng error", _);
         return void 0;
       })) || (await this.getPosByIp());
@@ -432,7 +433,7 @@ export class MapService {
       result.position = {
         lat: latLng.lat,
         lng: latLng.lng,
-        cityName: latLng.cityName
+        cityName: latLng.cityName,
       };
     }
     return result.position && result.position.lat && result.position.lng
@@ -454,7 +455,7 @@ export class MapService {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    let latLng: MapPoint = await this.getLatLng().catch(_ => {
+    let latLng: MapPoint = await this.getLatLng().catch((_) => {
       console.error("getCurrentPosition error", _);
       return void 0;
     });
@@ -463,9 +464,9 @@ export class MapService {
       result = {
         city: {
           CityName: latLng.cityName,
-          CityCode: ""
+          CityCode: "",
         } as any,
-        position: latLng
+        position: latLng,
       };
     }
     // if (!latLng) {
@@ -477,7 +478,7 @@ export class MapService {
     // }
     console.log("getCurrentCityPosition after", latLng);
     if (latLng) {
-      const city = await this.getCityByMap(latLng).catch(_ => {
+      const city = await this.getCityByMap(latLng).catch((_) => {
         console.error("getCityByMap", _);
         return null;
       });
@@ -485,12 +486,12 @@ export class MapService {
         result = {
           city: {
             CityName: city.CityName,
-            CityCode: city.CityCode
+            CityCode: city.CityCode,
           } as any,
-          position: latLng
+          position: latLng,
         };
       } else {
-        const cityFromMap = await this.getCityFromMap(latLng).catch(_ => {
+        const cityFromMap = await this.getCityFromMap(latLng).catch((_) => {
           console.error("getCityFromMap", _);
           return null;
         });
@@ -498,9 +499,9 @@ export class MapService {
           result = {
             city: {
               CityCode: "",
-              CityName: cityFromMap.city
+              CityName: cityFromMap.city,
             } as any,
-            position: cityFromMap
+            position: cityFromMap,
           };
         }
       }
@@ -508,7 +509,7 @@ export class MapService {
     return result;
   }
   private getPosByIp(): Promise<MapPoint> {
-    return new Promise<MapPoint>(s => {
+    return new Promise<MapPoint>((s) => {
       if (!window["BMap"]) {
         console.error("getCityNameByIp,BMap 地图尚未加载。。。");
         s(null);
@@ -558,16 +559,18 @@ export class MapService {
     ) {
       return new Promise<MapPoint>((s, reject) => {
         navigator.geolocation.getCurrentPosition(
-          async position => {
+          async (position) => {
             if (position && position.coords) {
               const curPoint = new window["BMap"].Point(
                 position.coords.longitude,
                 position.coords.latitude
               );
-              const p: MapPoint = await this.convertPoint(curPoint).catch(e => {
-                console.error("getCurrentPostionByNavigator", e);
-                return null;
-              });
+              const p: MapPoint = await this.convertPoint(curPoint).catch(
+                (e) => {
+                  console.error("getCurrentPostionByNavigator", e);
+                  return null;
+                }
+              );
               if (p) {
                 s(p);
               } else {
@@ -577,13 +580,13 @@ export class MapService {
               reject("Navigator 定位失败");
             }
           },
-          error => {
+          (error) => {
             reject(error);
           },
           {
             enableHighAccuracy: false,
             timeout: 3 * 1000, //获取位置允许的最长时间
-            maximumAge: 1000 //多久更新获取一次位置
+            maximumAge: 1000, //多久更新获取一次位置
           }
         );
       });
@@ -598,6 +601,4 @@ export interface AddressComponents {
   street: string;
   streetNumber: string;
 }
-interface TrafficlineEntity{
-  
-}
+interface TrafficlineEntity {}

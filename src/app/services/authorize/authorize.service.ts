@@ -1,10 +1,10 @@
 import { Injectable } from "@angular/core";
 import { ApiService } from "../api/api.service";
 import { RequestEntity } from "../api/Request.entity";
-import { IdentityService } from '../identity/identity.service';
+import { IdentityService } from "../identity/identity.service";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class AuthorizeService {
   private fetchAuthority: { promise: Promise<{ [key: string]: any }> };
@@ -19,6 +19,11 @@ export class AuthorizeService {
   }
   clearAuthorizes() {
     this.authorizes = null;
+  }
+  async loadSubsystems() {
+    const req = new RequestEntity();
+    req.Method = "ApiHomeUrl-Authorize-SubSystems";
+    return this.apiService.getPromiseData<string[]>(req);
   }
   async getAuthorizes() {
     if (this.authorizes) {

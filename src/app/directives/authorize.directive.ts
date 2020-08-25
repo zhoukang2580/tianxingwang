@@ -8,21 +8,30 @@ import {
   SimpleChanges,
   ElementRef,
   AfterContentChecked,
-  AfterViewChecked
+  AfterViewChecked,
+  Renderer2,
+  OnInit,
 } from "@angular/core";
+import { AppHelper } from "../appHelper";
 
 @Directive({
-  selector: "[appAuthority]"
+  selector: "[appAuthority]",
 })
-export class AuthorizeDirective implements OnChanges {
+export class AuthorizeDirective implements OnChanges, OnInit {
   @Input() appAuthority: string;
+  @Input() options: {
+    isShadeText: boolean;
+    alterTextWhenClick: string;
+    textColor: string;
+  };
   private lastTime = 0;
   private initialDisplayStyle;
   constructor(
     private authorizeService: AuthorizeService,
     // private viewContainerRef: ViewContainerRef,
     // private tempRef: TemplateRef<any>,
-    private el: ElementRef<HTMLElement>
+    private el: ElementRef<HTMLElement>,
+    private render: Renderer2
   ) {
     this.initialDisplayStyle = this.el.nativeElement.style.display;
   }
@@ -37,6 +46,15 @@ export class AuthorizeDirective implements OnChanges {
   //     this.changeView();
   //   }
   // }
+  ngOnInit() {
+    if (this.options) {
+      if (this.options.alterTextWhenClick) {
+        this.el.nativeElement.onclick = () => {
+          AppHelper.alert(this.options.alterTextWhenClick);
+        };
+      }
+    }
+  }
   ngOnChanges(changes: SimpleChanges) {
     if (changes.appAuthority && changes.appAuthority.currentValue) {
       this.changeView();
@@ -66,10 +84,24 @@ export class AuthorizeDirective implements OnChanges {
       //   this.initialDisplayStyle,
       //   this.el.nativeElement.style.display
       // );
-      this.el.nativeElement.style.display = this.initialDisplayStyle || "";
+      if (this.options) {
+        this.render.setStyle(this.el.nativeElement, "color", "initial");
+      } else {
+        this.el.nativeElement.style.display = this.initialDisplayStyle || "";
+      }
     } else {
       // this.viewContainerRef.clear();
-      this.el.nativeElement.style.display = "none";
+      if (!this.options || !this.options.isShadeText) {
+        this.el.nativeElement.style.display = "none";
+      } else {
+        if (this.options.isShadeText) {
+          this.render.setStyle(
+            this.el.nativeElement,
+            "color",
+            this.options.textColor
+          );
+        }
+      }
     }
   }
 }

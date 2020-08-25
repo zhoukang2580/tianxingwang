@@ -210,7 +210,7 @@
       </ion-grid>
     </ng-container>
   </ion-list>
-  <ion-list #trafficInfo class='traffic-info'>
+  <!-- <ion-list #trafficInfo class='traffic-info'>
     <ion-item-divider (click)='onToggleOpenMap()'>交通信息
       <ng-container *ngIf='hotel'>
         <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
@@ -218,8 +218,8 @@
       </ng-container>
     </ion-item-divider>
     <div class="traffic-map" [style.display]='!hotel||!hotel["isShowMap"]?"none":"block"'>
-      <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
+   
     </div>
-  </ion-list>
-  <div #divforscroll [class.div-for-scroll]='!hotel||!hotel["isShowMap"]||!hotel["ishoteldetails"]'></div>
+  </ion-list> -->
+  <div #divforscroll class='div-for-scroll'></div>
 </ion-content>

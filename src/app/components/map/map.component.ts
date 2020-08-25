@@ -28,10 +28,10 @@ export class MapComponent
   @ViewChild("container") private container: ElementRef<HTMLElement>;
   map: any;
   private marker: any;
+  private dragendTimer: any;
   constructor(private mapService: MapService) { }
   ngOnInit() {
     // this.getCurPosition();
-    this.autoPanTo();
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -52,13 +52,13 @@ export class MapComponent
       }
     }
   }
-  private async createMap(container: HTMLElement) {
+  private  createMap(container: HTMLElement) {
     // console.log(container);
     // if (!this.lat || !this.lng) {
     //   this.lat = "40.057031";
     //   this.lng = "116.307852";
     // }
-    if(!window["BMap"]){
+    if (!window["BMap"]) {
       return;
     }
     if (!this.map) {
@@ -68,7 +68,7 @@ export class MapComponent
     const ZoomControl = {
       // 设置默认停靠位置和偏移量
       defaultAnchor: window["BMap"].BMAP_ANCHOR_TOP_LEFT,
-      defaultOffset: new window["BMap"].Size(10, 10),
+      defaultOffset: new window["BMap"].Size(15, 15),
       initialize: map => {
         // 创建一个DOM元素
         const div = document.createElement("div");
@@ -90,8 +90,8 @@ export class MapComponent
     };
     if (this.map && window["BMap"] && window["BMap"].Point) {
       this.map.addControl(ZoomControl);
-      this.map.addEventListener("dragstart", this.onMapDragstart.bind(this));
-      this.map.addEventListener("dragend", this.onMapDragEnd.bind(this));
+      // this.map.addEventListener("dragstart", this.onMapDragstart.bind(this));
+      // this.map.addEventListener("dragend", this.onMapDragEnd.bind(this));
       const point = new window["BMap"].Point(this.lng, this.lat);
       const opts = { offset: new window["BMap"].Size(10, 10) };
       this.map.addControl(new window["BMap"].ScaleControl(opts));
@@ -104,11 +104,18 @@ export class MapComponent
   }
   private onMapDragstart() {
     console.log("dragstart");
-    this.stopPanTo();
+  }
+  onBackToLatLng(){
+    this.initAndPanToMarker();
   }
   private onMapDragEnd() {
+    if (this.dragendTimer) {
+      clearTimeout(this.dragendTimer);
+    }
     console.log("dragend");
-    this.autoPanTo();
+    // this.dragendTimer = setTimeout(() => {
+    //   this.autoPanTo();
+    // }, 5000);
   }
   private initAndPanToMarker(p?: MapPoint) {
     if (!window["BMap"] || !window["BMap"].Point || !this.map) {
@@ -143,19 +150,17 @@ export class MapComponent
   ngAfterViewInit() {
     if (this.container && this.container.nativeElement) {
       setTimeout(() => {
-        this.createMap(this.container.nativeElement).catch(e => {
-          console.error(e);
+        this.createMap(this.container.nativeElement);
+        this.initAndPanToMarker();
+        requestAnimationFrame(()=>{
+          const el=this.container.nativeElement.querySelector(".BMap_Marker");
+          if(el&&el.firstChild){
+            (el.firstChild as HTMLElement).style.width=`35px`;
+            (el.firstChild as HTMLElement).style.height=`30px`;
+          }
         });
       }, 1000);
     }
   }
-  private autoPanTo() {
-    this.stopPanTo();
-    this.subscription = interval(2 * 1000).subscribe(() => {
-      this.initAndPanToMarker();
-    });
-  }
-  private stopPanTo() {
-    this.subscription.unsubscribe();
-  }
+
 }

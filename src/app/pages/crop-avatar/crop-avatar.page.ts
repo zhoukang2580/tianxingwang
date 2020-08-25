@@ -3,7 +3,7 @@ import {
   OnInit,
   HostBinding,
   AfterViewInit,
-  ViewChild
+  ViewChild,
 } from "@angular/core";
 import { NavController, Platform, Config } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
@@ -15,7 +15,7 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 @Component({
   selector: "app-crop-avatar",
   templateUrl: "./crop-avatar.page.html",
-  styleUrls: ["./crop-avatar.page.scss"]
+  styleUrls: ["./crop-avatar.page.scss"],
 })
 export class CropAvatarPage implements OnInit, AfterViewInit {
   cropper: Cropper;
@@ -37,13 +37,13 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
     this.fileReader = new FileReader();
   }
 
-  ngOnInit() { }
+  ngOnInit() {}
   goBack() {
     this.backbtn.popToPrePage();
   }
   ngAfterViewInit() {
     this.croppedImage = document.getElementById("image") as HTMLImageElement;
-    this.activatedRoute.paramMap.subscribe(d => {
+    this.activatedRoute.paramMap.subscribe((d) => {
       if (d && d.get("cropAvatar")) {
         this.method = d.get("method");
         this.fileName = d.get("fileName");
@@ -58,7 +58,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
           AppHelper.setRouteData(null);
           this.reset();
         } else {
-          this.backbtn.popToPrePage();
+          this.cancel();
         }
       }
     });
@@ -78,12 +78,12 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
       this.showCropBox = false;
     }, 0);
     const avatar = this.cropper.getCroppedCanvas({
-      maxWidth: 800,
-      maxHeight: 800,
-      minWidth: 800,
-      minHeight: 800,
+      maxWidth: 400,
+      maxHeight: 400,
+      minWidth: 400,
+      minHeight: 400,
       // fillColor: '#fff',
-      imageSmoothingEnabled: false
+      imageSmoothingEnabled: false,
       // imageSmoothingQuality: 'medium' as any,
     });
     this.avatar = this.resultImageUrl = avatar.toDataURL("image/jpeg", 0.8);
@@ -119,7 +119,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
     req.Method = this.method;
     req.IsShowLoading = true;
     req.Data = {
-      FileName: this.fileName
+      FileName: this.fileName,
     };
     req.FileValue = vals[1];
     this.uploadAction(req);
@@ -129,15 +129,17 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
       // .getResponse(req, true, "image/jpeg", this.fileName)
       .getResponse(req)
       .subscribe(
-        uploadRes => {
+        (uploadRes) => {
           this.showCropBox = false;
           this.uploaded = uploadRes.Status;
           if (uploadRes.Status) {
             AppHelper.setRouteData(true);
             this.goBack();
+          } else if (uploadRes.Message) {
+            AppHelper.alert(uploadRes.Message);
           }
         },
-        e => {
+        (e) => {
           this.uploaded = false;
           this.showCropBox = true;
           AppHelper.alert(e);
@@ -180,7 +182,7 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
         // console.log(event.detail.rotate);
         // console.log(event.detail.scaleX);
         // console.log(event.detail.scaleY);
-      }
+      },
     });
   }
 }

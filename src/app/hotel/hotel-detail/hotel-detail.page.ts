@@ -232,7 +232,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  async ngOnInit() {
+   ngOnInit() {
     this.subscriptions.push(this.hotelDetailSub);
     AppHelper.isWechatMiniAsync().then((isMini) => {
       this.isShowTrafficInfo = !isMini;
@@ -253,11 +253,14 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
         this.hotelDayPrice = this.hotelService.curViewHotel;
         const isSelf = await this.staffService.isSelfBookType();
         if (!this.hotelPolicy || this.hotelPolicy.length == 0) {
-          this.onSearch();
+          this.hotelPolicy = await this.getPolicy();
         }
       })
     );
-    this.config = await this.configService.get().catch((_) => null);
+    this.configService.get().then(c=>{
+      this.config = c;
+    })
+    this.doRefresh();
   }
   private getHotelImageUrls() {
     let urls: string[] = [];
@@ -393,6 +396,10 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onSegmentChanged(evt: CustomEvent) {
     this.activeTab = evt.detail.value;
+    if(this.activeTab=='trafficInfo'){
+      this.onOpenMap();
+      return;
+    }
     this.scrollToTab(this.activeTab);
   }
   private scrollToTab(tab: IHotelDetailTab) {
@@ -439,12 +446,6 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
         behavior: "smooth",
         top: tab.top - this.headerHeight,
       });
-    }
-  }
-  onToggleOpenMap() {
-    if (this.hotel) {
-      this.hotel["isShowMap"] = !this.hotel["isShowMap"];
-      this.isAutoOpenMap = false;
     }
   }
   async onShowRoomPlans(room) {
@@ -725,8 +726,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   onOpenMap() {
-    this.activeTab = "trafficInfo";
-    this.onSegmentChanged({ detail: { value: this.activeTab } } as any);
+    this.router.navigate(['hotel-map'])
   }
   async ngAfterViewInit() {
     setTimeout(() => {

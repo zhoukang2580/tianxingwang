@@ -21,7 +21,9 @@ import {
 } from "@ionic-native/in-app-browser/ngx";
 import { Clipboard } from "@ionic-native/clipboard/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
-import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
+import { SafariViewController } from "@ionic-native/safari-view-controller/ngx";
+import { IAliPayPluginPayResult } from "src/app/services/pay/pay.service";
+
 @Component({
   selector: "app-open-rental-car",
   templateUrl: "./open-rental-car.page.html",
@@ -33,10 +35,8 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   private openSystemBrowser: InAppBrowserObject;
   private shareWebUrl$ = new BehaviorSubject(null);
   private isSafariAvailable = false;
-  private entryUrl: string;
   isApp = AppHelper.isApp();
   url$: Observable<string>;
-  payUrl: string;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   constructor(
     private carService: CarService,
@@ -48,7 +48,6 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   ) { }
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
-    this.payUrl = "";
     try {
       if (this.browser) {
         this.browser.hide();
@@ -84,6 +83,20 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       this.backBtn.popToPrePage();
     }
   }
+  private getQueryParams(url: string) {
+    const obj = {};
+    if (url) {
+      if (url.includes("?")) {
+        const tmp = url.substr(url.indexOf("?") + 1);
+        const arr = tmp.split("&");
+        arr.forEach((kv) => {
+          const it = kv.split("=");
+          obj[it[0]] = it[1];
+        });
+      }
+    }
+    return obj;
+  }
   private closeBrowser() {
     if (this.browser) {
       this.browser.close();
@@ -104,40 +117,45 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   private async openInSafari(uri: string) {
     const ok = await this.safariViewController.isAvailable().catch(() => false);
     if (ok) {
-      const sub = this.safariViewController.show({
-        url: uri,
-        hidden: false,
-        animated: true,
-        transition: 'curl',
-        enterReaderModeIfAvailable: true,
-        tintColor: '#2596D9'
-      })
-        .pipe(finalize(() => setTimeout(() => {
-          sub.unsubscribe();
-        }, 200)))
-        .subscribe(result => {
-
-          if (result.event === 'opened') {
-            if (this.browser) {
-              this.browser.hide();
-            };
-            console.log('Opened');
-          }
-          else if (result.event === 'loaded') {
-            ; console.log('Loaded');
-          }
-          else if (result.event === 'closed') {
-            if (this.browser) {
-              this.browser.show();
-            } else {
-              this.back();
-            }
-            ; console.log('Closed');
-          }
-        }, e => {
-          this.openInAppBrowser(uri);
-          console.error(e);
+      const sub = this.safariViewController
+        .show({
+          url: uri,
+          hidden: false,
+          animated: true,
+          transition: "curl",
+          enterReaderModeIfAvailable: true,
+          tintColor: "#2596D9",
         })
+        .pipe(
+          finalize(() =>
+            setTimeout(() => {
+              sub.unsubscribe();
+            }, 200)
+          )
+        )
+        .subscribe(
+          (result) => {
+            if (result.event === "opened") {
+              if (this.browser) {
+                this.browser.hide();
+              }
+              console.log("Opened");
+            } else if (result.event === "loaded") {
+              console.log("Loaded");
+            } else if (result.event === "closed") {
+              if (this.browser) {
+                this.browser.show();
+              } else {
+                this.back();
+              }
+              console.log("Closed");
+            }
+          },
+          (e) => {
+            this.openInAppBrowser(uri);
+            console.error(e);
+          }
+        );
     }
     // else {
     //   this.openInAppBrowser(uri);
@@ -156,23 +174,47 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       toolbar: "yes",
       zoom: "no",
       footer: "no",
-      beforeload: "yes", // 设置后，beforeload事件才能触发
+      beforeload: "get", // 设置后，beforeload事件才能触发
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: "#2596D9",
       navigationbuttoncolor: "#2596D9",
       // toolbarcolor:"#2596D90f"
     };
-    // url = `http://test.version.testskytrip.com/download/test.html`;
-    if (url.startsWith("weixin") || url.startsWith("alipays") || this.checkIfAliWechatPay(url)) {
-      this.openWechatOrAliApp(url);
+    if (AppHelper.platform.is("ios")) {
+      options.beforeload = "yes";
     }
-    else {
-      if (this.isSafariAvailable) {
-        this.subscriptions.push(
-          this.safariViewController.show({ url, hidden: true }).subscribe());
-      }
+    // url = `http://test.version.testskytrip.com/download/test.html`;
+    if (
+      url.startsWith("weixin") ||
+      url.startsWith("alipays") ||
+      this.checkIfAliWechatPay(url)
+    ) {
+      this.openWechatOrAliApp(url);
+    } else {
       this.browser = this.iab.create(encodeURI(url), "_blank", options);
       this.addListeners();
+    }
+  }
+  private async aliPay(url: string) {
+    try {
+      if (this.browser) {
+        this.browser.hide();
+      }
+      const res = await AppHelper.payH5Url(url).catch(() => {
+        if (this.browser) {
+          this.browser._loadAfterBeforeload(url);
+          this.browser.show();
+        }
+        return null;
+      });
+      if (res) {
+        await AppHelper.alert(res.resultCode == '9000' ? "支付完成" : res.resultCode);
+      }
+      if (this.browser) {
+        this.browser.show();
+      }
+    } catch (e) {
+      AppHelper.alert(e);
     }
   }
   private addListeners() {
@@ -180,17 +222,13 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       this.subscriptions.push(
         this.browser.on("beforeload").subscribe(async (evt) => {
           console.log("beforeload", evt.message, evt.data, evt.code, evt.url);
-          this.isSafariAvailable = await this.safariViewController.isAvailable().catch(() => false);
-          if (this.isSafariAvailable) {
-            this.subscriptions.push(
-              this.safariViewController.show({ url: evt.url, hidden: true }).subscribe());
-          }
           if (evt.url) {
             const toUrl = evt.url.toLowerCase();
             if (
               toUrl.startsWith("weixin") ||
               toUrl.startsWith("wechat") ||
-              toUrl.startsWith("alipays") || this.checkIfAliWechatPay(toUrl)
+              toUrl.startsWith("alipays") ||
+              this.checkIfAliWechatPay(toUrl)
             ) {
               // 微信或者支付宝支付
               this.openWechatOrAliApp(toUrl);
@@ -238,6 +276,26 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
           // if (this.browser) {
           //   this.browser.show();
           // }
+          const toUrl = evt.url;
+          if (AppHelper.platform.is("android")) {
+            if (toUrl.includes("sharetrips")) {
+              AppHelper.isWXAppInstalled().then(async (installed) => {
+                if (installed) {
+                  this.shareWebPage(evt.url);
+                } else {
+                  this.clipboard.clear();
+                  await this.clipboard.copy(evt.url);
+                  this.browser.hide();
+                  await AppHelper.toast(
+                    "行程链接已拷贝到剪切板",
+                    2000,
+                    "middle"
+                  );
+                  this.browser.show();
+                }
+              });
+            }
+          }
           console.log("loadstart");
           console.log(evt);
           console.log("loadstart", evt);
@@ -275,18 +333,23 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     }
   }
   private checkIfAliWechatPay(uri: string) {
-    if (uri.includes("mclient.alipay.com") || uri.includes("wx.tenpay.com")) {// ios 打开支付宝支付
+    if (uri.includes("mclient.alipay.com") || uri.includes("wx.tenpay.com")) {
+      // ios 打开支付宝支付
       return true;
     }
-    if (uri.startsWith("alipays") || uri.startsWith("weixin") || uri.startsWith("wechat")) {
+    if (
+      uri.startsWith("alipays") ||
+      uri.startsWith("weixin") ||
+      uri.startsWith("wechat")
+    ) {
       return true;
     }
     return false;
   }
   private async openWechatOrAliApp(uri: string) {
-    this.payUrl = uri;
     // https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb?prepay_id=wx0515512304565038c0d556b61957171400&package=1739803123&redirect_url=https%3A%2F%2Fopen.es.xiaojukeji.com%2Fwebapp%2FfeESWebapp%2FpaymentCompleted&redirect_url=https%3A%2F%2Fopen.es.xiaojukeji.com%2Fwebapp%2FfeESWebapp%2FpaymentCompleted
-    if (uri.includes("mclient.alipay.com")) {// ios 打开支付宝支付
+    if (uri.includes("mclient.alipay.com") || uri.startsWith("alipays")) {
+      // ios 打开支付宝支付
       // if (this.browser) {
       // https://mclient.alipay.com/home/exterfaceassign.htm?_input_charset=utf-8&subject=%e6%bb%b4%e6%bb%b4%e5%bf%ab%e8%bd%a6-%e4%b9%94%e5%b8%88%e5%82%85&sign=bviqyjizkf1n%2f95zp2e24dluzqy1q%2blz8l3dsidfry3ei5%2ffat84z8nxlk8ksxoqiq6ztjirerzeauqxu19xudm1j1ui1iex%2bj%2fvood9fb%2btd5rlze42%2b0dxrb0trkbkonozq0efz%2b471oxmh2cotnrohlh%2foh54fr39pa4akfo%3d&body=%e6%bb%b4%e6%bb%b4%e5%bf%ab%e8%bd%a6-%e4%b9%94%e5%b8%88%e5%82%85&notify_url=http%3a%2f%2fpay.diditaxi.com.cn%2fshield%2falipay%2fnotifypay&alipay_exterface_invoke_assign_model=cashier&alipay_exterface_invoke_assign_target=mapi_direct_trade.htm&payment_type=1&out_trade_no=233_202008056832823201616503&partner=2088021541607785&alipay_exterface_invoke_assign_sign=_p841%2f_srlaa%2b%2ba4b_y_ht_w_fh_e7lv%2fx_m8_b_x_up_bx_g_d_mz_c_x_j3bhpz_uo%2b1w4_a%3d%3d&service=alipay.wap.create.direct.pay.by.user&total_fee=3.0&return_url=https%3a%2f%2fopen.es.xiaojukeji.com%2fwebapp%2ffeeswebapp%2fpaymentcompleted&sign_type=rsa&seller_id=2088021541607785&alipay_exterface_invoke_assign_client_ip=117.136.8.145
       // await AppHelper.alipayH5PayWebUrl(uri);
@@ -294,7 +357,21 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       // }, 5000);
       // this.browser._loadAfterBeforeload(uri);
       // }
-
+      if (uri.startsWith("alipays")) {
+        if (!(await AppHelper.isAliPayAppInstalled())) {
+          AppHelper.alert("尚未安装支付宝，请继续使用h5完成支付");
+          return;
+        }
+        // this.openInSystemBrowser(uri);
+        if (this.openSystemBrowser) {
+          this.openSystemBrowser.close();
+        }
+        this.openSystemBrowser = this.iab.create(uri, "_system");
+        this.openSystemBrowser.hide();
+      } else {
+        await this.aliPay(uri);
+      }
+      return;
     }
     if (uri.startsWith("weixin")) {
       if (!(await AppHelper.isWXAppInstalled())) {
@@ -302,38 +379,32 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         return;
       }
     }
-    if (uri.startsWith("alipays")) {
-      if (!(await AppHelper.isAliPayAppInstalled())) {
-        AppHelper.alert("尚未安装支付宝，请继续使用h5完成支付");
-        return;
-      }
-    }
-    const ok = await this.safariViewController.isAvailable().catch(e => false);
-    if (ok) {
-      this.subscriptions.push(this.safariViewController.show({ url: this.entryUrl, hidden: true }).subscribe(evt => {
-        if (evt.event == 'loaded') {
-          this.openInSafari(uri);
-        }
-      }, () => {
-        this.openInSafari(uri);
-      }));
-    } else {
-      this.openInSystemBrowser(uri);
-    }
 
+    const ok = await this.safariViewController
+      .isAvailable()
+      .catch((e) => false);
+    if (ok) {
+      this.openInSafari(uri);
+    } else {
+      // this.openInSystemBrowser(uri);
+      if (this.openSystemBrowser) {
+        this.openSystemBrowser.close();
+      }
+      this.openSystemBrowser = this.iab.create(uri, "_system");
+      this.openSystemBrowser.hide();
+      // if(uri.startsWith("weixin:")){
+      // }else{
+      //   window.open(uri, "_blank");
+      // }
+    }
   }
   private async openInSystemBrowser(uri: string) {
     if (this.openSystemBrowser) {
       this.openSystemBrowser.close();
     }
-    var encodedUri = encodeURI(uri);
+    const encodedUri = encodeURI(uri);
     console.log("要打开的uri", uri);
     console.log("打开的uri地址 encoded", encodeURI(uri));
-    // window.opener = 'https://open.es.xiaojukeji.com';
-    if (this.browser) {
-      this.browser.executeScript({ code: `alert(document.referrer)` });
-    }
-
     window.open(uri, "_system");
 
     // this.openSystemBrowser = this.iab.create(uri);
@@ -359,33 +430,26 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       }
     }
   }
-  private browserExecuteJs(js: string) {
-    if (this.browser) {
-      const browser = this.iab.create("", "_system");
-      browser.hide();
-      browser.executeScript({ code: js });
-    }
-  }
   ngOnInit() {
     this.subscriptions.push(
       this.shareWebUrl$.subscribe((url) => {
         this.shareWebPage(url);
       })
     );
-    this.subscriptions.push(this.route.queryParamMap.subscribe(q => {
-      if (this.openSystemBrowser) {
-        this.openSystemBrowser.close();
-      }
-      if (this.payUrl) {
-        window.open(this.payUrl);
-        this.payUrl = "";
-      }
-    }))
+    this.subscriptions.push(
+      this.route.queryParamMap.subscribe((q) => {
+        if (this.openSystemBrowser) {
+          this.openSystemBrowser.close();
+        }
+      })
+    );
     if (AppHelper.isApp()) {
+      this.closeBrowser();
       this.subscriptions.push(
         this.route.queryParamMap.subscribe(async (q) => {
-          this.isSafariAvailable = await this.safariViewController.isAvailable().catch(e=>false);
-          this.entryUrl = q.get("url");
+          this.isSafariAvailable = await this.safariViewController
+            .isAvailable()
+            .catch((e) => false);
           if (q.get("url")) {
             if (this.isSafariAvailable) {
               this.openInSafari(q.get("url"));

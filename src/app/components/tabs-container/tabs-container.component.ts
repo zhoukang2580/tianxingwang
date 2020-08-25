@@ -13,6 +13,7 @@ import {
   AfterViewInit,
   OnDestroy,
   Renderer2,
+  TemplateRef,
 } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { Subscription, fromEvent } from "rxjs";
@@ -45,6 +46,7 @@ export class TabsContainerComponent
   @Input() options: {
     displayNameKey: string;
     valueKey: string;
+    tabRef: TemplateRef<HTMLElement>;
   };
   activeTab: ITab;
   private isFirstActive = false;
@@ -55,23 +57,33 @@ export class TabsContainerComponent
 
   ngOnDestroy() {}
   ngAfterViewInit() {
-    if (this.tabs && this.tabs.length > 1) {
-      this.initMaxWidth();
-    }
     setTimeout(() => {
-      const t = this.tabs && this.tabs.find((it) => it.isActive);
-      if (t) {
-        this.moveActiveTabToCenter();
+      this.initMax();
+      if (this.tabs && this.tabs.length > 1) {
+        const t = this.tabs && this.tabs.find((it) => it.isActive);
+        if (t) {
+          this.moveActiveTabToCenter();
+        }
       }
     }, 200);
   }
-  private initMaxWidth() {
-    if (this.direction == "horizontal") {
-      this.render.setStyle(
-        this.containerEle.nativeElement,
-        "width",
-        `${this.el.nativeElement.parentElement.clientWidth}px`
-      );
+  private initMax() {
+    try {
+      if (this.direction == "horizontal") {
+        this.render.setStyle(
+          this.containerEle.nativeElement,
+          "width",
+          `${this.el.nativeElement.parentElement.clientWidth}px`
+        );
+      } else {
+        this.render.setStyle(
+          this.containerEle.nativeElement,
+          "height",
+          `${this.el.nativeElement.parentElement.clientHeight}px`
+        );
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
   ngOnInit() {}
@@ -161,10 +173,8 @@ export class TabsContainerComponent
       const rect1 = activeEl.getBoundingClientRect();
       if (rect1) {
         if (this.direction == "vertical") {
-          const delta = rect1.y - rect1.height / 2 - container.clientWidth / 2;
-          if (delta > 0) {
-            container.scrollBy({ top: delta, behavior: "smooth", left: 0 });
-          }
+          const delta = rect1.y - rect1.height / 2 - container.clientHeight / 2;
+          container.scrollBy({ top: delta, behavior: "smooth", left: 0 });
         } else {
           const w = container.clientWidth / 2;
           const delta = rect1.x + rect1.width / 2 - w;

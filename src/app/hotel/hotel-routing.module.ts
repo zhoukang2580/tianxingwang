@@ -58,7 +58,11 @@ export const routes: Routes = [
   {
     path: "hotel-book",
     loadChildren: () => import("./book/book.module").then(m => m.BookPageModule)
+  },  {
+    path: 'hotel-map',
+    loadChildren: () => import('./hotel-map/hotel-map.module').then( m => m.HotelMapPageModule)
   }
+
 ];
 @NgModule({
   declarations: [],

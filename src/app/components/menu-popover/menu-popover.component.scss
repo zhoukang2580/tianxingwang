@@ -28,7 +28,7 @@ ion-grid {
     }
   }
 }
-.icon{
+.icon {
   font-size: 2em;
 }
 .menus-wrapper {
@@ -77,4 +77,13 @@ ion-grid {
     box-shadow: 1px 3px 3px grey;
     padding: 0.5em;
   }
+}
+img {
+  width: 2em;
+  height: 2em;
+}
+.text-desc {
+  font-size: 0.8rem;
+  white-space: nowrap;
+  margin-top: 0.2em;
 }

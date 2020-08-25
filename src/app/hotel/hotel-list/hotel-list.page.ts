@@ -69,7 +69,7 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
   animations: [],
 })
 export class HotelListPage
-  implements OnInit, OnDestroy, AfterViewInit, AfterContentInit {
+  implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
@@ -146,8 +146,7 @@ export class HotelListPage
     this.hotelDayPrices = [];
     this.doRefresh();
   }
-  async ngAfterContentInit() { }
-  async ngAfterViewInit() {
+  ngAfterViewInit() {
     this.autofocusSearchBarInput();
     this.setQueryConditionEleTop();
   }
@@ -247,10 +246,7 @@ export class HotelListPage
       .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
-          this.oldSearchText = this.searchHotelModel.searchText;
-          this.oldDestinationCode =
-            this.searchHotelModel &&
-            this.searchHotelModel.destinationCity.CityCode;
+
           setTimeout(() => {
             this.isLoadingHotels = false;
             if (this.scroller) {
@@ -261,6 +257,9 @@ export class HotelListPage
       )
       .subscribe(
         (result) => {
+          this.oldSearchText = this.searchHotelModel.searchText;
+          this.oldDestinationCode = this.searchHotelModel.destinationCity &&
+            this.searchHotelModel.destinationCity.Code;
           if (this.refresher) {
             if (this.hotelQueryModel.PageIndex < 1) {
               console.log("refresher complete");
@@ -341,8 +340,8 @@ export class HotelListPage
   private checkDestinationChanged() {
     if (this.searchHotelModel) {
       return (
-        !this.searchHotelModel.destinationCity ||
-        this.searchHotelModel.destinationCity.Code != this.oldDestinationCode
+        (this.searchHotelModel.destinationCity &&
+          this.searchHotelModel.destinationCity.Code) != this.oldDestinationCode
       );
     }
     return false;
@@ -350,10 +349,10 @@ export class HotelListPage
   private checkSearchTextChanged() {
     if (this.searchHotelModel) {
       return (
-        !this.searchHotelModel.searchText ||
-        !this.oldSearchText ||
-        this.searchHotelModel.searchText.Value != this.oldSearchText.Value ||
-        this.searchHotelModel.searchText.Text != this.oldSearchText.Text
+        this.searchHotelModel.searchText &&
+        this.oldSearchText &&
+        (this.searchHotelModel.searchText.Value != this.oldSearchText.Value ||
+          this.searchHotelModel.searchText.Text != this.oldSearchText.Text)
       );
     }
     return false;
@@ -387,12 +386,9 @@ export class HotelListPage
       this.hideQueryPannel();
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
-      this.isLoadingHotels = true;
-      const changed = this.checkSearchTextChanged();
-      if (changed || this.checkDestinationChanged()) {
-        requestAnimationFrame(() => {
-          this.doRefresh(true);
-        });
+      const isrefresh = this.checkSearchTextChanged() || this.checkDestinationChanged() || !this.hotelDayPrices || !this.hotelDayPrices.length;
+      if (isrefresh) {
+        this.doRefresh(true);
       }
     });
     this.subscriptions.push(sub0);
@@ -422,9 +418,9 @@ export class HotelListPage
       });
     this.subscriptions.push(sub);
     this.subscriptions.push(sub1);
-    setTimeout(() => {
-      this.doRefresh();
-    }, 500);
+    // setTimeout(() => {
+    //   this.doRefresh();
+    // }, 500);
     this.agent = await this.tmcService.getAgent();
     this.config = await this.configService.getConfigAsync();
   }

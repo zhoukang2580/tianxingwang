@@ -58,7 +58,7 @@ export class InternationalHotelService {
   private fetchPassengerCredentials: {
     promise: Promise<{ [accountId: string]: CredentialsEntity[] }>;
   };
-  private isInitializingSelfBookInfos:Promise<any> ;
+  private isInitializingSelfBookInfos: Promise<any>;
   private bookInfos: PassengerBookInfo<IInterHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IInterHotelInfo>[]>;
   private hotelQuerySource: Subject<HotelQueryEntity>;
@@ -72,9 +72,7 @@ export class InternationalHotelService {
   private selfCredentials: CredentialsEntity[];
   private conditionModel: HotelConditionModel;
   // = !environment.production    ? (MOCK_HOTEL_DETIAL_INFO as any)    : null; // 查看详情的hotel
-  viewHotel: HotelEntity = !environment.production
-    ? (MOCK_HOTEL_DETIAL_INFO as any)
-    : null; // 查看详情的hotel;
+  viewHotel: HotelEntity; //  = !environment.production ? (MOCK_HOTEL_DETIAL_INFO as any) : null; // 查看详情的hotel;
   showRoomDetailInfo: IshowRoomDetailInfo;
   showImages: any[];
   get isAgent() {
@@ -497,15 +495,12 @@ export class InternationalHotelService {
     if (this.isInitializingSelfBookInfos) {
       return this.isInitializingSelfBookInfos;
     } else {
-      this.isInitializingSelfBookInfos =new Promise(async (resolve) => {
+      this.isInitializingSelfBookInfos = new Promise(async (resolve) => {
         const isSelf = await this.staffService.isSelfBookType(isShowLoading);
         const infos = this.getBookInfos();
         if (infos.length === 0 && isSelf) {
           let passportOrHmTwPass: any;
-          const staff = await this.staffService.getStaff(
-            false,
-            isShowLoading
-          );
+          const staff = await this.staffService.getStaff(false, isShowLoading);
           const res = await this.getPassengerCredentials(
             [staff.AccountId],
             isShowLoading
@@ -526,7 +521,7 @@ export class InternationalHotelService {
         }
       }).finally(() => {
         this.isInitializingSelfBookInfos = null;
-      })
+      });
     }
     return this.isInitializingSelfBookInfos;
   }

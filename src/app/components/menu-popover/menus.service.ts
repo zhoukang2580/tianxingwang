@@ -4,6 +4,9 @@ const KEY_SYSTEMS_MENUS = "key_systems_menus_";
 import { Storage } from "@ionic/storage";
 import { Subject, BehaviorSubject } from "rxjs";
 import { filter } from "rxjs/operators";
+import { ApiService } from "src/app/services/api/api.service";
+import { RequestEntity } from "src/app/services/api/Request.entity";
+import { AuthorizeService } from "src/app/services/authorize/authorize.service";
 export const WMS_SYSTEM_MENUS: SystemsMenus[] = [
   {
     feature: "wms",
@@ -145,14 +148,21 @@ export const WMS_SYSTEM_MENUS: SystemsMenus[] = [
     route: ``,
     action: "onUpdate",
   },
+  {
+    isShowInFeatureTabHome: false,
+    isShowInHome: true,
+    id: "wms-home",
+    name: `仓储系统`,
+    imageUrl: `assets/svgs/wms.svg`,
+    icon: `wms`,
+    route: `wms-home`,
+    authId: "WmsId",
+    feature: "wms",
+    iconColor: "var(--ion-color-light)",
+    bgColor: "var(--ion-color-secondary)",
+  },
 ];
-export const SYSTEMS_MENUS: SystemsMenus[] = [
-  // {
-  //   name: `电子扫码系统`,
-  //   imageUrl: `assets/svgs/ess.svg`,
-  //   route: `ess-home`,
-  //   authId: "EssId",
-  // },
+const MMS_SYSTEMS: SystemsMenus[] = [
   {
     isShowInFeatureTabHome: false,
     isShowInHome: true,
@@ -167,31 +177,170 @@ export const SYSTEMS_MENUS: SystemsMenus[] = [
     feature: "mms",
   },
   {
-    isShowInFeatureTabHome: false,
-    isShowInHome: true,
-    id: "wms-home",
-    name: `仓储系统`,
-    imageUrl: `assets/svgs/wms.svg`,
-    icon: `wms`,
-    route: `wms-home`,
-    authId: "WmsId",
-    feature: "wms",
-    iconColor: "var(--ion-color-light)",
-    bgColor: "var(--ion-color-secondary)",
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    // icon: "mms-goods-tag",
+    id: "mms-tag",
+    name: `商品标签`,
+    imageUrl: `assets/svgs/mms-goods-tag.svg`,
+    route: `mms-tag`,
+    // authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+    appAuthority: "PresentationMmsWebsiteAdminUrl.Tag.Index.App_MmsTagOp",
   },
   {
-    isShowInFeatureTabHome: false,
-    isShowInHome: true,
-    name: `客户管理`,
-    id: "crm-home",
-    imageUrl: `assets/svgs/customers.svg`,
-    icon: `customers`,
-    route: `crm-home`,
-    authId: "CrmId",
-    iconColor: "var(--ion-color-light)",
-    bgColor: "var(--ion-color-danger)",
-    feature: "crm",
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    // icon: "icon-mms",
+    id: "mms-banner",
+    name: `横幅维护`,
+    imageUrl: `assets/svgs/mms-banner.svg`,
+    route: `mms-banner`,
+    // authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+    appAuthority: "PresentationMmsWebsiteAdminUrl.Banner.Index.App_MmsBannerOp",
   },
+  {
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    // icon: "icon-mms",
+    id: "mms-freight",
+    name: `运费模板`,
+    imageUrl: `assets/svgs/mms-freight.svg`,
+    route: `mms-freight`,
+    // authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+    appAuthority: "PresentationMmsWebsiteAdminUrl.Freight.Index.App_MmsFreight",
+  },
+  {
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    // icon: "icon-mms",
+    id: "mms-category",
+    name: `商品分类`,
+    imageUrl: `assets/svgs/mms-goods-category.svg`,
+    route: `mms-category`,
+    authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+    appAuthority:
+      "PresentationMmsWebsiteAdminUrl.Category.Index.App_MmsCategoryOp",
+  },
+  {
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    // icon: "icon-mms",
+    id: "mms-goods",
+    name: `销售商品`,
+    imageUrl: `assets/svgs/mms-goods.svg`,
+    route: `mms-admin-home/mms-goods`,
+    authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+    appAuthority: "PresentationMmsWebsiteAdminUrl.Goods.Index.App_MmsGoodsOp",
+  },
+  {
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    // icon: "icon-mms",
+    id: "mms-certificate",
+    name: `证书维护`,
+    imageUrl: `assets/svgs/mms-certificate.svg`,
+    route: `mms-certificate`,
+    authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    appAuthority:
+      "PresentationMmsWebsiteAdminUrl.Certificate.Index.App_MmsCertificateOp",
+    feature: "mms",
+  },
+  {
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    // icon: "icon-mms",
+    id: "mms-company-managament",
+    name: `公司维护`,
+    imageUrl: `assets/svgs/mms-company.svg`,
+    route: `mms-company-managament`,
+    authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    appAuthority:
+      "PresentationMmsWebsiteAdminUrl.Company.Index.App_MmsCompanyOp",
+    feature: "mms",
+  },
+  {
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    // icon: "icon-mms",
+    id: "mms-partner",
+    name: `加盟我的`,
+    imageUrl: `assets/svgs/mms-partner.svg`,
+    route: `mms-partner`,
+    authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+    appAuthority:
+      "PresentationMmsWebsiteAdminUrl.Partner.Index.App_MmsPartnerOp",
+  },
+  {
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    // icon: "icon-mms",
+    id: "mms-partnerlinker",
+    name: `我加盟的`,
+    imageUrl: `assets/svgs/mms-partnerlinker.svg`,
+    route: `mms-partnerlinker`,
+    authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+    appAuthority:
+      "PresentationMmsWebsiteAdminUrl.PartnerLinker.Index.App_MmsPartnerLinkerOp",
+  },
+  {
+    appAuthority: "PresentationMmsWebsiteAdminUrl.Coupon.Index.App_MmsCouponOp",
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    icon: "icon-mms",
+    id: "mms-coupon",
+    name: `优惠券`,
+    imageUrl: `assets/svgs/mms-coupon.svg`,
+    route: `mms-coupon`,
+    authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+  },
+  {
+    appAuthority: "PresentationMmsWebsiteAdminUrl.OrderCoupon.Index.App_MmsOrderCouponOp",
+    isShowInFeatureTabHome: true,
+    isShowInHome: true,
+    icon: "icon-mms",
+    id: "mms-order-coupon",
+    name: `优惠券验证`,
+    imageUrl: `assets/svgs/mms-order-coupon.svg`,
+    route: `mms-order-coupon`,
+    authId: "MmsId",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+  },
+].map((it) => {
+  it.authId = "PresentationMmsWebsiteAdminUrl";
+  return it;
+});
+console.log("MMS_SYSTEMS ", MMS_SYSTEMS);
+export const BPM_SYSTEMS: SystemsMenus[] = [
   {
     isShowInFeatureTabHome: false,
     isShowInHome: true,
@@ -220,6 +369,27 @@ export const SYSTEMS_MENUS: SystemsMenus[] = [
     isCanRemove: true,
     isShowInHome: false,
   },
+];
+export const CRM_SYSTEMS: SystemsMenus[] = [
+  {
+    appAuthority:
+      "PresentationBpmWebsiteAdminUrl.Customer.Index.App_CrmCustomer",
+    isShowInFeatureTabHome: false,
+    isShowInHome: true,
+    name: `客户管理`,
+    id: "crm-home",
+    imageUrl: `assets/svgs/customers.svg`,
+    icon: `customers`,
+    route: `crm-home`,
+    authId: "CrmId",
+    iconColor: "var(--ion-color-light)",
+    bgColor: "var(--ion-color-danger)",
+    feature: "crm",
+  },
+];
+export const SYSTEMS_MENUS: SystemsMenus[] = [
+  ...MMS_SYSTEMS,
+  ...BPM_SYSTEMS,
   ...WMS_SYSTEM_MENUS,
 ].map((it: SystemsMenus) => {
   if (it.icon) {
@@ -237,7 +407,8 @@ export class MenusService {
   private menus: SystemsMenus[];
   constructor(
     private storage: Storage,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private authService: AuthorizeService
   ) {
     this.menusSource = new BehaviorSubject(null);
     if (
@@ -246,16 +417,32 @@ export class MenusService {
     ) {
       throw new Error("键不能重复");
     }
-    this.initSystemMenus();
-    this.identityService.getIdentitySource().subscribe((it) => {
+    // this.initSystemMenus();
+    this.identityService.getIdentitySource().subscribe(async (it) => {
+      let systems = [];
       if (it && it.Ticket && it.Id) {
-        this.initSystemMenus();
+        systems = await this.loadSubSystems();
       }
+      this.initSystemMenus(systems);
     });
   }
-  private initSystemMenus() {
+  async initSystems() {
+    const systems = await this.loadSubSystems();
+    if (systems) {
+      await this.initSystemMenus(systems);
+    }
+  }
+  private async loadSubSystems() {
     try {
-      this.menus = SYSTEMS_MENUS.map((m) => {
+      return this.authService.loadSubsystems();
+    } catch (e) { }
+    return [];
+  }
+  private async initSystemMenus(systems: string[]) {
+    try {
+      this.menus = SYSTEMS_MENUS.filter((it) =>
+        systems.some((s) => s.toLowerCase() == (it.authId || "").toLowerCase())
+      ).map((m) => {
         if (!m.refresh) {
           m.refresh = () => {
             console.log("更新", m, this.menus);
@@ -296,34 +483,30 @@ export class MenusService {
         }
         return m;
       });
-      this.getCacheKey()
-        .then((k) => {
-          if (k) {
-            return this.storage.get(k).then((local: SystemsMenus[]) => {
-              if (local) {
-                local.forEach((m) => {
-                  const oneM = this.menus.find((it) => it.name == m.name);
-                  if (oneM) {
-                    oneM.isShowInHome = m.isShowInHome;
-                    oneM.isCanRemove = m.isCanRemove;
-                    oneM.bgColor = m.bgColor;
-                    oneM.iconColor = m.iconColor;
-                  }
-                });
-              } else {
-                this.menus = this.menus.map((it) => {
-                  if (it.isCanRemove) {
-                    it.isShowInHome = false;
-                  }
-                  return it;
-                });
-              }
-            });
-          }
-        })
-        .finally(() => {
-          this.setMenusSource(this.menus);
-        });
+      console.log("all menus", this.menus);
+      const k = await this.getCacheKey();
+      if (k) {
+        const local: SystemsMenus[] = await this.storage.get(k);
+        if (local) {
+          local.forEach((m) => {
+            const oneM = this.menus.find((it) => it.name == m.name);
+            if (oneM) {
+              oneM.isShowInHome = m.isShowInHome;
+              oneM.isCanRemove = m.isCanRemove;
+              oneM.bgColor = m.bgColor;
+              oneM.iconColor = m.iconColor;
+            }
+          });
+        } else {
+          this.menus = this.menus.map((it) => {
+            if (it.isCanRemove) {
+              it.isShowInHome = false;
+            }
+            return it;
+          });
+        }
+      }
+      this.setMenusSource(this.menus);
     } catch (error) {
       console.error(error);
     }

@@ -44,6 +44,11 @@ export class AddStrokeComponent implements OnInit, OnChanges {
   @Input() travelFromId: string;
   @Input() TravelApprovalContent: string;
   @Input() vmRegionTypes: { value: string; label: string }[];
+  public form = [
+    { val: 'Pepperoni', isChecked: true },
+    { val: 'Sausage', isChecked: false },
+    { val: 'Mushroom', isChecked: false }
+  ];
   constructor(
     private router: Router,
     private flightService: FlightService,
@@ -323,9 +328,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       this.TravelApprovalContent.split(","),
       "vmTravelApprovalContent"
     );
-    const approvals =
-      (this.TravelApprovalContent && this.TravelApprovalContent.split(",")) ||
-      [];
+    const approvals = (this.TravelApprovalContent && this.TravelApprovalContent.split(",")) || [];
     console.log(t, "Tttt");
     console.log(this.regionTypes, "this.regionTypes ");
     if (t == "Domestic") {

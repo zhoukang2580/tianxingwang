@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { AddStrokeComponent } from './add-stroke.component';
+import { HotelMapPage } from './hotel-map.page';
 
-describe('AddStrokeComponent', () => {
-  let component: AddStrokeComponent;
-  let fixture: ComponentFixture<AddStrokeComponent>;
+describe('HotelMapPage', () => {
+  let component: HotelMapPage;
+  let fixture: ComponentFixture<HotelMapPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddStrokeComponent ],
+      declarations: [ HotelMapPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AddStrokeComponent);
+    fixture = TestBed.createComponent(HotelMapPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

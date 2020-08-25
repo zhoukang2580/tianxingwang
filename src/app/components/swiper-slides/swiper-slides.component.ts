@@ -290,6 +290,7 @@ export class SwiperSlidesComponent
       if (changes.items && changes.items.currentValue) {
         this.items = this.items.map((it, idx) => {
           return {
+            ...it,
             idx,
             imageUrl: it.imageUrl,
             text: it.text,

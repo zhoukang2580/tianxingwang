@@ -54,14 +54,18 @@ export class ApiService {
     private route: ActivatedRoute
   ) {
     this.loadingSubject = new BehaviorSubject({ isLoading: false, msg: "" });
-    this.storage.get(`KEY_API_CONFIG`).then((config) => {
-      if (config) {
-        this.apiConfig = config;
-      }
-    });
-    this.loadApiConfig(true)
-      .then((_) => {})
-      .catch(() => {});
+    this.storage
+      .get(`KEY_API_CONFIG`)
+      .then((config) => {
+        if (config) {
+          this.apiConfig = config;
+        }
+      })
+      .finally(() => {
+        this.loadApiConfig(true)
+          .then((_) => { })
+          .catch(() => { });
+      });
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -374,7 +378,7 @@ export class ApiService {
         }
         return throwError(error);
       }),
-      map((r) => r as any)
+      // map((r) => r)
     );
   }
   private sendRequest(
@@ -394,6 +398,12 @@ export class ApiService {
       isShowLoading: req.IsShowLoading,
       reqMethod: req.Method,
     });
+    if (this.apiConfig && this.apiConfig.Urls) {
+      return from(this.getUrl(req)).pipe(
+        switchMap((url) => this.post(url, req)),
+        switchMap((r) => this.processResponse(r, isCheckLogin, req))
+      );
+    }
     return from(this.loadApiConfig()).pipe(
       switchMap((config) => {
         if (!config) {
@@ -440,6 +450,12 @@ export class ApiService {
       isShowLoading: req.IsShowLoading,
       reqMethod: req.Method,
     });
+    if (this.apiConfig && this.apiConfig.Urls) {
+      return from(this.getUrl(req)).pipe(
+        switchMap((url) => this.postBodyData(url, req, contentType, fileName)),
+        switchMap((r) => this.processResponse(r, isCheckLogin, req))
+      );
+    }
     return from(this.loadApiConfig()).pipe(
       switchMap((config) => {
         if (!config) {
@@ -455,14 +471,16 @@ export class ApiService {
     if (!forceRefresh) {
       if (!this.apiConfig || !this.apiConfig.Urls) {
         const local = await this.storage.get(`KEY_API_CONFIG`);
-        if (typeof local == "string") {
-          this.apiConfig = JSON.parse(local);
-        } else {
-          this.apiConfig = local;
+        if (local) {
+          if (typeof local == "string") {
+            this.apiConfig = JSON.parse(local);
+          } else {
+            this.apiConfig = local;
+          }
         }
       }
       if (this.apiConfig && this.apiConfig.Urls) {
-        return Promise.resolve(this.apiConfig);
+        return this.apiConfig;
       }
     }
     if (this.fetchApiConfigPromise) {
@@ -470,7 +488,7 @@ export class ApiService {
     }
     const url = AppHelper.getApiUrl() + "/Home/ApiConfig";
     const due = 30 * 1000;
-    this.fetchApiConfigPromise=new Promise<ApiConfig>((s) => {
+    this.fetchApiConfigPromise = new Promise<ApiConfig>((s) => {
       const sub = this.http
         .get(url)
         .pipe(
@@ -508,13 +526,13 @@ export class ApiService {
             s(null);
           }
         );
-    })
+    });
     return this.fetchApiConfigPromise;
   }
   getSign(req: RequestEntity) {
     return md5(
       `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
-        req.Timestamp
+      req.Timestamp
       }${req.Token}`
     ) as string;
   }

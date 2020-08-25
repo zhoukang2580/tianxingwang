@@ -33,6 +33,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
       if (paramters.wechatcode) {
         const data = {
           Code: paramters.wechatcode,
+          AloneTag:paramters.AloneTag
         };
         this.bindCode(data);
         AppHelper.removeQueryParamers("wechatcode");
