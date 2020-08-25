@@ -1,7 +1,0 @@
-<!--index.wxml-->
-
-<view>
-<button type='primary' class="button" open-type="contact" bindcontact='onService' bindtap="onEnter">开始对话</button>
-<button type='default' class="cancel"  bindtap="back">取消</button>
-</view>
- 

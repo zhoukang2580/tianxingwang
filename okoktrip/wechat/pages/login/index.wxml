@@ -1,9 +1,0 @@
-<!-- <view class="container">
-  <button wx:if='{{isShowAuthorizeButton}}' open-type="getUserInfo" lang="zh_CN" class="login" bindgetuserinfo="onLogin">获取用户昵称</button>
-    <button wx:if='{{isShowAuthorizeButton}}'  lang="zh_CN" class="login" bindgetuserinfo="onCancel">取消</button>
-</view> -->
-<view class="wrapper">
-  <button wx:if='{{isShowAuthorizeButton}}'  class="auth-button" type='primary'  open-type="getUserInfo" lang="zh_CN"  bindgetuserinfo="onLogin">获取用户昵称</button>
-  <button class="auth-button" type='primary' open-type='openSetting' wx:if="{{isOpenSetting}}"  bindopensetting='onOpenSetting'>授权获取用户昵称</button>
-  <button wx:if='{{isShowAuthorizeButton||isOpenSetting}}' type='default'  class="cancel" lang="zh_CN" bindtap="onCancel">取消</button>
-</view>
