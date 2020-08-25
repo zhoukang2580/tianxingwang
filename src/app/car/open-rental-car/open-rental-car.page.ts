@@ -200,7 +200,8 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       if (this.browser) {
         this.browser.hide();
       }
-      const res = await AppHelper.payH5Url(url).catch(() => {
+      const res = await AppHelper.payH5Url(url).catch((e) => {
+        AppHelper.alert(e)
         if (this.browser) {
           this.browser._loadAfterBeforeload(url);
           this.browser.show();
@@ -208,7 +209,8 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         return null;
       });
       if (res) {
-        await AppHelper.alert(res.resultCode == '9000' ? "支付完成" : res.resultCode);
+        alert(JSON.stringify(res));
+        await AppHelper.alert(res.payResultCode == '9000' ? "支付完成" : res.payResultCode);
       }
       if (this.browser) {
         this.browser.show();
@@ -357,20 +359,20 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       // }, 5000);
       // this.browser._loadAfterBeforeload(uri);
       // }
-      if (uri.startsWith("alipays")) {
-        if (!(await AppHelper.isAliPayAppInstalled())) {
-          AppHelper.alert("尚未安装支付宝，请继续使用h5完成支付");
-          return;
-        }
-        // this.openInSystemBrowser(uri);
-        if (this.openSystemBrowser) {
-          this.openSystemBrowser.close();
-        }
-        this.openSystemBrowser = this.iab.create(uri, "_system");
-        this.openSystemBrowser.hide();
-      } else {
-        await this.aliPay(uri);
-      }
+      // if (uri.startsWith("alipays")) {
+      //   if (!(await AppHelper.isAliPayAppInstalled())) {
+      //     AppHelper.alert("尚未安装支付宝，请继续使用h5完成支付");
+      //     return;
+      //   }
+      //   // this.openInSystemBrowser(uri);
+      //   if (this.openSystemBrowser) {
+      //     this.openSystemBrowser.close();
+      //   }
+      //   this.openSystemBrowser = this.iab.create(uri, "_system");
+      //   this.openSystemBrowser.hide();
+      // } else {
+      // }
+      await this.aliPay(uri);
       return;
     }
     if (uri.startsWith("weixin")) {
