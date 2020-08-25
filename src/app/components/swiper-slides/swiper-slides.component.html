@@ -1,18 +1,23 @@
 <div class="swiper-container" #container [class.black]='bgColorBlack'>
   <div class="swiper-wrapper">
     <div class="swiper-slide" #slide *ngFor='let it of vmItems;let idx=index;' (click)='onItemClick(it,idx)'>
-      <div class="inner" *ngIf='!options?.isShowText||it.imageUrl||isShowImage'>
-        <img #img [lazyLoad]='it.imageUrl' [ngStyle]='options?.imageStyle' [loadingImage]='loadingImage' class="pic" [defaultImage]='defaultImage' alt="图片">
-        <ion-text color='light'>
-          <div>{{it.desc}}</div>
-        </ion-text>
-        <div class="logo" *ngIf='logoUrl'>
-          <img [src]="logoUrl" alt="logo">
+      <ng-container *ngIf='options?.slideTplRef else normalTpl'>
+        <ng-container [ngTemplateOutlet]='options.slideTplRef' [ngTemplateOutletContext]='{slideItem:it,item:it}'></ng-container>
+      </ng-container>
+      <ng-template #normalTpl>
+        <div class="inner" *ngIf='!options?.isShowText||it.imageUrl||isShowImage'>
+          <img #img [lazyLoad]='it.imageUrl' [ngStyle]='options?.imageStyle' [loadingImage]='loadingImage' class="pic" [defaultImage]='defaultImage' alt="图片">
+          <ion-text color='light'>
+            <div>{{it.desc}}</div>
+          </ion-text>
+          <div class="logo" *ngIf='logoUrl'>
+            <img [src]="logoUrl" alt="logo">
+          </div>
         </div>
-      </div>
-      <ion-text *ngIf='options?.isShowText||!isShowImage'>
-        {{it.text}}
-      </ion-text>
+        <ion-text *ngIf='options?.isShowText||!isShowImage'>
+          {{it.text}}
+        </ion-text>
+      </ng-template>
     </div>
   </div>
   <!-- 如果需要分页器 -->
