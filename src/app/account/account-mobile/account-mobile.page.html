@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button></app-back-button>
+      <app-back-button [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title>手机号码</ion-title>
   </ion-toolbar>
@@ -22,8 +22,7 @@
           </ion-input>
         </ion-col>
         <ion-col *ngIf='!isModiy&&!isChangeMobile'>
-          <ion-button color='secondary' size='small' fill='outline'
-            (click)='onChangeMobile()'>更换手机号</ion-button>
+          <ion-button color='secondary' size='small' fill='outline' (click)='onChangeMobile()'>更换手机号</ion-button>
         </ion-col>
       </ion-row>
       <ion-row [class.hidden]='!isModiy&&!isChangeMobile'>
@@ -34,8 +33,7 @@
           <ion-input placeholder="短信验证码" formControlName="Code" (blur)="sendAction()"></ion-input>
         </ion-col>
         <ion-col size="3" *ngIf="countDown==0; else countdown">
-          <ion-button size="small" fill="outline" color="secondary" [disabled]='!form.value.Mobile'
-            (click)="sendMobileCode()">
+          <ion-button size="small" fill="outline" color="secondary" [disabled]='!form.value.Mobile' (click)="sendMobileCode()">
             <span [style.font-size.rem]="0.8">发送验证码</span>
           </ion-button>
         </ion-col>

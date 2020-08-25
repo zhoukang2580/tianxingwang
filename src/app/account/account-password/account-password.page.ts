@@ -30,7 +30,7 @@ class PasswordModel {
 @Component({
   selector: "app-account-password",
   templateUrl: "./account-password.page.html",
-  styleUrls: ["./account-password.page.scss"]
+  styleUrls: ["./account-password.page.scss"],
 })
 export class AccountPasswordPage implements OnInit, OnDestroy {
   identityEntity: IdentityEntity;
@@ -39,26 +39,37 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
   modifyPasswordSubscription = Subscription.EMPTY;
   identitySubscription = Subscription.EMPTY;
   loading$: Observable<{ isLoading: boolean }>;
+  private isOpenAsModal = false;
   constructor(
     identityService: IdentityService,
     private router: Router,
     private apiService: ApiService,
     private navCtrl: NavController
   ) {
-    this.identitySubscription = identityService.getIdentitySource().subscribe(id => {
-      this.identityEntity = id;
-    });
+    this.identitySubscription = identityService
+      .getIdentitySource()
+      .subscribe((id) => {
+        this.identityEntity = id;
+      });
     this.loading$ = this.apiService.getLoading();
     console.log("account-password constructor");
     this.passwordModel = new PasswordModel();
   }
   back() {
+    if (this.isOpenAsModal) {
+      AppHelper.modalController.getTop().then((t) => {
+        if (t) {
+          t.dismiss();
+        }
+      });
+      return;
+    }
     this.navCtrl.pop();
   }
   forgetPassword() {
     this.router.navigate([
       AppHelper.getRoutePath("password-check"),
-      { Id: this.identityEntity.Id }
+      { Id: this.identityEntity.Id },
     ]);
   }
   done() {
@@ -72,19 +83,20 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
     }
     this.modifyPasswordSubscription.unsubscribe();
     this.modifyPasswordSubscription = this.modifyPassword(this.passwordModel)
-      .pipe(tap(a => console.log(a)))
+      .pipe(tap((a) => console.log(a)))
       .subscribe(
-        res => {
+        (res) => {
           if (res.Status) {
+            AppHelper.removeQueryParamers("IsForceModifyPassword");
             AppHelper.alert("密码修改成功");
           } else {
             AppHelper.alert(res.Message);
           }
         },
-        e => AppHelper.alert(e)
+        (e) => AppHelper.alert(e)
       );
   }
-  ngOnInit() { }
+  ngOnInit() {}
   ngOnDestroy(): void {
     this.identitySubscription.unsubscribe();
     this.modifyPasswordSubscription.unsubscribe();

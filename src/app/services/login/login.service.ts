@@ -12,6 +12,8 @@ import { IResponse } from "../api/IResponse";
 import { LanguageHelper } from "src/app/languageHelper";
 import { Storage } from "@ionic/storage";
 import { environment } from "src/environments/environment";
+import { AccountMobilePage } from "src/app/account/account-mobile/account-mobile.page";
+import { AccountPasswordPage } from "src/app/account/account-password/account-password.page";
 @Injectable({
   providedIn: "root",
 })
@@ -252,20 +254,58 @@ export class LoginService {
         .subscribe(
           (r) => {
             this.identityService.removeIdentity();
-            this.goToLoginPage();
+            this.goToLoginPage("");
           },
           (_) => {
             this.identityService.removeIdentity();
-            this.goToLoginPage();
+            this.goToLoginPage("");
           }
         );
     } else {
       this.identityService.removeIdentity();
-      this.goToLoginPage();
+      this.goToLoginPage("");
     }
   }
-  private goToLoginPage() {
-    AppHelper.setToPageAfterAuthorize({ path: this.router.url });
+  async checkIfForceAction() {
+    let isForceBindMobile = AppHelper.getQueryParamers()["IsForceBindMobile"];
+    let isForceModifyPassword = AppHelper.getQueryParamers()[
+      "IsForceModifyPassword"
+    ];
+    if (isForceBindMobile) {
+      const m = await AppHelper.modalController.create({
+        component: AccountMobilePage,
+        componentProps: {
+          isOpenAsModal: true,
+        },
+      });
+      m.present();
+      const d = await m.onDidDismiss();
+      isForceBindMobile = AppHelper.getQueryParamers()["IsForceBindMobile"];
+      if (isForceBindMobile) {
+        await this.checkIfForceAction();
+      }
+    }
+    if (isForceModifyPassword) {
+      const m = await AppHelper.modalController.create({
+        component: AccountPasswordPage,
+        componentProps: {
+          isOpenAsModal: true,
+        },
+      });
+      m.present();
+      const d = await m.onDidDismiss();
+      isForceModifyPassword = AppHelper.getQueryParamers()[
+        "IsForceModifyPassword"
+      ];
+      if (isForceModifyPassword) {
+        await this.checkIfForceAction();
+      }
+    }
+  }
+  private goToLoginPage(path: string) {
+    AppHelper.setToPageAfterAuthorize({
+      path: path == "" || path ? path : this.router.url,
+    });
     this.router.navigate([AppHelper.getRoutePath("login")]);
   }
   async check() {

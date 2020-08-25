@@ -26,6 +26,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
   senSmsCodeSubscription = Subscription.EMPTY;
   isShowImageCode: boolean;
   isChangeMobile = false;
+  private isOpenAsModal = false;
   constructor(
     private fb: FormBuilder,
     private navController: NavController,
@@ -62,6 +63,13 @@ export class AccountMobilePage implements OnInit, OnDestroy {
       );
   }
   async back() {
+    if (this.isOpenAsModal) {
+      const t = await AppHelper.modalController.getTop();
+      if (t) {
+        t.dismiss(true);
+      }
+      return;
+    }
     await this.navController.pop();
   }
   sendAction() {
@@ -88,6 +96,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
           if (r.Data) {
             if ((r.Data.Action as string).toLowerCase() == "finish") {
               AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true);
+              AppHelper.removeQueryParamers("IsForceMobileBind");
               this.back();
               setTimeout(() => {
                 if (this.router.url == "/account-mobile") {
