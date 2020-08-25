@@ -202,6 +202,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         this.browser.hide();
       }
       const res = await AppHelper.payH5Url(url).catch(async (e) => {
+        console.log(e)
         await AppHelper.alert(e)
         if (this.browser) {
           this.browser._loadAfterBeforeload(url);
@@ -209,6 +210,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         }
         return null;
       });
+      console.log("payres",res)
       if (res) {
         alert(JSON.stringify(res));
         await AppHelper.alert(res.payResultCode == '9000' ? "支付完成" : res.payResultCode);

@@ -411,7 +411,7 @@ export class AppHelper {
     }
     return false;
   }
-  static async payH5Url(url: string): Promise<{ url: string; resultCode: string }> {
+  static async payH5Url(url: string): Promise<{ payReturnUrl: string; payResultCode: string }> {
     await AppHelper.platform.ready();
     if (window["ali"]) {
       return window["ali"]
