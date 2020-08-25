@@ -80,7 +80,7 @@ public class MyH5PayActivity extends Activity {
 		mWebView.setWebViewClient(new MyWebViewClient());
 		mWebView.loadUrl(url);
 	}
-	private  void  showMessage(String msg){
+	private  void  showMessage(String msg,boolean isGoBack){
 		runOnUiThread(()->{
 			new AlertDialog.Builder(MyH5PayActivity.this).setTitle("提示")
 					.setMessage(msg)
@@ -89,6 +89,11 @@ public class MyH5PayActivity extends Activity {
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
 //						finish();
+							if(isGoBack){
+								if(mWebView.canGoBack()){
+									mWebView.goBack();
+								}
+							}
 						}
 					}).show();
 		});
@@ -236,7 +241,8 @@ public class MyH5PayActivity extends Activity {
 					Log.d("PayH5Activiti","支付结果返回 = "+result.getResultCode()+" getResultCode="+result.getResultCode());
 					h5PayResultModel=result;
 					final String url = result.getReturnUrl();
-					showMessage(getMessage(result.getResultCode()));
+					showMessage(getMessage(result.getResultCode()),!"9000".equals(result.getResultCode()));
+
 					if (!TextUtils.isEmpty(url)) {
 						MyH5PayActivity.this.runOnUiThread(new Runnable() {
 							@Override
