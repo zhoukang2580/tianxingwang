@@ -1,0 +1,26 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/my-service/index",
+    "pages/share/index",
+    "pages/login/index",
+    "pages/location/index",
+    "pages/phonenumber/index",
+    "pages/address/index",
+    "pages/pay/index",
+    "pages/map/map",
+    "pages/logs/logs"
+  ],
+  "permission": {
+    "scope.userLocation": {
+      "desc": "小程序希望能够获取您的位置信息"
+    }
+  },
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "毅博商旅",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json"
+}

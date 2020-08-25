@@ -1,0 +1,6 @@
+<!-- <button class="button" type='primary' wx:if="{{!isOpenSetting}}" bindtap='onUserCurPos'>使用当前位置</button> -->
+<view class="wrapper">
+<view class="desc" wx:if="{{description}}">{{description}}</view>
+<button class="auth-button" type='primary' open-type='openSetting' wx:if="{{isOpenSetting}}"  bindopensetting='onOpenSetting'>授权选择位置</button>
+<button lang="zh_CN" type='default'  class="cancel"  wx:if="{{isShowCancel||isOpenSetting}}" bindtap="onCancel">取消</button>
+</view>

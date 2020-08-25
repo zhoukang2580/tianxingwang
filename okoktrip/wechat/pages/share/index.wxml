@@ -1,0 +1,11 @@
+<view>
+
+	<!-- <button  type='default'  class="cancel" lang="zh_CN" bindtap="onCancel">取消</button> -->
+	<view class="share-info">
+		<view class="title">{{shareInfo.title}}</view>
+		<image src="{{shareInfo.imageUrl}}" mode='scaleToFill'></image>
+	</view>
+	<canvas canvas-id='myCanvas' class='canvas-content' style='height:{{totalHeight * canvasScale}}px;width:{{375*canvasScale}}px'>
+	</canvas>
+  	<button open-type="share" wx:if='{{isShowBtn}}' type='default' class="share" >分享</button>
+</view>
