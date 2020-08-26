@@ -415,7 +415,7 @@ export class AppHelper {
     await AppHelper.platform.ready();
     if (window["ali"]) {
       return window["ali"]
-        .payH5Url(url)
+        .payH5Url(url,this.getWechatAppId())
     }
     return null;
   }

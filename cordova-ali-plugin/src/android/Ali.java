@@ -43,7 +43,7 @@ public class Ali extends CordovaPlugin {
             return true;
         }
         if (TextUtils.equals("payH5Url", action)) {
-            payH5Url(args.optString(0), callbackContext);
+            payH5Url(args.optString(0),args.optString(1),args.optString(2), callbackContext);
             return true;
         }
         return super.execute(action, args, callbackContext);
@@ -86,7 +86,7 @@ public class Ali extends CordovaPlugin {
         });
     }
 
-    public void payH5Url(String h5PayUrl, CallbackContext callbackContext) {
+    public void payH5Url(String h5PayUrl,String openId,String appId, CallbackContext callbackContext) {
         sPayH5UrlCallbackContext = callbackContext;
         Intent intent = new Intent(cordova.getActivity(), MyH5PayActivity.class);
         Bundle extras = new Bundle();
@@ -98,6 +98,8 @@ public class Ali extends CordovaPlugin {
         String url = h5PayUrl;
         // url可以是一号店或者淘宝等第三方的购物wap站点，在该网站的支付过程中，支付宝sdk完成拦截支付
         extras.putString("url", url);
+        extras.putString("appId", appId);
+        extras.putString("openId", openId);
         intent.putExtras(extras);
         cordova.getActivity().startActivityForResult(intent, Pay_H5_Url_Request_Code);
     }
