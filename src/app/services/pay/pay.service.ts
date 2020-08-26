@@ -11,7 +11,7 @@ import {
   IPayWayItem,
 } from "src/app/components/pay/pay.component";
 import { finalize } from "rxjs/operators";
-export const Wechat_Pay_Error_Message_Cancel = "用户中途取消";
+export const Wechat_Pay_Error_Message_Cancel = "";
 @Injectable({
   providedIn: "root",
 })
