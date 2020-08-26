@@ -8,6 +8,8 @@ import { IdentityService } from "../identity/identity.service";
 })
 export class AuthorizeService {
   private fetchAuthority: { promise: Promise<{ [key: string]: any }> };
+  private loadSubsystemsPromise: Promise<string[]>;
+  private subsystems: string[];
   private authorizes: { [key: string]: any };
   constructor(
     private apiService: ApiService,
@@ -21,9 +23,26 @@ export class AuthorizeService {
     this.authorizes = null;
   }
   async loadSubsystems() {
+    if (this.subsystems && this.subsystems.length) {
+      return this.subsystems;
+    }
+    if (this.loadSubsystemsPromise) {
+      return this.loadSubsystemsPromise;
+    }
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Authorize-SubSystems";
-    return this.apiService.getPromiseData<string[]>(req);
+    this.loadSubsystemsPromise = this.apiService
+      .getPromiseData<string[]>(req)
+      .then((r) => {
+        if (r && r.length) {
+          this.subsystems = r;
+        }
+        return r;
+      })
+      .finally(() => {
+        this.loadSubsystemsPromise = null;
+      });
+    return this.loadSubsystemsPromise;
   }
   async getAuthorizes() {
     if (this.authorizes) {
