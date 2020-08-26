@@ -138,8 +138,8 @@
       "cordova-plugin-safariviewcontroller": {},
       "cordova-filetransfer-plugin": {},
       "cordova-plugin-inappbrowser": {},
-      "cordova-ali-plugin": {},
-      "cordova-hcp-plugin": {}
+      "cordova-hcp-plugin": {},
+      "cordova-ali-plugin": {}
     },
     "platforms": [
       "ios",
