@@ -21,8 +21,7 @@ try {
   if (
     // true||
     window["VConsole"] &&
-    (AppHelper.isApp() || AppHelper.isWechatH5()) &&
-    (location.href.toLowerCase().includes("test") || environment.mockProBuild)
+    CONFIG.isShowVConsole
   ) {
     if (window["vConsole"]) {
       window["vConsole"].destroy();

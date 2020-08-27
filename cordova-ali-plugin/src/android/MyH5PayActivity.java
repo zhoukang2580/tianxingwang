@@ -47,12 +47,15 @@ import java.util.concurrent.Executors;
 
 public class MyH5PayActivity extends Activity {
     private final String TAG = "MyH5PayActivity";
-    private  String appId="wx0839a418ccafdf36";
-    private  String openId;
+    private String appId = "wx0839a418ccafdf36";
+    private String openId;
     private WebView mWebView;
-    private  IWXAPI sWxApi;
+    private IWXAPI sWxApi;
     private H5PayResultModel h5PayResultModel;
-    private static  final  int sH5payResultReqCode=0x1111;
+    private static final int sH5payResultReqCode = 0x1111;
+    private LinearLayout linearLayout;
+    private boolean isInitiateWeixinPay = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,14 +73,14 @@ public class MyH5PayActivity extends Activity {
         String url = null;
         try {
             url = extras.getString("url");
-           String appId = extras.getString("appId");
-           if(!TextUtils.isEmpty(appId)){
-               this.appId=appId;
-           }
+            String appId = extras.getString("appId");
+            if (!TextUtils.isEmpty(appId)) {
+                this.appId = appId;
+            }
             String openId = extras.getString("openId");
-           if(!TextUtils.isEmpty(openId)){
-               this.openId=openId;
-           }
+            if (!TextUtils.isEmpty(openId)) {
+                this.openId = openId;
+            }
         } catch (Exception e) {
             finish();
             return;
@@ -96,18 +99,20 @@ public class MyH5PayActivity extends Activity {
 
         }
         super.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        LinearLayout layout = new LinearLayout(getApplicationContext());
-        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        setContentView(layout, params);
+        linearLayout = new LinearLayout(getApplicationContext());
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        setContentView(linearLayout, params);
         mWebView = new WebView(getApplicationContext());
         params.weight = 1;
         mWebView.setVisibility(View.VISIBLE);
-        layout.addView(mWebView, params);
+        linearLayout.addView(mWebView, params);
         initWebViewSettings();
         mWebView.setWebViewClient(new MyWebViewClient());
         mWebView.loadUrl(url);
     }
+
     /**
      * 构建一个唯一标志
      *
@@ -115,12 +120,14 @@ public class MyH5PayActivity extends Activity {
      * @return 返回唯一字符串
      */
     private static String buildTransaction(String type) {
-        return (type == null) ? String.valueOf(System.currentTimeMillis()) : type + System.currentTimeMillis();
+        return (type == null) ? String.valueOf(System.currentTimeMillis()) :
+                type + System.currentTimeMillis();
     }
+
     private void regToWx(String appId) {
         // 通过WXAPIFactory工厂，获取IWXAPI的实例
-         sWxApi = WXAPIFactory.createWXAPI(this.getApplicationContext(), appId, true);
-        Wechat.sWxApi=sWxApi;
+        sWxApi = WXAPIFactory.createWXAPI(this.getApplicationContext(), appId, true);
+        Wechat.sWxApi = sWxApi;
         // 将应用的appId注册到微信
         sWxApi.registerApp(appId);
 
@@ -135,6 +142,7 @@ public class MyH5PayActivity extends Activity {
 //        }, new IntentFilter(ConstantsAPI.ACTION_REFRESH_WXAPP));
 
     }
+
     private void showMessage(String msg, boolean isGoBack) {
         runOnUiThread(() -> {
             new AlertDialog.Builder(MyH5PayActivity.this).setTitle("提示")
@@ -154,36 +162,38 @@ public class MyH5PayActivity extends Activity {
         });
 
     }
-    private void share(JSONObject shareInfo){
-        try{
-            String appId=shareInfo.optString("appId");
+
+    private void share(JSONObject shareInfo) {
+        try {
+            String appId = shareInfo.optString("appId");
             regToWx(appId);
-            String type=shareInfo.optString("shareType");
-            if(TextUtils.equals("WXTextObject",type)){
+            String type = shareInfo.optString("shareType");
+            if (TextUtils.equals("WXTextObject", type)) {
                 //初始化一个 WXTextObject 对象，填写分享的文本内容
-                WXTextObject wxTextObject=new WXTextObject();
-                wxTextObject.text=shareInfo.optString("data");
+                WXTextObject wxTextObject = new WXTextObject();
+                wxTextObject.text = shareInfo.optString("data");
                 shareWXTextObject(wxTextObject);
                 return;
             }
-            if(TextUtils.equals("WXWebpageObject",type)){
+            if (TextUtils.equals("WXWebpageObject", type)) {
                 //初始化一个 WXTextObject 对象，填写分享的文本内容
-                WXWebpageObject webpageObject=new WXWebpageObject();
-                JSONObject data=shareInfo.optJSONObject("data");
-                if(data!=null){
-                    webpageObject.webpageUrl=data.optString("webpageUrl");
+                WXWebpageObject webpageObject = new WXWebpageObject();
+                JSONObject data = shareInfo.optJSONObject("data");
+                if (data != null) {
+                    webpageObject.webpageUrl = data.optString("webpageUrl");
                     shareWXWebPageObject(webpageObject,
                             data.optString("webTitle"),
                             data.optString("webDescription"),
                             data.optString("openId"));
                 }
             }
-        }catch (Exception ex){
-           showMessage(ex.getMessage(),false);
+        } catch (Exception ex) {
+            showMessage(ex.getMessage(), false);
         }
 
     }
-    private void shareWXTextObject(WXTextObject textObj){
+
+    private void shareWXTextObject(WXTextObject textObj) {
         //用 WXTextObject 对象初始化一个 WXMediaMessage 对象
         WXMediaMessage msg = new WXMediaMessage();
         msg.mediaObject = textObj;
@@ -199,29 +209,31 @@ public class MyH5PayActivity extends Activity {
             sWxApi.sendReq(req);
         }).start();
     }
+
     private void shareWXWebPageObject(
-                                      WXWebpageObject webpage,
-                                      String title,
-                                      String webDescription,
-                                      String openId){
+            WXWebpageObject webpage,
+            String title,
+            String webDescription,
+            String openId) {
 
         // 用 WXWebpageObject 对象初始化一个 WXMediaMessage 对象
         WXMediaMessage msg = new WXMediaMessage(webpage);
-        msg.title =TextUtils.isEmpty(title)? "分享页面":title;
-        msg.description =TextUtils.isEmpty(webDescription)? "网页描述":webDescription;
+        msg.title = TextUtils.isEmpty(title) ? "分享页面" : title;
+        msg.description = TextUtils.isEmpty(webDescription) ? "网页描述" : webDescription;
         //构造一个Req
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = buildTransaction("webpage");
-        req.message =msg;
-        req.scene =SendMessageToWX.Req.WXSceneSession;
-        if(!TextUtils.isEmpty(openId)){
+        req.message = msg;
+        req.scene = SendMessageToWX.Req.WXSceneSession;
+        if (!TextUtils.isEmpty(openId)) {
             req.userOpenId = openId;
         }
         //调用api接口，发送数据到微信
-        new Thread(()->{
+        new Thread(() -> {
             sWxApi.sendReq(req);
         }).start();
     }
+
     @SuppressLint({"NewApi", "SetJavaScriptEnabled"})
     @SuppressWarnings("deprecation")
     private void initWebViewSettings() {
@@ -246,13 +258,15 @@ public class MyH5PayActivity extends Activity {
 
         // Enable database
         // We keep this disabled because we use or shim to get around DOM_EXCEPTION_ERROR_16
-        String databasePath = mWebView.getContext().getApplicationContext().getDir("database", Context.MODE_PRIVATE).getPath();
+        String databasePath = mWebView.getContext().getApplicationContext().getDir("database",
+                Context.MODE_PRIVATE).getPath();
         settings.setDatabaseEnabled(true);
         settings.setDatabasePath(databasePath);
 
 
         //Determine whether we're in debug or release mode, and turn on Debugging!
-//		ApplicationInfo appInfo = mWebView.getContext().getApplicationContext().getApplicationInfo();
+//		ApplicationInfo appInfo = mWebView.getContext().getApplicationContext()
+//		.getApplicationInfo();
 
 
         settings.setGeolocationDatabasePath(databasePath);
@@ -303,10 +317,10 @@ public class MyH5PayActivity extends Activity {
     @Override
     public void onBackPressed() {
         if (mWebView.canGoBack()) {
-            String curUrl=mWebView.getUrl();
+            String curUrl = mWebView.getUrl();
             mWebView.goBack();
-            String cur=mWebView.getUrl();
-            if(cur!=null&&cur.equals(curUrl)&&mWebView.canGoBack()){
+            String cur = mWebView.getUrl();
+            if (cur != null && cur.equals(curUrl) && mWebView.canGoBack()) {
                 mWebView.goBack();
             }
         } else {
@@ -317,6 +331,8 @@ public class MyH5PayActivity extends Activity {
                 bundle.putString("payReturnUrl", h5PayResultModel.getReturnUrl());
                 intent.putExtras(intent);
                 setResult(RESULT_OK, intent);
+            } else {
+                setResult(RESULT_CANCELED, null);
             }
             finish();
         }
@@ -354,21 +370,21 @@ public class MyH5PayActivity extends Activity {
      * @param phoneNum 电话号码
      */
     public void callPhone(String phoneNum) {
-        try{
+        try {
             Intent intent = new Intent(Intent.ACTION_DIAL);
-            if(TextUtils.isEmpty(phoneNum)){
+            if (TextUtils.isEmpty(phoneNum)) {
                 return;
             }
-            Uri data=null;
-            if(!phoneNum.contains("tel")){
+            Uri data = null;
+            if (!phoneNum.contains("tel")) {
                 data = Uri.parse("tel:" + phoneNum);
-            }else{
-                data=Uri.parse(phoneNum);
+            } else {
+                data = Uri.parse(phoneNum);
             }
             intent.setData(data);
             startActivity(intent);
-        }catch (Exception e){
-            showMessage(e.getMessage(),false);
+        } catch (Exception e) {
+            showMessage(e.getMessage(), false);
         }
     }
 
@@ -379,7 +395,22 @@ public class MyH5PayActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            Log.d(TAG, "onActivityResult requestCode" + requestCode + " resultCode=" + resultCode);
+            if (data != null) {
+                Log.d(TAG, "onActivityResult Intent data" + data.toString());
+                Bundle bundle = data.getExtras();
+                if (bundle != null && !bundle.keySet().isEmpty()) {
+                    for (String key : bundle.keySet()) {
+                        Log.d(TAG,
+								"onActivityResult Bundle bundle key=" + key + ",value=" + bundle.get(key) + "\n");
+                    }
+                }
+            }
+            super.onActivityResult(requestCode, resultCode, data);
+        } catch (Exception ex) {
+            Log.d(TAG, "onActivityResult " + ex.getMessage());
+        }
     }
 
     private class MyWebViewClient extends WebViewClient {
@@ -390,42 +421,52 @@ public class MyH5PayActivity extends Activity {
         }
 
         @Override
+        public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+            super.doUpdateVisitedHistory(view, url, isReload);
+            url = url.toLowerCase();
+            if (isInitiateWeixinPay
+                    || url.startsWith("wechat")
+                    || url.startsWith("weixin:")
+                    || url.contains("index")
+                    || url.contains("home")
+                    || url.contains("login")
+            ) {
+                view.clearHistory();
+            }
+        }
+
+        @Override
         public boolean shouldOverrideUrlLoading(final WebView view, String url) {
             Log.d(TAG, " shouldOverrideUrlLoading " + url);
-            if(url.contains("sharetrips")){
-                JSONObject jsonObject=new JSONObject();
+            if (url.contains("sharetrips")) {
+                JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.putOpt("appId",appId);
-                    jsonObject.putOpt("shareType","WXWebpageObject");
-                    JSONObject data=new JSONObject();
-                    data.putOpt("webpageUrl",url);
-                    data.putOpt("webTitle","行程分享");
-                    data.putOpt("webDescription","行程分享");
-                    data.putOpt("openId",openId);
-                    jsonObject.putOpt("data",data);
+                    jsonObject.putOpt("appId", appId);
+                    jsonObject.putOpt("shareType", "WXWebpageObject");
+                    JSONObject data = new JSONObject();
+                    data.putOpt("webpageUrl", url);
+                    data.putOpt("webTitle", "行程分享");
+                    data.putOpt("webDescription", "行程分享");
+                    data.putOpt("openId", openId);
+                    jsonObject.putOpt("data", data);
                     share(jsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    showMessage(e.getMessage(),false);
+                    showMessage(e.getMessage(), false);
                     view.loadUrl(url);
                 }
                 return true;
             }
-            if(url.startsWith("tel:")){
+            if (url.startsWith("tel:")) {
                 callPhone(url);
                 return true;
             }
             if (url.startsWith("weixin:") || url.startsWith("wechat")) {
-                if(mWebView!=null){
-                    mWebView.clearHistory();
-                    view.clearHistory();
-                }
+                isInitiateWeixinPay = true;
                 Intent intent = new Intent();
-
                 intent.setAction(Intent.ACTION_VIEW);
-
                 intent.setData(Uri.parse(url));
-                startActivityForResult(intent,sH5payResultReqCode);
+                startActivityForResult(intent, sH5payResultReqCode);
                 return true;
             }
             if (!(url.startsWith("http") || url.startsWith("https"))) {
@@ -439,10 +480,12 @@ public class MyH5PayActivity extends Activity {
                 @Override
                 public void onPayResult(final H5PayResultModel result) {
                     // 支付结果返回
-                    Log.d("PayH5Activiti", "支付结果返回 = " + result.getResultCode() + " getResultCode=" + result.getResultCode());
+                    Log.d("PayH5Activiti", "支付结果返回 = " + result.getResultCode() + " getResultCode" +
+                            "=" + result.getResultCode());
                     h5PayResultModel = result;
                     final String url = result.getReturnUrl();
-                    showMessage(getMessage(result.getResultCode()), !"9000".equals(result.getResultCode()));
+                    showMessage(getMessage(result.getResultCode()),
+                            !"9000".equals(result.getResultCode()));
 
                     if (!TextUtils.isEmpty(url)) {
                         MyH5PayActivity.this.runOnUiThread(new Runnable() {
@@ -491,12 +534,12 @@ public class MyH5PayActivity extends Activity {
                         }
                     }
                     if (!TextUtils.isEmpty(redirectUrl)) {
-						arr=redirectUrl.split("=");
-						if(arr.length>1){
-							if(!TextUtils.isEmpty(arr[1])){
-								return arr[1];
-							}
-						}
+                        arr = redirectUrl.split("=");
+                        if (arr.length > 1) {
+                            if (!TextUtils.isEmpty(arr[1])) {
+                                return arr[1];
+                            }
+                        }
                     }
                 }
             } catch (MalformedURLException | UnsupportedEncodingException e) {
@@ -511,6 +554,9 @@ public class MyH5PayActivity extends Activity {
         super.onDestroy();
         if (mWebView != null) {
             mWebView.removeAllViews();
+            if (linearLayout != null) {
+                linearLayout.removeView(mWebView);
+            }
             try {
                 mWebView.destroy();
             } catch (Throwable t) {

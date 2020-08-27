@@ -22,7 +22,7 @@ Page({
     if (app.urls.homeUrl) {
       this.initLauch(args);
     } else {
-      this.loadLaunchUrl(true,function (shopUrl) {
+      this.loadLaunchUrl(true, function (shopUrl) {
         if (shopUrl) {
           app.setLaunchUrl(shopUrl);
           that.initLauch(args);
@@ -87,17 +87,21 @@ Page({
       url: `${app.getBaseUrl()}/home/LaunchUrl?AppId=${app.getAppId()}`,
       success: function (rs) {
         if (rs.data && rs.data.Data) {
-          const launchUrl= rs.data.Data.LaunchUrl;
+          const launchUrl = rs.data.Data.LaunchUrl;
           app.urls.homeUrl = launchUrl
-          if(typeof callback=='function'){
+          if (typeof callback == 'function') {
             callback(launchUrl);
           }
         } else {
-          that.showModal();
+          if (isShowLoading) {
+            that.showModal();
+          }
         }
       },
       fail: function () {
-        that.showModal();
+        if (isShowLoading) {
+          that.showModal();
+        }
       },
       complete: function () {
         that.hideLoading();

@@ -11,7 +11,9 @@ import android.util.Log;
 import com.alipay.sdk.app.PayTask;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.CordovaWebView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +27,13 @@ public class Ali extends CordovaPlugin {
     public static final String TAG = "Ali";
     public static CallbackContext sPayH5UrlCallbackContext;
     private static final int Pay_H5_Url_Request_Code = 0X0001;
+    private CordovaPlugin self;
+
+    @Override
+    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
+        super.initialize(cordova, webView);
+        self = this;
+    }
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -43,7 +52,9 @@ public class Ali extends CordovaPlugin {
             return true;
         }
         if (TextUtils.equals("payH5Url", action)) {
-            payH5Url(args.optString(0),args.optString(1),args.optString(2), callbackContext);
+            cordova.getThreadPool().execute(() -> {
+                payH5Url(args.optString(0), args.optString(1), args.optString(2), callbackContext);
+            });
             return true;
         }
         return super.execute(action, args, callbackContext);
@@ -56,7 +67,8 @@ public class Ali extends CordovaPlugin {
      * @return
      */
     public static boolean isAliPayInstalled(Context context, String apkName) {
-        Uri uri = Uri.parse(TextUtils.isEmpty(apkName) ? "alipays://platformapi/startApp" : apkName);
+        Uri uri = Uri.parse(TextUtils.isEmpty(apkName) ? "alipays://platformapi/startApp" :
+                apkName);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         ComponentName componentName = intent.resolveActivity(context.getPackageManager());
         return componentName != null;
@@ -86,7 +98,8 @@ public class Ali extends CordovaPlugin {
         });
     }
 
-    public void payH5Url(String h5PayUrl,String openId,String appId, CallbackContext callbackContext) {
+    public void payH5Url(String h5PayUrl, String openId, String appId,
+                         CallbackContext callbackContext) {
         sPayH5UrlCallbackContext = callbackContext;
         Intent intent = new Intent(cordova.getActivity(), MyH5PayActivity.class);
         Bundle extras = new Bundle();
@@ -95,25 +108,20 @@ public class Ali extends CordovaPlugin {
          * demo中拦截url进行支付的逻辑是在H5PayDemoActivity中shouldOverrideUrlLoading方法实现，
          * 商户可以根据自己的需求来实现
          */
-        String url = h5PayUrl;
         // url可以是一号店或者淘宝等第三方的购物wap站点，在该网站的支付过程中，支付宝sdk完成拦截支付
-        extras.putString("url", url);
+        extras.putString("url", h5PayUrl);
         extras.putString("appId", appId);
         extras.putString("openId", openId);
         intent.putExtras(extras);
-        cordova.getActivity().startActivityForResult(intent, Pay_H5_Url_Request_Code);
+        cordova.startActivityForResult(self, intent, Pay_H5_Url_Request_Code);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == Pay_H5_Url_Request_Code) {
-            Bundle bundle = intent.getExtras();
-            if (sPayH5UrlCallbackContext != null&&bundle!=null) {
-                if(resultCode!=RESULT_OK){
-                    sPayH5UrlCallbackContext.error("尚未返回支付结果");
-                    return;
-                }
+            Bundle bundle = intent != null ? intent.getExtras() : null;
+            if (sPayH5UrlCallbackContext != null && bundle != null) {
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.putOpt("payResultCode", bundle.getString("resultCode"));
@@ -123,6 +131,11 @@ public class Ali extends CordovaPlugin {
                     e.printStackTrace();
                 }
                 sPayH5UrlCallbackContext.success(jsonObject);
+            }
+            if (resultCode != RESULT_OK) {
+                if (webView != null && webView.canGoBack()&&self.webView.getEngine()!=null) {
+                    self.webView.getEngine().goBack();
+                }
             }
         }
     }
@@ -143,7 +156,8 @@ public class Ali extends CordovaPlugin {
 //                 * @return true：表示URL为支付宝支付URL，URL已经被拦截并支付转化；false：表示URL非支付宝支付URL；
 //                 *
 //                 */
-//                boolean isIntercepted = task.payInterceptorWithUrl(h5PayUrl, true, new H5PayCallback() {
+//                boolean isIntercepted = task.payInterceptorWithUrl(h5PayUrl, true, new
+//                H5PayCallback() {
 //                    @Override
 //                    public void onPayResult(final H5PayResultModel result) {
 //                        // 支付结果返回

@@ -2,6 +2,7 @@ export const CONFIG = {
   // 该变量用于 启用 --prod 编译，若为true，访问的是测试库的地址，否则访问生产地址
   mockProBuild: !false,
   production: true,
+  isShowVConsole: false,
   appDomain: {
     production: "sky-trip.com",
     debug: "testskytrip.com",
