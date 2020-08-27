@@ -49,8 +49,14 @@ export class AuthorizeDirective implements OnChanges, OnInit {
   ngOnInit() {
     if (this.options) {
       if (this.options.alterTextWhenClick) {
-        this.el.nativeElement.onclick = () => {
-          AppHelper.alert(this.options.alterTextWhenClick);
+        this.el.nativeElement.onclick = async () => {
+          if (
+            !(await this.authorizeService.checkAuthority(this.appAuthority))
+          ) {
+            if (this.options.alterTextWhenClick) {
+              AppHelper.alert(this.options.alterTextWhenClick);
+            }
+          }
         };
       }
     }
