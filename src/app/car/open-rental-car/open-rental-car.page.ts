@@ -141,28 +141,15 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   // }
   private async openInMyBrowser(url: string) {
     try {
-      // if (this.browser) {
-      //   this.browser.hide();
-      // }
       const res = await AppHelper.payH5Url(url).catch(async (e) => {
         console.log("aliPay error", e);
-        await AppHelper.alert(e);
+        // await AppHelper.alert(e);
         return null;
       });
       console.log("payres", res);
-      if (res) {
-        await AppHelper.alert(res);
-        await AppHelper.alert(
-          res.payResultCode == "9000" ? "支付完成" : res.payResultCode
-        );
-      } else {
-        if (this.backBtn) {
-          this.backBtn.popToPrePage();
-        }
+      if (this.backBtn) {
+        this.backBtn.popToPrePage();
       }
-      // if (this.browser) {
-      //   this.browser.show();
-      // }
     } catch (e) {
       AppHelper.alert(e);
     }
