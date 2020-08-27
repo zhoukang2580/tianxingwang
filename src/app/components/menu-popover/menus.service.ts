@@ -7,51 +7,7 @@ import { filter } from "rxjs/operators";
 import { ApiService } from "src/app/services/api/api.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AuthorizeService } from "src/app/services/authorize/authorize.service";
-export const WMS_SYSTEM_MENUS: SystemsMenus[] = [
-  {
-    feature: "wms",
-    id: "wms-inventories",
-    isShowInFeatureTabHome: true,
-    isCanRemove: true,
-    name: `库存清单`,
-    bgColor: "var(--ion-color-light)",
-    imageUrl: `assets/svgs/inventories.svg`,
-    icon: `inventories`,
-    iconColor: "var(--ion-color-secondary)",
-    route: `wms-inventory-list`,
-    appAuthority:
-      "PresentationWmsWebsiteUrl.Inventory.Index.App_WmsInventoryQuery",
-  },
-  {
-    feature: "wms",
-    id: "wms-warehouse-initialize",
-    isShowInFeatureTabHome: true,
-    isCanRemove: true,
-    name: `库存初始化`,
-    imageUrl: `assets/svgs/warehouse-initialize.svg`,
-    icon: `warehouse-initialize`,
-    iconColor: "var(--ion-color-success)",
-    bgColor: "var(--ion-color-light)",
-    route: `wms-inventory-list`,
-    queryParams: {
-      canEdit: true,
-    },
-    appAuthority:
-      "PresentationWmsWebsiteUrl.Inventory.Index.App_WmsInventoryOp",
-  },
-  {
-    feature: "wms",
-    id: "wms-product-maintain",
-    isShowInFeatureTabHome: true,
-    isCanRemove: true,
-    name: `产品维护`,
-    imageUrl: `assets/svgs/wms-product-maintain.svg`,
-    icon: `wms-product-maintain`,
-    iconColor: "var(--ion-color-secondary)",
-    bgColor: "var(--ion-color-light)",
-    route: `wms-product`,
-    appAuthority: "PresentationWmsWebsiteUrl.Product.Index.App_WmsProduct",
-  },
+export const WMS_REPORTS_SYSTEM_MENUS: SystemsMenus[] = [
   {
     feature: "wms",
     id: "wms-day-report",
@@ -108,6 +64,58 @@ export const WMS_SYSTEM_MENUS: SystemsMenus[] = [
     appAuthority:
       "PresentationWmsReportUrl.StockWarning.Index.App_WmsReportStockWarning",
   },
+].map((it: SystemsMenus) => {
+  if (!it.authId) {
+    it.authId = "PresentationWmsReportUrl";
+  }
+  return it;
+});
+export const WMS_SYSTEM_MENUS: SystemsMenus[] = [
+  {
+    feature: "wms",
+    id: "wms-inventories",
+    isShowInFeatureTabHome: true,
+    isCanRemove: true,
+    name: `库存清单`,
+    bgColor: "var(--ion-color-light)",
+    imageUrl: `assets/svgs/inventories.svg`,
+    icon: `inventories`,
+    iconColor: "var(--ion-color-secondary)",
+    route: `wms-inventory-list`,
+    appAuthority:
+      "PresentationWmsWebsiteUrl.Inventory.Index.App_WmsInventoryQuery",
+  },
+  {
+    feature: "wms",
+    id: "wms-warehouse-initialize",
+    isShowInFeatureTabHome: true,
+    isCanRemove: true,
+    name: `库存初始化`,
+    imageUrl: `assets/svgs/warehouse-initialize.svg`,
+    icon: `warehouse-initialize`,
+    iconColor: "var(--ion-color-success)",
+    bgColor: "var(--ion-color-light)",
+    route: `wms-inventory-list`,
+    queryParams: {
+      canEdit: true,
+    },
+    appAuthority:
+      "PresentationWmsWebsiteUrl.Inventory.Index.App_WmsInventoryOp",
+  },
+  {
+    feature: "wms",
+    id: "wms-product-maintain",
+    isShowInFeatureTabHome: true,
+    isCanRemove: true,
+    name: `产品维护`,
+    imageUrl: `assets/svgs/wms-product-maintain.svg`,
+    icon: `wms-product-maintain`,
+    iconColor: "var(--ion-color-secondary)",
+    bgColor: "var(--ion-color-light)",
+    route: `wms-product`,
+    appAuthority: "PresentationWmsWebsiteUrl.Product.Index.App_WmsProduct",
+  },
+  ...WMS_REPORTS_SYSTEM_MENUS,
   {
     feature: "wms",
     id: "wms-warehouse-management",
@@ -161,7 +169,12 @@ export const WMS_SYSTEM_MENUS: SystemsMenus[] = [
     iconColor: "var(--ion-color-light)",
     bgColor: "var(--ion-color-secondary)",
   },
-];
+].map((it) => {
+  if (!it.authId) {
+    it.authId = "PresentationWmsWebsiteUrl";
+  }
+  return it;
+});
 const MMS_SYSTEMS: SystemsMenus[] = [
   {
     isShowInFeatureTabHome: false,
@@ -322,7 +335,8 @@ const MMS_SYSTEMS: SystemsMenus[] = [
     feature: "mms",
   },
   {
-    appAuthority: "PresentationMmsWebsiteAdminUrl.OrderCoupon.Index.App_MmsOrderCouponOp",
+    appAuthority:
+      "PresentationMmsWebsiteAdminUrl.OrderCoupon.Index.App_MmsOrderCouponOp",
     isShowInFeatureTabHome: true,
     isShowInHome: true,
     icon: "icon-mms",
@@ -336,7 +350,9 @@ const MMS_SYSTEMS: SystemsMenus[] = [
     feature: "mms",
   },
 ].map((it) => {
-  it.authId = "PresentationMmsWebsiteAdminUrl";
+  if (!it.authId) {
+    it.authId = "PresentationMmsWebsiteAdminUrl";
+  }
   return it;
 });
 console.log("MMS_SYSTEMS ", MMS_SYSTEMS);
@@ -369,7 +385,12 @@ export const BPM_SYSTEMS: SystemsMenus[] = [
     isCanRemove: true,
     isShowInHome: false,
   },
-];
+].map((it) => {
+  if (!it.authId) {
+    it.authId = "PresentationBpmWebsiteAdminUrl";
+  }
+  return it;
+});
 export const CRM_SYSTEMS: SystemsMenus[] = [
   {
     appAuthority:
@@ -386,11 +407,17 @@ export const CRM_SYSTEMS: SystemsMenus[] = [
     bgColor: "var(--ion-color-danger)",
     feature: "crm",
   },
-];
+].map((it) => {
+  if (!it.authId) {
+    it.authId = "PresentationCrmWebsiteAdminUrl";
+  }
+  return it;
+});
 export const SYSTEMS_MENUS: SystemsMenus[] = [
   ...MMS_SYSTEMS,
   ...BPM_SYSTEMS,
   ...WMS_SYSTEM_MENUS,
+  ...CRM_SYSTEMS,
 ].map((it: SystemsMenus) => {
   if (it.icon) {
     if (!it.icon.startsWith("icon-")) {
@@ -435,7 +462,7 @@ export class MenusService {
   private async loadSubSystems() {
     try {
       return this.authService.loadSubsystems();
-    } catch (e) { }
+    } catch (e) {}
     return [];
   }
   private async initSystemMenus(systems: string[]) {
