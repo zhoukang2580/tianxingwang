@@ -21,6 +21,7 @@ import {
 } from "@ionic/angular";
 import { finalize, switchMap, map, catchError } from "rxjs/operators";
 import { LoginSkeletonPageComponent } from "../components/login-skeleton-page/login-skeleton-page.component";
+import { CONFIG } from "../config";
 
 @Injectable({
   providedIn: "root",
@@ -63,8 +64,11 @@ export class AuthorityGuard implements CanActivate, CanLoad, CanActivateChild {
           return true;
         }
         // this.loginService.setToPageRouter(state.url);
-        AppHelper.setToPageAfterAuthorize({path:state.url,queryParams:next.queryParams});
-        if (AppHelper.isWechatMini()) {
+        AppHelper.setToPageAfterAuthorize({
+          path: state.url,
+          queryParams: next.queryParams,
+        });
+        if (AppHelper.isWechatMini() && CONFIG.isForWechatMiniApproval) {
           this.router.navigate(["home"]);
           return false;
         }

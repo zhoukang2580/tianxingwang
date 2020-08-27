@@ -69,6 +69,8 @@
         <span *ngIf="!isLogining">登录</span>
         <span *ngIf="isLogining">正在登录...</span>
       </ion-button>
+      <ion-button class="register-btn" color='secondary'  expand='block' strong='true' *ngIf='!isGetWechatMiniMobile && isWechatMini'
+      (click)="getWechatMiniMobile()">使用微信手机号</ion-button>
       <section class='register-forgetpassword'>
         <ion-button fill='clear' color='secondary' strong='true' (click)="forgetPassword()">忘记密码</ion-button>
         <ng-container>

@@ -14,6 +14,8 @@ import { finalize } from "rxjs/operators";
 import { RequestEntity } from "../services/api/Request.entity";
 import { IdentityService } from "../services/identity/identity.service";
 import { environment } from "src/environments/environment";
+import { WechatHelper } from '../wechatHelper';
+import { ApiService } from '../services/api/api.service';
 
 @Component({
   selector: "app-login",
@@ -44,11 +46,15 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isApp = AppHelper.isApp();
   defaultLogoUrl: string;
   isWechatMini = AppHelper.isWechatMini();
+  isGetWechatMiniMobile: boolean;
+  wechatMiniUser: any;
+  wechatMiniMobile: any;
   private mockDeviceInfo = {
     Device: `accw125487df1254accw125487df1254`,
     DeviceName: `pc模拟测试`,
   };
   constructor(
+    private apiService: ApiService,
     private loginService: LoginService,
     private identityService: IdentityService,
     private configService: ConfigService,
@@ -348,7 +354,33 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
               }
             },
             (e) => {
-              AppHelper.alert("wechat登录失败，" + JSON.stringify(e));
+              AppHelper.alert("wechat登录失败，" );
+            }
+          );
+        break;
+      }
+      case "wechatMiniMobile": {
+        this.loginEntity.Data.WechatMiniEncryptedData = this.wechatMiniMobile.encryptedData;
+        this.loginEntity.Data.WechatMiniEncryptedIv = this.wechatMiniMobile.iv;
+        if (this.wechatMiniMobile.wechatminicode) {
+          this.loginEntity.Data.WechatMiniCode = this.wechatMiniMobile.wechatminicode;
+        }
+        this.loginSubscription = this.loginService
+          .login("ApiLoginUrl-Home-WechatMiniMobileLogin", this.loginEntity)
+          .pipe(
+            finalize(() => {
+              this.loginType = "user";
+              this.hideLoadingStatus();
+            })
+          )
+          .subscribe(
+            (r) => {
+              if (r.Ticket) {
+                this.jump(true);
+              }
+            },
+            (e) => {
+              AppHelper.alert("登录失败，请使用其它登陆方式" );
             }
           );
         break;
@@ -428,7 +460,28 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
         }
       );
   }
-
+  getWechatMiniMobile() {
+    const token =
+      (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
+    const key = AppHelper.uuid();
+    const desc="小程序需要获取你的手机号码来完成登陆功能";
+    let url = `/pages/phonenumber/index?key=${key}&token=${token}&description=${desc}`;
+    if (!this.wechatMiniUser) {
+      url = url + "&isLogin=true";
+    }
+    WechatHelper.wx.miniProgram.navigateTo({ url: url });
+    WechatHelper.checkStep(key, this.apiService, (val) => {
+      try {
+        this.wechatMiniMobile = JSON.parse(val);
+        this.loginType="wechatMiniMobile";
+        this.login();
+      } catch (e) {
+        this.wechatMiniMobile = null;
+      }
+    });
+    this.isGetWechatMiniMobile = true;
+  }
+  
   async jump(
     isCheckDevice: boolean // 跳转
   ) {
