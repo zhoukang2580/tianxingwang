@@ -29,10 +29,7 @@ import { WechatHelper } from "src/app/wechatHelper";
 })
 export class OpenRentalCarPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
-  // private browser: InAppBrowserObject;
-  // private openSystemBrowser: InAppBrowserObject;
   private shareWebUrl$ = new BehaviorSubject(null);
-  private isSafariAvailable = false;
   isApp = AppHelper.isApp();
   url$: Observable<string>;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
@@ -64,17 +61,13 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     );
   }
   async back() {
-    if (!this.isSafariAvailable) {
-      const ok = await AppHelper.alert(
-        "是否退出当前页面？",
-        true,
-        LanguageHelper.getYesTip(),
-        LanguageHelper.getNegativeTip()
-      );
-      if (ok) {
-        this.backBtn.popToPrePage();
-      }
-    } else {
+    const ok = await AppHelper.alert(
+      "是否退出当前页面？",
+      true,
+      LanguageHelper.getYesTip(),
+      LanguageHelper.getNegativeTip()
+    );
+    if (ok) {
       this.backBtn.popToPrePage();
     }
   }
@@ -162,6 +155,10 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
         await AppHelper.alert(
           res.payResultCode == "9000" ? "支付完成" : res.payResultCode
         );
+      } else {
+        if (this.backBtn) {
+          this.backBtn.popToPrePage();
+        }
       }
       // if (this.browser) {
       //   this.browser.show();

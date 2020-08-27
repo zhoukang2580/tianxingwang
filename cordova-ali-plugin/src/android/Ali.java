@@ -121,22 +121,22 @@ public class Ali extends CordovaPlugin {
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == Pay_H5_Url_Request_Code) {
             Bundle bundle = intent != null ? intent.getExtras() : null;
-            if (sPayH5UrlCallbackContext != null && bundle != null) {
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.putOpt("payResultCode", bundle.getString("resultCode"));
-                    jsonObject.putOpt("payReturnUrl", bundle.getString("payReturnUrl"));
-                } catch (JSONException e) {
-                    sPayH5UrlCallbackContext.error(e.getMessage());
-                    e.printStackTrace();
+            if (sPayH5UrlCallbackContext != null) {
+                if(bundle!=null){
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.putOpt("payResultCode", bundle.getString("resultCode"));
+                        jsonObject.putOpt("payReturnUrl", bundle.getString("payReturnUrl"));
+                    } catch (JSONException e) {
+                        sPayH5UrlCallbackContext.error(e.getMessage());
+                        e.printStackTrace();
+                    }
+                    sPayH5UrlCallbackContext.success(jsonObject);
+                }else {
+                    sPayH5UrlCallbackContext.error("未返回支付结果，请稍后查看订单状态");
                 }
-                sPayH5UrlCallbackContext.success(jsonObject);
             }
-            if (resultCode != RESULT_OK) {
-                if (webView != null && webView.canGoBack()&&self.webView.getEngine()!=null) {
-                    self.webView.getEngine().goBack();
-                }
-            }
+            
         }
     }
     //    public void payH5Url( String h5PayUrl,CallbackContext callbackContext) {

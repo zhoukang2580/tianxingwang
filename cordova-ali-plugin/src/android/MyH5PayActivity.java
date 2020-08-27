@@ -329,7 +329,7 @@ public class MyH5PayActivity extends Activity {
                 Bundle bundle = new Bundle();
                 bundle.putString("payResultCode", h5PayResultModel.getResultCode());
                 bundle.putString("payReturnUrl", h5PayResultModel.getReturnUrl());
-                intent.putExtras(intent);
+                intent.putExtras(bundle);
                 setResult(RESULT_OK, intent);
             } else {
                 setResult(RESULT_CANCELED, null);
@@ -483,10 +483,9 @@ public class MyH5PayActivity extends Activity {
                     Log.d("PayH5Activiti", "支付结果返回 = " + result.getResultCode() + " getResultCode" +
                             "=" + result.getResultCode());
                     h5PayResultModel = result;
-                    final String url = result.getReturnUrl();
-                    showMessage(getMessage(result.getResultCode()),
-                            !"9000".equals(result.getResultCode()));
-
+//                    final String url = result.getReturnUrl();
+//                    showMessage(getMessage(result.getResultCode()),
+//                            !"9000".equals(result.getResultCode()));
                     if (!TextUtils.isEmpty(url)) {
                         MyH5PayActivity.this.runOnUiThread(new Runnable() {
                             @Override
