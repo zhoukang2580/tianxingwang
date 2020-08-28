@@ -14,8 +14,8 @@ import { finalize } from "rxjs/operators";
 import { RequestEntity } from "../services/api/Request.entity";
 import { IdentityService } from "../services/identity/identity.service";
 import { environment } from "src/environments/environment";
-import { WechatHelper } from '../wechatHelper';
-import { ApiService } from '../services/api/api.service';
+import { WechatHelper } from "../wechatHelper";
+import { ApiService } from "../services/api/api.service";
 
 @Component({
   selector: "app-login",
@@ -328,7 +328,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           )
           .subscribe((r) => {
             if (r.Ticket) {
-              this.jump(true);
+              this.jump(false);
             }
           });
         break;
@@ -350,11 +350,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           .subscribe(
             (r) => {
               if (r.Ticket) {
-                this.jump(true);
+                this.jump(false);
               }
             },
             (e) => {
-              AppHelper.alert("wechat登录失败，" );
+              AppHelper.alert("wechat登录失败，");
             }
           );
         break;
@@ -376,11 +376,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
           .subscribe(
             (r) => {
               if (r.Ticket) {
-                this.jump(true);
+                this.jump(false);
               }
             },
             (e) => {
-              AppHelper.alert("登录失败，请使用其它登陆方式" );
+              AppHelper.alert("登录失败，请使用其它登陆方式");
             }
           );
         break;
@@ -464,7 +464,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     const token =
       (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
     const key = AppHelper.uuid();
-    const desc="小程序需要获取你的手机号码来完成登陆功能";
+    const desc = "小程序需要获取你的手机号码来完成登陆功能";
     let url = `/pages/phonenumber/index?key=${key}&token=${token}&description=${desc}`;
     if (!this.wechatMiniUser) {
       url = url + "&isLogin=true";
@@ -473,7 +473,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     WechatHelper.checkStep(key, this.apiService, (val) => {
       try {
         this.wechatMiniMobile = JSON.parse(val);
-        this.loginType="wechatMiniMobile";
+        this.loginType = "wechatMiniMobile";
         this.login();
       } catch (e) {
         this.wechatMiniMobile = null;
@@ -481,7 +481,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     });
     this.isGetWechatMiniMobile = true;
   }
-  
+
   async jump(
     isCheckDevice: boolean // 跳转
   ) {
