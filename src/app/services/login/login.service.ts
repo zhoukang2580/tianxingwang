@@ -19,8 +19,9 @@ import { AccountPasswordPage } from "src/app/account/account-password/account-pa
 })
 export class LoginService {
   identity: IdentityEntity;
+  preventAutoLogin = false;
+  private checkLoginTime = 2 * 60 * 1000;
   private imageValue: string;
-  private preventAutoLogin = false;
   private isAutoLoginPromise: Promise<boolean>;
   set ImageValue(value: string) {
     this.imageValue = value;
@@ -42,7 +43,7 @@ export class LoginService {
       this.ngZone.runOutsideAngular(() => {
         setTimeout(() => {
           this.check();
-        }, 30000);
+        }, this.checkLoginTime);
       });
     });
   }
@@ -97,10 +98,10 @@ export class LoginService {
       const sdkType = AppHelper.isWechatH5()
         ? ""
         : AppHelper.isWechatMini()
-        ? "Mini"
-        : AppHelper.isApp()
-        ? "App"
-        : "";
+          ? "Mini"
+          : AppHelper.isApp()
+            ? "App"
+            : "";
       const req = new RequestEntity();
       req.Method = `ApiPasswordUrl-Wechat-Check`;
       req.Data = {
@@ -310,7 +311,7 @@ export class LoginService {
   }
   async check() {
     const ticket = AppHelper.getTicket();
-    if (!this.identity || !ticket || environment.mockProBuild) {
+    if (!this.identity || !this.identity.Ticket || !this.identity.Id || !ticket || environment.mockProBuild) {
       return;
     }
     const req = new RequestEntity();
@@ -335,7 +336,7 @@ export class LoginService {
       })
       .pipe(
         map((r: IResponse<IdentityEntity>) => r),
-        finalize(() => {})
+        finalize(() => { })
       )
       .subscribe((r) => {
         if (r.Status) {
@@ -348,7 +349,7 @@ export class LoginService {
           this.ngZone.runOutsideAngular(() => {
             setTimeout(() => {
               this.check();
-            }, 30000);
+            }, this.checkLoginTime);
           });
         }
       });
