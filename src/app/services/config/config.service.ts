@@ -62,7 +62,7 @@ export class ConfigService {
     }
     const data = {
       domain: AppHelper.getDomain(),
-      AloneTag: AppHelper.getQueryParamers()["AloneTag"],
+      AloneTag: AppHelper.getQueryParamers()["AloneTag"]||"",
     };
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Router-Get";
