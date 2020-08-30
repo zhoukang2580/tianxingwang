@@ -183,7 +183,7 @@ export class PayService {
                 WechatHelper.checkStep(key, this.apiService, (val) => {
                   try {
                     callback(r.Data.Number || "支付操作完成");
-                  } catch (e) {}
+                  } catch (e) { }
                 });
                 resolve(r.Data.Number || "支付操作完成");
               } else if (AppHelper.isWechatH5()) {
@@ -195,7 +195,6 @@ export class PayService {
                   signType: r.Data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
                   paySign: r.Data.paySign, // 支付签名
                   success: (res) => {
-                    AppHelper.alert(res);
                     resolve(r.Data.Number || "支付操作完成");
                   },
                   cancel: (r) => {
@@ -207,6 +206,8 @@ export class PayService {
                     if (emsg) {
                       if (emsg.toLowerCase() == "choosewxpay:cancel") {
                         reject(Wechat_Pay_Error_Message_Cancel);
+                      } else {
+                        reject("支付失败");
                       }
                     } else {
                       reject(e || "支付失败");
@@ -251,8 +252,8 @@ export class PayService {
                       e.message || `${e}`.includes("-2")
                         ? "用户取消"
                         : `${e}`.includes("-1")
-                        ? "签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配"
-                        : `微信支付结果：${e}`.replace(",(null)", "")
+                          ? "签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配"
+                          : `微信支付结果：${e}`.replace(",(null)", "")
                     );
                   });
               }
@@ -357,14 +358,14 @@ export interface IAliPayPluginPayResult {
       其它	 其它支付错误
    */
   resultStatus:
-    | "9000"
-    | "8000"
-    | "4000"
-    | "5000"
-    | "6001"
-    | "6002"
-    | "6004"
-    | "其它"; // 9000
+  | "9000"
+  | "8000"
+  | "4000"
+  | "5000"
+  | "6001"
+  | "6002"
+  | "6004"
+  | "其它"; // 9000
 }
 export interface Ali {
   pay: (payInfo: string) => Promise<IAliPayPluginPayResult>;
