@@ -79,6 +79,18 @@ export class WechatHelper {
       });
     }
   }
+  static wechatMiniShare(parameters: any) {
+    let p = "";
+    if (parameters) {
+      if (typeof parameters == "object" && Object.keys(parameters).length) {
+        p = encodeURIComponent(JSON.stringify(parameters));
+      }
+    } else {
+      p = parameters;
+    }
+    const url = `/pages/share/index?shareArgs=${p}`;
+    WechatHelper.wx.miniProgram.navigateTo({ url });
+  }
   static async getCode() {
     return AppHelper.getWechatCode();
   }
@@ -150,8 +162,18 @@ export class WechatHelper {
       this.LaunchUrl.indexOf("#") > -1
         ? this.LaunchUrl.substring(0, this.LaunchUrl.indexOf("#"))
         : this.LaunchUrl;
+    // if (pageUrl.includes("?")) {
+    //   pageUrl = pageUrl.substr(0, pageUrl.indexOf("?"));
+    // }
     pageUrl = window.btoa(pageUrl);
     req.Method = "ApiPasswordUrl-wechat-jssdk";
+    req.Url = AppHelper.getApiUrl() + "/Home/WechatJsSdk";
+    const paramters = AppHelper.getQueryParamers();
+    if (paramters) {
+      for (var p in paramters) {
+        req[p] = paramters[p];
+      }
+    }
     req.Data = {
       Url: pageUrl,
     };
@@ -175,8 +197,8 @@ export class WechatHelper {
           observe: "body",
         })
         .subscribe((r: any) => {
-          if (!r.Status || !r.Data) {
-            return reject(r.Message || r.Code);
+          if (!r || !r.Status || !r.Data) {
+            return reject(!r ? " WechatJsSdk 接口异常" : r.Message || r.Code);
           }
           resolve(r.Data);
         });
