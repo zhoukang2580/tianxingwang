@@ -146,10 +146,12 @@ export class PayService {
         const sub = this.apiService.getResponse<any>(req).subscribe(
           async (r) => {
             if (r.Status && r.Data) {
-              // if (!r.Data.Status) {
-              //   reject(r.Message);
-              //   return;
-              // }
+              if (typeof r.Data.Status == 'boolean') {
+                if (!r.Data.Status) {
+                  reject(r.Data.Message || r.Data.Code);
+                  return;
+                }
+              }
               if (AppHelper.isWechatMini()) {
                 const key = AppHelper.uuid();
                 const token =
@@ -258,7 +260,7 @@ export class PayService {
                   });
               }
             } else {
-              reject((r && r.Message) || "操作失败");
+              reject(r && (r.Message || (r.Data && r.Data.Message)) || "操作失败");
             }
           },
           (e) => {
