@@ -242,9 +242,6 @@ export class FlightListPage
       evt.preventDefault();
     }
     if (s) {
-      const unselectBookInfos = this.flightService
-        .getPassengerBookInfos()
-        .filter((it) => !it.bookInfo || !it.bookInfo.flightPolicy);
       const cabins =
         s.Cabins && s.Cabins.filter((it) => it.SalesPrice == s.LowestFare);
       const cabin =
@@ -260,7 +257,6 @@ export class FlightListPage
           tripType: TripType.departureTrip,
           id: AppHelper.uuid(),
         } as IFlightSegmentInfo;
-
         const bookInfos = this.flightService.getPassengerBookInfos();
         if (!bookInfos.length) {
           await this.flightService.initSelfBookTypeBookInfos();

@@ -822,6 +822,19 @@ export class FlightService {
     if (!bookInfo || !flightCabin || !flightSegment) {
       return null;
     }
+    if (bookInfo.exchangeInfo) {
+      const info = {
+        flightSegment,
+        flightPolicy: {
+          Cabin: flightCabin,
+          CabinCode: flightCabin.Code,
+          IsAllowBook: true,
+        },
+        tripType: TripType.departureTrip,
+        id: AppHelper.uuid(),
+      } as IFlightSegmentInfo;
+      return info;
+    }
     this.policyFlights = this.policyFlights || [];
     const passengerPolicies = this.policyFlights.find(
       (itm) => itm.PassengerKey == bookInfo.passenger.AccountId
