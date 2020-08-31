@@ -1,35 +1,38 @@
 <div class="tip recomend-segment" *ngIf='isRecomendSegment'>最低价推荐</div>
-<div class='list-item' [class.recomend-segment]='isRecomendSegment' *ngIf='segment as s' #fli
-  [class.shade]='isHasFiltered&&!s.Cabins?.length'>
-  <div class='left'>
-    <h4 class="time">
-      <strong>{{s.TakeoffShortTime}}</strong>
-      <span class="line">-----&nbsp;{{s.IsStop||s.StopCities ? "经停" : "直飞"}}&nbsp;-----</span>
-      <strong>{{s.ArrivalShortTime}}
-        <span *ngIf='s.AddOneDayTip' class='addoneday'>{{s.AddOneDayTip}}</span>
-                </strong>
-        </h4>
-        <div class="airports">
-            <span>{{s.FromAirportName}}
-          <ng-container *ngIf='s.FromTerminal as t'>
-            ({{t}})
+<div class="list-item" [class.recomend-segment]='isRecomendSegment' *ngIf='segment' #fli [class.shade]='isHasFiltered&&!segment.Cabins?.length'>
+  <div class='item'>
+    <div class='left'>
+      <h4 class="time">
+        <strong>{{segment.TakeoffShortTime}}</strong>
+        <span class="line">-----&nbsp;{{segment.IsStop||segment.StopCities ? "经停" : "直飞"}}&nbsp;-----</span>
+        <strong>{{segment.ArrivalShortTime}}
+          <span *ngIf='segment.AddOneDayTip' class='addoneday'>{{segment.AddOneDayTip}}</span>
+        </strong>
+      </h4>
+      <div class="airports">
+        <span>{{segment.FromAirportName}}
+          <ng-container>
+            ({{segment.FromTerminal}})
           </ng-container>
         </span>
-        <span>{{s.ToAirportName}}
-          <ng-container *ngIf='s.ToTerminal as t'>
-            ({{t}})
+        <span>{{segment.ToAirportName}}
+          <ng-container>
+            ({{segment.ToTerminal}})
           </ng-container>
         </span>
+      </div>
+    </div>
+    <div class="price">
+      <div>￥{{segment.LowestFare}}</div>
+      <div class="tip" *ngIf='segment.isLowestPrice'>最低价</div>
+    </div>
   </div>
   <div class="desc">
-    <img [src]="s.AirlineSrc" class="airlinesrc">
-    <label>{{s.AirlineName}}</label>
-    <label>|{{s.Number}}</label>
-    <label>|{{s.PlaneType}}</label>
-    <label *ngIf='s.CodeShareNumber as n'>|<span class='code-share-number'>共享{{n}}</span> </label>
+    <img [src]="segment.AirlineSrc" class="airlinesrc">
+    <label>{{segment.AirlineName}}</label>
+    <label>|{{segment.Number}}</label>
+    <label *ngIf='segment.CodeShareNumber'>|<span class='code-share-number'>共享{{segment.CodeShareNumber}}</span> </label>
+    <label *ngIf=' segment.PlaneType'>|机型{{segment.PlaneType}}</label>
+    <label>|{{segment.Meal?"有":"无"}}餐食</label>
   </div>
-</div>
-<div class="price">
-  <div>￥{{s.LowestFare}}</div>
-  <div class="tip" *ngIf='s.isLowestPrice'>最低价</div>
 </div>

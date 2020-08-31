@@ -8,43 +8,42 @@
 .list-item {
   border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
 }
-.list-item .left .airports,
-.list-item,
-.list-item .desc,
-.list-item .price,
-.list-item .left .time {
+.left .airports,
+.desc,
+.price,
+.left .time {
   display: flex;
   align-items: center;
 }
-.list-item .desc {
+.desc {
   margin: 0.3em 0;
 }
-.list-item .desc img {
+.desc img {
   margin: 0 0.3em 0 0;
   width: 1em;
 }
 
-.list-item .left {
+.left {
   margin-right: 1em;
   flex: 1;
 }
 
-.list-item .left .airports,
-.list-item .line,
-.list-item .desc {
+.left .airports,
+.line,
+.desc {
   font-size: 0.8rem;
 }
 
-.list-item .left .airports,
-.list-item .left .time {
+.left .airports,
+.left .time {
   justify-content: space-between;
 }
 
-.list-item .code-share-number {
+.code-share-number {
   color: var(--ion-color-secondary);
 }
 
-.list-item .price {
+.price {
   text-align: end;
   display: block;
   width: calc(20vw - 1em);
@@ -56,14 +55,14 @@
   }
 }
 
-.list-item .addoneday {
+.addoneday {
   position: relative;
   right: 0.2em;
   bottom: 0.5em;
   font-size: 0.6rem;
   color: var(--ion-color-secondary);
 }
-.list-item.recomend-segment {
+.recomend-segment {
   padding: 0.5em;
   border-radius: 0.3em;
   border-top-left-radius: 0;
@@ -82,4 +81,8 @@
   font-size: 0.7rem;
   color: var(--ion-color-success);
   text-align: center;
+}
+.item {
+  display: flex;
+  align-items: center;
 }
