@@ -133,29 +133,32 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   }
   getApprovalStaff() {
     this.travelService.getStaff().then((s) => {
-      if (this.searchModel && this.searchModel.TravelForm) {
-        this.searchModel.TravelForm.CostCenterName =
-          this.searchModel.TravelForm.CostCenterName ||
-          (s.staff && s.staff.CostCenter.Name);
-        this.searchModel.TravelForm.CostCenterCode =
-          this.searchModel.TravelForm.CostCenterCode ||
-          (s.staff && s.staff.CostCenter.Code);
-        if (s.approvalStaff && s.approvalStaff.Name) {
-          this.appovalStaff = s.approvalStaff.Name;
-          this.searchModel.AccountId = s.approvalStaff.Account.Id;
+      if (s) {
+        if (this.searchModel && this.searchModel.TravelForm) {
+          this.searchModel.Staff = s && s.staff;
+          this.searchModel.TravelForm.CostCenterName =
+            this.searchModel.TravelForm.CostCenterName ||
+            (s.staff && s.staff.CostCenter.Name);
+          this.searchModel.TravelForm.CostCenterCode =
+            this.searchModel.TravelForm.CostCenterCode ||
+            (s.staff && s.staff.CostCenter.Code);
+          if (s.approvalStaff && s.approvalStaff.Name) {
+            this.appovalStaff = s.approvalStaff.Name;
+            this.searchModel.AccountId = s.approvalStaff.Account.Id;
+          }
+          if (!this.searchModel.TravelForm.Organization) {
+            this.searchModel.TravelForm.Organization = {} as any;
+          }
+          this.searchModel.TravelForm.Organization.Code =
+            this.searchModel.TravelForm.Organization.Code ||
+            (s.staff && s.staff.Organization && s.staff.Organization.Code);
+          this.searchModel.TravelForm.Organization.Name =
+            this.searchModel.TravelForm.Organization.Name ||
+            (s.staff && s.staff.Organization && s.staff.Organization.Name);
+          this.searchModel.TravelForm.Organization.Id =
+            this.searchModel.TravelForm.Organization.Id ||
+            (s.staff && s.staff.Organization && s.staff.Organization.Id);
         }
-        if (!this.searchModel.TravelForm.Organization) {
-          this.searchModel.TravelForm.Organization = {} as any;
-        }
-        this.searchModel.TravelForm.Organization.Code =
-          this.searchModel.TravelForm.Organization.Code ||
-          (s.staff && s.staff.Organization && s.staff.Organization.Code);
-        this.searchModel.TravelForm.Organization.Name =
-          this.searchModel.TravelForm.Organization.Name ||
-          (s.staff && s.staff.Organization && s.staff.Organization.Name);
-        this.searchModel.TravelForm.Organization.Id =
-          this.searchModel.TravelForm.Organization.Id ||
-          (s.staff && s.staff.Organization && s.staff.Organization.Id);
       }
     });
   }
@@ -401,8 +404,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
               this.moveRequiredEleToViewPort(el);
               AppHelper.toast("请输入出差类别");
               return;
-            }
-            else if (!trip.FromCityName) {
+            } else if (!trip.FromCityName) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
               AppHelper.toast("请输入开始城市");
@@ -559,7 +561,5 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }
     return this.searchModel.TravelForm.DayCount;
   }
-  getCashSuccess(){
-    
-  }
+  getCashSuccess() {}
 }
