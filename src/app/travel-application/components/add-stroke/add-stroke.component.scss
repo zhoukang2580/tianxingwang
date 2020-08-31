@@ -1,73 +1,85 @@
 .trash-outline {
-    color: var(--ion-color-secondary);
-    font-size: 1.3rem;
+  color: var(--ion-color-secondary);
+  font-size: 1.3rem;
 }
 
 .text-trip {
-    font-size: 13px;
-    color: #735a5a;
-    padding-left: 8px;
-    border-left: 4px solid #0083E9;
-    line-height: 3;
-    // font-size: 0.7rem;
-    height: 14px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  font-size: 13px;
+  color: #735a5a;
+  padding-left: 8px;
+  border-left: 4px solid #0083e9;
+  line-height: 3;
+  // font-size: 0.7rem;
+  height: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .radio {
-    height: 50px;
-    justify-content: left;
+  height: 50px;
+  justify-content: left;
 }
-
-div {
-    display: flex;
-    margin: 0 10px;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 18px;
-    color: rgba(34, 34, 34, 1);
-    line-height: 20px;
-    align-items: center;
-    border-bottom: 1px solid #c8cdd2;
-    overflow: hidden;
+.flex-row {
+  display: flex;
+  align-items: center;
+}
+.radios {
+  border: 1px solid #c8cdd2;
+  ion-item {
+    border: none;
+    ion-label {
+      margin-left: 0.6em;
+    }
+  }
+}
+.pass {
+  display: flex;
+  margin: 0 10px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  color: rgba(34, 34, 34, 1);
+  line-height: 20px;
+  align-items: center;
+  border-bottom: 1px solid #c8cdd2;
+  overflow: hidden;
 }
 
 .radio input {
-    width: 30px;
-    height: 15px;
-    margin-right: 2px;
+  width: 30px;
+  height: 15px;
+  margin-right: 2px;
 }
 
 .dcwf {
-    margin-right: 35px;
-    font-size: 16px;
+  margin-right: 35px;
+  font-size: 16px;
 }
 
 ion-item {
-    border-bottom: 1px solid #c8cdd2;
-    line-height: 40px;
+  border-bottom: 1px solid #c8cdd2;
+  line-height: 40px;
 }
 
 .hydrated {
-    visibility: inherit;
-    line-height: 25px;
-    font: inherit;
+  visibility: inherit;
+  line-height: 25px;
+  font: inherit;
 }
 
 ion-item-divider {
-    height: 50px;
+  height: 50px;
 }
 
 ion-item-divider {
-    background-color: #f2f6f9;
+  background-color: #f2f6f9;
 }
 
 ion-label:nth-child(2) {
-    margin-left: 20px;
+  margin-left: 20px;
 }
 
 .select-icon {
-    padding: 5px;
+  padding: 5px;
 }

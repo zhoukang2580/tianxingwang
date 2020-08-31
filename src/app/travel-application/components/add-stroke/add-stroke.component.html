@@ -5,17 +5,30 @@
                 <ion-text class="text-trip"><span style="font-size:12px">行程{{index+1}}</span></ion-text>
                 <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()" class="ion-text-end" *ngIf="enable"></ion-icon>
             </ion-item-divider>
-            <div class="radio">
+            <!-- <div class="radio">
                 <input type="radio" name="trip" id="signle">
                 <span class="dcwf">单程</span>
                 <input type="radio" name="trip" id="around">
                 <span class="dcwf">往返</span>
-            </div>
+            </div> -->
+            <ion-radio-group [(ngModel)]='trip.IsBackway'>
+                <ion-buttons class="radios">
+                    <ion-item lines='none'>
+                        <ion-radio value="false" mode='md'></ion-radio>
+                        <ion-label>单程</ion-label>
+                    </ion-item>
+                    <ion-item lines='none'>
+                        <ion-radio value="true" mode='md'></ion-radio>
+                        <ion-label>往返</ion-label>
+                    </ion-item>
+                </ion-buttons>
+            </ion-radio-group>
             <ion-item lines="none" [attr.tripType]='"tripType"'>
                 <ion-text [color]="!enable?'dark':'dark'">
                     出差类别
                 </ion-text>
-                <ion-select slot="end" class="ion-text-end" [(ngModel)]="trip.TripType" okText="确定" cancelText="取消" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(trip.TripType)" [disabled]="!enable">
+                <ion-select slot="end" class="ion-text-end" [(ngModel)]="trip.TripType" okText="确定" cancelText="取消" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(trip.TripType)"
+                    [disabled]="!enable">
                     <ion-select-option value="Domestic" *ngIf="domestic">国内</ion-select-option>
                     <ion-select-option value="International" *ngIf="international">国际*港澳台</ion-select-option>
                 </ion-select>
@@ -24,7 +37,8 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     交通住宿
                 </ion-text>
-                <ion-select (ionChange)='onRegionTypeChange($event)' [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.travelTools" okText="确定" multiple="true" cancelText="取消" [compareWith]="compareTravelToolWithFn">
+                <ion-select (ionChange)='onRegionTypeChange($event)' [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.travelTools" okText="确定"
+                    multiple="true" cancelText="取消" [compareWith]="compareTravelToolWithFn">
                     <ion-select-option value="{{t.value}}" *ngFor='let t of vmRegionTypes'>{{t.label}}</ion-select-option>
                 </ion-select>
             </ion-item>
@@ -69,11 +83,12 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     出差结束时间
                 </ion-text>
-                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" [(ngModel)]="trip.EndDate" (ionChange)="duageTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
+                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" [(ngModel)]="trip.EndDate"
+                    (ionChange)="duageTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
                 </ion-datetime>
             </ion-item>
             <ion-item *ngIf="pass">
-                <div>
+                <div class="pass">
                     <div *ngFor='let t of trip.travelTools'>
                         <ion-button slot='end' color="secondary" style="height: 2.4em;" (click)="goReserve(t)">
                             预订{{getTravelTools(t)}}
