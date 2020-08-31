@@ -38,6 +38,7 @@ import { RefundFlightTicketTipComponent } from "../refund-flight-ticket-tip/refu
 import { OrderService } from "../../order.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { DayModel } from "src/app/tmc/models/DayModel";
+import { tick } from "@angular/core/testing";
 @Component({
   selector: "app-order-item",
   templateUrl: "./order-item.component.html",
@@ -98,52 +99,74 @@ export class OrderItemComponent implements OnInit, OnChanges {
     evt.preventDefault();
     evt.stopPropagation();
   }
+  onHelp() {
+    AppHelper.alert("退票操作需3-15个工作日，退款操作需7-10个工作日");
+  }
   ngOnChanges(changes: SimpleChanges) {
     if (changes.order && changes.order.currentValue) {
       if (this.order) {
-        this.order.InsertDateTime = (this.order.InsertDateTime || "").replace("T", " ").substr(0, 19);
+        this.order.InsertDateTime = (this.order.InsertDateTime || "")
+          .replace("T", " ")
+          .substr(0, 19);
         this.order["checkPay"] = this.checkPay();
         this.order.VariablesJsonObj =
           this.order.VariablesJsonObj ||
           (this.order.Variables ? JSON.parse(this.order.Variables) : {});
         if (this.order.OrderFlightTickets) {
           this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(
-            (t) => {
-              t.VariablesJsonObj =
-                t.VariablesJsonObj ||
-                (t.Variables ? JSON.parse(t.Variables) : {});
-              if (t.OrderFlightTrips) {
-                t.OrderFlightTrips = t.OrderFlightTrips.map((trip) => {
-                  if (trip.TakeoffDate) {
-                    trip["dateWeekName"] = this.getDateWeekName(
-                      trip.TakeoffDate
-                    );
+            (ticket) => {
+              ticket.VariablesJsonObj =
+                ticket.VariablesJsonObj ||
+                (ticket.Variables ? JSON.parse(ticket.Variables) : {});
+              if (ticket.OrderFlightTrips) {
+                ticket.OrderFlightTrips = ticket.OrderFlightTrips.map(
+                  (trip) => {
+                    if (trip.TakeoffDate) {
+                      trip["dateWeekName"] = this.getDateWeekName(
+                        trip.TakeoffDate
+                      );
+                    }
+                    trip["isTakeoffTimeGtNow"] =
+                      this.calendarService
+                        .getMoment(0, trip.TakeoffTime)
+                        .diff(
+                          this.calendarService
+                            .getMoment(0)
+                            .format("YYYY-MM-DD"),
+                          "days"
+                        ) > 0;
+                    if (
+                      !trip.OrderFlightTicket ||
+                      !trip.OrderFlightTicket.Passenger
+                    ) {
+                      trip.OrderFlightTicket = {
+                        Id: ticket.Id,
+                        Passenger: ticket.Passenger,
+                      } as any;
+                    }
+                    return trip;
                   }
-                  if (
-                    !trip.OrderFlightTicket ||
-                    !trip.OrderFlightTicket.Passenger
-                  ) {
-                    trip.OrderFlightTicket = {
-                      Id: t.Id,
-                      Passenger: t.Passenger,
-                    } as any;
-                  }
-                  return trip;
-                });
-                t.OrderFlightTrips.sort((t1, t2) => {
+                );
+                ticket.OrderFlightTrips.sort((t1, t2) => {
                   return (
                     AppHelper.getDate(t1.TakeoffTime).getTime() -
                     AppHelper.getDate(t2.TakeoffTime).getTime()
                   );
                 });
               }
-              t.VariablesJsonObj.isShowBtnByTimeAndTicketType = this.showBtnByTimeAndTicketType(
-                t
+              ticket.VariablesJsonObj.isShowBtnByTimeAndTicketType = this.showBtnByTimeAndTicketType(
+                ticket
               );
-              t.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(t);
-              t.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(t);
-              t.VariablesJsonObj.isShowCancelBtn = this.isShowCancelBtn(t);
-              return t;
+              ticket.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(
+                ticket
+              );
+              ticket.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(
+                ticket
+              );
+              ticket.VariablesJsonObj.isShowCancelBtn = this.isShowCancelBtn(
+                ticket
+              );
+              return ticket;
             }
           );
         }

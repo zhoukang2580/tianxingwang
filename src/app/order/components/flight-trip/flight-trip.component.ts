@@ -5,7 +5,7 @@ import {
   Output,
   EventEmitter,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
 } from "@angular/core";
 import { ModalController } from "@ionic/angular";
 import { OrderTripModel } from "src/app/order/models/OrderTripModel";
@@ -18,7 +18,7 @@ import { OrderTravelPayType } from "src/app/order/models/OrderTravelEntity";
 @Component({
   selector: "app-flight-trip",
   templateUrl: "./flight-trip.component.html",
-  styleUrls: ["./flight-trip.component.scss"]
+  styleUrls: ["./flight-trip.component.scss"],
 })
 export class FlightTripComponent implements OnInit, OnChanges {
   @Input() trip: OrderTripModel;
@@ -26,6 +26,9 @@ export class FlightTripComponent implements OnInit, OnChanges {
   @Output() payInsuranceEvt: EventEmitter<any>;
   @Output() showInsuranceEvt: EventEmitter<any>;
   // products: InsuranceProductEntity[];
+  startDate: string;
+  endHHmm: string;
+  startHHmm: string;
   constructor(
     private calendarService: CalendarService,
     private modalCtrl: ModalController
@@ -34,7 +37,11 @@ export class FlightTripComponent implements OnInit, OnChanges {
     this.showInsuranceEvt = new EventEmitter();
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.startDate = this.getDate();
+    this.endHHmm = this.getHHmm(this.trip && this.trip.EndTime);
+    this.startHHmm = this.getHHmm(this.trip && this.trip.StartTime);
+  }
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.trip && changes && changes.trip.currentValue) {
       // this.getProducts();
@@ -46,7 +53,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
       return true;
     }
     const count = OrderInsurances.filter(
-      s =>
+      (s) =>
         s.InsuranceType == type &&
         s.Status != OrderInsuranceStatusType.Abolish &&
         s.Status != OrderInsuranceStatusType.Refunded
@@ -56,35 +63,12 @@ export class FlightTripComponent implements OnInit, OnChanges {
     }
     return true;
   }
-  // private getProducts() {
-  //   let products: InsuranceProductEntity[] = [];
-  //   if (!this.trip) {
-  //     return products;
-  //   }
-  //   const types = [
-  //     OrderInsuranceType.FlightAccident,
-  //     OrderInsuranceType.FlightDelay
-  //   ];
-  //   products =
-  //     (this.trip.InsuranceResult &&
-  //       this.trip.InsuranceResult.Products &&
-  //       this.trip.InsuranceResult.Products.filter(it =>
-  //         types.some(t => t == it.InsuranceType)
-  //       )) ||
-  //     [];
-  //   this.products =
-  //     this.trip && this.diffHours(this.trip.StartTime, null) >= 2
-  //       ? products
-  //       : [];
-  //   this.products = this.products.filter(it => this.check(it.InsuranceType));
-  //   return products;
-  // }
   getOrderInsurad() {
     if (!this.trip || !this.trip.OrderInsurances) {
       return;
     }
     return this.trip.OrderInsurances.find(
-      it =>
+      (it) =>
         it.Status == OrderInsuranceStatusType.Booking &&
         it.TravelPayType == OrderTravelPayType.Person
     );
@@ -115,7 +99,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
     // });
     // m.present();
   }
-  getDate() {
+  private getDate() {
     const str =
       (this.trip &&
         this.trip.StartTime &&
@@ -128,19 +112,11 @@ export class FlightTripComponent implements OnInit, OnChanges {
       str.substr(0, "yyyy-mm-dd".length)
     )}`;
   }
-  getStHHmm() {
-    const str =
-      (this.trip &&
-        this.trip.StartTime &&
-        this.trip.StartTime.replace("T", " ")) ||
-      "";
-    return str.substr("yyyy-mm-ddT".length, "hh:mm".length);
-  }
-  getEndHHmm() {
-    const str =
-      (this.trip && this.trip.EndTime && this.trip.EndTime.replace("T", " ")) ||
-      "";
-    return str.substr("yyyy-mm-ddT".length, "hh:mm".length);
+  private getHHmm(str: string) {
+    if (str) {
+      return str.substr("yyyy-mm-ddT".length, "hh:mm".length);
+    }
+    return str;
   }
   payInsurance(key: string, tradeNo: string, evt: CustomEvent) {
     if (evt) {
@@ -149,7 +125,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
     this.payInsuranceEvt.emit({
       evt,
       key,
-      tradeNo
+      tradeNo,
     });
   }
 }
