@@ -8,16 +8,17 @@
             </ion-buttons>
         </form>
     </ion-toolbar>
-    <ion-footer *ngIf='textSearchResults?.length else nodatatempl'>
-        <ion-label class="ion-text-wrap" color='secondary'>
-            <ion-chip *ngFor='let g of textSearchResults'>
-                <ion-label color='secondary'>
-                    {{g?.Name}}
-                </ion-label>
-                <ion-icon name="close-circle-outline" color='danger' (click)='onDeleteSelectedTag(g)'></ion-icon>
-            </ion-chip>
-        </ion-label>
-    </ion-footer>
+</ion-header>
+<ion-header *ngIf='selectedCitys?.length'>
+    <ion-label class="ion-text-wrap" color='secondary'>
+        <ion-chip *ngFor='let g of selectedCitys'>
+            <ion-label color='secondary'>
+                {{g?.Name}}
+            </ion-label>
+            <ion-icon name="close-circle-outline" color='danger' (click)='onDeleteSelectedTag(g)'></ion-icon>
+        </ion-chip>
+        <ion-button (click)='onDetermine()' style="display: flex;width: 100px;margin: auto;" color="secondary" shape='round'>确定</ion-button>
+    </ion-label>
 </ion-header>
 <ion-content>
     <app-refresher (ionRefresh)='doRefresh(true)' slot='fixed'>

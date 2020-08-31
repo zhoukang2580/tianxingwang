@@ -11,6 +11,16 @@ export const routes: Routes = [
     path: 'add-apply',
     loadChildren: () => import('./add-apply/add-apply.module').then(m => m.AddApplyPageModule)
   },
+  {
+    path: 'travel-apply-detail',
+    loadChildren: () => import('./travel-apply-detail/travel-apply-detail.module').then( m => m.TravelApplyDetailPageModule)
+  },
+  {
+    path: 'approval-tack',
+    loadChildren: () => import('./approval-task/approval-task.module').then( m => m.ApprovalTackPageModule)
+  },
+
+
 ];
 @NgModule({
   declarations: [],
@@ -18,3 +28,4 @@ export const routes: Routes = [
   exports: [RouterModule]
 })
 export class TravelApplicationRoutingModule { }
+

@@ -24,3 +24,4 @@ import { PageComponentsModule } from 'src/app/pages/components/page-components.m
   declarations: [AddApplyPage]
 })
 export class AddApplyPageModule {}
+export class SharedModule{}

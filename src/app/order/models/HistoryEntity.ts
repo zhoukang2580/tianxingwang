@@ -15,6 +15,7 @@ export class HistoryEntity extends BaseVariablesEntity {
   /// </summary>
 
   Key: string;
+  Name: string;
   /// <summary>
   /// 上一个审核任务
   /// </summary>

@@ -325,6 +325,9 @@ export class OrganizationEntity {
   Children: OrganizationEntity[];
 }
 export class CostCenterEntity extends BaseEntity{
+  join(arg0: string): any {
+    throw new Error("Method not implemented.");
+  }
   /// <summary>
   ///
   /// </summary>

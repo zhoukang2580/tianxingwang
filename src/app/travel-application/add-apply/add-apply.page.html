@@ -6,83 +6,11 @@
         <ion-title style="font:inherit;">新增出差申请</ion-title>
     </ion-toolbar>
 </ion-header>
-
 <ion-content>
-    <!-- <div class="container">
-        <p class="h_line h_line_mini"></p>
-        <form>
-            <section class="sec1">
-                <div class="frist"><span>出行人:</span><input type="text" name="name" placeholder="请输入"></div>
-                <div class="no_border_bottom"><span>所属部门:</span><input type="text" name="department" placeholder="请输入"></div>
-                <p class="h_line h_line_mini"></p>
-                <div><span><span class="red">*</span>客户或公司:</span><input type="text" name="customer" placeholder="请输入"></div>
-                <div class="no_border_bottom text">
-                    <span><span class="red">*</span>出差事由:</span>
-                    <textarea type="text" name="reason" placeholder="请输入"></textarea>
-                </div>
-            </section>
-            <section>
-                <p class="h_line trip1"><span>行程 1：</span></p>
-                <div class="radio"><input type="radio" name="trip" id="signle"><span>单程</span><input type="radio" name="trip" id="around"><span>往返</span></div>
-                <div><span>出差类型:</span>
-                    <p class="business_travel_parent"><input type="text" disabled="true" class="business_travel" name="business_travel" placeholder="请选择>"></p>
-                </div>
-                <div><span>交通住宿:</span>
-                    <p class="transportation_parent"><input type="text" disabled="true" class="transportation" name="transportation" placeholder="请选择>"></p>
-                </div>
-                <div><span>出发城市:</span>
-                    <p class="start_city_parent"><input type="text" readonly="" id="start_city" name="start_city" placeholder="请选择>"></p>
-                </div>
-                <div><span>到达城市:</span>
-                    <p class="arrive_city_parent"><input type="text" readonly="" id="arrive_city" name="arrive_city" placeholder="请选择>"></p>
-                </div>
-                <div><span>入住城市:</span>
-                    <p class="check_in_city_parent"><input type="text" readonly="" id="check_in_city" name="check_in_city" placeholder="请选择>"></p>
-                </div>
-                <div><span>开始日期:</span>
-                    <p class="begin_date_parent"> <input type="text" readonly="" id="begin_date" name="begin_date" data-lcalendar="2020-08-05,2099-01-29" placeholder="请选择>"> </p>
-                </div>
-                <div class="no_border_bottom"><span>结束日期:</span>
-                    <p class="end_date_parent"><input type="text" readonly="" id="end_date" data-lcalendar="2020-08-05,2099-01-29" name="end_date" placeholder="请选择>"></p>
-                </div>
-            </section>
-            <p class="h_line trip2"><span>+ 添加行程</span></p>
-            <section>
-                <div><span>审批人:</span><input type="text" name="approver" placeholder="请选择"></div>
-                <div><span>成本中心:</span><input type="text" name="cost_center" placeholder="请选择"></div>
-                <div><span>项目编号:</span><input type="text" name="project_num" placeholder="请选择"></div>
-                <div><span>出差总天数:</span><input type="text" name="all_days" placeholder="请输入"></div>
-                <div class="no_border_bottom text">
-                    <span>备注:</span>
-                    <textarea type="text" name="reason" placeholder="请输入"></textarea>
-                </div>
-            </section>
-        </form>
-        <section>
-            <div class="apply_button">
-                <button class="apply_button_save">保存</button>
-                <button class="apply_button_submit">提交</button>
-            </div>
-        </section>
-        <div class="mask mask1">
-            <div class="radio">
-                <p><span>国内</span><input type="radio" name="internal_trip" id="internal_trip"></p>
-                <p><span>国际*港澳台</span><input type="radio" name="international_trip" id="international_trip"></p>
-            </div>
-        </div>
-        <div class="mask mask2">
-            <div>
-                <p><span class="internal_transportation_span"></span><input type="checkbox" name="internal_transportation" id="internal_transportation"></p>
-                <p><span class="internal_hotel_span"></span><input type="checkbox" name="internal_hotel" id="internal_hotel"></p>
-                <p class="railway"><span>火车票</span><input type="checkbox" name="railway_ticket" id="railway_ticket"></p>
-                <button class="mask2_btn">保存</button>
-            </div>
-        </div>
-    </div> -->
     <ion-list style="background: transparent;">
         <ion-item style="margin-top: 8px;">
             <ion-text [color]="!enable?'dark':'dark'">出行人:</ion-text>
-            <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
+            <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.TravelersName" [disabled]="!enable">
             </ion-input>
         </ion-item>
         <ion-item detail (click)='onSelectOrg()' [attr.organization]='"organization"'>
@@ -110,15 +38,20 @@
             </span>
             <ion-input placeholder="请输入" type="text" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable">
             </ion-input> -->
-            <div class="no_border_bottom text">
+            <!-- <div class="no_border_bottom text">
                 <span style="line-height: 3;"><span class="red">*</span><span style="font: inherit;font-size: 15px;">出差事由:</span></span>
-                <textarea type="text" name="reason" placeholder="请输入"></textarea>
+                <textarea type="text" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
+            </div> -->
+            <div class="no_border_bottom text">
+                <span style="line-height: 3;"><span class="red">*</span>
+                <ion-text [color]="!enable?'dark':'dark'">出差事由:</ion-text>
+                </span>
+                <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
             </div>
         </ion-item>
-
-
         <app-add-stroke [regionTypes]='vmRegionTypes' [TravelApprovalContent]="vmTravelApprovalContent" [international]='international' [domestic]='domestic' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"
-            [index]="idx" [trip]='item' (remove)='onRemoveTrip($event)'></app-add-stroke>
+            [index]="idx" [trip]='item' (remove)='onRemoveTrip($event)'>
+        </app-add-stroke>
         <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()" *ngIf="enable">
             <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
             添加行程
@@ -138,8 +71,9 @@
         </ion-item>
         <ion-item>
             <ion-text [color]="!enable?'dark':'dark'">项目编号:</ion-text>
-            <ion-input placeholder="请输入" slot="end" class="ion-text-end">
+            <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.ProjectId" [disabled]="!enable">
             </ion-input>
+            <!-- <ion-input placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Id" [disabled]="!enable"></ion-input> -->
         </ion-item>
         <ion-item>
             <ion-text [color]="!enable?'dark':'dark'">
@@ -152,7 +86,7 @@
         <ion-item>
             <div class="no_border_bottom text">
                 <span style="line-height: 3;"><ion-text [color]="!enable?'dark':'dark'" style="font-size: 16px;">备注:</ion-text></span>
-                <textarea type="text" name="reason" placeholder="请输入"></textarea>
+                <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable"></textarea>
             </div>
             <!-- <div style="display: flex;justify-content: space-between;width: 100%;flex-wrap: wrap;">
                 <div style="padding-top: 0.5em;">
@@ -165,12 +99,11 @@
                 </div>
             </div> -->
         </ion-item>
-        <ion-item style="display: none;">
+        <ion-item>
             <div style="width: 100%;">
                 <ion-row *ngFor="let item of tmc?.OutNumberNameArray" style="justify-content: center;
-            align-items: center;
-            
-            display: flex !important;">
+                align-items: center;
+                display: flex !important;">
                     <ion-col>{{item}}</ion-col>
                     <ion-col [attr.OutNumberName]='item'>
                         <ion-input placeholder="请输入{{item}}" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="outNumbers[item]" [color]="!enable?'medium':'dark'" [disabled]="!enable"></ion-input>
@@ -209,18 +142,23 @@
             </div>
         </ion-item>
         <ion-item *ngIf="waiting" class="ion-btn">
-            <!-- <div class="ion-div">
-                <ion-button slot='end' color="secondary" style="width: 6em;height: 3.4em;" (click)="onSave()">
+
+            <div class="ion-div">
+                <ion-button slot='end' shape='round' color="secondary" on-touch="getCashSuccess();" data-ng-disabled="!isCashTest()" style="width: 7em;height: 3.4em;" (click)="onSave()">
                     保存
                 </ion-button>
-                <ion-button slot='end' color="secondary" (click)="onSubmit()" style="width: 6em;height: 3.4em;">
+                <ion-button slot='end' shape='round' color="secondary" (click)="onSubmit()" style="width: 7em;height: 3.4em;">
                     提交
                 </ion-button>
-            </div> -->
-            <div class="apply_button">
-                <button class="apply_button_save">保存</button>
-                <button class="apply_button_submit">提交</button>
             </div>
+            <!-- <div class="apply_button">
+                <button class="apply_button_save" [ngStyle]="{disabled : !isValid}" (click)="onConfirm()" color="secondary" (click)="onSave()">
+                保存
+            </button>
+                <button class="apply_button_submit" [class.disabled]='' color="secondary" (click)="onSubmit()">
+                提交
+            </button>
+            </div> -->
         </ion-item>
     </ion-list>
 </ion-content>

@@ -23,8 +23,7 @@ ion-text {
 }
 
 ion-input {
-    font-size: 0.8rem;
-    ;
+    font-size: 1rem;
 }
 
 div ion-button {
@@ -33,22 +32,22 @@ div ion-button {
 }
 
 .ion-div {
-    padding: 19px 78px 30px;
-    background: #F5F7F9;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    padding: 22px 33px 30px;
+    // background: #F5F7F9;
+    // display: flex;
+    // justify-content: space-between;
+    // align-items: center;
 }
 
 textarea {
     display: flex;
     text-align: revert;
     line-height: 15px;
-    width: 350px;
+    width: 335px;
     height: 43px;
     border: none;
     outline: none;
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 
 .div-travel {
@@ -67,10 +66,8 @@ button {
 }
 
 .apply_button {
-    padding: 31px 79px 51px;
-    background: #F5F7F9;
+    padding: 31px 73px 51px;
     display: flex;
-    justify-content: space-between;
 }
 
 .apply_button button {
@@ -84,3 +81,13 @@ button {
     margin-right: 138px;
     margin-left: -58px;
 }
+
+ion-lable {
+    margin-left: 77px;
+}
+
+// .button-native {
+//     background: #0083e9;
+//     margin: auto;
+//     width: 100px;
+// }

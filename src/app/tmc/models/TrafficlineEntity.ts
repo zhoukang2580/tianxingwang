@@ -40,7 +40,8 @@ export class TrafficlineEntity extends BaseEntity {
   ///  城市名称
   /// </summary>
   CityName: string;
-
+  ToCityCode: string;
+  ToCityName: string;
   /// <summary>
   ///  描述
   /// </summary>

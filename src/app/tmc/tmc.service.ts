@@ -32,6 +32,7 @@ import {
   TravelFormTripEntity,
   TmcTravelApprovalType,
   ApprovalStatusType,
+  TravelFormDetailEntity,
 } from "../travel-application/travel.service";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
@@ -795,6 +796,7 @@ export class TravelFormEntity extends BaseVariablesEntity {
   Subject: string;
   /// <summary>
   ///
+  TravelersName: string;
   /// </summary>
   Detail: string;
   /// <summary>
@@ -831,6 +833,9 @@ export class TravelFormEntity extends BaseVariablesEntity {
   /// 到达城市
   /// </summary>
   ToAirportCity: string;
+
+  ToCityCode: string;
+  ToCityName: string;
   /// <summary>
   /// 出发城市名称
   /// </summary>
@@ -847,7 +852,6 @@ export class TravelFormEntity extends BaseVariablesEntity {
   /// 起飞结束日期
   /// </summary>
   TakeoffEndTime: string;
-
   // 火车票首航段
   /// <summary>
   /// 出发城市
@@ -913,13 +917,17 @@ export class TravelFormEntity extends BaseVariablesEntity {
   /// </summary>
   Numbers: TravelInfoNumberEntity[];
   ApplyTime: string;
+  applyTimeDate: string;
+  applyTimeTime: string;
+  
   StatusTypeName: string;
   StatusType: ApprovalStatusType;
   ApprovalTime: string;
+  approvalTimeDate: string;
   startDate: string;
   CompanyName: string;
   DayCount: number;
-  Id: string;
+  ProjectId: string;
 }
 export class TravelInfoFlightEntity {
   /// <summary>

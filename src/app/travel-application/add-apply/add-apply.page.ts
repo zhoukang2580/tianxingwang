@@ -67,6 +67,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   domestic = false;
   international = false;
   pass = false;
+  isVaild = true;
   appovalStaff: string;
   outNumbers: {
     [key: string]: any;
@@ -401,14 +402,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
               AppHelper.toast("请输入出差类别");
               return;
             }
-            // else if (
-            //   !trip.TravelTool
-            // ) {
-            //   const el = this.getEleByAttr("addStroke", `${index}`);
-            //   this.moveRequiredEleToViewPort(el);
-            //   AppHelper.toast("请输入交通住宿");
-            //   return;
-            // }
             else if (!trip.FromCityName) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
@@ -469,6 +462,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           this.tmc.OutNumberRequiryNameArray,
           " this.tmc.OutNumberRequiryNameArray"
         );
+        // tslint:disable-next-line: prefer-for-of
         for (
           let index = 0;
           index < this.tmc.OutNumberRequiryNameArray.length;
@@ -564,5 +558,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       this.searchModel.TravelForm.DayCount = 0;
     }
     return this.searchModel.TravelForm.DayCount;
+  }
+  getCashSuccess(){
+    
   }
 }

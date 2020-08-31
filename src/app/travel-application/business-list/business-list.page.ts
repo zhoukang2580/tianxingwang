@@ -37,7 +37,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private service: TravelService,
     private staffService: StaffService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((q) => {
@@ -60,9 +60,10 @@ export class BusinessListPage implements OnInit, OnDestroy {
   }
   goAddApply() {
     this.router.navigate(
-      [AppHelper.getRoutePath("add-apply")], 
-      {queryParams: { tabId: "1" },
-    });
+      [AppHelper.getRoutePath("add-apply")],
+      {
+        queryParams: { tabId: "1" },
+      });
   }
   gettravel() {
     this.subscription = this.service
@@ -82,7 +83,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
           this.scroller.disabled = arr.length < this.searchModel.PageSize;
         }
         if (arr.length) {
-          this.items = this.items.concat(arr).map((it) => {
+          const tempArr = arr.map((it) => {
             if (it.ApplyTime) {
               it.ApplyTime = this.transformDataTime({
                 time: it.ApplyTime,
@@ -109,8 +110,8 @@ export class BusinessListPage implements OnInit, OnDestroy {
                   hasTime: false,
                   withDot: false,
                 });
-                trip.ToCityName=this.strip(trip.ToCityName);
-                trip.FromCityName=this.strip(trip.FromCityName);
+                trip.ToCityName = this.strip(trip.ToCityName);
+                trip.FromCityName = this.strip(trip.FromCityName);
                 return trip;
               });
               it.startDate = this.transformDataTime({
@@ -120,7 +121,8 @@ export class BusinessListPage implements OnInit, OnDestroy {
               });
             }
             return it;
-          });
+          })
+          this.items = this.items.concat(tempArr);
           this.searchModel.PageIndex++;
         }
       });
@@ -179,8 +181,11 @@ export class BusinessListPage implements OnInit, OnDestroy {
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
-  async onTravelEdit(id) {
+  async onTravelEdit(id, evt: CustomEvent) {
     try {
+      if (evt) {
+        evt.stopPropagation()
+      }
       const m = await this.service.getTravelDetail(id);
       if (m) {
         // if (m.TravelForm) {
@@ -188,13 +193,21 @@ export class BusinessListPage implements OnInit, OnDestroy {
         // }
         this.router.navigate([AppHelper.getRoutePath("add-apply")], {
           queryParams: {
-            data: JSON.stringify(m),
+            id: id,
           },
         });
       }
     } catch (e) {
       AppHelper.alert(e);
     }
+  }
+  onGotoDetail(id: string) {
+    this.router.navigate([AppHelper.getRoutePath("travel-apply-detail")], {
+      queryParams: {
+        id: id,
+      },
+    });
+
   }
   onCancel(id, event: CustomEvent) {
     event.stopPropagation();

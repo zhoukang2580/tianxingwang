@@ -1,5 +1,5 @@
 import { Subscription } from "rxjs";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { Storage } from "@ionic/storage";
 import {
   IonContent,
@@ -29,6 +29,7 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 import { RefresherComponent } from "src/app/components/refresher";
 import { TravelService } from "../../travel.service";
 import { finalize } from "rxjs/operators";
+import { AppHelper } from 'src/app/appHelper';
 interface ICity{
   Id: string;
   // tslint:disable-next-line: ban-types
@@ -51,7 +52,9 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   private pageSize = 20;
   private pageIndex = 0;
   private tripType = "";
-  // selectedCitys: ICity[];
+  private isMulti = true;
+  private isCityJudge = null;
+  selectedCitys: ICity[];
   textSearchResults: TrafficlineEntity[] = [];
   vmKeyowrds = "";
   isSearching = false;
@@ -61,6 +64,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   isIos = false;
   constructor(
     plt: Platform,
+    private router: Router,
     private travelService: TravelService,
     private modalCtrl: ModalController
   ) {
@@ -94,11 +98,32 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.doRefresh();
   }
-  onCitySelected(city: TrafficlineEntity) {
-    this.modalCtrl.getTop().then((t) => t.dismiss(city));
+  // onCitySelected(city: TrafficlineEntity) {
+  //   this.modalCtrl.getTop().then((t) => t.dismiss(city));
+  // }
+
+  onCitySelected(city: { Id: string; Name: string }) {
+    if(this.isMulti){
+      this.modalCtrl.getTop().then((t) => t.dismiss(city));
+    } else{
+      console.log(city);
+      if (!this.selectedCitys) {
+        this.selectedCitys = [];
+      }
+      if (!this.selectedCitys.find((it) => it.Id == city.Id)) {
+        this.selectedCitys.push(city);
+      }
+      if (this.isSearching) {
+        return;
+      }
+    }
+   
+    // this.goToDetail(city.Id);
+
   }
+
   back() {
-    this.modalCtrl.getTop().then((t) => t.dismiss());
+    this.modalCtrl.getTop().then((t) => t.dismiss(this.selectedCitys));
   }
   async loadMore() {
     const name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
@@ -134,10 +159,28 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     }
-    onDeleteSelectedTag(city: ICity) {
-      if (this.textSearchResults) {
-        // tslint:disable-next-line: triple-equals
-        this.textSearchResults = this.textSearchResults.filter((it) => it.Id != city.Id)
+    private async goToDetail(id: string) {
+      const city = await this.travelService.getTravelDetail(id).catch((e) => {
+        AppHelper.alert(e);
+        return null;
+      });
+      if (city) {
+        this.router.navigate([""], {
+          queryParams: {
+            tag: JSON.stringify(city),
+          },
+        });
       }
+    }
+    onDeleteSelectedTag(city: ICity) {
+      if (this.selectedCitys) {
+        // tslint:disable-next-line: triple-equals
+        this.selectedCitys = this.selectedCitys.filter((it) => it.Id != city.Id)
+      }
+    }
+
+  
+    onDetermine(){
+      this.modalCtrl.getTop().then((t) => t.dismiss(this.selectedCitys));
     }
 }

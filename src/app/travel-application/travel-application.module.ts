@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TravelApplicationRoutingModule } from './travel-application-routing.module';
 
-
-
 @NgModule({
   declarations: [],
   imports: [

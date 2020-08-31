@@ -23,6 +23,7 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService } from "src/app/hotel/hotel.service";
 import { TrainService } from "src/app/train/train.service";
 import { CalendarService } from "src/app/tmc/calendar.service";
+import { computeDecimalDigest } from '@angular/compiler/src/i18n/digest';
 interface IRegionType {
   label: string;
   value: string;
@@ -49,6 +50,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     { val: 'Sausage', isChecked: false },
     { val: 'Mushroom', isChecked: false }
   ];
+  isShowCheckInCity = false;
   constructor(
     private router: Router,
     private flightService: FlightService,
@@ -126,7 +128,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     }
     return day;
   }
-  async onSelectCity(isFrom = true) {
+  
+  async onStartingCity(isFrom = true) {
     if (!this.enable) {
       return;
     }
@@ -136,7 +139,6 @@ export class AddStrokeComponent implements OnInit, OnChanges {
         tripType: this.trip.TripType,
       },
     });
-
     m.present();
     const res = await m.onDidDismiss();
     const city: TrafficlineEntity = res && res.data;
@@ -145,13 +147,69 @@ export class AddStrokeComponent implements OnInit, OnChanges {
         this.trip.FromCityCode = res.data.Code;
         this.trip.FromCityName =
           res.data.Name + `(${(city.Country && city.Country.Name) || ""})`;
-      } else {
-        this.trip.ToCityCode = res.data.Code;
-        this.trip.ToCityName =
-          res.data.Name + `(${(city.Country && city.Country.Name) || ""})`;
       }
     }
   }
+  async onSelectCity(isFrom = true, isMulti, trip: TravelFormTripEntity) {
+    if (!this.enable) {
+      return;
+    }
+    const m = await this.modalCtrl.create({
+      component: SelectCity,
+      componentProps: {
+        tripType: this.trip.TripType,
+        isMulti
+      },
+    });
+
+    m.present();
+    const res = await m.onDidDismiss();
+    const cities: TrafficlineEntity[] = res && res.data;
+    const citys = cities && cities.slice(0 , 3);
+    trip.ToCities=citys
+    if (trip){
+      trip.ToCityCode = trip.ToCities && trip.ToCities.map(it => it.Code).join(",");
+      trip.ToCityName = trip.ToCities && trip.ToCities.map(it => it.Name).join(",");
+      console.log(trip.ToCityCode);
+      console.log(citys);
+      console.log(citys.toString());
+      // trip.ToCityCode = citys.toString();
+    }
+  }
+
+  async onSelectCity1(isFrom = true,isMulti,trip:TravelFormTripEntity) {
+    if (!this.enable) {
+      return;
+    }
+    const m = await this.modalCtrl.create({
+      component: SelectCity,
+      componentProps: {
+        tripType: this.trip.TripType,
+        isMulti
+      },
+    });
+
+    m.present();
+    const res = await m.onDidDismiss();
+    const city: TrafficlineEntity = res && res.data;
+    const cities: TrafficlineEntity[] = res && res.data;
+    const citys = cities && cities.slice(0 , 3);
+    trip.ToCityArrive = citys;
+    if(trip){
+      trip.ToCityCode = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Code).join(',');
+      trip.ToCityName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).join(',');
+      // trip.ToCityArrive=citys
+    }
+    if (city && this.trip) {
+      if (isFrom) {
+        this.trip.FromCityCode = res.data.Code;
+        this.trip.FromCityName =
+          res.data.Name + `(${(city.Country && city.Country.Name) || ""})`;
+      } else {
+      }
+    }
+  }
+
   getTravelTools(t) {
     let text = "";
     if (!this.regionTypes) {
@@ -321,6 +379,13 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       });
     } else {
       AppHelper.alert("接口请求异常");
+    }
+  }
+  onRegionTypeChange(evt:CustomEvent){
+    console.log(evt.detail);
+    if(evt.detail&&evt.detail.value){
+      const arr:string[]=evt.detail.value;
+      this.isShowCheckInCity = arr.some(it => it.includes("Hotel"));
     }
   }
   getRegionTypes(t) {
