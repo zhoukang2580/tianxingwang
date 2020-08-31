@@ -70,9 +70,11 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       return o2 && o1 && o2.some((it) => it == o1);
     }
 
+    // tslint:disable-next-line: triple-equals
     return o1 == o2;
   };
   compareWithFn = (o1, o2) => {
+    // tslint:disable-next-line: triple-equals
     return o1 == o2;
   };
   ngOnChanges(change: SimpleChanges) {
@@ -166,7 +168,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     const res = await m.onDidDismiss();
     const cities: TrafficlineEntity[] = res && res.data;
     const citys = cities && cities.slice(0 , 3);
-    trip.ToCities=citys
+    trip.ToCities = citys;
     if (trip){
       trip.ToCityCode = trip.ToCities && trip.ToCities.map(it => it.Code).join(",");
       trip.ToCityName = trip.ToCities && trip.ToCities.map(it => it.Name).join(",");

@@ -7,6 +7,7 @@ import { IonInfiniteScroll } from '@ionic/angular';
 import { StaffService } from 'src/app/hr/staff.service';
 import { RefresherComponent } from 'src/app/components/refresher';
 import { OrderModel } from 'src/app/order/models/OrderModel';
+import { ApprovalStatusType } from '../travel.service';
 
 @Component({
   selector: 'app-approval-tack',
@@ -20,6 +21,7 @@ export class ApprovalTackPage implements OnInit {
   private staffService: StaffService
   curTaskPageIndex = 0;
   tasks: TaskEntity[];
+  ApprovalStatusType: ApprovalStatusType;
   isLoading = true;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   loadMoreErrMsg: string;

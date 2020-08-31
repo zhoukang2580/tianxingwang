@@ -35,5 +35,33 @@ ion-button {
 
 .ion-color.sc-ion-label-ios-h {
     color: var(--ion-color-base);
-    color: black;
+    color: #433a3a;
+    font-size: 11px;
+    margin-left: -8px;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    line-height: 35px;
+}
+
+.con-left {
+    width: 90%;
+    flex: 1;
+    margin: 0px 14px 0px 10px;
+    display: flex;
+}
+
+.con-right {
+    width: 10%;
+    margin-top: -2px;
+    font-family: serif;
+    font-size: 15px;
+}
+
+.icon-label {
+    height: 22px;
+    background: #abceff;
+    margin-left: 6px;
 }

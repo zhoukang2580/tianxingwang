@@ -133,3 +133,24 @@ section div {
 .apply_info {
     padding: 22px 23px;
 }
+
+.apply_info_status {
+    display: inline-flex;
+    width: 130px;
+    height: 130px;
+    position: absolute;
+    left: 278px;
+    top: 84px;
+}
+
+.apply_info_status_pass {
+    background-repeat: no-repeat;
+    background-size: 57%;
+    background-image: url(/assets/images/pass.png);
+}
+
+.apply_info_status_deny {
+    background-repeat: no-repeat;
+    background-size: 57%;
+    background-image: url(/assets/images/deny.png);
+}

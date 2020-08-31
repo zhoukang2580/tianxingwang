@@ -10,15 +10,22 @@
     </ion-toolbar>
 </ion-header>
 <ion-header *ngIf='selectedCitys?.length'>
-    <ion-label class="ion-text-wrap" color='secondary'>
-        <ion-chip *ngFor='let g of selectedCitys'>
-            <ion-label color='secondary'>
-                {{g?.Name}}
+    <div class="container">
+        <div class="con-left">
+            <ion-label class="ion-text-wrap" color='secondary'>
+                <ion-chip *ngFor='let g of selectedCitys' class="icon-label">
+                    <ion-label color='secondary'>
+                        <div style="padding-left: 4px;">{{g?.Name}}</div>
+                    </ion-label>
+                    <ion-icon name="close-outline" (click)='onDeleteSelectedTag(g)' style="font-size: 14px;"></ion-icon>
+                </ion-chip>
             </ion-label>
-            <ion-icon name="close-circle-outline" color='danger' (click)='onDeleteSelectedTag(g)'></ion-icon>
-        </ion-chip>
-        <ion-button (click)='onDetermine()' style="display: flex;width: 100px;margin: auto;" color="secondary" shape='round'>确定</ion-button>
-    </ion-label>
+        </div>
+        <div class="con-right">
+            <ion-text (click)='onDetermine()' style="display: flex;width: 100px;margin: auto;" color="secondary">确定</ion-text>
+        </div>
+    </div>
+
 </ion-header>
 <ion-content>
     <app-refresher (ionRefresh)='doRefresh(true)' slot='fixed'>
