@@ -15,7 +15,13 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService, IHotelInfo, SearchHotelModel } from "./../hotel.service";
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
 import { Observable, Subscription, from, of } from "rxjs";
-import { Component, OnInit, OnDestroy, EventEmitter } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  EventEmitter,
+  ViewChild,
+} from "@angular/core";
 import { ModalController, PopoverController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
@@ -26,13 +32,16 @@ import { SelectedPassengersComponent } from "src/app/tmc/components/selected-pas
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
 import { OverHotelComponent } from "../components/over-hotel/over-hotel.component";
 import { environment } from "src/environments/environment";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 @Component({
   selector: "app-search-hotel",
   templateUrl: "./search-hotel.page.html",
   styleUrls: ["./search-hotel.page.scss"],
 })
 export class SearchHotelPage implements OnInit, OnDestroy {
+  @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   private subscriptions: Subscription[] = [];
+  private fromRoute: string;
   get isShowSelectedInfos() {
     return this.hotelService.getBookInfos().some((it) => !!it.bookInfo);
   }
@@ -92,7 +101,8 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     private popoverCtrl: PopoverController,
     private internationalHotelService: InternationalHotelService
   ) {
-    const sub = route.queryParamMap.subscribe(async (_) => {
+    const sub = route.queryParamMap.subscribe(async (q) => {
+      this.fromRoute = q.get("fromRoute");
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
       this.isSelf = await this.staffService.isSelfBookType();
@@ -279,6 +289,10 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     }
   }
   back() {
-    this.router.navigate([AppHelper.getRoutePath("")]);
+    if (this.fromRoute && this.fromRoute.toLowerCase() == "bookflight") {
+      this.router.navigate([AppHelper.getRoutePath("")]);
+    } else {
+      this.backbtn.popToPrePage();
+    }
   }
 }

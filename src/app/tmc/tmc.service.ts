@@ -89,14 +89,16 @@ export class TmcService {
   }
   get isAgent() {
     return !!(
-      this.identity && this.identity.Numbers && this.identity.Numbers.AgentId
+      this.identity &&
+      this.identity.Numbers &&
+      this.identity.Numbers.AgentId
     );
   }
   async getBanners() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Banner-List";
-    req.IsRedirctNoAuthorize=false;
-    req.IsRedirctLogin=false;
+    req.IsRedirctNoAuthorize = false;
+    req.IsRedirctLogin = false;
     return this.apiService.getPromiseData<
       { ImageUrl: string; Title: string; Id: string }[]
     >(req);
@@ -190,6 +192,16 @@ export class TmcService {
       }
     }
     return payResult;
+  }
+   async checkHasHotelBookRight() {
+    if (!this.tmc) {
+      await this.getTmc();
+    }
+    return (
+      this.tmc &&
+      this.tmc.RegionTypeValue &&
+      this.tmc.RegionTypeValue.toLowerCase().includes("hotel")
+    );
   }
   private async wechatPay(
     tradeNo: string,

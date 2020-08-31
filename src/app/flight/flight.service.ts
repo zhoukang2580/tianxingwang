@@ -567,6 +567,7 @@ export class FlightService {
       isSelfBookType: true,
       isReplace: false,
       isProcessOk: false,
+      isReselect: false,
     };
     const s = this.getSearchFlightModel();
     let bookInfos = this.getPassengerBookInfos();
@@ -608,11 +609,16 @@ export class FlightService {
             const showTip =
               flightSegment.FromAirport != go.bookInfo.flightSegment.ToAirport;
             if (showTip) {
-              await AppHelper.alert(
+              const isOk = await AppHelper.alert(
                 `回程航班出发机场与去程航班抵达机场不同`,
                 true,
-                "继续"
+                "继续",
+                "重选"
               );
+              if (!isOk) {
+                result.isReselect = true;
+                return result;
+              }
             }
             bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
           }
@@ -658,12 +664,13 @@ export class FlightService {
     const result = {
       isSelfBookType,
       isReplace: false,
+      isReselect: false,
       isProcessOk: false,
     };
     let bookInfos = this.getPassengerBookInfos();
 
     if (isSelfBookType) {
-      return  this.addOrRelaceSelf(flightCabin, flightSegment);
+      return this.addOrRelaceSelf(flightCabin, flightSegment);
     } else {
       const unselectBookInfos = this.getPassengerBookInfos().filter(
         (it) => !it.bookInfo || !it.bookInfo.flightPolicy

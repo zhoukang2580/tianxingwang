@@ -772,6 +772,23 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
               await AppHelper.alert("下单成功!");
             }
           }
+          const hasRight = await this.tmcService.checkHasHotelBookRight();
+          if (hasRight) {
+            const ok = await AppHelper.alert(
+              "您的预订已完成，是否继续预订酒店？",
+              true,
+              "是",
+              "否"
+            );
+            if (ok) {
+              this.router.navigate([AppHelper.getRoutePath("search-hotel")], {
+                queryParams: {
+                  fromRoute: "bookflight",
+                },
+              });
+              return;
+            }
+          }
           this.goToMyOrders(ProductItemType.plane);
         }
       }
@@ -861,17 +878,15 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     bookDto: OrderBookDto,
     combindInfos: ICombindInfo[]
   ) {
-    const showErrorMsg = (
+    const showErrorMsg = async (
       msg: string,
       item: ICombindInfo,
       ele: HTMLElement
     ) => {
-      AppHelper.toast(
+      await AppHelper.alert(
         `${item.credentialStaff && item.credentialStaff.Name} 【${
           item.modal.credential && item.modal.credential.Number
-        }】 ${msg} 信息不能为空`,
-        2000,
-        "bottom"
+        }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
     };

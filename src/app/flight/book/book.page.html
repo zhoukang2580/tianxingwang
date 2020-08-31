@@ -56,7 +56,8 @@
                 <p *ngIf='s.flightSegment.Carrier=="9C"' style="font-size: 0.9rem;color:darkblue">
                   温馨提醒： 无论何种原因航班延误或取消，春秋航空不提供任何补偿。
                 </p>
-                <ion-button fill='clear' class='change-policy-btn' (click)='onShowFriendlyReminder(combindInfo)'
+                <!-- 取消温馨提醒 -->
+                <ion-button fill='clear' *ngIf='' class='change-policy-btn' (click)='onShowFriendlyReminder(combindInfo)'
                   color='secondary'>
                   温馨提醒
                   <ion-icon name='caret-down-outline' *ngIf='combindInfo?.showFriendlyReminder'></ion-icon>

@@ -30,7 +30,7 @@ export class LanguageHelper {
       return "待签收";
     },
     getBookTicketWaitingTip: () => {
-      return "您的订单正在预订，请稍后到我的订单中支付";
+      return "您的订单正在预订，请稍后到“我的订单”中支付";
     },
     getBookTicketWaitingApprovToPayTip: () => {
       return "下单成功！您的订单需要审批，请于审批完成后到订单列表进行支付";

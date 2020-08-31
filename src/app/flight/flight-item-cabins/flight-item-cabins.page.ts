@@ -206,6 +206,10 @@ export class FlightItemCabinsPage implements OnInit {
           flightCabin,
           this.vmFlightSegment
         );
+        if (res.isReselect) {
+          await this.flightService.onSelectReturnTrip();
+          return;
+        }
         isShowPage = res.isReplace || res.isSelfBookType || res.isProcessOk;
       } else {
         const info = {
