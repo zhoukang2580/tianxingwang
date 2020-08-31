@@ -14,13 +14,13 @@ import { FlightComponentsModule } from 'src/app/flight/components/components.mod
 const routes: Routes = [
   {
     path: "",
-    component: FlightOrderDetailPage
+    component: OrderFlightDetailPage
   }
 ];
 
-import { FlightOrderDetailPageRoutingModule } from './flight-order-detail-routing.module';
+import { FlightOrderDetailPageRoutingModule } from './order-flight-detail-routing.module';
 
-import { FlightOrderDetailPage } from './flight-order-detail.page';
+import { OrderFlightDetailPage } from './order-flight-detail.page';
 
 @NgModule({
   imports: [
@@ -35,8 +35,8 @@ import { FlightOrderDetailPage } from './flight-order-detail.page';
     TmcComponentsModule,
     FlightComponentsModule
   ],
-  declarations: [FlightOrderDetailPage]
+  declarations: [OrderFlightDetailPage]
 })
-export class FlightOrderDetailPageModule {
+export class OrderFlightDetailPageModule {
 
 }

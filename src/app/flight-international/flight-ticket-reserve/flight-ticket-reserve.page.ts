@@ -727,7 +727,7 @@ export class FlightTicketReservePage
     });
   }
   private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["product-tabs"], {
+    this.router.navigate(["order-list"], {
       queryParams: { tabId: tab },
     });
   }

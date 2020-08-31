@@ -1,5 +1,5 @@
-import { AppComponentsModule } from './../../components/appcomponents.module';
-import { OrderComponentsModule } from './../../order/components/components.module';
+import { AppComponentsModule } from '../../components/appcomponents.module';
+import { OrderComponentsModule } from '../../order/components/components.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,12 +7,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { OrderListPage } from './order-list.page';
+import { AgentOrderListPage } from './agent-order-list.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: OrderListPage
+    component: AgentOrderListPage
   }
 ];
 
@@ -25,6 +25,6 @@ const routes: Routes = [
     OrderComponentsModule,
     AppComponentsModule
   ],
-  declarations: [OrderListPage]
+  declarations: [AgentOrderListPage]
 })
-export class OrderListPageModule {}
+export class AgentOrderListPageModule {}

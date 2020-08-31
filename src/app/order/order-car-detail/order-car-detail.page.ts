@@ -1,4 +1,4 @@
-import { SwiperSlideContentComponent } from "./../components/swiper-slide-content/swiper-slide-content.component";
+import { SwiperSlideContentComponent } from "../components/swiper-slide-content/swiper-slide-content.component";
 import { IonSlides } from "@ionic/angular";
 import { DomController } from "@ionic/angular";
 import { Platform, IonContent, IonHeader } from "@ionic/angular";
@@ -24,9 +24,9 @@ interface ITab {
   active?: boolean;
 }
 @Component({
-  selector: "app-car-order-detail",
-  templateUrl: "./car-order-detail.page.html",
-  styleUrls: ["./car-order-detail.page.scss"],
+  selector: "app-order-car-detail",
+  templateUrl: "./order-car-detail.page.html",
+  styleUrls: ["./order-car-detail.page.scss"],
 })
 export class CarOrderDetailPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;

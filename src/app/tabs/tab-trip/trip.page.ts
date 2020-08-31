@@ -25,13 +25,11 @@ import { OrderTripModel } from "src/app/order/models/OrderTripModel";
 import { OrderInsuranceType } from "src/app/insurance/models/OrderInsuranceType";
 import { OrderInsuranceStatusType } from "src/app/order/models/OrderInsuranceStatusType";
 import { OrderTravelPayType } from "src/app/order/models/OrderTravelEntity";
-import { TravelModel } from "src/app/order/models/TravelModel";
-import { ProductItemType } from "src/app/tmc/models/ProductItems";
-import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
-import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 import { environment } from "src/environments/environment";
+import { TravelModel } from "src/app/order/models/TravelModel";
 import { RefresherComponent } from "src/app/components/refresher";
 import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTicketStatusType";
+import { OrderFlightTicketType } from 'src/app/order/models/OrderFlightTicketType';
 @Component({
   selector: "app-trip",
   templateUrl: "trip.page.html",

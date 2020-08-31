@@ -123,7 +123,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       })
     );
     this.navCtrl.navigateRoot(
-      `product-tabs?tabId=${ProductItemType.plane}&doRefresh=${result}`,
+      `order-list?tabId=${ProductItemType.plane}&doRefresh=${result}`,
       {
         animated: true,
       }

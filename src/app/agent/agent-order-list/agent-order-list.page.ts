@@ -1,11 +1,11 @@
 import { Router } from "@angular/router";
-import { AgentService } from "./../agent.service";
+import { AgentService } from "../agent.service";
 import { TmcService } from "src/app/tmc/tmc.service";
-import { ProductItemType } from "./../../tmc/models/ProductItems";
-import { ORDER_TABS } from "./../../order/product-list/product-list.page";
+import { ProductItemType } from "../../tmc/models/ProductItems";
+import { ORDER_TABS } from "../../order/product-list/product-list.page";
 import { finalize, catchError, map } from "rxjs/operators";
 import { Subscription, of } from "rxjs";
-import { OrderService } from "./../../order/order.service";
+import { OrderService } from "../../order/order.service";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { OrderModel } from "src/app/order/models/OrderModel";
 import { OrderEntity } from "src/app/order/models/OrderEntity";
@@ -13,11 +13,11 @@ import { ProductItem } from "src/app/tmc/models/ProductItems";
 import { AppHelper } from "src/app/appHelper";
 
 @Component({
-  selector: "app-order-list",
-  templateUrl: "./order-list.page.html",
-  styleUrls: ["./order-list.page.scss"]
+  selector: "app-agent-order-list",
+  templateUrl: "./agent-order-list.page.html",
+  styleUrls: ["./agent-order-list.page.scss"]
 })
-export class OrderListPage implements OnInit, OnDestroy {
+export class AgentOrderListPage implements OnInit, OnDestroy {
   private searchCondition: OrderModel;
   private loadSubscription = Subscription.EMPTY;
   tab: ProductItem; //

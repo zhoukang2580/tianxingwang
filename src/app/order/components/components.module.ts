@@ -12,10 +12,6 @@ import { SearchTicketModalComponent } from "./search-ticket-modal/search-ticket-
 import { TripRulePopoverComponent } from "./trip-rule-popover/trip-rule-popover.component";
 import { FlightModule } from "src/app/flight/flight.module";
 import { SelectTicketPopoverComponent } from "./select-ticket-popover/select-ticket-popover.component";
-import { TrainOrderDetailComponent } from "src/app/order/components/train-order-detail/train-order-detail.component";
-import { FlightOrderDetailComponent } from "./flight-order-detail/flight-order-detail.component";
-import { HotelOrderDetailComponent } from "./hotel-order-detail/hotel-order-detail.component";
-import { InsuranceOrderDetailComponent } from "./insurance-order-detail/insurance-order-detail.component";
 import { CarItemComponent } from "./car-item/car-item.component";
 import { TrainTripComponent } from "./train-trip/train-trip.component";
 import { HotelTripComponent } from "./hotel-trip/hotel-trip.component";
@@ -24,6 +20,10 @@ import { RefundFlightTicketTipComponent } from "./refund-flight-ticket-tip/refun
 import { UploadFileComponent } from './upload-file/upload-file.component';
 import { HotelOrderPricePopoverComponent } from './hotel-order-price-popover/hotel-order-price-popover.component';
 import { TrainOrderPricePopoverComponent } from './train-order-price-popover/train-order-price-popover.component';
+import { TrainOrderDetailComponent } from './train-order-detail/train-order-detail.component';
+import { FlightOrderDetailComponent } from './flight-order-detail/flight-order-detail.component';
+import { HotelOrderDetailComponent } from './hotel-order-detail/hotel-order-detail.component';
+import { InsuranceOrderDetailComponent } from './insurance-order-detail/insurance-order-detail.component';
 
 @NgModule({
   declarations: [

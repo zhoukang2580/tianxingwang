@@ -1,9 +1,9 @@
 import { Subscription } from "rxjs";
-import { SwiperSlideContentComponent } from "./../components/swiper-slide-content/swiper-slide-content.component";
+import { SwiperSlideContentComponent } from "../components/swiper-slide-content/swiper-slide-content.component";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
-import { OrderInsuranceEntity } from "./../models/OrderInsuranceEntity";
-import { SelectTicketPopoverComponent } from "./../components/select-ticket-popover/select-ticket-popover.component";
+import { OrderInsuranceEntity } from "../models/OrderInsuranceEntity";
+import { SelectTicketPopoverComponent } from "../components/select-ticket-popover/select-ticket-popover.component";
 import { SendEmailComponent } from "../components/send-email/send-email.component";
 import { OrderFlightTicketEntity } from "../models/OrderFlightTicketEntity";
 import { CalendarService } from "../../tmc/calendar.service";
@@ -59,11 +59,11 @@ export interface TabItem {
   value: number;
 }
 @Component({
-  selector: "app-hotel-order-detail",
-  templateUrl: "./hotel-order-detail.page.html",
-  styleUrls: ["./hotel-order-detail.page.scss"],
+  selector: "app-order-hotel-detail",
+  templateUrl: "./order-hotel-detail.page.html",
+  styleUrls: ["./order-hotel-detail.page.scss"],
 })
-export class HotelOrderDetailPage implements OnInit, AfterViewInit, OnDestroy {
+export class OrderHotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private headerHeight = 0;
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];

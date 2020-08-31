@@ -213,7 +213,7 @@ export class AppComponent
         // this.router.navigate(['workflow-list']);
         // this.router.navigate(['qrscan']);
         // this.router.navigate(['function-test']);
-        // this.router.navigate(['car-order-detail']);
+        // this.router.navigate(['order-car-detail']);
         // this.router.navigate(["hr-invitation"]);
         // this.router.navigate(["bpm-home"]);
         // this.router.navigate(["wms-add-product"]);

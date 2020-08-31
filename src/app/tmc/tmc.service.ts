@@ -806,9 +806,6 @@ export class TravelFormEntity extends BaseVariablesEntity {
   /// 差旅主题
   /// </summary>
   Subject: string;
-  /// <summary>
-  ///
-  TravelersName: string;
   /// </summary>
   Detail: string;
   /// <summary>

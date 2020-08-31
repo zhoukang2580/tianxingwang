@@ -10,9 +10,9 @@ const routes: Routes = [
       )
   },
   {
-    path: "order-list",
+    path: "agent-order-list",
     loadChildren: () =>
-      import("./order-list/order-list.module").then(m => m.OrderListPageModule)
+      import("./agent-order-list/agent-order-list.module").then(m => m.AgentOrderListPageModule)
   }
 ];
 @NgModule({

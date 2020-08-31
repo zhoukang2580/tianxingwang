@@ -1401,7 +1401,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["product-tabs"], {
+    this.router.navigate(["order-list"], {
       queryParams: { tabId: tab },
     });
   }

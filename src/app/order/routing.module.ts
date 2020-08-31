@@ -10,38 +10,38 @@ export const routes: Routes = [
       )
   },
   {
-    path: "product-tabs",
+    path: "order-list",
     loadChildren: () =>
-      import("./product-tabs/product-tabs.module").then(
-        m => m.ProductTabsPageModule
+      import("./order-list/order-list.module").then(
+        m => m.OrderListPageModule
       )
   },
   {
-    path: "car-order-detail",
+    path: "order-car-detail",
     loadChildren: () =>
-      import("./car-order-detail/car-order-detail.module").then(
-        m => m.CarOrderDetailPageModule
+      import("./order-car-detail/order-car-detail.module").then(
+        m => m.OrderCarDetailPageModule
       )
   },
   {
-    path: "flight-order-detail",
+    path: "order-flight-detail",
     loadChildren: () =>
-      import("./flight-order-detail/flight-order-detail.module").then(
-        m => m.FlightOrderDetailPageModule
+      import("./order-flight-detail/order-flight-detail.module").then(
+        m => m.OrderFlightDetailPageModule
       )
   },
   {
-    path: "hotel-order-detail",
+    path: "order-hotel-detail",
     loadChildren: () =>
-      import("./hotel-order-detail/hotel-order-detail.module").then(
-        m => m.HotelOrderDetailPageModule
+      import("./order-hotel-detail/order-hotel-detail.module").then(
+        m => m.OrderHotelDetailPageModule
       )
   },
  {
-    path: "train-order-detail",
+    path: "order-train-detail",
     loadChildren: () =>
-      import("./train-order-detail/train-order-detail.module").then(
-        m => m.TrainOrderDetailPageModule
+      import('./order-train-detail/order-train-detail.module').then(
+        m => m.OrderTrainDetailPageModule
       )
   }
 

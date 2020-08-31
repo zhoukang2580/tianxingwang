@@ -72,7 +72,7 @@ export class ProductListPage implements OnInit {
     this.navCtrl.pop();
   }
   goToProductTab(tab: ProductItem) {
-    this.router.navigate([AppHelper.getRoutePath(`product-tabs`)], {
+    this.router.navigate([AppHelper.getRoutePath(`order-list`)], {
       queryParams: { tabId: tab.value }
     });
   }
