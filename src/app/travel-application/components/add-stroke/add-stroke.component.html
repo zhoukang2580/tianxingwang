@@ -28,7 +28,7 @@
                     <ion-select-option value="{{t.value}}" *ngFor='let t of vmRegionTypes'>{{t.label}}</ion-select-option>
                 </ion-select>
             </ion-item>
-            <ion-item lines="none" detail (click)="onStartingCity(true,true)">
+            <ion-item lines="none" detail (click)="onStartingCity(true)">
                 <ion-text [color]="!enable?'dark':'dark'">
                     出发城市
                 </ion-text>

@@ -71,7 +71,6 @@ export class ApprovalTackPage implements OnInit {
   }
 
   OnTaskReviewed() {
-    // console.log('222')
     this.dispased = false;
     this.isactivename = "已审任务";
   }

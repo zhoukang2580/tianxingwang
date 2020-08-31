@@ -34,7 +34,7 @@
             <section>
                 <p class="h_line h_line_mini"></p>
                 <div class="apply_info" *ngFor="let task of tasks">
-                    <p><span class="apply_info_tit"><span>出行人：</span><span>徐小明</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.UpdateTime}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>行程：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
@@ -43,27 +43,27 @@
             </section>
         </div>
         <div class="bg has_apply" *ngIf='!dispased' id="has_apply">
-            <section>
+            <section *ngFor="let task of tasks">
                 <p class="h_line h_line_mini"></p>
                 <i class="apply_info_status apply_info_status_pass"></i>
                 <div class="apply_info">
-                    <p><span class="apply_info_tit"><span>申请人：</span><span>徐小明</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>申请时间：</span><span>2020.06.15  18:00</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.InsertTime}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>出差城市：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>出差总天数：</span><span>90天</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>类别：</span><span>事前审批</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>单号：</span><span>7100000009</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
                 </div>
             </section>
-            <section>
+            <section *ngFor="let task of tasks">
                 <p class="h_line h_line_mini"></p>
                 <i class="apply_info_status apply_info_status_deny"></i>
                 <div class="apply_info">
-                    <p><span class="apply_info_tit"><span>出行人：</span><span>徐小明</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>出行时间：</span><span>2020.06.15  18:00</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.UpdateTime}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>行程：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>类别：</span><span>国内机票（预订）</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>单号：</span><span>7100000009</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
                 </div>
             </section>
         </div>
