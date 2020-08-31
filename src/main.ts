@@ -21,7 +21,7 @@ try {
   if (
     // true||
     window["VConsole"] &&
-    CONFIG.isShowVConsole
+    (CONFIG.isShowVConsole || window["isShowVConsole"])
   ) {
     if (window["vConsole"]) {
       window["vConsole"].destroy();

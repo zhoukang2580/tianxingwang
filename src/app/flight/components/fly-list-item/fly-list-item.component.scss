@@ -28,6 +28,9 @@
 }
 .air {
   font-size: 0.7rem;
+  ion-text{
+    white-space: nowrap;
+  }
 }
 .airports,
 .time {
