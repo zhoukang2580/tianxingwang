@@ -186,9 +186,15 @@ img {
 }
 
 .apply_info_tit {
-    display: flex;
-    flex-flow: row wrap;
-    flex: 1;
+    .Cost_center {
+        display: flex;
+        flex-flow: row wrap;
+        flex: 1;
+    }
+}
+
+.cen_frist:nth-child(1) {
+    min-width: 78px;
 }
 
 .apply_info_tit .apply_info_reason {
@@ -277,7 +283,7 @@ img {
 }
 
 .travel_step_btn button {
-    width: 80px;
+    // width: 80px;
     height: 28px;
     color: #fff;
     font-size: 10px;

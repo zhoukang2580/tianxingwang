@@ -32,6 +32,7 @@ export class OrderModel {
   /// 开始日期
   /// </summary>
   EndDate: string;
+  Tag: string;
   /// <summary>
   /// 状态
   /// </summary>

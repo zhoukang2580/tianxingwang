@@ -31,9 +31,9 @@
                     <p><span class="apply_info_tit"><span>申请人：</span><span>{{detail?.Staff.Name}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit">
                         <span>申请时间：</span>
-                        <span>{{detail?.TravelForm.applyTimeDate}}{{detail?.TravelForm.applyTimeTime}}</span>
+                        <span>{{detail?.TravelForm.applyTimeDate}}{{detail?.TravelForm.applyTimeTime||''}}</span>
                         </span>
-                        <span class="apply_info_time">{{detail?.TravelForm.approvalTimeDate}}
+                        <span class="apply_info_time" *ngIf="istime">{{detail?.TravelForm.approvalTimeDate}}
                     </span></p>
                     <p><span class="apply_info_tit"><span>出差天数：</span><span>{{detail?.TravelForm.DayCount}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>单号：</span><span>{{detail?.Staff.Id}}</span></span><span class="apply_info_time"></span></p>
@@ -81,10 +81,16 @@
 
                 <span class="apply_info_time"></span>
                 </p>
-                <p><span class="apply_info_tit"><span>成本中心：</span><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span></p>
-                <p><span class="apply_info_tit"><span>项目编号：</span><span>{{detail?.TravelForm?.ProjectId}}</span></span><span class="apply_info_time"></span></p>
-                <p><span class="apply_info_tit"><span>备注：</span><span class="apply_info_reason"></span>{{detail?.TravelForm.Detail}}</span><span class="apply_info_time"></span></p>
+                <p><span class="apply_info_tit Cost_center"><span>成本中心：</span><span>{{detail?.TravelForm?.CostCenterName}}({{detail}})</span></span><span class="apply_info_time"></span></p>
+                <p><span class="apply_info_tit">
+                    <div *ngFor="let item of detail?.OutNumbers" class="last_center">
+                        <span class="cen_frist">{{item?.Name}}：</span><span>{{item?.Code}}</span>
             </div>
+            </span>
+
+            <span class="apply_info_time"></span></p>
+            <p><span class="apply_info_tit"><span>备注：</span><span class="apply_info_reason"></span>{{detail?.TravelForm.Detail}}</span><span class="apply_info_time"></span></p>
+    </div>
     </div>
     </section>
     <!-- <section>

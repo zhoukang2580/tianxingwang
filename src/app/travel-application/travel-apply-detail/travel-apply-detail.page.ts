@@ -17,6 +17,7 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
   // tslint:disable-next-line: ban-types
   isflag: Boolean = true;
   ApprovalStatusType = ApprovalStatusType;
+  istime:Boolean = true;
   constructor(private route: ActivatedRoute, private service: TravelService,) { }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -59,12 +60,32 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
       const date = this.detail.TravelForm.ApplyTime.substr(0, 10).replace(/-/g, '.');
       const time = this.detail.TravelForm.ApplyTime.substr(10, 6).replace(/T/g,' ');// 2020-09-10T12:40:34
       const appdate = this.detail.TravelForm.ApprovalTime.substr(0, 10).replace(/-/g, '.');
+      const sub = this.detail.TravelForm.ApprovalTime.substr(0,2);
       this.detail.TravelForm.applyTimeDate = date;
       this.detail.TravelForm.applyTimeTime = time;
-      this.detail.TravelForm.approvalTimeDate = appdate;
+      this.detail.TravelForm.approvalTimeDate = appdate || sub;
+
+      if(sub == '18' || sub == '00'){
+        this.istime = false;
+      }
+     // this.detail.TravelForm.applyTimeTime = times;
+      // tslint:disable-next-line: triple-equals
+      // if (times == "18" || times == "00") {
+      //   this.getoutTime = false;
+      // }
     }
+
+    // const times = this.detail.TravelForm.applyTimeTime;
+    // console.log('123123123123'+ times);
+    // const timers = times.substring(0, 2);
+    // // tslint:disable-next-line: triple-equals
+    // if (timers == "18" || timers == "00") {
+    //   this.getoutTime = false;
+    // }
   }
+
   private async getDetail(id: string) {
+    
     this.detail = await this.service.getTravelDetail(id).catch(() => null);
     this.initTrips();
     this.initTime();
@@ -85,4 +106,5 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
     });
   }
 
+    
 }
