@@ -16,7 +16,7 @@ export const routes: Routes = [
     loadChildren: () => import('./travel-apply-detail/travel-apply-detail.module').then( m => m.TravelApplyDetailPageModule)
   },
   {
-    path: 'approval-tack',
+    path: 'approval-task',
     loadChildren: () => import('./approval-task/approval-task.module').then( m => m.ApprovalTackPageModule)
   },
 

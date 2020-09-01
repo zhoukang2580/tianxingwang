@@ -8,6 +8,11 @@ import { StaffService } from 'src/app/hr/staff.service';
 import { RefresherComponent } from 'src/app/components/refresher';
 import { OrderModel } from 'src/app/order/models/OrderModel';
 import { ApprovalStatusType } from '../travel.service';
+import { IdentityEntity } from 'src/app/services/identity/identity.entity';
+import { IdentityService } from 'src/app/services/identity/identity.service';
+import { ActivatedRoute, Router } from "@angular/router";
+import { ProductItem } from 'src/app/tmc/models/ProductItems';
+import { AppHelper } from 'src/app/appHelper';
 
 @Component({
   selector: 'app-approval-tack',
@@ -22,13 +27,19 @@ export class ApprovalTackPage implements OnInit {
   curTaskPageIndex = 0;
   tasks: TaskEntity[];
    // TravelForm =
-  ApprovalStatusType: ApprovalStatusType;
+  ApprovalStatus: ApprovalStatusType;
   isLoading = true;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   loadMoreErrMsg: string;
   public dispased: boolean = true;
   isactivename: "待我审批" | "已审任务" = '待我审批';
-  constructor(private orderService: OrderService) { }
+  activeTab: ProductItem;
+  isOpenUrl = false;
+  constructor(
+    private orderService: OrderService,
+    private identityService: IdentityService,
+    private router: Router,
+    ) { }
 
   ngOnInit() {
     this.doLoadMoreTasks();
@@ -69,12 +80,53 @@ export class ApprovalTackPage implements OnInit {
       );
   }
 
+  getTaskUrl(task: TaskEntity) {
+    return task && task.VariablesJsonObj["TaskUrl"];
+  }
+
+  private async getTaskHandleUrl(task: TaskEntity) {
+    const identity: IdentityEntity = await this.identityService
+      .getIdentityAsync()
+      .catch((_) => null);
+    let url = this.getTaskUrl(task);
+    if (url.includes("?")) {
+      url = `${url}&taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }`;
+    } else {
+      url = `${url}?taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }`;
+    }
+    return url;
+  }
+
+  async onTaskDetail(task: TaskEntity) {
+    const url = await this.getTaskHandleUrl(task);
+    if (url) {
+      this.router
+        .navigate(["open-url"], {
+          queryParams: {
+            url,
+            title: task && task.Name,
+            tabId: this.activeTab?.value,
+            isOpenInAppBrowser: AppHelper.isApp(),
+          },
+        })
+        .then((_) => {
+          this.isOpenUrl = true;
+        });
+    }
+  }
+
   OnTackApp() {
+    this.doLoadMoreTasks();
     this.dispased = true;
     this.isactivename = "待我审批";
   }
 
   OnTaskReviewed() {
+    this.doLoadMoreTasks();
     this.dispased = false;
     this.isactivename = "已审任务";
   }
