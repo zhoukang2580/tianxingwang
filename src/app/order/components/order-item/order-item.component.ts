@@ -99,7 +99,10 @@ export class OrderItemComponent implements OnInit, OnChanges {
     evt.preventDefault();
     evt.stopPropagation();
   }
-  onHelp() {
+  onHelp(evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
     AppHelper.alert("退票操作需3-15个工作日，退款操作需7-10个工作日");
   }
   ngOnChanges(changes: SimpleChanges) {
