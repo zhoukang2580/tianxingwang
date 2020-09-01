@@ -267,7 +267,7 @@ export class MyPage implements OnDestroy, OnInit {
     this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
   }
   PendingTasks(){
-    this.router.navigate([AppHelper.getRoutePath("approval-tack")]);
+    this.router.navigate([AppHelper.getRoutePath("approval-task")]);
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
