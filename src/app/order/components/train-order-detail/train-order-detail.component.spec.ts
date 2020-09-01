@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TrainOrderDetailComponent } from './train-order-detail.component';
+import { TrainOrderDetailComponent } from './order-train-detail.component';
 
 describe('TrainOrderDetailComponent', () => {
   let component: TrainOrderDetailComponent;

@@ -732,7 +732,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     // console.timeEnd("总计");
   }
   private goToMyOrders(tab: ProductItemType, isExchange = false) {
-    this.router.navigate(["product-tabs"], {
+    this.router.navigate(["order-list"], {
       queryParams: { tabId: tab, doRefresh: isExchange },
     });
   }

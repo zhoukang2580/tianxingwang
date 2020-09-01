@@ -33,6 +33,7 @@ import { ImgPickerComponent } from "./img-picker/img-picker.component";
 import { MapComponent } from "./map/map.component";
 import { SelectComponent } from './select/select.component';
 import { PhotoGalleryComponent } from './photo-gallary/photo-gallery.component';
+import { TabsContainerComponent } from './tabs-container/tabs-container.component';
 @NgModule({
   declarations: [
     ImgPickerComponent,
@@ -60,6 +61,7 @@ import { PhotoGalleryComponent } from './photo-gallary/photo-gallery.component';
     ComboboxModalComponent,
     PhotoGalleryComponent,
     EchartComponent,
+    TabsContainerComponent,
     MenuPopoverComponent,
     ListItemComponent,
     MapComponent,
@@ -73,6 +75,7 @@ import { PhotoGalleryComponent } from './photo-gallary/photo-gallery.component';
     RefresherModule,
   ],
   exports: [
+    TabsContainerComponent,
     PhotoGalleryComponent,
     MapComponent,
     ImgControlComponent,

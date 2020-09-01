@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { HotelOrderPricePopoverComponent } from './hotel-order-price-popover.component';
+import { HotelOrderPricePopoverComponent } from './order-hotel-price-popover.component';
 
 describe('HotelOrderPricePopoverComponent', () => {
   let component: HotelOrderPricePopoverComponent;

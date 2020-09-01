@@ -201,7 +201,7 @@ export class MyPage implements OnDestroy, OnInit {
     }
   }
   private goToProductTabsPage(tab: ProductItem) {
-    this.router.navigate([AppHelper.getRoutePath(`product-tabs`)], {
+    this.router.navigate([AppHelper.getRoutePath(`order-list`)], {
       queryParams: { tabId: tab.value },
     });
   }

@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { TrainOrderPricePopoverComponent } from './train-order-price-popover.component';
+import { TrainOrderPricePopoverComponent } from './order-train-price-popover.component';
 
 describe('TrainOrderPricePopoverComponent', () => {
   let component: TrainOrderPricePopoverComponent;

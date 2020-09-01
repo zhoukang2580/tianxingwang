@@ -11,14 +11,14 @@ import { FlightPipesModule } from "src/app/flight/pipes/Pipes.module";
 import { OrderComponentsModule } from '../components/components.module';
 import { FlightComponentsModule } from 'src/app/flight/components/components.module';
 
-import { HotelOrderDetailPageRoutingModule } from './hotel-order-detail-routing.module';
+import { HotelOrderDetailPageRoutingModule } from './order-hotel-detail-routing.module';
 
-import { HotelOrderDetailPage } from './hotel-order-detail.page';
+import { OrderHotelDetailPage } from './order-hotel-detail.page';
 
 const routes: Routes = [
   {
     path: "",
-    component: HotelOrderDetailPage
+    component: OrderHotelDetailPage
   }
 ];
 
@@ -39,6 +39,6 @@ const routes: Routes = [
     TmcComponentsModule,
     FlightComponentsModule
   ],
-  declarations: [HotelOrderDetailPage]
+  declarations: [OrderHotelDetailPage]
 })
-export class HotelOrderDetailPageModule {}
+export class OrderHotelDetailPageModule {}

@@ -4,11 +4,11 @@ import { FormsModule } from "@angular/forms";
 
 import { IonicModule } from "@ionic/angular";
 
-import { TrainOrderDetailPageRoutingModule } from "./train-order-detail-routing.module";
 
-import { TrainOrderDetailPage } from "./train-order-detail.page";
+import { OrderTrainDetailPage } from "./order-train-detail.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { OrderComponentsModule } from "../components/components.module";
+import { TrainOrderDetailPageRoutingModule } from './order-train-detail-routing.module';
 
 @NgModule({
   imports: [
@@ -19,6 +19,6 @@ import { OrderComponentsModule } from "../components/components.module";
     AppComponentsModule,
     OrderComponentsModule
   ],
-  declarations: [TrainOrderDetailPage]
+  declarations: [OrderTrainDetailPage]
 })
-export class TrainOrderDetailPageModule {}
+export class OrderTrainDetailPageModule {}

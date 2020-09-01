@@ -180,7 +180,7 @@ export class OrderService {
   }
   getMyTrips(data: OrderModel) {
     const req = new RequestEntity();
-    // req.IsShowLoading = true;
+    req.IsShowLoading = data.PageIndex <= 1;
     req.Data = data;
     req.Method = `TmcApiOrderUrl-Travel-List`;
     if (data.Type) {
