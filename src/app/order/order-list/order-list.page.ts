@@ -834,7 +834,7 @@ export class OrderListPage implements OnInit, OnDestroy {
           ? this.activeTab
           : this.activeTab || tab;
         this.title = tab.label;
-        console.log("order-list", this.activeTab);
+        // console.log("order-list", this.activeTab);
         this.isOpenUrl = false;
         if (d && d.get("doRefresh") == "true") {
           this.doRefresh();
@@ -846,7 +846,10 @@ export class OrderListPage implements OnInit, OnDestroy {
       this.doRefresh();
       this.tabs = ORDER_TABS.filter(
         (t) => t.value != ProductItemType.more && t.isDisplay
-      );
+      ).map((t) => {
+        t["isActive"] = t.value == this.activeTab.value;
+        return t;
+      });
       this.tmc = await this.tmcService.getTmc();
     } catch (e) {
       console.error(e);

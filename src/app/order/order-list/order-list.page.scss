@@ -2,6 +2,9 @@ app-tabs-container {
   display: block;
   overflow: auto;
   width: 100vw;
+  &::-webkit-scrollbar{
+    display: none;
+  }
 }
 ion-list {
   background: transparent;
