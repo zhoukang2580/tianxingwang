@@ -32,3 +32,12 @@ ul {
   max-width: 7em;
   min-width: 7em;
 }
+.from-to-city {
+  flex: 1;
+  .swap {
+    font-size: 0.9rem;
+  }
+  .city-wrapper {
+    margin: 0.5em 0;
+  }
+}

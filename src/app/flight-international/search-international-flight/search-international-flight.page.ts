@@ -107,7 +107,7 @@ export class SearchInternationalFlightPage
     }
     this.router.navigate(
       [AppHelper.getRoutePath("international-flight-list")],
-      {  queryParams: { doRefresh: "true" } }
+      { queryParams: { doRefresh: "true" } }
     );
   }
   onSegmentChanged(evt: CustomEvent) {
@@ -176,9 +176,6 @@ export class SearchInternationalFlightPage
           this.selectedPassengers = infos;
         })
       );
-      // this.route.queryParamMap.subscribe((q) => {
-      //   this.loadLoadingLevelPolicies();
-      // });
     } catch (e) {
       AppHelper.alert(e);
     }

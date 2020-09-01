@@ -158,8 +158,6 @@ export class InternationalFlightService {
   private selfCredentials: CredentialsEntity[];
   private identity: IdentityEntity;
   private lastOneWaySearchModel: IInternationalFlightSearchModel; // 上一次选择的单程trip信息
-  private lastGobackSearchModel: IInternationalFlightSearchModel; // 上一次选择的往返trip信息
-  private lastMultiTripSearchModel: IInternationalFlightSearchModel; // 上一次选择的多程trip信息
   private filterCondition: IFilterCondition;
   private filterConditionSource: Subject<IFilterCondition>;
   private searchModel: IInternationalFlightSearchModel;
@@ -170,6 +168,34 @@ export class InternationalFlightService {
   >;
   private flightPolicyResult: FlightResultEntity;
   // private flightCabinLevelPolicies: { [cabinType: number]: string };
+  private get cabins(): IFlightCabinType[] {
+    return [
+      {
+        label: "经济舱",
+        value: FlightCabinInternationalType.ECONOMY,
+      },
+      {
+        label: "超级经济舱",
+        value: FlightCabinInternationalType.PREMIUM_ECONOMY,
+      },
+      {
+        label: "商务舱",
+        value: FlightCabinInternationalType.BUSINESS,
+      },
+      {
+        label: "超级商务舱",
+        value: FlightCabinInternationalType.PREMIUM_BUSINESS,
+      },
+      {
+        label: "头等舱",
+        value: FlightCabinInternationalType.FIRST,
+      },
+      {
+        label: "超级头等舱",
+        value: FlightCabinInternationalType.PREMIUM_FIRST,
+      },
+    ];
+  }
   flightListResult: FlightResultEntity;
   constructor(
     private apiService: ApiService,
@@ -183,7 +209,6 @@ export class InternationalFlightService {
     private storage: Storage
   ) {
     this.searchModelSource = new BehaviorSubject({} as any);
-    this.initOneWaySearModel();
     this.bookInfoSource = new BehaviorSubject([]);
     this.initFilterCondition();
     this.identityService.getIdentitySource().subscribe((it) => {
@@ -236,45 +261,7 @@ export class InternationalFlightService {
         }
       }
     });
-  }
-  private async getCacheSearchKey(type: "oneway" | "goBack" | "multi") {
-    let key = "";
-    try {
-      this.identity = await this.identityService.getIdentityAsync();
-      if (!this.identity) {
-        return;
-      }
-      key = `${this.identity.Id}_${LAST_INTERNATIONAL_FLIGHT_SEARCH_CONDITION_KEY}_${type}`.toUpperCase();
-    } catch (e) {
-      console.error(e);
-    }
-    return key;
-  }
-  private async setLastSearchCondition(data: {
-    type: "oneway" | "goBack" | "multi";
-    condition: IInternationalFlightSearchModel;
-  }) {
-    const key = await this.getCacheSearchKey(data.type);
-    return this.storage.set(key, {
-      ...data.condition,
-      trips: (data.condition.trips || []).map((it) => {
-        return {
-          ...it,
-          bookInfo: null,
-        };
-      }),
-    });
-  }
-  private async getLastSearchCondition(
-    type: "oneway" | "goBack" | "multi"
-  ): Promise<IInternationalFlightSearchModel> {
-    try {
-      const key = await this.getCacheSearchKey(type);
-      return this.storage.get(key);
-    } catch (e) {
-      console.error(e);
-    }
-    return null;
+    this.initOneWaySearModel();
   }
   async getInitializeBookDto(
     bookDto: OrderBookDto
@@ -545,16 +532,22 @@ export class InternationalFlightService {
     });
   }
   initOneWaySearModel() {
-    if (this.lastOneWaySearchModel) {
-      this.setSearchModelSource(this.lastOneWaySearchModel);
-      return;
+    let fromCity1 = fromCity;
+    let toCity1 = toCity;
+    if (
+      this.searchModel &&
+      this.searchModel.trips &&
+      this.searchModel.trips.length
+    ) {
+      fromCity1 = this.searchModel.trips[0].fromCity;
+      toCity1 = this.searchModel.trips[0].toCity;
     }
     this.searchModel = {
       voyageType: FlightVoyageType.OneWay,
       trips: [
         {
-          fromCity,
-          toCity,
+          fromCity: fromCity1,
+          toCity: toCity1,
           date: this.calendarService.getMoment(1).format("YYYY-MM-DD"),
           id: AppHelper.uuid(),
         },
@@ -563,61 +556,35 @@ export class InternationalFlightService {
         label: "经济舱",
         value: FlightCabinInternationalType.ECONOMY,
       },
-      cabins: [
-        {
-          label: "经济舱",
-          value: FlightCabinInternationalType.ECONOMY,
-        },
-        {
-          label: "超级经济舱",
-          value: FlightCabinInternationalType.PREMIUM_ECONOMY,
-        },
-        {
-          label: "头等舱",
-          value: FlightCabinInternationalType.FIRST,
-        },
-        {
-          label: "商务舱",
-          value: FlightCabinInternationalType.BUSINESS,
-        },
-        {
-          label: "超级商务舱",
-          value: FlightCabinInternationalType.PREMIUM_BUSINESS,
-        },
-        {
-          label: "超级头等舱",
-          value: FlightCabinInternationalType.PREMIUM_FIRST,
-        },
-      ],
+      cabins: this.cabins,
     };
-    this.getLastSearchCondition("oneway").then((res) => {
-      if (res) {
-        this.lastOneWaySearchModel = res;
-        this.searchModel = res;
-        this.searchModelSource.next(res);
-      } else {
-        this.setSearchModelSource(this.searchModel);
-      }
-    });
+    this.setSearchModelSource(this.searchModel);
   }
+
   initGoBackSearchModel() {
-    if (this.lastGobackSearchModel) {
-      this.setSearchModelSource(this.lastGobackSearchModel);
-      return;
+    let fromCity1 = fromCity;
+    let toCity1 = toCity;
+    if (
+      this.lastOneWaySearchModel &&
+      this.lastOneWaySearchModel.trips &&
+      this.lastOneWaySearchModel.trips.length
+    ) {
+      fromCity1 = this.lastOneWaySearchModel.trips[0].fromCity;
+      toCity1 = this.lastOneWaySearchModel.trips[0].toCity;
     }
     this.searchModel = {
       voyageType: FlightVoyageType.GoBack,
       trips: [
         {
-          fromCity,
-          toCity,
+          fromCity: fromCity1,
+          toCity: toCity1,
           date: this.calendarService.getMoment(1).format("YYYY-MM-DD"),
           id: AppHelper.uuid(),
         },
         {
           id: AppHelper.uuid(),
-          fromCity: toCity,
-          toCity: fromCity,
+          fromCity: toCity1,
+          toCity: fromCity1,
           date: this.calendarService.getMoment(3).format("YYYY-MM-DD"),
         },
       ],
@@ -625,54 +592,27 @@ export class InternationalFlightService {
         label: "经济舱",
         value: FlightCabinInternationalType.ECONOMY,
       },
-      cabins: [
-        {
-          label: "经济舱",
-          value: FlightCabinInternationalType.ECONOMY,
-        },
-        {
-          label: "超级经济舱",
-          value: FlightCabinInternationalType.PREMIUM_ECONOMY,
-        },
-        {
-          label: "头等舱",
-          value: FlightCabinInternationalType.FIRST,
-        },
-        {
-          label: "商务舱",
-          value: FlightCabinInternationalType.BUSINESS,
-        },
-        {
-          label: "超级商务舱",
-          value: FlightCabinInternationalType.PREMIUM_BUSINESS,
-        },
-        {
-          label: "超级头等舱",
-          value: FlightCabinInternationalType.PREMIUM_FIRST,
-        },
-      ],
+      cabins: this.cabins,
     };
-    this.getLastSearchCondition("goBack").then((res) => {
-      if (res) {
-        this.lastGobackSearchModel = res;
-        this.searchModel = res;
-        this.searchModelSource.next(res);
-      } else {
-        this.setSearchModelSource(this.searchModel);
-      }
-    });
+    this.setSearchModelSource(this.searchModel);
   }
   initMultiTripSearchModel() {
-    if (this.lastMultiTripSearchModel) {
-      this.setSearchModelSource(this.lastMultiTripSearchModel);
-      return;
+    let fromCity1 = fromCity;
+    let toCity1 = toCity;
+    if (
+      this.lastOneWaySearchModel &&
+      this.lastOneWaySearchModel.trips &&
+      this.lastOneWaySearchModel.trips.length
+    ) {
+      fromCity1 = this.lastOneWaySearchModel.trips[0].fromCity;
+      toCity1 = this.lastOneWaySearchModel.trips[0].toCity;
     }
     this.searchModel = {
       voyageType: FlightVoyageType.MultiCity,
       trips: [
         {
-          fromCity,
-          toCity,
+          fromCity: fromCity1,
+          toCity: toCity1,
           date: this.calendarService.getMoment(1).format("YYYY-MM-DD"),
           id: AppHelper.uuid(),
         },
@@ -686,45 +626,12 @@ export class InternationalFlightService {
         label: "经济舱",
         value: FlightCabinInternationalType.ECONOMY,
       },
-      cabins: [
-        {
-          label: "经济舱",
-          value: FlightCabinInternationalType.ECONOMY,
-        },
-        {
-          label: "超级经济舱",
-          value: FlightCabinInternationalType.PREMIUM_ECONOMY,
-        },
-        {
-          label: "头等舱",
-          value: FlightCabinInternationalType.FIRST,
-        },
-        {
-          label: "商务舱",
-          value: FlightCabinInternationalType.BUSINESS,
-        },
-        {
-          label: "超级商务舱",
-          value: FlightCabinInternationalType.PREMIUM_BUSINESS,
-        },
-        {
-          label: "超级头等舱",
-          value: FlightCabinInternationalType.PREMIUM_FIRST,
-        },
-      ],
+      cabins: this.cabins,
     };
-    if (!environment.production) {
-      this.searchModel = MOCK_MultiCity_SEARCHMODEL;
-    }
-    this.getLastSearchCondition("multi").then((res) => {
-      if (res) {
-        this.lastMultiTripSearchModel = res;
-        this.searchModel = res;
-        this.searchModelSource.next(res);
-      } else {
-        this.setSearchModelSource(this.searchModel);
-      }
-    });
+    // if (!environment.production) {
+    //   this.searchModel = MOCK_MultiCity_SEARCHMODEL;
+    // }
+    this.setSearchModelSource(this.searchModel);
   }
   disposal() {
     // this.flightCabinLevelPolicies = null;
@@ -1140,10 +1047,10 @@ export class InternationalFlightService {
               f.IsAllowOrder = true;
             });
           }
-          if(result.FlightRoutes){
-            result.FlightRoutes.forEach(r=>{
-              r.IsAllowOrder=true;
-            })
+          if (result.FlightRoutes) {
+            result.FlightRoutes.forEach((r) => {
+              r.IsAllowOrder = true;
+            });
           }
         }
       }
@@ -1505,8 +1412,6 @@ export class InternationalFlightService {
     this.searchModel = m;
     if (m) {
       if (m.voyageType == FlightVoyageType.GoBack) {
-        this.setLastSearchCondition({ type: "goBack", condition: m });
-        this.lastGobackSearchModel = m;
         if (m.trips) {
           const trip = m.trips[0];
           const backTrip = m.trips[1];
@@ -1517,12 +1422,7 @@ export class InternationalFlightService {
         }
       }
       if (m.voyageType == FlightVoyageType.OneWay) {
-        this.setLastSearchCondition({ type: "oneway", condition: m });
         this.lastOneWaySearchModel = m;
-      }
-      if (m.voyageType == FlightVoyageType.MultiCity) {
-        this.setLastSearchCondition({ type: "multi", condition: m });
-        this.lastMultiTripSearchModel = m;
       }
     }
     if (this.searchModelSource) {

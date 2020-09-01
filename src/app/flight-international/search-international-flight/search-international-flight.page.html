@@ -44,13 +44,13 @@
             <ion-text class="index-number" color='secondary'
               *ngIf='searchFlightModel?.voyageType==FlightVoyageType.MultiCity'>{{i+1}}
             </ion-text>
-            <div style="flex: 1;">
-              <ion-buttons class="ion-justify-content-between ion-align-items-start">
+            <div class="from-to-city">
+              <ion-buttons class="ion-justify-content-between ion-align-items-center city-wrapper">
                 <ion-text class="city-name ion-text-start" (click)='onSelectCity(true,trip)'
                   color='{{disabled?"medium":"secondary"}}'>
                   {{trip?.fromCity?.Nickname?.replace("国际机场","")?.replace("机场","")}}</ion-text>
-                <ion-button color='{{disabled?"medium":"secondary"}}' (click)='onSwapCity(trip)'>
-                  <ion-icon name="swap-horizontal-outline" color='{{disabled?"medium":"secondary"}}'>
+                <ion-button color='{{disabled?"medium":"secondary"}}' (click)='onSwapCity(trip)' size='small'>
+                  <ion-icon class='swap' name="swap-horizontal-outline" color='{{disabled?"medium":"secondary"}}'>
                   </ion-icon>
                 </ion-button>
                 <ion-text class="city-name ion-text-end" (click)='onSelectCity(false,trip)'
