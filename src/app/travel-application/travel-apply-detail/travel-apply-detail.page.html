@@ -33,7 +33,7 @@
                         <span>申请时间：</span>
                         <span>{{detail?.TravelForm.applyTimeDate}}{{detail?.TravelForm.applyTimeTime||''}}</span>
                         </span>
-                        <span class="apply_info_time" *ngIf="istime">{{detail?.TravelForm.approvalTimeDate}}
+                        <span class="apply_info_time">{{detail?.TravelForm.approvalTimeDate?.startsWith("1800")||detail?.TravelForm.approvalTimeDate?.startsWith("0001")?" ":detail?.TravelForm.approvalTimeDate}}
                     </span></p>
                     <p><span class="apply_info_tit"><span>出差天数：</span><span>{{detail?.TravelForm.DayCount}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>单号：</span><span>{{detail?.Staff.Id}}</span></span><span class="apply_info_time"></span></p>

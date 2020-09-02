@@ -31,7 +31,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     // subHeader: 'Select your hair color',
     // message: 'Only select your dominant hair color'
   };
-  staff: StaffEntity;
+  // staff: StaffEntity;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -139,6 +139,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     if (idx > -1) {
       return name.substring(0, idx);
     }
+    return name.replace(/,/g, '·');
   }
   private transformDataTime({
     time,
@@ -161,9 +162,9 @@ export class BusinessListPage implements OnInit, OnDestroy {
     return time;
   }
   doRefresh(isKeepCondition = false) {
-    this.staffService.getStaff().then((s) => {
-      this.staff = s;
-    });
+    // this.staffService.getStaff().then((s) => {
+    //   this.staff = s;
+    // });
     if (this.searchModel) {
       if (!isKeepCondition) {
         this.searchModel.StatusType = 0;

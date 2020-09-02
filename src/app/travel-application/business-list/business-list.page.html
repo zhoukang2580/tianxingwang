@@ -14,7 +14,7 @@
         <ion-refresher-content>正在加载...</ion-refresher-content>
     </app-refresher>
     <form action="javascript:void(0)" (ngSubmit)='onSearch(true)'>
-        <ion-searchbar name='searchbar' placeholder="申请单号、出差事由等内容搜索" mode='ios' animated='true' [(ngModel)]="searchModel.SearchContent"></ion-searchbar>
+        <ion-searchbar name='searchbar' placeholder="查询姓名、城市、关键字等" mode='ios' animated='true' [(ngModel)]="searchModel.SearchContent"></ion-searchbar>
         <ion-item style="display: none;">
             <ion-select cancelText='取消' okText='确定' backdrop-dismiss='true' #statusSelect translucent='true' [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="searchModel.StatusType" name='status'
                 (ionChange)="onSearch(false)">
@@ -34,7 +34,7 @@
                     出行人：
                 </div>
                 <div class="main">
-                    {{staff?.Name}}
+                    {{item?.Account?.RealName}}
                 </div>
                 <div class="end">
                     {{item.ApplyTime}}

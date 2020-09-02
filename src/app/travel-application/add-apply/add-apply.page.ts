@@ -507,6 +507,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           this.searchModel.TravelForm.Organization.Id;
       }
       if (this.searchModel.TravelForm.Trips) {
+        // tslint:disable-next-line: prefer-for-of
         for (
           let index = 0;
           index < this.searchModel.TravelForm.Trips.length;

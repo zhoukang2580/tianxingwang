@@ -60,19 +60,10 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
       const date = this.detail.TravelForm.ApplyTime.substr(0, 10).replace(/-/g, '.');
       const time = this.detail.TravelForm.ApplyTime.substr(10, 6).replace(/T/g,' ');// 2020-09-10T12:40:34
       const appdate = this.detail.TravelForm.ApprovalTime.substr(0, 10).replace(/-/g, '.');
-      const sub = this.detail.TravelForm.ApprovalTime.substr(0,2);
       this.detail.TravelForm.applyTimeDate = date;
       this.detail.TravelForm.applyTimeTime = time;
-      this.detail.TravelForm.approvalTimeDate = appdate || sub;
+      this.detail.TravelForm.approvalTimeDate = appdate;
 
-      if(sub == '18' || sub == '00'){
-        this.istime = false;
-      }
-     // this.detail.TravelForm.applyTimeTime = times;
-      // tslint:disable-next-line: triple-equals
-      // if (times == "18" || times == "00") {
-      //   this.getoutTime = false;
-      // }
     }
 
     // const times = this.detail.TravelForm.applyTimeTime;
