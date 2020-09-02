@@ -43,7 +43,8 @@
                 <textarea type="text" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
             </div> -->
             <div class="no_border_bottom text">
-                <span style="line-height: 3;"><span class="red">*</span>
+                <span class="red" style="position: absolute;margin: 14px 0px;">*</span>
+                <span style="line-height: 3;margin-left: 10px;">
                 <ion-text [color]="!enable?'dark':'dark'">出差事由:</ion-text>
                 </span>
                 <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
@@ -138,10 +139,10 @@
         <ion-item *ngIf="waiting" class="ion-btn">
 
             <div class="ion-div">
-                <ion-button slot='end' shape='round' color="secondary" on-touch="getCashSuccess();" data-ng-disabled="!isCashTest()" style="width: 7em;height: 3.4em;" (click)="onSave()">
+                <ion-button slot='end' shape='round' color="secondary" on-touch="getCashSuccess();" data-ng-disabled="!isCashTest()" style="width: 7em;height: 3em;" (click)="onSave()">
                     保存
                 </ion-button>
-                <ion-button slot='end' shape='round' color="secondary" (click)="onSubmit()" style="width: 7em;height: 3.4em;">
+                <ion-button slot='end' shape='round' color="secondary" (click)="onSubmit()" style="width: 7em;height: 3em;">
                     提交
                 </ion-button>
             </div>

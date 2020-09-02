@@ -415,7 +415,7 @@ export class AppHelper {
     await AppHelper.platform.ready();
     if (window["ali"]) {
       return window["ali"]
-        .payH5Url(url,this.getWechatAppId())
+        .payH5Url(url, this.getWechatAppId())
     }
     return null;
   }
@@ -694,6 +694,9 @@ export class AppHelper {
     const query = AppHelper.getQueryParamers();
     const hrefPath = AppHelper.getNormalizedPath(window.location.href);
     if (query) {
+      if (query.style && query.style.toLowerCase() != 'undefined' && query.style.toLowerCase() != 'null') {
+        this.setStyle(query.style || "")
+      }
       if (hrefPath) {
         if (!query.path) {
           query.path = hrefPath;

@@ -19,7 +19,7 @@
         <div class="bg wait_apply" *ngIf='dispased'>
             <section>
                 <p class="h_line h_line_mini"></p>
-                <div class="apply_info" style="padding: 18px 23px;" *ngFor="let task of tasks">
+                <div class="apply_info" style="padding: 18px 23px;" *ngFor="let task of tasks" (click)='onTaskDetail(task)'>
                     <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.InsertTime}}</span></span><span class="apply_info_time"></span></p>
                     <p>
@@ -45,7 +45,7 @@
         <div class="bg has_apply" *ngIf='!dispased' id="has_apply">
             <section *ngFor="let task of tasks">
                 <p class="h_line h_line_mini"></p>
-                <i class="apply_info_status apply_info_status_pass"></i>
+                <i class="apply_info_status apply_info_status_pass" *ngIf='ApprovalStatus'></i>
                 <div class="apply_info">
                     <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.InsertTime}}</span></span><span class="apply_info_time"></span></p>
@@ -66,6 +66,8 @@
                     <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
                 </div>
             </section>
+            <!-- <img src="assets/images/pass.png" *ngIf='' alt="">
+            <img src="assets/images/deny.png" *ngIf='' alt=""> -->
         </div>
     </div>
     <ion-infinite-scroll (ionInfinite)='doLoadMoreTasks()'>
