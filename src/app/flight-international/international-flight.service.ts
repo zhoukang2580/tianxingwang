@@ -683,33 +683,6 @@ export class InternationalFlightService {
         }
       }
     }
-    // if (!environment.production && !forceFetch) {
-    //   let result = this.flightListResult;
-    //   if (!result || !result.FlightRoutes || !result.FlightRoutes.length) {
-    //     result = MockInternationalFlightListData as any;
-    //     this.flightPolicyResult = await this.checkRoutePolicy(result);
-    //     if (this.flightPolicyResult && this.flightPolicyResult.FlightFares) {
-    //       result.FlightFares = result.FlightFares.map((it) => {
-    //         const one = this.flightPolicyResult.FlightFares.find(
-    //           (i) => i.Id == it.Id
-    //         );
-    //         if (one) {
-    //           it.Rules = one.Rules;
-    //           it.IsAllowOrder = one.IsAllowOrder;
-    //         }
-    //         return it;
-    //       });
-    //     }
-    //     result = this.initFlightRouteSegments(result);
-    //     this.flightListResult = result;
-    //     await this.initParagraphCondition(result);
-    //   }
-    //   if (!keepFilterCondition) {
-    //     await this.initParagraphCondition(result);
-    //   }
-    //   result = this.filterByCondition(result);
-    //   return result;
-    // }
     if (!m || !forceFetch) {
       if (
         this.flightListResult &&
@@ -779,25 +752,18 @@ export class InternationalFlightService {
       .then((policyResult) => {
         this.flightPolicyResult = policyResult;
         if (policyResult) {
-          if (policyResult.FlightFares) {
-            this.flightListResult.FlightFares = this.flightListResult.FlightFares.map(
-              (it) => {
-                const one = policyResult.FlightFares.find((i) => i.Id == it.Id);
-                if (one) {
-                  it.Rules = one.Rules;
-                  it.IsAllowOrder = one.IsAllowOrder;
-                }
-                return it;
-              }
-            );
-          }
           if (policyResult.FlightRoutes) {
             this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
               (r) => {
                 const one = policyResult.FlightRoutes.find((i) => i.Id == r.Id);
                 if (one) {
-                  // r.Rules = one.Rules;
+                  r.Rules = one.Rules;
                   r.IsAllowOrder = one.IsAllowOrder;
+                  if (r.Rules) {
+                    r.rulesMessages = Object.keys(r.Rules).map(
+                      (k) => r.Rules[k]
+                    );
+                  }
                 }
                 return r;
               }
@@ -829,6 +795,7 @@ export class InternationalFlightService {
         return true;
       }
       const req = new RequestEntity();
+      req.IsShowLoading = true;
       req.Method = `TmcApiInternationalFlightUrl-Home-Check`;
       if (!this.flightListResult || !this.flightListResult.FlightFares) {
         return true;
@@ -989,7 +956,7 @@ export class InternationalFlightService {
             r.Type = it.Type;
             r.FirstTime = it.FirstTime;
             r.FlightSegmentIds = it.FlightSegmentIds;
-            r.Paragraphs=it.Paragraphs;
+            r.Paragraphs = it.Paragraphs;
             return r;
           })
         ),

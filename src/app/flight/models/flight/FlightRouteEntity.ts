@@ -29,6 +29,7 @@ export class FlightRouteEntity {
   Origin: string; // SHA";
   Paragraphs: number;
   Rules: any;
+  rulesMessages: string[];
   ToCountry: string; // CN";
   Type: number;
   TypeName: string; // 经济舱";
