@@ -102,23 +102,23 @@ export class MyPage implements OnDestroy, OnInit {
     this.router.navigate([AppHelper.getRoutePath(`product-list`)]);
   }
   async onLanguageSettings() {
-    const cur = AppHelper.getStyle();
+    const style = AppHelper.getStyle();
     const ash = await this.actionSheetCtrl.create({
       cssClass: "language",
       buttons: [
         {
           text: "English",
-          role: cur == "en" ? "selected" : "",
+          role: style == "en" ? "selected" : "",
           handler: () => {
-            AppHelper.setStorage("style", "en");
+            AppHelper.setStyle("en");
             this.reloadPage();
           },
         },
         {
           text: "中文",
-          role: !cur ? "selected" : "",
+          role: !style ? "selected" : "",
           handler: () => {
-            AppHelper.setStorage("style", "");
+            AppHelper.setStyle("cn");
             this.reloadPage();
           },
         },
@@ -193,8 +193,9 @@ export class MyPage implements OnDestroy, OnInit {
     });
   }
   private reloadPage() {
-    this.translateService.translate();
-    this.router.navigate([AppHelper.getRoutePath(this.router.url)]);
+    this.router.navigate([AppHelper.getRoutePath(this.router.url)]).then(() => {
+      this.translateService.translate();
+    });
   }
   onProductClick(tab: ProductItem) {
     if (tab.value != ProductItemType.more) {
@@ -269,7 +270,7 @@ export class MyPage implements OnDestroy, OnInit {
   credentialManagement() {
     this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
   }
-  PendingTasks(){
+  PendingTasks() {
     this.router.navigate([AppHelper.getRoutePath("approval-task")]);
   }
   ngOnDestroy() {

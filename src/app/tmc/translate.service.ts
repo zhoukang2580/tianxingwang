@@ -4,6 +4,7 @@ import { RequestEntity } from "../services/api/Request.entity";
 import { IdentityService } from "../services/identity/identity.service";
 import { AppHelper } from "../appHelper";
 import { IdentityEntity } from "../services/identity/identity.entity";
+import { Subscription, interval } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -11,8 +12,8 @@ import { IdentityEntity } from "../services/identity/identity.entity";
 export class TranslateService {
   private tempHtml = "";
   private isTranslate = false;
-  private intervalId: any;
-  private intervalTime = 1000;
+  private subscription = Subscription.EMPTY;
+  private intervalTime = 3 * 1000;
   private identity: IdentityEntity;
   constructor(
     private apiService: ApiService,
@@ -24,29 +25,33 @@ export class TranslateService {
     });
   }
   translate() {
-    if (this.identity && this.identity.Id != "0" && this.identity.Ticket) {
-      if (AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() != "cn") {
-        this.start();
+    try {
+      if (this.identity && this.identity.Id != "0" && this.identity.Ticket) {
+        if (
+          AppHelper.getStyle() &&
+          AppHelper.getStyle().toLowerCase() != "cn"
+        ) {
+          this.start();
+        } else {
+          this.stop();
+        }
       } else {
-        this.stop();
+        setTimeout(() => {
+          this.stop();
+        }, 5000);
       }
-    } else {
-      setTimeout(() => {
-        this.stop();
-      }, 5000);
+    } catch (e) {
+      console.error(e);
     }
   }
   private start() {
     this.stop();
-    this.intervalId = setInterval(
-      () => this.inspectTranslate(),
-      this.intervalTime
-    );
+    this.subscription = interval(this.intervalTime).subscribe(() => {
+      this.inspectTranslate();
+    });
   }
   private stop() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
+    this.subscription.unsubscribe();
   }
   private getTranslateContent(html) {
     if (!html) {
