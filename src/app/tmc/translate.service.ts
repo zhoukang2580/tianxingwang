@@ -58,9 +58,8 @@ export class TranslateService {
       return null;
     }
     // tslint:disable-next-line: max-line-length
-    const reg = /<\w+(\s|\w|\=|\"|\:|\;|\/|\.|\#|\(|\)|\?|\&|[\u4E00-\u9FA5])*>((?!\<)(.|\r|\n))*[\u4E00-\u9FA5]+((?!\<)(.|\r|\n))*<\/\w+>/g;
+    const reg = /<\w+(\s|\w|\=|\"|\:|\;|\/|\.|\#|\_|\-|\(|\)|\?|\&|[\u4E00-\u9FA5])*>((?!\<)(.|\r|\n))*[\u4E00-\u9FA5]+((?!\<)(.|\r|\n))*<\/\w+>/g;
     const matches = html.match(reg);
-
     return matches;
   }
 
@@ -79,7 +78,7 @@ export class TranslateService {
   private getElementContent(match) {
     return match
       .replace(
-        /^<\w+(\s|\w|\=|\"|\:|\;|\/|\.|\#|\(|\)|\?|\&|[\u4E00-\u9FA5])*>/g,
+        /^<\w+(\s|\w|\=|\"|\:|\;|\/|\.|\#|\_|\-|\(|\)|\?|\&|[\u4E00-\u9FA5])*>/g,
         ""
       )
       .replace(/<\/\w+>$/g, "");
