@@ -27,7 +27,7 @@
 }
 
 .radios {
-    border-bottom: 1px solid #c8cdd2;
+    border-bottom: 1px solid var(--ion-item-border-color, var(--ion-border-color, var(--ion-color-step-150, rgba(0, 0, 0, 0.13))));
     ion-item {
         border: none;
         ion-label {
@@ -60,11 +60,10 @@
     font-size: 16px;
 }
 
-ion-item {
-    border-bottom: 1px solid #c8cdd2;
-    line-height: 40px;
-}
-
+// ion-item {
+//     border-bottom: 1px solid #c8cdd2;
+//     line-height: 40px;
+// }
 .hydrated {
     visibility: inherit;
     line-height: 25px;
@@ -85,4 +84,8 @@ ion-label:nth-child(2) {
 
 .select-icon {
     padding: 5px;
+}
+
+.ion-text-end:nth-child(2) {
+    margin-left: auto;
 }
