@@ -989,6 +989,7 @@ export class InternationalFlightService {
             r.Type = it.Type;
             r.FirstTime = it.FirstTime;
             r.FlightSegmentIds = it.FlightSegmentIds;
+            r.Paragraphs=it.Paragraphs;
             return r;
           })
         ),
