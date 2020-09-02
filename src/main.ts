@@ -46,7 +46,7 @@ function changeAppTitle() {
 }
 function processPath() {
   const query = AppHelper.getQueryParamers();
-  let hrefPath = AppHelper.getNormalizedPath(window.location.href);
+  const hrefPath = AppHelper.getNormalizedPath(window.location.href);
   if (query) {
     if (hrefPath) {
       if (!query.path && hrefPath) {

@@ -42,6 +42,7 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
 import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
 import { LoginService } from "src/app/services/login/login.service";
+import { TranslateService } from "src/app/tmc/translate.service";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home.page.html",
@@ -99,7 +100,8 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     private flightService: FlightService,
     route: ActivatedRoute,
     private configService: ConfigService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private translateService: TranslateService
   ) {
     this.staff = null;
     this.selectedCompany$ = tmcService.getSelectedCompanySource();
@@ -121,6 +123,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       await this.loginService.checkIfForceAction();
       // console.log("返回到首页 ",p.keys);
     });
+    this.translateService.translate();
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();

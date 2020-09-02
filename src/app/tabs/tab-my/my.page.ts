@@ -18,6 +18,7 @@ import { tap, map } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
+import { TranslateService } from "src/app/tmc/translate.service";
 interface PageModel {
   Name: string;
   RealName: string;
@@ -70,7 +71,8 @@ export class MyPage implements OnDestroy, OnInit {
     private route: ActivatedRoute,
     private messageService: MessageService,
     private staffService: StaffService,
-    private actionSheetCtrl: ActionSheetController
+    private actionSheetCtrl: ActionSheetController,
+    private translateService: TranslateService
   ) {
     this.isIos = plt.is("ios");
     this.subscriptions.push(
@@ -100,23 +102,23 @@ export class MyPage implements OnDestroy, OnInit {
     this.router.navigate([AppHelper.getRoutePath(`product-list`)]);
   }
   async onLanguageSettings() {
-    const cur = AppHelper.getStyle();
+    const style = AppHelper.getStyle();
     const ash = await this.actionSheetCtrl.create({
       cssClass: "language",
       buttons: [
         {
           text: "English",
-          role: cur == "en" ? "selected" : "",
+          role: style == "en" ? "selected" : "",
           handler: () => {
-            AppHelper.setStorage("style", "en");
+            AppHelper.setStyle("en");
             this.reloadPage();
           },
         },
         {
           text: "中文",
-          role: !cur ? "selected" : "",
+          role: !style ? "selected" : "",
           handler: () => {
-            AppHelper.setStorage("style", "");
+            AppHelper.setStyle("cn");
             this.reloadPage();
           },
         },
@@ -191,7 +193,9 @@ export class MyPage implements OnDestroy, OnInit {
     });
   }
   private reloadPage() {
-    this.router.navigate([AppHelper.getRoutePath(this.router.url)]);
+    this.router.navigate([AppHelper.getRoutePath(this.router.url)]).then(() => {
+      this.translateService.translate();
+    });
   }
   onProductClick(tab: ProductItem) {
     if (tab.value != ProductItemType.more) {
@@ -266,7 +270,7 @@ export class MyPage implements OnDestroy, OnInit {
   credentialManagement() {
     this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
   }
-  PendingTasks(){
+  PendingTasks() {
     this.router.navigate([AppHelper.getRoutePath("approval-task")]);
   }
   ngOnDestroy() {
