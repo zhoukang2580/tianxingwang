@@ -35,8 +35,8 @@
         <ion-label>正在搜索...</ion-label>
     </ng-container>
     <ng-template #n>
-        <ion-list class='holder'>
-        </ion-list>
+        <!-- <ion-list class='holder'>
+        </ion-list> -->
         <ion-list *ngIf='textSearchResults?.length else nodatatempl'>
             <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item)'>
                 <ion-label>
