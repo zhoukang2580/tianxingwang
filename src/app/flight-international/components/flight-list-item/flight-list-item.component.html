@@ -1,15 +1,15 @@
 <ion-row *ngIf='flight' style="margin-bottom: 0.5em;">
   <ion-col size="0.8">
     <div class="logo margin-t11">
-      <img [src]="flight.fromSegment.AirlineSrc">
+      <img [src]="flight.fromSegment?.AirlineSrc">
     </div>
   </ion-col>
   <ion-col>
     <div class="cityAndTime">
       <div class='padding-t11'>
-        <ion-text class="time">{{flight?.FirstTime.replace("T"," ")?.substring(10,16)}}</ion-text>
+        <ion-text class="time">{{flight?.FirstTime?.replace("T"," ")?.substring(10,16)}}</ion-text>
         <div class="country">
-          {{flight.fromSegment?.FromAirportName?.replace("国际机场","")?.replace("机场","")}}{{flight.fromSegment.FromTerminal}}
+          {{flight.fromSegment?.FromAirportName?.replace("国际机场","")?.replace("机场","")}}{{flight.fromSegment?.FromTerminal}}
         </div>
       </div>
     </div>
