@@ -54,8 +54,8 @@
                         <p class="travel_step_i_tit"><i class="dot"></i><span>行程{{idx+1}}</span><span>{{trip.FromCityName}}~{{trip.ToCityName}}</span></p>
                         <div class="travel_step_detail" style="background: #f4f9fd;">
                             <p><span>出发时间：</span><span>{{trip.StartDate}}~{{trip.EndDate}}</span><i class="toggle" [class.up]='trip["isHideButtons"]' [class.down]='!trip["isHideButtons"]' (click)='onToggle(trip)'></i></p>
-                            <p><span>天数：</span><span>{{trip.Day}}</span></p>
-                            <p class="travel_step_btn" *ngIf='!trip["isHideButtons"]'>
+                            <p><span>天数：</span><span>{{detail?.TravelForm.DayCount}}</span></p>
+                            <p class="travel_step_btn" *ngIf='!trip["isHideButtons"]' style="justify-content: space-around;">
                                 <button *ngIf='trip["hasFlight"]'>预订国内机票</button>
                                 <button *ngIf='trip["hasHotel"]'>预订国内酒店</button>
                                 <button *ngIf='trip["hasTrain"]'>预订火车票</button>
@@ -72,7 +72,7 @@
                     <p>
                         <span class="apply_info_tit">审批人：</span>
                         <span class="apply_info_tit" style="width: 205px;">
-                        <div class="approver" *ngFor='let h of detail?.Histories;let last=last;' style="width: initial;">
+                        <div class="approver" *ngFor='let h of detail?.Histories;let last=last;' style="width: inherit;">
                               <span class="approver1" style="width: auto;">{{h?.Name}}</span>
                         <span class="apply_status apply_past">({{h?.StatusName}})<ng-container *ngIf='!last'>→</ng-container></span>
 

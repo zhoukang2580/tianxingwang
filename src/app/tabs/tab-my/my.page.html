@@ -42,7 +42,7 @@
         <ion-item detail (click)='credentialManagement()'>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/svgs/id.svg" alt=""> 证件管理
+                <img src="assets/images/zjgl.png" alt=""> 证件管理
             </ion-label>
         </ion-item>
     </ion-list>
@@ -58,7 +58,7 @@
         <ion-item detail (click)='contactUs()'>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/svgs/contactus.svg" alt=""> 联系我们
+                <img src="assets/images/contactus.png" alt=""> 联系我们
             </ion-label>
         </ion-item>
     </ion-list>
@@ -74,7 +74,7 @@
         <ion-item (click)="goBusiness()" detail>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/svgs/apply.svg" alt=""> 我的出差申请
+                <img src="assets/images/ccsq.png" alt=""> 我的出差申请
             </ion-label>
         </ion-item>
     </ion-list>
@@ -101,7 +101,7 @@
         <ion-item (click)='goToPage("bulletin","notice")' detail>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/svgs/notification.svg" alt="通知"> 公司通知
+                <img src="assets/images/gstz.png" alt="通知"> 公司通知
             </ion-label>
         </ion-item>
     </ion-list>
@@ -109,14 +109,16 @@
         <ion-item (click)="onSettings()" detail>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/svgs/settings.svg" alt=""> 设置
+                <img src="assets/images/settings.png" alt=""> 设置
             </ion-label>
         </ion-item>
     </ion-list>
     <ion-list *ngIf='isShowMyOrderTabs'>
         <ion-item (click)="onLanguageSettings()" detail>
-            <ion-icon name="cog" color="dark"></ion-icon>
-            <ion-label>语言设置</ion-label>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/images/language.png" alt="" />语言设置
+            </ion-label>
         </ion-item>
     </ion-list>
     <ion-list *ngIf='isShowDeveloperOption'>

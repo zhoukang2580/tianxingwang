@@ -94,7 +94,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
             this.vmRegionTypes.push(t);
           }
         });
-        //  console.log(this.vmRegionTypes, "vmRegionTypes");
+         console.log(this.vmRegionTypes, "vmRegionTypes");
         //  console.log(this.trip.travelTools, "this.trip.travelTools333333");
         // this.getRegionTypes()
       }
@@ -172,14 +172,11 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     if (trip){
       trip.ToCityCode = trip.ToCities && trip.ToCities.map(it => it.Code).join(",");
       trip.ToCityName = trip.ToCities && trip.ToCities.map(it => it.Name).join(",");
-      console.log(trip.ToCityCode);
-      console.log(citys);
-      console.log(citys.toString());
       // trip.ToCityCode = citys.toString();
     }
   }
 
-  async onSelectCity1(isFrom = true,isMulti,trip:TravelFormTripEntity) {
+  async onSelectCheckInCity(isFrom = true,isMulti,trip:TravelFormTripEntity) {
     if (!this.enable) {
       return;
     }
@@ -196,20 +193,19 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     const city: TrafficlineEntity = res && res.data;
     const cities: TrafficlineEntity[] = res && res.data;
     const citys = cities && cities.slice(0 , 3);
-    trip.ToCityArrive = citys;
     if(trip){
-      trip.ToCityCode = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Code).join(',');
-      trip.ToCityName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).join(',');
-      // trip.ToCityArrive=citys
+      trip.ToCityArrive = citys;
+      trip.CheckInCityCode = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Code).join(',');
+      trip.CheckInCityName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).join(',');
     }
-    if (city && this.trip) {
-      if (isFrom) {
-        this.trip.FromCityCode = res.data.Code;
-        this.trip.FromCityName =
-          res.data.Name + `(${(city.Country && city.Country.Name) || ""})`;
-      } else {
-      }
-    }
+    // if (city && this.trip) {
+    //   if (isFrom) {
+    //     this.trip.FromCityCode = res.data.Code;
+    //     this.trip.FromCityName =
+    //       res.data.Name + `(${(city.Country && city.Country.Name) || ""})`;
+    //   } else {
+    //   }
+    // }
   }
 
   getTravelTools(t) {

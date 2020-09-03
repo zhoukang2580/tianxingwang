@@ -3,7 +3,8 @@
         <ion-buttons slot="start">
             <app-back-button></app-back-button>
         </ion-buttons>
-        <ion-title style="font:inherit;">新增出差申请</ion-title>
+        <ion-title *ngIf="addstatus" style="font:inherit;">新增出差申请</ion-title>
+        <ion-title *ngIf="!addstatus" style="font:inherit;">出差编辑</ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -27,6 +28,7 @@
             <span class="red">*</span>
             <ion-text [color]="!enable?'dark':'dark'">客户或公司:</ion-text>
             <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
+
             </ion-input>
         </ion-item>
         <ion-item [attr.Subject]='"Subject"'>
@@ -72,7 +74,7 @@
         </ion-item>
         <ion-item>
             <ion-text [color]="!enable?'dark':'dark'">
-                出差天数统计:
+                出差总天数:
             </ion-text>
             <ion-label slot="end" class="ion-text-end" [color]="!enable?'medium':'dark'" *ngIf="searchModel?.TravelForm?.DayCount">
                 {{searchModel?.TravelForm?.DayCount}}
@@ -96,9 +98,10 @@
         </ion-item>
         <ion-item>
             <div style="width: 100%;">
-                <ion-row *ngFor="let item of tmc?.OutNumberNameArray" style="justify-content: center;
+                <ion-row *ngFor="let item of outNumberNameArray" style="justify-content: center;
                 align-items: center;
                 display: flex !important;">
+                    <span style="color: red;margin-top: 5px;">*</span>
                     <ion-col>{{item}}</ion-col>
                     <ion-col [attr.OutNumberName]='item'>
                         <ion-input placeholder="请输入{{item}}" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="outNumbers[item]" [color]="!enable?'medium':'dark'" [disabled]="!enable"></ion-input>
@@ -121,7 +124,7 @@
                     </div>
                     <div style="display: flex;">
                         <label>审批人:</label>
-                        <ion-label color="medium">{{h?.Account?.RealName}}</ion-label>
+                        <ion-label color="medium">{{h.Account?.RealName}}</ion-label>
                     </div>
                     <div style="display: flex;">
                         <label>审批结果:</label>

@@ -66,13 +66,6 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
 
     }
 
-    // const times = this.detail.TravelForm.applyTimeTime;
-    // console.log('123123123123'+ times);
-    // const timers = times.substring(0, 2);
-    // // tslint:disable-next-line: triple-equals
-    // if (timers == "18" || timers == "00") {
-    //   this.getoutTime = false;
-    // }
   }
 
   private async getDetail(id: string) {

@@ -28,7 +28,7 @@
         <img src="assets/images/shaixuan.png" (click)='statusSelect.open()' alt="">
     </form>
     <div class="list">
-        <div class="item" [ngClass]="{first:first,last:last}" *ngFor='let item of items;let first=first;let last=last;' (click)="onGotoDetail(item.Id)">
+        <div class="item" [ngClass]="{first:first,last:last}" *ngFor='let item of items;let first=first;let last=last;' (click)="onGotoDetail(item,$event)">
             <div class="row">
                 <div class="start">
                     出行人：
@@ -53,6 +53,15 @@
                     {{item.startDate}}
                 </div>
             </div>
+            <div class="row" *ngIf='item.Trips'>
+                <div class="start">
+                    审批人:
+                </div>
+                <div class="main">
+                    {{item?.Account.RealName}}
+                </div>
+
+            </div>
             <div class="row" *ngIf='item.ApprovalTime'>
                 <div class="start">
                     审批时间：
@@ -61,14 +70,14 @@
                     {{item.ApprovalTime}}
                 </div>
             </div>
-            <div class="row" *ngIf='item.ApplyTime'>
+            <!-- <div class="row" *ngIf='item.ApplyTime'>
                 <div class="start">
                     申请时间：
                 </div>
                 <div class="main">
                     {{item.ApplyTime}}
                 </div>
-            </div>
+            </div> -->
             <div class="row">
                 <div class="start">
                     <ng-container *ngIf='(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType) else apTpl'>
@@ -79,15 +88,16 @@
                     </ng-template>
                 </div>
                 <div class="main">
-                    <ng-container *ngIf='(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType) else statusTpl'>
+                    <ng-container *ngIf='(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType||ApprovalStatusType.WaiteSubmit==item.StatusType) else statusTpl'>
                         <ion-text color='secondary' *ngIf='ApprovalStatusType.Pass==item.StatusType'>{{item.StatusTypeName}}</ion-text>
                         <ion-text color='danger' *ngIf='ApprovalStatusType.Refuse==item.StatusType'>{{item.StatusTypeName}}</ion-text>
+                        <ion-text color='success' *ngIf='ApprovalStatusType.WaiteSubmit==item.StatusType'>{{item.StatusTypeName}}</ion-text>
                     </ng-container>
                     <ng-template #statusTpl>
                         <ion-text>{{item.StatusTypeName}}</ion-text>
                     </ng-template>
                     <button *ngIf="item.StatusType==ApprovalStatusType.Waiting" (click)="onCancel(item.Id,$event)">撤销</button>
-                    <button *ngIf="item.StatusType==ApprovalStatusType.WaiteSubmit" (click)="onTravelEdit(item.Id,$event)">编辑</button>
+                    <!-- <button *ngIf="item.StatusType==ApprovalStatusType.WaiteSubmit" (click)="onTravelEdit(item.Id,$event)">编辑</button> -->
                 </div>
             </div>
             <img src="assets/images/pass.png" *ngIf='ApprovalStatusType.Pass==item.StatusType' alt="">

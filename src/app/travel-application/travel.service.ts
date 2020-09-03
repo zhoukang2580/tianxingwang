@@ -244,6 +244,16 @@ export class TravelFormTripEntity extends BaseEntity {
   ToCityName: string; //
 
   /// <summary>
+  /// 入住城市Code
+  /// </summary>
+  CheckInCityCode: string;
+  /// <summary>
+  /// 入住城市Name
+  /// </summary>
+  CheckInCityName: string;
+
+
+  /// <summary>
   /// 出发机场Code
   /// </summary>
   FromAirportCity: string; //

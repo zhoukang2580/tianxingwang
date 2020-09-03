@@ -182,33 +182,44 @@ export class BusinessListPage implements OnInit, OnDestroy {
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
-  async onTravelEdit(id, evt: CustomEvent) {
-    try {
-      if (evt) {
-        evt.stopPropagation()
-      }
-      const m = await this.service.getTravelDetail(id);
-      if (m) {
-        // if (m.TravelForm) {
-        //   m.TravelForm.Trips = m.TravelForm.Trips ;
-        // }
+ 
+  // async onTravelEdit(id, evt: CustomEvent) {
+  //   try {
+  //     if (evt) {
+  //       evt.stopPropagation()
+  //     }
+  //     this.router.navigate([AppHelper.getRoutePath("add-apply")], {
+  //       queryParams: {
+  //         id: id,
+  //       },
+  //     });
+  //   } catch (e) {
+  //     AppHelper.alert(e);
+  //   }
+  // }
+  onGotoDetail(item: any,evt: CustomEvent) {
+    // console.log('哈哈哈',item.StatusType);
+    const id=item.Id;
+    if(item.StatusType == ApprovalStatusType.WaiteSubmit){
+      try {
+        if (evt) {
+          evt.stopPropagation()
+        }
         this.router.navigate([AppHelper.getRoutePath("add-apply")], {
           queryParams: {
-            id: id,
+            id: id
           },
         });
+      } catch (e) {
+        AppHelper.alert(e);
       }
-    } catch (e) {
-      AppHelper.alert(e);
+    }else{
+      this.router.navigate([AppHelper.getRoutePath("travel-apply-detail")], {
+        queryParams: {
+          id: id,
+        },
+      });
     }
-  }
-  onGotoDetail(id: string) {
-    this.router.navigate([AppHelper.getRoutePath("travel-apply-detail")], {
-      queryParams: {
-        id: id,
-      },
-    });
-
   }
   onCancel(id, event: CustomEvent) {
     event.stopPropagation();
@@ -230,4 +241,5 @@ export class BusinessListPage implements OnInit, OnDestroy {
   //   }
   //   return name
   // }
+
 }

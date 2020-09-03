@@ -8,11 +8,11 @@
             <ion-radio-group [(ngModel)]='trip.IsBackway'>
                 <ion-buttons class="radios">
                     <ion-item lines='none'>
-                        <ion-radio value="false" mode='md'></ion-radio>
+                        <ion-radio [value]="false" mode='md'></ion-radio>
                         <ion-label>单程</ion-label>
                     </ion-item>
                     <ion-item lines='none'>
-                        <ion-radio value="true" mode='md'></ion-radio>
+                        <ion-radio [value]="true" mode='md'></ion-radio>
                         <ion-label>往返</ion-label>
                     </ion-item>
                 </ion-buttons>
@@ -44,36 +44,35 @@
             </ion-item>
             <ion-item detail (click)="onSelectCity(false,false,trip)">
                 <ion-text [color]="!enable?'dark':'dark'">
-                    目的城市
+                    到达城市
                 </ion-text>
                 <label class="ion-text-end" *ngFor='let t of trip.ToCities;let last=last;'>
                     <ion-text  [color]="!enable?'medium':'dark'">{{t.Name||" "}}
-                        <ng-container *ngIf='!last'>&nbsp;·&nbsp;</ng-container>
+                        <ng-container *ngIf='!last'>·&nbsp;</ng-container>
                     </ion-text>
                 </label>
             </ion-item>
-
-            <ion-item *ngIf='isShowCheckInCity' detail (click)="onSelectCity1(false,false,trip)">
+            <ion-item *ngIf='isShowCheckInCity' detail (click)="onSelectCheckInCity(false,false,trip)">
                 <ion-text [color]="!enable?'dark':'dark'">
                     入住城市
                 </ion-text>
                 <label class="ion-text-end" *ngFor='let g of trip.ToCityArrive;let last=last;'>
                     <ion-text [color]="!enable?'medium':'dark'">{{g.Name}}
-                        <ng-container *ngIf='!last'>&nbsp;·&nbsp;</ng-container>
+                        <ng-container *ngIf='!last'>·&nbsp;</ng-container>
                     </ion-text>
                 </label>
             </ion-item>
 
             <ion-item detail>
                 <ion-text [color]="!enable?'dark':'dark'">
-                    出差开始时间
+                    开始时间
                 </ion-text>
                 <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" [(ngModel)]="trip.StartDate" doneText="确定" cancelText="取消">
                 </ion-datetime>
             </ion-item>
             <ion-item detail>
                 <ion-text [color]="!enable?'dark':'dark'">
-                    出差结束时间
+                    结束时间
                 </ion-text>
                 <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" [(ngModel)]="trip.EndDate" (ionChange)="duageTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
                 </ion-datetime>

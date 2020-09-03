@@ -3,7 +3,7 @@
         <form (ngSubmit)='onSearchByKeywords()'>
             <ion-buttons>
                 <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
-                <ion-searchbar name='searchbar' style="padding: 0;margin-right: 1em;" type='search' [debounce]='300' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder="城市名称/拼音/三字码" (ionChange)='onSearchByKeywords()' mode='ios'>
+                <ion-searchbar name='searchbar' style="padding: 0;margin-right: 1em;" type='search' [debounce]='300' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder="城市名称/拼音/关键字" (ionChange)='onSearchByKeywords()' mode='ios'>
                 </ion-searchbar>
             </ion-buttons>
         </form>
