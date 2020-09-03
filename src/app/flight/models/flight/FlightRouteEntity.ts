@@ -24,6 +24,8 @@ export class FlightRouteEntity {
   FromCountry: string; // CN";
   Id: string; //  1;
   IsAllowOrder: boolean;
+  color: "danger" | "warning" | "success"|"secondary";
+  disabled: boolean;
   Key: string; // C4A3CF5E5BC5E7EAB8A1259DA38A943F";
   MaxDuration: string; //  100;
   Origin: string; // SHA";

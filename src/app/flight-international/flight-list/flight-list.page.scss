@@ -5,11 +5,39 @@
   ion-button {
     margin-left: auto;
   }
-  .rules{
-    color:var(--ion-color-secondary);
+  .rules {
+    color: var(--ion-color-secondary);
   }
 }
-
+.item-wrapper {
+  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
+  &.warning {
+    background-color: rgba(var(--ion-color-warning-rgb), 0.13);
+  }
+  &.danger {
+    background-color: rgba(var(--ion-color-danger-rgb), 0.13);
+  }
+  &.success {
+    background-color: rgba(var(--ion-color-success-rgb), 0.13);
+  }
+}
+.buttons-wrapper {
+  margin: 0.25em 1em 0.25em 1.7em;
+  justify-content: space-between;
+  .rulemsg-pkg {
+    font-size: 0.7rem;
+  }
+  .book-btn {
+    margin-left: 0.5em;
+  }
+}
+.rule-message {
+  font-size: 0.6rem;
+  text-indent: 1.1em;
+  padding: 0 1em;
+  text-align: justify;
+  color:var(--ion-color-danger);
+}
 .row-top {
   font-size: 12px;
   box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.1);
@@ -61,7 +89,7 @@
 }
 
 .back_white {
-  background-color: rgba(var(--ion-color-secondary-rgb),0.13);;
+  background-color: rgba(var(--ion-color-secondary-rgb), 0.13);
 }
 
 .date-font {

@@ -1,15 +1,15 @@
-<ion-row *ngIf='flight' style="margin-bottom: 0.5em;">
+<ion-row *ngIf='fr' style="margin-bottom: 0.5em;">
   <ion-col size="0.8">
     <div class="logo margin-t11">
-      <img [src]="flight.fromSegment?.AirlineSrc">
+      <img [src]="fr.fromSegment?.AirlineSrc">
     </div>
   </ion-col>
   <ion-col>
     <div class="cityAndTime">
       <div class='padding-t11'>
-        <ion-text class="time">{{flight?.FirstTime?.replace("T"," ")?.substring(10,16)}}</ion-text>
+        <ion-text class="time">{{fr?.FirstTime}}</ion-text>
         <div class="country">
-          {{flight.fromSegment?.FromAirportName?.replace("国际机场","")?.replace("机场","")}}{{flight.fromSegment?.FromTerminal}}
+          {{fr.fromSegment?.FromAirportName}}{{fr.fromSegment?.FromTerminal}}
         </div>
       </div>
     </div>
@@ -17,9 +17,9 @@
   <ion-col size="2.3" class="ion-text-center">
     <div class="ion-text-nowrap" style="font-size: 0.8rem;">
       <div style="display: flex;align-items: center;flex-flow: column;" color="secondary" (click)="onTransfer($event)">
-        <ion-text *ngIf="flight.isTransfer else directfly" color='secondary'>转机</ion-text>
+        <ion-text *ngIf="fr.isTransfer else directfly" color='secondary'>转机</ion-text>
         <ion-text>-----------</ion-text>
-        <ion-text>{{flight.flyTime}}</ion-text>
+        <ion-text>{{fr.flyTime}}</ion-text>
       </div>
       <ng-template #directfly>
         <ion-text color='secondary'>直飞</ion-text>
@@ -29,39 +29,39 @@
   <ion-col>
     <div class="cityAndTime">
       <div class="padding-t11">
-        <ng-container *ngIf='flight.addDays'>
+        <ng-container *ngIf='fr.addDays'>
           <div class="addDay">
-            +{{flight.addDays}}天</div>
+            +{{fr.addDays}}天</div>
         </ng-container>
-        <ion-text class="time">{{flight.ArrivalTime?.replace("T"," ")?.substring(10,16)}}</ion-text>
+        <ion-text class="time">{{fr.ArrivalTime}}</ion-text>
         <div class="country">
-          {{flight.toSegment?.ToAirportName?.replace("国际机场","")?.replace("机场","")}}{{flight.toSegment.ToTerminal}}
+          {{fr.toSegment?.ToAirportName}}{{fr.toSegment.ToTerminal}}
         </div>
       </div>
     </div>
   </ion-col>
   <ion-col size="3.1" class="ion-text-center">
-    <div [class.margin-t11]="flight?.toSegment?.Variables?.AddDaysTip&&flight.toSegment?.Variables?.AddDaysTip>'0'"
+    <div [class.margin-t11]="fr?.toSegment?.Variables?.AddDaysTip&&fr.toSegment?.Variables?.AddDaysTip>'0'"
       style="padding-top: 0.4em;">
-      <ion-text color="secondary" class="flightMoney">
+      <ion-text color="danger" class="flightMoney">
         <small style="font-size: 0.6rem;">¥</small> <span
-          style="font-weight:bold"></span>{{flight.minPriceFlightFare?.SalesPrice}}<small
+          style="font-weight:bold"></span>{{fr.minPriceFlightFare?.SalesPrice}}<small
           style="font-size: 0.6rem;">起</small>
       </ion-text>
-      <div class="fontSize" style="color:var(--ion-color-medium)">{{flight.TypeName}}</div>
-      <div style="font-size: 0.7rem" *ngIf="flight.minPriceFlightFare?.Tax">
-        <ion-text color="medium">
-          税<span style="font-weight:bold">¥</span>{{flight.minPriceFlightFare?.Tax}}
+      <div style="font-size: 0.7rem" *ngIf="fr.minPriceFlightFare?.Tax">
+        <ion-text color="danger">
+          税<span style="font-weight:bold">¥</span>{{fr.minPriceFlightFare?.Tax}}
         </ion-text>
       </div>
+      <div class="fontSize" style="color:var(--ion-color-medium)">{{fr.TypeName}}</div>
     </div>
   </ion-col>
   <div class="flihtCompany">
-    <ng-container *ngFor="let item of flight?.transferSegments">
+    <ng-container *ngFor="let item of fr?.transferSegments;let last=last">
       <ion-text class="whiteSpece">{{item.AirlineName}}</ion-text>
       <span>{{item.Number}}</span>
       <ion-text *ngIf="item.CodeShareNumber">(共享)</ion-text>
-      <div class="height"></div>
+      <div class="height" *ngIf='!last'></div>
     </ng-container>
 
   </div>
