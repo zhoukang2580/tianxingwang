@@ -34,6 +34,7 @@ export class ApprovalTackPage implements OnInit {
   public dispased: boolean = true;
   isactivename: "待我审批" | "已审任务" = '待我审批';
   activeTab: ProductItem;
+  ApprovalStatusType = ApprovalStatusType;
   isOpenUrl = false;
   constructor(
     private orderService: OrderService,

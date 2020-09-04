@@ -48,7 +48,7 @@
             <div *ngFor="let task of tasks">
                 <section>
                     <p class="h_line h_line_mini"></p>
-                    <i class="apply_info_status apply_info_status_pass" *ngIf='ApprovalStatus'></i>
+                    <!-- <i class="apply_info_status apply_info_status_pass" *ngIf='ApprovalStatus'></i> -->
                     <div class="apply_info">
                         <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
                         <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.InsertTime}}</span></span><span class="apply_info_time"></span></p>
@@ -60,7 +60,7 @@
                 </section>
                 <section>
                     <p class="h_line h_line_mini"></p>
-                    <i class="apply_info_status apply_info_status_deny"></i>
+                    <!-- <i class="apply_info_status apply_info_status_deny"></i> -->
                     <div class="apply_info">
                         <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
                         <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.UpdateTime}}</span></span><span class="apply_info_time"></span></p>
@@ -69,9 +69,9 @@
                         <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
                     </div>
                 </section>
+                <img src="assets/images/pass.png" *ngIf='ApprovalStatusType.Pass==task.Status' alt="">
+                <img src="assets/images/deny.png" *ngIf='ApprovalStatusType.Refuse==task.Status' alt="">
             </div>
-            <!-- <img src="assets/images/pass.png" *ngIf='' alt="">
-            <img src="assets/images/deny.png" *ngIf='' alt=""> -->
         </div>
     </div>
     <ion-infinite-scroll (ionInfinite)='doLoadMoreTasks()'>
