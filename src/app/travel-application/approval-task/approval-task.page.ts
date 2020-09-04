@@ -7,7 +7,6 @@ import { IonInfiniteScroll } from "@ionic/angular";
 import { StaffService } from "src/app/hr/staff.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { OrderModel } from "src/app/order/models/OrderModel";
-import { ApprovalStatusType } from "../travel.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -22,23 +21,23 @@ import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
   templateUrl: "./approval-task.page.html",
   styleUrls: ["./approval-task.page.scss"],
 })
-export class ApprovalTackPage implements OnInit {
+export class ApprovalTaskPage implements OnInit {
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
   private loadDataSub = Subscription.EMPTY;
   private pageSize = 20;
   private staffService: StaffService;
   curTaskPageIndex = 0;
+  TaskStatusType = TaskStatusType;
   tasks: TaskEntity[];
   // TravelForm =
-  ApprovalStatus: ApprovalStatusType;
   isLoading = true;
-  @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll, { static: true })
+  infiniteScroll: IonInfiniteScroll;
   loadMoreErrMsg: string;
   public dispased: boolean = true;
   isactivename: "待我审批" | "已审任务" = "待我审批";
   activeTab: ProductItem;
-  ApprovalStatusType = ApprovalStatusType;
   isOpenUrl = false;
   constructor(
     private orderService: OrderService,
@@ -47,22 +46,25 @@ export class ApprovalTackPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.doLoadMoreTasks();
+    this.doRefresh();
   }
 
   doLoadMoreTasks() {
     this.loadDataSub = this.orderService
-      .getOrderTasks({
-        PageSize: this.pageSize,
-        PageIndex: this.curTaskPageIndex,
-        Task: {
-          Tag: "TravelForm",
-          Status:
-            this.isactivename == "已审任务"
-              ? TaskStatusType.Passed
-              : TaskStatusType.Waiting,
-        },
-      } as TaskModel)
+      .getOrderTasks(
+        {
+          PageSize: this.pageSize,
+          PageIndex: this.curTaskPageIndex,
+          Task: {
+            Tag: "TravelForm",
+            Status:
+              this.isactivename == "已审任务"
+                ? TaskStatusType.Passed
+                : TaskStatusType.Waiting,
+          },
+        } as TaskModel,
+        this.curTaskPageIndex < 1
+      )
       .pipe(
         finalize(() => {
           this.isLoading = false;
@@ -129,18 +131,25 @@ export class ApprovalTackPage implements OnInit {
     }
   }
 
-  OnTackApp() {
-    this.doLoadMoreTasks();
+  onTaskApp() {
     this.dispased = true;
+    this.curTaskPageIndex = 0;
     this.isactivename = "待我审批";
+    this.infiniteScroll.disabled = true;
+    this.tasks = [];
+    this.doLoadMoreTasks();
   }
 
-  OnTaskReviewed() {
-    this.doLoadMoreTasks();
+  onTaskReviewed() {
+    this.infiniteScroll.disabled = true;
     this.dispased = false;
+    this.curTaskPageIndex = 0;
     this.isactivename = "已审任务";
+    this.tasks = [];
+    this.doLoadMoreTasks();
   }
   doRefresh() {
+    this.infiniteScroll.disabled = true;
     this.curTaskPageIndex = 0;
     this.tasks = [];
     this.doLoadMoreTasks();

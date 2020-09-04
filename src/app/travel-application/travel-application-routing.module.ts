@@ -4,6 +4,13 @@ import { Routes, RouterModule } from "@angular/router";
 
 export const routes: Routes = [
   {
+    path: "approval-task",
+    loadChildren: () =>
+      import("./approval-task/approval-task.module").then(
+        (m) => m.ApprovalTaskPageModule
+      ),
+  },
+  {
     path: 'business-list',
     loadChildren: () => import('./business-list/business-list.module').then(m => m.BusinessListPageModule)
   },
@@ -15,10 +22,7 @@ export const routes: Routes = [
     path: 'travel-apply-detail',
     loadChildren: () => import('./travel-apply-detail/travel-apply-detail.module').then( m => m.TravelApplyDetailPageModule)
   },
-  {
-    path: 'approval-task',
-    loadChildren: () => import('./approval-task/approval-task.module').then( m => m.ApprovalTackPageModule)
-  },
+
 
 
 ];

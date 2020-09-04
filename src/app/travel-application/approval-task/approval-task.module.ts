@@ -1,13 +1,13 @@
-import { routes } from './../../hotel/hotel-routing.module';
+import { routes } from '../../hotel/hotel-routing.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ApprovalTackPageRoutingModule } from './approval-task-routing.module';
+import { ApprovalTaskPageRoutingModule } from './approval-task-routing.module';
 
-import { ApprovalTackPage } from './approval-task.page';
+import { ApprovalTaskPage } from './approval-task.page';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 
@@ -16,11 +16,11 @@ import { AppComponentsModule } from 'src/app/components/appcomponents.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    ApprovalTackPageRoutingModule,
+    ApprovalTaskPageRoutingModule,
     AppComponentsModule,
   ],
-  declarations: [ApprovalTackPage]
+  declarations: [ApprovalTaskPage]
 })
-export class ApprovalTackPageModule {
+export class ApprovalTaskPageModule {
   
 }
