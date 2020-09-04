@@ -58,31 +58,29 @@
   </app-refresher>
   <ion-list *ngIf='!isLoading'>
     <ng-container *ngIf='flightRoutes?.length else nodata'>
-      <div *ngFor='let flight of flightRoutes' style="border-bottom: 1px solid rgba(var(--ion-color-dark-rgb),0.13);">
-        <app-flight-list-item (click)='onSelectTrip(flight)' [flight]='flight' (transfer)='onTransfer(flight)'>
+      <div *ngFor='let fr of flightRoutes' class="item-wrapper {{fr.color}}">
+        <app-flight-list-item [class.sticky]='isLastTrip' (click)='onSelectTrip(fr)' [flightRoute]='fr' (transfer)='onTransfer(fr)'>
         </app-flight-list-item>
         <ng-container *ngIf='isLastTrip'>
-          <ng-container *ngFor='let f of flight.flightFares'>
-            <ion-buttons class="ion-justify-content-between" style="margin: 0.25em 1em 0.25em 1.7em;">
-              <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(f)'>退改签规则
+          <ng-container *ngFor='let fare of vmFlightFares'>
+            <ion-buttons class="ion-justify-content-between" class="buttons-wrapper">
+              <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(fare)' class="rulemsg-pkg">退改签|行李规定
               </ion-button>
               <div style="display: flex;align-items: center;">
-                <ion-text color='danger'>￥{{f.SalesPrice}}<ng-container *ngIf='f.Variables?.AccountCode'>
+                <ion-text color='danger'>￥{{fare.SalesPrice}}<ng-container *ngIf='fare.Variables?.AccountCode'>
                     <ion-text color='secondary'>协</ion-text>
                   </ng-container>
-                  <ng-container *ngIf='f.TypeName'>
-                    <ion-text color='medium' style="font-size:0.8rem;">({{f.TypeName}})</ion-text>
+                  <ng-container *ngIf='fare.TypeName'>
+                    <ion-text color='medium' style="font-size:0.8rem;">({{fare.TypeName}})</ion-text>
                   </ng-container>
                 </ion-text>
-                <ion-button style="margin-left:.5em;" (click)='onSelectTrip(flight,f)' [disabled]='!flight.IsAllowOrder'
-                  color='{{flight.IsAllowOrder?"secondary":"danger"}}' fill='solid' expand='block' size='small'>
+                <ion-button class="book-btn" [color]='fare.color' [disabled]='fare.disabled' (click)='onBook(fr,fare)' fill='solid' expand='block' size='small'>
                   <ion-text color='light'>预订</ion-text>
                 </ion-button>
               </div>
             </ion-buttons>
-            <div *ngIf='(f.policy?.Message||f.ruleMessage)'
-              style="font-size: 0.6rem;text-indent: 1.1em;padding: .5em; text-align: justify;">
-              <ion-text color='danger'>{{(f.policy?.Message||f.ruleMessage)}}</ion-text>
+            <div *ngIf='(fare.policy?.Message||fare.ruleMessage)' class="rule-message clip-text" [class.show]='fare.isShowMoreRuleMessage' (click)='onShowMoreRuleMessage(fare)'>
+              {{(fare.policy?.Message||fare.ruleMessage)}}
             </div>
           </ng-container>
         </ng-container>
@@ -95,7 +93,9 @@
     </ion-item>
   </ng-template>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
-    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
+    <ion-infinite-scroll-content>
+      <ng-container *ngIf='!isLastTrip'>正在加载...</ng-container>
+    </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
 <ion-footer class="ion-no-border boxShadow">
@@ -103,16 +103,14 @@
     <ion-row>
       <ion-col (click)="presentModal()">
         <div>
-          <ion-icon color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}' name="funnel-outline"
-            style="font-size:1.3rem" [class.has-filter]='condition?.isFilter'>
+          <ion-icon color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}' name="funnel-outline" style="font-size:1.3rem" [class.has-filter]='condition?.isFilter'>
           </ion-icon>
         </div>
         <ion-text color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}'>筛选</ion-text>
       </ion-col>
       <ion-col (click)='onSortByTime()'>
         <div>
-          <ion-icon color='{{condition?.time!="none"?"secondary":""}}' name="swap-vertical-outline"
-            style="font-size:1.3rem">
+          <ion-icon color='{{condition?.time!="none"?"secondary":""}}' name="swap-vertical-outline" style="font-size:1.3rem">
           </ion-icon>
         </div>
         <ion-text color='{{condition?.time!="none"?"secondary":""}}'>时间

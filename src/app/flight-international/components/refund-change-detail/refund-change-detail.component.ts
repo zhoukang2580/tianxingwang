@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { FlightFareEntity } from "src/app/flight/models/FlightFareEntity";
 import { ModalController } from "@ionic/angular";
+import { FlightFareRuleEntity } from "src/app/flight/models/FlightFareRuleEntity";
 
 @Component({
   selector: "app-refund-change-detail",
@@ -8,27 +9,40 @@ import { ModalController } from "@ionic/angular";
   styleUrls: ["./refund-change-detail.component.scss"],
 })
 export class RefundChangeDetailComponent implements OnInit {
-  flightfares: FlightFareEntity[];
+  data: {
+    FlightFareRules: FlightFareRuleEntity[];
+    FlightFares: FlightFareEntity[];
+  };
+  explain: string;
   private airports: string[];
-  get explain() {
-    return (
-      (this.flightfares &&
-        this.flightfares[0] &&
-        this.flightfares[0].Explain &&
-        this.flightfares[0].Explain.split("。")
-          .map((it) => it.replace(/[\r|\n]/g, "<br/>"))
+  private getExplain() {
+    this.explain =
+      (this.data &&
+        this.data.FlightFares &&
+        this.data.FlightFares[0].Explain &&
+        this.data.FlightFares[0].Explain.split("。")
           .map((it) => {
-            if (it.startsWith("<br/>")) {
-              it = it.substring("<br/>".length);
+            if (it.match(/(\d+\.)/g)) {
+              it = it.replace(/(\d+\.)/g, "<br/>$1");
+            }
+            if (it.match(/（\d+）/g)) {
+              it = it.replace(/（(\d+)）/g, "<br/>（$1）");
             }
             if (this.airports && this.airports.some((a) => it.includes(a))) {
-              it = `<br/>${it}`;
+              if (!it.trim().startsWith("<br/>")) {
+                it = `<br/>${it}`;
+              }
+            }
+            return it;
+          })
+          .map((it) => {
+            if (it && it.trim().startsWith("<br/>")) {
+              it = it.trim().substring(5);
             }
             return it;
           })
           .join("<br/>")) ||
-      ""
-    );
+      "";
   }
   constructor(private modalCtrl: ModalController) {}
 
@@ -40,6 +54,7 @@ export class RefundChangeDetailComponent implements OnInit {
     });
   }
   ngOnInit() {
-    console.log(this.airports);
+    this.getExplain();
+    // console.log(this.airports);
   }
 }

@@ -35,7 +35,7 @@ export class AppHelper {
   static _appDomain = !environment.mockProBuild
     ? CONFIG.appDomain.production
     : CONFIG.appDomain.debug;
-  constructor() { }
+  constructor() {}
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -129,10 +129,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-        ? msg.message
-        : msg && (msg.message || msg.Message)
-          ? msg.message || msg.Message
-          : JSON.stringify(msg);
+      ? msg.message
+      : msg && (msg.message || msg.Message)
+      ? msg.message || msg.Message
+      : JSON.stringify(msg);
   }
   private static isHttpFailureMsg(msg: any) {
     if (msg) {
@@ -411,11 +411,12 @@ export class AppHelper {
     }
     return false;
   }
-  static async payH5Url(url: string): Promise<{ payReturnUrl: string; payResultCode: string }> {
+  static async payH5Url(
+    url: string
+  ): Promise<{ payReturnUrl: string; payResultCode: string }> {
     await AppHelper.platform.ready();
     if (window["ali"]) {
-      return window["ali"]
-        .payH5Url(url, this.getWechatAppId())
+      return window["ali"].payH5Url(url, this.getWechatAppId());
     }
     return null;
   }
@@ -694,8 +695,13 @@ export class AppHelper {
     const query = AppHelper.getQueryParamers();
     const hrefPath = AppHelper.getNormalizedPath(window.location.href);
     if (query) {
-      if (query.style && query.style.toLowerCase() != 'undefined' && query.style.toLowerCase() != 'null') {
-        this.setStyle(query.style || "")
+      if (
+        query.style != undefined &&
+        query.style != null &&
+        query.style.toLowerCase() != "undefined" &&
+        query.style.toLowerCase() != "null"
+      ) {
+        this.setStyle(query.style || "");
       }
       if (hrefPath) {
         if (!query.path) {
@@ -735,12 +741,12 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
       this._queryParamers[key] = null;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;

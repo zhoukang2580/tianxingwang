@@ -37,6 +37,7 @@ import { CredentialsType } from "../member/pipe/credential.pipe";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { Storage } from "@ionic/storage";
 import { FlightCabinType } from "../flight/models/flight/FlightCabinType";
+import { FlightFareRuleEntity } from "../flight/models/FlightFareRuleEntity";
 const LAST_INTERNATIONAL_FLIGHT_SEARCH_CONDITION_KEY =
   "last_international_flight_search_condition_key";
 export interface IFlightCabinType {
@@ -665,7 +666,7 @@ export class InternationalFlightService {
     forceFetch: boolean;
     keepFilterCondition: boolean;
   }) {
-    const m = this.searchModel;
+    const search = this.searchModel;
     const { forceFetch, keepFilterCondition } = query;
     await this.initSelfBookTypeBookInfos(forceFetch);
     const isSelf = await this.staffService.isSelfBookType();
@@ -683,7 +684,7 @@ export class InternationalFlightService {
         }
       }
     }
-    if (!m || !forceFetch) {
+    if (!search || !forceFetch) {
       if (
         this.flightListResult &&
         this.flightListResult.FlightSegments &&
@@ -699,8 +700,8 @@ export class InternationalFlightService {
       }
     }
     this.setSearchModelSource({
-      ...m,
-      trips: m.trips.map((it) => {
+      ...search,
+      trips: search.trips.map((it) => {
         it.bookInfo = null;
         return it;
       }),
@@ -711,26 +712,26 @@ export class InternationalFlightService {
     const req = new RequestEntity();
     req.Method = `TmcApiInternationalFlightUrl-Home-Index`;
     let days: string[] = [];
-    if (m.voyageType == FlightVoyageType.OneWay) {
-      const trip = m.trips[0];
+    if (search.voyageType == FlightVoyageType.OneWay) {
+      const trip = search.trips[0];
       date = trip.date;
       fromAirports = [trip.fromCity.Code];
       toAirports = [trip.toCity.Code];
     }
-    if (m.voyageType == FlightVoyageType.GoBack) {
-      const goTrip = m.trips[0];
-      const backTrip = m.trips[1];
+    if (search.voyageType == FlightVoyageType.GoBack) {
+      const goTrip = search.trips[0];
+      const backTrip = search.trips[1];
       days = [goTrip.date, backTrip.date];
       date = days.join(",");
       fromAirports = [goTrip.fromCity.Code];
       toAirports = [goTrip.toCity.Code];
     }
-    if (m.voyageType == FlightVoyageType.MultiCity) {
-      date = m.trips.map((it) => it.date).join(",");
-      fromAirports = m.trips
+    if (search.voyageType == FlightVoyageType.MultiCity) {
+      date = search.trips.map((it) => it.date).join(",");
+      fromAirports = search.trips
         .map((it) => it.fromCity && it.fromCity.AirportCityCode)
         .filter((it) => !!it);
-      toAirports = m.trips
+      toAirports = search.trips
         .map((it) => it.toCity && it.toCity.AirportCityCode)
         .filter((it) => !!it);
     }
@@ -738,14 +739,20 @@ export class InternationalFlightService {
       Date: date,
       FromAirport: fromAirports.join(","),
       ToAirport: toAirports.join(","),
-      VoyageType: m.voyageType,
-      Cabin: FlightCabinInternationalType[m.cabin && m.cabin.value],
+      VoyageType: search.voyageType,
+      travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
+      Cabin: FlightCabinInternationalType[search.cabin && search.cabin.value],
     };
     req.IsShowLoading = true;
     req.LoadingMsg = "正在获取航班列表...";
     return this.apiService
       .getPromiseData<FlightResultEntity>(req)
       .then((r) => {
+        if (r && r.FlightFares) {
+          r.FlightFares.forEach((f) => {
+            f.color = "secondary";
+          });
+        }
         this.flightListResult = r;
         return this.checkRoutePolicy(this.flightListResult);
       })
@@ -763,6 +770,15 @@ export class InternationalFlightService {
                     r.rulesMessages = Object.keys(r.Rules).map(
                       (k) => r.Rules[k]
                     );
+                  }
+                  r.color = "success";
+                  if (r.IsAllowOrder) {
+                    if (r.Rules) {
+                      r.color = "warning";
+                    }
+                  } else {
+                    r.disabled = true;
+                    r.color = "danger";
                   }
                 }
                 return r;
@@ -864,6 +880,14 @@ export class InternationalFlightService {
       }>(req);
       if (result.Policy) {
         flightFare.policy = result.Policy;
+        if (!result.Policy.IsAllowOrder) {
+          flightFare.color = "danger";
+          flightFare.disabled = true;
+        } else {
+          if (result.Policy.IsIllegal || result.Policy.Message) {
+            flightFare.color = "warning";
+          }
+        }
       }
       if (result.flightCabinCodeDis) {
         this.flightListResult.FlightSegments = this.flightListResult.FlightSegments.map(
@@ -902,7 +926,7 @@ export class InternationalFlightService {
       FlightRoutes: JSON.stringify(flightRoutes),
     };
     return this.apiService.getResponse<{
-      FlightRoutes: FlightRouteEntity[];
+      FlightFareRules: FlightFareRuleEntity[];
       FlightFares: FlightFareEntity[];
     }>(req);
   }
@@ -1026,6 +1050,7 @@ export class InternationalFlightService {
     return result;
   }
   private filterByCondition(data: FlightResultEntity) {
+    console.time("filterByCondition");
     const condition = this.getFilterCondition();
     data = this.filterByAirports(data);
     data = this.filterByAirComponies(data);
@@ -1035,6 +1060,7 @@ export class InternationalFlightService {
       }
     }
     data = this.filterByTimeSpan(data);
+    console.timeEnd("filterByCondition");
     return data;
   }
   private filterByTimeSpan(data: FlightResultEntity) {
@@ -1115,6 +1141,7 @@ export class InternationalFlightService {
     return data;
   }
   private initParagraphFlightRoutes(data: FlightResultEntity) {
+    console.time("initParagraphFlightRoutes");
     if (data && data.FlightRoutesData) {
       const m = this.searchModel;
       if (m) {
@@ -1138,9 +1165,13 @@ export class InternationalFlightService {
         }
       }
     }
+    // console.log("initParagraphFlightRoutes 耗时：", Date.now() - st);
+    console.timeEnd("initParagraphFlightRoutes");
     return data;
   }
   private async initParagraphCondition(data: FlightResultEntity) {
+    // tslint:disable-next-line: no-console
+    console.time("initParagraphCondition");
     const m = this.getSearchModel();
     const condition = this.getFilterCondition();
     condition.airComponies = [];
@@ -1208,6 +1239,7 @@ export class InternationalFlightService {
         return r;
       });
       this.setFilterConditionSource(condition);
+      console.timeEnd("initParagraphCondition");
     }
   }
   private initFlightRouteSegments(data: FlightResultEntity) {
@@ -1288,6 +1320,7 @@ export class InternationalFlightService {
     flightFares: FlightFareEntity[],
     routeIds: string[]
   ) {
+    console.time("getMinPriceFlightFare");
     const ffs = flightFares.filter((f) => {
       const ids = f.FlightRouteIds && f.FlightRouteIds;
       return routeIds.length > 1
@@ -1323,6 +1356,7 @@ export class InternationalFlightService {
         }
       }
     }
+    console.timeEnd("getMinPriceFlightFare");
     return flightFare;
   }
   async getInternationalAirports(forceFetch = false) {

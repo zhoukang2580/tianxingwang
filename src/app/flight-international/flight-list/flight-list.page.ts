@@ -25,6 +25,7 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { FlightFareEntity } from "src/app/flight/models/FlightFareEntity";
 import { RefundChangeDetailComponent } from "../components/refund-change-detail/refund-change-detail.component";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { FlightFareRuleEntity } from "src/app/flight/models/FlightFareRuleEntity";
 interface Iisblue {
   isshow: false;
 }
@@ -38,6 +39,9 @@ export class FlightListPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private explainSubscription = Subscription.EMPTY;
   private pageSize = 8;
+  private farePageSize = 15;
+  private totalFares: FlightFareEntity[];
+  vmFlightFares: FlightFareEntity[];
   isLastTrip = false;
   isLoading = false;
   multipassShow = false;
@@ -101,31 +105,46 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.searchModel.trips.length - 1;
     return isLastTrip;
   }
+  async onBook(flightRoute: FlightRouteEntity, fare?: FlightFareEntity) {
+    if (!fare.hasCheckPolicy) {
+      if (fare) {
+        await this.flightService.checkPolicy(flightRoute, fare);
+        let tip = (fare.policy && fare.policy.Message) || "";
+        if (fare.policy && !fare.policy.IsAllowOrder) {
+          if (tip) {
+            tip = `${tip}，不可预订`;
+          } else {
+            tip = `违规不可预订`;
+          }
+          AppHelper.alert(tip);
+          return;
+        }
+      } else {
+        return;
+      }
+    }
+    if (fare) {
+      flightRoute.selectFlightFare = fare;
+    }
+    const trip = this.searchModel.trips.find((it) => !it.bookInfo);
+    trip.bookInfo = {
+      fromSegment: flightRoute.fromSegment,
+      toSegment: flightRoute.toSegment,
+      flightRoute: flightRoute,
+      id: AppHelper.uuid(),
+    };
+    this.flightService.setSearchModelSource(this.searchModel);
+    this.router.navigate(["selected-trip-info"], {
+      queryParams: { doRefresh: "false", queryParamsHandling: "merge" },
+    });
+  }
   async onSelectTrip(flightRoute: FlightRouteEntity, fare?: FlightFareEntity) {
     console.log(this.searchModel, "this.searchModel");
     if (this.searchModel && this.searchModel.trips) {
       let trip = this.searchModel.trips.find((it) => !it.bookInfo);
-      const isCheckPolicy =
+      this.isLastTrip =
         this.searchModel.trips.findIndex((it) => it == trip) ==
         this.searchModel.trips.length - 1;
-      this.isLastTrip = isCheckPolicy;
-      if (isCheckPolicy) {
-        if (fare) {
-          await this.flightService.checkPolicy(flightRoute, fare);
-          let tip = (fare.policy && fare.policy.Message) || "";
-          if (fare.policy && !fare.policy.IsAllowOrder) {
-            if (tip) {
-              tip = `${tip}，不可预订`;
-            } else {
-              tip = `违规不可预订`;
-            }
-            AppHelper.alert(tip);
-            return;
-          }
-        } else {
-          return;
-        }
-      }
       if (!trip) {
         trip = this.searchModel.trips[this.searchModel.trips.length - 1];
       }
@@ -139,14 +158,12 @@ export class FlightListPage implements OnInit, OnDestroy {
         id: AppHelper.uuid(),
       };
       this.flightService.setSearchModelSource(this.searchModel);
-      trip = this.searchModel.trips.find((it) => !it.bookInfo);
-      if (!trip) {
-        this.router.navigate(["selected-trip-info"], {
-          queryParams: { doRefresh: "false", queryParamsHandling: "merge" },
-        });
-        return;
-      }
       this.doRefresh();
+    }
+  }
+  onShowMoreRuleMessage(flightfare: FlightFareEntity) {
+    if (flightfare) {
+      flightfare.isShowMoreRuleMessage = !flightfare.isShowMoreRuleMessage;
     }
   }
   onShowRuleExplain(flightfare: FlightFareEntity) {
@@ -158,7 +175,10 @@ export class FlightListPage implements OnInit, OnDestroy {
           .subscribe((r) => {
             const data = r && r.Data;
             if (data.FlightFares) {
-              flightfare.refundChangeDetail = data.FlightFares;
+              flightfare.refundChangeDetail = {
+                FlightFares: data.FlightFares,
+                FlightFareRules: r.Data.FlightFareRules,
+              };
               this.presentRuleExplain(flightfare.refundChangeDetail);
             }
           });
@@ -167,7 +187,10 @@ export class FlightListPage implements OnInit, OnDestroy {
       }
     }
   }
-  private async presentRuleExplain(flightfares: FlightFareEntity[]) {
+  private async presentRuleExplain(data: {
+    FlightFareRules: FlightFareRuleEntity[];
+    FlightFares: FlightFareEntity[];
+  }) {
     const trips = this.searchModel.trips || [];
     const routes = trips
       .map((it) => it.bookInfo && it.bookInfo.flightRoute)
@@ -188,7 +211,7 @@ export class FlightListPage implements OnInit, OnDestroy {
           .concat(
             this.flightRoutes.map((it) => `${it.Destination}-${it.Origin}`)
           ),
-        flightfares,
+        data,
       },
     });
     m.present();
@@ -232,6 +255,7 @@ export class FlightListPage implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.route.queryParamMap.subscribe((q) => {
+        const fromRoute = q.get("fromRoute");
         if (
           this.searchModel &&
           this.searchModel.trips &&
@@ -239,6 +263,10 @@ export class FlightListPage implements OnInit, OnDestroy {
         ) {
           this.clearLastTrip();
           this.doRefresh();
+        } else {
+          if (!this.flightRoutes || !this.flightRoutes.length) {
+            this.doRefresh(true);
+          }
         }
       })
     );
@@ -276,10 +304,17 @@ export class FlightListPage implements OnInit, OnDestroy {
           0,
           this.pageSize
         );
-        this.scroller.disabled = this.flightRoutes.length < this.pageSize;
       }
       this.scrollToTop();
       this.isLastTrip = this.checkIsLastTrip();
+      if (this.isLastTrip) {
+        this.totalFares = this.flightRoutes[0].flightFares;
+        this.vmFlightFares = this.totalFares.splice(0, this.farePageSize);
+      } else {
+        this.totalFares = [];
+      }
+      this.scroller.disabled =
+        this.flightRoutes.length < this.pageSize && !this.totalFares.length;
     } catch (e) {
       console.error(e);
       AppHelper.alert(e);
@@ -291,11 +326,16 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.flightRoutes.length,
         this.pageSize + this.flightRoutes.length
       );
-      this.scroller.complete();
-      this.scroller.disabled = arr.length < this.pageSize;
+      const fares = this.totalFares.splice(0, this.farePageSize);
+      if (fares.length) {
+        this.vmFlightFares = this.vmFlightFares.concat(fares);
+      }
       if (arr.length) {
         this.flightRoutes = this.flightRoutes.concat(arr);
       }
+      this.scroller.complete();
+      this.scroller.disabled =
+        arr.length < this.pageSize && !this.totalFares.length;
     }
   }
   onSortByPrice() {

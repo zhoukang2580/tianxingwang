@@ -13,7 +13,10 @@ export class FlightFareEntity {
   /// </summary>
   Id: string;
   Explain: string;
-  refundChangeDetail?: FlightFareEntity[];
+  refundChangeDetail?: {
+    FlightFareRules: FlightFareRuleEntity[];
+    FlightFares: FlightFareEntity[];
+  };
   /// <summary>
   ///
   /// </summary>
@@ -32,6 +35,10 @@ export class FlightFareEntity {
   /// z
   /// </summary>
   PolicyId: string;
+  isShowMoreRuleMessage?: boolean;
+  hasCheckPolicy?: boolean;
+  disabled?: boolean;
+  color: "danger" | "secondary" | "success" | "warning";
   policy: {
     IsAllowOrder: boolean;
     IsIllegal: boolean;

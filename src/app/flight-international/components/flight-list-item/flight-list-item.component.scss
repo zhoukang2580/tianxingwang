@@ -50,12 +50,13 @@
 
 .height {
   width: 1px;
-  background-color: var(--ion-color-medium);
+  background-color: var(--ion-color-dark);
   height: 1em;
   margin-left: 0.5em;
   margin-right: 0.5em;
+  opacity: 0.8;
 }
-.height:last-child{
+.height:last-child {
   width: 1px;
   background-color: var(--ion-color-light);
   height: 1em;
