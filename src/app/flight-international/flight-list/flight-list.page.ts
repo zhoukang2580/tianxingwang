@@ -106,7 +106,7 @@ export class FlightListPage implements OnInit, OnDestroy {
     return isLastTrip;
   }
   async onBook(flightRoute: FlightRouteEntity, fare?: FlightFareEntity) {
-    if (fare.hasCheckPolicy) {
+    if (!fare.hasCheckPolicy) {
       if (fare) {
         await this.flightService.checkPolicy(flightRoute, fare);
         let tip = (fare.policy && fare.policy.Message) || "";
@@ -122,10 +122,21 @@ export class FlightListPage implements OnInit, OnDestroy {
       } else {
         return;
       }
-      this.router.navigate(["selected-trip-info"], {
-        queryParams: { doRefresh: "false", queryParamsHandling: "merge" },
-      });
     }
+    if (fare) {
+      flightRoute.selectFlightFare = fare;
+    }
+    const trip = this.searchModel.trips.find((it) => !it.bookInfo);
+    trip.bookInfo = {
+      fromSegment: flightRoute.fromSegment,
+      toSegment: flightRoute.toSegment,
+      flightRoute: flightRoute,
+      id: AppHelper.uuid(),
+    };
+    this.flightService.setSearchModelSource(this.searchModel);
+    this.router.navigate(["selected-trip-info"], {
+      queryParams: { doRefresh: "false", queryParamsHandling: "merge" },
+    });
   }
   async onSelectTrip(flightRoute: FlightRouteEntity, fare?: FlightFareEntity) {
     console.log(this.searchModel, "this.searchModel");
@@ -244,6 +255,7 @@ export class FlightListPage implements OnInit, OnDestroy {
     );
     this.subscriptions.push(
       this.route.queryParamMap.subscribe((q) => {
+        const fromRoute = q.get("fromRoute");
         if (
           this.searchModel &&
           this.searchModel.trips &&
@@ -251,6 +263,10 @@ export class FlightListPage implements OnInit, OnDestroy {
         ) {
           this.clearLastTrip();
           this.doRefresh();
+        } else {
+          if (!this.flightRoutes || !this.flightRoutes.length) {
+            this.doRefresh(true);
+          }
         }
       })
     );
@@ -298,7 +314,7 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.totalFares = [];
       }
       this.scroller.disabled =
-          this.flightRoutes.length < this.pageSize && !this.totalFares.length;
+        this.flightRoutes.length < this.pageSize && !this.totalFares.length;
     } catch (e) {
       console.error(e);
       AppHelper.alert(e);
@@ -310,11 +326,16 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.flightRoutes.length,
         this.pageSize + this.flightRoutes.length
       );
-      this.scroller.complete();
-      this.scroller.disabled = arr.length < this.pageSize;
+      const fares = this.totalFares.splice(0, this.farePageSize);
+      if (fares.length) {
+        this.vmFlightFares = this.vmFlightFares.concat(fares);
+      }
       if (arr.length) {
         this.flightRoutes = this.flightRoutes.concat(arr);
       }
+      this.scroller.complete();
+      this.scroller.disabled =
+        arr.length < this.pageSize && !this.totalFares.length;
     }
   }
   onSortByPrice() {

@@ -59,7 +59,7 @@
   <ion-list *ngIf='!isLoading'>
     <ng-container *ngIf='flightRoutes?.length else nodata'>
       <div *ngFor='let fr of flightRoutes' class="item-wrapper {{fr.color}}">
-        <app-flight-list-item (click)='onSelectTrip(fr)' [flightRoute]='fr' (transfer)='onTransfer(fr)'>
+        <app-flight-list-item [class.sticky]='isLastTrip' (click)='onSelectTrip(fr)' [flightRoute]='fr' (transfer)='onTransfer(fr)'>
         </app-flight-list-item>
         <ng-container *ngIf='isLastTrip'>
           <ng-container *ngFor='let fare of vmFlightFares'>
@@ -93,7 +93,9 @@
     </ion-item>
   </ng-template>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
-    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
+    <ion-infinite-scroll-content>
+      <ng-container *ngIf='!isLastTrip'>正在加载...</ng-container>
+    </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
 <ion-footer class="ion-no-border boxShadow">
