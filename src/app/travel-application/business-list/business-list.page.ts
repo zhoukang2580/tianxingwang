@@ -38,15 +38,15 @@ export class BusinessListPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private service: TravelService,
     private staffService: StaffService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((q) => {
       if (q.get("doRefresh") == "true") {
         this.doRefresh();
-        this.staffService.getStaff().then(s=>{
-          this.staff=s;
-        })
+        this.staffService.getStaff().then((s) => {
+          this.staff = s;
+        });
       }
     });
     this.searchModel = {} as any;
@@ -64,19 +64,21 @@ export class BusinessListPage implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   goAddApply() {
-    this.router.navigate(
-      [AppHelper.getRoutePath("add-apply")],
-      {
-        queryParams: { tabId: "1" },
+    this.router.navigate([AppHelper.getRoutePath("add-apply")], {
+      queryParams: { tabId: "1" },
+    });
+  }
+  onDelete(item, key) {
+    this.service
+      .removeTravel(item.Id)
+      .then(() => {
+        this.items.splice(key, 1);
+      })
+      .catch((e) => {
+        AppHelper.alert(e);
       });
   }
-  onDelete(key){
-    // this.remove.emit(this.trip);
-    console.log('删除'+key);
-    this.items.splice(key,1);
-  }
   gettravel() {
-    
     this.subscription = this.service
       .getlist(this.searchModel)
       .pipe(
@@ -133,15 +135,14 @@ export class BusinessListPage implements OnInit, OnDestroy {
             }
             this.getVariablesJsonObj(it);
             return it;
-          })
+          });
           this.items = this.items.concat(tempArr);
           this.searchModel.PageIndex++;
         }
       });
-
   }
 
-  private getVariablesJsonObj(it: TravelFormEntity){
+  private getVariablesJsonObj(it: TravelFormEntity) {
     if (it.Variables) {
       it.VariablesJsonObj = JSON.parse(it.Variables);
     }
@@ -158,7 +159,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     if (idx > -1) {
       return name.substring(0, idx);
     }
-    return name.replace(/,/g, '·');
+    return name.replace(/,/g, "·");
   }
   private transformDataTime({
     time,
@@ -201,7 +202,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   compareWithFn = (o1, o2) => {
     return o1 == o2;
   };
- 
+
   // async onTravelEdit(id, evt: CustomEvent) {
   //   try {
   //     if (evt) {
@@ -216,23 +217,23 @@ export class BusinessListPage implements OnInit, OnDestroy {
   //     AppHelper.alert(e);
   //   }
   // }
-  onGotoDetail(item: any,evt: CustomEvent) {
+  onGotoDetail(item: any, evt: CustomEvent) {
     // console.log('哈哈哈',item.StatusType);
-    const id=item.Id;
-    if(item.StatusType == ApprovalStatusType.WaiteSubmit){
+    const id = item.Id;
+    if (item.StatusType == ApprovalStatusType.WaiteSubmit) {
       try {
         if (evt) {
-          evt.stopPropagation()
+          evt.stopPropagation();
         }
         this.router.navigate([AppHelper.getRoutePath("add-apply")], {
           queryParams: {
-            id: id
+            id: id,
           },
         });
       } catch (e) {
         AppHelper.alert(e);
       }
-    }else{
+    } else {
       this.router.navigate([AppHelper.getRoutePath("travel-apply-detail")], {
         queryParams: {
           id: id,
@@ -260,5 +261,4 @@ export class BusinessListPage implements OnInit, OnDestroy {
   //   }
   //   return name
   // }
-
 }

@@ -1,4 +1,4 @@
-import { AppHelper } from 'src/app/appHelper';
+import { AppHelper } from "src/app/appHelper";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import {
@@ -20,7 +20,7 @@ import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 export class TravelService {
   // organization:OrganizationEntity;
   // costCenter:CostCenterEntity;
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {}
   getlist(dto: SearchModel) {
     const req = new RequestEntity();
     req.IsShowLoading = dto && dto.IsShowLoading;
@@ -55,13 +55,13 @@ export class TravelService {
     if (!trips || !trips.length) {
       return 0;
     }
-    const temp = trips.map(it => {
+    const temp = trips.map((it) => {
       return {
         stdate: it.StartDate,
         eddate: it.EndDate,
         st: AppHelper.getDate((it.StartDate || "").substr(0, 10)).getTime(),
-        ed: AppHelper.getDate((it.EndDate || "").substr(0, 10)).getTime()
-      }
+        ed: AppHelper.getDate((it.EndDate || "").substr(0, 10)).getTime(),
+      };
     });
     const tempArr = temp.sort((a, b) => a.st - b.st);
     let days = 0;
@@ -70,7 +70,7 @@ export class TravelService {
       const rang = {
         st: one.st,
         ed: one.ed,
-      }
+      };
       const curIdx = i;
       for (let j = curIdx + 1; j <= tempArr.length - curIdx - 1; j++) {
         const next = tempArr[j];
@@ -80,7 +80,7 @@ export class TravelService {
           rang.ed = Math.max(next.ed, one.ed);
         }
       }
-      days += Math.floor((rang.ed - rang.st)) / 24 / 3600 / 1000;
+      days += Math.floor(rang.ed - rang.st) / 24 / 3600 / 1000;
     }
     days += 1;
     return days;
@@ -109,6 +109,15 @@ export class TravelService {
       ...dto,
     };
     return this.apiService.getPromiseData<TravelFormEntity[]>(req);
+  }
+  removeTravel(id: string) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiTravelUrl-Home-Remove`;
+    req.Data = {
+      Id: id,
+    };
+    return this.apiService.getPromiseData<any>(req);
   }
   travelSubmit(dto: SearchModel) {
     const req = new RequestEntity();
@@ -233,7 +242,7 @@ export class TravelFormTripEntity extends BaseEntity {
   toCity: TrafficlineEntity;
   ToCities: TrafficlineEntity[];
   ToCityArrive: TrafficlineEntity[];
-  
+
   /// <summary>
   /// 到达城市Code
   /// </summary>
@@ -244,8 +253,7 @@ export class TravelFormTripEntity extends BaseEntity {
   /// </summary>
   ToCityName: string; //
 
-
-  toCityNames:string;
+  toCityNames: string;
 
   /// <summary>
   /// 入住城市Code
@@ -255,7 +263,6 @@ export class TravelFormTripEntity extends BaseEntity {
   /// 入住城市Name
   /// </summary>
   CheckInCityName: string;
-
 
   /// <summary>
   /// 出发机场Code
