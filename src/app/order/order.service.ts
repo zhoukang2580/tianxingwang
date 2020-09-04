@@ -117,17 +117,13 @@ export class OrderService {
     return this.apiService.getResponse<OrderDetailModel>(req);
   }
   getOrderTasks(
-    data: OrderModel,
+    data: TaskModel,
     isShowLoading = false
   ): Observable<TaskEntity[]> {
     const req = new RequestEntity();
     req.IsShowLoading = isShowLoading;
     req.Data = data;
     req.Method = `TmcApiOrderUrl-Task-List`;
-    if(data.Tag){
-      req['Tag'] = data.Tag;
-      // TravelForm =
-    }
     const result = this.apiService.getResponse<TaskModel>(req).pipe(
       map((res) => {
         if (res.Data && res.Data.Tasks) {
