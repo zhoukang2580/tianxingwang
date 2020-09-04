@@ -19,6 +19,7 @@ export class TrafficlineEntity extends BaseEntity {
   /// <summary>
   /// 中文名
   /// </summary>
+  Names:string;
   Nickname: string;
   /// <summary>
   /// 拼音

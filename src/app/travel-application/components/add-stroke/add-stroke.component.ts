@@ -174,6 +174,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       trip.ToCityCode = trip.ToCities && trip.ToCities.map(it => it.Code).join(",");
       trip.ToCityName = trip.ToCities && trip.ToCities.map(it => it.Name).join(",");
       // trip.ToCityCode = citys.toString();
+      trip.toCityNames = trip.ToCities && trip.ToCities.map(it => it.Name).filter(it=>!!it&&it.length>0).join(" · ");
     }
   }
 

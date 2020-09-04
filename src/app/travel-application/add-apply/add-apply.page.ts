@@ -220,9 +220,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
                   Name: names[i]
                 } as TrafficlineEntity)
               }
+              t.toCityNames = t.ToCities && t.ToCities.map(it => it.Name).filter(it => it && it.length > 0).join(" · ");
             }
-
-           
             if (t.CheckInCityCode && t.CheckInCityName) {
               const code = t.CheckInCityCode.split(",");
               const name = t.CheckInCityName.split(",");

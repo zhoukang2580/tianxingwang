@@ -233,6 +233,7 @@ export class TravelFormTripEntity extends BaseEntity {
   toCity: TrafficlineEntity;
   ToCities: TrafficlineEntity[];
   ToCityArrive: TrafficlineEntity[];
+  
   /// <summary>
   /// 到达城市Code
   /// </summary>
@@ -242,6 +243,9 @@ export class TravelFormTripEntity extends BaseEntity {
   /// 到达城市名称
   /// </summary>
   ToCityName: string; //
+
+
+  toCityNames:string;
 
   /// <summary>
   /// 入住城市Code
