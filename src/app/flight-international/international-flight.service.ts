@@ -880,6 +880,14 @@ export class InternationalFlightService {
       }>(req);
       if (result.Policy) {
         flightFare.policy = result.Policy;
+        if (!result.Policy.IsAllowOrder) {
+          flightFare.color = "danger";
+          flightFare.disabled = true;
+        } else {
+          if (result.Policy.IsIllegal || result.Policy.Message) {
+            flightFare.color = "warning";
+          }
+        }
       }
       if (result.flightCabinCodeDis) {
         this.flightListResult.FlightSegments = this.flightListResult.FlightSegments.map(
