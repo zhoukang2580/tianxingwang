@@ -8,16 +8,15 @@
             添加</ion-button>
     </ion-toolbar>
 </ion-header>
-
 <ion-content>
     <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
         <ion-refresher-content>正在加载...</ion-refresher-content>
     </app-refresher>
     <form action="javascript:void(0)" (ngSubmit)='onSearch(true)'>
-        <ion-searchbar name='searchbar' placeholder="查询姓名、城市、关键字等" mode='ios' animated='true' [(ngModel)]="searchModel.SearchContent"></ion-searchbar>
+        <ion-searchbar name='searchbar' placeholder="查询姓名、城市、关键字等" mode='ios' animated='true' [(ngModel)]="searchModel&&searchModel.SearchContent"></ion-searchbar>
         <ion-item style="display: none;">
-            <ion-select cancelText='取消' okText='确定' backdrop-dismiss='true' #statusSelect translucent='true' [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="searchModel.StatusType" name='status'
-                (ionChange)="onSearch(false)">
+            <ion-select cancelText='取消' okText='确定' backdrop-dismiss='true' #statusSelect translucent='true' [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="searchModel&&searchModel.StatusType"
+                name='status' (ionChange)="onSearch(false)">
                 <ion-select-option value="0">全部</ion-select-option>
                 <ion-select-option value="{{ApprovalStatusType.Pass}}">通过</ion-select-option>
                 <ion-select-option value="{{ApprovalStatusType.Refuse}}">拒绝</ion-select-option>
@@ -28,7 +27,7 @@
         <img src="assets/images/shaixuan.png" (click)='statusSelect.open()' alt="">
     </form>
     <div class="list">
-        <div class="item" [ngClass]="{first:first,last:last}" *ngFor='let item of items;let first=first;let last=last;' (click)="onGotoDetail(item,$event)">
+        <div class="item" [ngClass]="{first:first,last:last}" *ngFor='let item of items;let first=first;let last=last;let key=index' (click)="onGotoDetail(item,$event)">
             <div class="row">
                 <div class="start">
                     出行人：
@@ -58,7 +57,7 @@
                     审批人:
                 </div>
                 <div class="main">
-                    {{item?.Account.RealName}}
+                    {{item?.VariablesJsonObj?.ApprovalStaffName}}
                 </div>
 
             </div>
@@ -99,6 +98,8 @@
                     <button *ngIf="item.StatusType==ApprovalStatusType.Waiting" (click)="onCancel(item.Id,$event)">撤销</button>
                     <!-- <button *ngIf="item.StatusType==ApprovalStatusType.WaiteSubmit" (click)="onTravelEdit(item.Id,$event)">编辑</button> -->
                 </div>
+
+                <ion-icon slot="end" style="font-size: 18px;" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete(key)" class="ion-text-end"></ion-icon>
             </div>
             <img src="assets/images/pass.png" *ngIf='ApprovalStatusType.Pass==item.StatusType' alt="">
             <img src="assets/images/deny.png" *ngIf='ApprovalStatusType.Refuse==item.StatusType' alt="">

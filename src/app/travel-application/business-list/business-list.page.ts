@@ -31,7 +31,8 @@ export class BusinessListPage implements OnInit, OnDestroy {
     // subHeader: 'Select your hair color',
     // message: 'Only select your dominant hair color'
   };
-  // staff: StaffEntity;
+  staff: StaffEntity;
+  appovalStaff: string;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -43,12 +44,16 @@ export class BusinessListPage implements OnInit, OnDestroy {
     this.route.queryParamMap.subscribe((q) => {
       if (q.get("doRefresh") == "true") {
         this.doRefresh();
+        this.staffService.getStaff().then(s=>{
+          this.staff=s;
+        })
       }
     });
     this.searchModel = {} as any;
     this.searchModel.PageSize = 20;
     this.doRefresh();
   }
+
   onSearch(b) {
     this.searchModel.IsShowLoading = b;
     console.log(this.searchModel.StatusType, "searchModel.StatusType");
@@ -65,7 +70,13 @@ export class BusinessListPage implements OnInit, OnDestroy {
         queryParams: { tabId: "1" },
       });
   }
+  onDelete(key){
+    // this.remove.emit(this.trip);
+    console.log('删除'+key);
+    this.items.splice(key,1);
+  }
   gettravel() {
+    
     this.subscription = this.service
       .getlist(this.searchModel)
       .pipe(
@@ -120,12 +131,20 @@ export class BusinessListPage implements OnInit, OnDestroy {
                 withDot: true,
               });
             }
+            this.getVariablesJsonObj(it);
             return it;
           })
           this.items = this.items.concat(tempArr);
           this.searchModel.PageIndex++;
         }
       });
+
+  }
+
+  private getVariablesJsonObj(it: TravelFormEntity){
+    if (it.Variables) {
+      it.VariablesJsonObj = JSON.parse(it.Variables);
+    }
   }
   private strip(name: string) {
     if (!name) {

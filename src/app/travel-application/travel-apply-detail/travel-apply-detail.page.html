@@ -82,15 +82,13 @@
                 <span class="apply_info_time"></span>
                 </p>
                 <p><span class="apply_info_tit Cost_center"><span>成本中心：</span><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span></p>
-                <p><span class="apply_info_tit">
-                    <div *ngFor="let item of detail?.OutNumbers" class="last_center">
-                        <span class="cen_frist">{{item?.Name}}：</span><span>{{item?.Code}}</span>
-            </div>
-            </span>
+                <p *ngFor="let item of detail?.OutNumbers"><span class="apply_info_tit Cost_Id">
+                <span class="cen_frist">{{item?.Name}}：</span><span>{{item?.Code}}</span>
+                    </span>
 
-            <span class="apply_info_time"></span></p>
-            <p><span class="apply_info_tit"><span>备注：</span><span class="apply_info_reason"></span>{{detail?.TravelForm.Detail}}</span><span class="apply_info_time"></span></p>
-    </div>
+                    <span class="apply_info_time"></span></p>
+                <p><span class="apply_info_tit"><span>备注：</span><span class="apply_info_reason"></span>{{detail?.TravelForm.Detail}}</span><span class="apply_info_time"></span></p>
+            </div>
     </div>
     </section>
     <!-- <section>

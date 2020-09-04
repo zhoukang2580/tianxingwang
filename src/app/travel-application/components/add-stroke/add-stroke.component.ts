@@ -84,6 +84,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       if (this.trip && this.regionTypes && this.trip.TravelTool) {
         console.log(this.regionTypes, "regionTypes");
         const arr = this.trip.TravelTool.split(",");
+        this.isShowCheckInCity = arr.some(it => it.includes("Hotel"));
         this.vmRegionTypes = this.vmRegionTypes || [];
         this.regionTypes.forEach((t) => {
           // console.log(arr.some(f=>f==t.value),"arr.some(f=>f==t.value)");
@@ -176,7 +177,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     }
   }
 
-  async onSelectCheckInCity(isFrom = true,isMulti,trip:TravelFormTripEntity) {
+  async onSelectCheckInCity(isFrom = true, isMulti, trip: TravelFormTripEntity) {
     if (!this.enable) {
       return;
     }

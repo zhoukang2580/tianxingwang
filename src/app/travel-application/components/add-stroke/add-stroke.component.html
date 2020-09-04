@@ -46,6 +46,7 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     到达城市
                 </ion-text>
+                <!-- {{trip.ToCities|json}} -->
                 <label class="ion-text-end" *ngFor='let t of trip.ToCities;let last=last;'>
                     <ion-text  [color]="!enable?'medium':'dark'">{{t.Name||" "}}
                         <ng-container *ngIf='!last'>·&nbsp;</ng-container>

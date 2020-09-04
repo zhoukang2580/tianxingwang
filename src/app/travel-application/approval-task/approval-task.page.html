@@ -17,55 +17,59 @@
             <span class="tabbar_has" (click)="OnTaskReviewed()" [class.active]='isactivename=="已审任务"'>已审任务</span>
         </div>
         <div class="bg wait_apply" *ngIf='dispased'>
-            <section>
-                <p class="h_line h_line_mini"></p>
-                <div class="apply_info" style="padding: 18px 23px;" *ngFor="let task of tasks" (click)='onTaskDetail(task)'>
-                    <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.InsertTime}}</span></span><span class="apply_info_time"></span></p>
-                    <p>
-                        <span class="apply_info_tit"><span>出差城市：
-                    </span ><span>上海 ~ 北京</span></span><span class="apply_info_time"></span>
-                    </p>
-                    <p><span class="apply_info_tit"><span>出差总天数：</span><span>{{task?.Type}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
-                </div>
-            </section>
-            <section>
-                <p class="h_line h_line_mini"></p>
-                <div class="apply_info" *ngFor="let task of tasks">
-                    <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.UpdateTime}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>行程：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
-                </div>
-            </section>
+            <div *ngFor="let task of tasks">
+                <section>
+                    <p class="h_line h_line_mini"></p>
+                    <div class="apply_info" style="padding: 18px 23px;" (click)='onTaskDetail(task)'>
+                        <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.InsertTime}}</span></span><span class="apply_info_time"></span></p>
+                        <p>
+                            <span class="apply_info_tit"><span>出差城市：
+                        </span ><span>上海 ~ 北京</span></span><span class="apply_info_time"></span>
+                        </p>
+                        <p><span class="apply_info_tit"><span>出差总天数：</span><span>{{task?.Type}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
+                    </div>
+                </section>
+                <section>
+                    <p class="h_line h_line_mini"></p>
+                    <div class="apply_info">
+                        <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.UpdateTime}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>行程：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
+                    </div>
+                </section>
+            </div>
         </div>
         <div class="bg has_apply" *ngIf='!dispased' id="has_apply">
-            <section *ngFor="let task of tasks">
-                <p class="h_line h_line_mini"></p>
-                <i class="apply_info_status apply_info_status_pass" *ngIf='ApprovalStatus'></i>
-                <div class="apply_info">
-                    <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.InsertTime}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>出差城市：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>出差总天数：</span><span>90天</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
-                </div>
-            </section>
-            <section *ngFor="let task of tasks">
-                <p class="h_line h_line_mini"></p>
-                <i class="apply_info_status apply_info_status_deny"></i>
-                <div class="apply_info">
-                    <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.UpdateTime}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>行程：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
-                </div>
-            </section>
+            <div *ngFor="let task of tasks">
+                <section>
+                    <p class="h_line h_line_mini"></p>
+                    <i class="apply_info_status apply_info_status_pass" *ngIf='ApprovalStatus'></i>
+                    <div class="apply_info">
+                        <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.InsertTime}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>出差城市：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>出差总天数：</span><span>90天</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
+                    </div>
+                </section>
+                <section>
+                    <p class="h_line h_line_mini"></p>
+                    <i class="apply_info_status apply_info_status_deny"></i>
+                    <div class="apply_info">
+                        <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.UpdateTime}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>行程：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
+                    </div>
+                </section>
+            </div>
             <!-- <img src="assets/images/pass.png" *ngIf='' alt="">
             <img src="assets/images/deny.png" *ngIf='' alt=""> -->
         </div>

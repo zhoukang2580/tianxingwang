@@ -230,7 +230,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
                 t.ToCityArrive.push({
                   Code: code[i],
                   Name: name[i]
-                } as TrafficlineEntity)
+                } as TrafficlineEntity);
               }
             }
 
