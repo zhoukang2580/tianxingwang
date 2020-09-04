@@ -68,7 +68,10 @@ export class BusinessListPage implements OnInit, OnDestroy {
       queryParams: { tabId: "1" },
     });
   }
-  onDelete(item, key) {
+  onDelete(item, key, evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
     this.service
       .removeTravel(item.Id)
       .then(() => {

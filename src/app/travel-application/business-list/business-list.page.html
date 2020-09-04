@@ -99,7 +99,7 @@
                     <!-- <button *ngIf="item.StatusType==ApprovalStatusType.WaiteSubmit" (click)="onTravelEdit(item.Id,$event)">编辑</button> -->
                 </div>
 
-                <ion-icon slot="end" style="font-size: 18px;" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete(item,key)" class="ion-text-end"></ion-icon>
+                <ion-icon slot="end" style="font-size: 18px;" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete(item,key,$event)" class="ion-text-end"></ion-icon>
             </div>
             <img src="assets/images/pass.png" *ngIf='ApprovalStatusType.Pass==item.StatusType' alt="">
             <img src="assets/images/deny.png" *ngIf='ApprovalStatusType.Refuse==item.StatusType' alt="">
