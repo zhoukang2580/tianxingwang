@@ -202,6 +202,18 @@ export class FlightListPage implements OnInit, OnDestroy {
         }
       });
     }
+    if (data) {
+      if (!data.FlightFareRules || !data.FlightFareRules.length) {
+        data.FlightFareRules = [];
+        data.FlightFares.forEach((ff) => {
+          if (ff.FlightFareRules && ff.FlightFareRules.length) {
+            data.FlightFareRules = data.FlightFareRules.concat(
+              ff.FlightFareRules
+            );
+          }
+        });
+      }
+    }
     const m = await this.modalController.create({
       component: RefundChangeDetailComponent,
       // cssClass: "flight-refund-comp",
