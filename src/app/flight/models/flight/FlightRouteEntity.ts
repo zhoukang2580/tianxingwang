@@ -23,6 +23,8 @@ export class FlightRouteEntity {
   FlightSegments: FlightSegmentEntity[];
   FromCountry: string; // CN";
   Id: string; //  1;
+  isShowFares: boolean;
+  vmFares:FlightFareEntity[];
   IsAllowOrder: boolean;
   color: "danger" | "warning" | "success"|"secondary";
   disabled: boolean;

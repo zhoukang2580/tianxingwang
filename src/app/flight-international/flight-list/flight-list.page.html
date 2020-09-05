@@ -61,8 +61,11 @@
       <div *ngFor='let fr of flightRoutes' class="item-wrapper {{fr.color}}">
         <app-flight-list-item [class.sticky]='isLastTrip' (click)='onSelectTrip(fr)' [flightRoute]='fr' (transfer)='onTransfer(fr)'>
         </app-flight-list-item>
-        <ng-container *ngIf='isLastTrip'>
-          <ng-container *ngFor='let fare of vmFlightFares'>
+        <div *ngIf='fr.flightFares?.length' (click)='onToggleFlightFare(fr)'>
+          <ion-text color='secondary'>{{fr.isShowFares?"隐藏": "显示"}}仓位</ion-text>
+        </div>
+        <ng-container *ngIf='isLastTrip&&fr.isShowFares'>
+          <ng-container *ngFor='let fare of fr.vmFares'>
             <ion-buttons class="ion-justify-content-between" class="buttons-wrapper">
               <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(fare)' class="rulemsg-pkg">退改签|行李规定
               </ion-button>

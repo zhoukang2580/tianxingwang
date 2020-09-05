@@ -42,12 +42,12 @@ const LAST_INTERNATIONAL_FLIGHT_SEARCH_CONDITION_KEY =
   "last_international_flight_search_condition_key";
 export interface IFlightCabinType {
   label:
-    | "经济舱"
-    | "超级经济舱"
-    | "头等舱"
-    | "商务舱"
-    | "超级商务舱"
-    | "超级头等舱";
+  | "经济舱"
+  | "超级经济舱"
+  | "头等舱"
+  | "商务舱"
+  | "超级商务舱"
+  | "超级头等舱";
   value: FlightCabinInternationalType;
 }
 export enum FlightCabinInternationalType {
@@ -648,7 +648,7 @@ export class InternationalFlightService {
         const one = trips[idx];
         AppHelper.alert(
           `请完善第${idx + 1}程的${!one.fromCity ? "出发城市" : ""}${
-            !one.toCity ? "到达城市" : ""
+          !one.toCity ? "到达城市" : ""
           }`
         );
         return;
@@ -1248,7 +1248,7 @@ export class InternationalFlightService {
       if (!data.FlightRoutesData || !data.FlightRoutesData.length) {
         data.FlightRoutesData = [
           ...data.FlightRoutes.map((r) => {
-            return { ...r };
+            return { ...r, isShowFares: false, vmFares: [] };
           }),
         ];
       }
