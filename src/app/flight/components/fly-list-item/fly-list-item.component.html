@@ -28,12 +28,9 @@
       <ion-text color='secondary' *ngIf='flightSegment?.CodeShareNumber'><span
           class='seperator'>|</span>共享{{flightSegment?.CodeShareNumber}}</ion-text>
       <ion-text color='medium'> <span class='seperator'>|</span>机型{{flightSegment?.PlaneType}}</ion-text>
-      <ion-text color='medium' *ngIf='showDetails'> <span class='seperator'>|</span>{{flightSegment?.FlyTimeName}}
+      <ion-text color='medium'> <span class='seperator'>|</span>{{flightSegment?.FlyTimeName}}
       </ion-text>
-      <!-- <ion-text color='secondary' *ngIf='flightSegment?.Meal&&showDetails'><span
-          class='seperator'>|</span>{{flightSegment?.MealType|flightMealType}}
-      </ion-text> -->
-      <ion-text color='secondary' *ngIf='flightSegment?.Meal&&showDetails'><span class='seperator'>|</span>有餐食
+      <ion-text color='secondary' *ngIf='flightSegment?.Meal'><span class='seperator'>|</span>有餐食
       </ion-text>
     </h4>
   </div>
