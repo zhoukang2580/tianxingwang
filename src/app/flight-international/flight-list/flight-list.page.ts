@@ -352,17 +352,7 @@ export class FlightListPage implements OnInit, OnDestroy {
       }
     }
   }
-  private loadOpenedFlightRouteFares() {
-    const fr = this.flightRoutes.find(it => it.isShowFares);
-    if (fr.flightFares) {
-      const fares = fr.flightFares.slice(fr.vmFares.length, this.farePageSize);
-      this.scroller.disabled = fares.length < this.farePageSize;
-      if (fares.length) {
-        fr.vmFares = fr.vmFares.concat(fares)
-      }
-    }
-    this.scroller.complete();
-  }
+  
   loadMore() {
     // this.loadOpenedFlightRouteFares();
     if (this.flightQuery && this.flightQuery.FlightRoutes) {
@@ -371,7 +361,14 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.pageSize + this.flightRoutes.length
       );
       if (arr.length) {
+        arr.forEach(it=>{
+          if(it.flightFares&&it.flightFares.length<this.farePageSize){
+            it.isShowFares=true;
+            it.vmFares=it.flightFares;
+          }
+        })
         this.flightRoutes = this.flightRoutes.concat(arr);
+        
       }
       this.scroller.disabled = arr.length < this.pageSize;
       this.scroller.complete();
