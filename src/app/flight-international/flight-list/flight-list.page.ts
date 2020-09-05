@@ -315,6 +315,12 @@ export class FlightListPage implements OnInit, OnDestroy {
           0,
           this.pageSize
         );
+        this.flightRoutes.forEach(it => {
+          if (it.flightFares && it.flightFares.length < this.farePageSize) {
+            it.isShowFares = true;
+            it.vmFares = it.flightFares;
+          }
+        })
       }
       this.scrollToTop();
       this.isLastTrip = this.checkIsLastTrip();
@@ -352,7 +358,7 @@ export class FlightListPage implements OnInit, OnDestroy {
       }
     }
   }
-  
+
   loadMore() {
     // this.loadOpenedFlightRouteFares();
     if (this.flightQuery && this.flightQuery.FlightRoutes) {
@@ -361,14 +367,14 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.pageSize + this.flightRoutes.length
       );
       if (arr.length) {
-        arr.forEach(it=>{
-          if(it.flightFares&&it.flightFares.length<this.farePageSize){
-            it.isShowFares=true;
-            it.vmFares=it.flightFares;
+        arr.forEach(it => {
+          if (it.flightFares && it.flightFares.length < this.farePageSize) {
+            it.isShowFares = true;
+            it.vmFares = it.flightFares;
           }
         })
         this.flightRoutes = this.flightRoutes.concat(arr);
-        
+
       }
       this.scroller.disabled = arr.length < this.pageSize;
       this.scroller.complete();
