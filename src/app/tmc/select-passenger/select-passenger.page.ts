@@ -651,8 +651,8 @@ export class SelectPassengerPage
     const ok = await AppHelper.alert(
       LanguageHelper.Flight.getAddMorePassengersTip(),
       true,
-      LanguageHelper.getConfirmTip(),
-      LanguageHelper.getCancelTip()
+      `完成`,
+      `继续添加`
     );
     if (ok) {
       this.back();
