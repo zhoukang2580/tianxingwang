@@ -2,14 +2,12 @@
   <div class='info'>
     <h3 class='time'>
       <strong>{{flightSegment?.TakeoffTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
-      <ion-icon name='airplane' class='non-stop' mode='ios' content='直飞' color='secondary'
-        *ngIf='!flightSegment?.IsStop'></ion-icon>
+      <ion-icon name='airplane' class='non-stop' mode='ios' content='直飞' color='secondary' *ngIf='!flightSegment?.IsStop'></ion-icon>
       <ion-text color='secondary' *ngIf='flightSegment?.IsStop' style='font-size: 0.7rem;'>经停</ion-text>
-      <strong class='end-time'
-        [attr.addoneday]='addoneday()'>{{flightSegment?.ArrivalTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
+      <strong class='end-time' [attr.addoneday]='addoneday()'>{{flightSegment?.ArrivalTime?.substring("2018-10-22T".length,"2018-10-22T21:20".length)}}</strong>
     </h3>
     <h3 class='airports'>
-      <ion-text  color='medium' class="from-city ion-text-nowrap">
+      <ion-text color='medium' class="from-city ion-text-nowrap">
         {{flightSegment?.FromAirportName}}
         <span *ngIf='flightSegment?.FromTerminal'>({{flightSegment?.FromTerminal}})</span>
       </ion-text>
@@ -22,15 +20,14 @@
     </h3>
     <h4 class='air'>
       <ion-thumbnail size='small'>
-        <img [src]='flightSegment?.AirlineSrc'/>
+        <img [src]='flightSegment?.AirlineSrc' />
       </ion-thumbnail>
       <ion-text class='ion-text-nowrap' color='medium'>{{flightSegment?.AirlineName}} {{flightSegment?.Number}}</ion-text>
-      <ion-text color='secondary' *ngIf='flightSegment?.CodeShareNumber'><span
-          class='seperator'>|</span>共享{{flightSegment?.CodeShareNumber}}</ion-text>
+      <ion-text color='secondary' *ngIf='flightSegment?.CodeShareNumber'><span class='seperator'>|</span>共享{{flightSegment?.CodeShareNumber}}</ion-text>
       <ion-text color='medium'> <span class='seperator'>|</span>机型{{flightSegment?.PlaneType}}</ion-text>
       <ion-text color='medium'> <span class='seperator'>|</span>{{flightSegment?.FlyTimeName}}
       </ion-text>
-      <ion-text color='secondary' *ngIf='flightSegment?.Meal'><span class='seperator'>|</span>有餐食
+      <ion-text color='secondary'><span class='seperator'>|</span>{{flightSegment?.Meal?"有":"无"}}餐食
       </ion-text>
     </h4>
   </div>
