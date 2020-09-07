@@ -221,5 +221,10 @@
    
     </div>
   </ion-list> -->
-  <div #divforscroll class='div-for-scroll'></div>
+  <div #divforscroll class='div-for-scroll'>
+    <ion-item detail (click)='onOpenMap()' lines='none'>
+      <ion-button fill='clear' color='secondary'>打开地图查看
+      </ion-button>
+    </ion-item>
+  </div>
 </ion-content>
