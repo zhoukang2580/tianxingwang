@@ -904,6 +904,7 @@ export class InternationalFlightService {
       }
     } catch (e) {
       AppHelper.alert(e);
+      return false;
     }
 
     return true;

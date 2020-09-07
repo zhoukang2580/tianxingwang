@@ -43,7 +43,7 @@
                 <div>
                   <ion-text color="medium" style="font-size:0.7rem">
                     {{getTransferSegments(index,item,trip?.bookInfo?.flightRoute?.transferSegments)}}
-                      <!-- {{item.FromCityName}} {{item.FromAirport}} {{item.FromAirportName}} | 
+                    <!-- {{item.FromCityName}} {{item.FromAirport}} {{item.FromAirportName}} | 
                       {{item.ToCityName}} {{item.ToAirport}} {{item.ToAirportName}} -->
                   </ion-text>
                 </div>
@@ -76,8 +76,7 @@
               </div>
               <ion-text class="carriername" color="medium">
                 {{air?.AirlineName}}
-                {{air?.Number?.trim()}} <ng-container *ngIf='air.CodeShareNumber'><span
-                    style="opacity: .4;margin: 0 0.25em;">|</span>共享{{air.CodeShareNumber}}</ng-container>
+                {{air?.Number?.trim()}} <ng-container *ngIf='air.CodeShareNumber'><span style="opacity: .4;margin: 0 0.25em;">|</span>共享{{air.CodeShareNumber}}</ng-container>
               </ion-text>
             </ion-col>
           </ion-row>
@@ -95,9 +94,9 @@
     </ion-row>
     <ion-row>
       <ion-col class="ion-padding-start">
-       <ion-text *ngIf="getOneWay()&&i==(searchModel.trips.length)-1" color="danger" style="font-size: 0.9rem;">
+        <ion-text *ngIf="getOneWay()&&i==(searchModel.trips.length)-1" color="danger" style="font-size: 0.9rem;">
           单程提醒：持商务、旅游等短期签证的旅客或免签的旅客建议购买返程机票或第三地机票，以免无法办理乘机和出境手续
-       </ion-text>
+        </ion-text>
       </ion-col>
     </ion-row>
   </ion-list>
@@ -116,5 +115,5 @@
   </ion-list>
 </ion-content>
 <ion-footer class="ion-text-end ion-margin-end">
-  <ion-button color="secondary" size='small' (click)="onReserve()">确定</ion-button>
+  <ion-button color="secondary"  expand='full' (click)="onReserve()">确定</ion-button>
 </ion-footer>
