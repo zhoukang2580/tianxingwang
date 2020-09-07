@@ -42,12 +42,12 @@ const LAST_INTERNATIONAL_FLIGHT_SEARCH_CONDITION_KEY =
   "last_international_flight_search_condition_key";
 export interface IFlightCabinType {
   label:
-  | "经济舱"
-  | "超级经济舱"
-  | "头等舱"
-  | "商务舱"
-  | "超级商务舱"
-  | "超级头等舱";
+    | "经济舱"
+    | "超级经济舱"
+    | "头等舱"
+    | "商务舱"
+    | "超级商务舱"
+    | "超级头等舱";
   value: FlightCabinInternationalType;
 }
 export enum FlightCabinInternationalType {
@@ -113,22 +113,24 @@ export interface IFilterCondition {
   isDirectFly?: boolean;
 }
 const toCity: TrafficlineEntity = {
-  AirportCityCode: "BJS",
-  CityCode: "1101",
-  CityName: "北京",
-  Code: "BJS",
-  CountryCode: "CN",
+  Id: 2919,
+  Tag: "AirportInternational",
+  Code: "HKG",
+  Name: "香港国际机场",
+  Nickname: "香港国际机场",
+  Pinyin: "xianggangguojijichang",
+  Initial: "XGGJJC",
+  AirportCityCode: "HKG",
+  CityCode: "HKG",
+  CityName: "香港",
   Description: "",
-  EnglishName: "Beijing",
-  Id: "9278",
-  Initial: "bj",
   IsHot: true,
-  Name: "北京",
-  Nickname: "北京",
-  Pinyin: "Beijing",
-  Sequence: 2,
-  Tag: "AirportCity",
-} as TrafficlineEntity;
+  CountryCode: "HK",
+  Sequence: 0,
+  EnglishName: "HONG KONG INTERNATIONAL APT",
+  Country: { Id: 87, Name: "中国(香港)", Code: "HK", Sequence: 13 },
+  matchStr: "hkg,香港国际机场,香港国际机场,香港,xianggangguojijichang,hkg",
+} as any;
 const fromCity = {
   AirportCityCode: "SHA",
   CityCode: "3101",
@@ -648,7 +650,7 @@ export class InternationalFlightService {
         const one = trips[idx];
         AppHelper.alert(
           `请完善第${idx + 1}程的${!one.fromCity ? "出发城市" : ""}${
-          !one.toCity ? "到达城市" : ""
+            !one.toCity ? "到达城市" : ""
           }`
         );
         return;
