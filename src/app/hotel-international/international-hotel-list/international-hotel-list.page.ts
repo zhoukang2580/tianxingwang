@@ -145,9 +145,6 @@ export class InternationalHotelListPage
     this.router.navigate([AppHelper.getRoutePath("room-count-children")]);
   }
   ngAfterViewInit() {}
-  itemHeightFn() {
-    return 123;
-  }
   onRank(r: IRankItem) {
     const hotelQuery = this.hotelService.getHotelQueryModel();
     if (r) {
@@ -161,15 +158,6 @@ export class InternationalHotelListPage
   onShowPanel(tab: IInterHotelQueryTab) {
     this.filterTab = tab;
     if (tab && tab.active) {
-      // if (this.hotels && this.hotels.length > 2 * 20) {
-      //   this.hotels = this.hotels.slice(0, 20);
-      //   const hotelQuery = this.hotelService.getHotelQueryModel();
-      //   hotelQuery.PageIndex = 1;
-      //   if (this.scroller) {
-      //     this.scroller.disabled = false;
-      //   }
-      //   this.hotelService.setHotelQuerySource(hotelQuery);
-      // }
     }
     this.scrollToTop();
   }
@@ -282,7 +270,9 @@ export class InternationalHotelListPage
         if (isRefresh) {
           setTimeout(
             () => {
-              this.doRefresh(true);
+              if (!this.isLoading) {
+                this.doRefresh(true);
+              }
             },
             this.plt.is("ios") ? 300 : 200
           );
@@ -295,12 +285,6 @@ export class InternationalHotelListPage
         this.defaultImage = res.DefaultUrl;
       }
     });
-    setTimeout(
-      () => {
-        this.doRefresh();
-      },
-      this.plt.is("ios") ? 500 : 200
-    );
   }
   onSearchText() {
     this.router.navigate(["combo-search-inter-hotel"]);
@@ -367,12 +351,13 @@ export class InternationalHotelListPage
         this.queryComp.onResetFilters();
       }
     }
+    this.completeRefresher();
     this.loadMore();
     this.scrollToTop();
   }
   onClearText(evt: CustomEvent) {
     if (evt) {
-      evt.stopImmediatePropagation();
+      evt.stopPropagation();
     }
     this.hotelService.setSearchConditionSource({
       ...this.hotelService.getSearchCondition(),
@@ -396,6 +381,7 @@ export class InternationalHotelListPage
       .pipe(
         finalize(() => {
           this.isLoading = false;
+          this.completeScroller();
         })
       )
       .subscribe(
@@ -406,11 +392,7 @@ export class InternationalHotelListPage
             this.searchCondition.destinationCity.Code;
           this.totalHotels = r && r.Data && r.Data.DataCount;
           const arr = (r && r.Data && r.Data.HotelDayPrices) || [];
-          this.completeScroller();
           this.enableScroller(arr.length >= 20);
-          if (this.pageIndex <= 1) {
-            this.completeRefresher();
-          }
           if (arr.length) {
             this.pageIndex++;
             this.hotels = this.hotels.concat(arr.map((it) => it.Hotel));
