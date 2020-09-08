@@ -158,7 +158,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     if (idx > -1) {
       return name.substring(0, idx);
     }
-    idx = name.indexOf("（");
+    idx = name.indexOf("(");
     if (idx > -1) {
       return name.substring(0, idx);
     }

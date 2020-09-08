@@ -450,7 +450,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         if (!this.searchModel.TravelForm.CustomerName) {
           const el = this.getEleByAttr("CustomerName", "CustomerName");
           this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请选择顾客或公司");
+          AppHelper.toast("请选择客户或公司");
           return;
         }
         if (!this.searchModel.TravelForm.Subject) {
