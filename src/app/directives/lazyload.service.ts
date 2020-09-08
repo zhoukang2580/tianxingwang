@@ -1,5 +1,5 @@
 import { SwiperSlidesComponent } from './../components/swiper-slides/swiper-slides.component';
-import { Injectable, NgZone } from "@angular/core";
+import { Injectable, NgZone, EventEmitter } from "@angular/core";
 import { AppHelper } from "../appHelper";
 import { ImageRecoverService } from "../services/imageRecover/imageRecover.service";
 
@@ -40,11 +40,14 @@ export class LazyloadService {
       imgs.forEach((img, pos) => {
         if (data.isCanView) {
           img.onclick = async () => {
+            const tap = new EventEmitter();
             const m = await AppHelper.modalController.create({
               component: SwiperSlidesComponent,
               componentProps: {
                 items: images,
                 isOpenAsModel: true,
+                bgColorBlack: true,
+                tap,
                 initialPos: pos,
                 defaultImage: this.defaultImage,
                 loadingImage: this.loadingImage,
@@ -52,6 +55,13 @@ export class LazyloadService {
               }
             });
             m.present();
+            tap.subscribe(() => {
+              AppHelper.modalController.getTop().then(t => {
+                if (t) {
+                  t.dismiss();
+                }
+              })
+            })
           }
         }
         const lazyLoad = img.src;
