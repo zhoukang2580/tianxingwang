@@ -3,7 +3,7 @@ import { RequestEntity } from "../../services/api/Request.entity";
 import { ApiService } from "../../services/api/api.service";
 import { LanguageHelper } from "../../languageHelper";
 import { StaffService, StaffEntity } from "../staff.service";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -11,13 +11,15 @@ import { MemberCredential } from "src/app/member/member.service";
 import { NavController } from "@ionic/angular";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { LoginService } from "src/app/services/login/login.service";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-comfirm-info",
   templateUrl: "./confirm-information.page.html",
   styleUrls: ["./confirm-information.page.scss"],
 })
-export class ConfirmInformationPage implements OnInit {
+export class ConfirmInformationPage implements OnInit, OnDestroy {
+  private subscription = Subscription.EMPTY;
   credentials: MemberCredential[];
   staff: StaffEntity;
   password: string;
@@ -32,7 +34,7 @@ export class ConfirmInformationPage implements OnInit {
     private loginService: LoginService,
     private identityService: IdentityService
   ) {
-    route.queryParamMap.subscribe(async (p) => {
+    this.subscription = route.queryParamMap.subscribe(async (p) => {
       this.staff = await this.staffService.getStaff(true);
       const staff = this.staff;
       this.identity = await this.identityService.getIdentityAsync();
@@ -50,11 +52,13 @@ export class ConfirmInformationPage implements OnInit {
             this.identity.Numbers &&
             this.identity.Numbers.AgentId
           ) {
-            this.router.navigate([""]);
+            this.navCtrl.navigateRoot("");
             return;
           }
           if (!this.credentials || this.credentials.length == 0) {
             await this.checkIfHasCredentials();
+          } else {
+            this.navCtrl.navigateRoot("");
           }
           return true;
         }
@@ -76,6 +80,9 @@ export class ConfirmInformationPage implements OnInit {
   }
   async back() {
     this.router.navigate([""]);
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
   async ngOnInit() {}
   async confirmPassword() {
