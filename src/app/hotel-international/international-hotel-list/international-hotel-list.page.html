@@ -71,7 +71,7 @@
   </ng-container>
   <ng-template #showlist>
     <ng-template #nodata>
-      <app-or-comp>暂无数据</app-or-comp>
+      <app-or-comp *ngIf='!isLoading'>暂无数据</app-or-comp>
     </ng-template>
     <ng-container *ngIf='hotels?.length else nodata'>
       <ion-list lines='full' *ngIf='hotels?.length else nodata'>

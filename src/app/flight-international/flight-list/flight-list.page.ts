@@ -61,7 +61,7 @@ export class FlightListPage implements OnInit, OnDestroy {
     private flightService: InternationalFlightService,
     public modalController: ModalController,
     public popoverController: PopoverController
-  ) { }
+  ) {}
   private scrollToTop() {
     this.content.scrollToTop();
   }
@@ -101,13 +101,16 @@ export class FlightListPage implements OnInit, OnDestroy {
       this.searchModel &&
       this.searchModel.trips &&
       this.searchModel.trips.findIndex((it) => it == trip) ==
-      this.searchModel.trips.length - 1;
+        this.searchModel.trips.length - 1;
     return isLastTrip;
   }
   async onBook(flightRoute: FlightRouteEntity, fare?: FlightFareEntity) {
     if (!fare.hasCheckPolicy) {
       if (fare) {
-        await this.flightService.checkPolicy(flightRoute, fare);
+        const ok = await this.flightService.checkPolicy(flightRoute, fare);
+        if (!ok) {
+          return;
+        }
         let tip = (fare.policy && fare.policy.Message) || "";
         if (fare.policy && !fare.policy.IsAllowOrder) {
           if (tip) {
@@ -144,8 +147,13 @@ export class FlightListPage implements OnInit, OnDestroy {
       this.isLastTrip =
         this.searchModel.trips.findIndex((it) => it == trip) ==
         this.searchModel.trips.length - 1;
+
       if (!trip) {
         trip = this.searchModel.trips[this.searchModel.trips.length - 1];
+      }
+      if (this.isLastTrip) {
+        this.onToggleFlightFare(flightRoute);
+        return;
       }
       if (fare) {
         flightRoute.selectFlightFare = fare;
@@ -315,12 +323,12 @@ export class FlightListPage implements OnInit, OnDestroy {
           0,
           this.pageSize
         );
-        this.flightRoutes.forEach(it => {
+        this.flightRoutes.forEach((it) => {
           if (it.flightFares && it.flightFares.length < this.farePageSize) {
             it.isShowFares = true;
             it.vmFares = it.flightFares;
           }
-        })
+        });
       }
       this.scrollToTop();
       this.isLastTrip = this.checkIsLastTrip();
@@ -339,21 +347,24 @@ export class FlightListPage implements OnInit, OnDestroy {
         fr.vmFares = [];
         return;
       }
-      this.flightRoutes.forEach(r => {
+      this.flightRoutes.forEach((r) => {
         r.isShowFares = r == fr;
-      })
-      const r = this.flightRoutes.find(it => it.isShowFares);
+      });
+      const r = this.flightRoutes.find((it) => it.isShowFares);
       if (r && r.isShowFares) {
         r.vmFares = [];
         const loop = () => {
-          const arr = fr.flightFares.slice(fr.vmFares.length, this.farePageSize + fr.vmFares.length);
+          const arr = fr.flightFares.slice(
+            fr.vmFares.length,
+            this.farePageSize + fr.vmFares.length
+          );
           if (arr.length) {
             r.vmFares = r.vmFares.concat(arr);
             this.reqAnimate = requestAnimationFrame(() => {
               loop();
-            })
+            });
           }
-        }
+        };
         loop();
       }
     }
@@ -367,14 +378,13 @@ export class FlightListPage implements OnInit, OnDestroy {
         this.pageSize + this.flightRoutes.length
       );
       if (arr.length) {
-        arr.forEach(it => {
+        arr.forEach((it) => {
           if (it.flightFares && it.flightFares.length < this.farePageSize) {
             it.isShowFares = true;
             it.vmFares = it.flightFares;
           }
-        })
+        });
         this.flightRoutes = this.flightRoutes.concat(arr);
-
       }
       this.scroller.disabled = arr.length < this.pageSize;
       this.scroller.complete();
@@ -397,7 +407,7 @@ export class FlightListPage implements OnInit, OnDestroy {
           (a.minPriceFlightFare &&
             b.minPriceFlightFare &&
             +a.minPriceFlightFare.TicketPrice -
-            +b.minPriceFlightFare.TicketPrice) ||
+              +b.minPriceFlightFare.TicketPrice) ||
           0;
         return c.price == "asc" ? delta : -delta;
       });
@@ -425,7 +435,7 @@ export class FlightListPage implements OnInit, OnDestroy {
           (a.fromSegment &&
             b.fromSegment &&
             +a.fromSegment.TakeoffTimeStamp -
-            +b.fromSegment.TakeoffTimeStamp) ||
+              +b.fromSegment.TakeoffTimeStamp) ||
           0;
         return c.time == "asc" ? delta : -delta;
       });

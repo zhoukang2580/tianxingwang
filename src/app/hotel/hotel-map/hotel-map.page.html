@@ -1,14 +1,19 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button ></app-back-button>
+      <app-back-button></app-back-button>
     </ion-buttons>
     <ion-title>{{hotel?.Name}}</ion-title>
+    <ion-buttons slot='end'>
+      <ion-button (click)='onReload()' color='secondary'>
+        <ion-icon name="location"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-<ion-list>
-  <app-map [lat]='hotel?.Lat' [lng]='hotel?.Lng'></app-map>
-</ion-list>
+  <ion-list>
+    <app-map [latLng]='latLng'></app-map>
+  </ion-list>
 </ion-content>
