@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <app-back-button></app-back-button>
         </ion-buttons>
-        <ion-title>我的出差申请</ion-title>
+        <ion-title>出差申请</ion-title>
         <ion-button mode='ios' style="height: 2em;width: 3.3em;font-size: 0.9rem;" slot="end" (click)="goAddApply()">
             添加</ion-button>
     </ion-toolbar>
@@ -87,10 +87,11 @@
                     </ng-template>
                 </div>
                 <div class="main">
-                    <ng-container *ngIf='(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType||ApprovalStatusType.WaiteSubmit==item.StatusType) else statusTpl'>
+                    <ng-container *ngIf='(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType||ApprovalStatusType.WaiteSubmit==item.StatusType||ApprovalStatusType.Waiting==item.StatusType) else statusTpl'>
                         <ion-text color='secondary' *ngIf='ApprovalStatusType.Pass==item.StatusType'>{{item.StatusTypeName}}</ion-text>
                         <ion-text color='danger' *ngIf='ApprovalStatusType.Refuse==item.StatusType'>{{item.StatusTypeName}}</ion-text>
                         <ion-text color='success' *ngIf='ApprovalStatusType.WaiteSubmit==item.StatusType'>{{item.StatusTypeName}}</ion-text>
+                        <ion-text color='warning' *ngIf='ApprovalStatusType.Waiting==item.StatusType'>{{item.StatusTypeName}}</ion-text>
                     </ng-container>
                     <ng-template #statusTpl>
                         <ion-text>{{item.StatusTypeName}}</ion-text>
@@ -99,7 +100,7 @@
                     <!-- <button *ngIf="item.StatusType==ApprovalStatusType.WaiteSubmit" (click)="onTravelEdit(item.Id,$event)">编辑</button> -->
                 </div>
 
-                <ion-icon slot="end" style="font-size: 18px;" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete(item,key,$event)" class="ion-text-end"></ion-icon>
+                <ion-icon slot="end" style="font-size: 18px;" name="trash-outline" color="danger" class="trash-outline" (click)="onDelete(item,key,$event)" class="ion-text-end"></ion-icon>
             </div>
             <img src="assets/images/pass.png" *ngIf='ApprovalStatusType.Pass==item.StatusType' alt="">
             <img src="assets/images/deny.png" *ngIf='ApprovalStatusType.Refuse==item.StatusType' alt="">

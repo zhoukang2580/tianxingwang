@@ -2,6 +2,7 @@
     <ion-list>
         <ion-item-group style="margin: .5em;">
             <ion-item-divider>
+                <span style="color: red;margin-top: 5px;margin-right: 4px;">*</span>
                 <ion-text class="text-trip"><span style="font-size:12px">行程{{index+1}}</span></ion-text>
                 <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()" class="ion-text-end" *ngIf="enable"></ion-icon>
             </ion-item-divider>
@@ -26,7 +27,8 @@
                     <ion-select-option value="International" *ngIf="international">国际*港澳台</ion-select-option>
                 </ion-select>
             </ion-item>
-            <ion-item *ngIf='vmRegionTypes?.length'>
+            <!-- *ngIf='vmRegionTypes?.length' -->
+            <ion-item>
                 <ion-text [color]="!enable?'dark':'dark'">
                     交通住宿
                 </ion-text>

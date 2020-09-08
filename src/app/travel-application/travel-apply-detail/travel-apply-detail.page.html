@@ -12,9 +12,6 @@
         <section>
             <div>
                 <p class="h_line h_line_mini"></p>
-                <!-- <i class="apply_info_status apply_info_status_pass" style="background-repeat: no-repeat;
-                background-size: 50%;
-                "></i> -->
                 <img src="assets/images/pass.png" class="apply_info_status_pass" *ngIf='ApprovalStatusType?.Pass==detail?.StatusType'>
                 <img src="assets/images/deny.png" class="apply_info_status_deny" *ngIf='ApprovalStatusType?.Refuse==detail?.StatusType'>
                 <div class="apply_info" style="padding:18px 23px;">
@@ -26,7 +23,6 @@
                         <ng-template #statusTpl>
                             <ion-text style="color: #2596d9;">{{detail?.TravelForm.StatusTypeName}}</ion-text>
                         </ng-template>
-                        <!-- {{detail?.TravelForm.StatusTypeName}} -->
                     </span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit"><span>申请人：</span><span>{{detail?.Staff.Name}}</span></span><span class="apply_info_time"></span></p>
                     <p><span class="apply_info_tit">
@@ -70,10 +66,10 @@
                 <p class="h_line h_line_mini"></p>
                 <div class="apply_info">
                     <p>
-                        <span class="apply_info_tit">审批人：</span>
-                        <span class="apply_info_tit" style="width: 205px;">
+                        <span class="apply_info_tit"><span>审批人：</span></span>
+                        <span style="width: 205px;">
                         <div class="approver" *ngFor='let h of detail?.Histories;let last=last;' style="width: inherit;">
-                              <span class="approver1" style="width: auto;">{{h?.Name}}</span>
+                              <span class="approver" style="width: auto;">{{h?.Name}}</span>
                         <span class="apply_status apply_past">({{h?.StatusName}})<ng-container *ngIf='!last'>→</ng-container></span>
 
                 </div>
