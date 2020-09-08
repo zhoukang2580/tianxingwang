@@ -1,3 +1,4 @@
+import { SwiperSlidesComponent } from './../components/swiper-slides/swiper-slides.component';
 import { Injectable, NgZone } from "@angular/core";
 import { AppHelper } from "../appHelper";
 import { ImageRecoverService } from "../services/imageRecover/imageRecover.service";
@@ -14,12 +15,13 @@ export class LazyloadService {
   constructor(
     private ngZone: NgZone,
     private imageRecoverService: ImageRecoverService
-  ) {}
+  ) { }
   append(data: {
     el: HTMLElement;
     html: string;
     defaultImage: string;
     loadingImage: string;
+    isCanView?: boolean;
   }) {
     this.container = data.el;
     this.defaultImage = data.defaultImage;
@@ -29,7 +31,29 @@ export class LazyloadService {
     div.innerHTML = data.html;
     const imgs = div.querySelectorAll("img");
     if (imgs && imgs.length) {
-      imgs.forEach((img) => {
+      const images: { imageUrl: string; }[] = [];
+      imgs.forEach(img => {
+        images.push({
+          imageUrl: img.src
+        })
+      })
+      imgs.forEach((img, pos) => {
+        if (data.isCanView) {
+          img.onclick = async () => {
+            const m = await AppHelper.modalController.create({
+              component: SwiperSlidesComponent,
+              componentProps: {
+                items: images,
+                isOpenAsModel: true,
+                initialPos: pos,
+                defaultImage: this.defaultImage,
+                loadingImage: this.loadingImage,
+                options: { imageStyle: { objectFit: 'contain' } }
+              }
+            });
+            m.present();
+          }
+        }
         const lazyLoad = img.src;
         img.src = this.loadingImage || this.defaultImage;
         img["lazyLoad"] = lazyLoad;
@@ -116,6 +140,9 @@ export class LazyloadService {
     url = this.addVersion(url);
     this.ngZone.runOutsideAngular(() => {
       el.style.opacity = `0.01`;
+      setTimeout(() => {
+        el.style.opacity = `1`;
+      }, 200);
       // console.log("加载图片耗时：", Date.now() - this.time);
       if (el instanceof HTMLDivElement) {
         // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);

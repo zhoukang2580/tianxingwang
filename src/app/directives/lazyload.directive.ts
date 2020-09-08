@@ -27,13 +27,14 @@ export class LazyloadDirective
   @Input() defaultImage;
   @Input() loadingImage;
   @Input() htmlStr;
+  @Input() isCanView;
   private time = 0;
   constructor(
     private imageRecoverService: ImageRecoverService,
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
     private ngZone: NgZone,
     private lazyLoadService: LazyloadService
-  ) {}
+  ) { }
   ngOnChanges(c: SimpleChanges) {
     // console.log("lazyload changes",this.el.nativeElement,this.lazyLoad);
     this.time = Date.now();
@@ -52,6 +53,7 @@ export class LazyloadDirective
         html: this.htmlStr,
         defaultImage: this.defaultImage,
         loadingImage: this.loadingImage,
+        isCanView: this.isCanView
       });
     }
   }
@@ -103,6 +105,9 @@ export class LazyloadDirective
     this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
       this.el.nativeElement.style.opacity = `0.01`;
+      setTimeout(() => {
+        this.el.nativeElement.style.opacity = `1`;
+      }, 200);
       // console.log("加载图片耗时：", Date.now() - this.time);
       if (this.el.nativeElement instanceof HTMLDivElement) {
         // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
