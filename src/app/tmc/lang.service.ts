@@ -88,9 +88,27 @@ export class LangService {
     console.timeEnd("getTags");
     if (tags.length) {
       this.subscription.unsubscribe();
-      this.subscription = this.getTranslateContent(
-        tags.map((t) => t.textContent)
-      )
+      const contents: {
+        tag: ChildNode;
+        txt: string;
+      }[] = [];
+      tags.forEach((t, idx) => {
+        const arr = t.textContent.match(/[\u4e00-\u9fa5]{1,}/g);
+        if (arr) {
+          arr.forEach((it) => {
+            contents.push({
+              tag: t,
+              txt: it,
+            });
+          });
+        } else {
+          contents.push({
+            tag: t,
+            txt: t.textContent,
+          });
+        }
+      });
+      this.subscription = this.getTranslateContent(contents.map((it) => it.txt))
         .pipe(
           finalize(() => {
             this.html = "";
@@ -98,12 +116,15 @@ export class LangService {
         )
         .subscribe((r) => {
           if (r && r.Data && r.Data.Content) {
-            if (r.Data.Content.length != tags.length) {
+            if (r.Data.Content.length != contents.length) {
               console.error("翻译失败");
             } else {
-              for (let i = 0; i < tags.length; i++) {
-                const t = tags[i];
-                t.textContent = r.Data.Content[i];
+              for (let i = 0; i < contents.length; i++) {
+                const t = contents[i];
+                t.tag.textContent = t.tag.textContent.replace(
+                  t.txt,
+                  r.Data.Content[i]
+                );
               }
               this.isTranslate = true;
             }
