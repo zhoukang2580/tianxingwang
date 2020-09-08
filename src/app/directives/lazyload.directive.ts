@@ -10,12 +10,14 @@ import {
   ElementRef,
   AfterContentInit,
   NgZone,
+  SimpleChanges,
 } from "@angular/core";
 import { Directive } from "@angular/core";
 import { ImageRecoverService } from "../services/imageRecover/imageRecover.service";
+import { LazyloadService } from "./lazyload.service";
 
 @Directive({
-  selector: "[lazyLoad]",
+  selector: "[lazyLoad],[htmlStr]",
 })
 export class LazyloadDirective
   implements OnInit, OnChanges, OnDestroy, AfterContentInit {
@@ -24,13 +26,15 @@ export class LazyloadDirective
   @Input() recoverImage = true;
   @Input() defaultImage;
   @Input() loadingImage;
+  @Input() htmlStr;
   private time = 0;
   constructor(
     private imageRecoverService: ImageRecoverService,
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private lazyLoadService: LazyloadService
   ) {}
-  ngOnChanges() {
+  ngOnChanges(c: SimpleChanges) {
     // console.log("lazyload changes",this.el.nativeElement,this.lazyLoad);
     this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
@@ -42,6 +46,14 @@ export class LazyloadDirective
     //   "lazyLoad ",
     //   this.lazyLoad
     // );
+    if (c && c.htmlStr) {
+      this.lazyLoadService.append({
+        el: this.el.nativeElement,
+        html: this.htmlStr,
+        defaultImage: this.defaultImage,
+        loadingImage: this.loadingImage,
+      });
+    }
   }
   ngAfterContentInit() {
     // console.log("ngAfterContentInit", this.defaultImage);
@@ -57,6 +69,10 @@ export class LazyloadDirective
     });
     this.el.nativeElement.style.transition = "all ease-in-out 200ms";
     this.el.nativeElement.onload = () => {
+      this.el.nativeElement.style.opacity = `1`;
+    };
+    this.el.nativeElement.onerror = () => {
+      this.setDefaultImage();
       this.el.nativeElement.style.opacity = `1`;
     };
   }
