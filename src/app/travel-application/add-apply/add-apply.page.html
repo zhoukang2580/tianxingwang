@@ -104,7 +104,7 @@
                 <ion-row *ngFor="let item of outNumberNameArray" style="justify-content: center;
                 align-items: center;
                 display: flex !important;">
-                    <span style="color: red;margin-top: 5px;margin-right: -4px;">*</span>
+                    <span style="color: red;margin-top: 5px;">*</span>
                     <ion-col>{{item}}</ion-col>
                     <ion-col [attr.OutNumberName]='item'>
                         <ion-input placeholder="请输入{{item}}" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="outNumbers[item]" [color]="!enable?'medium':'dark'" [disabled]="!enable"></ion-input>
