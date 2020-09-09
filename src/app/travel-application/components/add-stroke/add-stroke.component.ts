@@ -24,6 +24,7 @@ import { HotelService } from "src/app/hotel/hotel.service";
 import { TrainService } from "src/app/train/train.service";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { computeDecimalDigest } from '@angular/compiler/src/i18n/digest';
+import { formatDate } from '@angular/common';
 interface IRegionType {
   label: string;
   value: string;
@@ -51,6 +52,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     { val: 'Mushroom', isChecked: false }
   ];
   isShowCheckInCity = false;
+  
+  isactivename: "行程1" | "" = "行程1";
   constructor(
     private router: Router,
     private flightService: FlightService,
@@ -112,6 +115,15 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       return;
     }
   }
+
+  newTime(start, EndDate) {
+    let day = this.getNumberOfDays(start, EndDate);
+    if (day < 0) {
+      AppHelper.alert("出差结束时间不能早于出差开始时间");
+      return;
+    }
+  }
+
   onDelete() {
     this.remove.emit(this.trip);
   }
@@ -130,6 +142,14 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       this.trip.Day = day;
     }
     return day;
+  }
+
+  private datatime(){
+    const nowTime = new Date(Date.parse(new Date().toString()));
+    console.log(nowTime.getDate());
+    console.log(nowTime.getMonth());
+    console.log(nowTime.getDay());
+    console.log(nowTime.getFullYear());
   }
   
   async onStartingCity(isFrom = true) {

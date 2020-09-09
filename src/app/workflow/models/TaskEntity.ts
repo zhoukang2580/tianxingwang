@@ -20,6 +20,21 @@ export class TaskEntity extends BaseVariablesEntity {
   ///名称
   /// </summary>
   Name: string;
+
+  Applicant: string;
+
+  ApplicationTime: string;
+
+  TravelTime: string;
+
+  CheckInCity: string;
+
+  ConsumerId: string;
+
+  DayCount: string;
+
+  Trip: string;
+
   /// <summary>
   /// 标签
   /// </summary>

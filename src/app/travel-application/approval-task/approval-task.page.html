@@ -18,28 +18,33 @@
         </div>
         <div class="bg wait_apply" *ngIf='tasks?.length'>
             <div *ngFor="let task of tasks" (click)='onTaskDetail(task)' class="task-item">
-                <section *ngIf='!dispased'>
+                <section *ngIf="ispriorApproval">
                     <p class="h_line h_line_mini"></p>
                     <div class="apply_info" style="padding: 18px 23px;">
                         <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.InsertTime}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>申请时间：</span><span>{{task?.ApplicationTime}}</span></span><span class="apply_info_time"></span></p>
                         <p>
                             <span class="apply_info_tit"><span>出差城市：
-                                </span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span>
+                                </span><span>{{task?.Trip}}</span></span><span class="apply_info_time"></span>
                         </p>
-                        <p><span class="apply_info_tit"><span>出差总天数：</span><span>{{task?.Type}}</span></span><span class="apply_info_time"></span></p>
+                        <p *ngIf="isChenkInCity">
+                            <span class="apply_info_tit"><span>入住城市：
+                                </span><span>{{task?.CheckInCity}}</span></span><span class="apply_info_time"></span>
+                        </p>
+                        <p><span class="apply_info_tit"><span>出差总天数：</span><span>{{task?.DayCount}}</span></span><span class="apply_info_time"></span></p>
                         <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.ConsumerId}}</span></span><span class="apply_info_time"></span></p>
                     </div>
                 </section>
-                <section *ngIf='dispased'>
+                <section *ngIf="iscenterApproval">
                     <p class="h_line h_line_mini"></p>
                     <div class="apply_info">
-                        <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.UpdateTime}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>行程：</span><span>上海 ~ 北京</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.Id}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Applicant}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.TravelTime}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>行程：</span><span>{{task?.Trip}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>类别：</span><span>订单预定</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.ConsumerId}}</span></span><span class="apply_info_time"></span></p>
                     </div>
                 </section>
                 <img src="assets/images/pass.png" *ngIf='TaskStatusType.Passed==task.Status' alt="">

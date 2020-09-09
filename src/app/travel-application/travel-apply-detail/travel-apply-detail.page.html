@@ -53,8 +53,8 @@
                             <p><span>天数：</span><span>{{detail?.TravelForm.DayCount}}</span></p>
                             <p class="travel_step_btn" *ngIf='!trip["isHideButtons"]' style="justify-content: space-evenly;">
                                 <button *ngIf='trip["hasFlight"]' (click)='goToPage("flight")'>预订国内机票</button>
-                                <button *ngIf='trip["hasHotel"]' (click)='goToPage("train")'>预订国内酒店</button>
-                                <button *ngIf='trip["hasTrain"]' (click)='goToPage("hotel")'>预订火车票</button>
+                                <button *ngIf='trip["hasHotel"]' (click)='goToPage("train")'>预订火车票</button>
+                                <button *ngIf='trip["hasTrain"]' (click)='goToPage("hotel")'>预订国内酒店</button>
                             </p>
                         </div>
                     </div>

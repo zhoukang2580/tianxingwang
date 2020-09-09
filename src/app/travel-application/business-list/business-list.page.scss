@@ -22,8 +22,8 @@ form {
 }
 
 .item {
-    margin: 0.5em 0;
-    padding: 0.5em;
+    margin: 0.7em 0;
+    padding: 1.2em 0.1em 1.2em 1em;
     width: 100%;
     position: relative;
     background-color: var(--ion-color-light);
@@ -70,6 +70,7 @@ form {
         color: white;
         font-size: 0.7rem;
         margin-left: .5em;
+        float: right;
     }
     .trash-outline {
         font-size: 18px;

@@ -3,6 +3,10 @@
     font-size: 1.3rem;
 }
 
+ion-icon :first-child {
+    display: none;
+}
+
 .text-trip {
     font-size: 13px;
     color: #735a5a;
@@ -89,3 +93,7 @@ ion-label:nth-child(2) {
 .ion-text-end:nth-child(2) {
     margin-left: auto;
 }
+
+// :first-child {
+//     display: none;
+// }

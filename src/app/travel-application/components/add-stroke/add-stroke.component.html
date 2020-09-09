@@ -4,7 +4,7 @@
             <ion-item-divider>
                 <span style="color: red;margin-top: 5px;margin-right: 4px;">*</span>
                 <ion-text class="text-trip"><span style="font-size:12px">行程{{index+1}}</span></ion-text>
-                <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()" class="ion-text-end" *ngIf="enable"></ion-icon>
+                <ion-icon slot="end" [class.active]='isactivename=="行程1"' name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()" class="ion-text-end" *ngIf="enable"></ion-icon>
             </ion-item-divider>
             <ion-radio-group [(ngModel)]='trip.IsBackway'>
                 <ion-buttons class="radios">
@@ -69,14 +69,14 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     开始时间
                 </ion-text>
-                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" [(ngModel)]="trip.StartDate" doneText="确定" cancelText="取消">
+                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" min="2020-09-09" max="2100" [(ngModel)]="trip.StartDate" doneText="确定" cancelText="取消">
                 </ion-datetime>
             </ion-item>
             <ion-item detail>
                 <ion-text [color]="!enable?'dark':'dark'">
                     结束时间
                 </ion-text>
-                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" [(ngModel)]="trip.EndDate" (ionChange)="duageTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
+                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" min="2020-09-09" max="2100" [(ngModel)]="trip.EndDate" (ionChange)="duageTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
                 </ion-datetime>
             </ion-item>
             <ion-item *ngIf="pass">

@@ -71,6 +71,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   isVaild = true;
   appovalStaff: string;
   addstatus:boolean;
+  detail: SearchModel;
   outNumbers: {
     [key: string]: any;
   };

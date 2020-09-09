@@ -35,15 +35,19 @@ export class ApprovalTaskPage implements OnInit {
   @ViewChild(IonInfiniteScroll, { static: true })
   infiniteScroll: IonInfiniteScroll;
   loadMoreErrMsg: string;
-  public dispased: boolean = true;
+  // public dispased: boolean = true;
   isactivename: "待我审批" | "已审任务" = "待我审批";
   activeTab: ProductItem;
   isOpenUrl = false;
+  isChenkInCity: boolean = false;
+  istype: number;
+  ispriorApproval: boolean = true;
+  iscenterApproval: boolean = true;
   constructor(
     private orderService: OrderService,
     private identityService: IdentityService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.doRefresh();
@@ -55,13 +59,10 @@ export class ApprovalTaskPage implements OnInit {
         {
           PageSize: this.pageSize,
           PageIndex: this.curTaskPageIndex,
-          Task: {
-            Tag: "TravelForm",
-            Status:
-              this.isactivename == "已审任务"
-                ? TaskStatusType.Passed
-                : TaskStatusType.Waiting,
-          },
+          Type:
+            this.isactivename == "已审任务"
+              ? 2
+              : 1,
         } as TaskModel,
         this.curTaskPageIndex < 1
       )
@@ -96,19 +97,23 @@ export class ApprovalTaskPage implements OnInit {
     return task && task.VariablesJsonObj["TaskUrl"];
   }
 
+  // private initTime(){
+  //     return  tasks.InsertTime.substr(10, 6).replace(/T/g,' ');// 2020-09-10T12:40:34
+  // }
+
   private async getTaskHandleUrl(task: TaskEntity) {
     const identity: IdentityEntity = await this.identityService
       .getIdentityAsync()
       .catch((_) => null);
     let url = this.getTaskUrl(task);
-    if (url.includes("?")) {
+    if (url?.includes("?")) {
       url = `${url}&taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
-      }`;
+        }`;
     } else {
       url = `${url}?taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
-      }`;
+        }`;
     }
     return url;
   }
@@ -132,7 +137,8 @@ export class ApprovalTaskPage implements OnInit {
   }
 
   onTaskApp() {
-    this.dispased = true;
+    this.ispriorApproval = true;
+    this.iscenterApproval = true;
     this.curTaskPageIndex = 0;
     this.isactivename = "待我审批";
     this.infiniteScroll.disabled = true;
@@ -141,8 +147,9 @@ export class ApprovalTaskPage implements OnInit {
   }
 
   onTaskReviewed() {
+    this.ispriorApproval = true;
+    this.iscenterApproval = false;
     this.infiniteScroll.disabled = true;
-    this.dispased = false;
     this.curTaskPageIndex = 0;
     this.isactivename = "已审任务";
     this.tasks = [];

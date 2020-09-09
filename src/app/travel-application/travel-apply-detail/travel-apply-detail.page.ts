@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { TaskStatusType } from './../../workflow/models/TaskStatusType';
 import { async } from '@angular/core/testing';
 import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
@@ -15,16 +16,16 @@ import { TmcService } from 'src/app/tmc/tmc.service';
 export class TravelApplyDetailPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   detail: SearchModel;
-  router: any;
   // tslint:disable-next-line: ban-types
   isflag: Boolean = true;
   ApprovalStatusType = ApprovalStatusType;
   istime: Boolean = true;
   Property: any;
   taskStatus: TaskStatusType;
-  private tmcService: TmcService;
-  constructor(private route: ActivatedRoute, private service: TravelService,) { 
-    
+  constructor(private route: ActivatedRoute,
+    private router: Router,
+    private tmcService: TmcService, private service: TravelService,) {
+
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -63,13 +64,13 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
     }
   }
 
-  private getColor(taskStatus){
+  private getColor(taskStatus) {
     let color = "";
-    if (taskStatus == TaskStatusType.Created){
+    if (taskStatus == TaskStatusType.Created) {
       color = "orange";
-    } else if (taskStatus == TaskStatusType.Waiting){
+    } else if (taskStatus == TaskStatusType.Waiting) {
       color = "blue";
-    } else if(taskStatus == TaskStatusType.Passed){
+    } else if (taskStatus == TaskStatusType.Passed) {
       color = "red";
     } else {
       color = "blue";
@@ -80,7 +81,7 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
   private initTime() {
     if (this.detail && this.detail.TravelForm) {
       const date = this.detail.TravelForm.ApplyTime.substr(0, 10).replace(/-/g, '.');
-      const time = this.detail.TravelForm.ApplyTime.substr(10, 6).replace(/T/g,' ');// 2020-09-10T12:40:34
+      const time = this.detail.TravelForm.ApplyTime.substr(10, 6).replace(/T/g, ' ');// 2020-09-10T12:40:34
       const appdate = this.detail.TravelForm.ApprovalTime.substr(0, 10).replace(/-/g, '.');
       this.detail.TravelForm.applyTimeDate = date;
       this.detail.TravelForm.applyTimeTime = time;
@@ -91,7 +92,7 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
   }
 
   private async getDetail(id: string) {
-    
+
     this.detail = await this.service.getTravelDetail(id).catch(() => null);
     this.initTrips();
     this.initTime();
@@ -101,7 +102,7 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
   }
 
   async goToPage(name: string, params?: any) {
-    const tmc = await this.tmcService?.getTmc();
+    const tmc = await this.tmcService.getTmc();
     const msg = "您没有预订权限";
     if (!tmc || !tmc.RegionTypeValue) {
       AppHelper.alert(msg);
@@ -159,16 +160,4 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
       queryParams: { bulletinType: params },
     });
   }
-  
-
-
-  async onAdopt() {
-    console.log('通过');
-    await this.service.travelSubmit(this.detail);
-    this.router.navigate([AppHelper.getRoutePath("business-list")], {
-      queryParams: { doRefresh: true },
-    });
-  }
-
-    
 }
