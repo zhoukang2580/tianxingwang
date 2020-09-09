@@ -60,10 +60,16 @@ export class WechatHelper {
   static wx = window["wx"];
   private static timeoutids: { [key: string]: any } = {};
   static getOpenId() {
-    return AppHelper.getCookieValue("wechatopenid");
+    return (
+      AppHelper.getQueryParamers()["wechatopenid"] ||
+      AppHelper.getCookieValue("wechatopenid")
+    );
   }
   static getMiniOpenId() {
-    return AppHelper.getCookieValue("wechatminiopenid");
+    return (
+      AppHelper.getQueryParamers()["wechatminiopenid"] ||
+      AppHelper.getCookieValue("wechatminiopenid")
+    );
   }
   static async shareText(text: string) {
     const openId = this.getOpenId();
