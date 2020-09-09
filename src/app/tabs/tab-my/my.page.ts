@@ -18,7 +18,7 @@ import { tap, map } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { TranslateService } from "src/app/tmc/translate.service";
+import { LangService } from 'src/app/tmc/lang.service';
 interface PageModel {
   Name: string;
   RealName: string;
@@ -72,7 +72,7 @@ export class MyPage implements OnDestroy, OnInit {
     private messageService: MessageService,
     private staffService: StaffService,
     private actionSheetCtrl: ActionSheetController,
-    private translateService: TranslateService
+    private langService: LangService
   ) {
     this.isIos = plt.is("ios");
     this.subscriptions.push(
@@ -194,7 +194,7 @@ export class MyPage implements OnDestroy, OnInit {
   }
   private reloadPage() {
     this.router.navigate([AppHelper.getRoutePath(this.router.url)]).then(() => {
-      this.translateService.translate();
+      this.langService.translate();
     });
   }
   onProductClick(tab: ProductItem) {
