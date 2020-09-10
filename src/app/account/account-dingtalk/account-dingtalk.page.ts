@@ -1,11 +1,12 @@
 import { DingtalkHelper } from "./../../dingtalkHelper";
 import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
-import { IonList, NavController } from "@ionic/angular";
+import { IonList, NavController, Config } from "@ionic/angular";
 import { ApiService } from "src/app/services/api/api.service";
 import { Observable, merge, of, Subscription } from "rxjs";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { map, switchMap } from "rxjs/operators";
 import { AppHelper } from "src/app/appHelper";
+import { CONFIG } from "src/app/config";
 type Item = {
   Id: string;
   Name: string;
@@ -20,6 +21,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
   items: Item[] = [];
   isShowBindButton: boolean;
   @ViewChild("List") deviceList: IonList;
+  appName = CONFIG.appTitle;
   constructor(private apiService: ApiService, private navCtrl: NavController) {}
   back() {
     this.navCtrl.pop();
@@ -32,7 +34,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
       if (paramters.dingtalkcode) {
         const data = {
           Code: paramters.dingtalkcode,
-          AloneTag:paramters.AloneTag
+          AloneTag: paramters.AloneTag,
         };
         this.bindCode(data);
         AppHelper.removeQueryParamers("dingtalkcode");
@@ -48,7 +50,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
         "&ticket=" +
         AppHelper.getTicket() +
         "&path=account-dingtalk";
-      const filterKeys = ["domain", "ticket", "path","IsLogin","wechatcode"];
+      const filterKeys = ["domain", "ticket", "path", "IsLogin", "wechatcode"];
       url = this.concatParams(url, filterKeys);
       AppHelper.redirect(url);
     }

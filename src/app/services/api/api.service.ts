@@ -177,10 +177,6 @@ export class ApiService {
   }
   createRequest() {
     const req = new RequestEntity();
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.Domain = AppHelper.getDomain();
     if (this.apiConfig) {
       req.Token = this.apiConfig.Token;
     }
@@ -386,10 +382,6 @@ export class ApiService {
     isCheckLogin: boolean
   ): Observable<IResponse<any>> {
     const req = { ...request };
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.Domain = AppHelper.getDomain();
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
@@ -441,10 +433,6 @@ export class ApiService {
     fileName: string
   ): Observable<IResponse<any>> {
     const req = { ...request };
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.Domain = AppHelper.getDomain();
     this.setLoading({
       msg: req.LoadingMsg,
       isShowLoading: req.IsShowLoading,

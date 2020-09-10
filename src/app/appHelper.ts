@@ -1,4 +1,5 @@
-﻿import * as md5 from "md5";
+﻿import { RequestEntity } from 'src/app/services/api/Request.entity';
+import * as md5 from "md5";
 import Big from "big.js";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
@@ -426,6 +427,19 @@ export class AppHelper {
   static isH5() {
     return !this.isApp();
   }
+  static setRequestEntity(req:RequestEntity)
+  {
+    req.Timestamp = Math.floor(Date.now() / 1000);
+    req.Language = AppHelper.getLanguage();
+    req.Ticket = AppHelper.getTicket();
+    req.TicketName = AppHelper.getTicketName();
+    req.Domain = AppHelper.getDomain();
+    const ticketName = AppHelper.getTicketName();
+    if (ticketName != "ticket") {
+      req[ticketName] = req.Ticket;
+      req.Ticket = "";
+    }
+  }
   /**
    *  请注意，这个是异步方法，返回promise,是pda ，返回true，否则返回false，使用判断条件是，判断是否存在sim卡；
    */
@@ -604,11 +618,20 @@ export class AppHelper {
     return result;
   }
   static getTicket() {
+    const name=this.getTicketName();
     const ticket =
-      AppHelper.getQueryString("ticket") ||
-      AppHelper.getStorage("ticket") ||
-      AppHelper.getCookieValue("ticket");
+    this.getQueryParamers()[name] ||
+      this.getStorage(name) ||
+      this.getCookieValue(name);
     return ticket == "null" ? "" : ticket;
+  }
+
+  static getTicketName() {
+    const ticketName =
+      this.getQueryParamers()["ticketName"] ||
+      this.getStorage("ticketName") ||
+      this.getCookieValue("ticketName");
+    return !ticketName || ticketName == "null" ? "ticket" : ticketName;
   }
 
   static getDomain() {
