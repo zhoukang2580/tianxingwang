@@ -75,7 +75,7 @@ export class ImageRecoverService {
         ) {
           onError(this.Failover.DefaultUrl);
         } else {
-          onSuccess(this.getSrc(img.src));
+          onSuccess(img.src);
         }
       };
     }
