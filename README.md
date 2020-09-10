@@ -80,7 +80,7 @@ ng serve --disableHostCheck
 4. 执行archive打包，传到iTunes,提交审核
 ## android 发布
 0. 同ios发布
-1. 执行 `ionic cordova build android --prod --release`
+1. 执行 `ionic cordova build android --prod --release` 如果是在Mac上执行，需要添加 `sudo ionic cordova build android --prod --release` 
 
 ## 支付宝唤起
 在xcode打包时候，找到 info，找到 LSApplicationQueriesSchemes 添加 alipay ，alipays
