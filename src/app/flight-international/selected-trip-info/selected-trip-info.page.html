@@ -52,13 +52,7 @@
           </ion-row>
           <ion-row style="margin-top:1em">
             <ion-col size="2" style="text-align:end">
-              <div style='font-size: 0.6rem;
-              text-align: center;
-              color: sandybrown;
-              position: absolute;
-              bottom: 2.3em;
-              right: 0em;
-              white-space: nowrap;' *ngIf='trip.bookInfo?.flightRoute?.addDays'>
+              <div class="day-tip" *ngIf='trip.bookInfo?.flightRoute?.addDays'>
                 +{{trip.bookInfo?.flightRoute?.addDays}}天</div>
               {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
             </ion-col>
@@ -114,6 +108,9 @@
     </ion-item>
   </ion-list>
 </ion-content>
-<ion-footer class="ion-text-end ion-margin-end">
-  <ion-button color="secondary"  expand='full' (click)="onReserve()">确定</ion-button>
+<ion-footer>
+  <div *ngIf='curTrip?.bookInfo.flightRoute?.selectFlightFare?.policy' class="policy-message">
+    {{curTrip?.bookInfo.flightRoute?.selectFlightFare?.policy?.Message}}
+  </div>
+  <ion-button color="secondary" expand='full' (click)="onReserve()">确定</ion-button>
 </ion-footer>

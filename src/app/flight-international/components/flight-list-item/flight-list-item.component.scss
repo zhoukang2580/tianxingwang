@@ -24,7 +24,15 @@
 .fontSize {
   font-size: 0.8em;
 }
-
+.typename{
+  color:var(--ion-color-medium);
+  position: relative;
+}
+.show-off-icon {
+  font-size: 1rem;
+  position: absolute;
+  right: 40%;
+}
 // .paddingtop {
 //     padding-top   : 0.2em;
 //     padding-bottom: 0.2em;

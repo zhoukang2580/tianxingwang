@@ -1335,30 +1335,6 @@ export class InternationalFlightService {
       minPrice = Math.min(minPrice, +it.SalesPrice);
     });
     const flightFare = ffs.find((ff) => +ff.SalesPrice == +minPrice);
-    if (
-      this.flightPolicyResult &&
-      this.flightPolicyResult.FlightFares &&
-      flightFare
-    ) {
-      // 差标信息
-      const one = this.flightPolicyResult.FlightFares.find(
-        (it) => it.Id == flightFare.Id
-      );
-      if (one) {
-        flightFare.IsAllowOrder = one.IsAllowOrder;
-        flightFare.Rules = one.Rules;
-        if (flightFare.Rules) {
-          flightFare.ruleMessage = Object.keys(flightFare.Rules)
-            .map((k) => flightFare.Rules[k])
-            .join(";");
-        }
-        if (!flightFare.ruleMessage) {
-          const p = this.getBookInfos().map((it) => it.passenger)[0];
-          flightFare.ruleMessage =
-            p && p.Policy && p.Policy.InternationalFlightDescription;
-        }
-      }
-    }
     console.timeEnd("getMinPriceFlightFare");
     return flightFare;
   }

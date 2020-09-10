@@ -10,6 +10,7 @@
   }
 }
 .item-wrapper {
+  position: relative;
   border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
   &.warning {
     background-color: rgba(var(--ion-color-warning-rgb), 0.13);
@@ -20,7 +21,9 @@
   &.success {
     background-color: rgba(var(--ion-color-success-rgb), 0.13);
   }
+
 }
+
 .sticky {
   position: sticky;
   top: 0;
@@ -29,7 +32,9 @@
   z-index: 100;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.13);
   padding-bottom: 1px;
-  margin-bottom: 0.5em;
+  &.open {
+    margin-bottom: 0.5em;
+  }
 }
 .buttons-wrapper {
   margin: 0.25em 1em 0.25em 1.7em;

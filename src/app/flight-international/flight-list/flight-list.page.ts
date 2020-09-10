@@ -250,7 +250,6 @@ export class FlightListPage implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.subscriptions.push(this.explainSubscription);
-    this.doRefresh(environment.production);
     this.subscriptions.push(
       this.flightService.getSearchModelSource().subscribe((s) => {
         this.searchModel = s;
@@ -342,8 +341,8 @@ export class FlightListPage implements OnInit, OnDestroy {
       window.cancelAnimationFrame(this.reqAnimate);
     }
     if (fr) {
-      if (fr.isShowFares) {
-        fr.isShowFares = false;
+      fr.isShowFares = !fr.isShowFares;
+      if (!fr.isShowFares) {
         fr.vmFares = [];
         return;
       }
@@ -360,9 +359,9 @@ export class FlightListPage implements OnInit, OnDestroy {
           );
           if (arr.length) {
             r.vmFares = r.vmFares.concat(arr);
-            this.reqAnimate = requestAnimationFrame(() => {
+            this.reqAnimate = setTimeout(() => {
               loop();
-            });
+            }, 100);
           }
         };
         loop();
