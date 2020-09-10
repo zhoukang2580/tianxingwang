@@ -19,6 +19,7 @@
                         <ng-container *ngIf='(ApprovalStatusType?.Pass==detail?.StatusType||ApprovalStatusType?.Refuse==detail?.StatusType) else statusTpl'>
                             <ion-text style="color: #2596d9;" color='secondary' *ngIf='ApprovalStatusType.Pass==detail?.StatusType'>{{detail?.TravelForm.StatusTypeName}}</ion-text>
                             <ion-text style="color: red;" color='danger' *ngIf='ApprovalStatusType.Refuse==detail?.StatusType'>{{detail?.TravelForm.StatusTypeName}}</ion-text>
+                            <ion-text style="color: #fec114;" *ngIf='ApprovalStatusType.WaiteSubmit==detail?.StatusType'>{{detail?.TravelForm.StatusTypeName}}</ion-text>
                         </ng-container>
                         <ng-template #statusTpl>
                             <ion-text style="color: #2596d9;">{{detail?.TravelForm.StatusTypeName}}</ion-text>
@@ -32,7 +33,7 @@
                         <span class="apply_info_time">{{detail?.TravelForm.approvalTimeDate?.startsWith("1800")||detail?.TravelForm.approvalTimeDate?.startsWith("0001")?" ":detail?.TravelForm.approvalTimeDate}}
                     </span></p>
                     <p><span class="apply_info_tit"><span>出差天数：</span><span>{{detail?.TravelForm.DayCount}}</span></span><span class="apply_info_time"></span></p>
-                    <p><span class="apply_info_tit"><span>单号：</span><span>{{detail?.Staff.Id}}</span></span><span class="apply_info_time"></span></p>
+                    <p><span class="apply_info_tit"><span>单号：</span><span>{{detail?.TravelFormId}}</span></span><span class="apply_info_time"></span></p>
                 </div>
                 <div class="border_top">
                     <p><span class="apply_info_tit"><span>所属部门：</span><span>{{detail?.Staff.CostCenter.Name}}</span></span><span class="apply_info_time"></span></p>

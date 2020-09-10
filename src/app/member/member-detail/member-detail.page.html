@@ -1,48 +1,47 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
-
-      <app-back-button defaultHref=''></app-back-button>
-    </ion-buttons>
-    <ion-title>个人信息</ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref=''></app-back-button>
+        </ion-buttons>
+        <ion-title>个人信息</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item detail cropAvatar upload-method="ApiMemberUrl-Home-UploadHeadImage">
-      <ion-label>头像</ion-label>
-      <ion-thumbnail slot='end'>
-        <img alt="头像"  [lazyLoad]="memberDetails?.HeadUrl" [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl' >
-        <!-- <img alt="头像"  [src]="memberDetails.HeadUrl" > -->
-      </ion-thumbnail>
-    </ion-item>
-    <ion-item>
-      <ion-label>姓名</ion-label>
-      <ion-label slot='end'>{{memberDetails?.RealName}}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>账号</ion-label>
-      <ion-label slot='end'>{{memberDetails?.Name}}</ion-label>
-    </ion-item>
-  </ion-list>
-  <ion-list>
-    <ion-item *ngIf="memberDetails?.StaffNumber">
-      <ion-label>员工工号</ion-label>
-      <ion-label slot='end'>{{memberDetails.StaffNumber}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf="memberDetails?.CostCenterCode">
-      <ion-label>成本中心/编码</ion-label>
-      <ion-label slot='end' appShowtip>{{memberDetails.CostCenterName}}/{{memberDetails.CostCenterCode}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf="memberDetails?.OrganizationName">
-      <ion-label>所在部门</ion-label>
-      <ion-label slot='end' appShowtip>{{memberDetails.OrganizationName}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf="memberDetails?.BookTypeName">
-      <ion-label>预订方式</ion-label>
-      <ion-label slot='end' appShowtip>{{memberDetails.BookTypeName}}</ion-label>
-    </ion-item>
+    <ion-list>
+        <ion-item detail cropAvatar upload-method="ApiMemberUrl-Home-UploadHeadImage">
+            <ion-label>头像</ion-label>
+            <ion-thumbnail slot='end'>
+                <img alt="头像" [lazyLoad]="memberDetails?.HeadUrl" [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl'>
+                <!-- <img alt="头像"  [src]="memberDetails.HeadUrl" > -->
+            </ion-thumbnail>
+        </ion-item>
+        <ion-item>
+            <ion-label>姓名</ion-label>
+            <ion-label slot='end'>{{memberDetails?.RealName}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label>账号</ion-label>
+            <ion-label slot='end'>{{memberDetails?.Name}}</ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-item *ngIf="memberDetails?.StaffNumber">
+            <ion-label>员工工号</ion-label>
+            <ion-label slot='end'>{{memberDetails.StaffNumber}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="memberDetails?.CostCenterCode">
+            <ion-label>成本中心/编码</ion-label>
+            <ion-label slot='end' appShowtip>{{memberDetails.CostCenterName}}/{{memberDetails.CostCenterCode}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="memberDetails?.OrganizationName">
+            <ion-label>所在部门</ion-label>
+            <ion-label slot='end' appShowtip>{{memberDetails.OrganizationName}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf="memberDetails?.BookTypeName">
+            <ion-label>预订方式</ion-label>
+            <ion-label slot='end' appShowtip>{{memberDetails.BookTypeName}}</ion-label>
+        </ion-item>
 
-  </ion-list>
+    </ion-list>
 </ion-content>

@@ -30,13 +30,13 @@ export class ApprovalTaskPage implements OnInit {
   curTaskPageIndex = 0;
   TaskStatusType = TaskStatusType;
   tasks: TaskEntity[];
-  // TravelForm =
   isLoading = true;
   @ViewChild(IonInfiniteScroll, { static: true })
   infiniteScroll: IonInfiniteScroll;
   loadMoreErrMsg: string;
   // public dispased: boolean = true;
   isactivename: "待我审批" | "已审任务" = "待我审批";
+  Approval:string;
   activeTab: ProductItem;
   isOpenUrl = false;
   isChenkInCity: boolean = false;
@@ -47,6 +47,7 @@ export class ApprovalTaskPage implements OnInit {
     private orderService: OrderService,
     private identityService: IdentityService,
     private router: Router
+    
   ) { }
 
   ngOnInit() {
@@ -97,10 +98,6 @@ export class ApprovalTaskPage implements OnInit {
     return task && task.VariablesJsonObj["TaskUrl"];
   }
 
-  // private initTime(){
-  //     return  tasks.InsertTime.substr(10, 6).replace(/T/g,' ');// 2020-09-10T12:40:34
-  // }
-
   private async getTaskHandleUrl(task: TaskEntity) {
     const identity: IdentityEntity = await this.identityService
       .getIdentityAsync()
@@ -136,9 +133,8 @@ export class ApprovalTaskPage implements OnInit {
     }
   }
 
+
   onTaskApp() {
-    this.ispriorApproval = true;
-    this.iscenterApproval = true;
     this.curTaskPageIndex = 0;
     this.isactivename = "待我审批";
     this.infiniteScroll.disabled = true;
@@ -147,8 +143,6 @@ export class ApprovalTaskPage implements OnInit {
   }
 
   onTaskReviewed() {
-    this.ispriorApproval = true;
-    this.iscenterApproval = false;
     this.infiniteScroll.disabled = true;
     this.curTaskPageIndex = 0;
     this.isactivename = "已审任务";

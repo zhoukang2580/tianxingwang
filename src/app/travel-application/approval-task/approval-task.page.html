@@ -18,7 +18,7 @@
         </div>
         <div class="bg wait_apply" *ngIf='tasks?.length'>
             <div *ngFor="let task of tasks" (click)='onTaskDetail(task)' class="task-item">
-                <section *ngIf="ispriorApproval">
+                <section>
                     <p class="h_line h_line_mini"></p>
                     <div class="apply_info" style="padding: 18px 23px;">
                         <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
@@ -32,11 +32,11 @@
                                 </span><span>{{task?.CheckInCity}}</span></span><span class="apply_info_time"></span>
                         </p>
                         <p><span class="apply_info_tit"><span>出差总天数：</span><span>{{task?.DayCount}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>类别：</span><span>{{task?.Level}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>类别：</span><span *ngIf="task?.Tag=='TravelForm'">事前审批</span><span *ngIf="task?.Tag!='TravelForm'">订单预定</span></span><span class="apply_info_time"></span></p>
                         <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.ConsumerId}}</span></span><span class="apply_info_time"></span></p>
                     </div>
                 </section>
-                <section *ngIf="iscenterApproval">
+                <section>
                     <p class="h_line h_line_mini"></p>
                     <div class="apply_info">
                         <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>

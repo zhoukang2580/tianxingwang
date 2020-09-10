@@ -70,7 +70,7 @@ ion-icon :first-child {
 // }
 .hydrated {
     visibility: inherit;
-    line-height: 25px;
+    line-height: initial;
     font: inherit;
 }
 
@@ -97,3 +97,6 @@ ion-label:nth-child(2) {
 // :first-child {
 //     display: none;
 // }
+ion-item {
+    line-height: initial;
+}

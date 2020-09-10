@@ -18,7 +18,7 @@ import { tap, map } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { LangService } from "src/app/tmc/lang.service";
+import { LangService } from 'src/app/tmc/lang.service';
 interface PageModel {
   Name: string;
   RealName: string;
@@ -117,7 +117,6 @@ export class MyPage implements OnDestroy, OnInit {
         {
           text: "中文",
           role: !style ? "selected" : "",
-          cssClass: "notranslate",
           handler: () => {
             AppHelper.setStyle("cn");
             this.reloadPage();
@@ -222,9 +221,7 @@ export class MyPage implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.items = ORDER_TABS.filter((it) => it.isDisplay);
-    if (this.items.length < 4) {
-      this.items = this.items.filter((it) => it.value != ProductItemType.more);
-    }
+    this.items = this.items.filter((it) => it.value != ProductItemType.more&&it.value != ProductItemType.waitingApprovalTask);
 
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (_) => {

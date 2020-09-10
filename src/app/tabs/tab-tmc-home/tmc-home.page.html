@@ -1,136 +1,136 @@
 <ion-header>
-  <ion-toolbar color='primary'>
-    <ion-buttons slot='start' class="ion-margin-start" *ngIf='canShow'>
-      <app-scan-comp></app-scan-comp>
-    </ion-buttons>
-    <ion-title class='ion-text-center' appShowtip>
-      <ng-container *ngIf='canSelectCompany$|async'>
-        <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
-      </ng-container>
-      <ion-text class="ion-margin-start" >欢迎你 <ng-container *ngIf='identity?.Name'>,{{identity?.Name}}</ng-container>
-      </ion-text>
-    </ion-title>
-    <ion-buttons slot='end'>
-      <ion-button fill='clear' size='small' (click)='onSwitchCustomer()' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
-        <ion-chip color='success'>
-          <ion-label>切换客户</ion-label>
-        </ion-chip>
-      </ion-button>
-    </ion-buttons>
-    <ng-template #selectCompany>
-      <ion-button fill='clear' size='small' (click)='onSwitchCompany()' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
-        <ion-chip color='success'>
-          <ion-label>切换公司</ion-label>
-        </ion-chip>
-      </ion-button>
-    </ng-template>
-  </ion-toolbar>
+    <ion-toolbar color='primary'>
+        <ion-buttons slot='start' class="ion-margin-start" *ngIf='canShow'>
+            <app-scan-comp></app-scan-comp>
+        </ion-buttons>
+        <ion-title class='ion-text-center' appShowtip>
+            <ng-container *ngIf='canSelectCompany$|async'>
+                <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
+            </ng-container>
+            <ion-text class="ion-margin-start">欢迎你
+                <ng-container *ngIf='identity?.Name'>,{{identity?.Name}}</ng-container>
+            </ion-text>
+        </ion-title>
+        <ion-buttons slot='end'>
+            <ion-button fill='clear' size='small' (click)='onSwitchCustomer()' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
+                <ion-chip color='success'>
+                    <ion-label>切换客户</ion-label>
+                </ion-chip>
+            </ion-button>
+        </ion-buttons>
+        <ng-template #selectCompany>
+            <ion-button fill='clear' size='small' (click)='onSwitchCompany()' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
+                <ion-chip color='success'>
+                    <ion-label>切换公司</ion-label>
+                </ion-chip>
+            </ion-button>
+        </ng-template>
+    </ion-toolbar>
 </ion-header>
 <ion-content>
 
-  <div class="img">
-    <div class="swiper-container" #container>
-      <div class="swiper-wrapper">
-        <ng-container *ngIf='banners?.length else deftpl'>
-          <div class="swiper-slide" *ngFor='let pic of banners'>
-            <img [lazyLoad]='pic.ImageUrl' [defaultImage]='config?.DefaultImageUrl'  [loadingImage]='config?.PrerenderImageUrl'
-              style="object-fit: contain ;max-height: 40vh;width: 100vw; height: 40vh;" /></div>
-        </ng-container>
-        <ng-template #deftpl>
-          <div class="swiper-slide">
-            <img [lazyLoad]='config?.DefaultImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' style="object-fit: cover;
+    <div class="img">
+        <div class="swiper-container" #container>
+            <div class="swiper-wrapper">
+                <ng-container *ngIf='banners?.length else deftpl'>
+                    <div class="swiper-slide" *ngFor='let pic of banners'>
+                        <img [lazyLoad]='pic.ImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' style="object-fit: contain ;max-height: 40vh;width: 100vw; height: 40vh;" /></div>
+                </ng-container>
+                <ng-template #deftpl>
+                    <div class="swiper-slide">
+                        <img [lazyLoad]='config?.DefaultImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' style="object-fit: cover;
             -o-object-fit: cover;
             max-height: 40vh;
             width: 100vw;
             height: 40vh;" /></div>
-        </ng-template>
-      </div>
+                </ng-template>
+            </div>
+        </div>
     </div>
-  </div>
-  <ion-toolbar class="text-swiper" style="padding-top: 1em;">
-    <ng-container *ngIf='isLoadingNotice else noticeTpl'>
-      <ion-skeleton-text style="width: 100%;height: 1.5em;" animated></ion-skeleton-text>
-    </ng-container>
-    <ng-template #noticeTpl>
-      <div class="blueBack" *ngIf="agentNotices?.length" (click)='goToBulletinList("agentNotice")'>
-        <ion-slides class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
-          <ion-slide *ngFor='let n of agentNotices'>
-            <div class='announcement'>
-              <ion-icon name="notifications-outline" color="secondary" style="font-size:18px;padding-right: 5px">
-              </ion-icon>
-              <div class="text ion-text-start">{{n.text}}</div>
-              <ion-icon name="chevron-forward-outline" style="font-size:18px"></ion-icon>
+    <ion-toolbar class="text-swiper" style="padding-top: 1em;">
+        <ng-container *ngIf='isLoadingNotice else noticeTpl'>
+            <ion-skeleton-text style="width: 100%;height: 1.5em;" animated></ion-skeleton-text>
+        </ng-container>
+        <ng-template #noticeTpl>
+            <div class="blueBack" *ngIf="agentNotices?.length" (click)='goToBulletinList("agentNotice")'>
+                <ion-slides class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
+                    <ion-slide *ngFor='let n of agentNotices'>
+                        <div class='announcement'>
+                            <ion-icon name="notifications-outline" color="secondary" style="font-size:18px;padding-right: 5px">
+                            </ion-icon>
+                            <div class="text ion-text-start">{{n.text}}</div>
+                            <ion-icon name="chevron-forward-outline" style="font-size:18px"></ion-icon>
+                        </div>
+                    </ion-slide>
+                </ion-slides>
             </div>
-          </ion-slide>
-        </ion-slides>
-      </div>
-    </ng-template>
-  </ion-toolbar>
-  <div style='margin-top: -0.5em;'>
-    <ion-list>
-      <ion-grid class="products">
-        <ion-row>
-          <ion-col size="4">
-            <div class="item" (click)='goToPage("flight")'>
-              <ion-label>
-                <!-- <i class="icon icon-home-plane"></i> -->
-                <img src="assets/svgs/home-plane2.svg" alt="国内机票">
-              </ion-label>
-              <ion-text>国内机票</ion-text>
-            </div>
-          </ion-col>
-          <ion-col size="4" *ngIf='isShowoverseaHotel'>
-            <div class="item" (click)='goToPage("international-flight")'>
-              <ion-label>
-                <!-- <i class="icon icon-home-plane"></i> -->
-                <img src="assets/svgs/product-plane2.svg" alt="国际机票">
-              </ion-label>
-              <ion-text class="ion-text-nowrap">国际*港澳台机票</ion-text>
-            </div>
-          </ion-col>
-          <ion-col (click)='goToPage("train")' size="4">
-            <div class="item">
-              <ion-label>
-                <img src="assets/svgs/home-train2.svg" alt="火车票">
-                <!-- <i class="icon icon-home-train"></i> -->
-              </ion-label>
-              <ion-text>火车票</ion-text>
-            </div>
-          </ion-col>
-          <ion-col (click)='goToPage("hotel")' size="4">
-            <div class="item">
-              <ion-label>
-                <img src="assets/svgs/hotel2.svg" alt="酒店" [style.height.em]='3'>
-                <!-- <i class="icon icon-hotel"></i> -->
-              </ion-label>
-              <ion-text>国内酒店</ion-text>
-            </div>
-          </ion-col>
-          <ion-col (click)='goToPage("international-hotel")' size="4">
-            <div class="item">
-              <ion-label>
-                <img src="assets/svgs/product-hotel2.svg" alt="酒店" [style.height.em]='3'>
-                <!-- <i class="icon icon-hotel"></i> -->
-              </ion-label>
-              <ion-text class="ion-text-nowrap">港澳台*海外酒店</ion-text>
-            </div>
-          </ion-col>
-          <ion-col (click)='goToPage("rentalCar")' size="4" *ngIf='isShowRentalCar&&(!identity?.Numbers?.AgentId)'>
-            <div class="item">
-              <ion-label>
-                <img src="assets/svgs/home-rentalCar2.svg" alt="用车" [style.height.em]='3'>
-                <!-- <i class="icon icon-hotel"></i> -->
-              </ion-label>
-              <ion-text color=''>用车</ion-text>
-            </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-list>
-  </div>
-  <!-- <app-crop-image-comp></app-crop-image-comp> -->
+        </ng-template>
+    </ion-toolbar>
+    <div style='margin-top: -0.5em;'>
+        <ion-list>
+            <ion-grid class="products">
+                <ion-row>
+                    <ion-col size="4">
+                        <div class="item" (click)='goToPage("flight")'>
+                            <ion-label>
+                                <!-- <i class="icon icon-home-plane"></i> -->
+                                <img src="assets/svgs/home-plane2.svg" alt="国内机票">
+                            </ion-label>
+                            <ion-text>国内机票</ion-text>
+                        </div>
+                    </ion-col>
+                    <ion-col size="4" *ngIf='isShowoverseaHotel'>
+                        <div class="item" (click)='goToPage("international-flight")'>
+                            <ion-label>
+                                <!-- <i class="icon icon-home-plane"></i> -->
+                                <img src="assets/svgs/product-plane2.svg" alt="国际机票">
+                            </ion-label>
+                            <ion-text class="ion-text-nowrap">国际*港澳台机票</ion-text>
+                        </div>
+                    </ion-col>
+                    <ion-col (click)='goToPage("train")' size="4">
+                        <div class="item">
+                            <ion-label>
+                                <img src="assets/svgs/home-train2.svg" alt="火车票">
+                                <!-- <i class="icon icon-home-train"></i> -->
+                            </ion-label>
+                            <ion-text>火车票</ion-text>
+                        </div>
+                    </ion-col>
+                    <ion-col (click)='goToPage("hotel")' size="4">
+                        <div class="item">
+                            <ion-label>
+                                <img src="assets/svgs/hotel2.svg" alt="酒店" [style.height.em]='3'>
+                                <!-- <i class="icon icon-hotel"></i> -->
+                            </ion-label>
+                            <ion-text>国内酒店</ion-text>
+                        </div>
+                    </ion-col>
+                    <ion-col (click)='goToPage("international-hotel")' size="4">
+                        <div class="item">
+                            <ion-label>
+                                <img src="assets/svgs/product-hotel2.svg" alt="酒店" [style.height.em]='3'>
+                                <!-- <i class="icon icon-hotel"></i> -->
+                            </ion-label>
+                            <ion-text class="ion-text-nowrap">港澳台*海外酒店</ion-text>
+                        </div>
+                    </ion-col>
+                    <ion-col (click)='goToPage("rentalCar")' size="4" *ngIf='isShowRentalCar&&(!identity?.Numbers?.AgentId)'>
+                        <div class="item">
+                            <ion-label>
+                                <img src="assets/svgs/home-rentalCar2.svg" alt="用车" [style.height.em]='3'>
+                                <!-- <i class="icon icon-hotel"></i> -->
+                            </ion-label>
+                            <ion-text color=''>用车</ion-text>
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-list>
+    </div>
+    <!-- <app-crop-image-comp></app-crop-image-comp> -->
 
-  <!-- <div margin>
+    <!-- <div margin>
     
     <ion-text>{{ aliPayResult$ | async | json }}</ion-text>
     <ion-button (click)="accountSecurityEn()" expand="block"
@@ -148,7 +148,7 @@
     <ion-button (click)="wxPay()" expand="block">微信支付</ion-button>
     <ion-text>{{ wxPayResult$ | async | json }}</ion-text>
   </div> -->
-  <!-- <ion-item class='hat' no-padding no-margin lines='none'>
+    <!-- <ion-item class='hat' no-padding no-margin lines='none'>
     <ion-thumbnail class='left' (click)='testAction()'>
       <img src='/assets/images/hotel.jpg'>
     </ion-thumbnail>

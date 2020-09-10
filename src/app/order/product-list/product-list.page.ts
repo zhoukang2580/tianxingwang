@@ -7,12 +7,14 @@ export const ORDER_TABS: ProductItem[] = [
   {
     label: "机票",
     value: ProductItemType.plane,
+    // product-plane
     imageSrc: "assets/svgs/product-plane.svg",
     isDisplay: true
   },
   {
     label: "酒店",
     value: ProductItemType.hotel,
+    // product-hotel
     imageSrc: "assets/svgs/product-hotel.svg",
     isDisplay: true
   },
