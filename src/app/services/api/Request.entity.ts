@@ -1,4 +1,6 @@
+import { AppHelper } from "src/app/appHelper";
 export class RequestEntity {
+  TicketName?: string;
   Ticket?: string;
   Domain?: string;
   ImageCode?: string;
@@ -19,4 +21,17 @@ export class RequestEntity {
   IsRedirctNoAuthorize?: boolean;
   IsForward?: boolean;
   Timeout?: number;
+  constructor() {
+    this.Timestamp = Math.floor(Date.now() / 1000);
+    this.Language = AppHelper.getLanguage();
+    this.Ticket = AppHelper.getTicket();
+    this.TicketName = AppHelper.getTicketName();
+    this.Domain = AppHelper.getDomain();
+    if (this.TicketName != "ticket") {
+      this[this.TicketName] = this.Ticket;
+      this.Ticket = "";
+    } else {
+      this.TicketName = "";
+    }
+  }
 }

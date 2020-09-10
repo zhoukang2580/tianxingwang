@@ -232,10 +232,7 @@ export class LoginService {
       req.IsShowLoading = true;
       req.Method = "ApiLoginUrl-Home-Logout";
       req.Data = JSON.stringify({ Ticket: ticket });
-      req.Timestamp = Math.floor(Date.now() / 1000);
-      req.Language = AppHelper.getLanguage();
-      req.Ticket = AppHelper.getTicket();
-      req.Domain = AppHelper.getDomain();
+    
       this.apiService.showLoadingView({ msg: "正在退出账号..." });
       const formObj = Object.keys(req)
         .map((k) => `${k}=${req[k]}`)
@@ -321,10 +318,6 @@ export class LoginService {
       Ticket: ticket,
       LoginType: this.getLoginType(),
     });
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.Domain = AppHelper.getDomain();
     const url = await this.getUrl(req);
     const formObj = Object.keys(req)
       .map((k) => `${k}=${req[k]}`)

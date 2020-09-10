@@ -183,10 +183,6 @@ export class WechatHelper {
     req.Data = {
       Url: pageUrl,
     };
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.Domain = AppHelper.getDomain();
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
@@ -321,10 +317,6 @@ export class WechatHelper {
     const token = (apiService.apiConfig && apiService.apiConfig.Token) || "";
     // console.log("token " + token, "key=" + key);
     req.Data = {};
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.Domain = AppHelper.getDomain();
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
