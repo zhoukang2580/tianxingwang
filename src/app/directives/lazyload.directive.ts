@@ -28,16 +28,15 @@ export class LazyloadDirective
   @Input() loadingImage;
   @Input() htmlStr;
   @Input() isCanView;
-  private time = 0;
+  @Input() isReload = false;
   constructor(
     private imageRecoverService: ImageRecoverService,
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
     private ngZone: NgZone,
     private lazyLoadService: LazyloadService
-  ) { }
+  ) {}
   ngOnChanges(c: SimpleChanges) {
     // console.log("lazyload changes",this.el.nativeElement,this.lazyLoad);
-    this.time = Date.now();
     this.ngZone.runOutsideAngular(() => {
       this.addIO();
     });
@@ -48,74 +47,48 @@ export class LazyloadDirective
     //   this.lazyLoad
     // );
     if (c && c.htmlStr) {
-      this.lazyLoadService.append({
-        el: this.el.nativeElement,
-        html: this.htmlStr,
+      this.lazyLoadService.appendHtmlStr({
+        container: this.el.nativeElement,
+        htmlStr: this.htmlStr,
         defaultImage: this.defaultImage,
         loadingImage: this.loadingImage,
-        isCanView: this.isCanView
+        isCanView: this.isCanView,
       });
     }
   }
   ngAfterContentInit() {
     // console.log("ngAfterContentInit", this.defaultImage);
   }
+  private load(src?: string) {
+    this.lazyLoadService.load({
+      el: this.el.nativeElement,
+      src: src || this.lazyLoad,
+      loadingImage: this.loadingImage,
+      defaultImage: this.defaultImage,
+    });
+  }
+  private onReload() {
+    if (this.el.nativeElement.getAttribute("loaderror")) {
+      this.load(this.addVersion(this.lazyLoad));
+    }
+  }
   ngOnInit() {
     this.loadingImage = this.loadingImage || `assets/loading.gif`;
-    this.time = Date.now();
-    this.ngZone.runOutsideAngular(() => {
-      this.setDefaultImage();
-      if (this.recoverImage) {
-        this.setupImageRecover();
-      }
-    });
-    this.el.nativeElement.style.transition = "all ease-in-out 200ms";
-    this.el.nativeElement.onload = () => {
-      this.el.nativeElement.style.opacity = `1`;
-    };
-    this.el.nativeElement.onerror = () => {
-      this.setDefaultImage();
-      this.el.nativeElement.style.opacity = `1`;
-    };
-  }
-  private setDefaultImage() {
-    this.load(this.lazyLoad ? this.loadingImage : this.defaultImage);
-  }
-  private async setupImageRecover() {
-    // Do something
-    // console.log("settup", atter)
-    // atter.imagePath = null;
-    if (
-      !this.el.nativeElement.dataset ||
-      !this.el.nativeElement.dataset["isInitialized"]
-    ) {
-      this.el.nativeElement.dataset["isInitialized"] = "isInitialized";
-      await this.imageRecoverService.initialize(this.el.nativeElement);
+    if (this.isReload) {
+      this.el.nativeElement.addEventListener("click", this.onReload);
     }
+    this.el.nativeElement.style.transition = "all ease-in-out 200ms";
+    if (this.el.nativeElement instanceof HTMLImageElement) {
+      this.el.nativeElement.src = this.loadingImage;
+    } else {
+      this.el.nativeElement.style.backgroundImage = `url('${this.loadingImage}')`;
+    }
+  }
+  private getNormalizeUrl(url: string) {
+    return this.lazyLoadService.getNormalizeUrl(url);
   }
   ngOnDestroy() {
     this.removeIO();
-  }
-  private load(src: string = null) {
-    // console.log("进入load ", Date.now() - this.time);
-    let url = src || this.lazyLoad || this.defaultImage;
-    // url = `${url}`.replace(/\?v=\d+/g, "");
-    url = this.addVersion(url);
-    // console.log('load url:', url);
-    this.time = Date.now();
-    this.ngZone.runOutsideAngular(() => {
-      this.el.nativeElement.style.opacity = `0.01`;
-      setTimeout(() => {
-        this.el.nativeElement.style.opacity = `1`;
-      }, 200);
-      // console.log("加载图片耗时：", Date.now() - this.time);
-      if (this.el.nativeElement instanceof HTMLDivElement) {
-        // this.render.setProperty(this.el.nativeElement,'backgroundImage',`${src || this.lazyLoad}`);
-        this.el.nativeElement.style.backgroundImage = `url('${url}')`;
-      } else {
-        this.el.nativeElement.src = url || this.addVersion(this.lazyLoad);
-      }
-    });
   }
   private addVersion(url: string) {
     if (url) {
@@ -145,7 +118,6 @@ export class LazyloadDirective
     //   setTimeout(() => this.load(), 200);
     //   return;
     // }
-    this.time = Date.now();
     if (
       "IntersectionObserver" in window &&
       "IntersectionObserverEntry" in window
