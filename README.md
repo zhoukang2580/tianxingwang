@@ -73,15 +73,11 @@ ng serve --disableHostCheck
 3. ios微信配置，请参考官网：`https://developers.weixin.qq.com/doc/oplatform/Mobile_App/Access_Guide/iOS.html`
 ## ios 发布app说明
 执行命令前，先到config.xml修改版本号
-0. 确定打包的环境变量值， src/app/config.ts 里面的测试/生产环境，mockProdBuild 的值
-1. 首先执行 `sudo ionic cordova build ios --prod --release` 
+0. 确定打包的环境变量值，environment里面的测试/生产环境，environment.prod.ts
+1. 首先执行 `sudo ionic cordova build ios --prod --release`
 2. 用 xcode 打开 platforms/ios/项目名称.xcodeproj/项目名称.xcworkspace
 3. 到xcode target 的选项卡中打开 info，修改打包的bundle identifier为： `com.eskytrip.zhaozuomingios`，如果要修改微信appid ,修改最底下的url types 的schema `https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5`,位置访问，需要在info标签下面新增 key =`Privacy - Location Always Usage Description`和`Privacy - Location Usage Description`
 4. 执行archive打包，传到iTunes,提交审核
-## android 发布
-0. 同ios发布
-1. 执行 `ionic cordova build android --prod --release` 如果是在Mac上执行，需要添加 `sudo ionic cordova build android --prod --release` 
-
 ## 支付宝唤起
 在xcode打包时候，找到 info，找到 LSApplicationQueriesSchemes 添加 alipay ，alipays
 ## 微信唤起
@@ -118,3 +114,14 @@ cordova 官网 `https://cordova.apache.org/`
 
 ## 取消自动刷新浏览器
 `ng serve --liveReload=false`
+
+
+## 环境变量配置
+1. 安装 nodejs
+2. 全局安装 @ionic/cli, @angular/cli , cordova ;`npm i -g @ionic/cli @angular/cli cordova`;
+3. 安装 Android studio , 并且下载 sdk 
+4. 配置Android SDK 的环境变量
+   1 配置 SDK所在的目录
+   2 配置 platforms目录
+   2 配置 platform-tools 目录
+5. 编译Android apk `ionic cordova build android --prod --release`
