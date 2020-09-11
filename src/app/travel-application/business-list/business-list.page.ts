@@ -1,3 +1,4 @@
+import { Keyboard } from '@ionic-native/keyboard/ngx';
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -37,8 +38,9 @@ export class BusinessListPage implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private service: TravelService,
-    private staffService: StaffService
-  ) {}
+    private staffService: StaffService,
+    private keyboard: Keyboard
+  ) { }
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((q) => {
@@ -55,6 +57,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   }
 
   onSearch(b) {
+    this.keyboard.hide();
     this.searchModel.IsShowLoading = b;
     console.log(this.searchModel.StatusType, "searchModel.StatusType");
     console.log(this.searchModel.SearchContent, "searchModel.AccountId");
@@ -188,6 +191,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     // this.staffService.getStaff().then((s) => {
     //   this.staff = s;
     // });
+    this.keyboard.hide();
     if (this.searchModel) {
       if (!isKeepCondition) {
         this.searchModel.StatusType = 0;

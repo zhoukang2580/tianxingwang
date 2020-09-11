@@ -255,6 +255,8 @@ export class TravelFormTripEntity extends BaseEntity {
 
   toCityNames: string;
 
+  toCityInName: string;
+
   /// <summary>
   /// 入住城市Code
   /// </summary>

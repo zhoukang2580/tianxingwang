@@ -24,7 +24,7 @@
                 </ng-container>
             </ion-text>
         </ion-item>
-        <ion-item style="margin-top: 8px;">
+        <ion-item style="margin-top: 8px;" [attr.CustomerName]='"CustomerName"'>
             <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">客户或公司:</ion-text>
             <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
@@ -32,18 +32,6 @@
             </ion-input>
         </ion-item>
         <ion-item [attr.Subject]='"Subject"'>
-            <!-- <span>
-                <span>*</span>
-            <ion-text [color]="!enable?'dark':'dark'">
-                出差事由
-            </ion-text>
-            </span>
-            <ion-input placeholder="请输入" type="text" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable">
-            </ion-input> -->
-            <!-- <div class="no_border_bottom text">
-                <span style="line-height: 3;"><span class="red">*</span><span style="font: inherit;font-size: 15px;">出差事由:</span></span>
-                <textarea type="text" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
-            </div> -->
             <div class="no_border_bottom text">
                 <span class="red" style="position: absolute;margin: 14px 0px;">*</span>
                 <span style="line-height: 3;margin-left: 10px;">
@@ -86,7 +74,7 @@
         <ion-item>
             <div class="no_border_bottom text">
                 <span style="line-height: 3;"><ion-text [color]="!enable?'dark':'dark'" style="font-size: 16px;">备注:</ion-text></span>
-                <textarea style="margin-left: -3px;" type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable"></textarea>
+                <textarea style="margin-left: -3px;padding: 3px;" type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable"></textarea>
             </div>
             <!-- <div style="display: flex;justify-content: space-between;width: 100%;flex-wrap: wrap;">
                 <div style="padding-top: 0.5em;">

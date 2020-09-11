@@ -51,8 +51,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     { val: 'Mushroom', isChecked: false }
   ];
   isShowCheckInCity = false;
+  isapp :boolean = false;
   // tslint:disable-next-line: no-bitwise
-  istrips: "行程1" | "" = "行程1";
   constructor(
     private router: Router,
     private flightService: FlightService,
@@ -113,14 +113,27 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       AppHelper.alert("出差结束时间不能早于出差开始时间");
       return;
     }
-  }
-
-  nowTime(start, EndDate) {
-    let day = this.getNumberOfDays(start, EndDate);
     if (day > 365) {
       AppHelper.alert("出差时间不能超过一年");
       return;
     }
+  }
+
+  nowTime(start, EndDate) {
+    let day = this.getNumberOfDays(start, EndDate);
+    let nowtime = new Date();
+    let frist = start.substr(0,10).replace(/-/g ,'');
+    let nowday = nowtime.getFullYear() +'-'+ (nowtime.getMonth()+1) +'-'+ nowtime.getDate();
+
+    let newday = nowday.substr(0,10).replace(/-/g ,'').replace(nowday.substr(5,1),'0'+nowday.substr(5,1));
+
+    console.log('选择的时间'+frist+'选择的时间' + newday);
+    if(frist < newday){
+      AppHelper.alert("出差时间不能是过去时间");
+      // document.getElementById('starttime').value = '';
+      return;
+    }
+    
   }
   onDelete() {
     this.remove.emit(this.trip);
@@ -211,6 +224,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       trip.ToCityArrive = citys;
       trip.CheckInCityCode = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Code).join(',');
       trip.CheckInCityName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).join(',');
+
+      trip.toCityInName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).filter(it=>!!it&&it.length>0).join(" · ");
     }
     // if (city && this.trip) {
     //   if (isFrom) {

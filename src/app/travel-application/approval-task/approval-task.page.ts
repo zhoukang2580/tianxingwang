@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { OrderService } from "src/app/order/order.service";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { Subscription } from "rxjs";
@@ -21,24 +21,26 @@ import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
   templateUrl: "./approval-task.page.html",
   styleUrls: ["./approval-task.page.scss"],
 })
-export class ApprovalTaskPage implements OnInit {
+export class ApprovalTaskPage implements OnInit, OnDestroy {
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
   private loadDataSub = Subscription.EMPTY;
+  private queryparamSub = Subscription.EMPTY;
   private pageSize = 20;
-  private staffService: StaffService;
+  private isOpenUrl = false;
   curTaskPageIndex = 0;
   TaskStatusType = TaskStatusType;
   tasks: TaskEntity[];
   isLoading = true;
+  isApprova : boolean = true;
+
   @ViewChild(IonInfiniteScroll, { static: true })
   infiniteScroll: IonInfiniteScroll;
   loadMoreErrMsg: string;
   // public dispased: boolean = true;
   isactivename: "待我审批" | "已审任务" = "待我审批";
-  Approval:string;
+  Approval: string;
   activeTab: ProductItem;
-  isOpenUrl = false;
   isChenkInCity: boolean = false;
   istype: number;
   ispriorApproval: boolean = true;
@@ -46,12 +48,27 @@ export class ApprovalTaskPage implements OnInit {
   constructor(
     private orderService: OrderService,
     private identityService: IdentityService,
-    private router: Router
-    
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
+    this.queryparamSub = this.route.queryParamMap.subscribe((q) => {
+      const goPathQueryParams = q.get("goPathQueryParams")
+      if (goPathQueryParams) {
+        const p = JSON.parse(goPathQueryParams);
+        if (p.tab == '已审任务') {
+          // this.isactivename = '已审任务';
+          this.onTaskReviewed();
+        }
+      }
+      
+    })
     this.doRefresh();
+  }
+  ngOnDestroy() {
+    this.loadDataSub.unsubscribe();
+    this.queryparamSub.unsubscribe();
   }
 
   doLoadMoreTasks() {
@@ -125,6 +142,10 @@ export class ApprovalTaskPage implements OnInit {
             title: task && task.Name,
             tabId: this.activeTab?.value,
             isOpenInAppBrowser: AppHelper.isApp(),
+            goPath: this.router.url.substr(1), // /approval-task
+            goPathQueryParams: JSON.stringify({
+              tab: "已审任务"
+            })
           },
         })
         .then((_) => {
@@ -143,6 +164,7 @@ export class ApprovalTaskPage implements OnInit {
   }
 
   onTaskReviewed() {
+    this.isApprova = false;
     this.infiniteScroll.disabled = true;
     this.curTaskPageIndex = 0;
     this.isactivename = "已审任务";

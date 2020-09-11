@@ -36,12 +36,12 @@ export const ORDER_TABS: ProductItem[] = [
     imageSrc: "assets/svgs/product-insurance.svg",
     isDisplay: !true
   },
-  {
-    label: "待审任务",
-    value: ProductItemType.waitingApprovalTask,
-    imageSrc: "assets/images/projectcheck.png",
-    isDisplay: true
-  },
+  // {
+  //   label: "待审任务",
+  //   value: ProductItemType.waitingApprovalTask,
+  //   imageSrc: "assets/images/projectcheck.png",
+  //   isDisplay: true
+  // },
   {
     label: "更多",
     value: ProductItemType.more,

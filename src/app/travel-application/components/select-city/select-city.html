@@ -38,7 +38,7 @@
         <!-- <ion-list class='holder'>
         </ion-list> -->
         <ion-list *ngIf='textSearchResults?.length else nodatatempl'>
-            <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item)'>
+            <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item,index)'>
                 <ion-label>
                     <ion-text style="position: relative;padding-left: 1em;" [color]="item?.Selected?'secondary':'dark'">
                         <ion-icon *ngIf='item.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon>
