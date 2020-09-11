@@ -124,4 +124,5 @@ cordova 官网 `https://cordova.apache.org/`
    1 配置 SDK所在的目录
    2 配置 platforms目录
    2 配置 platform-tools 目录
-5. 编译Android apk `ionic cordova build android --prod --release`
+5. 安装 `npm i -g cordova-res` ;用于生成Android图标，启动图标
+6. 编译Android apk `ionic cordova build android --prod --release`
