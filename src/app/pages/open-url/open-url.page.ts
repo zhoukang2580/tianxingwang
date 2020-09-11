@@ -1,6 +1,6 @@
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { LoadingController, NavController, Platform } from "@ionic/angular";
-import { Subject, BehaviorSubject } from "rxjs";
+import { Subject, BehaviorSubject, Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   Component,
@@ -9,7 +9,8 @@ import {
   ElementRef,
   ViewChildren,
   AfterViewInit,
-  ViewChild
+  ViewChild,
+  OnDestroy
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import {
@@ -17,6 +18,7 @@ import {
   InAppBrowser,
   InAppBrowserOptions
 } from "@ionic-native/in-app-browser/ngx";
+import { AppHelper } from 'src/app/appHelper';
 
 @Component({
   selector: "app-open-url",
@@ -24,15 +26,18 @@ import {
   styleUrls: ["./open-url.page.scss"],
   providers: [InAppBrowser]
 })
-export class OpenUrlPage implements OnInit, AfterViewInit {
+export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
   title: string;
   url$: Subject<any>;
   isHideTitle = false;
   isShowFabButton = false;
   isIframeOpen = true;
   private isOpenInAppBrowser = false;
+  private isback = false;
+  private goPath = "";
+  private goPathQueryParams: any;
   private browser: InAppBrowserObject;
-
+  private subscription = Subscription.EMPTY;
   @ViewChild(BackButtonComponent) backButton: BackButtonComponent;
   @ViewChildren("iframe") iframes: QueryList<ElementRef<HTMLIFrameElement>>;
   constructor(
@@ -41,10 +46,14 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
     private loadingCtrl: LoadingController,
     private navCtrl: NavController,
     private iab: InAppBrowser,
-    private plt: Platform
+    private plt: Platform,
+    private router: Router
   ) {
     this.url$ = new BehaviorSubject(null);
-    activatedRoute.queryParamMap.subscribe(p => {
+    this.subscription = activatedRoute.queryParamMap.subscribe(p => {
+      this.goPath = p.get("goPath");
+      this.goPathQueryParams = p.get("goPathQueryParams") || "";
+
       console.log("open url page ", p);
       const isIframe = p.get("isIframeOpen");
       if (isIframe) {
@@ -74,16 +83,16 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
     if (this.browser) {
       this.browser.close();
     }
-    const color="#2596D9";
+    const color = "#2596D9";
     const options: InAppBrowserOptions = {
       usewkwebview: "yes",
       location: "no",
       toolbar: "yes",
       zoom: "no",
       footer: "no",
-      closebuttoncaption:"关闭(CLOSE)",
-      closebuttoncolor:"#2596D9",
-      navigationbuttoncolor:"#2596D9",
+      closebuttoncaption: "关闭(CLOSE)",
+      closebuttoncolor: "#2596D9",
+      navigationbuttoncolor: "#2596D9",
       // toolbarcolor:"#2596D90f"
     };
     this.browser = this.iab.create(encodeURI(url), "_blank", options);
@@ -96,25 +105,53 @@ export class OpenUrlPage implements OnInit, AfterViewInit {
       this.backButton.popToPrePage();
     });
   }
+  private onMessage(evt: MessageEvent) {
+    if (evt.data && evt.data.message) {
+      if (evt.data.message == 'back') {
+        if (this.goPath) {
+          this.router.navigate([this.goPath], {
+            queryParams: {
+              goPathQueryParams: this.goPathQueryParams
+            }
+          })
+        } else {
+          if (!this.isback) {
+            this.onBack();
+          }
+        }
+      }
+    }
+  }
+
   ngAfterViewInit() {
-    if (this.iframes) {
-      this.iframes.changes.subscribe(async _ => {
+    window.addEventListener("message", this.onMessage.bind(this));
+    setTimeout(async () => {
+
+      if (this.iframes) {
         const iframe = this.iframes.first;
         if (iframe) {
           const l = await this.loadingCtrl.create({ message: "请稍候" });
           l.backdropDismiss = true;
           l.present();
-          iframe.nativeElement.onload = _ => {
+          iframe.nativeElement.onload = () => {
             l.dismiss();
           };
+          iframe.nativeElement.onerror = () => {
+            l.dismiss();
+          }
         }
-      });
-    }
+      }
+    }, 200);
   }
-  onBack(evt: CustomEvent) {
+  onBack(evt?: CustomEvent) {
     if (this.backButton) {
+      this.isback = true;
       this.backButton.popToPrePage();
     }
   }
-  ngOnInit() {}
+  ngOnInit() { }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+    window.removeEventListener('message', this.onMessage.bind(this));
+  }
 }

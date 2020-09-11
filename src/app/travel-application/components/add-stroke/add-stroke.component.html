@@ -4,7 +4,7 @@
             <ion-item-divider>
                 <span style="color: red;margin-top: 5px;margin-right: 4px;">*</span>
                 <ion-text class="text-trip"><span style="font-size:12px">行程{{index+1}}</span></ion-text>
-                <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()" class="ion-text-end" *ngIf="enable"></ion-icon>
+                <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()" class="ion-text-end" *ngIf="enable&&index != 0"></ion-icon>
             </ion-item-divider>
             <!-- <ion-radio-group [(ngModel)]='trip.IsBackway'>
                 <ion-buttons class="radios">
@@ -45,34 +45,34 @@
                 </ion-label>
             </ion-item>
             <ion-item detail (click)="onSelectCity(false,false,trip)" style="line-height: initial;">
-                <ion-text [color]="!enable?'dark':'dark'">
+                <ion-text [color]="!enable?'dark':'dark'" class="selectCity">
                     到达城市
                 </ion-text>
                 <!-- {{trip.ToCities|json}} -->
-                <label class="ion-text-end">
-                    <ion-text  [color]="!enable?'medium':'dark'">{{trip['toCityNames']}}            
+                <label class="ion-text-end" style="margin-right: 9px;">
+                    <ion-text   [color]="!enable?'medium':'dark'">{{trip['toCityNames']}}            
                     </ion-text>
                 </label>
             </ion-item>
             <ion-item *ngIf='isShowCheckInCity' detail (click)="onSelectCheckInCity(false,false,trip)" style="line-height: initial;">
-                <ion-text [color]="!enable?'dark':'dark'">
+                <ion-text [color]="!enable?'dark':'dark'" class="selectCity">
                     入住城市
                 </ion-text>
-                <label class="ion-text-end" *ngFor='let g of trip.ToCityArrive;let last=last;'>
-                    <ion-text [color]="!enable?'medium':'dark'">{{g.Name}}
-                        <ng-container *ngIf='!last'>·&nbsp;</ng-container>
+                <label style="margin-right: 9px;" class="ion-text-end">
+                    <ion-text [color]="!enable?'medium':'dark'" >{{trip['toCityInName']}} 
+                        <!-- <ng-container *ngIf='!last'>·&nbsp;</ng-container> -->
                     </ion-text>
                 </label>
             </ion-item>
 
-            <ion-item detail>
+            <ion-item detail style="line-height: initial;">
                 <ion-text [color]="!enable?'dark':'dark'">
                     开始时间
                 </ion-text>
-                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" min="2020-09-10" max="2100" [(ngModel)]="trip.StartDate" doneText="确定" cancelText="取消">
+                <ion-datetime id="starttime" style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" max="2100" [(ngModel)]="trip.StartDate" (ionChange)="nowTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
                 </ion-datetime>
             </ion-item>
-            <ion-item detail>
+            <ion-item detail style="line-height: initial;">
                 <ion-text [color]="!enable?'dark':'dark'">
                     结束时间
                 </ion-text>
