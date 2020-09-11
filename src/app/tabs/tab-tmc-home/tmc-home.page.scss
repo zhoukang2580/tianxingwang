@@ -2,20 +2,33 @@ ion-header ion-title {
   font-size: 0.9rem;
 }
 
-.img {
+.banners {
   --background: white;
   --border-width: 0;
   position: relative;
-
+  width: 100vw;
+}
+.inner {
+  height: 30vh;
+  position: relative;
   img {
-    object-fit: cover;
-    -o-object-fit: cover;
-    max-height: 45vh;
-    width: 100vw;
-    height: 45vh;
+    width: 100%;
+    &.lazyloading{
+      width: auto;
+      object-fit: cover;
+    }
+  }
+  .desc {
+    font-size: 0.6rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(var(--ion-color-dark-rgb), 0.2);
+    color: white;
+    border-radius: 0em;
   }
 }
-
 .text-swiper {
   --min-height: 2em;
 }
@@ -25,6 +38,8 @@ ion-header ion-title {
   list-style-type: none;
   height: 1.2em;
   // overflow       : auto;
+  padding: 0 0.5em;
+  width: 100%;
   transition: all 200ms ease-in-out;
 
   li,

@@ -21,7 +21,9 @@ try {
   if (
     // true||
     window["VConsole"] &&
-    (CONFIG.isShowVConsole || window["isShowVConsole"])
+    (CONFIG.isShowVConsole ||
+      window["isShowVConsole"] ||
+      AppHelper.getQueryParamers()["isDebug"])
   ) {
     if (window["vConsole"]) {
       window["vConsole"].destroy();

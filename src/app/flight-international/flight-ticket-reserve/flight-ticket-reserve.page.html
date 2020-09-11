@@ -210,8 +210,8 @@
   </ng-template>
 </ion-content>
 
-<ion-footer>
-  <ion-toolbar (click)="isShowFee=!isShowFee">
+<ion-footer #footerEl >
+  <ion-toolbar (click)="onToggleIsShowFee(transfromEl,footerEl['el'])">
     <ion-buttons slot='start'>
       <ion-text color="secondary">总价:</ion-text>
       <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
@@ -226,11 +226,11 @@
   </ion-toolbar>
 </ion-footer>
 <div class="zz" *ngIf="isShowFee" (click)="isShowFee=!isShowFee"></div>
-<div [class.show]="isShowFee" class="transfrom">
+<div [class.show]="isShowFee" class="transfrom" #transfromEl>
   <div class="wrapper">
     <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee"
       [style.min-width]="vmCombindInfos.length>1?'90%':'100%'">
-      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmModal?.credential?.Number}})
+      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmCredential?.Number}})
       </div>
       <div *ngFor="let trip of searchModel?.trips">
         <div class="spacebetween">

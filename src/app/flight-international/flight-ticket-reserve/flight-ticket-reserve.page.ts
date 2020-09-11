@@ -140,6 +140,10 @@ export class FlightTicketReservePage
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
+  onToggleIsShowFee(el: HTMLElement, footerEl: HTMLElement) {
+    this.isShowFee = !this.isShowFee;
+    el.style.transform = `translate(0,-${footerEl.clientHeight || 44}px)`;
+  }
   async ngOnInit() {
     this.subscriptions.push(this.subscription);
     this.subscriptions.push(
