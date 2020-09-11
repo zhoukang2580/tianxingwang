@@ -169,6 +169,7 @@ export class LazyloadService {
       } else {
         el["src"] = loadingImage;
       }
+      el.classList.add("lazyloading");
       el.style.opacity = `0.01`;
       setTimeout(() => {
         el.style.opacity = `1`;
@@ -189,8 +190,12 @@ export class LazyloadService {
           } else {
             el.removeAttribute("loaderror");
           }
+          el.classList.add("lazyloaded");
+          el.classList.remove("lazyloading");
         },
         (failoverDefaultUrl) => {
+          el.classList.remove("lazyloaderror");
+          el.classList.remove("lazyloading");
           if (el instanceof HTMLDivElement) {
             el.style.backgroundImage = `url('${
               defaultImage || failoverDefaultUrl

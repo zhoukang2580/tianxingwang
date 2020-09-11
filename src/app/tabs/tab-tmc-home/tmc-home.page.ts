@@ -247,7 +247,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     // console.log("touchEnd");
     setTimeout(() => {
       this.startAutoPlay();
-    }, 1000);
+    }, 2000);
   }
   private startAutoPlay() {
     if (this.swiper && this.swiper.autoplay && this.swiper.autoplay.start) {

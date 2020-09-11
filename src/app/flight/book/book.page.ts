@@ -20,6 +20,7 @@ import {
   Platform,
   IonRefresher,
   IonRadio,
+  IonFooter,
 } from "@ionic/angular";
 import {
   TmcService,
@@ -139,6 +140,8 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
+  @ViewChild("transfromEle", { static: true }) transfromEle: ElementRef<HTMLElement>;
+  @ViewChild(IonFooter, { static: true }) ionFooter: IonFooter;
   constructor(
     private flightService: FlightService,
     private staffService: StaffService,
@@ -226,6 +229,12 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     }
     // console.log(currentRoute.url, currentState.url, nextState.url);
     return true;
+  }
+  onToggleIsShowFee() {
+    this.isShowFee = !this.isShowFee;
+    if(this.transfromEle&&this.transfromEle){
+      this.transfromEle.nativeElement.style.transform=`transform: translate(0, -${this.ionFooter['el'].clientHeight}px)`;
+    }
   }
   private async initOrderTravelPayTypes() {
     const bookInfos = this.flightService.getPassengerBookInfos();
