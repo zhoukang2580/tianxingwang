@@ -12,7 +12,7 @@ import { NavController } from "@ionic/angular";
 @Component({
   selector: "app-password-check",
   templateUrl: "./password-check.page.html",
-  styleUrls: ["./password-check.page.scss"]
+  styleUrls: ["./password-check.page.scss"],
 })
 export class PasswordCheckPage implements OnInit, OnDestroy {
   isShowImageCode: boolean;
@@ -42,7 +42,7 @@ export class PasswordCheckPage implements OnInit, OnDestroy {
       if (this.subscription) {
         this.subscription.unsubscribe();
       }
-      this.subscription = this.check().subscribe(r => {
+      this.subscription = this.check().subscribe((r) => {
         this.isShowImageCode = false;
       });
     }
@@ -56,10 +56,10 @@ export class PasswordCheckPage implements OnInit, OnDestroy {
     req.Method = "ApiPasswordUrl-Home-Action";
     req.Data = JSON.stringify({
       Name: this.name,
-      Action: "Check"
+      Action: "Check",
     });
     return this.identityService.getIdentitySource().pipe(
-      exhaustMap(identity => {
+      exhaustMap((identity) => {
         this.identityEntity = identity;
         return this.apiService
           .getResponse<{
@@ -67,23 +67,25 @@ export class PasswordCheckPage implements OnInit, OnDestroy {
             AccountId: string; // ;
           }>(req)
           .pipe(
-            switchMap(r => {
+            switchMap((r) => {
               if (!r.Status) {
                 this.message = r.Message;
                 return of(r.Data);
               }
               if (r.Data) {
-                this.router.navigate([
-                  AppHelper.getRoutePath("password-valid"),
+                this.router.navigate(
+                  [AppHelper.getRoutePath("password-valid")],
                   {
-                    Name: this.name,
-                    ValidTypes: JSON.stringify(r.Data.ValidTypes)
+                    queryParams: {
+                      Name: this.name,
+                      ValidTypes: JSON.stringify(r.Data.ValidTypes),
+                    },
                   }
-                ]);
+                );
               }
               return of(r.Data);
             }),
-            tap(rid => {})
+            tap((rid) => {})
           );
       })
     );

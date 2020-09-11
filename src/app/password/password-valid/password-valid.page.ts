@@ -32,7 +32,7 @@ export class PasswordValidPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe(p => {
+    this.activatedRoute.queryParamMap.subscribe(p => {
       this.message = "";
       this.items = p.get("ValidTypes") && JSON.parse(p.get("ValidTypes"));
       this.name = p.get("Name");
@@ -55,7 +55,6 @@ export class PasswordValidPage implements OnInit {
       }>(req)
       .pipe(
         switchMap(r => {
-          debugger;
           if (!r.Status) {
             this.message = r.Message;
             return of(r.Data);
