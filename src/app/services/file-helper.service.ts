@@ -302,12 +302,11 @@ export class FileHelperService {
     const pkgName = await this.getPackageName();
     req["type"] = "loadjson";
     req.Data = {
-      Name: `${pkgName}.${
-        this.plt.is("ios") ? "ios" : "android"
+      Name: `${pkgName}.${this.plt.is("ios") ? "ios" : "android"
         }`.toLowerCase(),
     };
     req.IsShowLoading = true;
-    req.LoadingMsg="正在初始化";
+    req.LoadingMsg = "正在初始化";
     // this.logMessage("apiconfig", this.apiService.apiConfig);
     // this.logMessage("requrl", await this.apiService.getUrl(req));
     if (AppHelper.isFunction(onprogress)) {
@@ -598,8 +597,7 @@ export class FileHelperService {
         this.dataDirectory,
         this.updateDirectoryName
       );
-      const curUsingVersionDir = `${
-        this.www
+      const curUsingVersionDir = `${this.www
         }_${this.getLocalHcpVersion()}`.replace(/\./g, "_");
       const downloadedLatestApk =
         `${this.serverVersion}`.replace(/\./g, "_") + ".apk";
@@ -816,8 +814,7 @@ export class FileHelperService {
         if (check) {
           resove({
             hcpUpdateComplete: true,
-            nativePath: `${
-              destFilePathDir.endsWith("/")
+            nativePath: `${destFilePathDir.endsWith("/")
                 ? destFilePathDir
                 : destFilePathDir + "/"
               }${fileName}`,
@@ -1007,8 +1004,7 @@ export class FileHelperService {
     Md5: string
   ) {
     this.logMessage(`要下载的应用地址: ` + apkUrl);
-    const apkPath = `${this.dataDirectory}${
-      this.updateDirectoryName
+    const apkPath = `${this.dataDirectory}${this.updateDirectoryName
       }/${this.serverVersion.replace(/\./g, "_")}.apk`;
     onprogress({
       total: 100,
@@ -1296,16 +1292,14 @@ export class FileHelperService {
   }
   private checkDirExists(path: string, dirName: string) {
     this.logMessage(
-      `检查路径${path}${
-      (path || "").endsWith("/") ? "" : "/"
+      `检查路径${path}${(path || "").endsWith("/") ? "" : "/"
       }${dirName}是否存在`
     );
     return this.file
       .checkDir(path, dirName)
       .then((_) => {
         this.logMessage(
-          `路径${path}${
-          (path || "").endsWith("/") ? "" : "/"
+          `路径${path}${(path || "").endsWith("/") ? "" : "/"
           }${dirName}是否存在?${_}】`
         );
         return true;
@@ -1419,14 +1413,12 @@ export class FileHelperService {
       }
       this.logMessage(`-----------完成文件校验-----------`);
       this.logMessage(
-        `总共有${
-        checkMd5Failures.filter((item) => !item.downloadMd5 || !item.md5)
+        `总共有${checkMd5Failures.filter((item) => !item.downloadMd5 || !item.md5)
           .length
         }个文件md5不存在`
       );
       this.logMessage(
-        `总共校验${files.length}个文件，其中${
-        checkMd5Failures.length
+        `总共校验${files.length}个文件，其中${checkMd5Failures.length
         }个校验失败，校验详细结果:${JSON.stringify(checkMd5Failures, null, 2)}`
       );
       return checkMd5Failures.length === 0;

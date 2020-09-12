@@ -22,7 +22,7 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
   isShowBindButton: boolean;
   @ViewChild("List") deviceList: IonList;
   appName = CONFIG.appTitle;
-  constructor(private apiService: ApiService, private navCtrl: NavController) {}
+  constructor(private apiService: ApiService, private navCtrl: NavController) { }
   back() {
     this.navCtrl.pop();
   }
@@ -34,7 +34,6 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
       if (paramters.dingtalkcode) {
         const data = {
           Code: paramters.dingtalkcode,
-          AloneTag: paramters.AloneTag,
         };
         this.bindCode(data);
         AppHelper.removeQueryParamers("dingtalkcode");
@@ -43,14 +42,8 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
   }
   async bind() {
     if (AppHelper.isDingtalkH5()) {
-      let url =
-        AppHelper.getApiUrl() +
-        "/home/GetDingTalkCode?domain=" +
-        AppHelper.getDomain() +
-        "&ticket=" +
-        AppHelper.getTicket() +
-        "&path=account-dingtalk";
-      const filterKeys = ["domain", "ticket", "path", "IsLogin", "wechatcode"];
+      let url = `${AppHelper.getApiUrl()}/home/GetDingTalkCode?domain=${AppHelper.getDomain()}&${AppHelper.getTicketName()}=${AppHelper.getTicket()}&path=account-dingtalk`;
+      const filterKeys = ["domain", AppHelper.getTicketName(), "path", "IsLogin", "wechatcode"];
       url = this.concatParams(url, filterKeys);
       AppHelper.redirect(url);
     }
@@ -138,8 +131,8 @@ export class AccountDingtalkPage implements OnInit, OnDestroy {
       }
     );
   }
-  itemClick() {}
-  ngOnDestroy() {}
+  itemClick() { }
+  ngOnDestroy() { }
   toggleDeleteButton() {
     this.deviceList.closeSlidingItems();
     setTimeout(

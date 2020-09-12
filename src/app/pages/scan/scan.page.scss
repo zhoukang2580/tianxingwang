@@ -1,0 +1,50 @@
+.container-flex {
+  display        : flex;
+  flex-flow      : column nowrap;
+  align-items    : center;
+  justify-content: center;
+  width          : 100%;
+}
+
+.check-login {
+  ion-avatar {
+    width : 7em;
+    height: 7em;
+  }
+
+  position   : fixed;
+  top        : 50%;
+  transform  : translateY(-60%);
+  left       : 10vw;
+  right      : 10vw;
+  display    : flex;
+  align-items: center;
+  flex-flow  : column nowrap;
+  ion-button{
+    width: 100%;
+  }
+}
+
+.iframe-wrapper {
+  width     : 100vw;
+  height    : 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  iframe {
+    width : 100%;
+    height: 100%;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+ion-textarea {
+  user-select: text;
+}
