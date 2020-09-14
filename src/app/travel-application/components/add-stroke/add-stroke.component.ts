@@ -51,7 +51,6 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     { val: 'Mushroom', isChecked: false }
   ];
   isShowCheckInCity = false;
-  isapp :boolean = false;
   // tslint:disable-next-line: no-bitwise
   constructor(
     private router: Router,
@@ -97,7 +96,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
             this.vmRegionTypes.push(t);
           }
         });
-         console.log(this.vmRegionTypes, "vmRegionTypes");
+        console.log(this.vmRegionTypes, "vmRegionTypes");
         //  console.log(this.trip.travelTools, "this.trip.travelTools333333");
         // this.getRegionTypes()
       }
@@ -108,32 +107,46 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     // this.trip.EndDate = new Date().toISOString();
   }
   duageTime(start, EndDate) {
+    if (!start) {
+      return;
+    }
+    // const st = AppHelper.getDate(start.substring(0, 10)).getTime();
+    // const now = new Date();
+    // const cur = AppHelper.getDate(`${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`).getTime();
     let day = this.getNumberOfDays(start, EndDate);
-    if (day < 0) {
+    if (day < 1) {
       AppHelper.alert("出差结束时间不能早于出差开始时间");
+      // setTimeout(() => {
+      //   this.trip.EndDate = '';
+      // }, 0);
+
       return;
     }
     if (day > 365) {
       AppHelper.alert("出差时间不能超过一年");
+      // setTimeout(() => {
+      //   this.trip.EndDate = '';
+      // }, 0);
       return;
     }
   }
 
-  nowTime(start, EndDate) {
-    let day = this.getNumberOfDays(start, EndDate);
-    let nowtime = new Date();
-    let frist = start.substr(0,10).replace(/-/g ,'');
-    let nowday = nowtime.getFullYear() +'-'+ (nowtime.getMonth()+1) +'-'+ nowtime.getDate();
-
-    let newday = nowday.substr(0,10).replace(/-/g ,'').replace(nowday.substr(5,1),'0'+nowday.substr(5,1));
-
-    console.log('选择的时间'+frist+'选择的时间' + newday);
-    if(frist < newday){
-      AppHelper.alert("出差时间不能是过去时间");
-      // document.getElementById('starttime').value = '';
+  nowTime(start: string, EndDate) {
+    if (!start) {
       return;
     }
-    
+    const st = AppHelper.getDate(start.substring(0, 10)).getTime();
+    const now = new Date();
+    const cur = AppHelper.getDate(`${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`).getTime();
+    const isBefore = st - cur < 0;
+    if (isBefore) {
+      AppHelper.alert("出差时间不能是过去时间");
+      setTimeout(() => {
+        this.trip.StartDate = '';
+      }, 0);
+      return;
+    }
+
   }
   onDelete() {
     this.remove.emit(this.trip);
@@ -154,7 +167,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     }
     return day;
   }
-  
+
   async onStartingCity(isFrom = true) {
     if (!this.enable) {
       return;
@@ -185,20 +198,20 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       componentProps: {
         tripType: this.trip.TripType,
         isMulti,
-        selectedCitys:trip.ToCities
+        selectedCitys: trip.ToCities
       },
     });
 
     m.present();
     const res = await m.onDidDismiss();
     const cities: TrafficlineEntity[] = res && res.data;
-    const citys = cities && cities.slice(0 , 3);
+    const citys = cities && cities.slice(0, 3);
     trip.ToCities = citys;
-    if (trip){
+    if (trip) {
       trip.ToCityCode = trip.ToCities && trip.ToCities.map(it => it.Code).join(",");
       trip.ToCityName = trip.ToCities && trip.ToCities.map(it => it.Name).join(",");
       // trip.ToCityCode = citys.toString();
-      trip.toCityNames = trip.ToCities && trip.ToCities.map(it => it.Name).filter(it=>!!it&&it.length>0).join(" · ");
+      trip.toCityNames = trip.ToCities && trip.ToCities.map(it => it.Name).filter(it => !!it && it.length > 0).join(" · ");
     }
   }
 
@@ -211,7 +224,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       componentProps: {
         tripType: this.trip.TripType,
         isMulti,
-        selectedCitys:trip.ToCityArrive
+        selectedCitys: trip.ToCityArrive
       },
     });
 
@@ -219,13 +232,13 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     const res = await m.onDidDismiss();
     const city: TrafficlineEntity = res && res.data;
     const cities: TrafficlineEntity[] = res && res.data;
-    const citys = cities && cities.slice(0 , 3);
-    if(trip){
+    const citys = cities && cities.slice(0, 3);
+    if (trip) {
       trip.ToCityArrive = citys;
       trip.CheckInCityCode = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Code).join(',');
       trip.CheckInCityName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).join(',');
 
-      trip.toCityInName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).filter(it=>!!it&&it.length>0).join(" · ");
+      trip.toCityInName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).filter(it => !!it && it.length > 0).join(" · ");
     }
     // if (city && this.trip) {
     //   if (isFrom) {
@@ -408,10 +421,10 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       AppHelper.alert("接口请求异常");
     }
   }
-  onRegionTypeChange(evt:CustomEvent){
+  onRegionTypeChange(evt: CustomEvent) {
     console.log(evt.detail);
-    if(evt.detail&&evt.detail.value){
-      const arr:string[]=evt.detail.value;
+    if (evt.detail && evt.detail.value) {
+      const arr: string[] = evt.detail.value;
       this.isShowCheckInCity = arr.some(it => it.includes("Hotel"));
     }
   }
