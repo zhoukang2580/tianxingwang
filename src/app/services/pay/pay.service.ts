@@ -171,7 +171,7 @@ export class PayService {
                   r.Data.paySign +
                   "&openid=" +
                   WechatHelper.getMiniOpenId() +
-                  "&ticket=" +
+                  "&" + AppHelper.getTicketName() + "=" +
                   AppHelper.getTicket() +
                   "&path=" +
                   path +
@@ -286,7 +286,7 @@ export class PayService {
     }
     let url =
       AppHelper.getApiUrl() +
-      "/home/Pay?ticket=" +
+      `/home/Pay?${AppHelper.getTicketName()}=` +
       AppHelper.getTicket() +
       "&path=" +
       path +

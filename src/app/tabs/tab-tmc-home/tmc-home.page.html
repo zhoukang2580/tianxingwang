@@ -4,8 +4,8 @@
             <app-scan-comp></app-scan-comp>
         </ion-buttons>
         <ion-title class='ion-text-center' appShowtip>
-            <ng-container *ngIf='canSelectCompany$|async'>
-                <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
+            <ng-container *ngIf='(canSelectCompany$|async)'>
+                <ion-text *ngIf='(selectedCompany$|async) as company'>{{company}}</ion-text>
             </ng-container>
             <ion-text class="ion-margin-start">欢迎你
                 <ng-container *ngIf='identity?.Name'>,{{identity?.Name}}</ng-container>
@@ -29,12 +29,16 @@
 </ion-header>
 <ion-content>
 
-    <div class="img">
+    <div class="banners">
         <div class="swiper-container" #container>
             <div class="swiper-wrapper">
                 <ng-container *ngIf='banners?.length else deftpl'>
                     <div class="swiper-slide" *ngFor='let pic of banners'>
-                        <img [lazyLoad]='pic.ImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' style="object-fit: contain ;max-height: 40vh;width: 100vw; height: 40vh;" /></div>
+                        <div class="inner">
+                            <img [lazyLoad]='pic.ImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' />
+                            <div class="desc" *ngIf='pic.Title'>{{pic.Title}}</div>
+                        </div>
+                    </div>
                 </ng-container>
                 <ng-template #deftpl>
                     <div class="swiper-slide">
@@ -47,7 +51,7 @@
             </div>
         </div>
     </div>
-    <ion-toolbar class="text-swiper" style="padding-top: 1em;">
+    <ion-toolbar class="text-swiper">
         <ng-container *ngIf='isLoadingNotice else noticeTpl'>
             <ion-skeleton-text style="width: 100%;height: 1.5em;" animated></ion-skeleton-text>
         </ng-container>

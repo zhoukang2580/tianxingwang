@@ -7,6 +7,7 @@ import { AutoGrowDirective } from "./auto-grow.directive";
 import { AuthorizeDirective } from './authorize.directive';
 import { ShowMenusDirective } from './show-menus.directive';
 import { LongPressShowpopDirective } from './long-press-showpop.directive';
+import { IosScrollintoviewDirective } from './ios-scrollintoview.directive';
 
 @NgModule({
   declarations: [
@@ -16,13 +17,15 @@ import { LongPressShowpopDirective } from './long-press-showpop.directive';
     LazyloadDirective,
     AuthorizeDirective,
     ShowMenusDirective,
-    LongPressShowpopDirective
+    LongPressShowpopDirective,
+    IosScrollintoviewDirective
   ],
   imports: [CommonModule],
   exports: [
     CropAvatarDirective,
     ShowtipDirective,
     AutoGrowDirective,
+    IosScrollintoviewDirective,
     LazyloadDirective,
     LongPressShowpopDirective,
     AuthorizeDirective,

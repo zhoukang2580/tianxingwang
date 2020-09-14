@@ -20,7 +20,7 @@ export class AccountWechatPage implements OnInit, OnDestroy {
   items: Item[] = [];
   isShowBindButton: boolean;
   @ViewChild("List") deviceList: IonList;
-  constructor(private apiService: ApiService, private navCtrl: NavController) {}
+  constructor(private apiService: ApiService, private navCtrl: NavController) { }
   back() {
     this.navCtrl.pop();
   }
@@ -33,7 +33,6 @@ export class AccountWechatPage implements OnInit, OnDestroy {
       if (paramters.wechatcode) {
         const data = {
           Code: paramters.wechatcode,
-          AloneTag:paramters.AloneTag
         };
         this.bindCode(data);
         AppHelper.removeQueryParamers("wechatcode");
@@ -77,19 +76,13 @@ export class AccountWechatPage implements OnInit, OnDestroy {
               SdkType: "Mini",
             };
             this.bindCode(data);
-          } catch (e) {}
+          } catch (e) { }
         });
       } else if (AppHelper.isWechatH5()) {
-        let url =
-          AppHelper.getApiUrl() +
-          "/home/GetWechatCode?domain=" +
-          AppHelper.getDomain() +
-          "&ticket=" +
-          AppHelper.getTicket() +
-          "&path=account-wechat";
+        let url = `${AppHelper.getApiUrl()}/home/GetWechatCode?domain=${AppHelper.getDomain()}&${AppHelper.getTicketName()}=${AppHelper.getTicket()}&path=account-wechat`;
         const filterKeys = [
           "domain",
-          "ticket",
+          AppHelper.getTicketName(),
           "path",
           "IsLogin",
           "wechatcode",
@@ -182,8 +175,8 @@ export class AccountWechatPage implements OnInit, OnDestroy {
       }
     );
   }
-  itemClick() {}
-  ngOnDestroy() {}
+  itemClick() { }
+  ngOnDestroy() { }
   toggleDeleteButton() {
     this.deviceList.closeSlidingItems();
     setTimeout(

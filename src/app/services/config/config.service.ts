@@ -60,16 +60,12 @@ export class ConfigService {
     if (this.fetchConfig && this.fetchConfig.promise) {
       return this.fetchConfig.promise;
     }
-    const AloneTag = AppHelper.getQueryParamers()["AloneTag"] || "";
     const data = {
       domain: AppHelper.getDomain(),
     };
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Router-Get";
     req.Data = data;
-    if (AloneTag) {
-      req.Data["AloneTag"] = AloneTag;
-    }
     this.fetchConfig = {
       promise: this.apiService
         .getPromiseData<{
