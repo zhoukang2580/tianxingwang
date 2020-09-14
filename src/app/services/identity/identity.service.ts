@@ -138,7 +138,7 @@ export class IdentityService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "ApiHomeUrl-Identity-Get";
-    req.Data = JSON.stringify({ Ticket: ticket, [AppHelper.getTicketName()]: ticket });
+    req.Data = JSON.stringify({ Ticket: ticket });
 
     let due = req.Timeout || 30 * 1000;
     due = due < 1000 ? due * 1000 : due;
