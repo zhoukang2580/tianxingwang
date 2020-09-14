@@ -27,7 +27,7 @@
         <ion-item style="margin-top: 8px;">
             <span class="red">*</span>
             <ion-text [color]="!enable?'dark':'dark'">客户或公司:</ion-text>
-            <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
+            <ion-input placeholder="请输入" slot="end" class="ion-text-end" maxlength="10" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
 
             </ion-input>
         </ion-item>
@@ -49,7 +49,7 @@
                 <span style="line-height: 3;margin-left: 10px;">
                 <ion-text [color]="!enable?'dark':'dark'">出差事由:</ion-text>
                 </span>
-                <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
+                <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" maxlength="100" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
             </div>
         </ion-item>
         <app-add-stroke [regionTypes]='vmRegionTypes' [TravelApprovalContent]="vmTravelApprovalContent" [international]='international' [domestic]='domestic' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"

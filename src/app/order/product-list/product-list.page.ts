@@ -21,7 +21,8 @@ export const ORDER_TABS: ProductItem[] = [
     value: ProductItemType.train,
     imageSrc: "assets/svgs/product-train.svg",
     isDisplay: true
-  },
+  }
+  ,
   {
     label: "用车",
     value: ProductItemType.car,
@@ -34,18 +35,18 @@ export const ORDER_TABS: ProductItem[] = [
     imageSrc: "assets/svgs/product-insurance.svg",
     isDisplay: !true
   },
-  {
-    label: "待审任务",
-    value: ProductItemType.waitingApprovalTask,
-    imageSrc: "assets/images/projectcheck.png",
-    isDisplay: true
-  },
-  {
-    label: "更多",
-    value: ProductItemType.more,
-    imageSrc: "assets/svgs/product-more.svg",
-    isDisplay: true
-  }
+  // {
+  //   label: "待审任务",
+  //   value: ProductItemType.waitingApprovalTask,
+  //   imageSrc: "assets/images/projectcheck.png",
+  //   isDisplay: true
+  // },
+  // {
+  //   label: "更多",
+  //   value: ProductItemType.more,
+  //   imageSrc: "assets/svgs/product-more.svg",
+  //   isDisplay: true
+  // }
 ];
 @Component({
   selector: "app-product-list",
