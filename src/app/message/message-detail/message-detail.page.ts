@@ -50,8 +50,8 @@ export class MessageDetailPage implements OnInit, AfterViewInit {
         if (this.message && this.message.Url) {
           this.isShowLink = false;
           this.message.Url = this.message.Url.includes("?")
-            ? `${this.message.Url}&ticket=${AppHelper.getTicket()}`
-            : `${this.message.Url}?ticket=${AppHelper.getTicket()}`;
+            ? `${this.message.Url}&${AppHelper.getTicketName()}=${AppHelper.getTicket()}`
+            : `${this.message.Url}?&${AppHelper.getTicketName()}=${AppHelper.getTicket()}`;
         }
       }
       console.log(this.message);
@@ -123,5 +123,5 @@ export class MessageDetailPage implements OnInit, AfterViewInit {
     this.isShowLink = true;
     this.url$.next(this.sanitizer.bypassSecurityTrustResourceUrl(url));
   }
-  ngOnInit() {}
+  ngOnInit() { }
 }

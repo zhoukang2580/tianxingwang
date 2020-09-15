@@ -69,7 +69,7 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     开始时间
                 </ion-text>
-                <ion-datetime id="starttime" style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" max="2100" [(ngModel)]="trip.StartDate" (ionChange)="nowTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
+                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" max="2100" [(ngModel)]="trip.StartDate" (ionChange)="nowTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
                 </ion-datetime>
             </ion-item>
             <ion-item detail style="line-height: initial;">

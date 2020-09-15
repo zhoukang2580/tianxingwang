@@ -45,7 +45,7 @@ export class IdentityService {
   }
   setIdentity(info: IdentityEntity) {
     this.identityEntity = info;
-    const ticketName=AppHelper.getTicketName();
+    const ticketName = AppHelper.getTicketName();
     AppHelper.setStorage(ticketName, (info && info.Ticket) || "");
     this.identitySource.next(this.identityEntity);
     console.log("Identity", this.identityEntity);
@@ -64,7 +64,7 @@ export class IdentityService {
       this.identityEntity.Ticket = null;
       this.identityEntity.Id = null;
     }
-    const ticketName=AppHelper.getTicketName();
+    const ticketName = AppHelper.getTicketName();
     AppHelper.setStorage(ticketName, "");
     this.setIdentity(this.identityEntity);
   }
@@ -72,7 +72,7 @@ export class IdentityService {
     if (
       this.identityEntity &&
       this.identityEntity.Ticket &&
-      this.identityEntity.Id &&this.identityEntity.Id !="0"
+      this.identityEntity.Id && this.identityEntity.Id != "0"
     ) {
       return Promise.resolve(this.identityEntity);
     }

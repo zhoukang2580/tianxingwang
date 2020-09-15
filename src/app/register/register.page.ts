@@ -168,7 +168,7 @@ export class RegisterPage implements OnInit {
         req.Data.WechatMiniCode = this.wechatMiniMobile.wechatminicode;
       }
     }
-    req.Data.AloneTag =  AppHelper.getQueryParamers()["AloneTag"];
+
   
     this.isCodeOk = true;
     const sub = this.apiService
@@ -201,7 +201,7 @@ export class RegisterPage implements OnInit {
     loginEntity.Data = {};
     loginEntity.Data.Name = this.form.value.Mobile;
     loginEntity.Data.Password = this.form.value.Password;
-    loginEntity.Data.AloneTag =  AppHelper.getQueryParamers()["AloneTag"];
+
     var sub = this.loginService
       .login("ApiLoginUrl-Home-Login", loginEntity)
       .subscribe(

@@ -1,3 +1,11 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button [forceback]="true"></app-back-button>
+    </ion-buttons>
+    <ion-title>登录</ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-toolbar class='ion-text-center' [ngClass]='{"keyboard-show":isKeyboardShow,"is-app":isApp}'>
   <img [lazyLoad]="config?.LogoImageUrl" alt="公司logo" class='logo' [loadingImage]='config?.PrerenderImageUrl'
     [defaultImage]='config?.DefaultImageUrl' />

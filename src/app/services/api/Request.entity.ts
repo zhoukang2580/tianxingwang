@@ -13,6 +13,7 @@ export class RequestEntity {
   Url?: string;
   Data: any;
   Token?: string;
+  AloneTag?: string;
   FileValue?: string;
   IsShowLoading?: boolean;
   IsShowMessage?: boolean;
@@ -27,6 +28,10 @@ export class RequestEntity {
     this.Ticket = AppHelper.getTicket();
     this.TicketName = AppHelper.getTicketName();
     this.Domain = AppHelper.getDomain();
+    const AloneTag = AppHelper.getQueryParamers()["AloneTag"];
+    if (AloneTag && AloneTag != 'null' && AloneTag != "undefined") {
+      this.AloneTag = AloneTag;
+    }
     if (this.TicketName != "ticket") {
       this[this.TicketName] = this.Ticket;
       this.Ticket = "";

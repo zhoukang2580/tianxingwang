@@ -196,7 +196,6 @@ export class LoginService {
       req.Data = {};
     }
     req.Data.LoginType = this.getLoginType();
-    req.Data.AloneTag = AppHelper.getQueryParamers()["AloneTag"];
     return this.apiService
       .getResponse<{
         Ticket: string; // "";
@@ -231,8 +230,8 @@ export class LoginService {
       const req = new RequestEntity();
       req.IsShowLoading = true;
       req.Method = "ApiLoginUrl-Home-Logout";
-      req.Data = JSON.stringify({ Ticket: ticket });
-    
+      req.Data = JSON.stringify({ Ticket: ticket, [AppHelper.getTicketName()]: ticket });
+
       this.apiService.showLoadingView({ msg: "正在退出账号..." });
       const formObj = Object.keys(req)
         .map((k) => `${k}=${req[k]}`)
@@ -317,6 +316,7 @@ export class LoginService {
     req.Data = JSON.stringify({
       Ticket: ticket,
       LoginType: this.getLoginType(),
+      [AppHelper.getTicketName()]:ticket
     });
     const url = await this.getUrl(req);
     const formObj = Object.keys(req)
