@@ -111,7 +111,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
         this.selectedCitys = [];
       }
       if (!this.selectedCitys.find((it) => it.Id == city.Id)) {
-          this.selectedCitys.unshift(city);
+          this.selectedCitys.push(city);
       }
       if (this.isSearching) {
         return;

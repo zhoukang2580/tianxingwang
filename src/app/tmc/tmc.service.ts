@@ -933,7 +933,6 @@ export class TravelFormEntity extends BaseVariablesEntity {
   ApprovalTime: string;
   approvalTimeDate: string;
   startDate: string;
-  EndData: string;
   CompanyName: string;
   DayCount: number;
   ProjectId: string;

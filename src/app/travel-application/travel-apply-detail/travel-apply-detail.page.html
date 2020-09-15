@@ -50,9 +50,10 @@
                     <div class="travel_step_i">
                         <p class="travel_step_i_tit"><i class="dot"></i><span>行程{{idx+1}}</span><span>{{trip.FromCityName}}~{{trip.ToCityName}}</span></p>
                         <div class="travel_step_detail" style="background: #f4f9fd;">
-                            <p><span>出发时间：</span><span>{{trip.StartDate}}~{{trip.EndDate}}</span><i class="toggle" [class.up]='trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' [class.down]='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' (click)='onToggle(trip)'></i></p>
+                            <p><span>出发时间：</span><span>{{trip.StartDate}}~{{trip.EndDate}}</span><i class="toggle" [class.up]='trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' [class.down]='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType'
+                                    (click)='onToggle(trip)'></i></p>
                             <p><span>天数：</span><span>{{detail?.TravelForm.DayCount}}</span></p>
-                            
+
                             <p class="travel_step_btn" *ngIf='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' style="justify-content: space-evenly;">
                                 <button *ngIf='trip["hasFlight"]' (click)='goToPage("flight")'>预订国内机票</button>
                                 <button *ngIf='trip["hasHotel"]' (click)='goToPage("train")'>预订火车票</button>
@@ -72,20 +73,24 @@
                         <span style="width: 280px;">
                         <div class="approver" *ngFor='let h of detail?.Histories;let last=last;' style="width: inherit;">
                               <span class="approver" style="width: auto;">{{h?.Name}}</span>
-                        <span [ngStyle]="{'background-color':'color'}" class="apply_status apply_past">({{h?.StatusName}})<ng-container *ngIf='!last'>→</ng-container></span>
-
+                        <!-- <span [ngStyle]="{'background-color':'red'}" class="apply_status apply_past">({{h?.StatusName}})<ng-container *ngIf='!last'>→</ng-container></span> -->
+                        <ion-text style="color: #2596d9;" color='secondary' *ngIf='ApprovalStatusType.Pass==detail?.StatusType'>({{detail?.TravelForm.StatusTypeName}})</ion-text>
+                        <ion-text style="color: red;" color='danger' *ngIf='ApprovalStatusType.Refuse==detail?.StatusType'>({{detail?.TravelForm.StatusTypeName}})</ion-text>
+                        <ion-text style="color: #fec114;" *ngIf='ApprovalStatusType.WaiteSubmit==detail?.StatusType'>({{detail?.TravelForm.StatusTypeName}})</ion-text>
                 </div>
                 </span>
 
                 <span class="apply_info_time"></span>
                 </p>
                 <p><span class="apply_info_tit Cost_center"><span>成本中心：</span><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span></p>
-                <p *ngFor="let item of detail?.OutNumbers"><span class="apply_info_tit Cost_Id">
-                <span class="cen_frist">{{item?.Name}}：</span><span>{{item?.Code}}</span>
-                    </span>
-
-                    <span class="apply_info_time"></span></p>
+                <div *ngFor="let item of detail?.OutNumbers">
+                    <p *ngIf="item?.Code"><span class="apply_info_tit Cost_Id">
+                        <span class="cen_frist" >{{item?.Name}}：</span><span>{{item?.Code}}</span>
+                        </span>
+                        <span class="apply_info_time"></span></p>
+                </div>
                 <p><span class="apply_info_tit"><span>备注：</span><span class="apply_info_reason"></span>{{detail?.TravelForm.Detail}}</span><span class="apply_info_time"></span></p>
+
             </div>
     </div>
     </section>

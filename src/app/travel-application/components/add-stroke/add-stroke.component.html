@@ -22,7 +22,7 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     出差类别
                 </ion-text>
-                <ion-select class="ion-text-end" [(ngModel)]="trip.TripType" okText="确定" cancelText="取消" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(trip.TripType)" [disabled]="!enable">
+                <ion-select mode='ios' class="ion-text-end" [(ngModel)]="trip.TripType" okText="确定" cancelText="取消" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(trip.TripType)" [disabled]="!enable">
                     <ion-select-option value="Domestic" *ngIf="domestic">国内</ion-select-option>
                     <ion-select-option value="International" *ngIf="international">国际*港澳台</ion-select-option>
                 </ion-select>
@@ -32,7 +32,7 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     交通住宿
                 </ion-text>
-                <ion-select (ionChange)='onRegionTypeChange($event)' [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.travelTools" okText="确定" multiple="true" cancelText="取消" [compareWith]="compareTravelToolWithFn">
+                <ion-select mode='ios' (ionChange)='onRegionTypeChange($event)' [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.travelTools" okText="确定" multiple="true" cancelText="取消" [compareWith]="compareTravelToolWithFn">
                     <ion-select-option value="{{t.value}}" *ngFor='let t of vmRegionTypes'>{{t.label}}</ion-select-option>
                 </ion-select>
             </ion-item>
@@ -69,7 +69,7 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     开始时间
                 </ion-text>
-                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" max="2100" [(ngModel)]="trip.StartDate" (ionChange)="nowTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
+                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" max="2100" [(ngModel)]="trip.StartDate" doneText="确定" cancelText="取消">
                 </ion-datetime>
             </ion-item>
             <ion-item detail style="line-height: initial;">

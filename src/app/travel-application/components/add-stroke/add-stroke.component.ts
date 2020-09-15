@@ -116,38 +116,32 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     let day = this.getNumberOfDays(start, EndDate);
     if (day < 1) {
       AppHelper.alert("出差结束时间不能早于出差开始时间");
-      // setTimeout(() => {
-      //   this.trip.EndDate = '';
-      // }, 0);
 
       return;
     }
     if (day > 365) {
       AppHelper.alert("出差时间不能超过一年");
-      // setTimeout(() => {
-      //   this.trip.EndDate = '';
-      // }, 0);
       return;
     }
   }
 
-  nowTime(start: string, EndDate) {
-    if (!start) {
-      return;
-    }
-    const st = AppHelper.getDate(start.substring(0, 10)).getTime();
-    const now = new Date();
-    const cur = AppHelper.getDate(`${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`).getTime();
-    const isBefore = st - cur < 0;
-    if (isBefore) {
-      AppHelper.alert("出差时间不能是过去时间");
-      setTimeout(() => {
-        this.trip.StartDate = '';
-      }, 0);
-      return;
-    }
+  // nowTime(start: string, EndDate) {
+  //   if (!start) {
+  //     return;
+  //   }
+  //   const st = AppHelper.getDate(start.substring(0, 10)).getTime();
+  //   const now = new Date();
+  //   const cur = AppHelper.getDate(`${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`).getTime();
+  //   const isBefore = st - cur < 0;
+  //   if (isBefore) {
+  //     AppHelper.alert("出差时间不能是过去时间");
+  //     setTimeout(() => {
+  //       this.trip.StartDate = '';
+  //     }, 0);
+  //     return;
+  //   }
 
-  }
+  // }
   onDelete() {
     this.remove.emit(this.trip);
   }

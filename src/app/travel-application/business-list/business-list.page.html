@@ -35,16 +35,13 @@
                 <div class="main">
                     {{item?.Account?.RealName}}
                 </div>
-                <div class="end" *ngIf='ApprovalStatusType.Pass==item.StatusType || ApprovalStatusType.Refuse==item.StatusType'>
+                <div class="end" *ngIf='ApprovalStatusType.Pass==item.StatusType || ApprovalStatusType.Refuse==item.StatusType || ApprovalStatusType.Waiting==item.StatusType'>
                     {{item.ApplyTime}}
                 </div>
-                <div class="end" *ngIf='ApprovalStatusType.Waiting==item.StatusType'>
-                    {{item?.startDate}}
-                </div>
                 <div class="end" *ngIf='ApprovalStatusType.WaiteSubmit==item.StatusType'>
-                    {{item?.EndData}}
+                    {{item?.InsertTime?.startsWith("1800")||item?.InsertTime?.startsWith("0001") ?" ":item?.InsertTime}}
                 </div>
-                
+
             </div>
             <div class="row" *ngIf='item.Trips '>
                 <div class="start">

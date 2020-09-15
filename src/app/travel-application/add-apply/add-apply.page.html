@@ -27,7 +27,7 @@
         <ion-item style="margin-top: 8px;" [attr.CustomerName]='"CustomerName"'>
             <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">客户或公司:</ion-text>
-            <ion-input placeholder="请输入" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
+            <ion-input placeholder="请输入" maxlength="11" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
 
             </ion-input>
         </ion-item>
@@ -37,7 +37,7 @@
                 <span style="line-height: 3;margin-left: 10px;">
                 <ion-text [color]="!enable?'dark':'dark'">出差事由:</ion-text>
                 </span>
-                <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
+                <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" maxlength="50" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
             </div>
         </ion-item>
         <app-add-stroke [regionTypes]='vmRegionTypes' [TravelApprovalContent]="vmTravelApprovalContent" [international]='international' [domestic]='domestic' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"
@@ -74,7 +74,7 @@
         <ion-item>
             <div class="no_border_bottom text">
                 <span style="line-height: 3;"><ion-text [color]="!enable?'dark':'dark'" style="font-size: 16px;">备注:</ion-text></span>
-                <textarea style="margin-left: -3px;padding: 3px;" type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable"></textarea>
+                <textarea style="margin-left: -3px;padding: 3px;" maxlength="50" type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable"></textarea>
             </div>
             <!-- <div style="display: flex;justify-content: space-between;width: 100%;flex-wrap: wrap;">
                 <div style="padding-top: 0.5em;">
@@ -87,8 +87,8 @@
                 </div>
             </div> -->
         </ion-item>
-        <ion-item *ngIf="!enable">
-            <div style="width: 100%;" >
+        <!-- <ion-item>
+            <div style="width: 100%;">
                 <ion-row *ngFor="let item of outNumberNameArray" style="justify-content: center;
                 align-items: center;
                 display: flex !important;">
@@ -99,7 +99,7 @@
                     </ion-col>
                 </ion-row>
             </div>
-        </ion-item>
+        </ion-item> -->
 
         <ion-item *ngIf="!enable">
             <div *ngIf="searchModel.Histories" style="width: 100%;">
