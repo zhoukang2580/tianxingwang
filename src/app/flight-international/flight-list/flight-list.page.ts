@@ -323,6 +323,8 @@ export class FlightListPage implements OnInit, OnDestroy {
           this.pageSize
         );
         this.flightRoutes.forEach((it) => {
+          it.vmFares = [];
+          it.isShowFares = false;
           if (it.flightFares && it.flightFares.length < this.farePageSize) {
             it.isShowFares = true;
             it.vmFares = it.flightFares;
@@ -338,7 +340,7 @@ export class FlightListPage implements OnInit, OnDestroy {
   }
   onToggleFlightFare(fr: FlightRouteEntity) {
     if (this.reqAnimate) {
-      window.cancelAnimationFrame(this.reqAnimate);
+      clearTimeout(this.reqAnimate);
     }
     if (fr) {
       fr.isShowFares = !fr.isShowFares;
@@ -347,12 +349,19 @@ export class FlightListPage implements OnInit, OnDestroy {
         return;
       }
       this.flightRoutes.forEach((r) => {
+        r.vmFares = [];
         r.isShowFares = r == fr;
       });
       const r = this.flightRoutes.find((it) => it.isShowFares);
-      if (r && r.isShowFares) {
+      if (r) {
         r.vmFares = [];
-        const loop = () => {
+        const loop = (timeout = 100) => {
+          if (!fr.isShowFares) {
+            r.vmFares = [];
+            clearTimeout(this.reqAnimate);
+            return;
+          }
+          console.log("looping");
           const arr = fr.flightFares.slice(
             fr.vmFares.length,
             this.farePageSize + fr.vmFares.length
@@ -361,10 +370,12 @@ export class FlightListPage implements OnInit, OnDestroy {
             r.vmFares = r.vmFares.concat(arr);
             this.reqAnimate = setTimeout(() => {
               loop();
-            }, 100);
+            }, timeout);
+          } else {
+            clearTimeout(this.reqAnimate);
           }
         };
-        loop();
+        loop(500);
       }
     }
   }
