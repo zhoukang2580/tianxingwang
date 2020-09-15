@@ -185,7 +185,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       componentProps: {
         tripType: this.trip.TripType,
         isMulti,
-        selectedCitys:trip.ToCities
+        selectedCitys: trip.ToCities
       },
     });
 

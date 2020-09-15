@@ -87,8 +87,8 @@
                 </div>
             </div> -->
         </ion-item>
-        <ion-item>
-            <div style="width: 100%;">
+        <ion-item *ngIf="!enable">
+            <div style="width: 100%;" >
                 <ion-row *ngFor="let item of outNumberNameArray" style="justify-content: center;
                 align-items: center;
                 display: flex !important;">

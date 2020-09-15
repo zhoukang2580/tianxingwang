@@ -49,8 +49,8 @@
                     到达城市
                 </ion-text>
                 <!-- {{trip.ToCities|json}} -->
-                <label class="ion-text-end" style="margin-right: 9px;">
-                    <ion-text   [color]="!enable?'medium':'dark'">{{trip['toCityNames']}}            
+                <label class="ion-text-end city" style="margin-right: 9px;">
+                    <ion-text   [color]="!enable?'medium':'dark'" >{{trip['toCityNames']}}            
                     </ion-text>
                 </label>
             </ion-item>
@@ -58,7 +58,7 @@
                 <ion-text [color]="!enable?'dark':'dark'" class="selectCity">
                     入住城市
                 </ion-text>
-                <label style="margin-right: 9px;" class="ion-text-end">
+                <label style="margin-right: 9px;" class="ion-text-end city">
                     <ion-text [color]="!enable?'medium':'dark'" >{{trip['toCityInName']}} 
                         <!-- <ng-container *ngIf='!last'>·&nbsp;</ng-container> -->
                     </ion-text>
@@ -76,7 +76,7 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     结束时间
                 </ion-text>
-                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" min="2020-09-10" max="2100" [(ngModel)]="trip.EndDate" (ionChange)="duageTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
+                <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" max="2100" [(ngModel)]="trip.EndDate" (ionChange)="duageTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
                 </ion-datetime>
             </ion-item>
             <ion-item *ngIf="pass">

@@ -38,6 +38,13 @@
                 <div class="end" *ngIf='ApprovalStatusType.Pass==item.StatusType || ApprovalStatusType.Refuse==item.StatusType'>
                     {{item.ApplyTime}}
                 </div>
+                <div class="end" *ngIf='ApprovalStatusType.Waiting==item.StatusType'>
+                    {{item?.startDate}}
+                </div>
+                <div class="end" *ngIf='ApprovalStatusType.WaiteSubmit==item.StatusType'>
+                    {{item?.EndData}}
+                </div>
+                
             </div>
             <div class="row" *ngIf='item.Trips '>
                 <div class="start">

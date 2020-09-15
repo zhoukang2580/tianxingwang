@@ -94,6 +94,13 @@ ion-label:nth-child(2) {
     margin-left: auto;
 }
 
+.city{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 188px;
+}
+
 // :first-child {
 //     display: none;
 // }
