@@ -1264,6 +1264,8 @@ export class InternationalFlightService {
             : a.FlightSegmentIds.length - b.FlightSegmentIds.length;
         });
         data.FlightRoutesData = data.FlightRoutesData.map((flightRoute) => {
+          flightRoute.vmFares = [];
+          flightRoute.isShowFares = false;
           flightRoute.FlightSegments = flightRoute.FlightSegmentIds.map((it) =>
             data.FlightSegments.find((s) => s.Id == it)
           );
