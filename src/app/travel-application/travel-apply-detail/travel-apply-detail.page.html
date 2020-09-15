@@ -50,9 +50,10 @@
                     <div class="travel_step_i">
                         <p class="travel_step_i_tit"><i class="dot"></i><span>行程{{idx+1}}</span><span>{{trip.FromCityName}}~{{trip.ToCityName}}</span></p>
                         <div class="travel_step_detail" style="background: #f4f9fd;">
-                            <p><span>出发时间：</span><span>{{trip.StartDate}}~{{trip.EndDate}}</span><i class="toggle" [class.up]='trip["isHideButtons"]' [class.down]='!trip["isHideButtons"]' (click)='onToggle(trip)'></i></p>
+                            <p><span>出发时间：</span><span>{{trip.StartDate}}~{{trip.EndDate}}</span><i class="toggle" [class.up]='trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' [class.down]='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' (click)='onToggle(trip)'></i></p>
                             <p><span>天数：</span><span>{{detail?.TravelForm.DayCount}}</span></p>
-                            <p class="travel_step_btn" *ngIf='!trip["isHideButtons"]' style="justify-content: space-evenly;">
+                            
+                            <p class="travel_step_btn" *ngIf='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' style="justify-content: space-evenly;">
                                 <button *ngIf='trip["hasFlight"]' (click)='goToPage("flight")'>预订国内机票</button>
                                 <button *ngIf='trip["hasHotel"]' (click)='goToPage("train")'>预订火车票</button>
                                 <button *ngIf='trip["hasTrain"]' (click)='goToPage("hotel")'>预订国内酒店</button>

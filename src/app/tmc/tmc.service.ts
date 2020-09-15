@@ -928,12 +928,12 @@ export class TravelFormEntity extends BaseVariablesEntity {
   ApplyTime: string;
   applyTimeDate: string;
   applyTimeTime: string;
-  
   StatusTypeName: string;
   StatusType: ApprovalStatusType;
   ApprovalTime: string;
   approvalTimeDate: string;
   startDate: string;
+  EndData: string;
   CompanyName: string;
   DayCount: number;
   ProjectId: string;

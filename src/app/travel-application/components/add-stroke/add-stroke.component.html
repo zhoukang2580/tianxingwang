@@ -49,8 +49,8 @@
                     到达城市
                 </ion-text>
                 <!-- {{trip.ToCities|json}} -->
-                <label class="ion-text-end" style="margin-right: 9px;">
-                    <ion-text   [color]="!enable?'medium':'dark'">{{trip['toCityNames']}}            
+                <label class="ion-text-end city" style="margin-right: 9px;">
+                    <ion-text   [color]="!enable?'medium':'dark'" >{{trip['toCityNames']}}            
                     </ion-text>
                 </label>
             </ion-item>
@@ -58,7 +58,7 @@
                 <ion-text [color]="!enable?'dark':'dark'" class="selectCity">
                     入住城市
                 </ion-text>
-                <label style="margin-right: 9px;" class="ion-text-end">
+                <label style="margin-right: 9px;" class="ion-text-end city">
                     <ion-text [color]="!enable?'medium':'dark'" >{{trip['toCityInName']}} 
                         <!-- <ng-container *ngIf='!last'>·&nbsp;</ng-container> -->
                     </ion-text>
