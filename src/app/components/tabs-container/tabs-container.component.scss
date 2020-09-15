@@ -43,6 +43,7 @@
     width: 100%;
     overflow: hidden;
     overflow-x: auto;
+    justify-content: var(--tabs-horizontal-justify-content);
     .tab {
       padding: 0.5em;
       font-size: 14px;
@@ -74,4 +75,7 @@ ion-segment {
   &::-webkit-scrollbar {
     display: none;
   }
+}
+:host {
+  --tabs-horizontal-justify-content: space-around;
 }
