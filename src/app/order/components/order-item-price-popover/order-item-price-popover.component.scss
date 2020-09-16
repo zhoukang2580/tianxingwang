@@ -13,7 +13,6 @@ ion-content {
     width: 100%;
     display: flex;
     align-items: center;
-    overflow: auto;
     ion-grid {
       padding-right: 1em;
       // min-width: 60vw;
@@ -31,7 +30,6 @@ ion-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 40vw;
   overflow: auto;
   overflow-y: hidden;
   margin: 0 auto;
