@@ -1325,7 +1325,7 @@ export class InternationalFlightService {
     flightFares: FlightFareEntity[],
     routeIds: string[]
   ) {
-    console.time("getMinPriceFlightFare");
+    // console.time("getMinPriceFlightFare");
     const ffs = flightFares.filter((f) => {
       const ids = f.FlightRouteIds && f.FlightRouteIds;
       return routeIds.length > 1
@@ -1337,7 +1337,7 @@ export class InternationalFlightService {
       minPrice = Math.min(minPrice, +it.SalesPrice);
     });
     const flightFare = ffs.find((ff) => +ff.SalesPrice == +minPrice);
-    console.timeEnd("getMinPriceFlightFare");
+    // console.timeEnd("getMinPriceFlightFare");
     return flightFare;
   }
   async getInternationalAirports(forceFetch = false) {
