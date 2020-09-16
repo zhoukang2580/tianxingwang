@@ -477,6 +477,7 @@ export class FlightListPage implements OnInit, OnDestroy {
       component: FlightTransferComponent,
       translucent: true,
       cssClass: "warranty",
+      backdropDismiss:true,
       componentProps: {
         flight,
       },

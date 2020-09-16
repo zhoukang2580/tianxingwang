@@ -24,8 +24,8 @@
 .fontSize {
   font-size: 0.8em;
 }
-.typename{
-  color:var(--ion-color-medium);
+.typename {
+  color: var(--ion-color-medium);
   position: relative;
 }
 .show-off-icon {
@@ -47,13 +47,13 @@
 }
 
 .flihtCompany {
-  // padding: 0.1em 0em 0.5em 2.8em;
-  font-size: 0.8em;
+  font-size: 0.6em;
   display: flex;
   align-items: center;
   color: var(--ion-color-medium);
   flex-flow: wrap;
-  padding-left: 3em;
+  padding-left: 4.3em;
+  max-width: 80%;
 }
 
 .height {
