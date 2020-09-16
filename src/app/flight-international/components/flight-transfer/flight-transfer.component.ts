@@ -15,21 +15,32 @@ import { RefresherComponent } from "src/app/components/refresher";
 export class FlightTransferComponent implements OnInit {
   flight: FlightRouteEntity;
   private subscription = Subscription.EMPTY;
-  isShow=0;
-  constructor() { }
-
-  ngOnInit() { }
-  isShowRemind(index, seg) {
-    if (index && seg && this.flight) {
-      if (this.flight.transferSegments[index - 1].ToAirportName!=seg.FromAirportName) {
-        return this.isShow=1
-      }else if((this.flight.transferSegments[index - 1].ToTerminal.includes("T")!=seg.FromTerminal)||(this.flight.transferSegments[index - 1].ToTerminal!=seg.FromTerminal.includes("T"))){
-        return this.isShow=3
-      }
-      else if(this.flight.transferSegments[index - 1].ToTerminal!=seg.FromTerminal){
-        return this.isShow=2
-      }
-      return this.isShow=3
+  constructor(private popCtrl: PopoverController) {}
+  onDismiss() {
+    this.popCtrl.getTop().then((t) => {
+      t.dismiss();
+    });
+  }
+  ngOnInit() {
+    if (
+      this.flight &&
+      this.flight.transferSegments &&
+      this.flight.transferSegments.length
+    ) {
+      this.flight.transferSegments.forEach((seg, idx) => {
+        if (idx > 0) {
+          const last = this.flight.transferSegments[idx - 1];
+          if (last) {
+            if (seg.FromAirportName != last.ToAirportName) {
+              seg["showRemind"] = 1;
+            } else {
+              if (seg.FromTerminal != last.ToTerminal) {
+                seg["showRemind"] = 2;
+              }
+            }
+          }
+        }
+      });
     }
   }
 }
