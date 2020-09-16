@@ -1,9 +1,9 @@
 <ion-header>
-    <ion-toolbar>
+    <ion-toolbar style="--border-width: 0;">
         <ion-buttons slot='start'>
             <app-back-button defaultHref=''></app-back-button>
         </ion-buttons>
-        <ion-title>个人信息</ion-title>
+        <ion-title style="font-size: 20px;color: #675656;">个人信息</ion-title>
     </ion-toolbar>
 </ion-header>
 
@@ -24,8 +24,6 @@
             <ion-label>账号</ion-label>
             <ion-label slot='end'>{{memberDetails?.Name}}</ion-label>
         </ion-item>
-    </ion-list>
-    <ion-list>
         <ion-item *ngIf="memberDetails?.StaffNumber">
             <ion-label>员工工号</ion-label>
             <ion-label slot='end'>{{memberDetails.StaffNumber}}</ion-label>
@@ -42,6 +40,5 @@
             <ion-label>预订方式</ion-label>
             <ion-label slot='end' appShowtip>{{memberDetails.BookTypeName}}</ion-label>
         </ion-item>
-
     </ion-list>
 </ion-content>
