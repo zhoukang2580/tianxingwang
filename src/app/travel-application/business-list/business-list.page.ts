@@ -110,6 +110,13 @@ export class BusinessListPage implements OnInit, OnDestroy {
                 withDot: true,
               });
             }
+            if (it.InsertTime) {
+              it.InsertTime = this.transformDataTime({
+                time: it.InsertTime,
+                hasTime: true,
+                withDot: true,
+              });
+            }
             if (it.ApprovalTime) {
               it.ApprovalTime = this.transformDataTime({
                 time: it.ApprovalTime,

@@ -18,7 +18,7 @@
         </div>
         <div class="bg wait_apply" *ngIf='tasks?.length'>
             <div *ngFor="let task of tasks" (click)='onTaskDetail(task)' class="task-item">
-                <section class="section">
+                <section class="section" *ngIf="task.Tag=='TravelForm' ">
                     <p class="h_line h_line_mini"></p>
                     <div class="apply_info" style="padding: 18px 23px;">
                         <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Applicant}}</span></span><span class="apply_info_time"></span></p>
@@ -46,30 +46,30 @@
                         <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.ConsumerId}}</span></span><span class="apply_info_time"></span></p>
                     </div>
                 </section>
-                <section class="section" *ngIf="isApprova">
-                    <p class="h_line h_line_mini"></p>
-                    <div class="apply_info">
-                        <p><span class="apply_info_tit"><span>申请人：</span><span>{{task?.Applicant}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>出行时间：</span><span>{{task?.TravelTime}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit" style="display: flex;">
-                            <span class="start">
+                <section class="section" *ngIf="task.Tag!='TravelForm'">
+                    <p class=" h_line h_line_mini "></p>
+                    <div class="apply_info ">
+                        <p><span class="apply_info_tit "><span>申请人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time "></span></p>
+                        <p><span class="apply_info_tit "><span>出行人：</span><span>{{task?.Name}}</span></span><span class="apply_info_time "></span></p>
+                        <p><span class="apply_info_tit "><span>出行时间：</span><span>{{task?.TravelTime}}</span></span><span class="apply_info_time "></span></p>
+                        <p><span class="apply_info_tit " style="display: flex; ">
+                            <span class="start ">
                                 行程:
                             </span>
-                            <span class="main">
-                                <span style="min-width: 220px;color: black;">
+                            <span class="main ">
+                                <span style="min-width: 220px;color: black; ">
                                     {{task?.Trip}}
                                 </span>
                             </span>
-                            </span><span class="apply_info_time"></span>
+                            </span><span class="apply_info_time "></span>
                         </p>
-                        <p><span class="apply_info_tit"><span>类别：</span><span>订单预定</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.ConsumerId}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit "><span>类别：</span><span>订单预定</span></span><span class="apply_info_time "></span></p>
+                        <p><span class="apply_info_tit "><span>单号：</span><span>{{task?.OrderId}}</span></span><span class="apply_info_time "></span></p>
                     </div>
                 </section>
-                <img src="assets/images/pass.png" *ngIf='TaskStatusType.Passed==task.Status' alt="">
-                <img src="assets/images/deny.png" *ngIf='TaskStatusType.Rejected==task.Status' alt="">
-                <img src="assets/images/close.png" *ngIf='TaskStatusType.Closed==task.Status' alt="">
+                <img src="assets/images/pass.png " *ngIf='TaskStatusType.Passed==task.Status' alt=" ">
+                <img src="assets/images/deny.png " *ngIf='TaskStatusType.Rejected==task.Status' alt=" ">
+                <img src="assets/images/close.png " *ngIf='TaskStatusType.Closed==task.Status' alt=" ">
             </div>
         </div>
     </div>

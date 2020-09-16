@@ -148,7 +148,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             (s.staff && s.staff.CostCenter.Code);
           if (s.approvalStaff && s.approvalStaff.Name) {
             this.appovalStaff = s.approvalStaff.Name;
-            this.searchModel.AccountId = s.approvalStaff.Account.Id;
+            this.searchModel.ApprovalId = s.approvalStaff.Account.Id;
           }
           if (!this.searchModel.TravelForm.Organization) {
             this.searchModel.TravelForm.Organization = {} as any;
@@ -193,7 +193,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       if (this.searchModel.TravelForm && this.searchModel.TravelForm.Variables) {
         this.searchModel.TravelForm.VariablesJsonObj = JSON.parse(this.searchModel.TravelForm.Variables);
         this.appovalStaff= this.searchModel.TravelForm.VariablesJsonObj.ApprovalStaffName;
-        this.searchModel.AccountId= this.searchModel.TravelForm.VariablesJsonObj.AccountId;
+        this.searchModel.ApprovalId= this.searchModel.TravelForm.VariablesJsonObj.ApprovalId;
       }
       if (
         this.searchModel.TravelForm &&
@@ -381,7 +381,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       this.appovalStaff = result.data.Text;
       this.searchModel.ApprovalStaffName = this.appovalStaff;
 
-      this.searchModel.AccountId = result.data.Value;
+      this.searchModel.ApprovalId = result.data.Value;
     }
   }
   async onSelectCostCenter() {
