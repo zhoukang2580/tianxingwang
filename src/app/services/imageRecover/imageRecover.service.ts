@@ -42,6 +42,7 @@ export class ImageRecoverService {
     this.fetchingReq = await this.apiService
       .getPromiseData<any>(req)
       .then((r) => {
+        this.Failover = r;
         return r;
       })
       .finally(() => {
