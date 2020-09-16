@@ -130,15 +130,30 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       if (this.iframes) {
         const iframe = this.iframes.first;
         if (iframe) {
+          let isDismiss = false;
           const l = await this.loadingCtrl.create({ message: "请稍候" });
           l.backdropDismiss = true;
           l.present();
           iframe.nativeElement.onload = () => {
+            if (isDismiss) {
+              return;
+            }
+            isDismiss=true;
             l.dismiss();
           };
           iframe.nativeElement.onerror = () => {
+            if (isDismiss) {
+              return;
+            }
+            isDismiss=true;
             l.dismiss();
           }
+          setTimeout(() => {
+            if(!isDismiss){
+              isDismiss=true;
+              l.dismiss();
+            }
+          }, 2000);
         }
       }
     }, 200);

@@ -35,6 +35,8 @@ export class TaskEntity extends BaseVariablesEntity {
 
   Trip: string;
 
+  OrderId: string;
+
   /// <summary>
   /// 标签
   /// </summary>
