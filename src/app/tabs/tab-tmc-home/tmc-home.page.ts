@@ -348,7 +348,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       setTimeout(() => {
         this.swiper.update();
         this.startAutoPlay();
-      }, 200);
+      }, 2000);
     }
   }
   private async loadNotices() {
