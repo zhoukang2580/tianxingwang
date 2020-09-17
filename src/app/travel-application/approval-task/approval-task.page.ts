@@ -70,7 +70,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     this.loadDataSub.unsubscribe();
     this.queryparamSub.unsubscribe();
   }
-
+  
   doLoadMoreTasks() {
     this.loadDataSub = this.orderService
       .getOrderTasks(
@@ -106,6 +106,8 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
           }
         },
         (err) => {
+          console.error(err);
+          
           this.loadMoreErrMsg = err.Message || err;
         }
       );
