@@ -236,7 +236,7 @@ export class FlightTicketReservePage
           info.bookInfo.flightRoute.selectFlightFare;
         if (i == 0 && p.FlightFare) {
           const flightRouteIds = p.FlightFare.FlightRouteIds || [];
-          p.FlightRoutes = this.flightService.flightListResult.FlightRoutesData.filter(
+          p.FlightRoutes = this.flightService.flightListResult.flightRoutesData.filter(
             (it) => flightRouteIds.some((id) => id == it.Id)
           ).map((it) => {
             const r = {
@@ -847,7 +847,7 @@ export class FlightTicketReservePage
       .slice(0)
       .pop()
       .bookInfo.flightRoute.selectFlightFare.FlightRouteIds.forEach((rid) => {
-        const r = this.flightService.flightListResult.FlightRoutesData.find(
+        const r = this.flightService.flightListResult.flightRoutesData.find(
           (it) => it.Id == rid
         );
         if (r) {

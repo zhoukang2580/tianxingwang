@@ -34,7 +34,10 @@ export class FlightTransferComponent implements OnInit {
             if (seg.FromAirportName != last.ToAirportName) {
               seg["showRemind"] = 1;
             } else {
-              if (seg.FromTerminal != last.ToTerminal) {
+              if (
+                seg.FromTerminal.replace("T", "") !=
+                last.ToTerminal.replace("T", "")
+              ) {
                 seg["showRemind"] = 2;
               }
             }

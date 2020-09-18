@@ -21,7 +21,7 @@ export class FlightResultEntity {
   ///
   /// </summary>
   FlightRoutes: FlightRouteEntity[];
-  FlightRoutesData: FlightRouteEntity[];
+  flightRoutesData: FlightRouteEntity[];
 
   /// <summary>
   /// 政策

@@ -53,7 +53,7 @@
 </ion-header>
 
 <ion-content>
-  <app-refresher slot="fixed" (ionRefresh)='doRefresh(true)'>
+  <app-refresher slot="fixed" (ionRefresh)='doRefresh(true)' [pullMin]='100'>
     <ion-refresher-content>正在刷新...</ion-refresher-content>
   </app-refresher>
   <ion-list *ngIf='!isLoading'>

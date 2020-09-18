@@ -1,4 +1,4 @@
-<ion-row *ngIf='fr' style="margin-bottom: 0.5em;">
+<ion-row *ngIf='fr' class="list-item" class="{{fr.color}}">
   <ion-col size="0.8">
     <div class="logo margin-t11">
       <img [src]="fr.fromSegment?.AirlineSrc">
@@ -51,7 +51,6 @@
         </ion-text>
       </div>
       <div class="fontSize typename">
-        {{fr.TypeName}}
         <div *ngIf='fr.flightFares?.length' (click)='onToggleFlightFare($event)' class="show-off-icon">
           <ion-icon name="chevron-up-outline" *ngIf='isShowFares'></ion-icon>
           <ion-icon name="chevron-down-outline" *ngIf='!isShowFares'></ion-icon>
