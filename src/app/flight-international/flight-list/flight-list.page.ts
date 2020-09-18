@@ -304,7 +304,11 @@ export class FlightListPage implements OnInit, OnDestroy {
           this.refresher.complete();
           this.isLoading = false;
         });
-      if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
+      if (
+        this.flightQuery &&
+        this.flightQuery.flightRoutesData &&
+        this.searchModel.voyageType == FlightVoyageType.GoBack
+      ) {
         const policyOne = this.flightQuery.flightRoutesData.find(
           (it) => !!it.color
         );

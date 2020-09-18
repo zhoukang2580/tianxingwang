@@ -6,6 +6,7 @@ import { Subscription } from "rxjs";
 import { InternationalFlightService } from "../../international-flight.service";
 import { finalize } from "rxjs/operators";
 import { RefresherComponent } from "src/app/components/refresher";
+import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
 
 @Component({
   selector: "app-flight-transfer",
@@ -15,7 +16,10 @@ import { RefresherComponent } from "src/app/components/refresher";
 export class FlightTransferComponent implements OnInit {
   flight: FlightRouteEntity;
   private subscription = Subscription.EMPTY;
-  constructor(private popCtrl: PopoverController) {}
+  constructor(
+    private popCtrl: PopoverController,
+    private flightService: InternationalFlightService
+  ) {}
   onDismiss() {
     this.popCtrl.getTop().then((t) => {
       t.dismiss();
@@ -44,6 +48,19 @@ export class FlightTransferComponent implements OnInit {
           }
         }
       });
+    }
+  }
+  async onGetStopCities(seg: FlightSegmentEntity) {
+    try {
+      if (seg.StopCities && seg.StopCities.length) {
+        return;
+      }
+      const r = await this.flightService.getStopCities(
+        this.flight.transferSegments
+      );
+      seg.StopCities = r.FlightStopCities;
+    } catch (e) {
+      console.error(e);
     }
   }
 }

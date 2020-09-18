@@ -346,6 +346,16 @@ export class InternationalFlightService {
         return res;
       });
   }
+  async getStopCities(flightSegments: FlightSegmentEntity[]) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiInternationalFlightUrl-Home-GetStopCities";
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    req.Data = {
+      FlightSegments: JSON.stringify(flightSegments),
+    };
+    return this.apiService.getPromiseData<FlightResultEntity>(req);
+  }
   async bookFlight(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-InternationalFlight-Book";

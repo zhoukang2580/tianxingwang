@@ -3,6 +3,7 @@ import { FlightQueryEntity } from "./FlightQueryEntity";
 import { FlightFareEntity } from "./FlightFareEntity";
 import { FlightRouteEntity } from "./flight/FlightRouteEntity";
 import { FlightPolicyEntity } from "./flight/FlightPolicyEntity";
+import { FlightStopCityEntity } from "./flight/FlightStopCityEntity";
 
 export class FlightResultEntity {
   /// <summary>
@@ -22,7 +23,7 @@ export class FlightResultEntity {
   /// </summary>
   FlightRoutes: FlightRouteEntity[];
   flightRoutesData: FlightRouteEntity[];
-
+  FlightStopCities: FlightStopCityEntity[];
   /// <summary>
   /// 政策
   /// </summary>
