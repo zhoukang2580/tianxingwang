@@ -1,4 +1,4 @@
-﻿import { RequestEntity } from 'src/app/services/api/Request.entity';
+﻿import { RequestEntity } from "src/app/services/api/Request.entity";
 import * as md5 from "md5";
 import Big from "big.js";
 import * as moment from "moment";
@@ -51,6 +51,14 @@ export class AppHelper {
   static _callbackHandle: (name: string, data: any) => void;
   static setModalController(modalController: ModalController) {
     this.modalController = modalController;
+  }
+  static checkNetworkStatus() {
+    document.addEventListener("online", onOnline, false);
+    document.addEventListener("offline", onOffline, false);
+    function onOffline() {
+      AppHelper.toast("网络中断，请检查网络设置", 2000, "middle");
+    }
+    function onOnline() {}
   }
   static showLoading(message: string, duration = 0) {
     return this.loadingController.create({ message, duration }).then((l) => {
@@ -427,8 +435,7 @@ export class AppHelper {
   static isH5() {
     return !this.isApp();
   }
-  static setRequestEntity(req:RequestEntity)
-  {
+  static setRequestEntity(req: RequestEntity) {
     req.Timestamp = Math.floor(Date.now() / 1000);
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
@@ -618,9 +625,9 @@ export class AppHelper {
     return result;
   }
   static getTicket() {
-    const name=this.getTicketName();
+    const name = this.getTicketName();
     const ticket =
-    this.getQueryParamers()[name] ||
+      this.getQueryParamers()[name] ||
       this.getStorage(name) ||
       this.getCookieValue(name);
     return ticket == "null" ? "" : ticket;
