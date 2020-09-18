@@ -764,10 +764,12 @@ export class InternationalFlightService {
         return this.checkRoutePolicy(this.flightListResult);
       })
       .then((policyResult) => {
-        if (!policyResult.flightRoutesData) {
-          policyResult.flightRoutesData = policyResult.FlightRoutes;
+        if (policyResult) {
+          if (!policyResult.flightRoutesData) {
+            policyResult.flightRoutesData = policyResult.FlightRoutes;
+          }
+          this.initRoutePolicy(policyResult);
         }
-        this.initRoutePolicy(policyResult);
         return this.initParagraphCondition(this.flightListResult).then(
           () => this.flightListResult
         );
@@ -778,6 +780,7 @@ export class InternationalFlightService {
       if (policyResult.flightRoutesData && this.flightListResult) {
         if (this.flightListResult.flightRoutesData) {
           this.flightListResult.flightRoutesData.forEach((r) => {
+            r.color = "success";
             const one = policyResult.FlightRoutes.find((i) => i.Id == r.Id);
             if (one) {
               r.Rules = one.Rules;
@@ -785,7 +788,7 @@ export class InternationalFlightService {
               if (r.Rules) {
                 r.rulesMessages = Object.keys(r.Rules).map((k) => r.Rules[k]);
               }
-              r.color = "success";
+              // r.color = "success";
               if (r.IsAllowOrder) {
                 if (r.Rules) {
                   r.color = "warning";
