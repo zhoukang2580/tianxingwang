@@ -245,7 +245,7 @@ export class OrderListPage implements OnInit, OnDestroy {
           }
         },
         (err) => {
-          this.loadMoreErrMsg = err.Message || err;
+          this.loadMoreErrMsg = err.Message || "数据获取失败";
         }
       );
   }
