@@ -8,26 +8,26 @@ export const ORDER_TABS: ProductItem[] = [
     label: "机票",
     value: ProductItemType.plane,
     // product-plane
-    imageSrc: "assets/svgs/product-plane.svg",
+    imageSrc: "assets/svgs/product-plane1.svg",
     isDisplay: true
   },
   {
     label: "酒店",
     value: ProductItemType.hotel,
     // product-hotel
-    imageSrc: "assets/svgs/product-hotel.svg",
+    imageSrc: "assets/svgs/product-hotel1.svg",
     isDisplay: true
   },
   {
     label: "火车票",
     value: ProductItemType.train,
-    imageSrc: "assets/svgs/product-train.svg",
+    imageSrc: "assets/svgs/product-train1.svg",
     isDisplay: true
   },
   {
     label: "用车",
     value: ProductItemType.car,
-    imageSrc: "assets/svgs/product-rentalCar.svg",
+    imageSrc: "assets/svgs/product-retalCar1.svg",
     isDisplay: true
   },
   {
