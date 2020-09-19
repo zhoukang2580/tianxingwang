@@ -45,7 +45,7 @@ export class IdentityService {
   }
   setIdentity(info: IdentityEntity) {
     this.identityEntity = info;
-    if (info.Ticket) {
+    if (info&&info.Ticket) {
       AppHelper.setTicket((info && info.Ticket) || "");
     }
     this.identitySource.next(this.identityEntity);
