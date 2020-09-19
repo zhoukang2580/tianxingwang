@@ -31,20 +31,22 @@ import { ListItemComponent } from "./list-item/list-item.component";
 import { ImgControlComponent } from "./img-control/img-control.component";
 import { ImgPickerComponent } from "./img-picker/img-picker.component";
 import { MapComponent } from "./map/map.component";
-import { SelectComponent } from './select/select.component';
-import { PhotoGalleryComponent } from './photo-gallary/photo-gallery.component';
+import { PhotoGalleryComponent } from "./photo-gallary/photo-gallery.component";
+import { EditorComponent } from "./editor/editor.component";
+import { ImagesMangerComponent } from './images-manager/images-manager.component';
 import { TabsContainerComponent } from './tabs-container/tabs-container.component';
 @NgModule({
   declarations: [
+    MapComponent,
     ImgPickerComponent,
-    SelectComponent,
+    ImgControlComponent,
     OrComponent,
     SwiperSlidesComponent,
     PinchZoomComponent,
-    ImgControlComponent,
     SlidvalidateComponent,
     ScanComponent,
     AppUpdateComponent,
+    PhotoGalleryComponent,
     LoadingComponent,
     LoginSkeletonPageComponent,
     TimelineComponent,
@@ -59,12 +61,12 @@ import { TabsContainerComponent } from './tabs-container/tabs-container.componen
     AddNumberComponent,
     ComboboxComponent,
     ComboboxModalComponent,
-    PhotoGalleryComponent,
     EchartComponent,
-    TabsContainerComponent,
     MenuPopoverComponent,
     ListItemComponent,
-    MapComponent,
+    TabsContainerComponent,
+    ImagesMangerComponent,
+    EditorComponent,
   ],
   imports: [
     CommonModule,
@@ -75,9 +77,10 @@ import { TabsContainerComponent } from './tabs-container/tabs-container.componen
     RefresherModule,
   ],
   exports: [
+    EditorComponent,
     TabsContainerComponent,
-    PhotoGalleryComponent,
     MapComponent,
+    ImagesMangerComponent,
     ImgControlComponent,
     ComboboxComponent,
     AddNumberComponent,

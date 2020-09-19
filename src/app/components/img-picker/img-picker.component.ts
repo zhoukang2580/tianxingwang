@@ -43,7 +43,6 @@ export class ImgPickerComponent implements OnInit, OnDestroy {
       responsive: true,
       // modal: true,
       aspectRatio: 1 / 1,
-      // initialAspectRatio: Math.min(this.croppedImage.naturalHeight / this.plt.width(), this.croppedImage.naturalWidth / this.plt.width()),
       viewMode: 0,
       crop(event) {
         // console.log(event.detail.x);

@@ -5,7 +5,7 @@ import { OnDestroy, ViewChild, ElementRef } from "@angular/core";
 import { Component, OnInit } from "@angular/core";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { AppHelper } from "src/app/appHelper";
-import { QrScanService } from "src/app/services/qrScan/qrscan.service";
+import { ScanService } from 'src/app/services/scan/scan.service';
 
 @Component({
   selector: "app-qrscan",
@@ -19,7 +19,7 @@ export class QrScanPage implements OnInit, OnDestroy {
   isMovingScanBar = false;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   constructor(
-    private qrScanService: QrScanService,
+    private qrScanService: ScanService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -30,7 +30,7 @@ export class QrScanPage implements OnInit, OnDestroy {
     }
     this.qrScanService.hide();
     this.clearBackground(false);
-    this.backbtn.popToPrePage();
+    this.backbtn.backToPrePage();
   }
   onEnableLight(isOn: boolean) {
     this.isLighting = isOn;
@@ -75,7 +75,7 @@ export class QrScanPage implements OnInit, OnDestroy {
       this.qrScanService.pausePreview();
       this.qrScanService.cancelScan().catch(() => 0);
       if (this.isAutoClose) {
-        this.backbtn.popToPrePage();
+        this.backbtn.backToPrePage();
         this.clearBackground(false);
         return;
       }
