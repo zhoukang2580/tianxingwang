@@ -58,6 +58,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   textSearchResults: TrafficlineEntity[] = [];
   vmKeyowrds = "";
   isSearching = false;
+  isLoading = false;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;

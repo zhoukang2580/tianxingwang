@@ -1,0 +1,14 @@
+<ion-item-divider *ngIf='desc'>默认图片</ion-item-divider>
+<ion-row>
+  <ion-col *ngFor='let img of images;let idx=index;' size='4'>
+    <div class="file">
+      <ion-icon name="close-circle" color='danger' (click)='onRemoveImage(img)'>
+      </ion-icon>
+      <img [lazyLoad]="img.imageUrl" [defaultImage]='defaultImage' [loadingImage]='loadingImage' (click)='onViewPic(img,idx)' alt="">
+    </div>
+  </ion-col>
+  <ion-col>
+    <app-img-control *ngIf='!isMulti&& !images?.length' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
+    <app-img-control *ngIf='isMulti&&images?.length<maxCount' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
+  </ion-col>
+</ion-row>

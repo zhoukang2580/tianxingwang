@@ -112,5 +112,7 @@
   <div *ngIf='curTrip?.bookInfo.flightRoute?.selectFlightFare?.policy' class="policy-message">
     {{curTrip?.bookInfo.flightRoute?.selectFlightFare?.policy?.Message}}
   </div>
-  <ion-button color="secondary" expand='full' (click)="onReserve()">确定</ion-button>
+  <ion-button color="{{curTrip?.bookInfo?.flightRoute?.color||'secondary'}}" expand='full' (click)="onReserve()">
+    <ion-text color='light'>确定</ion-text>
+  </ion-button>
 </ion-footer>

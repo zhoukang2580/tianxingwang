@@ -41,7 +41,30 @@
         </ion-text>
       </strong>
     </ion-item-divider>
-    <ion-grid *ngFor='let f of data?.FlightFares'>
+    <ion-grid>
+      <ng-container *ngFor='let f of data?.FlightFares'>
+        <ng-container *ngFor='let fr of f.FlightFareRules'>
+          <ion-row *ngFor='let b of fr.Bags'>
+            <ion-col size='3'>
+              <ion-text color='medium'>{{b.FlightNumber}}</ion-text>
+            </ion-col>
+            <ion-col *ngIf='b.BagInfo'>
+              <div class="ion-text-wrap">
+                <ion-text color='medium'>
+                  {{b.BagInfo}}
+                </ion-text>
+              </div>
+            </ion-col>
+            <ion-col *ngIf='b.freebginfo'>
+              <div class="ion-text-wrap">
+                <ion-text color='medium'>
+                  {{b.freebginfo}}
+                </ion-text>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ng-container>
+      </ng-container>
       <ng-container *ngFor='let fr of data.FlightFareRules'>
         <ion-row *ngFor='let b of fr.Bags'>
           <ion-col size='3'>

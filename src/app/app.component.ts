@@ -45,6 +45,7 @@ import {
 } from "@angular/animations";
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
 import { ThemeService } from "./services/theme/theme.service";
+import { Keyboard } from "@ionic-native/keyboard/ngx";
 export interface App {
   loadUrl: (
     url: string,
@@ -78,7 +79,7 @@ export interface App {
   ],
 })
 export class AppComponent
-  implements AfterViewInit, AfterContentInit, OnChanges ,OnInit{
+  implements AfterViewInit, AfterContentInit, OnChanges, OnInit {
   app: App = window.navigator["app"];
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
@@ -101,11 +102,15 @@ export class AppComponent
     private http: HttpClient,
     private imageRecoverService: ImageRecoverService,
     messageService: MessageService,
-    fileService: FileHelperService
+    fileService: FileHelperService,
+    private keybord: Keyboard
   ) {
     window["isAndroid"] = this.platform.is("android");
     this.message$ = messageService.getMessage();
     this.loading$ = apiService.getLoading();
+    this.router.events.subscribe((evt) => {
+      this.keybord.hide();
+    });
     if (this.platform.is("ios")) {
       AppHelper.setDeviceName("ios");
     }
@@ -119,7 +124,7 @@ export class AppComponent
     AppHelper.setModalController(this.modalController);
     this.initializeApp();
     this.platform.ready().then(() => {
-      if(this.platform.is("ios")&&AppHelper.isApp()){
+      if (this.platform.is("ios") && AppHelper.isApp()) {
         this.splashScreen.show();
       }
       console.log(`platform ready`);
@@ -133,15 +138,14 @@ export class AppComponent
       );
     });
   }
-  async ngOnInit(){
-  }
-  ngOnChanges() { }
+  async ngOnInit() {}
+  ngOnChanges() {}
   ngAfterViewInit() {
-   if(AppHelper.isApp()){
-     this.platform.ready().then(()=>{
-       this.splashScreen.hide();
-     })
-   }
+    if (AppHelper.isApp()) {
+      this.platform.ready().then(() => {
+        this.splashScreen.hide();
+      });
+    }
   }
   ngAfterContentInit() {
     console.log("ngAfterContentInit");

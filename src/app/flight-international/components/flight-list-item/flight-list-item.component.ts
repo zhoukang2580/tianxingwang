@@ -6,7 +6,6 @@ import {
   Output,
   OnChanges,
   SimpleChanges,
-  DoCheck,
   ChangeDetectionStrategy,
 } from "@angular/core";
 import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntity";

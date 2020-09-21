@@ -37,6 +37,8 @@ try {
 } catch (e) {
   console.error(e);
 }
+AppHelper.checkNetworkStatus();
+
 function changeAppTitle() {
   const title = CONFIG.appTitle;
   if (title) {

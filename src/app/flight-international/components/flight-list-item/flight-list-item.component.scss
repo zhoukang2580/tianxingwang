@@ -7,7 +7,9 @@
 .margin-padding-left {
   margin-left: 0.6em;
 }
-
+.list-item {
+  padding-bottom: 0.5em;
+}
 .time {
   font-size: 1.3em;
 }
@@ -40,7 +42,15 @@
 //     padding-right : 0.5em;
 //     border-bottom : 2px solid var(--ion-color-primary-shade);
 // }
-
+.warning {
+  background-color: rgba(var(--ion-color-warning-rgb), 0.13);
+}
+.danger {
+  background-color: rgba(var(--ion-color-danger-rgb), 0.13);
+}
+.success {
+  background-color: rgba(var(--ion-color-success-rgb), 0.13);
+}
 .flightMoney {
   font-size: 1.1em;
   text-align: right;

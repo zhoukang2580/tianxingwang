@@ -55,6 +55,27 @@ export class RefundChangeDetailComponent implements OnInit {
   }
   ngOnInit() {
     this.getExplain();
+    this.initFareRouteBags();
     // console.log(this.airports);
+  }
+  private initFareRouteBags() {
+    if (this.data && this.data.FlightFares) {
+      this.data.FlightFares.forEach((f) => {
+        if (f.FlightFareRules) {
+          f.FlightFareRules.forEach((r) => {
+            if (r.Bags) {
+              r.Bags.forEach((bg) => {
+                bg.BagInfo = bg.AllowedPieces
+                  ? `可携带件数${bg.AllowedPieces}`
+                  : `可携带重量${bg.AllowedWeight},重量单位${bg.AllowedWeightUnit}`;
+                bg.freebginfo = bg.FreeAllowedPieces
+                  ? `可免费携带件数${bg.FreeAllowedPieces}`
+                  : `可免费携带重量${bg.FreeAllowedWeight},重量单位${bg.FreeAllowedWeightUnit}`;
+              });
+            }
+          });
+        }
+      });
+    }
   }
 }

@@ -209,18 +209,6 @@ export class FlightListPage implements OnInit, OnDestroy {
         }
       });
     }
-    if (data) {
-      if (!data.FlightFareRules || !data.FlightFareRules.length) {
-        data.FlightFareRules = [];
-        data.FlightFares.forEach((ff) => {
-          if (ff.FlightFareRules && ff.FlightFareRules.length) {
-            data.FlightFareRules = data.FlightFareRules.concat(
-              ff.FlightFareRules
-            );
-          }
-        });
-      }
-    }
     const m = await this.modalController.create({
       component: RefundChangeDetailComponent,
       // cssClass: "flight-refund-comp",
@@ -316,6 +304,20 @@ export class FlightListPage implements OnInit, OnDestroy {
           this.refresher.complete();
           this.isLoading = false;
         });
+      if (
+        this.flightQuery &&
+        this.flightQuery.flightRoutesData &&
+        this.searchModel.voyageType == FlightVoyageType.GoBack
+      ) {
+        const policyOne = this.flightQuery.flightRoutesData.find(
+          (it) => !!it.color
+        );
+        if (policyOne) {
+          this.flightQuery.FlightRoutes.forEach((r) => {
+            r.color = policyOne.color;
+          });
+        }
+      }
       console.log("list data", this.flightQuery);
       if (this.flightQuery && this.flightQuery.FlightRoutes) {
         this.flightRoutes = this.flightQuery.FlightRoutes.slice(
@@ -477,7 +479,7 @@ export class FlightListPage implements OnInit, OnDestroy {
       component: FlightTransferComponent,
       translucent: true,
       cssClass: "warranty",
-      backdropDismiss:true,
+      backdropDismiss: true,
       componentProps: {
         flight,
       },

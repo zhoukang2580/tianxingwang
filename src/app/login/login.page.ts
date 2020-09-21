@@ -160,7 +160,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.setLoginButton();
   }
   private autoLogin() {
-    if (!AppHelper.isApp()||this.loginService.preventAutoLogin) {
+    if (!AppHelper.isApp() || this.loginService.preventAutoLogin) {
       return;
     }
     this.identityService.getStatus().subscribe((ok) => {
@@ -326,11 +326,17 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
               this.hideLoadingStatus();
             })
           )
-          .subscribe((r) => {
-            if (r.Ticket) {
-              this.jump(false);
+          .subscribe(
+            (r) => {
+              if (r.Ticket) {
+                this.jump(false);
+              }
+            },
+            (e) => {
+              this.message = e;
+              AppHelper.alert(e || "登录失败");
             }
-          });
+          );
         break;
       case "wechat": {
         this.loginEntity.Data.SdkType = this.form.value.SdkType;
@@ -354,7 +360,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
               }
             },
             (e) => {
-              AppHelper.alert("wechat登录失败，");
+              AppHelper.alert("wechat登录失败");
             }
           );
         break;
@@ -380,7 +386,8 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
               }
             },
             (e) => {
-              AppHelper.alert("登录失败，请使用其它登陆方式");
+              this.message = e || "登录失败，请使用其它登陆方式";
+              AppHelper.alert(e || "登录失败，请使用其它登陆方式");
             }
           );
         break;

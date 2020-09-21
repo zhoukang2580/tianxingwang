@@ -198,7 +198,7 @@ export class SearchTrainPage
         .timeStamp >=
         this.calendarService.generateDayModelByDate(nextDate).timeStamp
         ? lastSelectedGoDate
-        : nextDate;
+        : now;
     if (trip) {
       lastSelectedGoDate =
         +moment(trip.StartTime) >= +moment()
