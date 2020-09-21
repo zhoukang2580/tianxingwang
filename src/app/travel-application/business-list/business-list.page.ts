@@ -6,9 +6,10 @@ import {
   TravelService,
   SearchModel,
   ApprovalStatusType,
+  TmcTravelApprovalType
 } from "../travel.service";
 import { Subscription } from "rxjs";
-import { TravelFormEntity } from "src/app/tmc/tmc.service";
+import { TmcEntity, TravelFormEntity } from "src/app/tmc/tmc.service";
 import { finalize } from "rxjs/operators";
 import { RefresherComponent } from "src/app/components/refresher";
 import { IonInfiniteScroll } from "@ionic/angular";
@@ -20,6 +21,7 @@ import { StaffService, StaffEntity } from "src/app/hr/staff.service";
   styleUrls: ["./business-list.page.scss"],
 })
 export class BusinessListPage implements OnInit, OnDestroy {
+  TravelApprovalType = TmcTravelApprovalType;
   private subscription = Subscription.EMPTY;
   ApprovalStatusType = ApprovalStatusType;
   @ViewChild(RefresherComponent, { static: true })
@@ -27,6 +29,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   items: TravelFormEntity[];
   searchModel: SearchModel;
+  tmc: TmcEntity;
   customPopoverOptions: any = {
     header: "选择审批单状态",
     // subHeader: 'Select your hair color',
@@ -40,7 +43,8 @@ export class BusinessListPage implements OnInit, OnDestroy {
     private service: TravelService,
     private staffService: StaffService,
     private keyboard: Keyboard
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((q) => {
@@ -147,6 +151,10 @@ export class BusinessListPage implements OnInit, OnDestroy {
               });
             }
             this.getVariablesJsonObj(it);
+            const str = it.VariablesJsonObj.ApprovalName;
+            if (str){
+              it.VariablesJsonObj.ApprovalName = str.replace(/→/g, ' ⇀ ');
+            }
             return it;
           });
           this.items = this.items.concat(tempArr);
@@ -156,6 +164,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   }
 
   private getVariablesJsonObj(it: TravelFormEntity) {
+
     if (it.Variables) {
       it.VariablesJsonObj = JSON.parse(it.Variables);
     }
@@ -172,7 +181,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     if (idx > -1) {
       return name.substring(0, idx);
     }
-    return name.replace(/,/g, "·");
+    return name.replace(/,/g, " · ");
   }
   private transformDataTime({
     time,
@@ -232,7 +241,6 @@ export class BusinessListPage implements OnInit, OnDestroy {
   //   }
   // }
   onGotoDetail(item: any, evt: CustomEvent) {
-    // console.log('哈哈哈',item.StatusType);
     const id = item.Id;
     if (item.StatusType == ApprovalStatusType.WaiteSubmit) {
       try {
@@ -266,13 +274,4 @@ export class BusinessListPage implements OnInit, OnDestroy {
       AppHelper.alert(e);
     }
   }
-  // getCityName(name: string) {
-  //   // debugger
-  //   let idxStart = name.indexOf("(");
-  //   let result = name.substring(0, idxStart);
-  //   if (result) {
-  //     return result
-  //   }
-  //   return name
-  // }
 }
