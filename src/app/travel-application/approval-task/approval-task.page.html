@@ -16,6 +16,16 @@
             <span class="tabbar_wait" (click)="onTaskApp()" [class.active]='isactivename=="待我审批"'>待我审批</span>
             <span class="tabbar_has" (click)="onTaskReviewed()" [class.active]='isactivename=="已审任务"'>已审任务</span>
         </div>
+        <div class="no_appcalition" *ngIf="!TaskStatusType">
+            <div>
+                <div>
+                    <img class="app_img" src="assets/images/no_application.png" />
+                </div>
+                <div class="div_app">
+                    <p>暂无审批</p>
+                </div>
+            </div>
+        </div>
         <div class="bg wait_apply" *ngIf='tasks?.length'>
             <div *ngFor="let task of tasks" (click)='onTaskDetail(task)' class="task-item">
                 <section class="section" *ngIf="task.Tag=='TravelForm' ">
@@ -67,9 +77,9 @@
                         <p><span class="apply_info_tit "><span>单号：</span><span>{{task?.OrderId}}</span></span><span class="apply_info_time "></span></p>
                     </div>
                 </section>
-                <img src="assets/images/pass.png " *ngIf='TaskStatusType.Passed==task.Status' alt=" ">
-                <img src="assets/images/deny.png " *ngIf='TaskStatusType.Rejected==task.Status' alt=" ">
-                <img src="assets/images/close.png " *ngIf='TaskStatusType.Closed==task.Status' alt=" ">
+                <img class="img" src="assets/images/pass.png " *ngIf='TaskStatusType.Passed==task.Status' alt=" ">
+                <img class="img" src="assets/images/deny.png " *ngIf='TaskStatusType.Rejected==task.Status' alt=" ">
+                <img class="img" src="assets/images/close.png " *ngIf='TaskStatusType.Closed==task.Status' alt=" ">
             </div>
         </div>
     </div>

@@ -43,6 +43,7 @@ div.item_native ::after {
         margin-bottom: 0.5em;
         img {
             object-fit: fill;
+            width: 40px;
         }
     }
     ion-label {
@@ -78,6 +79,7 @@ ion-list:not(.top-panal) {
 .img {
     border-radius: 50%;
     margin-left: 18px;
+    width: 57px;
 }
 
 .head_detail {
