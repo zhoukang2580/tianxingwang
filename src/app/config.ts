@@ -3,6 +3,7 @@ export const CONFIG = {
   mockProBuild: !false,
   production: true,
   isShowVConsole: false,
+  isForWechatMiniApproval: false,
   showNotUseWechatAccountTipTimeout: 5000,
   appDomain: {
     production: "sky-trip.com",
