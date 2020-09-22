@@ -39,13 +39,14 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   eyeOn = false;
   isKeyboardShow = false;
   eyeType = "password";
-  isShowWechatLogin: boolean = false;
+  isShowWechatLogin = false;
   isShowImageCode: boolean;
   SlideEventType: string;
   environment = environment;
   isApp = AppHelper.isApp();
   defaultLogoUrl: string;
   isWechatMini = AppHelper.isWechatMini();
+  isShowWechatMiniTip = AppHelper.isWechatMini();
   isGetWechatMiniMobile: boolean;
   wechatMiniUser: any;
   wechatMiniMobile: any;
@@ -68,10 +69,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.isShowWechatLogin = installed;
     });
     route.queryParamMap.subscribe((_) => {
-      this.isWechatMini=AppHelper.isWechatMini();
+      this.isShowWechatMiniTip = AppHelper.isWechatMini();
       setTimeout(() => {
-        this.isWechatMini=false;
-      }, 3000);
+        this.isShowWechatMiniTip = false;
+      }, CONFIG.showNotUseWechatAccountTipTimeout);
     });
   }
   onToggleEye() {

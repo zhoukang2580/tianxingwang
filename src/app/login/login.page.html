@@ -70,7 +70,7 @@
       <ion-item lines='none' *ngIf="message" class='err-msg'>
         <ion-label color="danger">{{ message }}</ion-label>
       </ion-item>
-      <div *ngIf='isWechatMini' class="ion-text-center">
+      <div *ngIf='isShowWechatMiniTip' class="ion-text-center">
         <ion-text color='danger'>请勿使用微信用户的用户名或密码!</ion-text>
       </div>
       <ion-button color='secondary' class='login-btn' expand='block' strong='true' (click)="onLoginButton('login')">
