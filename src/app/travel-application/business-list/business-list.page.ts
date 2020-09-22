@@ -155,9 +155,12 @@ export class BusinessListPage implements OnInit, OnDestroy {
               });
             }
             this.getVariablesJsonObj(it);
-            const str = it.VariablesJsonObj.ApprovalName;
-            if (str) {
-              it.VariablesJsonObj.ApprovalName = str.replace(/→/g, ' ⇀ ');
+            if(it.VariablesJsonObj){
+
+              const str = it.VariablesJsonObj.ApprovalName;
+              if (str) {
+                it.VariablesJsonObj.ApprovalName = str.replace(/→/g, ' ⇀ ');
+              }
             }
             return it;
           });

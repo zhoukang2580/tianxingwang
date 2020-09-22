@@ -21,6 +21,7 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
   ApprovalStatusType = ApprovalStatusType;
   istime: Boolean = true;
   Property: any;
+  remark: any;
   taskStatus: TaskStatusType;
   constructor(private route: ActivatedRoute,
     private router: Router,
@@ -96,6 +97,19 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
     this.detail = await this.service.getTravelDetail(id).catch(() => null);
     this.initTrips();
     this.initTime();
+    if (this.detail && this.detail.Histories) {
+      // this.detail.Histories.forEach(his =>{
+      //   if(his.Status == TaskStatusType.Rejected){
+      //     this.remark = his.Remark;
+      //   }
+      // })
+      for (var i = 0; i < this.detail.Histories.length; i++) {
+        if (this.detail.Histories[i].Status == TaskStatusType.Rejected) {
+          this.remark = this.detail.Histories[i].Remark;
+          break;
+        }
+      }
+    }
   }
   onToggle(trip: any) {
     trip.isHideButtons = !trip.isHideButtons;

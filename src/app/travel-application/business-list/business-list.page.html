@@ -57,7 +57,7 @@
                 </div>
                 <div class="trip_end">{{item.startDate}}</div>
             </div>
-            <div class="row" *ngIf="item.Trips&&tmc?.TravelApprovalType!=TravelApprovalType.Free">
+            <div class="row" *ngIf="item.Trips&&tmc?.TravelApprovalType!=TravelApprovalType.Free&&tmc?.TravelApprovalType!=TravelApprovalType.Approver">
                 <div class="start">审批人:</div>
                 <div class="main">{{item?.VariablesJsonObj?.ApprovalName}}</div>
             </div>

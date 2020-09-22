@@ -61,7 +61,7 @@
                     </p>
                     <p>
                         <span class="apply_info_tit"><span>出差天数：</span
-              ><span>{{detail?.TravelForm.DayCount}}</span></span><span class="apply_info_time"></span>
+              ><span>{{detail?.TravelForm.DayCount}}天</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
                         <span class="apply_info_tit"><span>单号：</span><span>{{detail?.TravelFormId}}</span></span><span class="apply_info_time"></span>
@@ -82,6 +82,16 @@
                     <p>
                         <span class="apply_info_tit"><span>客户或公司：</span
               ><span>{{detail?.TravelForm.CompanyName}}</span></span><span class="apply_info_time"></span>
+                    </p>
+                    <p>
+                        <span class="apply_info_tit"><span>成本中心：</span
+                    ><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
+                    </p>
+                    <p>
+                        <span class="apply_info_tit"><span>备注：</span
+                      ><span class="apply_info_reason"></span
+                      >{{detail?.TravelForm.Detail}}</span
+                    ><span class="apply_info_time"></span>
                     </p>
                 </div>
             </div>
@@ -108,7 +118,7 @@
                 ></i>
               </p>
               <p>
-                <span>天数：</span><span>{{detail?.TravelForm.DayCount}}</span>
+                <span>天数：</span><span>{{detail?.TravelForm.DayCount}}天</span>
                             </p>
 
                             <p class="travel_step_btn" *ngIf='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' style="justify-content: space-evenly">
@@ -147,10 +157,10 @@
 
             <span class="apply_info_time"></span>
             </p>
-            <p>
+            <!-- <p>
                 <span class="apply_info_tit Cost_center"><span>成本中心：</span
               ><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
-            </p>
+            </p> -->
             <div *ngFor="let item of detail?.OutNumbers">
                 <p *ngIf="item?.Code">
                     <span class="apply_info_tit Cost_Id">
@@ -160,10 +170,10 @@
                     <span class="apply_info_time"></span>
                 </p>
             </div>
-            <p>
+            <p *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">
                 <span class="apply_info_tit"><span>备注：</span
               ><span class="apply_info_reason"></span
-              >{{detail?.TravelForm.Detail}}</span
+              >{{remark}}</span
             ><span class="apply_info_time"></span>
             </p>
     </div>
