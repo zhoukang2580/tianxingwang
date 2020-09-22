@@ -28,9 +28,22 @@ export class RequestEntity {
     this.Ticket = AppHelper.getTicket();
     this.TicketName = AppHelper.getTicketName();
     this.Domain = AppHelper.getDomain();
-    const AloneTag = AppHelper.getQueryParamers()["AloneTag"];
-    if (AloneTag && AloneTag != 'null' && AloneTag != "undefined") {
-      this.AloneTag = AloneTag;
+    const paramters = AppHelper.getQueryParamers();
+    const tags = [
+      "wechatcode",
+      "wechatminicode",
+      "dingtalkcode",
+      "ticket",
+      "ticketname",
+      "wechatopenid",
+      "dingtalkopenid",
+      AppHelper.getTicketName()
+    ];
+    for (let p in paramters) {
+      if (tags.includes(p.toLowerCase())) {
+        continue;
+      }
+      this[p] = paramters[p];
     }
     if (this.TicketName != "ticket") {
       this[this.TicketName] = this.Ticket;
