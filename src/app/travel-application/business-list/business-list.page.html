@@ -1,22 +1,22 @@
 <ion-header>
-    <ion-toolbar style="padding-right: 10px;">
+    <ion-toolbar style="padding-right: 10px">
         <ion-buttons slot="start">
             <app-back-button></app-back-button>
         </ion-buttons>
         <ion-title>出差申请</ion-title>
-        <ion-button mode='ios' style="height: 2em;width: 3.3em;font-size: 0.9rem;" slot="end" (click)="goAddApply()">
+        <ion-button mode="ios" color="secondary " style="height: 1.8em; width: 2.9em; font-size: 0.9rem; color: white" slot="end" (click)="goAddApply()">
             添加</ion-button>
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+    <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
         <ion-refresher-content>正在加载...</ion-refresher-content>
     </app-refresher>
-    <form action="javascript:void(0)" (ngSubmit)='onSearch(true)'>
-        <ion-searchbar name='searchbar' placeholder="查询姓名、城市、关键字等" mode='ios' animated='true' [(ngModel)]="searchModel&&searchModel.SearchContent"></ion-searchbar>
-        <ion-item style="display: none;">
-            <ion-select cancelText='取消' okText='确定' backdrop-dismiss='true' #statusSelect translucent='true' [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="searchModel&&searchModel.StatusType"
-                name='status' (ionChange)="onSearch(false)">
+    <form action="javascript:void(0)" (ngSubmit)="onSearch(true)">
+        <ion-searchbar name="searchbar" placeholder="查询姓名、城市、关键字等" mode="ios" animated="true" [(ngModel)]="searchModel&&searchModel.SearchContent"></ion-searchbar>
+        <ion-item style="display: none">
+            <ion-select cancelText="取消" okText="确定" backdrop-dismiss="true" #statusSelect translucent="true" [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="searchModel&&searchModel.StatusType"
+                name="status" (ionChange)="onSearch(false)">
                 <ion-select-option value="0">全部</ion-select-option>
                 <ion-select-option value="{{ApprovalStatusType.Pass}}">通过</ion-select-option>
                 <ion-select-option value="{{ApprovalStatusType.Refuse}}">拒绝</ion-select-option>
@@ -24,9 +24,9 @@
                 <ion-select-option value="{{ApprovalStatusType.WaiteSubmit}}">待提交</ion-select-option>
             </ion-select>
         </ion-item>
-        <img src="assets/images/shaixuan.png" (click)='statusSelect.open()' alt="">
+        <img src="assets/images/shaixuan.png" (click)="statusSelect.open()" alt="" />
     </form>
-    <div class="no_appcalition" *ngIf="!searchModel">
+    <div class="no_appcalition" *ngIf="!loading&&!items?.length">
         <div>
             <div>
                 <img class="app_img" src="assets/images/no_application.png" />
@@ -37,51 +37,33 @@
         </div>
     </div>
     <div class="list" *ngIf="searchModel">
-        <div class="item" [ngClass]="{first:first,last:last}" *ngFor='let item of items;let first=first;let last=last;let key=index' (click)="onGotoDetail(item,$event)">
+        <div class="item" [ngClass]="{first:first,last:last}" *ngFor="let item of items;let first=first;let last=last;let key=index" (click)="onGotoDetail(item,$event)">
             <div class="row">
-                <div class="start">
-                    出行人：
-                </div>
-                <div class="main">
-                    {{item?.Account?.RealName}}
-                </div>
-                <div class="end" *ngIf='ApprovalStatusType.Pass==item.StatusType || ApprovalStatusType.Refuse==item.StatusType || ApprovalStatusType.Waiting==item.StatusType'>
+                <div class="start">出行人：</div>
+                <div class="main">{{item?.Account?.RealName}}</div>
+                <div class="end" *ngIf="ApprovalStatusType.Pass==item.StatusType || ApprovalStatusType.Refuse==item.StatusType || ApprovalStatusType.Waiting==item.StatusType">
                     {{item.ApplyTime}}
                 </div>
-                <div class="end" *ngIf='ApprovalStatusType.WaiteSubmit==item.StatusType'>
+                <div class="end" *ngIf="ApprovalStatusType.WaiteSubmit==item.StatusType">
                     {{item?.InsertTime?.startsWith("1800")||item?.InsertTime?.startsWith("0001") ?" ":item?.InsertTime}}
                 </div>
-
             </div>
-            <div class="row" *ngIf='item.Trips '>
-                <div class="start">
-                    行程：
-                </div>
+            <div class="row" *ngIf="item.Trips ">
+                <div class="start">行程：</div>
                 <div class="main">
-                    <div style="width: 165px;" *ngFor="let i of item.Trips;">
+                    <div style="width: 165px" *ngFor="let i of item.Trips;">
                         {{i.FromCityName}}&nbsp;~&nbsp;{{i.ToCityName}}
                     </div>
                 </div>
-                <div class="trip_end">
-                    {{item.startDate}}
-                </div>
+                <div class="trip_end">{{item.startDate}}</div>
             </div>
-            <div class="row" *ngIf='item.Trips&&tmc?.TravelApprovalType!=TravelApprovalType.Free'>
-                <div class="start">
-                    审批人:
-                </div>
-                <div class="main">
-                    {{item?.VariablesJsonObj?.ApprovalName}}
-                </div>
-
+            <div class="row" *ngIf="item.Trips&&tmc?.TravelApprovalType!=TravelApprovalType.Free">
+                <div class="start">审批人:</div>
+                <div class="main">{{item?.VariablesJsonObj?.ApprovalName}}</div>
             </div>
-            <div class="row" *ngIf='item.ApprovalTime '>
-                <div class="start">
-                    审批时间：
-                </div>
-                <div class="main">
-                    {{item.ApprovalTime}}
-                </div>
+            <div class="row" *ngIf="item.ApprovalTime ">
+                <div class="start">审批时间：</div>
+                <div class="main">{{item.ApprovalTime}}</div>
             </div>
             <!-- <div class="row" *ngIf='item.ApplyTime '>
                 <div class="start">
@@ -93,36 +75,35 @@
             </div> -->
             <div class="row">
                 <div class="start">
-                    <ng-container *ngIf='(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType) else apTpl '>
+                    <ng-container *ngIf="(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType) else apTpl ">
                         审批状态：
                     </ng-container>
-                    <ng-template #apTpl>
-                        申请状态：
-                    </ng-template>
+                    <ng-template #apTpl> 申请状态： </ng-template>
                 </div>
                 <div class="main">
-                    <ng-container *ngIf='(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType||ApprovalStatusType.WaiteSubmit==item.StatusType||ApprovalStatusType.Waiting==item.StatusType) else statusTpl '>
-                        <ion-text color='secondary ' *ngIf='ApprovalStatusType.Pass==item.StatusType '>{{item.StatusTypeName}}</ion-text>
-                        <ion-text color='danger ' *ngIf='ApprovalStatusType.Refuse==item.StatusType '>{{item.StatusTypeName}}</ion-text>
-                        <ion-text color='success ' *ngIf='ApprovalStatusType.WaiteSubmit==item.StatusType '>{{item.StatusTypeName}}</ion-text>
-                        <ion-text color='warning ' *ngIf='ApprovalStatusType.Waiting==item.StatusType '>{{item.StatusTypeName}}</ion-text>
+                    <ng-container *ngIf="(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType||ApprovalStatusType.WaiteSubmit==item.StatusType||ApprovalStatusType.Waiting==item.StatusType) else statusTpl ">
+                        <ion-text color="secondary " *ngIf="ApprovalStatusType.Pass==item.StatusType ">{{item.StatusTypeName}}</ion-text>
+                        <ion-text color="danger " *ngIf="ApprovalStatusType.Refuse==item.StatusType ">{{item.StatusTypeName}}</ion-text>
+                        <ion-text color="success " *ngIf="ApprovalStatusType.WaiteSubmit==item.StatusType ">{{item.StatusTypeName}}</ion-text>
+                        <ion-text color="warning " *ngIf="ApprovalStatusType.Waiting==item.StatusType ">{{item.StatusTypeName}}</ion-text>
                     </ng-container>
                     <ng-template #statusTpl>
                         <ion-text>{{item.StatusTypeName}}</ion-text>
                     </ng-template>
-                    <button *ngIf="item.StatusType==ApprovalStatusType.Waiting" (click)="onCancel(item.Id,$event)">撤销</button>
+                    <button *ngIf="item.StatusType==ApprovalStatusType.Waiting" (click)="onCancel(item.Id,$event)">
+            撤销
+          </button>
                     <!-- <button *ngIf="item.StatusType==ApprovalStatusType.WaiteSubmit" (click)="onTravelEdit(item.Id,$event)">编辑</button> -->
                 </div>
 
-                <ion-icon slot="end" style="font-size: 18px;margin-right: 22px;" name="trash-outline" color="danger" class="trash-outline" *ngIf="ApprovalStatusType.WaiteSubmit == item.StatusType" (click)="onDelete(item,key,$event)" class="ion-text-end"></ion-icon>
+                <ion-icon slot="end" style="font-size: 18px; margin-right: 22px" name="trash-outline" color="danger" class="trash-outline" *ngIf="ApprovalStatusType.WaiteSubmit == item.StatusType" (click)="onDelete(item,key,$event)" class="ion-text-end"></ion-icon>
             </div>
-            <img src="assets/images/pass.png" *ngIf='ApprovalStatusType.Pass==item.StatusType ' alt="">
-            <img src="assets/images/deny.png" *ngIf='ApprovalStatusType.Refuse==item.StatusType ' alt="">
+            <img src="assets/images/pass.png" *ngIf="ApprovalStatusType.Pass==item.StatusType " alt="" />
+            <img src="assets/images/deny.png" *ngIf="ApprovalStatusType.Refuse==item.StatusType " alt="" />
         </div>
     </div>
-    <ion-list class="ion-padding-horizontal">
-    </ion-list>
-    <ion-infinite-scroll (ionInfinite)='gettravel() '>
+    <ion-list class="ion-padding-horizontal"> </ion-list>
+    <ion-infinite-scroll (ionInfinite)="gettravel() ">
         <ion-infinite-scroll-content>加载更多</ion-infinite-scroll-content>
     </ion-infinite-scroll>
 </ion-content>

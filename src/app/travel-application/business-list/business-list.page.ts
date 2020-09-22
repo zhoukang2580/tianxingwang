@@ -30,6 +30,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   items: TravelFormEntity[];
   searchModel: SearchModel;
   tmc: TmcEntity;
+  loading = true;
   customPopoverOptions: any = {
     header: "选择审批单状态",
     // subHeader: 'Select your hair color',
@@ -75,6 +76,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
       queryParams: { tabId: "1" },
     });
   }
+
   onDelete(item, key, evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
@@ -89,11 +91,13 @@ export class BusinessListPage implements OnInit, OnDestroy {
       });
   }
   gettravel() {
+    this.loading = true;
     this.subscription = this.service
       .getlist(this.searchModel)
       .pipe(
         finalize(() => {
           setTimeout(() => {
+            this.loading=false;
             if (this.refresher && this.searchModel.PageIndex <= 1) {
               this.refresher.complete();
             }
@@ -152,7 +156,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
             }
             this.getVariablesJsonObj(it);
             const str = it.VariablesJsonObj.ApprovalName;
-            if (str){
+            if (str) {
               it.VariablesJsonObj.ApprovalName = str.replace(/→/g, ' ⇀ ');
             }
             return it;
@@ -164,11 +168,11 @@ export class BusinessListPage implements OnInit, OnDestroy {
   }
 
   private getVariablesJsonObj(it: TravelFormEntity) {
-
     if (it.Variables) {
       it.VariablesJsonObj = JSON.parse(it.Variables);
     }
   }
+
   private strip(name: string) {
     if (!name) {
       return name;
@@ -240,8 +244,10 @@ export class BusinessListPage implements OnInit, OnDestroy {
   //     AppHelper.alert(e);
   //   }
   // }
+
   onGotoDetail(item: any, evt: CustomEvent) {
     const id = item.Id;
+    console.log(id);
     if (item.StatusType == ApprovalStatusType.WaiteSubmit) {
       try {
         if (evt) {

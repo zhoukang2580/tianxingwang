@@ -16,13 +16,14 @@
             <span class="tabbar_wait" (click)="onTaskApp()" [class.active]='isactivename=="待我审批"'>待我审批</span>
             <span class="tabbar_has" (click)="onTaskReviewed()" [class.active]='isactivename=="已审任务"'>已审任务</span>
         </div>
-        <div class="no_appcalition" *ngIf="!TaskStatusType">
+        <div class="no_appcalition" *ngIf="!isLoading&&!tasks?.length">
             <div>
                 <div>
                     <img class="app_img" src="assets/images/no_application.png" />
                 </div>
                 <div class="div_app">
-                    <p>暂无审批</p>
+                    <p *ngIf="isStates">暂无审批</p>
+                    <p *ngIf="!isStates">暂无任务</p>
                 </div>
             </div>
         </div>

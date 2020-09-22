@@ -37,7 +37,8 @@
                 <span style="line-height: 3;margin-left: 10px;">
                 <ion-text [color]="!enable?'dark':'dark'">出差事由:</ion-text>
                 </span>
-                <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" maxlength="50" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
+                <ion-textarea type="text" style="width: 20em;--padding-top: aliceblue;padding-left: 10px;" [disabled]="!enable" name="reason" (ionChange)="onTextarea($event)" placeholder="请输入" maxlength="50" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"
+                    rows="3"></ion-textarea>
             </div>
         </ion-item>
         <app-add-stroke [regionTypes]='vmRegionTypes' [TravelApprovalContent]="vmTravelApprovalContent" [international]='international' [domestic]='domestic' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"
@@ -73,8 +74,8 @@
         </ion-item>
         <ion-item>
             <div class="no_border_bottom text">
-                <span style="line-height: 3;"><ion-text [color]="!enable?'dark':'dark'" style="font-size: 16px;">备注:</ion-text></span>
-                <textarea style="margin-left: -3px;padding: 3px;" maxlength="50" type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable"></textarea>
+                <span style="line-height: 2.5;"><ion-text [color]="!enable?'dark':'dark'" style="font-size: 16px;">备注:</ion-text></span>
+                <ion-textarea style="width: 20em;--padding-top: aliceblue;" maxlength="50" (ionChange)='onTextarea($event)' type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable" rows="3"></ion-textarea>
             </div>
             <!-- <div style="display: flex;justify-content: space-between;width: 100%;flex-wrap: wrap;">
                 <div style="padding-top: 0.5em;">
@@ -131,6 +132,7 @@
             </div>
         </ion-item>
         <ion-item *ngIf="waiting" class="ion-btn">
+
 
             <div class="ion-div">
                 <ion-button slot='end' shape='round' color="secondary" on-touch="getCashSuccess();" data-ng-disabled="!isCashTest()" style="width: 7em;height: 3em;" (click)="onSave()">

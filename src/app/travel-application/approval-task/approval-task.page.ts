@@ -33,6 +33,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
   tasks: TaskEntity[];
   isLoading = true;
   isApprova : boolean = true;
+  isStates = true;
 
   @ViewChild(IonInfiniteScroll, { static: true })
   infiniteScroll: IonInfiniteScroll;
@@ -72,6 +73,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
   }
   
   doLoadMoreTasks() {
+    this.isLoading = true;
     this.loadDataSub = this.orderService
       .getOrderTasks(
         {
@@ -107,7 +109,6 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
         },
         (err) => {
           console.error(err);
-          
           this.loadMoreErrMsg = err.Message || err;
         }
       );
@@ -136,6 +137,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
 
   async onTaskDetail(task: TaskEntity) {
     const url = await this.getTaskHandleUrl(task);
+    
     if (url) {
       this.router
         .navigate(["open-url"], {
@@ -165,6 +167,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     this.infiniteScroll.disabled = true;
     this.tasks = [];
     this.doLoadMoreTasks();
+    this.isStates = true;
   }
 
   onTaskReviewed() {
@@ -174,6 +177,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     this.isactivename = "已审任务";
     this.tasks = [];
     this.doLoadMoreTasks();
+    this.isStates = false;
   }
   doRefresh() {
     this.infiniteScroll.disabled = true;
