@@ -73,7 +73,11 @@ let routes: Route[] = [
       import("./account-mobile/account-mobile.module").then(
         m => m.AccountMobilePageModule
       )
+  },  {
+    path: 'account-items',
+    loadChildren: () => import('./account-items/account-items.module').then( m => m.AccountItemsPageModule)
   }
+
 ];
 
 @NgModule({
