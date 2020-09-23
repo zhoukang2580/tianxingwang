@@ -43,12 +43,12 @@ export const ORDER_TABS: ProductItem[] = [
   //   imageSrc: "assets/images/projectcheck.png",
   //   isDisplay: true
   // },
-  {
-    label: "更多",
-    value: ProductItemType.more,
-    imageSrc: "assets/svgs/product-more.svg",
-    isDisplay: true
-  }
+  // {
+  //   label: "更多",
+  //   value: ProductItemType.more,
+  //   imageSrc: "assets/svgs/product-more.svg",
+  //   isDisplay: true
+  // }
 ];
 @Component({
   selector: "app-product-list",
