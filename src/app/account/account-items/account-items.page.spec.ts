@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { FlightTransferComponent } from './flight-transfer.component';
+import { AccountItemsPage } from './account-items.page';
 
-describe('FlightTransferComponent', () => {
-  let component: FlightTransferComponent;
-  let fixture: ComponentFixture<FlightTransferComponent>;
+describe('AccountItemsPage', () => {
+  let component: AccountItemsPage;
+  let fixture: ComponentFixture<AccountItemsPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FlightTransferComponent ],
+      declarations: [ AccountItemsPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(FlightTransferComponent);
+    fixture = TestBed.createComponent(AccountItemsPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

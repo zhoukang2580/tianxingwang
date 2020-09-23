@@ -12,7 +12,6 @@ import { IdentityEntity } from "../identity/identity.entity";
 })
 export class ImageRecoverService {
   Failover: any;
-  imageRecover: any;
   private fetchingReq: Promise<any>;
   private identity: IdentityEntity;
   constructor(
@@ -25,67 +24,108 @@ export class ImageRecoverService {
         this.disposal();
       }
     });
-    this.get();
   }
   disposal() {
     this.Failover = null;
-    this.imageRecover = null;
   }
-  async initialize(container: HTMLElement) {
-    if (!this.imageRecover) {
-      this.imageRecover = await this.get().catch((_) => null);
-      if (this.imageRecover) {
-        this.imageRecover.Initialize(container);
-      }
-    } else {
-      this.imageRecover.Initialize(container);
-    }
-  }
-  async get() {
-    if (this.imageRecover) {
-      return this.imageRecover;
+
+  private async load() {
+    if (this.Failover) {
+      return this.Failover;
     }
     if (this.fetchingReq) {
       return this.fetchingReq;
     }
-    if (!this.identity || !this.identity.Ticket) {
-      return Promise.resolve(null);
-    }
-    this.fetchingReq = new Promise<any>((resolve, reject) => {
-      const subscribtion = this.load()
-        .pipe(
-          finalize(() => {
-            this.fetchingReq = null;
-          })
-        )
-        .subscribe(
-          (r) => {
-            if (r && r.Status && r.Data && window["Winner"]) {
-              this.Failover = r.Data;
-              this.imageRecover = new window["Winner"].ImageRecover(r.Data);
-              resolve(this.imageRecover);
-            }
-            reject("");
-          },
-          (error) => {
-            reject(error);
-          },
-          () => {
-            setTimeout(() => {
-              if (subscribtion) {
-                subscribtion.unsubscribe();
-              }
-            }, 0);
-          }
-        );
-    }).finally(() => (this.fetchingReq = null));
-    return this.fetchingReq;
-  }
-
-  private load() {
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Home-GetImageRecoverAddress";
     req.Data = JSON.stringify({});
-    return this.apiService.getResponse<any>(req);
+    this.fetchingReq = await this.apiService
+      .getPromiseData<any>(req)
+      .then((r) => {
+        this.Failover = r;
+        return r;
+      })
+      .finally(() => {
+        this.fetchingReq = null;
+      });
+    return this.fetchingReq;
+  }
+  async recover(
+    img: HTMLImageElement,
+    onSuccess: (src: string) => void,
+    onError: (failoverImage) => void
+  ) {
+    if (!this.Failover) {
+      this.Failover = await this.load().catch((_) => null);
+      if (!this.Failover) {
+        onError(null);
+        return;
+      }
+    }
+    if (img) {
+      img.onerror = () => {
+        onError(this.Failover.DefaultUrl);
+      };
+      img.onload = () => {
+        if (
+          !img.src ||
+          (this.Failover &&
+            this.Failover.DefaultUrl &&
+            this.getSrc(img.src).toLowerCase() ==
+              this.getSrc(this.Failover.DefaultUrl).toLowerCase())
+        ) {
+          onError(this.Failover.DefaultUrl);
+        } else {
+          onSuccess(img.src);
+        }
+      };
+    }
+  }
+  private getNode(url: string) {
+    // 得到负载数据
+    for (const node of this.Failover.Nodes) {
+      if (url.indexOf(node.Url) > -1) {
+        node.IsNormal = false;
+        return node;
+      }
+    }
+  }
+  private getSrc(url: string) {
+    if (url) {
+      if (url.toLowerCase().includes("?")) {
+        return url.substring(0, url.indexOf("?"));
+      }
+    }
+    return url || "";
+  }
+  private replace(img: HTMLImageElement) {
+    // 替换
+    if (
+      img.src &&
+      this.Failover.DefaultUrl &&
+      this.getSrc(img.src).toLowerCase() ==
+        this.getSrc(this.Failover.DefaultUrl).toLowerCase()
+    ) {
+      return;
+    }
+    const date = new Date();
+    const node = this.getNode(img.src);
+    if (!node) {
+      img.src = this.Failover.DefaultUrl + "?v=" + date;
+      return;
+    }
+    let isRecover = false;
+    for (const n of this.Failover.Nodes) {
+      if (n.IsNormal == false || n.GroupName != node.GroupName) {
+        continue;
+      }
+      const src = img.src.split("?")[0];
+      img.src = src.replace(node.Url, n.Url) + "?v=" + date;
+      isRecover = true;
+      break;
+    }
+    if (!isRecover && this.Failover.DefaultUrl) {
+      img.src = this.Failover.DefaultUrl + "?v=" + date;
+    }
   }
 }

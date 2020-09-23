@@ -58,6 +58,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   textSearchResults: TrafficlineEntity[] = [];
   vmKeyowrds = "";
   isSearching = false;
+  isLoading = false;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -111,7 +112,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
         this.selectedCitys = [];
       }
       if (!this.selectedCitys.find((it) => it.Id == city.Id)) {
-        this.selectedCitys.push(city);
+          this.selectedCitys.push(city);
       }
       if (this.isSearching) {
         return;

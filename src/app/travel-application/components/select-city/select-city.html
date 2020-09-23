@@ -50,7 +50,7 @@
         </ion-list>
     </ng-template>
     <ng-template #nodatatempl>
-        <app-or-comp>暂无数据</app-or-comp>
+        <app-or-comp *ngIf='!isLoading'>暂无数据</app-or-comp>
     </ng-template>
     <ion-infinite-scroll (ionInfinite)='loadMore()'>
         <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>

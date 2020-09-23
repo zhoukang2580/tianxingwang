@@ -1,4 +1,4 @@
-<ion-row *ngIf='fr' style="margin-bottom: 0.5em;">
+<ion-row *ngIf='fr' class="list-item" class="{{fr.color}}">
   <ion-col size="0.8">
     <div class="logo margin-t11">
       <img [src]="fr.fromSegment?.AirlineSrc">
@@ -41,19 +41,21 @@
     </div>
   </ion-col>
   <ion-col size="3.1" class="ion-text-center">
-    <div [class.margin-t11]="fr?.toSegment?.Variables?.AddDaysTip&&fr.toSegment?.Variables?.AddDaysTip>'0'"
-      style="padding-top: 0.4em;">
+    <div [class.margin-t11]="fr?.toSegment?.Variables?.AddDaysTip&&fr.toSegment?.Variables?.AddDaysTip>'0'" style="padding-top: 0.4em;">
       <ion-text color="danger" class="flightMoney">
-        <small style="font-size: 0.6rem;">¥</small> <span
-          style="font-weight:bold"></span>{{fr.minPriceFlightFare?.SalesPrice}}<small
-          style="font-size: 0.6rem;">起</small>
+        <small style="font-size: 0.6rem;">¥</small> <span style="font-weight:bold"></span>{{fr.minPriceFlightFare?.SalesPrice}}<small style="font-size: 0.6rem;">起</small>
       </ion-text>
       <div style="font-size: 0.7rem" *ngIf="fr.minPriceFlightFare?.Tax">
         <ion-text color="danger">
           税<span style="font-weight:bold">¥</span>{{fr.minPriceFlightFare?.Tax}}
         </ion-text>
       </div>
-      <div class="fontSize" style="color:var(--ion-color-medium)">{{fr.TypeName}}</div>
+      <div class="fontSize typename">
+        <div *ngIf='fr.flightFares?.length' (click)='onToggleFlightFare($event)' class="show-off-icon">
+          <ion-icon name="chevron-up-outline" *ngIf='isShowFares'></ion-icon>
+          <ion-icon name="chevron-down-outline" *ngIf='!isShowFares'></ion-icon>
+        </div>
+      </div>
     </div>
   </ion-col>
   <div class="flihtCompany">
@@ -66,3 +68,4 @@
 
   </div>
 </ion-row>
+<ng-content></ng-content>

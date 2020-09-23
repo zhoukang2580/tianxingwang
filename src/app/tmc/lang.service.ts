@@ -40,7 +40,7 @@ export class LangService {
       } else {
         setTimeout(() => {
           this.stop();
-        }, 5000);
+        }, 0);
       }
     } catch (e) {
       console.error(e);
@@ -146,6 +146,7 @@ export class LangService {
             const ele: HTMLElement = el as any;
             if (
               ele.hasAttribute("notranslate") ||
+              ele.classList.contains("notranslate") ||
               !el.textContent ||
               !el.textContent.match(/[\u4E00-\u9FA5]/g)
             ) {

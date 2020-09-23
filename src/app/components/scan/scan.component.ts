@@ -8,7 +8,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { WechatHelper } from "src/app/wechatHelper";
 import { Subscription } from "rxjs";
-import { QrScanService } from "src/app/services/qrScan/qrscan.service";
+import { ScanService } from 'src/app/services/scan/scan.service';
 @Component({
   selector: "app-scan-comp",
   templateUrl: "./scan.component.html",
@@ -29,7 +29,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     private plt: Platform,
     private identityService: IdentityService,
     private router: Router,
-    private qrScanService: QrScanService
+    private qrScanService: ScanService
   ) {
     this.scanResult = new EventEmitter();
     this.identityEntitySub = this.identityService

@@ -50,7 +50,7 @@ export class OrderItemPricePopoverComponent implements OnInit, AfterViewInit {
       });
       setTimeout(() => {
         swiper.update();
-      }, 200);
+      }, 300);
     });
   }
   private calcTotalPrice() {

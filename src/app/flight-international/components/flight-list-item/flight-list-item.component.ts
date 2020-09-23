@@ -6,6 +6,7 @@ import {
   Output,
   OnChanges,
   SimpleChanges,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntity";
 
@@ -13,13 +14,21 @@ import { FlightRouteEntity } from "src/app/flight/models/flight/FlightRouteEntit
   selector: "app-flight-list-item",
   templateUrl: "./flight-list-item.component.html",
   styleUrls: ["./flight-list-item.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlightListItemComponent implements OnInit, OnChanges {
   @Input() flightRoute: FlightRouteEntity;
   @Output() transfer: EventEmitter<any>;
+  @Output() toggleFlightFare: EventEmitter<any>;
   fr: FlightRouteEntity;
+  @Input() isShowFares = false;
   constructor() {
     this.transfer = new EventEmitter();
+    this.toggleFlightFare = new EventEmitter();
+  }
+  onToggleFlightFare(evt: CustomEvent) {
+    evt.stopPropagation();
+    this.toggleFlightFare.emit();
   }
   onTransfer(event: CustomEvent) {
     event.stopPropagation();

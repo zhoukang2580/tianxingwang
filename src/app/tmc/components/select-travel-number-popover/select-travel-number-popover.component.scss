@@ -1,4 +1,14 @@
-
-.row{
-    font-size:0.7rem;
+.row {
+  font-size: 0.7rem;
+}
+.sticky {
+  position: sticky;
+  top: 0;
+}
+.title {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 1em;
 }

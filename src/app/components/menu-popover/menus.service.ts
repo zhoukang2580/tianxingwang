@@ -295,7 +295,7 @@ const MMS_SYSTEMS: SystemsMenus[] = [
     isShowInHome: false,
     // icon: "icon-mms",
     id: "mms-partner",
-    name: `加盟我的`,
+    name: `我的供应商`,
     imageUrl: `assets/svgs/mms-partner.svg`,
     route: `mms-partner`,
     authId: "",
@@ -310,7 +310,7 @@ const MMS_SYSTEMS: SystemsMenus[] = [
     isShowInHome: false,
     // icon: "icon-mms",
     id: "mms-partnerlinker",
-    name: `我加盟的`,
+    name: `我的渠道商`,
     imageUrl: `assets/svgs/mms-partnerlinker.svg`,
     route: `mms-partnerlinker`,
     authId: "",
@@ -344,6 +344,21 @@ const MMS_SYSTEMS: SystemsMenus[] = [
     name: `优惠券验证`,
     imageUrl: `assets/svgs/mms-order-coupon.svg`,
     route: `mms-order-coupon`,
+    authId: "",
+    bgColor: "var(--ion-color-tertiary)",
+    iconColor: "var(--ion-color-secondary)",
+    feature: "mms",
+  },
+  {
+    appAuthority:
+      "PresentationMmsWebsiteAdminUrl.Note.Index.App_MmsNoteOp",
+    isShowInFeatureTabHome: true,
+    isShowInHome: false,
+    icon: "icon-mms",
+    id: "mms-notes",
+    name: `日志查询`,
+    imageUrl: `assets/svgs/mms-order-coupon.svg`,
+    route: `mms-notes`,
     authId: "",
     bgColor: "var(--ion-color-tertiary)",
     iconColor: "var(--ion-color-secondary)",
@@ -458,11 +473,12 @@ export class MenusService {
     if (systems) {
       await this.initSystemMenus(systems);
     }
+    return this.menus;
   }
   private async loadSubSystems() {
     try {
       return this.authService.loadSubsystems();
-    } catch (e) {}
+    } catch (e) { }
     return [];
   }
   private async initSystemMenus(systems: string[]) {
@@ -510,7 +526,7 @@ export class MenusService {
         }
         return m;
       });
-      console.log("all menus", this.menus);
+      // console.log("all menus", this.menus);
       const k = await this.getCacheKey();
       if (k) {
         const local: SystemsMenus[] = await this.storage.get(k);
@@ -533,6 +549,7 @@ export class MenusService {
           });
         }
       }
+      // console.log("before setMenusSource menus ", this.menus);
       this.setMenusSource(this.menus);
     } catch (error) {
       console.error(error);
@@ -548,7 +565,7 @@ export class MenusService {
     } catch (e) {
       console.error(e);
     }
-    console.log("menus cache key", k);
+    // console.log("menus cache key", k);
     return k;
   }
   getMenusSource() {
@@ -560,10 +577,10 @@ export class MenusService {
         if (it.name) {
           it.name =
             it.feature == "wms" &&
-            it.isShowInHome &&
-            it.isCanRemove &&
-            it.name == "产品维护" &&
-            !it.name.includes("仓库")
+              it.isShowInHome &&
+              it.isCanRemove &&
+              it.name == "产品维护" &&
+              !it.name.includes("仓库")
               ? `仓库${it.name}`
               : it.name;
         }
@@ -577,12 +594,12 @@ export class MenusService {
 export interface SystemsMenus {
   /** 颜色，css 样式或者主题色 */
   bgColor?:
-    | "var(--ion-color-primary)"
-    | "var(--ion-color-secondary)"
-    | "var(--ion-color-warning)"
-    | "var(--ion-color-danger)"
-    | "var(--ion-color-tertiary)"
-    | string;
+  | "var(--ion-color-primary)"
+  | "var(--ion-color-secondary)"
+  | "var(--ion-color-warning)"
+  | "var(--ion-color-danger)"
+  | "var(--ion-color-tertiary)"
+  | string;
   name: string;
   nameColor?: string;
   id: string;

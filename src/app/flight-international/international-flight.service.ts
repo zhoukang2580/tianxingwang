@@ -169,8 +169,6 @@ export class InternationalFlightService {
   private bookInfoSource: Subject<
     PassengerBookInfo<IInternationalFlightSegmentInfo>[]
   >;
-  private flightPolicyResult: FlightResultEntity;
-  // private flightCabinLevelPolicies: { [cabinType: number]: string };
   private get cabins(): IFlightCabinType[] {
     return [
       {
@@ -347,6 +345,16 @@ export class InternationalFlightService {
 
         return res;
       });
+  }
+  async getStopCities(flightSegments: FlightSegmentEntity[]) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiInternationalFlightUrl-Home-GetStopCities";
+    req.IsShowLoading = true;
+    req.Timeout = 60;
+    req.Data = {
+      FlightSegments: JSON.stringify(flightSegments),
+    };
+    return this.apiService.getPromiseData<FlightResultEntity>(req);
   }
   async bookFlight(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
@@ -693,6 +701,8 @@ export class InternationalFlightService {
         this.flightListResult.FlightSegments.length
       ) {
         let result = this.flightListResult;
+        const policyResult = await this.checkRoutePolicy(result);
+        this.initRoutePolicy(policyResult);
         result = this.initParagraphFlightRoutes(result);
         if (!keepFilterCondition) {
           await this.initParagraphCondition(result);
@@ -750,51 +760,60 @@ export class InternationalFlightService {
     return this.apiService
       .getPromiseData<FlightResultEntity>(req)
       .then((r) => {
-        if (r && r.FlightFares) {
-          r.FlightFares.forEach((f) => {
-            f.color = "secondary";
-          });
+        if (r) {
+          if (r.FlightFares) {
+            r.FlightFares.forEach((f) => {
+              f.color = "secondary";
+            });
+          }
+          this.flightListResult = r;
+          if (!r.flightRoutesData) {
+            r.flightRoutesData = r.FlightRoutes;
+          }
         }
-        this.flightListResult = r;
         return this.checkRoutePolicy(this.flightListResult);
       })
       .then((policyResult) => {
-        this.flightPolicyResult = policyResult;
         if (policyResult) {
-          if (policyResult.FlightRoutes) {
-            this.flightListResult.FlightRoutes = this.flightListResult.FlightRoutes.map(
-              (r) => {
-                const one = policyResult.FlightRoutes.find((i) => i.Id == r.Id);
-                if (one) {
-                  r.Rules = one.Rules;
-                  r.IsAllowOrder = one.IsAllowOrder;
-                  if (r.Rules) {
-                    r.rulesMessages = Object.keys(r.Rules).map(
-                      (k) => r.Rules[k]
-                    );
-                  }
-                  r.color = "success";
-                  if (r.IsAllowOrder) {
-                    if (r.Rules) {
-                      r.color = "warning";
-                    }
-                  } else {
-                    r.disabled = true;
-                    r.color = "danger";
-                  }
-                }
-                return r;
-              }
-            );
+          if (!policyResult.flightRoutesData) {
+            policyResult.flightRoutesData = policyResult.FlightRoutes;
           }
+          this.initRoutePolicy(policyResult);
         }
-        this.flightListResult = this.initFlightRouteSegments(
-          this.flightListResult
-        );
         return this.initParagraphCondition(this.flightListResult).then(
           () => this.flightListResult
         );
       });
+  }
+  private initRoutePolicy(policyResult: FlightResultEntity) {
+    if (policyResult) {
+      if (policyResult.flightRoutesData && this.flightListResult) {
+        if (this.flightListResult.flightRoutesData) {
+          this.flightListResult.flightRoutesData.forEach((r) => {
+            r.color = "success";
+            const one = policyResult.FlightRoutes.find((i) => i.Id == r.Id);
+            if (one) {
+              r.Rules = one.Rules;
+              r.IsAllowOrder = one.IsAllowOrder;
+              if (r.Rules) {
+                r.rulesMessages = Object.keys(r.Rules).map((k) => r.Rules[k]);
+              }
+              // r.color = "success";
+              if (r.IsAllowOrder) {
+                if (r.Rules) {
+                  r.color = "warning";
+                }
+              } else {
+                r.disabled = true;
+                r.color = "danger";
+              }
+            }
+            return r;
+          });
+        }
+      }
+    }
+    this.flightListResult = this.initFlightRouteSegments(this.flightListResult);
   }
   async checkPolicy(route: FlightRouteEntity, flightFare: FlightFareEntity) {
     try {
@@ -914,7 +933,7 @@ export class InternationalFlightService {
     req.Method = `TmcApiInternationalFlightUrl-Home-GetRuleInfo`;
     req.IsShowLoading = true;
     req.LoadingMsg = "正在获取";
-    const flightRoutes = (this.flightListResult.FlightRoutesData || []).map(
+    const flightRoutes = (this.flightListResult.flightRoutesData || []).map(
       (r) => {
         const route = new FlightRouteEntity();
         route.Id = r.Id;
@@ -1143,9 +1162,9 @@ export class InternationalFlightService {
     }
     return data;
   }
-  private initParagraphFlightRoutes(data: FlightResultEntity) {
+  private initParagraphFlightRoutes(flightResult: FlightResultEntity) {
     console.time("initParagraphFlightRoutes");
-    if (data && data.FlightRoutesData) {
+    if (flightResult && flightResult.flightRoutesData) {
       const m = this.searchModel;
       if (m) {
         const routeIds = m.trips
@@ -1154,23 +1173,28 @@ export class InternationalFlightService {
           .filter((it) => !!it);
         const rids = routeIds.join(",");
         if (!routeIds.length) {
-          data.FlightRoutes = data.FlightRoutesData.filter(
+          flightResult.FlightRoutes = flightResult.flightRoutesData.filter(
             (r) => r.Paragraphs == 1
           );
         } else {
-          const fares = data.FlightFares.filter((it) => {
+          const fares = flightResult.FlightFares.filter((it) => {
             const temp = it.FlightRouteIds || [];
             return temp.slice(0, routeIds.length).join(",") === rids;
           });
-          data.FlightRoutes = data.FlightRoutesData.filter((it) =>
-            fares.some((f) => f.FlightRouteIds[routeIds.length] == it.Id)
+          flightResult.FlightRoutes = flightResult.flightRoutesData.filter(
+            (it) => {
+              // console.log("route color", it.color);
+              return fares.some(
+                (f) => f.FlightRouteIds[routeIds.length] == it.Id
+              );
+            }
           );
         }
       }
     }
     // console.log("initParagraphFlightRoutes 耗时：", Date.now() - st);
     console.timeEnd("initParagraphFlightRoutes");
-    return data;
+    return flightResult;
   }
   private async initParagraphCondition(data: FlightResultEntity) {
     // tslint:disable-next-line: no-console
@@ -1183,7 +1207,7 @@ export class InternationalFlightService {
     condition.isFilter = false;
     condition.timeSpan = { lower: 0, upper: 24 };
     condition.isDirectFly = false;
-    if (data && data.FlightRoutesData && m) {
+    if (data && data.flightRoutesData && m) {
       data = this.initParagraphFlightRoutes(data);
       data.FlightRoutes.forEach((r) => {
         if (r.fromSegment) {
@@ -1248,22 +1272,24 @@ export class InternationalFlightService {
   private initFlightRouteSegments(data: FlightResultEntity) {
     if (data && data.FlightSegments && data.FlightFares) {
       data = { ...data };
-      if (!data.FlightRoutesData || !data.FlightRoutesData.length) {
-        data.FlightRoutesData = [
+      if (!data.flightRoutesData || !data.flightRoutesData.length) {
+        data.flightRoutesData = [
           ...data.FlightRoutes.map((r) => {
-            return { ...r, isShowFares: false, vmFares: [] };
+            return { ...r };
           }),
         ];
       }
-      if (data.FlightRoutesData && data.FlightRoutesData.length) {
-        data.FlightRoutesData.sort((a, b) => {
+      if (data.flightRoutesData && data.flightRoutesData.length) {
+        data.flightRoutesData.sort((a, b) => {
           return a.FlightSegmentIds &&
             b.FlightSegmentIds &&
             a.FlightSegmentIds.length == b.FlightSegmentIds.length
             ? new Date(a.FirstTime).getTime() - new Date(b.FirstTime).getTime()
             : a.FlightSegmentIds.length - b.FlightSegmentIds.length;
         });
-        data.FlightRoutesData = data.FlightRoutesData.map((flightRoute) => {
+        data.flightRoutesData = data.flightRoutesData.map((flightRoute) => {
+          flightRoute.vmFares = [];
+          flightRoute.isShowFares = false;
           flightRoute.FlightSegments = flightRoute.FlightSegmentIds.map((it) =>
             data.FlightSegments.find((s) => s.Id == it)
           );
@@ -1323,7 +1349,7 @@ export class InternationalFlightService {
     flightFares: FlightFareEntity[],
     routeIds: string[]
   ) {
-    console.time("getMinPriceFlightFare");
+    // console.time("getMinPriceFlightFare");
     const ffs = flightFares.filter((f) => {
       const ids = f.FlightRouteIds && f.FlightRouteIds;
       return routeIds.length > 1
@@ -1335,31 +1361,7 @@ export class InternationalFlightService {
       minPrice = Math.min(minPrice, +it.SalesPrice);
     });
     const flightFare = ffs.find((ff) => +ff.SalesPrice == +minPrice);
-    if (
-      this.flightPolicyResult &&
-      this.flightPolicyResult.FlightFares &&
-      flightFare
-    ) {
-      // 差标信息
-      const one = this.flightPolicyResult.FlightFares.find(
-        (it) => it.Id == flightFare.Id
-      );
-      if (one) {
-        flightFare.IsAllowOrder = one.IsAllowOrder;
-        flightFare.Rules = one.Rules;
-        if (flightFare.Rules) {
-          flightFare.ruleMessage = Object.keys(flightFare.Rules)
-            .map((k) => flightFare.Rules[k])
-            .join(";");
-        }
-        if (!flightFare.ruleMessage) {
-          const p = this.getBookInfos().map((it) => it.passenger)[0];
-          flightFare.ruleMessage =
-            p && p.Policy && p.Policy.InternationalFlightDescription;
-        }
-      }
-    }
-    console.timeEnd("getMinPriceFlightFare");
+    // console.timeEnd("getMinPriceFlightFare");
     return flightFare;
   }
   async getInternationalAirports(forceFetch = false) {

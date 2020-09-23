@@ -7,7 +7,9 @@
 .margin-padding-left {
   margin-left: 0.6em;
 }
-
+.list-item {
+  padding-bottom: 0.5em;
+}
 .time {
   font-size: 1.3em;
 }
@@ -24,7 +26,15 @@
 .fontSize {
   font-size: 0.8em;
 }
-
+.typename {
+  color: var(--ion-color-medium);
+  position: relative;
+}
+.show-off-icon {
+  font-size: 1rem;
+  position: absolute;
+  right: 40%;
+}
 // .paddingtop {
 //     padding-top   : 0.2em;
 //     padding-bottom: 0.2em;
@@ -32,20 +42,28 @@
 //     padding-right : 0.5em;
 //     border-bottom : 2px solid var(--ion-color-primary-shade);
 // }
-
+.warning {
+  background-color: rgba(var(--ion-color-warning-rgb), 0.13);
+}
+.danger {
+  background-color: rgba(var(--ion-color-danger-rgb), 0.13);
+}
+.success {
+  background-color: rgba(var(--ion-color-success-rgb), 0.13);
+}
 .flightMoney {
   font-size: 1.1em;
   text-align: right;
 }
 
 .flihtCompany {
-  // padding: 0.1em 0em 0.5em 2.8em;
-  font-size: 0.8em;
+  font-size: 0.6em;
   display: flex;
   align-items: center;
   color: var(--ion-color-medium);
   flex-flow: wrap;
-  padding-left: 3em;
+  padding-left: 4.3em;
+  max-width: 80%;
 }
 
 .height {

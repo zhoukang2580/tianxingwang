@@ -193,7 +193,7 @@ export class TmcService {
     }
     return payResult;
   }
-   async checkHasHotelBookRight() {
+  async checkHasHotelBookRight() {
     if (!this.tmc) {
       await this.getTmc();
     }
@@ -778,6 +778,7 @@ export interface TravelUrlInfo {
   TravelInfo: string; // null
   TravelNumber: string; // "630000000122"
   Type: string; // null
+  checked: boolean;
 }
 export interface IBookOrderResult {
   TradeNo: string;
@@ -928,7 +929,6 @@ export class TravelFormEntity extends BaseVariablesEntity {
   ApplyTime: string;
   applyTimeDate: string;
   applyTimeTime: string;
-  
   StatusTypeName: string;
   StatusType: ApprovalStatusType;
   ApprovalTime: string;

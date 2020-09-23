@@ -42,12 +42,14 @@ div ion-button {
 textarea {
     display: flex;
     text-align: revert;
-    line-height: 15px;
+    line-height: 20px;
     width: 335px;
-    height: 43px;
+    height: 70px;
     border: none;
     outline: none;
     font-size: 1rem;
+    margin-left: 5px;
+    margin-top: -10px;
 }
 
 .div-travel {
@@ -91,3 +93,7 @@ ion-lable {
 //     margin: auto;
 //     width: 100px;
 // }
+.native-textarea.sc-ion-textarea-ios {
+    --padding-top: aliceblue;
+    --padding-bottom: aliceblue;
+}

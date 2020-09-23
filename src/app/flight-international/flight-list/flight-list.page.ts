@@ -209,18 +209,6 @@ export class FlightListPage implements OnInit, OnDestroy {
         }
       });
     }
-    if (data) {
-      if (!data.FlightFareRules || !data.FlightFareRules.length) {
-        data.FlightFareRules = [];
-        data.FlightFares.forEach((ff) => {
-          if (ff.FlightFareRules && ff.FlightFareRules.length) {
-            data.FlightFareRules = data.FlightFareRules.concat(
-              ff.FlightFareRules
-            );
-          }
-        });
-      }
-    }
     const m = await this.modalController.create({
       component: RefundChangeDetailComponent,
       // cssClass: "flight-refund-comp",
@@ -250,7 +238,6 @@ export class FlightListPage implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.subscriptions.push(this.explainSubscription);
-    this.doRefresh(environment.production);
     this.subscriptions.push(
       this.flightService.getSearchModelSource().subscribe((s) => {
         this.searchModel = s;
@@ -317,6 +304,20 @@ export class FlightListPage implements OnInit, OnDestroy {
           this.refresher.complete();
           this.isLoading = false;
         });
+      if (
+        this.flightQuery &&
+        this.flightQuery.flightRoutesData &&
+        this.searchModel.voyageType == FlightVoyageType.GoBack
+      ) {
+        const policyOne = this.flightQuery.flightRoutesData.find(
+          (it) => !!it.color
+        );
+        if (policyOne) {
+          this.flightQuery.FlightRoutes.forEach((r) => {
+            r.color = policyOne.color;
+          });
+        }
+      }
       console.log("list data", this.flightQuery);
       if (this.flightQuery && this.flightQuery.FlightRoutes) {
         this.flightRoutes = this.flightQuery.FlightRoutes.slice(
@@ -324,6 +325,8 @@ export class FlightListPage implements OnInit, OnDestroy {
           this.pageSize
         );
         this.flightRoutes.forEach((it) => {
+          it.vmFares = [];
+          it.isShowFares = false;
           if (it.flightFares && it.flightFares.length < this.farePageSize) {
             it.isShowFares = true;
             it.vmFares = it.flightFares;
@@ -339,33 +342,42 @@ export class FlightListPage implements OnInit, OnDestroy {
   }
   onToggleFlightFare(fr: FlightRouteEntity) {
     if (this.reqAnimate) {
-      window.cancelAnimationFrame(this.reqAnimate);
+      clearTimeout(this.reqAnimate);
     }
     if (fr) {
-      if (fr.isShowFares) {
-        fr.isShowFares = false;
+      fr.isShowFares = !fr.isShowFares;
+      if (!fr.isShowFares) {
         fr.vmFares = [];
         return;
       }
       this.flightRoutes.forEach((r) => {
+        r.vmFares = [];
         r.isShowFares = r == fr;
       });
       const r = this.flightRoutes.find((it) => it.isShowFares);
-      if (r && r.isShowFares) {
+      if (r) {
         r.vmFares = [];
-        const loop = () => {
+        const loop = (timeout = 100) => {
+          if (!fr.isShowFares) {
+            r.vmFares = [];
+            clearTimeout(this.reqAnimate);
+            return;
+          }
+          console.log("looping");
           const arr = fr.flightFares.slice(
             fr.vmFares.length,
             this.farePageSize + fr.vmFares.length
           );
           if (arr.length) {
             r.vmFares = r.vmFares.concat(arr);
-            this.reqAnimate = requestAnimationFrame(() => {
+            this.reqAnimate = setTimeout(() => {
               loop();
-            });
+            }, timeout);
+          } else {
+            clearTimeout(this.reqAnimate);
           }
         };
-        loop();
+        loop(500);
       }
     }
   }
@@ -467,6 +479,7 @@ export class FlightListPage implements OnInit, OnDestroy {
       component: FlightTransferComponent,
       translucent: true,
       cssClass: "warranty",
+      backdropDismiss: true,
       componentProps: {
         flight,
       },

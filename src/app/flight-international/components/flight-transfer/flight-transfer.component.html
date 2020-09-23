@@ -1,14 +1,13 @@
 <!-- <app-flight-list-item [flight]='flight'   *ngFor='let seg of flight?.transferSegments'></app-flight-list-item> -->
-<div>
+<div (click)='onDismiss()'>
   <ion-list class="ion-padding">
-    <ion-item *ngFor="let seg of flight?.transferSegments;let index=index" class="padding1em" lines="none"
-      style="font-size: 0.9rem;">
+    <ion-item *ngFor="let seg of flight?.transferSegments;let index=index" class="padding1em" lines="none" style="font-size: 0.9rem;">
       <div style="width:100%">
         <div>
-          <ion-text color="secondary" *ngIf="isShowRemind(index,seg)" style="font-size: 0.6rem;display: flex;
+          <ion-text color="secondary" *ngIf="seg['showRemind']" style="font-size: 0.6rem;display: flex;
           justify-content: center;">
-            <span *ngIf="isShow==1">转机机场不同，请保留充足中转时间。</span>
-            <span *ngIf="isShow==2">转机机场起降航站楼不同<br/>请保留充足中转时间。</span>
+            <span *ngIf="seg['showRemind']==1">转机机场不同，请保留充足中转时间。</span>
+            <span *ngIf="seg['showRemind']==2">转机机场起降航站楼不同<br />请保留充足中转时间。</span>
           </ion-text>
         </div>
         <ion-row>
@@ -40,6 +39,24 @@
             </ion-text>
           </ion-col>
         </ion-row>
+        <ng-container *ngIf='seg.IsStop||seg.StopCities'>
+          <ion-row>
+            <ion-col size="3">
+            </ion-col>
+            <ion-col>
+              <ng-container *ngIf='seg.StopCities'>
+                <div *ngFor='let c of seg.StopCities'>
+                  <ion-text style="font-size: 0.6rem;" color="medium">
+                    {{c.CityName}} <ng-container *ngIf='c.StayTime'>{{c.StayTime}}</ng-container>
+                  </ion-text>
+                </div>
+              </ng-container>
+              <ng-container *ngIf='!seg.StopCities'>
+                <ion-button color='secondary' fill='clear' size='small' (click)='onGetStopCities(seg)'>经停</ion-button>
+              </ng-container>
+            </ion-col>
+          </ion-row>
+        </ng-container>
         <ion-row>
           <ion-col size="3">
             到达

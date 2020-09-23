@@ -10,12 +10,12 @@
 <ion-content>
     <ion-list style="background: transparent;">
         <ion-item style="margin-top: 8px;">
-
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">出行人:</ion-text>
             <ion-label class="ion-text-end">{{searchModel?.Staff?.Name}}</ion-label>
         </ion-item>
         <ion-item detail (click)='onSelectOrg()' [attr.organization]='"organization"'>
-
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">
                 所属部门:
             </ion-text>
@@ -24,32 +24,21 @@
                 </ng-container>
             </ion-text>
         </ion-item>
-        <ion-item style="margin-top: 8px;">
-            <span class="red">*</span>
+        <ion-item style="margin-top: 8px;" [attr.CustomerName]='"CustomerName"'>
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">客户或公司:</ion-text>
-            <ion-input placeholder="请输入" slot="end" class="ion-text-end" maxlength="10" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
+            <ion-input placeholder="请输入" maxlength="11" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
 
             </ion-input>
         </ion-item>
         <ion-item [attr.Subject]='"Subject"'>
-            <!-- <span>
-                <span>*</span>
-            <ion-text [color]="!enable?'dark':'dark'">
-                出差事由
-            </ion-text>
-            </span>
-            <ion-input placeholder="请输入" type="text" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable">
-            </ion-input> -->
-            <!-- <div class="no_border_bottom text">
-                <span style="line-height: 3;"><span class="red">*</span><span style="font: inherit;font-size: 15px;">出差事由:</span></span>
-                <textarea type="text" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
-            </div> -->
             <div class="no_border_bottom text">
                 <span class="red" style="position: absolute;margin: 14px 0px;">*</span>
                 <span style="line-height: 3;margin-left: 10px;">
                 <ion-text [color]="!enable?'dark':'dark'">出差事由:</ion-text>
                 </span>
-                <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" maxlength="100" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"></textarea>
+                <ion-textarea type="text" style="width: 20em;--padding-top: aliceblue;padding-left: 10px;" [disabled]="!enable" name="reason" (ionChange)="onTextarea($event)" placeholder="请输入" maxlength="50" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"
+                    rows="3"></ion-textarea>
             </div>
         </ion-item>
         <app-add-stroke [regionTypes]='vmRegionTypes' [TravelApprovalContent]="vmTravelApprovalContent" [international]='international' [domestic]='domestic' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"
@@ -59,20 +48,23 @@
             <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
             添加行程
         </ion-button>
-        <ion-item detail (click)='openApproverModal()' *ngIf="true||tmc?.TravelApprovalType==TravelApprovalType.Free&&enable" [attr.accountId]='"accountId"'>
+        <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType==TravelApprovalType.Free&&enable" [attr.accountId]='"accountId"'>
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">
                 审批人:
             </ion-text>
-            <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;" class="ion-text-end" *ngIf="appovalStaff">
-                {{appovalStaff}}
+            <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;" class="ion-text-end" *ngIf="searchModel?.ApprovalName">
+                {{searchModel.ApprovalName}}
             </ion-text>
         </ion-item>
         <ion-item detail (click)="onSelectCostCenter()">
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">成本中心:</ion-text>
             <ion-label class="ion-text-end" color="{{searchModel.TravelForm?.CostCenterName}}" [color]="!enable?'medium':'dark'">
                 {{searchModel.TravelForm?.CostCenterName||" "}}</ion-label>
         </ion-item>
         <ion-item>
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">
                 出差总天数:
             </ion-text>
@@ -82,8 +74,8 @@
         </ion-item>
         <ion-item>
             <div class="no_border_bottom text">
-                <span style="line-height: 3;"><ion-text [color]="!enable?'dark':'dark'" style="font-size: 16px;">备注:</ion-text></span>
-                <textarea type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable"></textarea>
+                <span style="line-height: 2.5;"><ion-text [color]="!enable?'dark':'dark'" style="font-size: 16px;">备注:</ion-text></span>
+                <ion-textarea style="width: 20em;--padding-top: aliceblue;" maxlength="50" (ionChange)='onTextarea($event)' type="text" [disabled]="!enable" name="reason" placeholder="请输入" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable" rows="3"></ion-textarea>
             </div>
             <!-- <div style="display: flex;justify-content: space-between;width: 100%;flex-wrap: wrap;">
                 <div style="padding-top: 0.5em;">
@@ -96,7 +88,7 @@
                 </div>
             </div> -->
         </ion-item>
-        <ion-item>
+        <!-- <ion-item>
             <div style="width: 100%;">
                 <ion-row *ngFor="let item of outNumberNameArray" style="justify-content: center;
                 align-items: center;
@@ -108,7 +100,7 @@
                     </ion-col>
                 </ion-row>
             </div>
-        </ion-item>
+        </ion-item> -->
 
         <ion-item *ngIf="!enable">
             <div *ngIf="searchModel.Histories" style="width: 100%;">
@@ -140,6 +132,7 @@
             </div>
         </ion-item>
         <ion-item *ngIf="waiting" class="ion-btn">
+
 
             <div class="ion-div">
                 <ion-button slot='end' shape='round' color="secondary" on-touch="getCashSuccess();" data-ng-disabled="!isCashTest()" style="width: 7em;height: 3em;" (click)="onSave()">

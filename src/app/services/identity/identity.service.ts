@@ -45,7 +45,9 @@ export class IdentityService {
   }
   setIdentity(info: IdentityEntity) {
     this.identityEntity = info;
-    AppHelper.setStorage("ticket", (info && info.Ticket) || "");
+    if (info&&info.Ticket) {
+      AppHelper.setTicket((info && info.Ticket) || "");
+    }
     this.identitySource.next(this.identityEntity);
     console.log("Identity", this.identityEntity);
   }
@@ -63,14 +65,14 @@ export class IdentityService {
       this.identityEntity.Ticket = null;
       this.identityEntity.Id = null;
     }
-    AppHelper.setStorage("ticket", "");
+    AppHelper.setTicket("");
     this.setIdentity(this.identityEntity);
   }
   getIdentityAsync(): Promise<IdentityEntity> {
     if (
       this.identityEntity &&
       this.identityEntity.Ticket &&
-      this.identityEntity.Id &&this.identityEntity.Id !="0"
+      this.identityEntity.Id && this.identityEntity.Id != "0"
     ) {
       return Promise.resolve(this.identityEntity);
     }
@@ -137,10 +139,7 @@ export class IdentityService {
     req.IsShowLoading = true;
     req.Method = "ApiHomeUrl-Identity-Get";
     req.Data = JSON.stringify({ Ticket: ticket });
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = ticket;
-    req.Domain = AppHelper.getDomain();
+
     let due = req.Timeout || 30 * 1000;
     due = due < 1000 ? due * 1000 : due;
     due = environment.disableNetWork ? 1 : due;

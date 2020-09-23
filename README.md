@@ -114,3 +114,15 @@ cordova 官网 `https://cordova.apache.org/`
 
 ## 取消自动刷新浏览器
 `ng serve --liveReload=false`
+
+
+## 环境变量配置
+1. 安装 nodejs
+2. 全局安装 @ionic/cli, @angular/cli , cordova ;`npm i -g @ionic/cli @angular/cli cordova`;
+3. 安装 Android studio , 并且下载 sdk 
+4. 配置Android SDK 的环境变量
+   1 配置 SDK所在的目录
+   2 配置 platforms目录
+   2 配置 platform-tools 目录
+5. 安装 `npm i -g cordova-res` ;用于生成Android图标，启动图标
+6. 编译Android apk `ionic cordova build android --prod --release`

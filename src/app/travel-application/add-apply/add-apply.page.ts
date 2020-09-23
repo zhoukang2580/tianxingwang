@@ -69,8 +69,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   international = false;
   pass = false;
   isVaild = true;
-  appovalStaff: string;
+  // appovalStaff: string;
   addstatus:boolean;
+  detail: SearchModel;
   outNumbers: {
     [key: string]: any;
   };
@@ -146,8 +147,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             this.searchModel.TravelForm.CostCenterCode ||
             (s.staff && s.staff.CostCenter.Code);
           if (s.approvalStaff && s.approvalStaff.Name) {
-            this.appovalStaff = s.approvalStaff.Name;
-            this.searchModel.AccountId = s.approvalStaff.Account.Id;
+            this.searchModel.ApprovalName =s.approvalStaff.Name;
+            this.searchModel.ApprovalId = s.approvalStaff.Account.Id;
           }
           if (!this.searchModel.TravelForm.Organization) {
             this.searchModel.TravelForm.Organization = {} as any;
@@ -191,8 +192,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       }
       if (this.searchModel.TravelForm && this.searchModel.TravelForm.Variables) {
         this.searchModel.TravelForm.VariablesJsonObj = JSON.parse(this.searchModel.TravelForm.Variables);
-        this.appovalStaff= this.searchModel.TravelForm.VariablesJsonObj.ApprovalStaffName;
-        this.searchModel.AccountId= this.searchModel.TravelForm.VariablesJsonObj.AccountId;
+        this.searchModel.ApprovalName = this.searchModel.TravelForm.VariablesJsonObj.ApprovalName;
+        this.searchModel.ApprovalId = this.searchModel.TravelForm.VariablesJsonObj.ApprovalId;
       }
       if (
         this.searchModel.TravelForm &&
@@ -231,17 +232,18 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
                   Name: name[i]
                 } as TrafficlineEntity);
               }
+              t.toCityInName = t.ToCityArrive && t.ToCityArrive.map(it => it.Name).filter(it => it && it.length > 0).join(" · ");
             }
-
             return t;
           }
         );
-
       }
-      
     }
   }
+ 
   ngOnInit() {
+
+    console.log();
     this.addstatus = true;
     this.outNumbers = {};
     if (this.searchModel) {
@@ -376,10 +378,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     await modal.present();
     const result = await modal.onDidDismiss();
     if (result && result.data) {
-      this.appovalStaff = result.data.Text;
-      this.searchModel.ApprovalStaffName = this.appovalStaff;
-
-      this.searchModel.AccountId = result.data.Value;
+      this.searchModel.ApprovalName =  result.data.Text;
+      this.searchModel.ApprovalId = result.data.Value;
     }
   }
   async onSelectCostCenter() {
@@ -444,19 +444,19 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         if (!this.searchModel.TravelForm.Organization) {
           const el = this.getEleByAttr("organization", "organization");
           this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请选择所属部门");
+          AppHelper.alert("请选择所属部门");
           return;
         }
         if (!this.searchModel.TravelForm.CustomerName) {
           const el = this.getEleByAttr("CustomerName", "CustomerName");
           this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请选择顾客或公司");
+          AppHelper.alert("请选择客户或公司");
           return;
         }
         if (!this.searchModel.TravelForm.Subject) {
           const el = this.getEleByAttr("Subject", "Subject");
           this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请输入出差事由");
+          AppHelper.alert("请输入出差事由");
           return;
         }
         if (this.searchModel.TravelForm.Trips) {
@@ -471,38 +471,45 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             } else if (!trip.TripType) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入出差类别");
+              AppHelper.alert("请输入出差类别");
               return;
             } else if (!trip.FromCityName) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入开始城市");
+              AppHelper.alert("请输入开始城市");
               return;
             } else if (!trip.ToCityName) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入到达城市");
+              AppHelper.alert("请输入到达城市");
               return;
             } else if (!trip.CheckInCityName) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入住的城市");
+              AppHelper.alert("请输入住的城市");
               return;
             } else if (!trip.StartDate) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入开始时间");
+              AppHelper.alert("请输入开始时间");
               return;
             } else if (!trip.EndDate) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入结束时间");
+              AppHelper.alert("请输入结束时间");
               return;
             }
             if (this.searchModel.TravelForm.Trips[index].Day <= 0) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("出差结束时间不能早于出差开始时间");
+              AppHelper.alert("出差结束时间不能早于出差开始时间");
+              return;
+            }
+
+            if (this.searchModel.TravelForm.Trips[index].Day > 365) {
+              const el = this.getEleByAttr("addStroke", `${index}`);
+              this.moveRequiredEleToViewPort(el);
+              AppHelper.alert("出差时间不能超过一年");
               return;
             }
             if (trip.StartDate && trip.EndDate) {
@@ -521,38 +528,11 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         this.TravelApprovalType &&
         this.tmc.TravelApprovalType == this.TravelApprovalType.Free
       ) {
-        if (!this.appovalStaff) {
+        if (!this.searchModel.ApprovalName) {
           const el = this.getEleByAttr("accountId", "accountId");
           this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请选择审批人");
+          AppHelper.alert("请选择审批人");
           return;
-        }
-      }
-      if (
-        this.tmc &&
-        this.tmc.OutNumberNameArray &&
-        this.tmc.OutNumberRequiryNameArray
-      ) {
-        console.log(this.tmc.OutNumberNameArray, "this.tmc.OutNumberNameArray");
-        console.log(
-          this.tmc.OutNumberRequiryNameArray,
-          " this.tmc.OutNumberRequiryNameArray"
-        );
-        // tslint:disable-next-line: prefer-for-of
-        for (
-          let index = 0;
-          index < this.tmc.OutNumberRequiryNameArray.length;
-          index++
-        ) {
-          const element = this.tmc.OutNumberRequiryNameArray[index];
-          if (!this.outNumbers[element]) {
-            const el = this.getEleByAttr("OutNumberName", element);
-            this.moveRequiredEleToViewPort(el);
-            AppHelper.toast(
-              `请输入${this.tmc.OutNumberNameArray.find((f) => f == element)}`
-            );
-            return;
-          }
         }
       }
 
@@ -573,28 +553,10 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       AppHelper.alert(e);
     }
   }
+
   async onSave() {
     try {
       if (this.searchModel.TravelForm) {
-        // this.searchModel.Trips = this.searchModel.TravelForm.Trips;
-        if (!this.searchModel.TravelForm.Organization) {
-          const el = this.getEleByAttr("organization", "organization");
-          this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请选择所属部门");
-          return;
-        }
-        if (!this.searchModel.TravelForm.CustomerName) {
-          const el = this.getEleByAttr("CustomerName", "CustomerName");
-          this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请选择顾客或公司");
-          return;
-        }
-        if (!this.searchModel.TravelForm.Subject) {
-          const el = this.getEleByAttr("Subject", "Subject");
-          this.moveRequiredEleToViewPort(el);
-          AppHelper.toast("请输入出差事由");
-          return;
-        }
         if (this.searchModel.TravelForm.Trips) {
           for (
             let index = 0;
@@ -604,36 +566,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             const trip = this.searchModel.TravelForm.Trips[index];
             if (trip && trip.travelTools) {
               trip.TravelTool = trip.travelTools.join(",");
-            } else if (!trip.TripType) {
-              const el = this.getEleByAttr("addStroke", `${index}`);
-              this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入出差类别");
-              return;
-            } else if (!trip.FromCityName) {
-              const el = this.getEleByAttr("addStroke", `${index}`);
-              this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入开始城市");
-              return;
-            } else if (!trip.ToCityName) {
-              const el = this.getEleByAttr("addStroke", `${index}`);
-              this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入目的城市");
-              return;
-            } else if (!trip.CheckInCityName) {
-              const el = this.getEleByAttr("addStroke", `${index}`);
-              this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入住的城市");
-              return;
-            } else if (!trip.StartDate) {
-              const el = this.getEleByAttr("addStroke", `${index}`);
-              this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入开始时间");
-              return;
-            } else if (!trip.EndDate) {
-              const el = this.getEleByAttr("addStroke", `${index}`);
-              this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("请输入结束时间");
-              return;
             }
             if (this.searchModel.TravelForm.Trips[index].Day <= 0) {
               const el = this.getEleByAttr("addStroke", `${index}`);
@@ -641,6 +573,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
               AppHelper.toast("出差结束时间不能早于出差开始时间");
               return;
             }
+
             if (trip.StartDate && trip.EndDate) {
               trip.StartDate = trip.StartDate.replace("T", " ").substring(
                 0,
@@ -651,18 +584,18 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             // this.searchModel.TravelForm.Trips.some()
           }
         }
-        if (
-          this.tmc &&
-          this.TravelApprovalType &&
-          this.tmc.TravelApprovalType == this.TravelApprovalType.Free
-        ) {
-          if (!this.appovalStaff) {
-            const el = this.getEleByAttr("accountId", "accountId");
-            this.moveRequiredEleToViewPort(el);
-            AppHelper.toast("请选择审批人");
-            return;
-          }
-        }
+        // if (
+        //   this.tmc &&
+        //   this.TravelApprovalType &&
+        //   this.tmc.TravelApprovalType == this.TravelApprovalType.Free
+        // ) {
+        //   if (!this.appovalStaff) {
+        //     const el = this.getEleByAttr("accountId", "accountId");
+        //     this.moveRequiredEleToViewPort(el);
+        //     AppHelper.toast("请选择审批人");
+        //     return;
+        //   }
+        // }
         this.searchModel.OrganizationId =
           this.searchModel.TravelForm.Organization &&
           this.searchModel.TravelForm.Organization.Id;
@@ -691,6 +624,16 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       AppHelper.alert(e);
     }
   }
+
+
+  onTextarea(evt: CustomEvent) {
+    const len = evt.detail.value.length;
+    if(len>50){
+      AppHelper.alert("长度不能超过五十个");
+      return;
+    }
+  }
+  
   onRemoveTrip(item: TravelFormTripEntity) {
     if (item && this.searchModel.TravelForm.Trips) {
       this.searchModel.TravelForm.Trips = this.searchModel.TravelForm.Trips.filter(

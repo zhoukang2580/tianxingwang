@@ -280,11 +280,6 @@ export class InternationalHotelListPage
       })
     );
     this.observeSearchCondition();
-    this.imageRecoverService.get().then((res) => {
-      if (res) {
-        this.defaultImage = res.DefaultUrl;
-      }
-    });
   }
   onSearchText() {
     this.router.navigate(["combo-search-inter-hotel"]);

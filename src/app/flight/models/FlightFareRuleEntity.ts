@@ -27,6 +27,15 @@ export class FlightFareRuleEntity {
   BaggageAllowance: string;
   Bags: {
     BagInfo: string;
+    freebginfo: string;
     FlightNumber: string; // "MU8273";
+    AllowedPieces: string; // 2;
+    AllowedWeight: string; // 0;
+    AllowedWeightUnit: string; // "";
+    FreeAllowedPieces: string; // 1;
+    FreeAllowedWeight: string; // 0;
+    FreeAllowedWeightUnit: string; // "";
+    FromCityName: string; // "上海";
+    ToCityName: string; // "法兰克福";
   }[];
 }

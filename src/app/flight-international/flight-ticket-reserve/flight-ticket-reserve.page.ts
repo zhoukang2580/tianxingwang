@@ -140,6 +140,10 @@ export class FlightTicketReservePage
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
+  onToggleIsShowFee(el: HTMLElement, footerEl: HTMLElement) {
+    this.isShowFee = !this.isShowFee;
+    el.style.transform = `translate(0,-${footerEl.clientHeight || 44}px)`;
+  }
   async ngOnInit() {
     this.subscriptions.push(this.subscription);
     this.subscriptions.push(
@@ -232,19 +236,19 @@ export class FlightTicketReservePage
           info.bookInfo.flightRoute.selectFlightFare;
         if (i == 0 && p.FlightFare) {
           const flightRouteIds = p.FlightFare.FlightRouteIds || [];
-          p.FlightRoutes = this.flightService.flightListResult.FlightRoutesData.filter(
-            (it) => flightRouteIds.some((id) => id == it.Id)
-          ).map((it) => {
-            const r = {
-              ...it,
-              flightFare: null,
-              FlightSegments: [],
-              fromSegment: null,
-              toSegment: null,
-              transferSegments: null,
-            };
-            return r;
-          });
+          p.FlightRoutes = this.flightService.flightListResult.flightRoutesData
+            .filter((it) => flightRouteIds.some((id) => id == it.Id))
+            .map((it) => {
+              const r = {
+                ...it,
+                flightFare: null,
+                FlightSegments: [],
+                fromSegment: null,
+                toSegment: null,
+                transferSegments: null,
+              };
+              return r;
+            });
           const segs = this.flightService.flightListResult.FlightSegments.filter(
             (s) =>
               p.FlightRoutes.some(
@@ -843,7 +847,7 @@ export class FlightTicketReservePage
       .slice(0)
       .pop()
       .bookInfo.flightRoute.selectFlightFare.FlightRouteIds.forEach((rid) => {
-        const r = this.flightService.flightListResult.FlightRoutesData.find(
+        const r = this.flightService.flightListResult.flightRoutesData.find(
           (it) => it.Id == rid
         );
         if (r) {
@@ -1287,9 +1291,13 @@ export class FlightTicketReservePage
     let fees = 0;
     if (this.initialBookDtoModel && this.initialBookDtoModel.ServiceFees) {
       fees = Object.keys(this.initialBookDtoModel.ServiceFees).reduce(
-        (acc, key) => {
-          const fee = +this.initialBookDtoModel.ServiceFees[key];
-          acc = +AppHelper.add(fee, acc);
+        (acc, key, idx) => {
+          if (this.searchModel.voyageType == FlightVoyageType.GoBack) {
+            if (idx == 0) {
+              const fee = +this.initialBookDtoModel.ServiceFees[key];
+              acc = +AppHelper.add(fee, acc);
+            }
+          }
           return acc;
         },
         0

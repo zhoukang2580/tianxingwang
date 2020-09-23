@@ -2,7 +2,8 @@ app-tabs-container {
   display: block;
   overflow: auto;
   width: 100vw;
-  &::-webkit-scrollbar{
+  --tabs-horizontal-justify-content: space-around;
+  &::-webkit-scrollbar {
     display: none;
   }
 }

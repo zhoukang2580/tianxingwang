@@ -32,8 +32,6 @@ export class LogService {
       }
       const identity = this.identityEntity;
       const req = new RequestEntity();
-      req.Timestamp = Math.floor(Date.now() / 1000);
-      req.Domain = AppHelper.getDomain();
       req.Method = "ApiLogUrl-Error-Add";
       const detail = JSON.stringify(serializeError(ex));
       req.Data = JSON.stringify({

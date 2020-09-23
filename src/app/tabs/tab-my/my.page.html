@@ -1,37 +1,36 @@
-<ion-header>
+<!-- <ion-header>
     <ion-toolbar color="primary">
         <ion-title class="ion-text-capitalize">我的</ion-title>
     </ion-toolbar>
-</ion-header>
-
+</ion-header> -->
 <ion-content>
     <ion-list lines='none' class='top-panal'>
-        <ion-item detail (click)='goToMyDetail()'>
-            <ion-thumbnail slot='start'>
-                <img alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'>
+        <ion-item detail (click)='goToMyDetail()' class="head_detail">
+            <ion-thumbnail slot='start' class="top-center">
+                <img class="img" alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'>
                 <!-- <ion-img [src]='Model?.HeadUrl'></ion-img> -->
             </ion-thumbnail>
             <ion-label class='ion-padding-start'>
-                <h3>{{Model?.RealName}}
+                <h3 style="color: #e8e1e1;font-size: 1.1rem;">{{Model?.RealName}}
                     <ion-note class='account-type'></ion-note>
                 </h3>
                 <h4>
-                    <ion-note>账号: {{Model?.Name || Model?.Mobile}}</ion-note>
+                    <ion-note style="color: #e8e1e1;font-size: 12px;">账号: {{Model?.Name || Model?.Mobile}}</ion-note>
                 </h4>
             </ion-label>
         </ion-item>
     </ion-list>
     <ion-card mode='ios' color='primary' *ngIf='isShowMyOrderTabs'>
-        <ion-card-header>
+        <!-- <ion-card-header>
             <strong>我的订单</strong>
-        </ion-card-header>
+        </ion-card-header> -->
         <ion-card-content>
             <ion-row>
                 <ion-col *ngFor='let item of items;let last = last;'>
                     <div class='produc-item' (click)='onProductClick(item)'>
-                        <ion-avatar size='small'>
-                            <img [src]="item.imageSrc" alt="">
-                        </ion-avatar>
+                        <!-- <ion-avatar size='small'> -->
+                        <img [src]="item.imageSrc" alt="" style="width: 40px;">
+                        <!-- </ion-avatar> -->
                         <ion-label class='ion-text-center ion-text-nowrap'>{{item.label}}</ion-label>
                     </div>
                 </ion-col>
@@ -42,15 +41,15 @@
         <ion-item detail (click)='credentialManagement()'>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/images/zjgl.png" alt=""> 证件管理
+                <img src="assets/images/5.png" alt=""> 证件管理
             </ion-label>
         </ion-item>
     </ion-list>
     <ion-list>
-        <ion-item detail (click)='PendingTasks()'>
+        <ion-item detail *ngIf='isShowWorkflow' (click)='PendingTasks()'>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/images/mytask.png" alt=""> 待审任务
+                <img src="assets/images/6.png" alt=""> 审批任务
             </ion-label>
         </ion-item>
     </ion-list>
@@ -58,7 +57,7 @@
         <ion-item detail (click)='contactUs()'>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/images/contactus.png" alt=""> 联系我们
+                <img src="assets/images/7.png" alt=""> 联系我们
             </ion-label>
         </ion-item>
     </ion-list>
@@ -74,7 +73,7 @@
         <ion-item (click)="goBusiness()" detail>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/images/ccsq.png" alt=""> 我的出差申请
+                <img src="assets/images/8.png" alt=""> 出差申请
             </ion-label>
         </ion-item>
     </ion-list>
@@ -101,7 +100,7 @@
         <ion-item (click)='goToPage("bulletin","notice")' detail>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/images/gstz.png" alt="通知"> 公司通知
+                <img src="assets/images/9.png" alt="通知"> 公司通知
             </ion-label>
         </ion-item>
     </ion-list>
@@ -109,15 +108,15 @@
         <ion-item (click)="onSettings()" detail>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/images/settings.png" alt=""> 设置
+                <img src="assets/images/10.png" alt=""> 设置
             </ion-label>
         </ion-item>
     </ion-list>
-    <ion-list *ngIf='isShowMyOrderTabs'>
+    <ion-list *ngIf='isShowWorkflow'>
         <ion-item (click)="onLanguageSettings()" detail>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon">
-                <img src="assets/images/language.png" alt="" />语言设置
+                <img src="assets/images/11.png" alt="" />语言设置
             </ion-label>
         </ion-item>
     </ion-list>

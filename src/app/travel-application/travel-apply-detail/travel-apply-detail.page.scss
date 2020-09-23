@@ -166,7 +166,6 @@ img {
     display: inline-flex;
     width: 78px;
     margin-right: 5px;
-    color: #222;
     color: rgba(102, 102, 102, 1);
 }
 
@@ -193,9 +192,6 @@ img {
     }
 }
 
-// .cen_frist:nth-child(1) {
-//     min-width: 78px;
-// }
 .apply_info_tit .apply_info_reason {
     width: 239px;
     line-height: 20px;
@@ -222,19 +218,23 @@ img {
     font-size: 12px;
     line-height: 20px;
     margin-bottom: 15px;
+    display: flex;
+    padding: 4px 0px;
 }
 
 .travel_step .travel_step_i .travel_step_i_tit :nth-child(2) {
     margin-right: 10px;
+    width: 45px;
 }
 
 .travel_step .travel_step_i .dot {
     display: inline-flex;
-    width: 8px;
-    height: 8px;
+    width: 14px;
+    height: 10px;
     background: url(/assets/images/dot.png) no-repeat;
     background-size: 7px 7px;
-    margin-right: 15px;
+    margin-right: 10px;
+    margin-top: 6px;
 }
 
 .travel_step_detail {
@@ -296,7 +296,10 @@ img {
 }
 
 .approver {
-    width: inherit;
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
 }
 
 .apply_info p {

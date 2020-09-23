@@ -8,6 +8,7 @@ export class TaskModel {
   /// 当前页
   /// </summary>
   PageIndex: number;
+  Type: number;
   /// <summary>
   /// 分页大小
   /// </summary>

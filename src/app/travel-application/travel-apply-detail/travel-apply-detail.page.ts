@@ -1,9 +1,12 @@
+import { Router } from '@angular/router';
+import { TaskStatusType } from './../../workflow/models/TaskStatusType';
 import { async } from '@angular/core/testing';
 import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TravelService, SearchModel, ApprovalStatusType } from '../travel.service';
 import { AppHelper } from 'src/app/appHelper';
+import { TmcService } from 'src/app/tmc/tmc.service';
 
 @Component({
   selector: 'app-travel-apply-detail',
@@ -13,12 +16,18 @@ import { AppHelper } from 'src/app/appHelper';
 export class TravelApplyDetailPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   detail: SearchModel;
-  router: any;
   // tslint:disable-next-line: ban-types
   isflag: Boolean = true;
   ApprovalStatusType = ApprovalStatusType;
-  istime:Boolean = true;
-  constructor(private route: ActivatedRoute, private service: TravelService,) { }
+  istime: Boolean = true;
+  Property: any;
+  remark: any;
+  taskStatus: TaskStatusType;
+  constructor(private route: ActivatedRoute,
+    private router: Router,
+    private tmcService: TmcService, private service: TravelService,) {
+
+  }
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
@@ -55,10 +64,25 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
       });
     }
   }
+
+  private getColor(taskStatus) {
+    let color = "";
+    if (taskStatus == TaskStatusType.Created) {
+      color = "orange";
+    } else if (taskStatus == TaskStatusType.Waiting) {
+      color = "blue";
+    } else if (taskStatus == TaskStatusType.Passed) {
+      color = "red";
+    } else {
+      color = "blue";
+    }
+    return color;
+  }
+
   private initTime() {
     if (this.detail && this.detail.TravelForm) {
       const date = this.detail.TravelForm.ApplyTime.substr(0, 10).replace(/-/g, '.');
-      const time = this.detail.TravelForm.ApplyTime.substr(10, 6).replace(/T/g,' ');// 2020-09-10T12:40:34
+      const time = this.detail.TravelForm.ApplyTime.substr(10, 6).replace(/T/g, ' ');// 2020-09-10T12:40:34
       const appdate = this.detail.TravelForm.ApprovalTime.substr(0, 10).replace(/-/g, '.');
       this.detail.TravelForm.applyTimeDate = date;
       this.detail.TravelForm.applyTimeTime = time;
@@ -69,26 +93,85 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
   }
 
   private async getDetail(id: string) {
-    
+
     this.detail = await this.service.getTravelDetail(id).catch(() => null);
     this.initTrips();
     this.initTime();
+    if (this.detail && this.detail.Histories) {
+      // this.detail.Histories.forEach(his =>{
+      //   if(his.Status == TaskStatusType.Rejected){
+      //     this.remark = his.Remark;
+      //   }
+      // })
+      for (var i = 0; i < this.detail.Histories.length; i++) {
+        if (this.detail.Histories[i].Status == TaskStatusType.Rejected) {
+          this.remark = this.detail.Histories[i].Remark;
+          break;
+        }
+      }
+    }
   }
   onToggle(trip: any) {
     trip.isHideButtons = !trip.isHideButtons;
   }
 
-  async inRefuse() {
-  }
+  async goToPage(name: string, params?: any) {
+    const tmc = await this.tmcService.getTmc();
+    const msg = "您没有预订权限";
+    if (!tmc || !tmc.RegionTypeValue) {
+      AppHelper.alert(msg);
+      return;
+    }
+    let route = "";
 
-
-  async onAdopt() {
-    console.log('通过');
-    await this.service.travelSubmit(this.detail);
-    this.router.navigate([AppHelper.getRoutePath("business-list")], {
-      queryParams: { doRefresh: true },
+    const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+    if (name == "international-flight") {
+      route = "search-international-flight";
+      if (tmcRegionTypeValue.search("internationalflight") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "international-hotel") {
+      route = "search-international-hotel";
+      if (tmcRegionTypeValue.search("internationalhot") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "hotel") {
+      route = "search-hotel";
+      if (tmcRegionTypeValue.search("hotel") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "train") {
+      route = "search-train";
+      if (tmcRegionTypeValue.search("train") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "flight") {
+      route = "search-flight";
+      if (tmcRegionTypeValue.search("flight") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "rentalCar") {
+      route = "rental-car";
+      if (tmcRegionTypeValue.search("car") < 0) {
+        AppHelper.alert(msg);
+        return;
+      }
+    }
+    if (name == "bulletin") {
+      route = "bulletin-list";
+    }
+    this.router.navigate([AppHelper.getRoutePath(route)], {
+      queryParams: { bulletinType: params },
     });
   }
-
-    
 }

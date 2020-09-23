@@ -221,9 +221,7 @@ export class MyPage implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.items = ORDER_TABS.filter((it) => it.isDisplay);
-    if (this.items.length < 4) {
-      this.items = this.items.filter((it) => it.value != ProductItemType.more);
-    }
+    this.items = this.items.filter((it) => it.value != ProductItemType.more&&it.value != ProductItemType.waitingApprovalTask);
 
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (_) => {

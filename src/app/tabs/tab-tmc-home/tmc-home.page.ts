@@ -247,7 +247,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     // console.log("touchEnd");
     setTimeout(() => {
       this.startAutoPlay();
-    }, 1000);
+    }, 2000);
   }
   private startAutoPlay() {
     if (this.swiper && this.swiper.autoplay && this.swiper.autoplay.start) {
@@ -348,7 +348,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       setTimeout(() => {
         this.swiper.update();
         this.startAutoPlay();
-      }, 200);
+      }, 2000);
     }
   }
   private async loadNotices() {
@@ -424,13 +424,13 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.identity = await this.identityService
         .getIdentityAsync()
         .catch((_) => null);
-      this.companies = await this.tmcService.getCompanies().catch((_) => []);
       if (
         this.identity &&
         this.identity.Numbers &&
         this.identity.Numbers.AgentId &&
         this.identity.Numbers.TmcId
       ) {
+        this.companies = await this.tmcService.getCompanies().catch((_) => []);
         console.log(this.companies);
       }
       this.apiService.hideLoadingView();

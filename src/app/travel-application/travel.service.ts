@@ -204,8 +204,8 @@ export class SearchModel {
   PageIndex: number;
   PageSize: number;
   OutNumbers: { Name: string; Code: string }[];
-  AccountId: string;
-  ApprovalStaffName: string;
+  ApprovalId: string;
+  ApprovalName: string;
 
   // Trips: TravelFormTripEntity[];
 }
@@ -254,6 +254,8 @@ export class TravelFormTripEntity extends BaseEntity {
   ToCityName: string; //
 
   toCityNames: string;
+
+  toCityInName: string;
 
   /// <summary>
   /// 入住城市Code

@@ -7,26 +7,28 @@ export const ORDER_TABS: ProductItem[] = [
   {
     label: "机票",
     value: ProductItemType.plane,
-    imageSrc: "assets/svgs/product-plane.svg",
+    // product-plane
+    imageSrc: "assets/svgs/product-plane1.svg",
     isDisplay: true
   },
   {
     label: "酒店",
     value: ProductItemType.hotel,
-    imageSrc: "assets/svgs/product-hotel.svg",
+    // product-hotel
+    imageSrc: "assets/svgs/product-hotel1.svg",
     isDisplay: true
   },
   {
     label: "火车票",
     value: ProductItemType.train,
-    imageSrc: "assets/svgs/product-train.svg",
+    imageSrc: "assets/svgs/product-train1.svg",
     isDisplay: true
   }
   ,
   {
     label: "用车",
     value: ProductItemType.car,
-    imageSrc: "assets/svgs/product-rentalCar.svg",
+    imageSrc: "assets/svgs/product-retalCar1.svg",
     isDisplay: true
   },
   {
@@ -41,12 +43,12 @@ export const ORDER_TABS: ProductItem[] = [
   //   imageSrc: "assets/images/projectcheck.png",
   //   isDisplay: true
   // },
-  // {
-  //   label: "更多",
-  //   value: ProductItemType.more,
-  //   imageSrc: "assets/svgs/product-more.svg",
-  //   isDisplay: true
-  // }
+  {
+    label: "更多",
+    value: ProductItemType.more,
+    imageSrc: "assets/svgs/product-more.svg",
+    isDisplay: true
+  }
 ];
 @Component({
   selector: "app-product-list",

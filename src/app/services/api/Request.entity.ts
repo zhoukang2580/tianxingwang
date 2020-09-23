@@ -1,4 +1,6 @@
+import { AppHelper } from "src/app/appHelper";
 export class RequestEntity {
+  TicketName?: string;
   Ticket?: string;
   Domain?: string;
   ImageCode?: string;
@@ -11,6 +13,7 @@ export class RequestEntity {
   Url?: string;
   Data: any;
   Token?: string;
+  AloneTag?: string;
   FileValue?: string;
   IsShowLoading?: boolean;
   IsShowMessage?: boolean;
@@ -19,4 +22,34 @@ export class RequestEntity {
   IsRedirctNoAuthorize?: boolean;
   IsForward?: boolean;
   Timeout?: number;
+  constructor() {
+    this.Timestamp = Math.floor(Date.now() / 1000);
+    this.Language = AppHelper.getLanguage();
+    this.Ticket = AppHelper.getTicket();
+    this.TicketName = AppHelper.getTicketName();
+    this.Domain = AppHelper.getDomain();
+    const paramters = AppHelper.getQueryParamers();
+    const tags = [
+      "wechatcode",
+      "wechatminicode",
+      "dingtalkcode",
+      "ticket",
+      "ticketname",
+      "wechatopenid",
+      "dingtalkopenid",
+      AppHelper.getTicketName()
+    ];
+    for (let p in paramters) {
+      if (tags.includes(p.toLowerCase())) {
+        continue;
+      }
+      this[p] = paramters[p];
+    }
+    if (this.TicketName != "ticket") {
+      this[this.TicketName] = this.Ticket;
+      this.Ticket = "";
+    } else {
+      this.TicketName = "";
+    }
+  }
 }

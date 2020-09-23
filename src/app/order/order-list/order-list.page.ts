@@ -93,7 +93,7 @@ export class OrderListPage implements OnInit, OnDestroy {
     private staffService: StaffService,
     private flightService: FlightService,
     private pickerCtrl: PickerController
-  ) {}
+  ) { }
 
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
@@ -208,8 +208,8 @@ export class OrderListPage implements OnInit, OnDestroy {
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-        ? "Hotel"
-        : "Train";
+          ? "Hotel"
+          : "Train";
     this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
@@ -245,7 +245,7 @@ export class OrderListPage implements OnInit, OnDestroy {
           }
         },
         (err) => {
-          this.loadMoreErrMsg = err.Message || err;
+          this.loadMoreErrMsg = err.Message || "数据获取失败";
         }
       );
   }
@@ -322,9 +322,9 @@ export class OrderListPage implements OnInit, OnDestroy {
           handler: (data: { year: TV; month: TV; day: TV }) => {
             this.selectDateChange.emit(
               `${data.year.value}-${
-                +data.month.value < 10
-                  ? "0" + data.month.value
-                  : data.month.value
+              +data.month.value < 10
+                ? "0" + data.month.value
+                : data.month.value
               }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
             );
           },
@@ -593,10 +593,10 @@ export class OrderListPage implements OnInit, OnDestroy {
           this.activeTab.value == ProductItemType.plane
             ? "Flight"
             : this.activeTab.value == ProductItemType.train
-            ? "Train"
-            : this.activeTab.value == ProductItemType.car
-            ? "Car"
-            : "Hotel";
+              ? "Train"
+              : this.activeTab.value == ProductItemType.car
+                ? "Car"
+                : "Hotel";
       }
       this.orderModel.Type = m.Type;
       if (
@@ -662,11 +662,11 @@ export class OrderListPage implements OnInit, OnDestroy {
     if (url.includes("?")) {
       url = `${url}&taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
-      }`;
+        }`;
     } else {
       url = `${url}?taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
-      }`;
+        }`;
     }
     return url;
   }
@@ -823,9 +823,10 @@ export class OrderListPage implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
-        const plane = ORDER_TABS.find(
-          (it) => it.value == ProductItemType.plane
-        );
+        const plane = ORDER_TABS
+          .find(
+            (it) => it.value == ProductItemType.plane
+          );
         let tab = plane;
         if (d && d.get("tabId")) {
           tab = ORDER_TABS.find((it) => it.value == +d.get("tabId")) || plane;
@@ -844,9 +845,14 @@ export class OrderListPage implements OnInit, OnDestroy {
       this.subscriptions.push(this.selectDateSubscription);
       this.subscriptions.push(this.loadDataSub);
       this.doRefresh();
-      this.tabs = ORDER_TABS.filter(
+      this.tabs = ORDER_TABS
+      .filter(
+        (t) => t.value != ProductItemType.waitingApprovalTask
+      )
+      .filter(
         (t) => t.value != ProductItemType.more && t.isDisplay
-      ).map((t) => {
+      )
+      .map((t) => {
         t["isActive"] = t.value == this.activeTab.value;
         return t;
       });
@@ -883,7 +889,7 @@ export class OrderListPage implements OnInit, OnDestroy {
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-          OrderTravelPayType.Person) &&
+        OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;

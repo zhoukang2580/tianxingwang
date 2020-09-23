@@ -53,17 +53,15 @@
 </ion-header>
 
 <ion-content>
-  <app-refresher slot="fixed" (ionRefresh)='doRefresh(true)'>
+  <app-refresher slot="fixed" (ionRefresh)='doRefresh(true)' [pullMin]='100'>
     <ion-refresher-content>正在刷新...</ion-refresher-content>
   </app-refresher>
   <ion-list *ngIf='!isLoading'>
     <ng-container *ngIf='flightRoutes?.length else nodata'>
       <div *ngFor='let fr of flightRoutes' class="item-wrapper {{fr.color}}">
-        <app-flight-list-item [class.sticky]='isLastTrip' (click)='onSelectTrip(fr)' [flightRoute]='fr' (transfer)='onTransfer(fr)'>
+        <app-flight-list-item [ngClass]="{open:fr.isShowFares,sticky:isLastTrip}" (click)='onSelectTrip(fr)' [isShowFares]='fr.isShowFares' (toggleFlightFare)='onToggleFlightFare(fr)'
+          [flightRoute]='fr' (transfer)='onTransfer(fr)'>
         </app-flight-list-item>
-        <div *ngIf='fr.flightFares?.length' (click)='onToggleFlightFare(fr)'>
-          <ion-text color='secondary'>{{fr.isShowFares?"隐藏": "显示"}}仓位</ion-text>
-        </div>
         <ng-container *ngIf='isLastTrip&&fr.isShowFares'>
           <ng-container *ngFor='let fare of fr.vmFares'>
             <ion-buttons class="ion-justify-content-between" class="buttons-wrapper">
@@ -82,8 +80,8 @@
                 </ion-button>
               </div>
             </ion-buttons>
-            <div *ngIf='(fare.policy?.Message||fare.ruleMessage)' class="rule-message clip-text" [class.show]='fare.isShowMoreRuleMessage' (click)='onShowMoreRuleMessage(fare)'>
-              {{(fare.policy?.Message||fare.ruleMessage)}}
+            <div *ngIf='(fare.policy?.Message)' class="rule-message clip-text" [class.show]='fare.isShowMoreRuleMessage' (click)='onShowMoreRuleMessage(fare)'>
+              {{(fare.policy?.Message)}}
             </div>
           </ng-container>
         </ng-container>

@@ -124,15 +124,13 @@ export class OrderService {
     req.IsShowLoading = isShowLoading;
     req.Data = data;
     req.Method = `TmcApiOrderUrl-Task-List`;
-    const result = this.apiService.getResponse<TaskModel>(req).pipe(
+    const result = this.apiService.getResponse<TaskEntity[]>(req).pipe(
       map((res) => {
-        if (res.Data && res.Data.Tasks) {
-          return res.Data.Tasks.map((it) => {
+        if (res.Data && res.Data) {
+          return res.Data.map((it) => {
             it.VariablesJsonObj =
               (it.Variables && JSON.parse(it.Variables)) || {};
             it.VariablesJsonObj["TaskUrl"] = it.HandleUrl;
-            it.InsertTime = moment(it.InsertTime).format("YYYY-MM-DD HH:mm");
-            it.ExpiredTime = moment(it.ExpiredTime).format("YYYY-MM-DD HH:mm");
             return it;
           });
         }
