@@ -28,6 +28,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: "tmc-home_en",
+        loadChildren: () =>
+          import("./tab-tmc-home_en/tmc-home_en.module").then(
+            (m) => m.TmcHomeEnPageModule
+          ),
+      },
+      {
         path: "home_en",
         loadChildren: () =>
           import("./tab-home_en/home_en.module").then(

@@ -91,8 +91,8 @@
                         <ion-text>{{item.StatusTypeName}}</ion-text>
                     </ng-template>
                     <button *ngIf="item.StatusType==ApprovalStatusType.Waiting" (click)="onCancel(item.Id,$event)">
-            撤销
-          </button>
+                        撤销
+                    </button>
                     <!-- <button *ngIf="item.StatusType==ApprovalStatusType.WaiteSubmit" (click)="onTravelEdit(item.Id,$event)">编辑</button> -->
                 </div>
 
@@ -100,6 +100,8 @@
             </div>
             <img src="assets/images/pass.png" *ngIf="ApprovalStatusType.Pass==item.StatusType " alt="" />
             <img src="assets/images/deny.png" *ngIf="ApprovalStatusType.Refuse==item.StatusType " alt="" />
+            <img src="assets/images/close.png" *ngIf="ApprovalStatusType.Closed==item.StatusType" alt="" />
+            <img src="assets/images/overdue.png" *ngIf="overduetime" alt="" />
         </div>
     </div>
     <ion-list class="ion-padding-horizontal"> </ion-list>

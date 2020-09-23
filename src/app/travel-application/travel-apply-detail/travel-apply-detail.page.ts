@@ -98,11 +98,6 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
     this.initTrips();
     this.initTime();
     if (this.detail && this.detail.Histories) {
-      // this.detail.Histories.forEach(his =>{
-      //   if(his.Status == TaskStatusType.Rejected){
-      //     this.remark = his.Remark;
-      //   }
-      // })
       for (var i = 0; i < this.detail.Histories.length; i++) {
         if (this.detail.Histories[i].Status == TaskStatusType.Rejected) {
           this.remark = this.detail.Histories[i].Remark;

@@ -31,6 +31,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   searchModel: SearchModel;
   tmc: TmcEntity;
   loading = true;
+  overduetime: any;
   customPopoverOptions: any = {
     header: "选择审批单状态",
     // subHeader: 'Select your hair color',
@@ -136,6 +137,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
                 withDot: true,
               });
             }
+            
             if (it.Trips && it.Trips.length) {
               it.Trips = it.Trips.map((trip) => {
                 trip.StartDate = this.transformDataTime({

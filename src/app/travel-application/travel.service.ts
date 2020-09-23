@@ -20,7 +20,7 @@ import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 export class TravelService {
   // organization:OrganizationEntity;
   // costCenter:CostCenterEntity;
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) { }
   getlist(dto: SearchModel) {
     const req = new RequestEntity();
     req.IsShowLoading = dto && dto.IsShowLoading;
@@ -319,6 +319,11 @@ export enum ApprovalStatusType {
   /// 待提交
   /// </summary>
   WaiteSubmit = 4,
+
+  /// <summary>
+  /// 已关闭
+  /// </summary>
+  Closed = 5
 }
 export interface TravelNumberValue {
   Name: string;

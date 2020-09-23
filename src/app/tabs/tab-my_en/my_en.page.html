@@ -1,77 +1,131 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title class="ion-text-capitalize">我的英文版</ion-title>
-  </ion-toolbar>
-</ion-header>
-
+<!-- <ion-header>
+    <ion-toolbar color="primary">
+        <ion-title class="ion-text-capitalize">我的</ion-title>
+    </ion-toolbar>
+</ion-header> -->
 <ion-content>
-  <ion-list lines='none' class='top-panal'>
-    <ion-item detail (click)='goToMyDetail()'>
-      <ion-thumbnail slot='start'>
-        <img alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.PrerenderImageUrl'>
-        <!-- <ion-img [src]='Model?.HeadUrl'></ion-img> -->
-      </ion-thumbnail>
-      <ion-label class='ion-padding-start'>
-        <h3>{{Model?.RealName}}<ion-note class='account-type'></ion-note>
-        </h3>
-        <h4>
-          <ion-note>账号: {{Model?.Name || Model?.Mobile}}</ion-note>
-        </h4>
-      </ion-label>
-    </ion-item>
-  </ion-list>
-  <ion-card color='primary' mode='ios' [class.is-ios]='isIos' *ngIf='isShowMyOrderTabs'>
-    <ion-card-header>
-      <strong>My Orders</strong>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-row>
-        <ion-col *ngFor='let item of items;let last = last;'>
-          <div class='produc-item' (click)='onProductClick(item)'>
-            <ion-avatar size='small'>
-              <img [src]="item.imageSrc" alt="">
-            </ion-avatar>
-            <ion-label class='ion-text-center'>{{item.label}}</ion-label>
-          </div>
-        </ion-col>
-      </ion-row>
-    </ion-card-content>
-  </ion-card>
-  <ion-list>
-    <ion-item detail (click)='credentialManagement()'>
-      <ion-icon name="cog" color="dark"></ion-icon>
-      <ion-label>Identity Management</ion-label>
-    </ion-item>
-  </ion-list>
-  <ion-list>
-    <ion-item detail (click)='contactUs()'>
-      <ion-icon name="cog" color="dark"></ion-icon>
-      <ion-label>Contact Us</ion-label>
-    </ion-item>
-  </ion-list>
-  <ion-list>
-    <ion-item (click)="goTomessageList()" detail>
-      <ion-icon name="cog" color="dark"></ion-icon>
-      <ion-label>Messages</ion-label>
-      <ion-badge color="danger" *ngIf='msgCount$|async as count'>{{count}}</ion-badge>
-    </ion-item>
-  </ion-list>
-  <ion-list>
-    <ion-item (click)="onSettings()" detail>
-      <ion-icon name="cog" color="dark"></ion-icon>
-      <ion-label>Settings</ion-label>
-    </ion-item>
-  </ion-list>
-  <ion-list>
-    <ion-item (click)="onLanguageSettings()" detail>
-      <ion-icon name="cog" color="dark"></ion-icon>
-      <ion-label>Language</ion-label>
-    </ion-item>
-  </ion-list>
-  <ion-list *ngIf='isShowDeveloperOption'>
-    <ion-item (click)="onDeveloper()" detail>
-      <ion-icon name="cog" color="dark"></ion-icon>
-      <ion-label>开发者选项</ion-label>
-    </ion-item>
-  </ion-list>
+    <ion-list lines='none' class='top-panal'>
+        <ion-item detail (click)='goToMyDetail()' class="head_detail">
+            <ion-thumbnail slot='start' class="top-center">
+                <img class="img" alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'>
+                <!-- <ion-img [src]='Model?.HeadUrl'></ion-img> -->
+            </ion-thumbnail>
+            <ion-label class='ion-padding-start'>
+                <h3 style="color: #e8e1e1;font-size: 1.1rem;">{{Model?.RealName}}
+                    <ion-note class='account-type'></ion-note>
+                </h3>
+                <h4>
+                    <ion-note style="color: #e8e1e1;font-size: 12px;">账号: {{Model?.Name || Model?.Mobile}}</ion-note>
+                </h4>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-card mode='ios' color='primary' *ngIf='isShowMyOrderTabs'>
+        <!-- <ion-card-header>
+          <strong>我的订单</strong>
+      </ion-card-header> -->
+        <ion-card-content>
+            <ion-row>
+                <ion-col *ngFor='let item of items;let last = last;'>
+                    <div class='produc-item' (click)='onProductClick(item)'>
+                        <!-- <ion-avatar size='small'> -->
+                        <img [src]="item.imageSrc" alt="" style="width: 40px;">
+                        <!-- </ion-avatar> -->
+                        <ion-label class='ion-text-center ion-text-nowrap'>{{item.label}}</ion-label>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-card-content>
+    </ion-card>
+    <ion-list>
+        <ion-item detail (click)='credentialManagement()'>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/images/5.png" alt=""> 证件管理
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-item detail *ngIf='isShowWorkflow' (click)='PendingTasks()'>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/images/6.png" alt=""> 审批任务
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-item detail (click)='contactUs()'>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/images/7.png" alt=""> 联系我们
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf='isShowWorkflow&&isAgent'>
+        <ion-item (click)="goToWorkflow()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/svgs/my-task.svg" alt=""> 我的待办
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf='isShowWorkflow&&!isAgent&&staff?.StaffNumber'>
+        <ion-item (click)="goBusiness()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/images/8.png" alt=""> 出差申请
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list appAuthority='PresentationHrWebsiteUrl.Invitation.List.App_HrInvitation'>
+        <ion-item (click)="goInvitation()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/svgs/my-task.svg" alt=""> 我的邀请
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf='isAgent'>
+        <ion-item (click)="goTomessageList()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/svgs/message.svg" alt=""> 消息
+            </ion-label>
+            <ion-badge color="danger" *ngIf='msgCount$|async as count'>
+                <ion-text color='light'>{{count}}</ion-text>
+            </ion-badge>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-item (click)='goToPage("bulletin","notice")' detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/images/9.png" alt="通知"> 公司通知
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-item (click)="onSettings()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/images/10.png" alt=""> 设置
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf='isShowWorkflow'>
+        <ion-item (click)="onLanguageSettings()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/images/11.png" alt="" />语言设置
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf='isShowDeveloperOption'>
+        <ion-item (click)="onDeveloper()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon">
+                <img src="assets/svgs/developeropt.svg" alt=""> 开发者选项
+            </ion-label>
+        </ion-item>
+    </ion-list>
 </ion-content>
