@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { IonInfiniteScroll } from "@ionic/angular";
+import { ActivatedRoute } from "@angular/router";
+import { IonDatetime, IonInfiniteScroll } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { RefresherComponent } from "src/app/components/refresher";
@@ -17,13 +18,28 @@ export class AccountItemsPage implements OnInit, OnDestroy {
   private refresher: RefresherComponent;
   private lastTime: string;
   private lastId: string;
+  private type: string;
+  title: string = "余额";
   date: string;
   items: any[];
-  constructor(private accountService: AccountService) {}
+  balance: any;
+  constructor(
+    private accountService: AccountService,
+    private route: ActivatedRoute
+  ) {}
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
   ngOnInit() {
+    this.route.queryParamMap.subscribe((q) => {
+      if (q.get("title")) {
+        this.title = q.get("title");
+      }
+      if (q.get("type")) {
+        this.type = q.get("type");
+      }
+    });
+    this.date = this.getDate();
     this.doRefresh();
   }
   private getDate() {
@@ -35,11 +51,14 @@ export class AccountItemsPage implements OnInit, OnDestroy {
     return `${now.getFullYear()}-${m}-${d}`;
   }
   doRefresh() {
+    this.accountService.getBalance(this.type).then((b) => {
+      this.balance = b;
+    });
     this.items = [];
     this.lastId = "";
     this.lastTime = "";
-    this.date = this.getDate();
     this.refresher.complete();
+    this.scroller.disabled = true;
     this.subscription.unsubscribe();
     this.loadMore();
   }
@@ -48,7 +67,8 @@ export class AccountItemsPage implements OnInit, OnDestroy {
       .getItems({
         LastId: this.lastId,
         LastTime: this.lastTime,
-        Date: this.date,
+        Date: this.date.substr(0, 7) + "-01",
+        Type: this.type,
       })
       .pipe(
         finalize(() => {

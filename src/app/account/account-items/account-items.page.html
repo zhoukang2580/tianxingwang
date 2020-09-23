@@ -2,11 +2,17 @@
   <ion-toolbar>
     <ion-buttons>
       <app-back-button></app-back-button>
-      <ion-title>积分流水</ion-title>
+      <ion-title>{{title}}</ion-title>
     </ion-buttons>
   </ion-toolbar>
 
 </ion-header>
+<ion-item lines='none' class="date">
+  <ion-label>日期</ion-label>
+  <ion-datetime displayFormat='YYYY-MM' #datetime [(ngModel)]='date' doneText="确定" cancelText='取消' (ionChange)='doRefresh()'></ion-datetime>
+  <ion-icon name="chevron-down-outline" (click)='datetime.open()'></ion-icon>
+  <ion-label color='danger' slot='end' class="ion-text-end">剩余{{title}}：{{balance||0}}</ion-label>
+</ion-item>
 <ion-content>
   <div class="bar sticky">
     <div class="date"></div>

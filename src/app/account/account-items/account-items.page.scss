@@ -22,3 +22,9 @@
     color: var(--ion-color-medium);
   }
 }
+.date {
+  ion-label,
+  ion-datetime {
+    font-size: 1rem;
+  }
+}
