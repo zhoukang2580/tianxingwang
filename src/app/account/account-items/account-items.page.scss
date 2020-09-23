@@ -1,0 +1,24 @@
+.item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  width: 100%;
+  padding: 0.25em 0.5em;
+  .name,
+  .price {
+    font-size: 0.975rem;
+  }
+  .price {
+    flex-basis: 20%;
+    text-align: end;
+    font-weight: bold;
+  }
+  .left {
+    flex: 1;
+    padding-right: 0.5em;
+  }
+  .remark,
+  .time {
+    color: var(--ion-color-medium);
+  }
+}

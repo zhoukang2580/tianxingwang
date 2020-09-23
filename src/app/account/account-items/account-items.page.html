@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons>
+      <app-back-button></app-back-button>
+      <ion-title>积分流水</ion-title>
+    </ion-buttons>
+  </ion-toolbar>
+
+</ion-header>
+<ion-content>
+  <div class="bar sticky">
+    <div class="date"></div>
+  </div>
+  <app-refresher (ionRefresh)='doRefresh()' slot='fixed'>
+    <ion-refresher-content>正在刷新...</ion-refresher-content>
+  </app-refresher>
+  <ion-list>
+    <ion-item *ngFor='let it of items' class="ion-no-padding">
+      <div class="item">
+        <div class="left">
+          <div class="name">{{it.Name}}</div>
+          <div class="remark"> {{it.Remark}}</div>
+          <div class="time"> <span>{{it.InserTime}}</span> </div>
+        </div>
+        <div class="price" slot='end'>
+          {{it.Amount}}
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
