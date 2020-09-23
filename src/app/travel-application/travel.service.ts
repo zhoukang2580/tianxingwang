@@ -205,7 +205,7 @@ export class SearchModel {
   PageSize: number;
   OutNumbers: { Name: string; Code: string }[];
   ApprovalId: string;
-  ApprovalStaffName: string;
+  ApprovalName: string;
 
   // Trips: TravelFormTripEntity[];
 }

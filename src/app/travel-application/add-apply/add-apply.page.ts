@@ -381,7 +381,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     const result = await modal.onDidDismiss();
     if (result && result.data) {
       this.appovalStaff = result.data.Text;
-      this.searchModel.ApprovalStaffName = this.appovalStaff;
+      this.searchModel.ApprovalName = this.appovalStaff;
 
       this.searchModel.ApprovalId = result.data.Value;
     }
@@ -591,41 +591,88 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
         if (!this.searchModel.TravelForm.Organization) {
           const el = this.getEleByAttr("organization", "organization");
           this.moveRequiredEleToViewPort(el);
-          AppHelper.alert("请选择所属部门");
+          AppHelper.toast("请选择所属部门");
           return;
         }
-        // if (!this.searchModel.TravelForm.CustomerName) {
-        //   const el = this.getEleByAttr("CustomerName", "CustomerName");
-        //   this.moveRequiredEleToViewPort(el);
-        //   AppHelper.alert("请选择顾客或公司");
-        //   return;
-        // }
-        // if (!this.searchModel.TravelForm.Subject) {
-        //   const el = this.getEleByAttr("Subject", "Subject");
-        //   this.moveRequiredEleToViewPort(el);
-        //   AppHelper.alert("请输入出差事由");
-        //   return;
-        // }
+        if (!this.searchModel.TravelForm.CustomerName) {
+          const el = this.getEleByAttr("CustomerName", "CustomerName");
+          this.moveRequiredEleToViewPort(el);
+          AppHelper.toast("请选择顾客或公司");
+          return;
+        }
+        if (!this.searchModel.TravelForm.Subject) {
+          const el = this.getEleByAttr("Subject", "Subject");
+          this.moveRequiredEleToViewPort(el);
+          AppHelper.toast("请输入出差事由");
+          return;
+        }
         if (this.searchModel.TravelForm.Trips) {
           for (
             let index = 0;
             index < this.searchModel.TravelForm.Trips.length;
             index++
           ) {
-           
+            const trip = this.searchModel.TravelForm.Trips[index];
+            if (trip && trip.travelTools) {
+              trip.TravelTool = trip.travelTools.join(",");
+            } else if (!trip.TripType) {
+              const el = this.getEleByAttr("addStroke", `${index}`);
+              this.moveRequiredEleToViewPort(el);
+              AppHelper.toast("请输入出差类别");
+              return;
+            } else if (!trip.FromCityName) {
+              const el = this.getEleByAttr("addStroke", `${index}`);
+              this.moveRequiredEleToViewPort(el);
+              AppHelper.toast("请输入开始城市");
+              return;
+            } else if (!trip.ToCityName) {
+              const el = this.getEleByAttr("addStroke", `${index}`);
+              this.moveRequiredEleToViewPort(el);
+              AppHelper.toast("请输入目的城市");
+              return;
+            } else if (!trip.CheckInCityName) {
+              const el = this.getEleByAttr("addStroke", `${index}`);
+              this.moveRequiredEleToViewPort(el);
+              AppHelper.toast("请输入住的城市");
+              return;
+            } else if (!trip.StartDate) {
+              const el = this.getEleByAttr("addStroke", `${index}`);
+              this.moveRequiredEleToViewPort(el);
+              AppHelper.toast("请输入开始时间");
+              return;
+            } else if (!trip.EndDate) {
+              const el = this.getEleByAttr("addStroke", `${index}`);
+              this.moveRequiredEleToViewPort(el);
+              AppHelper.toast("请输入结束时间");
+              return;
+            }
             if (this.searchModel.TravelForm.Trips[index].Day <= 0) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
-              AppHelper.alert("出差结束时间不能早于出差开始时间");
+              AppHelper.toast("出差结束时间不能早于出差开始时间");
               return;
             }
-            if (this.searchModel.TravelForm.Trips[index].Day > 365) {
-              const el = this.getEleByAttr("addStroke", `${index}`);
-              this.moveRequiredEleToViewPort(el);
-              AppHelper.alert("出差结束时间不能超过一年");
-              return;
+
+            if (trip.StartDate && trip.EndDate) {
+              trip.StartDate = trip.StartDate.replace("T", " ").substring(
+                0,
+                10
+              );
+              trip.EndDate = trip.EndDate.replace("T", " ").substring(0, 10);
             }
             // this.searchModel.TravelForm.Trips.some()
+          }
+        }
+        if (
+          this.tmc &&
+          this.TravelApprovalType &&
+          this.tmc.TravelApprovalType == this.TravelApprovalType.Free
+        ) {
+          if (!this.appovalStaff) {
+            const el = this.getEleByAttr("accountId", "accountId");
+            this.moveRequiredEleToViewPort(el);
+            AppHelper.toast("请选择审批人");
+            return;
           }
         }
         this.searchModel.OrganizationId =
@@ -656,6 +703,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       AppHelper.alert(e);
     }
   }
+
 
   onTextarea(evt: CustomEvent) {
     const len = evt.detail.value.length;
