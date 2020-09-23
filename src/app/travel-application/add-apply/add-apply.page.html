@@ -53,8 +53,8 @@
             <ion-text [color]="!enable?'dark':'dark'">
                 审批人:
             </ion-text>
-            <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;" class="ion-text-end" *ngIf="appovalStaff">
-                {{appovalStaff}}
+            <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;" class="ion-text-end" *ngIf="searchModel?.ApprovalName">
+                {{searchModel.ApprovalName}}
             </ion-text>
         </ion-item>
         <ion-item detail (click)="onSelectCostCenter()">

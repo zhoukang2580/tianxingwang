@@ -77,11 +77,13 @@ export class BusinessListPage implements OnInit, OnDestroy {
     });
   }
 
-  onDelete(item, key, evt: CustomEvent) {
+  async onDelete(item, key, evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
     }
-    this.service
+    const ok =await AppHelper.alert("确定删除?",true,"确定","取消")
+    if(ok == true){
+      this.service
       .removeTravel(item.Id)
       .then(() => {
         this.items.splice(key, 1);
@@ -89,6 +91,8 @@ export class BusinessListPage implements OnInit, OnDestroy {
       .catch((e) => {
         AppHelper.alert(e);
       });
+    }
+    
   }
   gettravel() {
     this.loading = true;

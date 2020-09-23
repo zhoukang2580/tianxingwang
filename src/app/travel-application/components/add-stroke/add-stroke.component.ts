@@ -142,8 +142,12 @@ export class AddStrokeComponent implements OnInit, OnChanges {
   //   }
 
   // }
-  onDelete() {
-    this.remove.emit(this.trip);
+  async onDelete() {
+    const ok =await AppHelper.alert("确定删除该行程吗?",true,"确定","取消");
+    if(ok == true){
+      this.remove.emit(this.trip);
+    }
+    
   }
   onGetCities() {
     // return this.service.getCities();
