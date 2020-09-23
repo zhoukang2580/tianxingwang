@@ -9,7 +9,7 @@ import {
   OnChanges,
   SimpleChanges,
   Optional,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import { AppComponent } from "src/app/app.component";
 import { Subscription, fromEvent, interval } from "rxjs";
@@ -18,17 +18,22 @@ const BMapLib = window["BMapLib"];
 @Component({
   selector: "app-map",
   templateUrl: "./map.component.html",
-  styleUrls: ["./map.component.scss"]
+  styleUrls: ["./map.component.scss"],
 })
 export class MapComponent
   implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   private subscription = Subscription.EMPTY;
-  @Input() lat: string;
-  @Input() lng: string;
+  private get lat() {
+    return this.latLng && this.latLng.lat;
+  }
+  private get lng() {
+    return this.latLng && this.latLng.lng;
+  }
+  @Input() latLng: { lat: string; lng: string };
   @ViewChild("container") private container: ElementRef<HTMLElement>;
   map: any;
   private marker: any;
-  constructor(private mapService: MapService) { }
+  constructor(private mapService: MapService) {}
   ngOnInit() {
     // this.getCurPosition();
     this.autoPanTo();
@@ -58,7 +63,7 @@ export class MapComponent
     //   this.lat = "40.057031";
     //   this.lng = "116.307852";
     // }
-    if(!window["BMap"]){
+    if (!window["BMap"]) {
       return;
     }
     if (!this.map) {
@@ -69,7 +74,7 @@ export class MapComponent
       // 设置默认停靠位置和偏移量
       defaultAnchor: window["BMap"].BMAP_ANCHOR_TOP_LEFT,
       defaultOffset: new window["BMap"].Size(10, 10),
-      initialize: map => {
+      initialize: (map) => {
         // 创建一个DOM元素
         const div = document.createElement("div");
         // 添加文字说明
@@ -79,14 +84,14 @@ export class MapComponent
         div.style.border = "1px solid gray";
         div.style.backgroundColor = "white";
         // 绑定事件，点击一次放大两级
-        div.onclick = e => {
+        div.onclick = (e) => {
           map.zoomTo(map.getZoom() + 2);
         };
         // 添加DOM元素到地图中
         map.getContainer().appendChild(div);
         // 将DOM元素返回
         return div;
-      }
+      },
     };
     if (this.map && window["BMap"] && window["BMap"].Point) {
       this.map.addControl(ZoomControl);
@@ -143,7 +148,7 @@ export class MapComponent
   ngAfterViewInit() {
     if (this.container && this.container.nativeElement) {
       setTimeout(() => {
-        this.createMap(this.container.nativeElement).catch(e => {
+        this.createMap(this.container.nativeElement).catch((e) => {
           console.error(e);
         });
       }, 1000);

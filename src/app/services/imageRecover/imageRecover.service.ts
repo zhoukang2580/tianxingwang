@@ -39,7 +39,7 @@ export class ImageRecoverService {
     const req = new RequestEntity();
     req.Method = "ApiHomeUrl-Home-GetImageRecoverAddress";
     req.Data = JSON.stringify({});
-    this.fetchingReq = await this.apiService
+    this.fetchingReq = this.apiService
       .getPromiseData<any>(req)
       .then((r) => {
         this.Failover = r;
@@ -51,10 +51,12 @@ export class ImageRecoverService {
     return this.fetchingReq;
   }
   async recover(
-    img: HTMLImageElement,
+    url: string,
     onSuccess: (src: string) => void,
     onError: (failoverImage) => void
   ) {
+    const img = document.createElement("img");
+    img["nodes"] = {};
     if (!this.Failover) {
       this.Failover = await this.load().catch((_) => null);
       if (!this.Failover) {
@@ -62,24 +64,35 @@ export class ImageRecoverService {
         return;
       }
     }
-    if (img) {
-      img.onerror = () => {
-        onError(this.Failover.DefaultUrl);
-      };
-      img.onload = () => {
+    img.onerror = () => {
+      const src = img.src;
+      if (src) {
         if (
-          !img.src ||
-          (this.Failover &&
-            this.Failover.DefaultUrl &&
-            this.getSrc(img.src).toLowerCase() ==
-              this.getSrc(this.Failover.DefaultUrl).toLowerCase())
+          this.getSrc(src).toLowerCase() ==
+          this.getSrc(this.Failover.DefaultUrl).toLowerCase()
         ) {
           onError(this.Failover.DefaultUrl);
         } else {
-          onSuccess(img.src);
+          this.replace(img);
         }
-      };
-    }
+      } else {
+        onError(this.Failover.DefaultUrl);
+      }
+    };
+    img.onload = () => {
+      if (
+        !img.src ||
+        (this.Failover &&
+          this.Failover.DefaultUrl &&
+          this.getSrc(img.src).toLowerCase() ==
+            this.getSrc(this.Failover.DefaultUrl).toLowerCase())
+      ) {
+        onError(this.Failover.DefaultUrl);
+      } else {
+        onSuccess(img.src);
+      }
+    };
+    img.src = url;
   }
   private getNode(url: string) {
     // 得到负载数据
@@ -116,9 +129,12 @@ export class ImageRecoverService {
     }
     let isRecover = false;
     for (const n of this.Failover.Nodes) {
-      if (n.IsNormal == false || n.GroupName != node.GroupName) {
+      const url = img["nodes"][n.Url] || "";
+      const isUsed = url.includes(node.Url);
+      if (n.IsNormal == false || n.GroupName != node.GroupName || isUsed) {
         continue;
       }
+      img["nodes"][n.Url] = n.Url;
       const src = img.src.split("?")[0];
       img.src = src.replace(node.Url, n.Url) + "?v=" + date;
       isRecover = true;

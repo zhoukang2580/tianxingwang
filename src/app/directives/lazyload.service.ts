@@ -174,9 +174,8 @@ export class LazyloadService {
       setTimeout(() => {
         el.style.opacity = `1`;
       }, 200);
-      const img = document.createElement("img");
       this.imageRecoverService.recover(
-        img,
+        url,
         (loadedSrc) => {
           if (el instanceof HTMLDivElement) {
             el.style.backgroundImage = `url('${loadedSrc}')`;
@@ -207,7 +206,6 @@ export class LazyloadService {
           el.style.opacity = `1`;
         }
       );
-      img.src = url;
     });
   }
   private removeIO(el: any) {
