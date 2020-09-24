@@ -35,6 +35,7 @@ import { PhotoGalleryComponent } from "./photo-gallary/photo-gallery.component";
 import { EditorComponent } from "./editor/editor.component";
 import { ImagesMangerComponent } from './images-manager/images-manager.component';
 import { TabsContainerComponent } from './tabs-container/tabs-container.component';
+import { SelectComponent } from './select/select.component';
 @NgModule({
   declarations: [
     MapComponent,
@@ -49,6 +50,7 @@ import { TabsContainerComponent } from './tabs-container/tabs-container.componen
     PhotoGalleryComponent,
     LoadingComponent,
     LoginSkeletonPageComponent,
+    SelectComponent,
     TimelineComponent,
     TimelineItemComponent,
     PayComponent,

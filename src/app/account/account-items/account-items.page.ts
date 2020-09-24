@@ -39,6 +39,9 @@ export class AccountItemsPage implements OnInit, OnDestroy {
       if (q.get("type")) {
         this.type = q.get("type");
       }
+      if (q.get("typeName") || q.get("typename")) {
+        this.typeName = q.get("typeName") || q.get("typename");
+      }
     });
     this.date = this.getDate();
     this.doRefresh();
