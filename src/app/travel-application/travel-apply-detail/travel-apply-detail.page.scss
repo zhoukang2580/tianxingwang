@@ -139,6 +139,7 @@ img {
     top: 16px;
     width: 4.5em;
     z-index: 10;
+    opacity: 0.5;
 }
 
 // .apply_info {
@@ -147,7 +148,7 @@ img {
 .apply_info p {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 16px;
     font-weight: 400;
     margin-bottom: 6px;
@@ -177,7 +178,7 @@ img {
 .border_top p {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 400;
     line-height: 20px;
     margin-bottom: 6px;
@@ -198,7 +199,7 @@ img {
 }
 
 .travel_man {
-    font-size: 14px;
+    font-size: 15px;
     line-height: 20px;
     padding-left: 25px;
     height: 47px;
@@ -215,7 +216,7 @@ img {
 }
 
 .travel_step .travel_step_i .travel_step_i_tit {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 20px;
     margin-bottom: 15px;
     display: flex;
@@ -273,7 +274,8 @@ img {
     align-items: center;
     flex-wrap: nowrap;
     position: relative;
-    font-size: 10px;
+    font-size: 12px;
+    ;
 }
 
 .travel_step_btn {
@@ -285,7 +287,8 @@ img {
     // width: 80px;
     height: 28px;
     color: #fff;
-    font-size: 10px;
+    font-size: 12px;
+    ;
     background: rgba(0, 131, 233, 1);
     border-radius: 28px;
     outline: none;
@@ -305,7 +308,7 @@ img {
 .apply_info p {
     display: flex;
     justify-content: space-between;
-    font-size: 12px;
+    font-size: 13px;
     line-height: 20px;
 }
 

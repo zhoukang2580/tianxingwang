@@ -37,6 +37,8 @@ export class TaskEntity extends BaseVariablesEntity {
 
   OrderId: string;
 
+  IsOverdue: boolean;
+
   /// <summary>
   /// 标签
   /// </summary>

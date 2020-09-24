@@ -14,6 +14,8 @@
                 <p class="h_line h_line_mini"></p>
                 <img src="assets/images/pass.png" class="apply_info_status_pass" *ngIf="ApprovalStatusType?.Pass==detail?.StatusType" />
                 <img src="assets/images/deny.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Refuse==detail?.StatusType" />
+                <img src="assets/images/close.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Closed==detail?.StatusType" />
+                <img src="assets/images/close.png" class="apply_info_status_deny" *ngIf="detail?.TravelForm?.IsOverdue" />
                 <div class="apply_info" style="padding: 18px 23px">
                     <p>
                         <span class="apply_info_tit"><span>审批状态：</span
@@ -34,9 +36,19 @@
                     >{{detail?.TravelForm.StatusTypeName}}</ion-text
                   >
                   <ion-text
-                    style="color: #fec114"
+                    color="success "
                     *ngIf="ApprovalStatusType.WaiteSubmit==detail?.StatusType"
                     >{{detail?.TravelForm.StatusTypeName}}</ion-text
+                  >
+                  <ion-text
+                    style=" color: #a08f8f;"
+                    *ngIf="ApprovalStatusType?.Closed==detail?.StatusType"
+                    >{{detail?.TravelForm.StatusTypeName}}</ion-text
+                  >
+                  <ion-text
+                    style="color: #2596d9"
+                    *ngIf="detail?.TravelForm?.IsOverdue"
+                    >已过期</ion-text
                   >
                 </ng-container>
                 <ng-template #statusTpl>

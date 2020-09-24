@@ -137,7 +137,6 @@ export class BusinessListPage implements OnInit, OnDestroy {
                 withDot: true,
               });
             }
-            
             if (it.Trips && it.Trips.length) {
               it.Trips = it.Trips.map((trip) => {
                 trip.StartDate = this.transformDataTime({

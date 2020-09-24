@@ -48,11 +48,13 @@
                     {{item?.InsertTime?.startsWith("1800")||item?.InsertTime?.startsWith("0001") ?" ":item?.InsertTime}}
                 </div>
             </div>
-            <div class="row" *ngIf="item.Trips ">
+            <div class="row" *ngIf="item.Trips">
                 <div class="start">行程：</div>
                 <div class="main">
-                    <div style="width: 165px" *ngFor="let i of item.Trips;">
-                        {{i.FromCityName}}&nbsp;~&nbsp;{{i.ToCityName}}
+                    <div style="width: 165px" *ngFor="let i of item.Trips;let key1=index">
+                        <div *ngIf="key1==0">
+                            {{i.FromCityName}}&nbsp;~&nbsp;{{i.ToCityName}}
+                        </div>
                     </div>
                 </div>
                 <div class="trip_end">{{item.startDate}}</div>
@@ -86,6 +88,8 @@
                         <ion-text color="danger " *ngIf="ApprovalStatusType.Refuse==item.StatusType ">{{item.StatusTypeName}}</ion-text>
                         <ion-text color="success " *ngIf="ApprovalStatusType.WaiteSubmit==item.StatusType ">{{item.StatusTypeName}}</ion-text>
                         <ion-text color="warning " *ngIf="ApprovalStatusType.Waiting==item.StatusType ">{{item.StatusTypeName}}</ion-text>
+                        <ion-text color="medium" *ngIf="ApprovalStatusType.Closed==item.StatusType">{{item.StatusTypeName}}</ion-text>
+                        <ion-text color="secondary " *ngIf="item?.IsOverdue">已过期</ion-text>
                     </ng-container>
                     <ng-template #statusTpl>
                         <ion-text>{{item.StatusTypeName}}</ion-text>
@@ -101,7 +105,7 @@
             <img src="assets/images/pass.png" *ngIf="ApprovalStatusType.Pass==item.StatusType " alt="" />
             <img src="assets/images/deny.png" *ngIf="ApprovalStatusType.Refuse==item.StatusType " alt="" />
             <img src="assets/images/close.png" *ngIf="ApprovalStatusType.Closed==item.StatusType" alt="" />
-            <img src="assets/images/overdue.png" *ngIf="overduetime" alt="" />
+            <img src="assets/images/overdue.png" *ngIf="item?.IsOverdue" alt="" />
         </div>
     </div>
     <ion-list class="ion-padding-horizontal"> </ion-list>

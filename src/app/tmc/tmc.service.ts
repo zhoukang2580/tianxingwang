@@ -937,6 +937,7 @@ export class TravelFormEntity extends BaseVariablesEntity {
   CompanyName: string;
   DayCount: number;
   ProjectId: string;
+  IsOverdue: boolean;
 }
 export class TravelInfoFlightEntity {
   /// <summary>

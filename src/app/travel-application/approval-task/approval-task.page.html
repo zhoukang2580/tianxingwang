@@ -81,6 +81,7 @@
                 <img class="img" src="assets/images/pass.png " *ngIf='TaskStatusType.Passed==task.Status' alt=" ">
                 <img class="img" src="assets/images/deny.png " *ngIf='TaskStatusType.Rejected==task.Status' alt=" ">
                 <img class="img" src="assets/images/close.png " *ngIf='TaskStatusType.Closed==task.Status' alt=" ">
+                <img class="img" src="assets/images/overdue.png" *ngIf="task?.IsOverdue">
             </div>
         </div>
     </div>
