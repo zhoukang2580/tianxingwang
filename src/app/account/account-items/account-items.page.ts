@@ -19,7 +19,8 @@ export class AccountItemsPage implements OnInit, OnDestroy {
   private lastTime: string;
   private lastId: string;
   private type: string;
-  title: string = "余额";
+  title = "余额";
+  typeName = "余额";
   date: string;
   items: any[];
   balance: any;
