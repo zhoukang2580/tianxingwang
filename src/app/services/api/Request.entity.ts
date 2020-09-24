@@ -37,9 +37,11 @@ export class RequestEntity {
       "ticketname",
       "wechatopenid",
       "dingtalkopenid",
-      AppHelper.getTicketName()
+      "style",
+      "path",
+      AppHelper.getTicketName(),
     ];
-    for (let p in paramters) {
+    for (const p in paramters) {
       if (tags.includes(p.toLowerCase())) {
         continue;
       }
