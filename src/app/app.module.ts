@@ -1,3 +1,5 @@
+import { FormBuilder } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { mdTransitionAnimation } from "./animations/md.transition";
 import { iosTransitionAnimation } from "./animations/ios-transition";
 import { NgModule, ErrorHandler, Injector } from "@angular/core";
@@ -56,9 +58,11 @@ export function navAnimations(baseEl, opts) {
     HttpClientModule,
     AppRoutingModule,
     AppComponentsModule,
+    ReactiveFormsModule,
     IonicStorageModule.forRoot()
   ],
   providers: [
+    FormBuilder,
     StatusBar,
     SplashScreen,
     Keyboard,
