@@ -96,7 +96,7 @@ export class AccountMobilePage implements OnInit, OnDestroy {
           if (r.Data) {
             if ((r.Data.Action as string).toLowerCase() == "finish") {
               AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true);
-              AppHelper.removeQueryParamers("IsForceMobileBind");
+              AppHelper.removeQueryParamers("IsForceBindMobile");
               this.back();
               setTimeout(() => {
                 if (this.router.url == "/account-mobile") {
