@@ -126,11 +126,11 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     if (url?.includes("?")) {
       url = `${url}&taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
-        }&isApp=true`;
+        }&isApp=true&lang=${AppHelper.getLanguage()||""}`;
     } else {
       url = `${url}?taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
-        }&isApp=true`;
+        }&isApp=true&lang=${AppHelper.getLanguage()||""}`;
     }
     return url;
   }

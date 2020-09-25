@@ -37,8 +37,8 @@
                 <span style="line-height: 3;margin-left: 10px;">
                 <ion-text [color]="!enable?'dark':'dark'">出差事由:</ion-text>
                 </span>
-                <ion-textarea type="text" style="width: 20em;--padding-top: aliceblue;padding-left: 10px;" [disabled]="!enable" name="reason" (ionChange)="onTextarea($event)" placeholder="请输入" maxlength="50" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"
-                    rows="3"></ion-textarea>
+                <ion-textarea type="text" style="width: 20em;--padding-top: aliceblue;padding-left: 10px;" [disabled]="!enable" name="reason" placeholder="请输入" (ionChange)="onTextarea($event)" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable" rows="3"></ion-textarea>
+
             </div>
         </ion-item>
         <app-add-stroke [regionTypes]='vmRegionTypes' [TravelApprovalContent]="vmTravelApprovalContent" [international]='international' [domestic]='domestic' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx' *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;"

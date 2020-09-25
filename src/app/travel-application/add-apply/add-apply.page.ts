@@ -70,7 +70,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   pass = false;
   isVaild = true;
   // appovalStaff: string;
-  addstatus:boolean;
+  addstatus: boolean;
   detail: SearchModel;
   outNumbers: {
     [key: string]: any;
@@ -147,7 +147,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             this.searchModel.TravelForm.CostCenterCode ||
             (s.staff && s.staff.CostCenter.Code);
           if (s.approvalStaff && s.approvalStaff.Name) {
-            this.searchModel.ApprovalName =s.approvalStaff.Name;
+            this.searchModel.ApprovalName = s.approvalStaff.Name;
             this.searchModel.ApprovalId = s.approvalStaff.Account.Id;
           }
           if (!this.searchModel.TravelForm.Organization) {
@@ -240,7 +240,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       }
     }
   }
- 
+
   ngOnInit() {
 
     console.log();
@@ -378,7 +378,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     await modal.present();
     const result = await modal.onDidDismiss();
     if (result && result.data) {
-      this.searchModel.ApprovalName =  result.data.Text;
+      this.searchModel.ApprovalName = result.data.Text;
       this.searchModel.ApprovalId = result.data.Value;
     }
   }
@@ -627,13 +627,18 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
 
 
   onTextarea(evt: CustomEvent) {
-    const len = evt.detail.value.length;
-    if(len>50){
+    const len = evt.detail && evt.detail.value && evt.detail.value.length;
+    if (len > 50) {
       AppHelper.alert("长度不能超过50个");
+      setTimeout(() => {
+        if (this.searchModel.TravelForm.Subject && this.searchModel.TravelForm.Subject.length > 50) {
+          this.searchModel.TravelForm.Subject = this.searchModel.TravelForm.Subject.substr(0, 50);
+        }
+      }, 100);
       return;
     }
   }
-  
+
   onRemoveTrip(item: TravelFormTripEntity) {
     if (item && this.searchModel.TravelForm.Trips) {
       this.searchModel.TravelForm.Trips = this.searchModel.TravelForm.Trips.filter(
