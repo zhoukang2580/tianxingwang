@@ -1,3 +1,5 @@
+import { filter } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import {
   Component,
   OnInit,
@@ -196,7 +198,12 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       componentProps: {
         tripType: this.trip.TripType,
         isMulti,
-        selectedCitys: trip.ToCities
+        selectedCitys: trip.ToCities?.map(it=>{
+          if(!it.Id){
+            it.Id=it.Code;
+          }
+          return it;
+        })
       },
     });
 
@@ -222,7 +229,12 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       componentProps: {
         tripType: this.trip.TripType,
         isMulti,
-        selectedCitys: trip.ToCityArrive
+        selectedCitys: trip.ToCityArrive?.map(it=>{
+          if(!it.Id){
+            it.Id = it.Code;
+          }
+          return it;
+        })
       },
     });
 
