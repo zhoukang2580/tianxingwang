@@ -161,8 +161,9 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
             tabId: this.activeTab?.value,
             // isOpenInAppBrowser: AppHelper.isApp(),
             isOpenInAppBrowser: false,
+            isIframeOpen: true,
             isHideTitle: false,
-            goPath: this.router.url.substr(1), // /approval-task
+            goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
             goPathQueryParams: JSON.stringify({
               tab: "已审任务"
             })
