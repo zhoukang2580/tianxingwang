@@ -1,4 +1,4 @@
-import { CalendarService } from 'src/app/tmc/calendar.service';
+import { CalendarService } from "src/app/tmc/calendar.service";
 import { FlightCabinEntity } from "./../../models/flight/FlightCabinEntity";
 import {
   Component,
@@ -11,13 +11,15 @@ import {
   OnChanges,
   SimpleChanges,
   ViewChild,
-  ElementRef
+  ElementRef,
 } from "@angular/core";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
 import { FlightSegmentEntity } from "../../models/flight/FlightSegmentEntity";
 import { LanguageHelper } from "src/app/languageHelper";
-import { FlightPolicy } from '../../models/PassengerFlightInfo';
+import { FlightPolicy } from "../../models/PassengerFlightInfo";
+import { FlightFareType } from "../../models/flight/FlightFareType";
+import { FlightCabinFareType } from "../../models/flight/FlightCabinFareType";
 
 @Component({
   selector: "app-fly-list-item",
@@ -30,18 +32,21 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() itmIndex: number;
   @Input() flightPolicy: FlightPolicy;
   showIndex = !environment.production;
-  constructor(
-    private calendarService: CalendarService
-  ) {
-  }
-  ngOnChanges(changes: SimpleChanges) {
-  }
-  ngAfterViewInit() { }
+  isAgreement = false;
+  constructor(private calendarService: CalendarService) {}
+  ngOnChanges(changes: SimpleChanges) {}
+  ngAfterViewInit() {}
   addoneday() {
-    if (!this.flightSegment || !this.flightSegment.ArrivalTime || !this.flightSegment.TakeoffTime) {
+    if (
+      !this.flightSegment ||
+      !this.flightSegment.ArrivalTime ||
+      !this.flightSegment.TakeoffTime
+    ) {
       return;
     }
-    const addDay = moment(this.flightSegment.ArrivalTime).date() - moment(this.flightSegment.TakeoffTime).date();
+    const addDay =
+      moment(this.flightSegment.ArrivalTime).date() -
+      moment(this.flightSegment.TakeoffTime).date();
     return addDay > 0 ? "+" + addDay + LanguageHelper.getDayTip() : "";
   }
   getDateWeek() {
@@ -53,6 +58,15 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
       d.date.length
     )} ${this.calendarService.getWeekName(d)}`;
   }
-  ngOnInit() { }
-
+  ngOnInit() {
+    if (
+      this.flightSegment &&
+      this.flightSegment.Cabins &&
+      this.flightSegment.Cabins.some(
+        (it) => it.FareType == FlightCabinFareType.Agreement
+      )
+    ) {
+      this.isAgreement = true;
+    }
+  }
 }
