@@ -40,6 +40,7 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
   identitySubscription = Subscription.EMPTY;
   loading$: Observable<{ isLoading: boolean }>;
   private isOpenAsModal = false;
+  isShowOldPassword = true;
   constructor(
     identityService: IdentityService,
     private router: Router,
@@ -67,6 +68,13 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
     this.navCtrl.pop();
   }
   forgetPassword() {
+    if (this.isOpenAsModal) {
+      AppHelper.modalController.getTop().then((t) => {
+        if (t) {
+          t.dismiss("forgetPassword");
+        }
+      });
+    }
     this.router.navigate([
       AppHelper.getRoutePath("password-check"),
       { Id: this.identityEntity.Id },
@@ -89,6 +97,7 @@ export class AccountPasswordPage implements OnInit, OnDestroy {
           if (res.Status) {
             AppHelper.removeQueryParamers("IsForceModifyPassword");
             AppHelper.alert("密码修改成功");
+            this.back();
           } else {
             AppHelper.alert(res.Message);
           }

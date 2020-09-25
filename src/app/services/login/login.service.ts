@@ -98,10 +98,10 @@ export class LoginService {
       const sdkType = AppHelper.isWechatH5()
         ? ""
         : AppHelper.isWechatMini()
-          ? "Mini"
-          : AppHelper.isApp()
-            ? "App"
-            : "";
+        ? "Mini"
+        : AppHelper.isApp()
+        ? "App"
+        : "";
       const req = new RequestEntity();
       req.Method = `ApiPasswordUrl-Wechat-Check`;
       req.Data = {
@@ -230,7 +230,10 @@ export class LoginService {
       const req = new RequestEntity();
       req.IsShowLoading = true;
       req.Method = "ApiLoginUrl-Home-Logout";
-      req.Data = JSON.stringify({ Ticket: ticket, [AppHelper.getTicketName()]: ticket });
+      req.Data = JSON.stringify({
+        Ticket: ticket,
+        [AppHelper.getTicketName()]: ticket,
+      });
 
       this.apiService.showLoadingView({ msg: "正在退出账号..." });
       const formObj = Object.keys(req)
@@ -268,7 +271,7 @@ export class LoginService {
     let isForceModifyPassword = AppHelper.getQueryParamers()[
       "IsForceModifyPassword"
     ];
-    if (isForceBindMobile) {
+    if (isForceBindMobile == "true") {
       const m = await AppHelper.modalController.create({
         component: AccountMobilePage,
         componentProps: {
@@ -278,15 +281,16 @@ export class LoginService {
       m.present();
       const d = await m.onDidDismiss();
       isForceBindMobile = AppHelper.getQueryParamers()["IsForceBindMobile"];
-      if (isForceBindMobile) {
+      if (isForceBindMobile == "true") {
         await this.checkIfForceAction();
       }
     }
-    if (isForceModifyPassword) {
+    if (isForceModifyPassword == "true") {
       const m = await AppHelper.modalController.create({
         component: AccountPasswordPage,
         componentProps: {
           isOpenAsModal: true,
+          isShowOldPassword: false,
         },
       });
       m.present();
@@ -294,8 +298,10 @@ export class LoginService {
       isForceModifyPassword = AppHelper.getQueryParamers()[
         "IsForceModifyPassword"
       ];
-      if (isForceModifyPassword) {
-        await this.checkIfForceAction();
+      if (isForceModifyPassword == "true") {
+        if (!d.data) {
+          await this.checkIfForceAction();
+        }
       }
     }
   }
@@ -307,7 +313,13 @@ export class LoginService {
   }
   async check() {
     const ticket = AppHelper.getTicket();
-    if (!this.identity || !this.identity.Ticket || !this.identity.Id || !ticket || environment.mockProBuild) {
+    if (
+      !this.identity ||
+      !this.identity.Ticket ||
+      !this.identity.Id ||
+      !ticket ||
+      environment.mockProBuild
+    ) {
       return;
     }
     const req = new RequestEntity();
@@ -316,7 +328,7 @@ export class LoginService {
     req.Data = JSON.stringify({
       Ticket: ticket,
       LoginType: this.getLoginType(),
-      [AppHelper.getTicketName()]:ticket
+      [AppHelper.getTicketName()]: ticket,
     });
     const url = await this.getUrl(req);
     const formObj = Object.keys(req)
@@ -329,7 +341,7 @@ export class LoginService {
       })
       .pipe(
         map((r: IResponse<IdentityEntity>) => r),
-        finalize(() => { })
+        finalize(() => {})
       )
       .subscribe((r) => {
         if (r.Status) {

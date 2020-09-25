@@ -13,6 +13,7 @@ import { AccountService } from "../account.service";
 })
 export class AccountItemsPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
+  private isLoading = false;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   @ViewChild(RefresherComponent, { static: true })
   private refresher: RefresherComponent;
@@ -27,7 +28,9 @@ export class AccountItemsPage implements OnInit, OnDestroy {
   constructor(
     private accountService: AccountService,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    this.date = this.getDate();
+  }
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
@@ -42,9 +45,8 @@ export class AccountItemsPage implements OnInit, OnDestroy {
       if (q.get("typeName") || q.get("typename")) {
         this.typeName = q.get("typeName") || q.get("typename");
       }
+      this.doRefresh();
     });
-    this.date = this.getDate();
-    this.doRefresh();
   }
   private getDate() {
     const now = new Date();
@@ -55,6 +57,10 @@ export class AccountItemsPage implements OnInit, OnDestroy {
     return `${now.getFullYear()}-${m}-${d}`;
   }
   doRefresh() {
+    if (this.isLoading) {
+      return;
+    }
+    this.isLoading = true;
     this.accountService.getBalance(this.type).then((b) => {
       this.balance = b;
     });
@@ -76,6 +82,7 @@ export class AccountItemsPage implements OnInit, OnDestroy {
       })
       .pipe(
         finalize(() => {
+          this.isLoading = false;
           setTimeout(() => {
             this.scroller.complete();
           }, 200);
