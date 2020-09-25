@@ -41,7 +41,7 @@
                     >{{detail?.TravelForm.StatusTypeName}}</ion-text
                   >
                   <ion-text
-                    style=" color: #a08f8f;"
+                    style="color: #a08f8f"
                     *ngIf="ApprovalStatusType?.Closed==detail?.StatusType"
                     >{{detail?.TravelForm.StatusTypeName}}</ion-text
                   >
@@ -97,13 +97,11 @@
                     </p>
                     <p>
                         <span class="apply_info_tit"><span>成本中心：</span
-                    ><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
+              ><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
-                        <span class="apply_info_tit"><span>备注：</span
-                      ><span class="apply_info_reason"></span
-                      >{{detail?.TravelForm.Detail}}</span
-                    ><span class="apply_info_time"></span>
+                        <span class="apply_info_tit" style="display: flex;"><span>备注：</span
+              ><span class="apply_info_reason">{{detail?.TravelForm.Detail}}</span></span><span class="apply_info_time"></span>
                     </p>
                 </div>
             </div>
@@ -115,13 +113,20 @@
                 <div class="travel_step" *ngFor="let trip of detail?.TravelForm?.Trips;let idx=index;">
                     <div class="travel_step_i">
                         <p class="travel_step_i_tit">
-                            <i class="dot"></i><span>行程{{idx+1}}</span
-              ><span>{{trip.FromCityName}}~{{trip.ToCityName}}</span>
+                            <i class="dot"></i><span>行程{{idx+1}}</span>
                         </p>
                         <div class="travel_step_detail" style="background: #f4f9fd">
                             <p>
-                                <span>出发时间：</span
-                ><span>{{trip.StartDate}}~{{trip.EndDate}}</span
+                                <span>到达城市:</span>
+                                <span>{{trip.FromCityName}}~{{trip.ToCityName}}</span>
+                            </p>
+                            <p>
+                                <span>入住城市:</span>
+                                <span>{{trip.CheckInCityName}}</span>
+                            </p>
+                            <p>
+                                <span>出发时间：</span>
+                                <span>{{trip.StartDate}}~{{trip.EndDate}}</span
                 ><i
                   class="toggle"
                   [class.up]='trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType'
@@ -130,7 +135,8 @@
                 ></i>
               </p>
               <p>
-                <span>天数：</span><span>{{detail?.TravelForm.DayCount}}天</span>
+                <span>天数：</span
+                ><span>{{detail?.TravelForm.DayCount}}天</span>
                             </p>
 
                             <p class="travel_step_btn" *ngIf='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' style="justify-content: space-evenly">
@@ -184,9 +190,7 @@
             </div>
             <p *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">
                 <span class="apply_info_tit"><span>备注：</span
-              ><span class="apply_info_reason"></span
-              >{{remark}}</span
-            ><span class="apply_info_time"></span>
+              ><span class="apply_info_reason"></span>{{remark}}</span><span class="apply_info_time"></span>
             </p>
     </div>
     </div>

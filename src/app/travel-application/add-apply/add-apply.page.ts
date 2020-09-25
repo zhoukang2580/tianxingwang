@@ -629,7 +629,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   onTextarea(evt: CustomEvent) {
     const len = evt.detail.value.length;
     if(len>50){
-      AppHelper.alert("长度不能超过五十个");
+      AppHelper.alert("长度不能超过50个");
       return;
     }
   }

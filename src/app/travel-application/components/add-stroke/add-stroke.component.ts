@@ -203,7 +203,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     m.present();
     const res = await m.onDidDismiss();
     const cities: TrafficlineEntity[] = res && res.data;
-    const citys = cities && cities.slice(0, 5);
+    const citys = cities && cities.slice(0, 15);
     trip.ToCities = citys;
     if (trip) {
       trip.ToCityCode = trip.ToCities && trip.ToCities.map(it => it.Code).join(",");
@@ -230,7 +230,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     const res = await m.onDidDismiss();
     const city: TrafficlineEntity = res && res.data;
     const cities: TrafficlineEntity[] = res && res.data;
-    const citys = cities && cities.slice(0, 3);
+    const citys = cities && cities.slice(0, 15);
     if (trip) {
       trip.ToCityArrive = citys;
       trip.CheckInCityCode = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Code).join(',');

@@ -108,7 +108,6 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
   private onMessage(evt: MessageEvent) {
     if (evt.data && evt.data.message) {
       if (evt.data.message == 'back') {
-        alert("asdsa撒旦");
         if (this.goPath) {
           this.router.navigate([this.goPath], {
             queryParams: {
