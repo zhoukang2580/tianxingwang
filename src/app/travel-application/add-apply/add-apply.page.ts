@@ -558,6 +558,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     try {
       if (this.searchModel.TravelForm) {
         if (this.searchModel.TravelForm.Trips) {
+          // tslint:disable-next-line: prefer-for-of
           for (
             let index = 0;
             index < this.searchModel.TravelForm.Trips.length;
@@ -570,10 +571,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             if (this.searchModel.TravelForm.Trips[index].Day <= 0) {
               const el = this.getEleByAttr("addStroke", `${index}`);
               this.moveRequiredEleToViewPort(el);
-              AppHelper.toast("出差结束时间不能早于出差开始时间");
+              AppHelper.alert("出差结束时间不能早于出差开始时间");
               return;
             }
-
             if (trip.StartDate && trip.EndDate) {
               trip.StartDate = trip.StartDate.replace("T", " ").substring(
                 0,

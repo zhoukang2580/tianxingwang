@@ -32,7 +32,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
   TaskStatusType = TaskStatusType;
   tasks: TaskEntity[];
   isLoading = true;
-  isApprova : boolean = true;
+  isApprova: boolean = true;
   isStates = true;
 
   @ViewChild(IonInfiniteScroll, { static: true })
@@ -63,7 +63,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
           this.onTaskReviewed();
         }
       }
-      
+
     })
     this.doRefresh();
   }
@@ -71,7 +71,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     this.loadDataSub.unsubscribe();
     this.queryparamSub.unsubscribe();
   }
-  
+
   doLoadMoreTasks() {
     this.isLoading = true;
     this.loadDataSub = this.orderService
@@ -98,6 +98,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
         (tasks) => {
           if (tasks) {
             if (tasks.length) {
+              this.initImageStatus(tasks);
               this.tasks = this.tasks || [];
               this.tasks = this.tasks.concat(tasks);
               this.curTaskPageIndex++;
@@ -124,20 +125,33 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url?.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage()||""}`;
+      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage()||""}`;
+      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     }
     return url;
   }
+  private initImageStatus(tasks: TaskEntity[]) {
+    if (tasks) {
+      tasks.forEach(task => {
+        if (task.IsOverdue) {
+          task.imageStatus = 'isOverdue';
+        } else if (task.Status == TaskStatusType.Passed) {
+          task.imageStatus = 'isPassed'
+        } else if (task.Status == TaskStatusType.Rejected) {
+          task.imageStatus = 'isRejected'
+        } else if (task.Status == TaskStatusType.Closed) {
+          task.imageStatus = 'isClosed'
+        }
+      })
+    }
 
+  }
   async onTaskDetail(task: TaskEntity) {
     const url = await this.getTaskHandleUrl(task);
-    
+
     if (url) {
       this.router
         .navigate(["open-url"], {
@@ -147,7 +161,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
             tabId: this.activeTab?.value,
             // isOpenInAppBrowser: AppHelper.isApp(),
             isOpenInAppBrowser: false,
-            isHideTitle : false,
+            isHideTitle: false,
             goPath: this.router.url.substr(1), // /approval-task
             goPathQueryParams: JSON.stringify({
               tab: "已审任务"

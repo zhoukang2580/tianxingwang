@@ -78,10 +78,11 @@
                         <p><span class="apply_info_tit "><span>单号：</span><span>{{task?.OrderId}}</span></span><span class="apply_info_time "></span></p>
                     </div>
                 </section>
-                <img class="img" src="assets/images/pass.png " *ngIf='TaskStatusType.Passed==task.Status' alt=" ">
-                <img class="img" src="assets/images/deny.png " *ngIf='TaskStatusType.Rejected==task.Status' alt=" ">
-                <img class="img" src="assets/images/close.png " *ngIf='TaskStatusType.Closed==task.Status' alt=" ">
-                <img class="img" src="assets/images/overdue.png" *ngIf="task?.IsOverdue">
+                <img class="img" src="assets/images/pass.png " *ngIf='task.imageStatus=="isPassed"' alt=" ">
+                <img class="img" src="assets/images/deny.png " *ngIf='task.imageStatus=="isRejected"' alt=" ">
+                <img class="img" src="assets/images/close.png " *ngIf='task.imageStatus=="isClosed"' alt=" ">
+                <img class="img" src="assets/images/overdue.png" *ngIf='task.imageStatus=="isOverdue"'>
+
             </div>
         </div>
     </div>

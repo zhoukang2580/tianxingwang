@@ -9,9 +9,6 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
-        <ion-refresher-content>正在加载...</ion-refresher-content>
-    </app-refresher>
     <form action="javascript:void(0)" (ngSubmit)="onSearch(true)">
         <ion-searchbar name="searchbar" placeholder="查询姓名、城市、关键字等" mode="ios" animated="true" [(ngModel)]="searchModel&&searchModel.SearchContent"></ion-searchbar>
         <ion-item style="display: none">
@@ -26,6 +23,9 @@
         </ion-item>
         <img src="assets/images/shaixuan.png" (click)="statusSelect.open()" alt="" />
     </form>
+    <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
+        <ion-refresher-content>正在加载...</ion-refresher-content>
+    </app-refresher>
     <div class="no_appcalition" *ngIf="!loading&&!items?.length">
         <div>
             <div>

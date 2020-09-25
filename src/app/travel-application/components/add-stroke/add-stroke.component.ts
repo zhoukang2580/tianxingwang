@@ -1,5 +1,4 @@
 import { filter } from 'rxjs/operators';
-import { filter } from 'rxjs/operators';
 import {
   Component,
   OnInit,
@@ -116,11 +115,11 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     // const now = new Date();
     // const cur = AppHelper.getDate(`${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`).getTime();
     let day = this.getNumberOfDays(start, EndDate);
-    if (day < 1) {
-      AppHelper.alert("出差结束时间不能早于出差开始时间");
 
-      return;
-    }
+    // if (day < 1) {
+    //   AppHelper.alert("出差结束时间不能早于出差开始时间");
+    //   return;
+    // }
     if (day > 365) {
       AppHelper.alert("出差时间不能超过一年");
       return;

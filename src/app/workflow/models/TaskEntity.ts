@@ -16,6 +16,8 @@ export class TaskEntity extends BaseVariablesEntity {
   /// </summary>
   Account: AccountEntity;
   Title: string;
+  imageStatus:"isOverdue"|"isRejected"|"isPassed"|"isClosed";
+
   /// <summary>
   ///名称
   /// </summary>
