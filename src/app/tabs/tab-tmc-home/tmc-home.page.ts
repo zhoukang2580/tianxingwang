@@ -331,6 +331,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   private async clearBookInfos() {
+    this.tmcService.clearTravelFormNumber();
     if (await this.hasTicket()) {
       this.flightService.removeAllBookInfos();
       this.trainService.removeAllBookInfos();
