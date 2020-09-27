@@ -44,6 +44,7 @@
               <app-book-credential-comp [attr.credentialcompid]='combindInfo.id'
                 [credential]='combindInfo?.vmCredential' *ngIf='!searchTrainModel?.isExchange else excredentialTemp'
                 [canEdit]='true' [canEditNumber]='false'
+                [isself]='isSelfBookType'
                 [canEditSurname]='combindInfo?.vmCredential.Type==CredentialsType.HvPass||combindInfo?.vmCredential.Type==CredentialsType.Taiwan'
                 [canEditName]='combindInfo?.vmCredential.Type==CredentialsType.HvPass||combindInfo?.vmCredential.Type==CredentialsType.Taiwan'
                 (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'

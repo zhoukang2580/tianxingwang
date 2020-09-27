@@ -120,8 +120,9 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
   curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
+  isSelfBookType = true;
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
-  dates: { date: string; price: string |number}[] = [];
+  dates: { date: string; price: string | number }[] = [];
   constructor(
     private navCtrl: NavController,
     private identityService: IdentityService,
@@ -139,6 +140,9 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(() => {
+        this.staffService.isSelfBookType().then((s) => {
+          this.isSelfBookType = s;
+        });
         if (this.isManagentCredentails) {
           this.doRefresh(false);
         }

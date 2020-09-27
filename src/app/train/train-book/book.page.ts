@@ -103,6 +103,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   addContacts: AddContact[] = [];
   isCheckingPay = false;
   isShowFee = false;
+  isSelfBookType = true;
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
@@ -127,6 +128,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     this.navCtrl.pop();
   }
   async doRefresh(byUser: boolean) {
+    this.staffService.isSelfBookType().then((is) => {
+      this.isSelfBookType = is;
+    });
     try {
       if (this.ionRefresher) {
         this.ionRefresher.complete();
