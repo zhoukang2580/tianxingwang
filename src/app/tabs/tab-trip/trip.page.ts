@@ -214,7 +214,7 @@ export class TripPage implements OnInit, OnDestroy {
         ? "car"
         : "";
     if (tag) {
-      this.router.navigate([AppHelper.getRoutePath(`${tag}-order-detail`)], {
+      this.router.navigate([AppHelper.getRoutePath(`order-${tag}-detail`)], {
         queryParams: { orderId: trip.OrderId },
       });
     }
@@ -223,7 +223,6 @@ export class TripPage implements OnInit, OnDestroy {
     if (!trip) {
       return trip;
     }
-    // <ng-container *ngIf="trip.VariablesJsonObj.IsCustomApplyRefund||trip.VariablesJsonObj.IsCustomApplyExchange||trip.Status!= OrderFlightTicketStatusType.Refunded">
     trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables);
     return trip;
   }
