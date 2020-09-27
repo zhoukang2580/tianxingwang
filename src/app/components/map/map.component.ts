@@ -23,20 +23,18 @@ const BMapLib = window["BMapLib"];
 export class MapComponent
   implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   private subscription = Subscription.EMPTY;
-  private get lat() {
-    return this.latLng && this.latLng.lat;
-  }
-  private get lng() {
-    return this.latLng && this.latLng.lng;
-  }
-  @Input() latLng: { lat: string; lng: string };
+  private bouncAnimate: any;
+  @Input() latLng: {
+    lat: string;
+    lng: string;
+  };
   @ViewChild("container") private container: ElementRef<HTMLElement>;
   map: any;
   private marker: any;
+  private dragendTimer: any;
   constructor(private mapService: MapService) {}
   ngOnInit() {
     // this.getCurPosition();
-    this.autoPanTo();
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -57,7 +55,7 @@ export class MapComponent
       }
     }
   }
-  private async createMap(container: HTMLElement) {
+  private createMap(container: HTMLElement) {
     // console.log(container);
     // if (!this.lat || !this.lng) {
     //   this.lat = "40.057031";
@@ -73,7 +71,7 @@ export class MapComponent
     const ZoomControl = {
       // 设置默认停靠位置和偏移量
       defaultAnchor: window["BMap"].BMAP_ANCHOR_TOP_LEFT,
-      defaultOffset: new window["BMap"].Size(10, 10),
+      defaultOffset: new window["BMap"].Size(15, 15),
       initialize: (map) => {
         // 创建一个DOM元素
         const div = document.createElement("div");
@@ -95,9 +93,9 @@ export class MapComponent
     };
     if (this.map && window["BMap"] && window["BMap"].Point) {
       this.map.addControl(ZoomControl);
-      this.map.addEventListener("dragstart", this.onMapDragstart.bind(this));
-      this.map.addEventListener("dragend", this.onMapDragEnd.bind(this));
-      const point = new window["BMap"].Point(this.lng, this.lat);
+      // this.map.addEventListener("dragstart", this.onMapDragstart.bind(this));
+      // this.map.addEventListener("dragend", this.onMapDragEnd.bind(this));
+      const point = new window["BMap"].Point(this.latLng.lng, this.latLng.lat);
       const opts = { offset: new window["BMap"].Size(10, 10) };
       this.map.addControl(new window["BMap"].ScaleControl(opts));
       if (this.marker) {
@@ -109,58 +107,90 @@ export class MapComponent
   }
   private onMapDragstart() {
     console.log("dragstart");
-    this.stopPanTo();
+  }
+  onBackToLatLng() {
+    this.initAndPanToMarker();
   }
   private onMapDragEnd() {
+    if (this.dragendTimer) {
+      clearTimeout(this.dragendTimer);
+    }
     console.log("dragend");
-    this.autoPanTo();
+    // this.dragendTimer = setTimeout(() => {
+    //   this.autoPanTo();
+    // }, 5000);
   }
   private initAndPanToMarker(p?: MapPoint) {
     if (!window["BMap"] || !window["BMap"].Point || !this.map) {
       return;
     }
     const point = new window["BMap"].Point(
-      (p && p.lng) || this.lng,
-      (p && p.lat) || this.lat
+      (p && p.lng) || this.latLng.lng,
+      (p && p.lat) || this.latLng.lat
     );
     if (this.marker) {
       this.map.removeOverlay(this.marker);
     }
-    this.marker = new window["BMap"].Marker(point); // 创建标注
+    const icon = new window[
+      "BMap"
+    ].Icon(
+      "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+      { width: 30, height: 30, transition: `all ease-in-out 200ms` }
+    );
+    // icon.imageSize = "cover";
+    this.marker = new window["BMap"].Marker(point, {
+      icon,
+      // title:this.
+    }); // 创建标注
     this.map.addOverlay(this.marker); // 将标注添加到地图中
     this.marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
     // this.map.panTo(point);
     this.map.centerAndZoom(point, 18);
+    if (this.bouncAnimate) {
+      clearInterval(this.bouncAnimate);
+    }
+    let isSet = false;
+    this.bouncAnimate = setInterval(() => {
+      // console.log("marker", this.marker);
+      if (this.marker) {
+        this.marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
+        const el = this.marker.Ac;
+        if (el) {
+          if (!isSet) {
+            isSet = true;
+            el.classList.add(
+              "animate__animated",
+              "animated",
+              "infinite",
+              "bounce"
+            );
+            el.style.setProperty("--animate-duration", "0.5s");
+            clearInterval(this.bouncAnimate);
+          }
+        }
+      }
+    }, 200);
   }
   ngOnChanges(changes: SimpleChanges) {
-    if (
-      changes &&
-      changes.lat &&
-      changes.lng &&
-      changes.lat.currentValue &&
-      changes.lng.currentValue
-    ) {
+    if (changes && changes.latLng && changes.latLng.currentValue) {
       if (this.map) {
-        this.initAndPanToMarker({ lat: this.lat, lng: this.lng });
+        this.initAndPanToMarker({ lat: this.latLng.lat, lng: this.latLng.lng });
       }
     }
   }
   ngAfterViewInit() {
     if (this.container && this.container.nativeElement) {
       setTimeout(() => {
-        this.createMap(this.container.nativeElement).catch((e) => {
-          console.error(e);
+        this.createMap(this.container.nativeElement);
+        this.initAndPanToMarker();
+        requestAnimationFrame(() => {
+          const el = this.container.nativeElement.querySelector(".BMap_Marker");
+          if (el && el.firstChild) {
+            (el.firstChild as HTMLElement).style.width = `35px`;
+            (el.firstChild as HTMLElement).style.height = `30px`;
+          }
         });
       }, 1000);
     }
-  }
-  private autoPanTo() {
-    this.stopPanTo();
-    this.subscription = interval(2 * 1000).subscribe(() => {
-      this.initAndPanToMarker();
-    });
-  }
-  private stopPanTo() {
-    this.subscription.unsubscribe();
   }
 }
