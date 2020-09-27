@@ -103,6 +103,9 @@ export class TmcService {
       { ImageUrl: string; Title: string; Id: string }[]
     >(req);
   }
+  setTravelFormNumber(tn: string) {
+    AppHelper.setQueryParamers("TravelNumber", tn);
+  }
   getTravelFormNumber() {
     const tn =
       AppHelper.getQueryParamers()["travelFormId"] ||
