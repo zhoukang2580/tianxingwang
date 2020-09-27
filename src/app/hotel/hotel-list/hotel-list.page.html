@@ -3,9 +3,13 @@
     <ion-buttons>
       <app-back-button defaultHref="" [backFn]='back.bind(this)' customeBack='true'></app-back-button>
       <div class="query">
-        <app-date-city [checkInDate]='searchHotelModel?.checkInDate' [checkOutDate]='searchHotelModel?.checkOutDate'
-          [city]='searchHotelModel?.destinationCity' (cityClick)='onCityClick()' (dateChange)='onDateChange()'
-          (searchBarClick)='onSearchByText()' [keywords]='searchHotelModel?.searchText?.Text||"地名/酒店/关键字"'>
+        <app-date-city [langOpt]='{
+          checkin: "CheckIn",
+          checkout: "Checkout",
+          night: "Nights",
+          placeholder: "keywords"
+        }' [checkInDate]='searchHotelModel?.checkInDate' [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity' (cityClick)='onCityClick()'
+          (dateChange)='onDateChange()' (searchBarClick)='onSearchByText()' [keywords]='searchHotelModel?.searchText?.Text||"地名/酒店/关键字"'>
         </app-date-city>
       </div>
     </ion-buttons>
@@ -20,8 +24,7 @@
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
   <ion-list lines='none'>
-    <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}"
-      color="secondary">
+    <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}" color="secondary">
       <ion-segment-button value="normal">
         <ion-label>非协议酒店</ion-label>
       </ion-segment-button>
@@ -56,13 +59,13 @@
         </ion-thumbnail>
         <ion-label class="ion-margin-start">
           <h1>
-            <ion-skeleton-text  style="width:90%"></ion-skeleton-text>
+            <ion-skeleton-text style="width:90%"></ion-skeleton-text>
           </h1>
           <h1>
             <ion-skeleton-text style="width:40%"></ion-skeleton-text>
           </h1>
           <h1 style="display:flex;justify-content:space-between;align-items: center;">
-            <ion-skeleton-text  style="width:70%"></ion-skeleton-text>
+            <ion-skeleton-text style="width:70%"></ion-skeleton-text>
             <ion-skeleton-text style="width:10%"></ion-skeleton-text>
           </h1>
         </ion-label>
@@ -85,16 +88,12 @@
 </ion-content>
 <div class="backdrop " (click)='onBackdropClick($event)' [class.show]='filterTab?.isActive'></div>
 <div #queryconditoneleContainer>
-  <app-recommend-rank class="filter-condition" (rank)='onRank()'
-    [class.show]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
+  <app-recommend-rank class="filter-condition" (rank)='onRank()' [class.show]='filterTab?.label=="推荐排序"&&filterTab.isActive'>
   </app-recommend-rank>
-  <app-hotel-starprice class="filter-condition" [class.show]='filterTab?.label=="星级价格"&&filterTab.isActive'
-    (starPriceChange)='onStarPriceChange()'>
+  <app-hotel-starprice class="filter-condition" [class.show]='filterTab?.label=="星级价格"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
   </app-hotel-starprice>
-  <app-hotel-filter class="filter-condition" [class.show]='filterTab?.label=="筛选"&&filterTab.isActive'
-    (filter)='onFilter()'>
+  <app-hotel-filter class="filter-condition" [class.show]='filterTab?.label=="筛选"&&filterTab.isActive' (filter)='onFilter()'>
   </app-hotel-filter>
-  <app-hotel-geo class="filter-condition" [class.show]='filterTab?.label=="位置区域"&&filterTab.isActive'
-    (geoFilterChange)='onFilterGeo()'>
+  <app-hotel-geo class="filter-condition" [class.show]='filterTab?.label=="位置区域"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
   </app-hotel-geo>
 </div>

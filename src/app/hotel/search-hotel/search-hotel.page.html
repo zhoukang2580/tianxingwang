@@ -59,7 +59,7 @@
       </div>
       <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;" class="ion-margin-top">
         <section class="flight-date">
-          <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkinDate'
+          <app-search-day-comp  [day]='isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkinDate'
             [isCheckIn]='true'  (click)="onSelecDate(true)" [disabled]='false'>
           </app-search-day-comp>
           <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>

@@ -4,8 +4,9 @@
   </ion-text>
   <ion-label class='day'>{{dayNumber}}</ion-label>
   <ion-label [class.start]='isCheckIn||isCheckOut' class="date">
-    <h5>{{dayDesc}} <ng-container *ngIf='isCheckIn'>入住</ng-container>
-      <ng-container *ngIf='isCheckOut'>离店</ng-container>
+    <h5><ng-container *ngIf='langOpt.isShowDayDesc'>{{dayDesc}}</ng-container>
+      <ng-container *ngIf='isCheckIn'>{{langOpt.checkin}}</ng-container>
+      <ng-container *ngIf='isCheckOut'>{{langOpt.checkout}}</ng-container>
     </h5>
     <h5>{{yearMonth}}</h5>
   </ion-label>

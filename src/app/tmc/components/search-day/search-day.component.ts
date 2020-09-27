@@ -20,6 +20,12 @@ export class SearchDayComponent implements OnInit, OnChanges {
   @Input()
   @HostBinding("class.disabled")
   disabled: boolean;
+  @Input() langOpt = {
+    checkin: "入住",
+    checkout: "离店",
+    night: "晚",
+    isShowDayDesc: true,
+  };
   @Input() isCheckIn = false;
   @Input() isCheckOut = false;
   yearMonth: string;

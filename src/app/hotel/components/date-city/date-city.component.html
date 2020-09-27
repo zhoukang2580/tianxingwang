@@ -2,15 +2,15 @@
   <div class='left' (click)='onDateClick()'>
     <div class='date-city'>
       <div>
-        <span>住</span>
+        <span>{{langOpt.checkin}}</span>
         <span class='date'>{{checkInDate?.substring("2019-".length)}}</span>
       </div>
       <div>
-        <span>离</span>
+        <span>{{langOpt.checkout}}</span>
         <span class='date'>{{checkOutDate?.substring("2019-".length)}}</span>
       </div>
     </div>
-    <span class='date'>{{getDays()}}晚</span>
+    <span class='date'>{{getDays()}}{{langOpt.night}}</span>
   </div>
   <div class="right">
     <div class='city' (click)='onCityClick()'>
@@ -18,7 +18,7 @@
     </div>
     <div class='search-bar' (click)='onSearchBarClick()'>
       <ion-icon name="search" mode='ios'></ion-icon>
-      <input type="text" placeholder="{{keywords||'地名/酒店/关键词'}}" disabled >
+      <input type="text" placeholder="{{keywords||langOpt.placeholder}}" disabled>
     </div>
   </div>
 </div>
