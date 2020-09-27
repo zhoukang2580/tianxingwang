@@ -432,18 +432,16 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     const day = this.calendarService.generateDayModelByDate(roomPlan.BeginDate);
     return `${day.date} ${day.dayOfWeekName}`;
   }
-  private showErrorMsg(
+  private async showErrorMsg(
     msg: string,
     item: IPassengerHotelBookInfo,
     ele: HTMLElement
   ) {
-    AppHelper.toast(
+    await AppHelper.alert(
       `${
         (item.credentialStaff && item.credentialStaff.Name) ||
         (item.credential && item.credential.Surname + item.credential.Givenname)
-      } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空`,
-      2000,
-      "bottom"
+      } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空`
     );
     this.moveRequiredEleToViewPort(ele);
   }
@@ -824,6 +822,9 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
             if (it.value) {
               p.OutNumbers[it.key] = it.value;
             }
+          }
+          if (!Object.keys(p.OutNumbers).length) {
+            p.OutNumbers = null;
           }
         }
       }
