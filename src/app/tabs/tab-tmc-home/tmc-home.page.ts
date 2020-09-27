@@ -122,8 +122,8 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
         .catch((_) => null);
       await this.loginService.checkIfForceAction();
       // console.log("返回到首页 ",p.keys);
+      this.langService.translate();
     });
-    this.langService.translate();
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();

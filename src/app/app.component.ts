@@ -108,9 +108,11 @@ export class AppComponent
     window["isAndroid"] = this.platform.is("android");
     this.message$ = messageService.getMessage();
     this.loading$ = apiService.getLoading();
-    this.router.events.subscribe((evt) => {
-      this.keybord.hide();
-    });
+    if (AppHelper.isApp()) {
+      this.router.events.subscribe((evt) => {
+        this.keybord.hide();
+      });
+    }
     if (this.platform.is("ios")) {
       AppHelper.setDeviceName("ios");
     }

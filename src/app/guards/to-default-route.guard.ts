@@ -37,6 +37,7 @@ export class ToDefaultRouteGuard implements CanActivate {
     if (defaultR) {
       this.router.navigate([defaultR], {
         queryParams: { ...next.queryParams },
+        replaceUrl: true,
       });
       return false;
     }

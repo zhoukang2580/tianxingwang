@@ -6,6 +6,7 @@ import { IdentityService } from "../services/identity/identity.service";
 import { IdentityEntity } from "../services/identity/identity.entity";
 import { AppHelper } from "../appHelper";
 import { finalize } from "rxjs/operators";
+import { Router } from "@angular/router";
 
 @Injectable({
   providedIn: "root",
@@ -19,7 +20,8 @@ export class LangService {
   private isTranslate = false;
   constructor(
     private apiService: ApiService,
-    identityService: IdentityService
+    identityService: IdentityService,
+    private router: Router
   ) {
     identityService.getIdentitySource().subscribe((id) => {
       this.identity = id;
@@ -40,6 +42,10 @@ export class LangService {
       } else {
         setTimeout(() => {
           this.stop();
+          this.router.navigate([AppHelper.getRoutePath(this.router.url)], {
+            replaceUrl: true,
+            skipLocationChange: false,
+          });
         }, 0);
       }
     } catch (e) {

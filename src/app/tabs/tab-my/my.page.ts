@@ -18,7 +18,7 @@ import { tap, map } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { LangService } from 'src/app/tmc/lang.service';
+import { LangService } from "src/app/tmc/lang.service";
 interface PageModel {
   Name: string;
   RealName: string;
@@ -193,9 +193,11 @@ export class MyPage implements OnDestroy, OnInit {
     });
   }
   private reloadPage() {
-    this.router.navigate([AppHelper.getRoutePath(this.router.url)]).then(() => {
-      this.langService.translate();
-    });
+    this.router
+      .navigate([AppHelper.getRoutePath(this.router.url)], { replaceUrl: true })
+      .then(() => {
+        this.langService.translate();
+      });
   }
   onProductClick(tab: ProductItem) {
     if (tab.value != ProductItemType.more) {
@@ -221,7 +223,11 @@ export class MyPage implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.items = ORDER_TABS.filter((it) => it.isDisplay);
-    this.items = this.items.filter((it) => it.value != ProductItemType.more&&it.value != ProductItemType.waitingApprovalTask);
+    this.items = this.items.filter(
+      (it) =>
+        it.value != ProductItemType.more &&
+        it.value != ProductItemType.waitingApprovalTask
+    );
 
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (_) => {
