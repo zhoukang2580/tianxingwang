@@ -64,26 +64,6 @@ export class BookTmcOutnumberComponent
       });
     }
   }
-  onFocus(n: ITmcOutNumberInfo) {
-    this.vmTmcOutNumberInfos = this.vmTmcOutNumberInfos.map((it) => {
-      it.hasfocus = it.label == n.label;
-      return it;
-    });
-    this.onChange(n, { detail: { value: "" } } as any);
-  }
-  onBlur(arg: ITmcOutNumberInfo) {
-    setTimeout(() => {
-      this.hints = [];
-      arg.hasfocus = false;
-      this.tmcOutNumber.emit({
-        tmcOutNumberInfo: arg,
-        tmcOutNumberInfos: this.tmcOutNumberInfos,
-        travelUrlInfo: {
-          TravelNumber: arg.value,
-        } as any,
-      });
-    }, 0);
-  }
   onChange(arg: ITmcOutNumberInfo, evt: CustomEvent) {
     if (this.timer) {
       clearTimeout(this.timer);
@@ -109,9 +89,15 @@ export class BookTmcOutnumberComponent
   }
   ngOnInit() {
     if (this.tmcOutNumberInfos) {
-      this.travelNumbers = this.tmcOutNumberInfos.filter(
-        (it) => it.label && it.label.toLowerCase() == "travelnumber"
-      );
+      const tn = this.tmcService.getTravelFormNumber();
+      this.travelNumbers = this.tmcOutNumberInfos
+        .filter((it) => it.label && it.label.toLowerCase() == "travelnumber")
+        .map((it) => {
+          if(tn){
+            it.value=tn;
+          }
+          return it;
+        });
       this.vmTmcOutNumberInfos = this.tmcOutNumberInfos.filter((it) =>
         this.travelNumbers.length
           ? !this.travelNumbers.some((a) => a.label == it.label)
@@ -147,13 +133,6 @@ export class BookTmcOutnumberComponent
           if (info.travelUrlInfos.length) {
             info.loadTravelUrlErrorMsg = info.loadTravelUrlErrorMsg || "请选择";
           }
-          // if (
-          //   !info.value &&
-          //   info.travelUrlInfos &&
-          //   info.travelUrlInfos.length
-          // ) {
-          //   info.value = info.travelUrlInfos[0].TravelNumber;
-          // }
           info.isLoadingNumber = false;
         });
       } else {
