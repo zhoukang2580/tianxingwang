@@ -8,7 +8,7 @@
     </ng-container>
     <ng-template #nodatas>
       <ion-label>{{n.label}}:</ion-label>
-      <ion-input class='travel-number' [disabled]='n.isDisabled||isExchange||!isShowGroupedInfo' [(ngModel)]='n.value' placeholder="{{n.label||'暂无数据'}}">
+      <ion-input class='travel-number' [disabled]='n.isDisabled||isExchange||!isShowGroupedInfo' [(ngModel)]='n.value' placeholder="{{n.label||'请输入'}}">
       </ion-input>
     </ng-template>
   </ion-item>
@@ -19,7 +19,7 @@
     <ion-label>{{n.label}}:</ion-label>
     <!-- <ion-input class='travel-number' #numberInputEle [attr.has-data]='n.labelDataList?.length>0' [attr.label]='n.label' (ionChange)='onChange(n,$event)' [disabled]='n.isDisabled||isExchange||!isShowGroupedInfo' [(ngModel)]='n.value' placeholder="{{n.isLoadingNumber?'正在加载行程单号':(n.loadTravelUrlErrorMsg||'暂无数据')}}">
     </ion-input> -->
-    <ion-label class="ion-text-end">{{n.value||(n.isLoadingNumber?'正在加载行程单号':(n.loadTravelUrlErrorMsg||'暂无数据'))}}</ion-label>
+    <ion-label class="ion-text-end">{{n.value||(n.isLoadingNumber?'正在加载行程单号':(n.loadTravelUrlErrorMsg||(!n.travelUrlInfos?.length?'暂无数据':'请选择')))}}</ion-label>
     <ion-icon name='caret-down-outline' color='secondary' *ngIf='!isExchange&&isShowGroupedInfo'>
     </ion-icon>
   </ion-item>

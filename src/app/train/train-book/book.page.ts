@@ -1370,13 +1370,13 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
               result[info.staffNumber] && result[info.staffNumber].Message;
             info.travelUrlInfos =
               result[info.staffNumber] && result[info.staffNumber].Data;
-            if (
-              !info.value &&
-              info.travelUrlInfos &&
-              info.travelUrlInfos.length
-            ) {
-              info.value = info.travelUrlInfos[0].TravelNumber;
-            }
+            // if (
+            //   !info.value &&
+            //   info.travelUrlInfos &&
+            //   info.travelUrlInfos.length
+            // ) {
+            //   info.value = info.travelUrlInfos[0].TravelNumber;
+            // }
           }
           info.isLoadingNumber = false;
         })
