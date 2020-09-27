@@ -18,6 +18,14 @@ export const routes: Routes = [
       )
   },
   {
+    path: "search-train_en",
+    canActivate: [ConfirmCredentialInfoGuard],
+    loadChildren: () =>
+      import("./search-train_en/search-train_en.module").then(
+        m => m.SearchTrainEnPageModule
+      )
+  },
+  {
     path: "select-station",
     loadChildren: () =>
       import("./select-station/select-station.module").then(

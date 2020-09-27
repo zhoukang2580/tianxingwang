@@ -1,0 +1,129 @@
+.flight-date {
+  width: 100%;
+  padding-right: 2px;
+  margin-top: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .date-week {
+    display: flex;
+    align-items: flex-end;
+    margin: 0 0.5rem;
+    h2 {
+      font-size: 1.2rem;
+    }
+    h6 {
+      margin-left: 0.5rem;
+      font-size: 0.7rem;
+    }
+  }
+}
+.destination {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  margin: 1em -1em;
+  ion-item {
+    width: 100%;
+    ion-label:first-child {
+      flex: 0.6;
+      font-size: 14px;;
+    }
+  }
+  ion-button {
+    margin-left: auto;
+    font-size: 0.6rem;
+    &.ios {
+      height: 5em;
+    }
+    .pos {
+      height: 100%;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
+    }
+    .pos ion-icon {
+      font-size: 1rem;
+    }
+  }
+}
+ion-card-header {
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.segments {
+  display: flex;
+  align-items: center;
+  background-color: #eee;
+  position: relative;
+  .segment-button {
+    padding: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    &.active {
+      background-color: white;
+      ion-label {
+        color: var(--ion-color-secondary);
+      }
+    }
+    &.left.active {
+      border-top-right-radius: 0.5em;
+    }
+    &.right.active {
+      border-top-left-radius: 0.5em;
+    }
+  }
+  .indicator {
+    position: absolute;
+    height: 3px;
+    border-radius: 10px;
+    background-color: var(--ion-color-secondary);
+    bottom: -0.5em;
+    transform-origin: left top;
+    transition: transform ease-in-out 100ms;
+    &.left {
+      left: 45%;
+      right: 45%;
+      transform: translate3d(-255%, 0, 0);
+    }
+    &.right {
+      left: 45%;
+      right: 45%;
+      transform: translate3d(255%, 0, 0);
+    }
+  }
+}
+.show-select-yeasterday-date-tip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-size: 0.7rem;
+  border-radius: 0.3em;
+  padding: 0.25em;
+  background-color: rgba(var(--ion-color-secondary-rgb), 0.8);
+  color: var(--ion-color-light);
+  width: 88%;
+  margin-top: 0.5em;
+  .moon {
+    font-size: 1rem;
+    transform: rotate(40deg);
+    color: #f9f195;
+  }
+  .up {
+    position: absolute;
+    left: 1.7em;
+    top: -0.6em;
+    color: rgba(var(--ion-color-secondary-rgb), 0.8);
+    z-index: 999;
+    font-size: 1rem;
+  }
+}
+section[_ngcontent-kgt-c183] .day[_ngcontent-kgt-c183] {
+  margin: 0 0.2em;
+  font-family: sans-serif;
+  font-size: 1.2rem;
+}

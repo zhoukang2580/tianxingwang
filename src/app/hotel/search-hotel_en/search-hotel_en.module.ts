@@ -1,4 +1,3 @@
-import { StylePageGuard } from './../../guards/style-page.guard';
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -7,15 +6,16 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { SearchHotelPage } from "./search-hotel.page";
+import { SearchHotelEnPage } from "./search-hotel_en.page";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: "",
-    component: SearchHotelPage,
+    component: SearchHotelEnPage,
     canActivate: [AuthorityGuard,ConfirmCredentialInfoGuard,StylePageGuard]
   }
 ];
@@ -29,6 +29,6 @@ const routes: Routes = [
     AppComponentsModule,
     TmcComponentsModule
   ],
-  declarations: [SearchHotelPage]
+  declarations: [SearchHotelEnPage]
 })
-export class SearchHotelPageModule {}
+export class SearchHotelEnPageModule {}

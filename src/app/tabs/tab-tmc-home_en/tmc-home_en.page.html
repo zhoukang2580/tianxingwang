@@ -80,7 +80,7 @@
                                 <!-- <i class="icon icon-home-plane"></i> -->
                                 <img src="assets/svgs/home-plane2.svg" alt="国内机票">
                             </ion-label>
-                            <ion-text>Domestic air tickets</ion-text>
+                            <ion-text notranslate>Domestic Flights</ion-text>
                         </div>
                     </ion-col>
                     <ion-col size="4" *ngIf='isShowoverseaHotel'>
@@ -89,7 +89,7 @@
                                 <!-- <i class="icon icon-home-plane"></i> -->
                                 <img src="assets/svgs/product-plane2.svg" alt="国际机票">
                             </ion-label>
-                            <ion-text class="ion-text-nowrap">国际*港澳台机票</ion-text>
+                            <ion-text >Domestic Overseas</ion-text>
                         </div>
                     </ion-col>
                     <ion-col (click)='goToPage("train")' size="4">
@@ -98,7 +98,7 @@
                                 <img src="assets/svgs/home-train2.svg" alt="火车票">
                                 <!-- <i class="icon icon-home-train"></i> -->
                             </ion-label>
-                            <ion-text>火车票</ion-text>
+                            <ion-text>Tickets</ion-text>
                         </div>
                     </ion-col>
                     <ion-col (click)='goToPage("hotel")' size="4">
@@ -107,7 +107,7 @@
                                 <img src="assets/svgs/hotel2.svg" alt="酒店" [style.height.em]='3'>
                                 <!-- <i class="icon icon-hotel"></i> -->
                             </ion-label>
-                            <ion-text>国内酒店</ion-text>
+                            <ion-text>Domestic Hotels</ion-text>
                         </div>
                     </ion-col>
                     <ion-col (click)='goToPage("international-hotel")' size="4">
@@ -116,7 +116,7 @@
                                 <img src="assets/svgs/product-hotel2.svg" alt="酒店" [style.height.em]='3'>
                                 <!-- <i class="icon icon-hotel"></i> -->
                             </ion-label>
-                            <ion-text class="ion-text-nowrap">港澳台*海外酒店</ion-text>
+                            <ion-text >Overseas Hotels</ion-text>
                         </div>
                     </ion-col>
                     <ion-col (click)='goToPage("rentalCar")' size="4" *ngIf='isShowRentalCar&&(!identity?.Numbers?.AgentId)'>
@@ -125,7 +125,7 @@
                                 <img src="assets/svgs/home-rentalCar2.svg" alt="用车" [style.height.em]='3'>
                                 <!-- <i class="icon icon-hotel"></i> -->
                             </ion-label>
-                            <ion-text color=''>用车</ion-text>
+                            <ion-text color=''>Car</ion-text>
                         </div>
                     </ion-col>
                 </ion-row>

@@ -5,7 +5,8 @@ import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MyPage } from "./my.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
-let routes: Route[] = [{ path: "", component: MyPage }];
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
+let routes: Route[] = [{ path: "", component: MyPage,canActivate:[StylePageGuard] }];
 
 @NgModule({
   imports: [

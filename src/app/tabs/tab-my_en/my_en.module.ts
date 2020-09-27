@@ -5,7 +5,8 @@ import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MyEnPage } from "./my_en.page";
 import { AppDirectivesModule } from "src/app/directives/directives.module";
-const routes: Route[] = [{ path: "", component: MyEnPage }];
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
+const routes: Route[] = [{ path: "", component: MyEnPage ,canActivate:[StylePageGuard]}];
 
 @NgModule({
   imports: [

@@ -12,6 +12,13 @@ const routes: Routes = [
       )
   },
   {
+    path: "search-flight_en",
+    loadChildren: () =>
+      import("./search-flight_en/search-flight_en.module").then(
+        m => m.SearchFlightEnPageModule
+      )
+  },
+  {
     path: "selected-flight-bookinfos",
     loadChildren: () =>
       import("./selected-flight-bookinfos/selected-flight-bookinfos.module").then(

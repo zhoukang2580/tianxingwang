@@ -11,6 +11,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "search-hotel_en",
+    loadChildren: () =>
+      import("./search-hotel_en/search-hotel_en.module").then(
+        m => m.SearchHotelEnPageModule
+      )
+  },
+  {
     path: "hotel-city",
     loadChildren: () =>
       import("./hotel-city/hotel-city.module").then(m => m.HotelCityPageModule)
@@ -58,7 +65,8 @@ export const routes: Routes = [
   {
     path: "hotel-book",
     loadChildren: () => import("./book/book.module").then(m => m.BookPageModule)
-  },  {
+  },
+  {
     path: 'hotel-map',
     loadChildren: () => import('./hotel-map/hotel-map.module').then( m => m.HotelMapPageModule)
   }
