@@ -120,10 +120,10 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     //   AppHelper.alert("出差结束时间不能早于出差开始时间");
     //   return;
     // }
-    if (day > 365) {
-      AppHelper.alert("出差时间不能超过一年");
-      return;
-    }
+    // if (day > 365) {
+    //   AppHelper.alert("出差时间不能超过一年");
+    //   return;
+    // }
   }
 
   // nowTime(start: string, EndDate) {
