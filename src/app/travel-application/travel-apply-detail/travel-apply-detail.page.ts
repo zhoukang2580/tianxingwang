@@ -62,7 +62,7 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
           trip['hasHotel'] = tools.some(it => it.toLowerCase() == 'hotel');
           trip['hasTrain'] = tools.some(it => it.toLowerCase() == 'train');
           // trip['hasInterFlight'] = tools.some(it => it.toLowerCase() == 'international-flight');
-          trip['InternationalHotel'] = tools.some(it => it.toLowerCase() == 'internationalhotel');
+          trip['InternationalHotel'] = tools.some(it => it.toLowerCase() == 'Internationalhotel');
           // trip['hasRentalCar'] = tools.some(it => it.toLowerCase() == 'rentalCar');
         }
       });

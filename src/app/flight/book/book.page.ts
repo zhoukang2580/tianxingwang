@@ -140,7 +140,9 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
-  @ViewChild("transfromEle", { static: true }) transfromEle: ElementRef<HTMLElement>;
+  @ViewChild("transfromEle", { static: true }) transfromEle: ElementRef<
+    HTMLElement
+  >;
   @ViewChild(IonFooter, { static: true }) ionFooter: IonFooter;
   constructor(
     private flightService: FlightService,
@@ -232,8 +234,8 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   }
   onToggleIsShowFee() {
     this.isShowFee = !this.isShowFee;
-    if(this.transfromEle&&this.transfromEle){
-      this.transfromEle.nativeElement.style.transform=`transform: translate(0, -${this.ionFooter['el'].clientHeight}px)`;
+    if (this.transfromEle && this.transfromEle) {
+      this.transfromEle.nativeElement.style.transform = `transform: translate(0, -${this.ionFooter["el"].clientHeight}px)`;
     }
   }
   private async initOrderTravelPayTypes() {
@@ -285,7 +287,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   }
   private async initializeBookDto() {
     const bookDto = new OrderBookDto();
-    bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
+    bookDto.TravelFormId = this.tmcService.getTravelFormNumber();
     const infos = this.flightService.getPassengerBookInfos();
     bookDto.Passengers = [];
     const isSelf = await this.staffService.isSelfBookType();
@@ -477,6 +479,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       }
     });
     const result = await this.tmcService.getTravelUrls(args);
+    const trvaelNumber = this.tmcService.getTravelFormNumber();
     if (result) {
       this.vmCombindInfos.forEach((combindInfo) => {
         if (combindInfo.tmcOutNumberInfos) {
@@ -488,10 +491,17 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
                 result[info.staffNumber] && result[info.staffNumber].Data;
               if (
                 !info.value &&
+                trvaelNumber &&
                 info.travelUrlInfos &&
                 info.travelUrlInfos.length
               ) {
-                info.value = info.travelUrlInfos[0].TravelNumber;
+                // info.value = info.travelUrlInfos.find(
+                //   (it) => it.TravelNumber == trvaelNumber
+                // ).TravelNumber;
+                info.value = trvaelNumber;
+              } else {
+                info.value = "";
+                info.placeholder="请选择"
               }
             }
             info.isLoadingNumber = false;
@@ -1500,6 +1510,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
               this.tmc.OutNumberNameArray) ||
             []
           ).map((n) => {
+            console.log("inti tmcOutNumberInfos", n);
             return {
               label: n,
               key: n,
@@ -1513,14 +1524,10 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
               staffNumber: cstaff && cstaff.Number,
               staffOutNumber: cstaff && cstaff.OutNumber,
               isTravelNumber: n.toLowerCase() == "TravelNumber".toLowerCase(),
-              canSelect:
-                true || n.toLowerCase() == "TravelNumber".toLowerCase(),
-              isDisabled:
-                false &&
-                !!(
-                  this.travelForm &&
-                  n.toLowerCase() == "TravelNumber".toLowerCase()
-                ),
+              canSelect: true, // n.toLowerCase() == "TravelNumber".toLowerCase(),
+              isDisabled: !!(
+                this.travelForm && n.toLowerCase() == "travelnumber"
+              ),
             } as ITmcOutNumberInfo;
           });
         if (!accountIdTmcOutNumberInfosMap[accountId]) {

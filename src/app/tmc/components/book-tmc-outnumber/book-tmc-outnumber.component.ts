@@ -144,13 +144,16 @@ export class BookTmcOutnumberComponent
             result[info.staffNumber] && result[info.staffNumber].Message;
           info.travelUrlInfos =
             result[info.staffNumber] && result[info.staffNumber].Data;
-          if (
-            !info.value &&
-            info.travelUrlInfos &&
-            info.travelUrlInfos.length
-          ) {
-            info.value = info.travelUrlInfos[0].TravelNumber;
+          if (info.travelUrlInfos.length) {
+            info.loadTravelUrlErrorMsg = info.loadTravelUrlErrorMsg || "请选择";
           }
+          // if (
+          //   !info.value &&
+          //   info.travelUrlInfos &&
+          //   info.travelUrlInfos.length
+          // ) {
+          //   info.value = info.travelUrlInfos[0].TravelNumber;
+          // }
           info.isLoadingNumber = false;
         });
       } else {
@@ -208,6 +211,7 @@ export interface ITmcOutNumberInfo {
   required: boolean;
   hasfocus: boolean;
   value: string;
+  placeholder: string;
   staffOutNumber: string;
   isTravelNumber: boolean;
   isLoadNumber: boolean;

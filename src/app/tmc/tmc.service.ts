@@ -103,6 +103,23 @@ export class TmcService {
       { ImageUrl: string; Title: string; Id: string }[]
     >(req);
   }
+  setTravelFormNumber(tn: string) {
+    AppHelper.setQueryParamers("TravelNumber", tn);
+  }
+  getTravelFormNumber() {
+    const tn =
+      AppHelper.getQueryParamers()["travelFormId"] ||
+      AppHelper.getQueryParamers()["travelNumber"] ||
+      AppHelper.getQueryParamers()["travelnumber"] ||
+      AppHelper.getQueryParamers()["TravelNumber"];
+    return tn || "";
+  }
+  clearTravelFormNumber() {
+    AppHelper.removeQueryParamers("travelFormId");
+    AppHelper.removeQueryParamers("travelNumber");
+    AppHelper.removeQueryParamers("travelnumber");
+    AppHelper.removeQueryParamers("TravelNumber");
+  }
   getTrips(type: "Flight" | "Train" | "Hotel" = null) {
     const req = new RequestEntity();
     req.Method = `TmcApiOrderUrl-Travel-List`;
