@@ -100,8 +100,11 @@
               ><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
-                        <span class="apply_info_tit" style="display: flex;"><span>备注：</span
-              ><span class="apply_info_reason">{{detail?.TravelForm.Detail}}</span></span><span class="apply_info_time"></span>
+                        <span class="apply_info_tit" style="display: flex"><span>备注：</span
+              ><span class="apply_info_reason"
+                >{{detail?.TravelForm.Detail}}</span
+              ></span
+            ><span class="apply_info_time"></span>
                     </p>
                 </div>
             </div>
@@ -139,17 +142,21 @@
                 ><span>{{detail?.TravelForm.DayCount}}天</span>
                             </p>
 
-                            <p class="travel_step_btn" *ngIf='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' style="justify-content: space-evenly">
+                            <p class="travel_step_btn" *ngIf='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType ' style="justify-content: space-evenly">
                                 <button *ngIf='trip["hasFlight"]' (click)='goToPage("flight")'>
                   预订国内机票
                 </button>
-                                <button *ngIf='trip["hasHotel"]' (click)='goToPage("train")'>
+                                <button *ngIf='trip["hasTrain"]' (click)='goToPage("train")'>
                   预订火车票
                 </button>
-                                <button *ngIf='trip["hasTrain"]' (click)='goToPage("hotel")'>
+                                <button *ngIf='trip["hasHotel"]' (click)='goToPage("hotel")'>
                   预订国内酒店
                 </button>
+                                <button *ngIf='trip["InternationalHotel"]' (click)='goToPage("international-hotel")'>
+                  预订国际酒店
+                </button>
                             </p>
+
                         </div>
                     </div>
                 </div>
