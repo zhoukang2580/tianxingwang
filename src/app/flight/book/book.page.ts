@@ -501,7 +501,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
                 info.value = trvaelNumber;
               } else {
                 info.value = "";
-                info.placeholder="请选择"
+                info.placeholder = "请选择";
               }
             }
             info.isLoadingNumber = false;
@@ -1078,6 +1078,9 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
             if (it.value) {
               p.OutNumbers[it.key] = it.value;
             }
+          }
+          if (!Object.keys(p.OutNumbers).length) {
+            p.OutNumbers = null;
           }
         }
       }

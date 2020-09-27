@@ -852,6 +852,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
               p.OutNumbers[it.key] = it.value;
             }
           }
+          if (!Object.keys(p.OutNumbers).length) {
+            p.OutNumbers = null;
+          }
         }
       }
       if (!combindInfo.travelType) {
