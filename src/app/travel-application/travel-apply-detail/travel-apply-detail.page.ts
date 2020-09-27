@@ -4,7 +4,7 @@ import { async } from '@angular/core/testing';
 import { Component, OnInit, OnDestroy, Input, OnChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TravelService, SearchModel, ApprovalStatusType } from '../travel.service';
+import { TravelService, SearchModel, ApprovalStatusType, TravelFormTripEntity } from '../travel.service';
 import { AppHelper } from 'src/app/appHelper';
 import { TmcService } from 'src/app/tmc/tmc.service';
 
@@ -23,6 +23,7 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
   Property: any;
   remark: any;
   taskStatus: TaskStatusType;
+  TravelFormTripEntity : TravelFormTripEntity;
   constructor(private route: ActivatedRoute,
     private router: Router,
     private tmcService: TmcService, private service: TravelService,) {
@@ -60,6 +61,9 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
           trip['hasFlight'] = tools.some(it => it.toLowerCase() == 'flight');
           trip['hasHotel'] = tools.some(it => it.toLowerCase() == 'hotel');
           trip['hasTrain'] = tools.some(it => it.toLowerCase() == 'train');
+          // trip['hasInterFlight'] = tools.some(it => it.toLowerCase() == 'international-flight');
+          trip['InternationalHotel'] = tools.some(it => it.toLowerCase() == 'internationalhotel');
+          // trip['hasRentalCar'] = tools.some(it => it.toLowerCase() == 'rentalCar');
         }
       });
     }
