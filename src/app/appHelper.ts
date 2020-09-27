@@ -36,7 +36,7 @@ export class AppHelper {
   static _appDomain = !environment.mockProBuild
     ? CONFIG.appDomain.production
     : CONFIG.appDomain.debug;
-  constructor() { }
+  constructor() {}
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -58,7 +58,7 @@ export class AppHelper {
     function onOffline() {
       AppHelper.toast("网络中断，请检查网络设置", 2000, "middle");
     }
-    function onOnline() { }
+    function onOnline() {}
   }
   static showLoading(message: string, duration = 0) {
     return this.loadingController.create({ message, duration }).then((l) => {
@@ -138,10 +138,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-        ? msg.message
-        : msg && (msg.message || msg.Message)
-          ? msg.message || msg.Message
-          : JSON.stringify(msg);
+      ? msg.message
+      : msg && (msg.message || msg.Message)
+      ? msg.message || msg.Message
+      : JSON.stringify(msg);
   }
   private static isHttpFailureMsg(msg: any) {
     if (msg) {
@@ -680,12 +680,12 @@ export class AppHelper {
   static setCookie(name, value, iDay) {
     var oDate = new Date();
     oDate.setDate(oDate.getDate() + iDay);
-    document.cookie = name + '=' + value + ';expires=' + oDate;
-  };
+    document.cookie = name + "=" + value + ";expires=" + oDate;
+  }
   /*删除cookie*/
   static removeCookie(name) {
     this.setCookie(name, 1, -1); //-1就是告诉系统已经过期，系统就会立刻去删除cookie
-  };
+  }
   static getCookieValue(name: string) {
     const reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)");
     const arr = document.cookie.match(reg);
@@ -790,12 +790,14 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
-      this._queryParamers[key] = null;
-    } catch (ex) { }
+      if (this._queryParamers[key]) {
+        this._queryParamers[key] = null;
+      }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;
