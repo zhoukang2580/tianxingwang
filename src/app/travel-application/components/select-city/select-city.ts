@@ -29,8 +29,8 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 import { RefresherComponent } from "src/app/components/refresher";
 import { TravelService } from "../../travel.service";
 import { finalize } from "rxjs/operators";
-import { AppHelper } from 'src/app/appHelper';
-interface ICity{
+import { AppHelper } from "src/app/appHelper";
+interface ICity {
   Id: string;
   // tslint:disable-next-line: ban-types
   Name: String;
@@ -59,6 +59,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   vmKeyowrds = "";
   isSearching = false;
   isLoading = false;
+  isDomestic = false;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
@@ -76,7 +77,12 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
     this.doRefresh();
     this.isSearching = false;
   }
-  async ngOnInit() {}
+  async ngOnInit() {
+    this.isDomestic =
+      this.tripType == "国内" ||
+      this.tripType == "Domestic" ||
+      this.tripType == "domestic";
+  }
   ngOnDestroy() {
     console.log("onDestroy");
     this.subscription.unsubscribe();
@@ -104,23 +110,22 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   // }
 
   onCitySelected(city: { Id: string; Name: string }) {
-    if(this.isMulti){
+    if (this.isMulti) {
       this.modalCtrl.getTop().then((t) => t.dismiss(city));
-    } else{
+    } else {
       console.log(city);
       if (!this.selectedCitys) {
         this.selectedCitys = [];
       }
       if (!this.selectedCitys.find((it) => it.Id == city.Id)) {
-          this.selectedCitys.push(city);
+        this.selectedCitys.push(city);
       }
       if (this.isSearching) {
         return;
       }
     }
-   
-    // this.goToDetail(city.Id);
 
+    // this.goToDetail(city.Id);
   }
 
   back() {
@@ -128,8 +133,11 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   }
   async loadMore() {
     const name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
-    console.log((this.vmKeyowrds && this.vmKeyowrds.trim()) || "","vmKeyowrds");
-    
+    console.log(
+      (this.vmKeyowrds && this.vmKeyowrds.trim()) || "",
+      "vmKeyowrds"
+    );
+
     this.subscription = this.travelService
       .getCities({
         name,
@@ -159,29 +167,28 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
           this.textSearchResults = this.textSearchResults.concat(arr);
         }
       });
-    }
-    private async goToDetail(id: string) {
-      const city = await this.travelService.getTravelDetail(id).catch((e) => {
-        AppHelper.alert(e);
-        return null;
+  }
+  private async goToDetail(id: string) {
+    const city = await this.travelService.getTravelDetail(id).catch((e) => {
+      AppHelper.alert(e);
+      return null;
+    });
+    if (city) {
+      this.router.navigate([""], {
+        queryParams: {
+          tag: JSON.stringify(city),
+        },
       });
-      if (city) {
-        this.router.navigate([""], {
-          queryParams: {
-            tag: JSON.stringify(city),
-          },
-        });
-      }
     }
-    onDeleteSelectedTag(city: ICity) {
-      if (this.selectedCitys) {
-        // tslint:disable-next-line: triple-equals
-        this.selectedCitys = this.selectedCitys.filter((it) => it.Id != city.Id)
-      }
+  }
+  onDeleteSelectedTag(city: ICity) {
+    if (this.selectedCitys) {
+      // tslint:disable-next-line: triple-equals
+      this.selectedCitys = this.selectedCitys.filter((it) => it.Id != city.Id);
     }
+  }
 
-  
-    onDetermine(){
-      this.modalCtrl.getTop().then((t) => t.dismiss(this.selectedCitys));
-    }
+  onDetermine() {
+    this.modalCtrl.getTop().then((t) => t.dismiss(this.selectedCitys));
+  }
 }
