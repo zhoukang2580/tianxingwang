@@ -1,4 +1,4 @@
-import { Keyboard } from '@ionic-native/keyboard/ngx';
+import { Keyboard } from "@ionic-native/keyboard/ngx";
 import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -6,7 +6,7 @@ import {
   TravelService,
   SearchModel,
   ApprovalStatusType,
-  TmcTravelApprovalType
+  TmcTravelApprovalType,
 } from "../travel.service";
 import { Subscription } from "rxjs";
 import { TmcEntity, TravelFormEntity } from "src/app/tmc/tmc.service";
@@ -45,8 +45,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     private service: TravelService,
     private staffService: StaffService,
     private keyboard: Keyboard
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((q) => {
@@ -82,18 +81,17 @@ export class BusinessListPage implements OnInit, OnDestroy {
     if (evt) {
       evt.stopPropagation();
     }
-    const ok =await AppHelper.alert("确定删除?",true,"确定","取消")
-    if(ok == true){
+    const ok = await AppHelper.alert("确定删除?", true, "确定", "取消");
+    if (ok == true) {
       this.service
-      .removeTravel(item.Id)
-      .then(() => {
-        this.items.splice(key, 1);
-      })
-      .catch((e) => {
-        AppHelper.alert(e);
-      });
+        .removeTravel(item.Id)
+        .then(() => {
+          this.items.splice(key, 1);
+        })
+        .catch((e) => {
+          AppHelper.alert(e);
+        });
     }
-    
   }
   gettravel() {
     this.loading = true;
@@ -102,7 +100,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
       .pipe(
         finalize(() => {
           setTimeout(() => {
-            this.loading=false;
+            this.loading = false;
             if (this.refresher && this.searchModel.PageIndex <= 1) {
               this.refresher.complete();
             }
@@ -160,11 +158,10 @@ export class BusinessListPage implements OnInit, OnDestroy {
               });
             }
             this.getVariablesJsonObj(it);
-            if(it.VariablesJsonObj){
-
+            if (it.VariablesJsonObj) {
               const str = it.VariablesJsonObj.ApprovalName;
               if (str) {
-                it.VariablesJsonObj.ApprovalName = str.replace(/→/g, ' ⇀ ');
+                it.VariablesJsonObj.ApprovalName = str.replace(/→/g, " ⇀ ");
               }
             }
             return it;
@@ -219,6 +216,11 @@ export class BusinessListPage implements OnInit, OnDestroy {
     // this.staffService.getStaff().then((s) => {
     //   this.staff = s;
     // });
+    if (!this.searchModel) {
+      this.searchModel = {} as any;
+    }
+    this.searchModel.PageIndex = 0;
+    this.searchModel.PageSize = 20;
     this.keyboard.hide();
     if (this.searchModel) {
       if (!isKeepCondition) {

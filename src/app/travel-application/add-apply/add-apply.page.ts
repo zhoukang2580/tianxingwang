@@ -1,4 +1,4 @@
-import { TrafficlineEntity } from './../../tmc/models/TrafficlineEntity';
+import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
 import {
   Component,
   OnInit,
@@ -167,11 +167,15 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     });
   }
   private initOutNumbers() {
-    if (this.searchModel && this.searchModel.TravelForm && this.searchModel.TravelForm.Numbers) {
+    if (
+      this.searchModel &&
+      this.searchModel.TravelForm &&
+      this.searchModel.TravelForm.Numbers
+    ) {
       this.outNumbers = {};
-      this.searchModel.TravelForm.Numbers.forEach(n => {
+      this.searchModel.TravelForm.Numbers.forEach((n) => {
         this.outNumbers[n.Name] = n.Code;
-      })
+      });
       this.outNumberNameArray = Object.keys(this.outNumbers);
     }
   }
@@ -190,15 +194,17 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       if (this.searchModel.StatusType == ApprovalStatusType.Pass) {
         this.pass = true;
       }
-      if (this.searchModel.TravelForm && this.searchModel.TravelForm.Variables) {
-        this.searchModel.TravelForm.VariablesJsonObj = JSON.parse(this.searchModel.TravelForm.Variables);
+      if (
+        this.searchModel.TravelForm &&
+        this.searchModel.TravelForm.Variables
+      ) {
+        this.searchModel.TravelForm.VariablesJsonObj = JSON.parse(
+          this.searchModel.TravelForm.Variables
+        );
         this.searchModel.ApprovalName = this.searchModel.TravelForm.VariablesJsonObj.ApprovalName;
         this.searchModel.ApprovalId = this.searchModel.TravelForm.VariablesJsonObj.ApprovalId;
       }
-      if (
-        this.searchModel.TravelForm &&
-        this.searchModel.TravelForm.Trips
-      ) {
+      if (this.searchModel.TravelForm && this.searchModel.TravelForm.Trips) {
         this.searchModel.TravelForm.Trips = this.searchModel.TravelForm.Trips.map(
           (t) => {
             if (t.TravelTool) {
@@ -208,8 +214,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
             t.ToCityArrive = [];
             if (t.IsBackway) {
               t.ToCities.push({
-                IsShow: t.IsBackway
-              } as TrafficlineEntity)
+                IsShow: t.IsBackway,
+              } as TrafficlineEntity);
             }
 
             if (t.ToCityCode && t.ToCityName) {
@@ -218,10 +224,14 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
               for (let i = 0; i < codes.length; i++) {
                 t.ToCities.push({
                   Code: codes[i],
-                  Name: names[i]
-                } as TrafficlineEntity)
+                  Name: names[i],
+                } as TrafficlineEntity);
               }
-              t.toCityNames = t.ToCities && t.ToCities.map(it => it.Name).filter(it => it && it.length > 0).join(" · ");
+              t.toCityNames =
+                t.ToCities &&
+                t.ToCities.map((it) => it.Name)
+                  .filter((it) => it && it.length > 0)
+                  .join(" · ");
             }
             if (t.CheckInCityCode && t.CheckInCityName) {
               const code = t.CheckInCityCode.split(",");
@@ -229,10 +239,14 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
               for (let i = 0; i < code.length; i++) {
                 t.ToCityArrive.push({
                   Code: code[i],
-                  Name: name[i]
+                  Name: name[i],
                 } as TrafficlineEntity);
               }
-              t.toCityInName = t.ToCityArrive && t.ToCityArrive.map(it => it.Name).filter(it => it && it.length > 0).join(" · ");
+              t.toCityInName =
+                t.ToCityArrive &&
+                t.ToCityArrive.map((it) => it.Name)
+                  .filter((it) => it && it.length > 0)
+                  .join(" · ");
             }
             return t;
           }
@@ -242,7 +256,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   }
 
   ngOnInit() {
-
     console.log();
     this.addstatus = true;
     this.outNumbers = {};
@@ -257,7 +270,6 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
           {}
         );
       if (this.tmc.OutNumberNameArray) {
-
         for (const n of this.tmc.OutNumberNameArray) {
           this.outNumbers[n] = (this.searchModel.OutNumbers && obj[n]) || "";
           console.log(this.outNumbers[n], "this.outNumbers[n]");
@@ -300,8 +312,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     const item: TravelFormTripEntity = {} as any;
     this.route.queryParamMap.subscribe(async (q) => {
       if (q.get("id")) {
-        this.getDetail(q.get('id'));
-
+        this.getDetail(q.get("id"));
       } else {
         if (!this.tmc) {
           this.tmc = await this.tmcService.getTmc();
@@ -625,14 +636,19 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }
   }
 
-
   onTextarea(evt: CustomEvent) {
     const len = evt.detail && evt.detail.value && evt.detail.value.length;
     if (len > 50) {
       AppHelper.alert("长度不能超过50个");
       setTimeout(() => {
-        if (this.searchModel.TravelForm.Subject && this.searchModel.TravelForm.Subject.length > 50) {
-          this.searchModel.TravelForm.Subject = this.searchModel.TravelForm.Subject.substr(0, 50);
+        if (
+          this.searchModel.TravelForm.Subject &&
+          this.searchModel.TravelForm.Subject.length > 50
+        ) {
+          this.searchModel.TravelForm.Subject = this.searchModel.TravelForm.Subject.substr(
+            0,
+            50
+          );
         }
       }, 100);
       return;
@@ -671,5 +687,5 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }
     return this.searchModel.TravelForm.DayCount;
   }
-  getCashSuccess() { }
+  getCashSuccess() {}
 }
