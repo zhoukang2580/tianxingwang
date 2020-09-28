@@ -12,6 +12,10 @@ import {
 } from "../travel.service";
 import { AppHelper } from "src/app/appHelper";
 import { TmcService } from "src/app/tmc/tmc.service";
+import { FlightService } from "src/app/flight/flight.service";
+import { TrainService } from "src/app/train/train.service";
+import { HotelService } from "src/app/hotel/hotel.service";
+import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
 
 @Component({
   selector: "app-travel-apply-detail",
@@ -33,7 +37,7 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private tmcService: TmcService,
-    private service: TravelService
+    private travelService: TravelService
   ) {}
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -112,7 +116,9 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
   }
 
   private async getDetail(id: string) {
-    this.detail = await this.service.getTravelDetail(id).catch(() => null);
+    this.detail = await this.travelService
+      .getTravelDetail(id)
+      .catch(() => null);
     this.initTrips();
     this.initTime();
     if (this.detail && this.detail.Histories) {
@@ -131,6 +137,7 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
   async goToPage(name: string, params?: any) {
     const tmc = await this.tmcService.getTmc();
     const msg = "您没有预订权限";
+    let queryParams = {};
     if (!tmc || !tmc.RegionTypeValue) {
       AppHelper.alert(msg);
       return;
@@ -144,6 +151,11 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
         AppHelper.alert(msg);
         return;
       }
+      queryParams = {
+        FromCityCode: this.detail.TravelForm.Trips[0].FromCityCode,
+        ToCityCode: this.detail.TravelForm.Trips[0].ToCityCode.split(",")[0],
+        StartDate: this.detail.TravelForm.Trips[0].StartDate,
+      };
     }
     if (name == "international-hotel") {
       route = "search-international-hotel";
@@ -151,6 +163,11 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
         AppHelper.alert(msg);
         return;
       }
+      queryParams = {
+        FromCityCode: this.detail.TravelForm.Trips[0].FromCityCode,
+        ToCityCode: this.detail.TravelForm.Trips[0].ToCityCode.split(",")[0],
+        StartDate: this.detail.TravelForm.Trips[0].StartDate,
+      };
     }
     if (name == "hotel") {
       route = "search-hotel";
@@ -158,6 +175,11 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
         AppHelper.alert(msg);
         return;
       }
+      queryParams = {
+        FromCityCode: this.detail.TravelForm.Trips[0].FromCityCode,
+        ToCityCode: this.detail.TravelForm.Trips[0].ToCityCode.split(",")[0],
+        StartDate: this.detail.TravelForm.Trips[0].StartDate,
+      };
     }
     if (name == "train") {
       route = "search-train";
@@ -165,12 +187,30 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
         AppHelper.alert(msg);
         return;
       }
+      queryParams = {
+        FromCityCode: this.detail.TravelForm.Trips[0].FromCityCode,
+        ToCityCode: this.detail.TravelForm.Trips[0].ToCityCode.split(",")[0],
+        StartDate: this.detail.TravelForm.Trips[0].StartDate,
+      };
     }
     if (name == "flight") {
       route = "search-flight";
       if (tmcRegionTypeValue.search("flight") < 0) {
         AppHelper.alert(msg);
         return;
+      }
+      if (
+        this.detail &&
+        this.detail.TravelForm &&
+        this.detail.TravelForm.Trips &&
+        this.detail.TravelForm.Trips.length &&
+        this.detail.TravelForm.Trips[0].ToCityCode
+      ) {
+        queryParams = {
+          FromCityCode: this.detail.TravelForm.Trips[0].FromCityCode,
+          ToCityCode: this.detail.TravelForm.Trips[0].ToCityCode.split(",")[0],
+          StartDate: this.detail.TravelForm.Trips[0].StartDate,
+        };
       }
     }
     if (name == "rentalCar") {
@@ -182,10 +222,11 @@ export class TravelApplyDetailPage implements OnInit, OnDestroy {
     }
     if (name == "bulletin") {
       route = "bulletin-list";
+      queryParams = { bulletinType: params };
     }
     this.tmcService.setTravelFormNumber(this.detail.TravelForm.Id);
     this.router.navigate([AppHelper.getRoutePath(route)], {
-      queryParams: { bulletinType: params },
+      queryParams,
     });
   }
 }
