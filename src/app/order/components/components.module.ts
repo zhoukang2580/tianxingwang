@@ -24,10 +24,15 @@ import { TrainOrderDetailComponent } from './train-order-detail/train-order-deta
 import { FlightOrderDetailComponent } from './flight-order-detail/flight-order-detail.component';
 import { HotelOrderDetailComponent } from './hotel-order-detail/hotel-order-detail.component';
 import { InsuranceOrderDetailComponent } from './insurance-order-detail/insurance-order-detail.component';
+import { TrainTripEnComponent } from './train-trip_en/train-trip_en.component';
+import { FlightTripEnComponent } from './flight-trip_en/flight-trip_en.component';
+import { HotelTripEnComponent } from './hotel-trip_en/hotel-trip_en.component';
+import { OrderItemEnComponent } from './order-item_en/order-item_en.component';
 
 @NgModule({
   declarations: [
     OrderItemComponent,
+    OrderItemEnComponent,
     CarItemComponent,
     OrderItemPricePopoverComponent,
     HotelOrderPricePopoverComponent,
@@ -43,8 +48,11 @@ import { InsuranceOrderDetailComponent } from './insurance-order-detail/insuranc
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
     TrainTripComponent,
+    TrainTripEnComponent,
     HotelTripComponent,
+    HotelTripEnComponent,
     FlightTripComponent,
+    FlightTripEnComponent,
     SwiperSlideContentComponent,
     RefundFlightTicketTipComponent
   ],
@@ -57,6 +65,7 @@ import { InsuranceOrderDetailComponent } from './insurance-order-detail/insuranc
   ],
   exports: [
     OrderItemComponent,
+    OrderItemEnComponent,
     UploadFileComponent,
     CarItemComponent,
     TrainOrderDetailComponent,
@@ -65,9 +74,12 @@ import { InsuranceOrderDetailComponent } from './insurance-order-detail/insuranc
     InsuranceOrderDetailComponent,
     SwiperSlideContentComponent,
     TrainTripComponent,
+    TrainTripEnComponent,
     HotelTripComponent,
+    HotelTripEnComponent,
     RefundFlightTicketTipComponent,
-    FlightTripComponent
+    FlightTripComponent,
+    FlightTripEnComponent
   ]
 })
 export class OrderComponentsModule {}

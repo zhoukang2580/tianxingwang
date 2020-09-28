@@ -8,6 +8,7 @@ import { FormsModule } from "@angular/forms";
 import { HomeEnPage } from "./home_en.page";
 import { TmcGuard } from "src/app/guards/tmc.guard";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 @NgModule({
   imports: [
@@ -19,7 +20,7 @@ import { AppComponentsModule } from "src/app/components/appcomponents.module";
       {
         path: "",
         component: HomeEnPage,
-        canActivate: [TmcGuard]
+        canActivate: [TmcGuard,StylePageGuard]
       }
     ])
   ],

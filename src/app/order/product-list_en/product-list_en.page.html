@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+ 
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
+    <ion-title>我的订单</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item detail *ngFor='let p of products' (click)='goToProductTab(p)'>{{p.label}}</ion-item>
+  </ion-list>
+</ion-content>

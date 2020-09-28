@@ -40,7 +40,7 @@ import { MemberComponentsModule } from 'src/app/member/components/components.mod
     PriceDetailComponent,
     SelectFlightPassengerComponent,
     SelectAndReplacebookinfoComponent,
-    FlightSegmentItemComponent
+    FlightSegmentItemComponent,
   ],
   imports: [
     CommonModule,

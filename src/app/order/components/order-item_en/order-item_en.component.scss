@@ -1,0 +1,31 @@
+:host {
+  width: 100%;
+  ion-row{
+    align-items: start;
+  }
+  font-size: 12px;
+}
+.item {
+  padding: 0.2em 0;
+  display: flex;
+  align-items: flex-start;
+  & > *:first-child {
+    min-width: 3.8rem;
+    margin-right: 0.5em;
+    color: var(--ion-color-medium);
+  }
+  span {
+    margin-right: 0.5em;
+  }
+}
+
+.select-text {
+  user-select: text;
+}
+.order-flight-ticket ~ .order-flight-ticket {
+  border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
+}
+.btn-show-margin{
+  margin-top: -8px;
+  margin-bottom: -8px;
+}

@@ -1,0 +1,11 @@
+ion-row {
+  padding-left: 1em;
+  // border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
+}
+ion-row ion-col {
+  align-self: flex-start;
+  font-size: 1rem;
+  &:first-child {
+    color: var(--ion-color-medium);
+  }
+}

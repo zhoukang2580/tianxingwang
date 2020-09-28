@@ -1,0 +1,16 @@
+<ng-container>
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot='start'>
+        <app-back-button [backFn]='back.bind(this)'>
+        </app-back-button>
+      </ion-buttons>
+      <ion-title>{{title}}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <div class='wrapper' *ngIf='(url$|async) as url'>
+      <iframe [src]="url" #iframe></iframe>
+    </div>
+  </ion-content>
+</ng-container>

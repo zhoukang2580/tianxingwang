@@ -10,10 +10,24 @@ export const routes: Routes = [
       )
   },
   {
+    path: "product-list_en",
+    loadChildren: () =>
+      import("./product-list_en/product-list_en.module").then(
+        m => m.ProductListEnPageModule
+      )
+  },
+  {
     path: "order-list",
     loadChildren: () =>
       import("./order-list/order-list.module").then(
         m => m.OrderListPageModule
+      )
+  },
+  {
+    path: "order-list_en",
+    loadChildren: () =>
+      import("./order-list_en/order-list_en.module").then(
+        m => m.OrderListEnPageModule
       )
   },
   {
@@ -35,6 +49,13 @@ export const routes: Routes = [
     loadChildren: () =>
       import("./order-hotel-detail/order-hotel-detail.module").then(
         m => m.OrderHotelDetailPageModule
+      )
+  },
+  {
+    path: "order-hotel-detail_en",
+    loadChildren: () =>
+      import("./order-hotel-detail_en/order-hotel-detail_en.module").then(
+        m => m.OrderHotelDetailEnPageModule
       )
   },
  {

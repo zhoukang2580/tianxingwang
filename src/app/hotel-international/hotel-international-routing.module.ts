@@ -55,9 +55,14 @@ export const routes: Routes = [
     loadChildren: () => import('./search-international-hotel/search-international-hotel.module').then( m => m.SearchInternationalHotelPageModule)
   },
   {
+    path: 'search-international-hotel_en',
+    loadChildren: () => import('./search-international-hotel_en/search-international-hotel_en.module').then( m => m.SearchInternationalHotelEnPageModule)
+  },
+  {
     path: 'room-count-children',
     loadChildren: () => import('./room-count-children/room-count-children.module').then( m => m.RoomCountChildrenPageModule)
-  },  {
+  },
+  {
     path: 'select-nationality',
     loadChildren: () => import('./select-nationality/select-nationality.module').then( m => m.SelectNationalityPageModule)
   },

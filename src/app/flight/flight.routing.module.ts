@@ -33,6 +33,13 @@ const routes: Routes = [
       )
   },
   {
+    path: "flight-list_en",
+    loadChildren: () =>
+      import("./flight-list_en/flight-list_en.module").then(
+        m => m.FlightListEnPageModule
+      )
+  },
+  {
     path: "select-flight-city",
     loadChildren: () =>
       import("./select-flight-city/select-flight-city.module").then(

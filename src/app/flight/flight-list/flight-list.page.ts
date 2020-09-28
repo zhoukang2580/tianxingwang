@@ -125,8 +125,8 @@ export class FlightListPage
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
   isRotateIcon = false;
-  @ViewChild("cnt") cnt: IonContent;
-  @ViewChildren("fli") liEles: QueryList<ElementRef<HTMLElement>>;
+  @ViewChild("cnt",{static:true}) public cnt: IonContent;
+  @ViewChildren("fli") public liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmFlightJourneyList: FlightJourneyEntity[];
   get flightJourneyList() {
@@ -140,16 +140,16 @@ export class FlightListPage
   day: string;
   currentProcessStatus = "正在获取航班列表";
   st = 0;
-  selectedPassengersNumbers$: Observable<number>;
-  goAndBackFlightDateTime$: Observable<{
+  selectedPassengersNumbers: number;
+  goAndBackFlightDateTime: {
     goArrivalDateTime: string;
     backTakeOffDateTime: string;
-  }>;
+  };
   @ViewChild(IonRefresher) refresher: IonRefresher;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
   hasDataSource: Subject<boolean>;
   showSelectFlyDayPage$: Observable<boolean>;
-  filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
+  filteredPolicyPassenger: PassengerBookInfo<IFlightSegmentInfo>;
   isCanLeave = false;
   get filterConditionIsFiltered() {
     return (
@@ -173,43 +173,46 @@ export class FlightListPage
     private storage: Storage,
     private tmcService: TmcService
   ) {
-    this.selectedPassengersNumbers$ = flightService
-      .getPassengerBookInfoSource()
-      .pipe(map((item) => item.length));
+    this.subscriptions.push(
+      flightService
+        .getPassengerBookInfoSource()
+        .pipe(map((item) => item.length))
+        .subscribe((n) => {
+          this.selectedPassengersNumbers = n;
+        })
+    );
     this.hasDataSource = new BehaviorSubject(false);
     this.vmFlights = [];
     this.searchFlightModel = new SearchFlightModel();
-    this.goAndBackFlightDateTime$ = flightService
-      .getPassengerBookInfoSource()
-      .pipe(
-        map((infos) => {
-          const goInfo = infos.find(
-            (item) =>
-              item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
-          );
-          const backInfo = infos.find(
-            (item) =>
-              item.bookInfo && item.bookInfo.tripType == TripType.returnTrip
-          );
-          return {
-            goArrivalDateTime:
-              goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
-                ? moment(goInfo.bookInfo.flightSegment.ArrivalTime).format(
-                    "YYYY-MM-DD HH:mm"
-                  )
-                : "",
-            backTakeOffDateTime:
-              backInfo &&
-              backInfo.bookInfo &&
-              backInfo.bookInfo.flightSegment &&
-              backInfo.bookInfo.tripType == TripType.returnTrip
-                ? moment(backInfo.bookInfo.flightSegment.TakeoffTime).format(
-                    "YYYY-MM-DD HH:mm"
-                  )
-                : "",
-          };
-        })
-      );
+    this.subscriptions.push(
+      flightService.getPassengerBookInfoSource().subscribe((infos) => {
+        const goInfo = infos.find(
+          (item) =>
+            item.bookInfo && item.bookInfo.tripType == TripType.departureTrip
+        );
+        const backInfo = infos.find(
+          (item) =>
+            item.bookInfo && item.bookInfo.tripType == TripType.returnTrip
+        );
+        this.goAndBackFlightDateTime = {
+          goArrivalDateTime:
+            goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
+              ? moment(goInfo.bookInfo.flightSegment.ArrivalTime).format(
+                  "YYYY-MM-DD HH:mm"
+                )
+              : "",
+          backTakeOffDateTime:
+            backInfo &&
+            backInfo.bookInfo &&
+            backInfo.bookInfo.flightSegment &&
+            backInfo.bookInfo.tripType == TripType.returnTrip
+              ? moment(backInfo.bookInfo.flightSegment.TakeoffTime).format(
+                  "YYYY-MM-DD HH:mm"
+                )
+              : "",
+        };
+      })
+    );
     this.route.queryParamMap.subscribe(async (d) => {
       this.isCanLeave = !this.flightService.getSearchFlightModel().isExchange;
       this.isSelfBookType = await this.staffService.isSelfBookType();
@@ -476,9 +479,11 @@ export class FlightListPage
         if (!this.isStillOnCurrentPage()) {
           return;
         }
-        this.cnt.scrollToTop(100);
+        if(this.cnt && typeof this.cnt.scrollToTop=='function'){
+          this.cnt.scrollToTop(100);
+        }
       }
-    }, 100);
+    }, 200);
   }
 
   async onSelectPassenger() {
@@ -584,12 +589,17 @@ export class FlightListPage
     );
   }
   async ngOnInit() {
-    this.filteredPolicyPassenger$ = this.flightService
-      .getPassengerBookInfoSource()
-      .pipe(
-        map((infos) => infos.find((it) => it.isFilterPolicy)),
-        delay(0)
-      );
+    this.subscriptions.push(
+      this.flightService
+        .getPassengerBookInfoSource()
+        .pipe(
+          map((infos) => infos.find((it) => it.isFilterPolicy)),
+          delay(0)
+        )
+        .subscribe((r) => {
+          this.filteredPolicyPassenger = r;
+        })
+    );
     this.activeTab = "filter";
     this.initSearchModelParams();
     const filterConditionSubscription = this.flightService

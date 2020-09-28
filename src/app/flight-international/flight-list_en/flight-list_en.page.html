@@ -1,0 +1,134 @@
+<ion-header>
+  <ion-toolbar style="border-bottom: 1px solid var(--ion-color-primary-shade);">
+    <ion-buttons slot='start'>
+      <app-back-button [backFn]='back.bind(this)'></app-back-button>
+    </ion-buttons>
+    <ion-title style="font-size: 0.9em;">
+      {{curTrip?.fromCity?.CityName}} -- {{curTrip?.toCity?.CityName}}
+      <div class="date-font">{{curTrip?.date}}</div>
+    </ion-title>
+  </ion-toolbar>
+  <ng-container *ngIf="multipassShow">
+    <ng-container *ngFor='let trip of searchModel?.trips;let i=index;'>
+      <ion-row *ngIf='trip?.bookInfo' (click)='onReselectTrip(trip)' class="back_white ">
+        <ion-col style="display: flex;">
+          <div class="padding-s">
+            <img [src]="trip.bookInfo.fromSegment?.AirlineSrc">
+          </div>
+          <div style="font-size: 0.6rem;">
+            <span class="back-border">第{{i+1}}程</span>
+            {{trip?.fromCity?.CityName}} -- {{trip?.toCity?.CityName}}
+            ({{trip.bookInfo.fromSegment?.AirlineName}})
+            <div class="font-size">
+              {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,16)}} --
+              {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
+              <span *ngIf="trip.bookInfo.flightRoute.addDays>0">
+                (+{{trip?.bookInfo?.flightRoute.addDays}}天)</span>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ng-container>
+  </ng-container>
+  <ion-row class="row-top">
+    <ion-col size="0.8">
+    </ion-col>
+    <ion-col *ngIf="curTrip?.fromCity?.CountryCode?.toLowerCase()=='cn' else localTimeTpl" style="text-align: left;">
+      北京时间
+    </ion-col>
+    <ng-template #localTimeTpl>
+      <ion-col>
+        当地时间
+      </ion-col>
+    </ng-template>
+    <ion-col size="2">
+    </ion-col>
+    <ion-col *ngIf="curTrip?.toCity?.CountryCode?.toLowerCase()=='cn' else localTimeTpl">
+      北京时间
+    </ion-col>
+    <ion-col size="3.1" class="ion-text-nowrap">
+      多程总价
+    </ion-col>
+  </ion-row>
+</ion-header>
+
+<ion-content>
+  <app-refresher slot="fixed" (ionRefresh)='doRefresh(true)' [pullMin]='100'>
+    <ion-refresher-content>正在刷新...</ion-refresher-content>
+  </app-refresher>
+  <ion-list *ngIf='!isLoading'>
+    <ng-container *ngIf='flightRoutes?.length else nodata'>
+      <div *ngFor='let fr of flightRoutes' class="item-wrapper {{fr.color}}">
+        <app-flight-list-item [ngClass]="{open:fr.isShowFares,sticky:isLastTrip}" (click)='onSelectTrip(fr)' [isShowFares]='fr.isShowFares' (toggleFlightFare)='onToggleFlightFare(fr)'
+          [flightRoute]='fr' (transfer)='onTransfer(fr)'>
+        </app-flight-list-item>
+        <ng-container *ngIf='isLastTrip&&fr.isShowFares'>
+          <ng-container *ngFor='let fare of fr.vmFares'>
+            <ion-buttons class="ion-justify-content-between" class="buttons-wrapper">
+              <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(fare)' class="rulemsg-pkg">退改签|行李规定
+              </ion-button>
+              <div style="display: flex;align-items: center;">
+                <ion-text color='danger'>￥{{fare.SalesPrice}}<ng-container *ngIf='fare.Variables?.AccountCode'>
+                    <ion-text color='secondary'>协</ion-text>
+                  </ng-container>
+                  <ng-container *ngIf='fare.TypeName'>
+                    <ion-text color='medium' style="font-size:0.8rem;">({{fare.TypeName}})</ion-text>
+                  </ng-container>
+                </ion-text>
+                <ion-button class="book-btn" [color]='fare.color' [disabled]='fare.disabled' (click)='onBook(fr,fare)' fill='solid' expand='block' size='small'>
+                  <ion-text color='light'>预订</ion-text>
+                </ion-button>
+              </div>
+            </ion-buttons>
+            <div *ngIf='(fare.policy?.Message)' class="rule-message clip-text" [class.show]='fare.isShowMoreRuleMessage' (click)='onShowMoreRuleMessage(fare)'>
+              {{(fare.policy?.Message)}}
+            </div>
+          </ng-container>
+        </ng-container>
+      </div>
+    </ng-container>
+  </ion-list>
+  <ng-template #nodata>
+    <ion-item lines="none">
+      <app-or-comp>未查到符合条件的航班信息，请更改查询条件重新查询</app-or-comp>
+    </ion-item>
+  </ng-template>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>
+      <ng-container *ngIf='!isLastTrip'>正在加载...</ng-container>
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+<ion-footer class="ion-no-border boxShadow">
+  <ion-toolbar>
+    <ion-row>
+      <ion-col (click)="presentModal()">
+        <div>
+          <ion-icon color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}' name="funnel-outline" style="font-size:1.3rem" [class.has-filter]='condition?.isFilter'>
+          </ion-icon>
+        </div>
+        <ion-text color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}'>筛选</ion-text>
+      </ion-col>
+      <ion-col (click)='onSortByTime()'>
+        <div>
+          <ion-icon color='{{condition?.time!="none"?"secondary":""}}' name="swap-vertical-outline" style="font-size:1.3rem">
+          </ion-icon>
+        </div>
+        <ion-text color='{{condition?.time!="none"?"secondary":""}}'>时间
+          <ng-container *ngIf='condition?.time=="asc"'><strong>早</strong>-晚</ng-container>
+          <ng-container *ngIf='condition?.time=="desc"'><strong>晚</strong>-早</ng-container>
+        </ion-text>
+      </ion-col>
+      <ion-col (click)='onSortByPrice()'>
+        <div>
+          <ion-icon color='{{condition?.price!="none"?"secondary":""}}' name="logo-yen" style="font-size:1.3rem">
+          </ion-icon>
+        </div>
+        <ion-text color='{{condition?.price!="none"?"secondary":""}}'>价格
+          <ng-container *ngIf='condition?.price=="asc"'><strong>低</strong>-高</ng-container>
+          <ng-container *ngIf='condition?.price=="desc"'><strong>高</strong>-低</ng-container>
+        </ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

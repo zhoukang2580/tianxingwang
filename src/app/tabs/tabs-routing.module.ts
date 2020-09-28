@@ -64,6 +64,7 @@ const routes: Routes = [
     redirectTo: "/tabs/tmc-home",
     pathMatch: "full",
   },
+
 ];
 
 @NgModule({

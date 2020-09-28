@@ -29,7 +29,7 @@
       <ion-button fill='clear' *ngIf='showAddPassenger' color='secondary' size='small' (click)='onSelectPassenger()'>
         <ion-text class='sm-font-size'>添加旅客</ion-text>
         <ion-badge color='danger'>
-          <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers$|async}}</ion-text>
+          <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers}}</ion-text>
         </ion-badge>
       </ion-button>
     </ion-buttons>
@@ -42,7 +42,7 @@
       </ion-col>
     </ion-row>
     <ng-container *ngIf='isSelfBookType'>
-      <ion-row *ngIf='goAndBackFlightDateTime$|async as datetime'>
+      <ion-row *ngIf='goAndBackFlightDateTime as datetime'>
         <ion-col *ngIf='datetime?.goArrivalDateTime'>
           <ion-text color='secondary'>去程<ion-text color='danger'>(到达)</ion-text>:{{datetime?.goArrivalDateTime}}
           </ion-text>
@@ -54,7 +54,7 @@
       <ion-row>
       </ion-row>
     </ng-container>
-    <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo'>
+    <ion-row *ngIf='(filteredPolicyPassenger) as bookInfo'>
       <ion-col *ngIf='bookInfo.credential as credential'>
         <ion-text color='secondary'>
           当前已过滤【{{credential.Name}}】({{credential.Number}})差标
