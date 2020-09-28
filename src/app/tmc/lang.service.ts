@@ -159,13 +159,21 @@ export class LangService {
               continue;
             }
           }
-          this.getTags(el as Element, tags);
+          if (tags.map((it) => it.textContent).join("").length < 2000) {
+            this.getTags(el as Element, tags);
+          } else {
+            break;
+          }
         }
       } else if (parent) {
         if (parent.nodeType == Node.TEXT_NODE) {
           // 文本节点
           if (parent.textContent.match(/[\u4E00-\u9FA5]/g)) {
-            tags.push(parent);
+            if (tags.map((it) => it.textContent).join("").length < 2000) {
+              tags.push(parent);
+            } else {
+              return;
+            }
           }
         }
       }
