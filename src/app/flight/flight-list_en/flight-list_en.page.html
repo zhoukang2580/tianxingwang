@@ -77,26 +77,18 @@
     <div [innerHtml]='getNoMoreDataDesc()'></div>
   </app-or-comp>
   <ion-list>
-    <ul class='flight recomend' *ngIf='lowestPriceSegments?.length==1'>
-      <li *ngFor='let s of lowestPriceSegments' class='lowest-item' (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [segment]='s'  [isRecomendSegment]='false' [isHasFiltered]='filterConditionIsFiltered' [langOpt]='{
+    <ul class='flight'>
+      <li *ngFor='let s of vmFlights; trackBy:trackById' #fli (click)='goToFlightCabinsDetails(s)'>
+        <app-flight-segment-item [langOpt]='{
           meal: "meal",
           isStop: "stop",
           directFly: "NON-stop",
           no: "no",
           common: "common",
-          planeType: "机型",
-          lowestPrice: "最低价",
-          lowestPriceRecommend: "最低价推荐"
-        }' 
-         >
-        </app-flight-segment-item>
-        <ion-button color='secondary' (click)='onBookLowestSegment($event,s)' [disabled]='s["disabled"]' size='small'>预订</ion-button>
-      </li>
-    </ul>
-    <ul class='flight'>
-      <li *ngFor='let s of vmFlights; trackBy:trackById' #fli (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [segment]='s' [isHasFiltered]='filterConditionIsFiltered'></app-flight-segment-item>
+          planeType: "planeType",
+          lowestPrice: "lowestPrice",
+          lowestPriceRecommend: "lowestPriceRecommend"
+        }' [segment]='s' [isHasFiltered]='filterConditionIsFiltered'></app-flight-segment-item>
       </li>
     </ul>
   </ion-list>

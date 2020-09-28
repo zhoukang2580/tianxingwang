@@ -33,15 +33,10 @@ export class CalendarService {
   private selectedDays: DayModel[];
   private holidays: ICalendarEntity[] = [];
   private fetchingHolidaysPromise: Promise<ICalendarEntity[]>;
-  private dayOfWeekNames = {
-    0: LanguageHelper.getSundayTip(),
-    1: LanguageHelper.getMondayTip(),
-    2: LanguageHelper.getTuesdayTip(),
-    3: LanguageHelper.getWednesdayTip(),
-    4: LanguageHelper.getThursdayTip(),
-    5: LanguageHelper.getFridayTip(),
-    6: LanguageHelper.getSaturdayTip(),
-  };
+  private get lang() {
+    return AppHelper.getLanguage();
+  }
+  
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -206,6 +201,24 @@ export class CalendarService {
       df.appendChild(this.generateOneCalendar(c));
     }
     return df;
+  }
+  getDayOfWeekNames(n: number) {
+    switch (n) {
+      case 0:
+        return LanguageHelper.getSundayTip(this.lang);
+      case 1:
+        return LanguageHelper.getMondayTip(this.lang);
+      case 2:
+        return LanguageHelper.getTuesdayTip(this.lang);
+      case 3:
+        return LanguageHelper.getWednesdayTip(this.lang);
+      case 4:
+        return LanguageHelper.getThursdayTip(this.lang);
+      case 5:
+        return LanguageHelper.getFridayTip(this.lang);
+      case 6:
+        return LanguageHelper.getSaturdayTip(this.lang);
+    }
   }
   private getCalendars(beginDate: string, endDate: string) {
     const calendars = [];
@@ -465,7 +478,7 @@ export class CalendarService {
       header.appendChild(title);
       weeks.classList.add("weeks");
       for (let i = 0; i < 7; i++) {
-        const wn = this.dayOfWeekNames[i];
+        const wn = this.getDayOfWeekNames(i);
         const li = document.createElement("li");
         li.style.color =
           i == 0 || i == 6
@@ -631,9 +644,6 @@ export class CalendarService {
     const mt2 = t2 ? moment(t2) : moment();
     return mt1.diff(mt2, "days");
   }
-  getDayOfWeekNames() {
-    return this.dayOfWeekNames;
-  }
   getNowDate() {
     const n = this.getMoment(0);
     return n.format("YYYY-MM-DD");
@@ -652,44 +662,44 @@ export class CalendarService {
     return d.date.substring("2018-".length + 1, "2018-11".length);
   }
   getDescOfDate(date: string) {
-    const curDay = moment(); // 今天
+    // const curDay = moment(); // 今天
     const d = this.generateDayModelByDate(date);
 
     // console.log(d.date);
-    switch (date) {
-      case this.generateDayModel(curDay).date: {
-        return LanguageHelper.getTodayTip();
-      }
+    // switch (date) {
+    //   case this.generateDayModel(curDay).date: {
+    //     return LanguageHelper.getTodayTip();
+    //   }
 
-      case this.generateDayModel(curDay.add(1, "days")).date: {
-        return LanguageHelper.getTomorrowTip();
-      }
-      case this.generateDayModel(curDay.add(1, "days")).date: {
-        return LanguageHelper.getTheDayAfterTomorrowTip();
-      }
+    //   case this.generateDayModel(curDay.add(1, "days")).date: {
+    //     return LanguageHelper.getTomorrowTip();
+    //   }
+    //   case this.generateDayModel(curDay.add(1, "days")).date: {
+    //     return LanguageHelper.getTheDayAfterTomorrowTip();
+    //   }
 
-      default:
-        return d.dayOfWeekName;
-    }
+    //   default:
+    //   }
+    return d.dayOfWeekName;
   }
   getDescOfDay(d: DayModel) {
-    const curDay = moment(); // 今天
-    // console.log(d.date);
-    switch (d.date) {
-      case this.generateDayModel(curDay).date: {
-        return LanguageHelper.getTodayTip();
-      }
+    // const curDay = moment(); // 今天
+    // // console.log(d.date);
+    // switch (d.date) {
+    //   case this.generateDayModel(curDay).date: {
+    //     return LanguageHelper.getTodayTip();
+    //   }
 
-      case this.generateDayModel(curDay.add(1, "days")).date: {
-        return LanguageHelper.getTomorrowTip();
-      }
-      case this.generateDayModel(curDay.add(1, "days")).date: {
-        return LanguageHelper.getTheDayAfterTomorrowTip();
-      }
+    //   case this.generateDayModel(curDay.add(1, "days")).date: {
+    //     return LanguageHelper.getTomorrowTip();
+    //   }
+    //   case this.generateDayModel(curDay.add(1, "days")).date: {
+    //     return LanguageHelper.getTheDayAfterTomorrowTip();
+    //   }
 
-      default:
-        return d.dayOfWeekName;
-    }
+    //   default:
+    // }
+    return d.dayOfWeekName;
   }
   generateDayModelByDate(date: string) {
     return this.generateDayModel(moment(date));
@@ -722,7 +732,7 @@ export class CalendarService {
         retD.color = "primary";
         retD.isToday = true;
         retD.enabled = true;
-        retD.displayName = "今天";
+        retD.displayName = LanguageHelper.getTodayTip();
       }
       retD.toolTipPos = "center";
       this.setWeekName(retD);
@@ -755,12 +765,12 @@ export class CalendarService {
   }
   private setWeekName(d: DayModel) {
     d.dayOfWeek = d.dayOfWeek || new Date(d.timeStamp * 1000).getDay();
-    const wn = this.dayOfWeekNames[d.dayOfWeek];
+    const wn = this.getDayOfWeekNames(d.dayOfWeek);
     d.dayOfWeekName = wn;
   }
   getWeekName(d: DayModel) {
     d.dayOfWeek = moment(d.date, "YYYY-MM-DD").weekday();
-    const wn = this.dayOfWeekNames[d.dayOfWeek];
+    const wn = this.getDayOfWeekNames(d.dayOfWeek);
     d.dayOfWeekName = wn;
     return wn;
   }

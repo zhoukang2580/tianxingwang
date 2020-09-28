@@ -5,7 +5,7 @@ export class LanguageHelper {
     },
     getCannotBookMorePassengerTip: () => {
       return "不能添加更多旅客";
-    }
+    },
   };
   static Order = {
     getStatusCancelTypeTip: () => {
@@ -34,7 +34,7 @@ export class LanguageHelper {
     },
     getBookTicketWaitingApprovToPayTip: () => {
       return "下单成功！您的订单需要审批，请于审批完成后到订单列表进行支付";
-    }
+    },
   };
   static CurrencySymbols = {
     Yuan: () => {
@@ -42,7 +42,7 @@ export class LanguageHelper {
     },
     USD: () => {
       return "$";
-    }
+    },
   };
   static FlightMealType = {
     /// <summary>
@@ -115,13 +115,13 @@ export class LanguageHelper {
     // R = 10
     getRTip: () => {
       return "茶点或小吃";
-    }
+    },
   };
   static Hotel = {
     getCannotBookMoreHotelPassengerTip: () => {
       return `您已添加旅客`;
-    }
-  }
+    },
+  };
   static Flight = {
     getMustAddOnePassengerTip: () => {
       return "请添加择旅客";
@@ -234,7 +234,7 @@ export class LanguageHelper {
     },
     getrOderTravelPayTypeTip() {
       return "支付方式";
-    }
+    },
   };
   static PayWays = {
     getAliPayTip: () => {
@@ -242,7 +242,7 @@ export class LanguageHelper {
     },
     getWechatPayTip: () => {
       return "微信支付";
-    }
+    },
   };
   static getDiscountTip() {
     return "折";
@@ -370,25 +370,46 @@ export class LanguageHelper {
   static getBackDateTip() {
     return "请选择返程日期";
   }
-  static getSundayTip() {
+  static getSundayTip(lang: string = "") {
+    if (lang == "en") {
+      return "Sunday";
+    }
     return "周日";
   }
-  static getMondayTip() {
+  static getMondayTip(lang = "") {
+    if (lang == "en") {
+      return "Monday";
+    }
     return "周一";
   }
-  static getTuesdayTip() {
+  static getTuesdayTip(lang = "") {
+    if (lang == "en") {
+      return "Tuesday";
+    }
     return "周二";
   }
-  static getWednesdayTip() {
+  static getWednesdayTip(lang = "") {
+    if (lang == "en") {
+      return "Wednesday";
+    }
     return "周三";
   }
-  static getThursdayTip() {
+  static getThursdayTip(lang = "") {
+    if (lang == "en") {
+      return "Thursday";
+    }
     return "周四";
   }
-  static getFridayTip() {
+  static getFridayTip(lang = "") {
+    if (lang == "en") {
+      return "Friday";
+    }
     return "周五";
   }
-  static getSaturdayTip() {
+  static getSaturdayTip(lang = "") {
+    if (lang == "en") {
+      return "Saturday";
+    }
     return "周六";
   }
   static getTodayTip() {

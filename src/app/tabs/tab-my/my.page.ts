@@ -110,7 +110,7 @@ export class MyPage implements OnDestroy, OnInit {
           text: "English",
           role: style == "en" ? "selected" : "",
           handler: () => {
-            AppHelper.setStyle("en");
+            this.langService.setLang('en');
             this.reloadPage();
           },
         },
@@ -118,7 +118,7 @@ export class MyPage implements OnDestroy, OnInit {
           text: "中文",
           role: !style ? "selected" : "",
           handler: () => {
-            AppHelper.setStyle("cn");
+            this.langService.setLang('cn');
             this.reloadPage();
           },
         },

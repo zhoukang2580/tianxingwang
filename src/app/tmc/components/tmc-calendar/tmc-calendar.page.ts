@@ -118,8 +118,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnInit() {
     this.st = Date.now();
-    const w = this.calendarService.getDayOfWeekNames();
-    this.weeks = Object.keys(w).map((k) => w[k]);
+    this.weeks =new Array(7).fill(0).map((k) => this.calendarService.getDayOfWeekNames(k));
     this.initCalendars();
   }
   private initCalendars() {

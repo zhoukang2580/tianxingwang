@@ -52,6 +52,13 @@ export class LangService {
       console.error(e);
     }
   }
+  setLang(lang = "cn") {
+    AppHelper.setStyle(lang);
+    AppHelper.setStorage("language", lang);
+  }
+  getLang() {
+    return AppHelper.getLanguage();
+  }
   private getTranslateContent(result: string[]) {
     const req = new RequestEntity();
     req.Data = {

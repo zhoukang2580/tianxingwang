@@ -19,11 +19,10 @@ export class TrainTicketComponent implements OnInit {
   constructor(private calendarService: CalendarService) { }
   getDate(date: string) {
     if (date) {
-      const wns = this.calendarService.getDayOfWeekNames();
       const d = AppHelper.getDate(date);
       const m = d.getMonth() + 1;
       const day = d.getDate();
-      const wn = wns[d.getDay()];
+      const wn =  this.calendarService.getDayOfWeekNames(d.getDay());
       return `${d.getFullYear()}年${m < 10 ? "0" : ""}${m}月${day < 10 ? "0" : ""}${day} ${wn}`;
     }
   }

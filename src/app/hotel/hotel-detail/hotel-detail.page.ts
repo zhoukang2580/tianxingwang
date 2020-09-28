@@ -213,7 +213,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   getWeekName(date: string) {
     if (date) {
       const d = AppHelper.getDate(date);
-      return this.calendarService.getDayOfWeekNames()[d.getDay()];
+      return this.calendarService.getDayOfWeekNames(d.getDay());
     }
   }
   isFullOnly(ps: RoomPlanEntity[]) {
