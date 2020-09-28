@@ -126,7 +126,26 @@ export class SearchTrainPage
           this.isSingle = !s.isRoundTrip;
         }
       });
-    const sub = this.route.queryParamMap.subscribe(async (_) => {
+    const sub = this.route.queryParamMap.subscribe(async (q) => {
+      const fromCityCode = q.get("FromCityCode");
+      const toCityCode = q.get("ToCityCode");
+      const startDate = q.get("StartDate");
+      if (fromCityCode && toCityCode && startDate) {
+        const stations = await this.trainService.getStationsAsync();
+        const fromCity = stations.find((it) => it.CityCode == fromCityCode);
+        const toCity = stations.find((it) => it.CityCode == toCityCode);
+        if (fromCity && toCity) {
+          this.searchTrainModel.fromCity = fromCity;
+          this.searchTrainModel.toCity = toCity;
+          const Date = startDate.replace(/\./g, "-");
+          this.trainService.setSearchTrainModelSource({
+            ...this.searchTrainModel,
+            fromCity,
+            toCity,
+            Date,
+          });
+        }
+      }
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
       const searchTrainModel = this.trainService.getSearchTrainModel();
       this.searchTrainModel.isExchange =
@@ -157,7 +176,11 @@ export class SearchTrainPage
       return;
     }
     if (isFrom) {
-      if (this.searchTrainModel && this.searchTrainModel.isExchange && this.searchTrainModel.isLocked) {
+      if (
+        this.searchTrainModel &&
+        this.searchTrainModel.isExchange &&
+        this.searchTrainModel.isLocked
+      ) {
         return;
       }
     }
@@ -249,7 +272,7 @@ export class SearchTrainPage
         if (isGo) {
           this.searchTrainModel.Date = days[0].date;
         }
-        // if (isBack) {  
+        // if (isBack) {
         //   this.searchTrainModel.BackDate = days[0].date;
         // }
         this.trainService.setSearchTrainModelSource(this.searchTrainModel);

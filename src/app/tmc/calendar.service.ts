@@ -634,6 +634,10 @@ export class CalendarService {
   getDayOfWeekNames() {
     return this.dayOfWeekNames;
   }
+  getNowDate() {
+    const n = this.getMoment(0);
+    return n.format("YYYY-MM-DD");
+  }
   getSelectedDays() {
     return this.selectedDays || [];
   }

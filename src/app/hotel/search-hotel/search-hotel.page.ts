@@ -102,6 +102,26 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     private internationalHotelService: InternationalHotelService
   ) {
     const sub = route.queryParamMap.subscribe(async (q) => {
+      const fromCityCode = q.get("FromCityCode");
+      const toCityCode = q.get("ToCityCode");
+      const startDate = q.get("StartDate");
+      if (fromCityCode && toCityCode && startDate) {
+        const cities = await this.hotelService.getHotelCityAsync();
+        const fromCity = cities.find((it) => it.Code == fromCityCode);
+        const toCity = cities.find((it) => it.Code == toCityCode);
+        if (fromCity && toCity) {
+          let date = startDate.replace(/\./g, "-");
+          const flag = AppHelper.getDate(date).getTime() < Date.now();
+          if (flag) {
+            date = this.calendarService.getNowDate();
+          }
+          this.hotelService.setSearchHotelModel({
+            ...this.searchHotelModel,
+            destinationCity: toCity,
+            checkInDate: date,
+          });
+        }
+      }
       this.fromRoute = q.get("fromRoute");
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());

@@ -70,6 +70,7 @@ export class SearchFlightPage
       this.isleave = false;
       this.isCanleave = false;
       this.showReturnTrip = await this.isStaffTypeSelf();
+      this.initTravelCondition(q);
     });
     this.subscriptions.push(sub);
   }
@@ -94,6 +95,32 @@ export class SearchFlightPage
               this.calendarService.getMoment(1, this.goDate.date)
             )
           : this.backDate;
+    }
+  }
+  private async initTravelCondition(q) {
+    const fromCityCode = q.get("FromCityCode");
+    const toCityCode = q.get("ToCityCode");
+    const startDate = q.get("StartDate");
+    if (fromCityCode && toCityCode && startDate) {
+      const airports = await this.flightService.getAllLocalAirports();
+      const fromCity = airports.find((it) => it.CityCode == fromCityCode);
+      const toCity = airports.find((it) => it.CityCode == toCityCode);
+      if (fromCity && toCity) {
+        let date = startDate.replace(/\./g, "-");
+        const obj = this.searchFlightModel;
+        if (
+          AppHelper.getDate(date).getTime() <
+          AppHelper.getDate(this.calendarService.getNowDate()).getTime()
+        ) {
+          date = obj.Date;
+        }
+        this.flightService.setSearchFlightModelSource({
+          ...this.searchFlightModel,
+          fromCity,
+          toCity,
+          Date: date,
+        });
+      }
     }
   }
   async canDeactivate() {
