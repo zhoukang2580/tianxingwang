@@ -20,7 +20,7 @@ import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 export class TravelService {
   // organization:OrganizationEntity;
   // costCenter:CostCenterEntity;
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {}
   getlist(dto: SearchModel) {
     const req = new RequestEntity();
     req.IsShowLoading = dto && dto.IsShowLoading;
@@ -101,10 +101,25 @@ export class TravelService {
     };
     return this.apiService.getPromiseData<TravelFormEntity>(req);
   }
-  getTravelSave(dto: SearchModel) {
+  getTravelSave(data: SearchModel) {
     const req = new RequestEntity();
+    const dto = {
+      ...data,
+    };
     req.IsShowLoading = true;
     req.Method = `TmcApiTravelUrl-Home-Save`;
+    if (dto && dto.TravelForm) {
+      if (dto.TravelForm.Trips) {
+        dto.TravelForm.Trips.forEach((trip) => {
+          if (!trip.TravelTool.toLowerCase().includes("hotel")) {
+            trip.CheckInCityName = "";
+            trip.CheckInCityCode = "";
+          }
+          trip.ToCityArrive = [];
+          trip.ToCities = [];
+        });
+      }
+    }
     req.Data = {
       ...dto,
     };
@@ -323,7 +338,7 @@ export enum ApprovalStatusType {
   /// <summary>
   /// 已关闭
   /// </summary>
-  Closed = 5
+  Closed = 5,
 }
 export interface TravelNumberValue {
   Name: string;

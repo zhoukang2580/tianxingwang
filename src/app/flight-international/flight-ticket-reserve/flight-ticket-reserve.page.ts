@@ -1300,6 +1300,9 @@ export class FlightTicketReservePage
               const fee = +this.initialBookDtoModel.ServiceFees[key];
               acc = +AppHelper.add(fee, acc);
             }
+          } else {
+            const fee = +this.initialBookDtoModel.ServiceFees[key];
+            acc = +AppHelper.add(fee, acc);
           }
           return acc;
         },
