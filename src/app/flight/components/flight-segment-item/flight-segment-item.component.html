@@ -11,12 +11,12 @@
       </h4>
       <div class="airports">
         <span>{{segment.FromAirportName}}
-          <ng-container>
+          <ng-container *ngIf='segment.FromTerminal'>
             ({{segment.FromTerminal}})
           </ng-container>
         </span>
         <span>{{segment.ToAirportName}}
-          <ng-container>
+          <ng-container *ngIf='segment.ToTerminal'>
             ({{segment.ToTerminal}})
           </ng-container>
         </span>
