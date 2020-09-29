@@ -4,15 +4,15 @@
 
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
-    <ion-text *ngIf='(isShowBookInfos$|async)'>机票查询</ion-text>
-    <ion-title *ngIf='!(isShowBookInfos$|async)'>机票查询</ion-title>
+    <ion-text *ngIf='(isShowBookInfos$|async)'>Flight</ion-text>
+    <ion-title *ngIf='!(isShowBookInfos$|async)'>Flight</ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' *ngIf='(isShowBookInfos$|async) as num' color='secondary' size='small'
         (click)='onShowSelectedInfosPage();isCanleave=true'>已选航班
         <ion-badge slot='end' color='danger'>
           <ion-text color='light'>{{num}}</ion-text></ion-badge>
       </ion-button>
-      <ion-button fill='clear' *ngIf='isSelf' color='secondary' size='small' (click)='onShowStandardDesc();'>policy
+      <ion-button fill='clear' *ngIf='isSelf' color='secondary' size='small' (click)='onShowStandardDesc();'>Policy
       </ion-button>
       <ion-button fill='clear' *ngIf='!isSelf' color='secondary' size='small' (click)='onSelectPassenger()'>添加乘客
         <ion-badge color='danger'>
@@ -54,7 +54,7 @@
       </section>
       <ion-button style='width: 100%' (click)="searchFlight()" class='ion-margin-top'
         *ngIf='isSelf||(!isSelf&&selectedPassengers>0)' color="secondary" expand="block">
-        <ion-text>查询航班</ion-text>
+        <ion-text>Search</ion-text>
       </ion-button>
       <ion-button style='width: 100%' (click)="onSelectPassenger()" class='ion-margin-top'
         *ngIf='(!isSelf && selectedPassengers==0)' color="secondary" expand="block">

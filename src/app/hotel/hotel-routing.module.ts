@@ -56,6 +56,11 @@ export const routes: Routes = [
       import("./hotel-list/hotel-list.module").then(m => m.HotelListPageModule)
   },
   {
+    path: "hotel-list_en",
+    loadChildren: () =>
+      import("./hotel-list_en/hotel-list_en.module").then(m => m.HotelListEnPageModule)
+  },
+  {
     path: "hotel-detail",
     loadChildren: () =>
       import("./hotel-detail/hotel-detail.module").then(

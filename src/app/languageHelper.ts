@@ -1,4 +1,7 @@
 export class LanguageHelper {
+  static get lang() {
+    return window.localStorage.getItem("language");
+  }
   static Train = {
     getDontAllowBookTip: () => {
       return "当前座位违反差标，不能预订";
@@ -537,7 +540,11 @@ export class LanguageHelper {
   static getCancelTip() {
     return "取消";
   }
+
   static getConfirmTip() {
+    if (this.lang == "en") {
+      return "Ok";
+    }
     return "确定";
   }
   static getConfirmDeleteTip() {

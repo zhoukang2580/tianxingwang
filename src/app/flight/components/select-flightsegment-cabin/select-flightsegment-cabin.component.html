@@ -9,7 +9,7 @@
 <ion-content>
   <ion-toolbar class='ion-text-center'>
     <ion-label class='ion-no-margin ion-no-padding'>
-      <strong>{{flightSegment?.FromCityName}} 到 {{flightSegment?.ToCityName}}</strong>
+      <strong>{{flightSegment?.FromCityName}} - {{flightSegment?.ToCityName}}</strong>
     </ion-label>
     <ion-item lines='none'>
       <app-fly-list-item [flightSegment]='flightSegment' [showDetails]='true'></app-fly-list-item>

@@ -15,6 +15,18 @@ export class SelectFlightsegmentCabinComponent implements OnInit {
   @Input() flightSegment: FlightSegmentEntity;
   @Output() selectcabin: EventEmitter<any>;
   @Input() isAgent = false;
+  @Input() langOpt: any = {
+    meal: "餐食",
+    isStop: "经停",
+    directFly: "直飞",
+    no: "无",
+    common: "共享",
+    agreement: "协",
+    agreementDesc: "协议价",
+    planeType: "机型",
+    lowestPrice: "最低价",
+    lowestPriceRecommend: "最低价推荐",
+  };
   FlightFareType = FlightFareType;
   constructor(
     private modalCtrl: ModalController,

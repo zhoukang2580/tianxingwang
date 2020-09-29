@@ -8,7 +8,7 @@ import {
   state,
   trigger
 } from "@angular/animations";
-import { Component, OnInit, HostBinding } from "@angular/core";
+import { Component, OnInit, HostBinding, Input } from "@angular/core";
 import { Router, NavigationStart } from "@angular/router";
 import { TripPage } from "./tab-trip/trip.page";
 
@@ -40,7 +40,13 @@ import { TripPage } from "./tab-trip/trip.page";
     ])
   ]
 })
+
 export class TabsPage implements OnInit {
+  @Input() langOpt: any = {
+    HomePage: "首页",
+    WaiToTra: "待出行",
+    My: "我的"
+  };
   private subscription = Subscription.EMPTY;
   // @HostBinding("class.ion-page-hidden")
   // private isHidden;

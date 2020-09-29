@@ -10,9 +10,7 @@ import { ApiService } from "src/app/services/api/api.service";
 import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.component";
 import { SearchFlightModel } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
-import {
-  StaffService,
-} from "../../hr/staff.service";
+import { StaffService } from "../../hr/staff.service";
 import { AppHelper } from "src/app/appHelper";
 import { animate } from "@angular/animations";
 import { trigger, state, style, transition } from "@angular/animations";
@@ -22,12 +20,7 @@ import {
   ModalController,
   PopoverController,
 } from "@ionic/angular";
-import {
-  Observable,
-  Subscription,
-  Subject,
-  BehaviorSubject,
-} from "rxjs";
+import { Observable, Subscription, Subject, BehaviorSubject } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   Component,
@@ -40,10 +33,7 @@ import {
   ViewChildren,
   EventEmitter,
 } from "@angular/core";
-import {
-  delay,
-  map,
-} from "rxjs/operators";
+import { delay, map } from "rxjs/operators";
 import * as moment from "moment";
 import { CalendarService } from "../../tmc/calendar.service";
 import { DayModel } from "../../tmc/models/DayModel";
@@ -57,9 +47,7 @@ import { FilterConditionModel } from "../models/flight/advanced-search-cond/Filt
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import {
-  CanComponentDeactivate,
-} from "src/app/guards/candeactivate.guard";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list_en.page.html",
@@ -102,12 +90,24 @@ export class FlightListEnPage
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private lastFetchTime = 0;
+  langOpt={
+    meal: "Meal",
+    isStop: "Stop over",
+    directFly: "NON-Stop",
+    agreementDesc: "'A' menans Corporate Fares",
+    no: "No",
+    common: "Operated by ",
+    agreement:"A",
+    planeType: "Aircraft ",
+    lowestPrice: "LowestPrice",
+    lowestPriceRecommend: "LowestPriceRecommend"
+  }
   lowestPriceSegments: FlightSegmentEntity[];
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
   isRotateIcon = false;
-  @ViewChild("cnt",{static:true}) public cnt: IonContent;
+  @ViewChild("cnt", { static: true }) public cnt: IonContent;
   @ViewChildren("fli") public liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmFlightJourneyList: FlightJourneyEntity[];
@@ -289,6 +289,30 @@ export class FlightListEnPage
       !(await this.staffService.isSelfBookType());
     return this.showAddPassenger;
   }
+  private async translateLang(segs: FlightSegmentEntity[]) {
+    try {
+      if (segs) {
+        const airports = await this.flightService.getDomesticAirports();
+        if (airports && airports.length) {
+          segs.forEach((seg) => {
+            const fap = airports.find((it) => it.Code == seg.FromAirport);
+            const tap = airports.find((it) => it.Code == seg.ToAirport);
+            if (fap) {
+              seg.FromAirportName = fap.EnglishName.replace("International", "")
+                .replace("Airport", "")
+                .trim();
+            }
+            if (tap) {
+              seg.ToAirportName = tap.EnglishName.replace("International", "")
+                .replace("Airport", "")
+                .trim();
+            }
+          });
+        }
+      }
+    } catch (e) {}
+    return segs;
+  }
   async onCalenderClick() {
     const d = await this.flightService.openCalendar(false);
     if (d && d.length) {
@@ -400,7 +424,7 @@ export class FlightListEnPage
         if (isSelf) {
           segments = this.filterSegmentsByGoArrivalTime(segments);
         }
-        this.vmFlights = segments;
+        this.vmFlights = await this.translateLang(segments);
         this.currentProcessStatus = "正在计算差标";
         await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
       }
@@ -412,12 +436,12 @@ export class FlightListEnPage
         segments = this.filterSegmentsByGoArrivalTime(segments);
       }
       this.st = Date.now();
-      this.renderFlightList(segments);
+      await this.renderFlightList(segments);
       this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
       this.apiService.hideLoadingView();
       this.isLoading = false;
       if (this.activeTab != "none" && this.activeTab != "filter") {
-        this.sortFlights(this.activeTab);
+       await this.sortFlights(this.activeTab);
       }
       if (loadDataFromServer || !keepSearchCondition) {
         this.initFilterConditionInfo();
@@ -451,7 +475,7 @@ export class FlightListEnPage
         if (!this.isStillOnCurrentPage()) {
           return;
         }
-        if(this.cnt && typeof this.cnt.scrollToTop=='function'){
+        if (this.cnt && typeof this.cnt.scrollToTop == "function") {
           this.cnt.scrollToTop(100);
         }
       }
@@ -719,7 +743,7 @@ export class FlightListEnPage
     this.isLoading = false;
     // console.timeEnd("price");
   }
-  private sortFlights(key: "price" | "time") {
+  private async sortFlights(key: "price" | "time") {
     if (!this.filterCondition) {
       this.filterCondition = FilterConditionModel.init();
     }
@@ -733,7 +757,7 @@ export class FlightListEnPage
         this.vmFlights,
         this.priceOrderL2H
       );
-      this.renderFlightList(segments);
+      await this.renderFlightList(segments);
     }
     if (key === "time") {
       this.filterCondition.timeFromM2N = this.timeOrdM2N ? "am2pm" : "pm2am";
@@ -742,7 +766,7 @@ export class FlightListEnPage
         this.vmFlights,
         this.timeOrdM2N
       );
-      this.renderFlightList(segments);
+      await this.renderFlightList(segments);
     }
     this.scrollToTop();
   }
@@ -777,10 +801,11 @@ export class FlightListEnPage
         : totalFlySegments.filter((it) => it.isLowestPrice);
     return this.lowestPriceSegments;
   }
-  private renderFlightList(fs: FlightSegmentEntity[] = []) {
-    this.vmFlights = this.calcLowestPrice(fs).filter(
+  private async renderFlightList(fs: FlightSegmentEntity[] = []) {
+    const segments = this.calcLowestPrice(fs).filter(
       (it) => it.Cabins && it.Cabins.length
     );
+    this.vmFlights = await this.translateLang(segments);
     return;
   }
   private filterFlightSegments(segs: FlightSegmentEntity[]) {

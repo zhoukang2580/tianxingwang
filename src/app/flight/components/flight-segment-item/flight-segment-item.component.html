@@ -12,25 +12,28 @@
       <div class="airports">
         <span>{{segment.FromAirportName}}
           <ng-container *ngIf='segment.FromTerminal'>
-            ({{segment.FromTerminal}})
+            {{segment.FromTerminal}}
           </ng-container>
         </span>
         <span>{{segment.ToAirportName}}
           <ng-container *ngIf='segment.ToTerminal'>
-            ({{segment.ToTerminal}})
+            {{segment.ToTerminal}}
           </ng-container>
         </span>
       </div>
     </div>
     <div class="price">
       <div>￥{{segment.LowestFare}}</div>
-      <div class="tip" *ngIf='segment.isLowestPrice'>{{langOpt.lowestPrice}}</div>
+      <div class="tip" *ngIf='segment.isLowestPrice && !langOpt.lowestPrice'>{{langOpt.lowestPrice}}</div>
     </div>
   </div>
   <div class="desc">
     <img [src]="segment.AirlineSrc" class="airlinesrc">
-    <label>{{segment.AirlineName}}</label>
-    <label>|{{segment.Number}}</label>
+    <!-- <label>{{segment.AirlineName}}</label> agreementDesc-->
+    <label (click)="onShowAgreement($event)" *ngIf=' cabin?.Cabin?.FareType==FlightFareType.Agreement' class="agreement">
+      {{langOpt.agreement}}<span class="line">|</span>
+    </label>
+    <label>{{segment.Number}}</label>
     <label *ngIf='segment.CodeShareNumber'>|<span class='code-share-number'>{{langOpt.common}}{{segment.CodeShareNumber}}</span> </label>
     <label *ngIf=' segment.PlaneType'>|{{langOpt.planeType}}{{segment.PlaneType}}</label>
     <label>|{{segment.Meal?langOpt.has:langOpt.no}}{{langOpt.meal}}</label>

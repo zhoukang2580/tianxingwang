@@ -80,7 +80,7 @@
                                 <!-- <i class="icon icon-home-plane"></i> -->
                                 <img src="assets/svgs/home-plane2.svg" alt="国内机票">
                             </ion-label>
-                            <ion-text notranslate>Domestic Flights</ion-text>
+                            <ion-text notranslate>Domestic Flight</ion-text>
                         </div>
                     </ion-col>
                     <ion-col size="4" *ngIf='isShowoverseaHotel'>
@@ -89,7 +89,7 @@
                                 <!-- <i class="icon icon-home-plane"></i> -->
                                 <img src="assets/svgs/product-plane2.svg" alt="国际机票">
                             </ion-label>
-                            <ion-text >Overseas Flights</ion-text>
+                            <ion-text >Overseas Flight</ion-text>
                         </div>
                     </ion-col>
                     <ion-col (click)='goToPage("train")' size="4">
@@ -107,7 +107,7 @@
                                 <img src="assets/svgs/hotel2.svg" alt="酒店" [style.height.em]='3'>
                                 <!-- <i class="icon icon-hotel"></i> -->
                             </ion-label>
-                            <ion-text>Domestic Hotels</ion-text>
+                            <ion-text>Domestic Hotel</ion-text>
                         </div>
                     </ion-col>
                     <ion-col (click)='goToPage("international-hotel")' size="4">
@@ -116,7 +116,7 @@
                                 <img src="assets/svgs/product-hotel2.svg" alt="酒店" [style.height.em]='3'>
                                 <!-- <i class="icon icon-hotel"></i> -->
                             </ion-label>
-                            <ion-text >Overseas Hotels</ion-text>
+                            <ion-text >Overseas Hotel</ion-text>
                         </div>
                     </ion-col>
                     <ion-col (click)='goToPage("rentalCar")' size="4" *ngIf='isShowRentalCar&&(!identity?.Numbers?.AgentId)'>

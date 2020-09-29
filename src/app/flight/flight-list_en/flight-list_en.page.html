@@ -37,7 +37,7 @@
   <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'" (click)='onShowSelectedInfos()'>
     <ion-row>
       <ion-col>
-        {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班
+        {{searchFlightModel?.Date}} {{vmFlights?.length}}个航班
         <ion-text color='danger' *ngIf='filterConditionIsFiltered'>(筛选后)</ion-text>
       </ion-col>
     </ion-row>
@@ -54,13 +54,13 @@
       <ion-row>
       </ion-row>
     </ng-container>
-    <ion-row *ngIf='(filteredPolicyPassenger) as bookInfo'>
+    <!-- <ion-row *ngIf='(filteredPolicyPassenger) as bookInfo'>
       <ion-col *ngIf='bookInfo.credential as credential'>
         <ion-text color='secondary'>
           当前已过滤【{{credential.Name}}】({{credential.Number}})差标
         </ion-text>
       </ion-col>
-    </ion-row>
+    </ion-row> -->
   </ion-grid>
   <ion-toolbar class="fly-days">
     <app-days-calendar (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
@@ -79,14 +79,17 @@
   <ion-list>
     <ul class='flight recomend' *ngIf='lowestPriceSegments?.length==1'>
       <li *ngFor='let s of lowestPriceSegments' class='lowest-item' (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [segment]='s' [isRecomendSegment]='true' [isHasFiltered]='filterConditionIsFiltered'>
+        <app-flight-segment-item [segment]='s' 
+        [langOpt]='langOpt' [isRecomendSegment]='true' [isHasFiltered]='filterConditionIsFiltered'>
         </app-flight-segment-item>
         <ion-button color='secondary' (click)='onBookLowestSegment($event,s)' [disabled]='s["disabled"]' size='small'>预订</ion-button>
       </li>
     </ul>
     <ul class='flight'>
       <li *ngFor='let s of vmFlights; trackBy:trackById' #fli (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [segment]='s' [isHasFiltered]='filterConditionIsFiltered'></app-flight-segment-item>
+        <app-flight-segment-item [segment]='s'
+        [langOpt]='langOpt'
+         [isHasFiltered]='filterConditionIsFiltered'></app-flight-segment-item>
       </li>
     </ul>
   </ion-list>
@@ -125,17 +128,17 @@
       <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()"
         [class.filtered]='filterConditionIsFiltered'>
         <ion-icon name="funnel"></ion-icon>
-        <ion-note>筛选</ion-note>
+        <ion-note>Sereen</ion-note>
       </div>
       <div class="tab" [class.active]="activeTab === 'time'" (click)="onTimeOrder()">
         <ion-icon name="time"></ion-icon>
-        <ion-note *ngIf="activeTab !== 'time'">时间</ion-note>
+        <ion-note *ngIf="activeTab !== 'time'">Time</ion-note>
         <ion-note *ngIf="activeTab === 'time' && timeOrdM2N">从早到晚</ion-note>
         <ion-note *ngIf="activeTab === 'time' && !timeOrdM2N">从晚到早</ion-note>
       </div>
       <div class="tab" [class.active]="activeTab === 'price'" (click)="onPriceOrder()">
         <ion-icon name="logo-yen"></ion-icon>
-        <ion-note *ngIf="activeTab !== 'price'">价格</ion-note>
+        <ion-note *ngIf="activeTab !== 'price'">Price</ion-note>
         <ion-note *ngIf="activeTab === 'price' && priceOrderL2H">从低到高</ion-note>
         <ion-note *ngIf="activeTab === 'price' && !priceOrderL2H">从高到低</ion-note>
       </div>

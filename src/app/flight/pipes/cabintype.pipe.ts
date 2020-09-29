@@ -1,36 +1,48 @@
+import { AppHelper } from "./../../appHelper";
 import { Pipe, PipeTransform, Injectable } from "@angular/core";
 import { FlightCabinType } from "../models/flight/FlightCabinType";
 
 @Injectable({ providedIn: "root" })
 @Pipe({
-  name: "cabintype"
+  name: "cabintype",
 })
 export class CabintypePipe implements PipeTransform {
+  get lang() {
+    return AppHelper.getLanguage();
+  }
   transform(value: number | string, args?: any): any {
     switch (value) {
       case FlightCabinType.Y:
       case FlightCabinType[FlightCabinType.Y]:
-        return "经济舱";
+      case "经济舱":
+        return this.lang == "en" ? "Economy class" : "经济舱";
       case FlightCabinType.C:
       case FlightCabinType[FlightCabinType.C]:
-        return "公务舱";
+      case "公务舱":
+        return this.lang == "en" ? "Business class" : "公务舱";
       case FlightCabinType.F:
       case FlightCabinType[FlightCabinType.F]:
-        return "头等舱";
+      case "头等舱":
+        return this.lang == "en" ? "First class" : "头等舱";
       case FlightCabinType.SeniorY:
       case FlightCabinType[FlightCabinType.SeniorY]:
-        return "高端经济舱";
+      case "高端经济舱":
+        return this.lang == "en" ? "High-end economy" : "高端经济舱";
       case FlightCabinType.DiscountC:
       case FlightCabinType[FlightCabinType.DiscountC]:
-        return "折扣公务舱";
+      case "折扣公务舱":
+        return this.lang == "en" ? "Discount business" : "折扣公务舱";
       case FlightCabinType.DiscountF:
       case FlightCabinType[FlightCabinType.DiscountF]:
-        return "折扣头等舱";
+        case "折扣头等舱":
+          return this.lang == "en" ? "Discount first" : "折扣头等舱";
       case FlightCabinType.SuperF:
       case FlightCabinType[FlightCabinType.SuperF]:
-        return "超级头等舱";
+        case "超级头等舱":
+          return this.lang == "en" ? "Super first" : "超级头等舱";
       case FlightCabinType[FlightCabinType.BusinessPremier]:
-        return "豪华公务舱";
+         case "豪华公务舱":
+        return this.lang == "en" ? "Business Premier" : "豪华公务舱";
       default:
         return value;
     }

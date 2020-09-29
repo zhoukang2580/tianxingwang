@@ -20,6 +20,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { FlightPolicy } from "../../models/PassengerFlightInfo";
 import { FlightFareType } from "../../models/flight/FlightFareType";
 import { FlightCabinFareType } from "../../models/flight/FlightCabinFareType";
+import { AppHelper } from 'src/app/appHelper';
 
 @Component({
   selector: "app-fly-list-item",
@@ -27,10 +28,23 @@ import { FlightCabinFareType } from "../../models/flight/FlightCabinFareType";
   styleUrls: ["./fly-list-item.component.scss"],
 })
 export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
+  FlightFareType = FlightFareType;
   @Input() flightSegment: FlightSegmentEntity;
   @Input() showDetails: boolean;
   @Input() itmIndex: number;
   @Input() flightPolicy: FlightPolicy;
+  @Input() langOpt: any = {
+    meal: "餐食",
+    isStop: "经停",
+    directFly: "直飞",
+    no: "无",
+    common: "共享",
+    agreement: "协",
+    agreementDesc: "协议价",
+    planeType: "机型",
+    lowestPrice: "最低价",
+    lowestPriceRecommend: "最低价推荐",
+  };
   showIndex = !environment.production;
   isAgreement = false;
   constructor(private calendarService: CalendarService) {}
@@ -68,5 +82,9 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
     ) {
       this.isAgreement = true;
     }
+  }
+  onShowAgreement(evt:CustomEvent){
+    evt.stopPropagation();
+    AppHelper.alert(this.langOpt.agreementDesc,false,LanguageHelper.getConfirmTip());
   }
 }

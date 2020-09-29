@@ -55,6 +55,14 @@ const routes: Routes = [
     canActivate: [TmcGuard]
   },
   {
+    path: "flight-item-cabins_en",
+    loadChildren: () =>
+      import(
+        "src/app/flight/flight-item-cabins_en/flight-item-cabins_en.module"
+      ).then(m => m.FlightItemCabinsEnPageModule),
+    canActivate: [TmcGuard]
+  },
+  {
     path: "flight-book",
     loadChildren: () =>
       import("src/app/flight/book/book.module").then(
