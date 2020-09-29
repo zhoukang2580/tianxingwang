@@ -1,0 +1,44 @@
+ion-content {
+  ion-fab {
+    bottom: 3em;
+  }
+}
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.filter-condition {
+  z-index: -200;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 5.5em;
+  background-color: white;
+  will-change: transform opacity;
+  transition: all ease-in-out 200ms;
+  transform: translate3d(0, -150%, 0);
+  opacity: 0;
+  &.show {
+    z-index: 200;
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.backdrop {
+  position: fixed;
+  top: 6em;
+  left: 0;
+  bottom: 0;
+  z-index: -100;
+  opacity: 0;
+  width: 100vw;
+  background-color: rgba(var(--ion-color-dark-rgb), 0.5);
+  overflow: hidden;
+  height: 100%;
+  &.show {
+    opacity: 1;
+    z-index: 1;
+  }
+}

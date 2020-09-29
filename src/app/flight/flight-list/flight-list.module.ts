@@ -29,6 +29,9 @@ const routes: Routes = [
     TmcComponentsModule,
     AppDirectivesModule,
   ],
+  exports:[
+
+  ],
   declarations: [FlightListPage],
 })
 export class FlightListPageModule {}

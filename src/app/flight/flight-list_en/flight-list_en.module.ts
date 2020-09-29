@@ -1,6 +1,6 @@
-import { AppComponentsModule } from './../../components/appcomponents.module';
+import { AppDirectivesModule } from "./../../directives/directives.module";
 import { NgModule } from "@angular/core";
-import {  CommonModule } from "@angular/common";
+import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Routes, RouterModule } from "@angular/router";
 
@@ -9,16 +9,17 @@ import { IonicModule } from "@ionic/angular";
 import { FlightListEnPage } from "./flight-list_en.page";
 import { FlightComponentsModule } from "../components/components.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
-import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
+import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
+import { FlightListPageModule } from '../flight-list/flight-list.module';
 
 const routes: Routes = [
   {
     path: "",
     component: FlightListEnPage,
     canActivate: [StylePageGuard],
-    canDeactivate: [CandeactivateGuard]
-  }
+    canDeactivate: [CandeactivateGuard],
+  },
 ];
 
 @NgModule({
@@ -27,10 +28,11 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule,
-    TmcComponentsModule,
     FlightComponentsModule,
+    TmcComponentsModule,
+    AppDirectivesModule,
+    
   ],
-  declarations: [FlightListEnPage]
+  declarations: [FlightListEnPage],
 })
 export class FlightListEnPageModule {}

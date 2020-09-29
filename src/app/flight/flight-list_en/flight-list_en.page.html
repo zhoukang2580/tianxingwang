@@ -42,22 +42,22 @@
       </ion-col>
     </ion-row>
     <ng-container *ngIf='isSelfBookType'>
-      <ion-row *ngIf='goAndBackFlightDateTime'>
-        <ion-col *ngIf='goAndBackFlightDateTime?.goArrivalDateTime'>
-          <ion-text color='secondary'>去程<ion-text color='danger'>(到达)</ion-text>:{{goAndBackFlightDateTime?.goArrivalDateTime}}
+      <ion-row *ngIf='goAndBackFlightDateTime as datetime'>
+        <ion-col *ngIf='datetime?.goArrivalDateTime'>
+          <ion-text color='secondary'>去程<ion-text color='danger'>(到达)</ion-text>:{{datetime?.goArrivalDateTime}}
           </ion-text>
         </ion-col>
-        <ion-col *ngIf='goAndBackFlightDateTime?.backTakeOffDateTime'>
-          <ion-text color='secondary'>返程:{{goAndBackFlightDateTime?.backTakeOffDateTime}}</ion-text>
+        <ion-col *ngIf='datetime?.backTakeOffDateTime'>
+          <ion-text color='secondary'>返程:{{datetime?.backTakeOffDateTime}}</ion-text>
         </ion-col>
       </ion-row>
       <ion-row>
       </ion-row>
     </ng-container>
-    <ion-row *ngIf='filteredPolicyPassenger'>
-      <ion-col *ngIf='filteredPolicyPassenger.credential'>
+    <ion-row *ngIf='(filteredPolicyPassenger) as bookInfo'>
+      <ion-col *ngIf='bookInfo.credential as credential'>
         <ion-text color='secondary'>
-          当前已过滤【{{filteredPolicyPassenger.credential.Name}}】({{filteredPolicyPassenger.credential.Number}})差标
+          当前已过滤【{{credential.Name}}】({{credential.Number}})差标
         </ion-text>
       </ion-col>
     </ion-row>
@@ -77,18 +77,16 @@
     <div [innerHtml]='getNoMoreDataDesc()'></div>
   </app-or-comp>
   <ion-list>
+    <ul class='flight recomend' *ngIf='lowestPriceSegments?.length==1'>
+      <li *ngFor='let s of lowestPriceSegments' class='lowest-item' (click)='goToFlightCabinsDetails(s)'>
+        <app-flight-segment-item [segment]='s' [isRecomendSegment]='true' [isHasFiltered]='filterConditionIsFiltered'>
+        </app-flight-segment-item>
+        <ion-button color='secondary' (click)='onBookLowestSegment($event,s)' [disabled]='s["disabled"]' size='small'>预订</ion-button>
+      </li>
+    </ul>
     <ul class='flight'>
       <li *ngFor='let s of vmFlights; trackBy:trackById' #fli (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [langOpt]='{
-          meal: "meal",
-          isStop: "stop",
-          directFly: "NON-stop",
-          no: "no",
-          common: "common",
-          planeType: "planeType",
-          lowestPrice: "lowestPrice",
-          lowestPriceRecommend: "lowestPriceRecommend"
-        }' [segment]='s' [isHasFiltered]='filterConditionIsFiltered'></app-flight-segment-item>
+        <app-flight-segment-item [segment]='s' [isHasFiltered]='filterConditionIsFiltered'></app-flight-segment-item>
       </li>
     </ul>
   </ion-list>

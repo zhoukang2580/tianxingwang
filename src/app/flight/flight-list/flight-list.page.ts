@@ -12,8 +12,6 @@ import { SearchFlightModel } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import {
   StaffService,
-  StaffBookType,
-  StaffEntity,
 } from "../../hr/staff.service";
 import { AppHelper } from "src/app/appHelper";
 import { animate } from "@angular/animations";
@@ -23,14 +21,10 @@ import {
   IonRefresher,
   ModalController,
   PopoverController,
-  DomController,
-  Platform,
-  NavController,
 } from "@ionic/angular";
 import {
   Observable,
   Subscription,
-  fromEvent,
   Subject,
   BehaviorSubject,
 } from "rxjs";
@@ -41,21 +35,14 @@ import {
   ViewChild,
   AfterViewInit,
   OnDestroy,
-  NgZone,
   ElementRef,
   QueryList,
   ViewChildren,
   EventEmitter,
 } from "@angular/core";
 import {
-  tap,
-  takeUntil,
-  switchMap,
   delay,
   map,
-  filter,
-  reduce,
-  finalize,
 } from "rxjs/operators";
 import * as moment from "moment";
 import { CalendarService } from "../../tmc/calendar.service";
@@ -69,15 +56,10 @@ import { FilterConditionModel } from "../models/flight/advanced-search-cond/Filt
 
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
-import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import { DaysCalendarComponent } from "src/app/tmc/components/days-calendar/days-calendar.component";
 import {
-  CandeactivateGuard,
   CanComponentDeactivate,
 } from "src/app/guards/candeactivate.guard";
-import { THIS_EXPR } from "@angular/compiler/src/output/output_ast";
-import { FlightCabinEntity } from "../models/flight/FlightCabinEntity";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -236,7 +218,7 @@ export class FlightListPage
       }
     });
   }
-  trackById(idx: number, item: FlightSegmentEntity) {
+  trackById(item: FlightSegmentEntity) {
     return item.Id;
   }
   async onBookLowestSegment(evt: CustomEvent, s: FlightSegmentEntity) {
@@ -250,16 +232,6 @@ export class FlightListPage
       const cabin =
         cabins && cabins.find((it) => it.SalesPrice == s.LowestFare);
       if (cabin) {
-        const info = {
-          flightSegment: s,
-          flightPolicy: {
-            Cabin: cabin,
-            CabinCode: cabin.Code,
-            IsAllowBook: true,
-          },
-          tripType: TripType.departureTrip,
-          id: AppHelper.uuid(),
-        } as IFlightSegmentInfo;
         const bookInfos = this.flightService.getPassengerBookInfos();
         if (!bookInfos.length) {
           await this.flightService.initSelfBookTypeBookInfos();
@@ -372,7 +344,7 @@ export class FlightListPage
     this.isRotateIcon = !this.isRotateIcon; // 控制图标旋转
     this.doRefresh(true, false);
   }
-  onRotateIconDone(evt) {
+  onRotateIconDone() {
     this.isRotatingIcon = false;
     console.log("onRotateIconDone");
   }
@@ -814,9 +786,6 @@ export class FlightListPage
   private filterFlightSegments(segs: FlightSegmentEntity[]) {
     let result = segs;
     // 根据筛选条件过滤航班信息：
-    const bookInfo = this.flightService
-      .getPassengerBookInfos()
-      .find((it) => it.isFilterPolicy);
     // result = this.flightService.filterPassengerPolicyFlights(
     //   bookInfo,
     //   result
