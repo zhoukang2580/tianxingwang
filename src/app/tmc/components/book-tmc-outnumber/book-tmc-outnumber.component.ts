@@ -93,8 +93,8 @@ export class BookTmcOutnumberComponent
       this.travelNumbers = this.tmcOutNumberInfos
         .filter((it) => it.label && it.label.toLowerCase() == "travelnumber")
         .map((it) => {
-          if(tn){
-            it.value=tn;
+          if (tn) {
+            it.value = tn;
           }
           return it;
         });
@@ -129,7 +129,7 @@ export class BookTmcOutnumberComponent
           info.loadTravelUrlErrorMsg =
             result[info.staffNumber] && result[info.staffNumber].Message;
           info.travelUrlInfos =
-            result[info.staffNumber] && result[info.staffNumber].Data;
+            (result[info.staffNumber] && result[info.staffNumber].Data) || [];
           if (info.travelUrlInfos.length) {
             info.loadTravelUrlErrorMsg = info.loadTravelUrlErrorMsg || "请选择";
           }
