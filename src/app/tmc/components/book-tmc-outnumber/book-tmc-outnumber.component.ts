@@ -122,7 +122,7 @@ export class BookTmcOutnumberComponent
             name: arg.label,
           },
         ],
-        true
+        false
       );
       if (result) {
         tmcOutNumberInfos.forEach((info) => {
