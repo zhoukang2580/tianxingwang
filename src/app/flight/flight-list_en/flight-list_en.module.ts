@@ -31,7 +31,6 @@ const routes: Routes = [
     FlightComponentsModule,
     TmcComponentsModule,
     AppDirectivesModule,
-    
   ],
   declarations: [FlightListEnPage],
 })
