@@ -14,8 +14,9 @@ import { Router } from "@angular/router";
 export class LangService {
   private subscription = Subscription.EMPTY;
   private intervalId: any;
-  private timer = 1000;
   private html: any;
+  private timer = 1000;
+  private len = 1500;
   private identity: IdentityEntity;
   private isTranslate = false;
   constructor(
@@ -166,7 +167,7 @@ export class LangService {
               continue;
             }
           }
-          if (tags.map((it) => it.textContent).join("").length < 2000) {
+          if (tags.map((it) => it.textContent).join("").length <= this.len) {
             this.getTags(el as Element, tags);
           } else {
             break;
@@ -176,7 +177,7 @@ export class LangService {
         if (parent.nodeType == Node.TEXT_NODE) {
           // 文本节点
           if (parent.textContent.match(/[\u4E00-\u9FA5]/g)) {
-            if (tags.map((it) => it.textContent).join("").length < 2000) {
+            if (tags.map((it) => it.textContent).join("").length <=this.len) {
               tags.push(parent);
             } else {
               return;
