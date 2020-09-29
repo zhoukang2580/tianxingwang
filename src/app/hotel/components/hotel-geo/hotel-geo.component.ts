@@ -8,13 +8,13 @@ import {
   Output,
   OnChanges,
   SimpleChanges,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import {
   HotelQueryEntity,
   IGeoItem,
-  IGeoTab
+  IGeoTab,
 } from "src/app/hotel/models/HotelQueryEntity";
 import { Subscription } from "rxjs";
 import { GeoEntity } from "../../models/GeoEntity";
@@ -23,7 +23,7 @@ import { HotelService } from "../../hotel.service";
 @Component({
   selector: "app-hotel-geo",
   templateUrl: "./hotel-geo.component.html",
-  styleUrls: ["./hotel-geo.component.scss"]
+  styleUrls: ["./hotel-geo.component.scss"],
 })
 export class HotelGeoComponent implements OnInit, OnDestroy {
   private conditionModel: HotelConditionModel;
@@ -46,7 +46,7 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.subscription = this.hotelService
       .getHotelQuerySource()
-      .subscribe(query => {
+      .subscribe((query) => {
         this.hotelQuery = query;
         // console.log("geo filter ", this.hotelQuery);
         // this.conditionModel = await this.hotelService.getConditions();
@@ -54,8 +54,8 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
           this.resetTabs();
         } else {
           this.onTabClick(
-            this.hotelQuery.locationAreas.find(it => it.active) ||
-            this.hotelQuery.locationAreas[0]
+            this.hotelQuery.locationAreas.find((it) => it.active) ||
+              this.hotelQuery.locationAreas[0]
           );
         }
       });
@@ -64,18 +64,19 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     if (!item) {
       return;
     }
-    const tab: IGeoTab<IGeoItem<
-      GeoEntity
-    >> = this.hotelQuery.locationAreas.find(it => it.active);
+    const tab: IGeoTab<IGeoItem<GeoEntity>> =
+      this.hotelQuery &&
+      this.hotelQuery.locationAreas &&
+      this.hotelQuery.locationAreas.find((it) => it.active);
     this.hotelQuery.Geos = [];
-    this.hotelQuery.locationAreas = this.hotelQuery.locationAreas.map(t => {
+    this.hotelQuery.locationAreas = this.hotelQuery.locationAreas.map((t) => {
       if (!t.active) {
         t.hasFilterItem = false;
         if (t.items) {
-          t.items = t.items.map(m => {
+          t.items = t.items.map((m) => {
             m.isSelected = false;
             if (m.items) {
-              m.items = m.items.map(s => {
+              m.items = m.items.map((s) => {
                 s.isSelected = false;
                 return s;
               });
@@ -89,17 +90,17 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     if (item.level == "second") {
       this.thirdItems = item.items;
     }
-    if (items.filter(it => it.isSelected).length > 2) {
+    if (items.filter((it) => it.isSelected).length > 2) {
       AppHelper.toast(`${item.label}不能超过3个`, 1000, "middle");
       item.isSelected = false;
       return;
     }
     if (!item.isMulti) {
       if (items) {
-        items.forEach(it => {
+        items.forEach((it) => {
           it.isSelected = it.id == item.id;
           if (it.items) {
-            it.items.forEach(k => {
+            it.items.forEach((k) => {
               k.isSelected = k.id == item.id;
             });
           }
@@ -110,10 +111,10 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     }
     if (tab) {
       if (this.thirdItems && this.thirdItems.length) {
-        tab.hasFilterItem = this.thirdItems.some(it => it.isSelected);
+        tab.hasFilterItem = this.thirdItems.some((it) => it.isSelected);
       } else {
         if (tab.items) {
-          tab.hasFilterItem = tab.items.some(it => it.isSelected);
+          tab.hasFilterItem = tab.items.some((it) => it.isSelected);
         }
       }
       // console.log(tab.label,tab.items.find(it=>it.isSelected).label,this.thirdItems.find(it=>it.isSelected).label,tab.hasFilterItem);
@@ -125,21 +126,21 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
       const thirdList = document.querySelector(".third-list");
       const normalList = document.querySelector(".normal-list");
       const sec =
-        this.secondaryItems && this.secondaryItems.find(it => it.isSelected);
+        this.secondaryItems && this.secondaryItems.find((it) => it.isSelected);
       this.scrollEleToView(
         secondList,
         sec && sec.id,
         this.secondaryItems && this.secondaryItems.length
       );
       const third =
-        this.thirdItems && this.thirdItems.find(it => it.isSelected);
+        this.thirdItems && this.thirdItems.find((it) => it.isSelected);
       this.scrollEleToView(
         thirdList,
         third && third.id,
         this.thirdItems && this.thirdItems.length
       );
       const nor =
-        this.normalItems && this.normalItems.find(it => it.isSelected);
+        this.normalItems && this.normalItems.find((it) => it.isSelected);
       this.scrollEleToView(
         normalList,
         nor && nor.id,
@@ -162,7 +163,7 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
         if (ele && rect) {
           container.scrollBy({
             top: rect.top - h / 2,
-            behavior: scrollItemsNum > 50 ? "auto" : "smooth"
+            behavior: scrollItemsNum > 50 ? "auto" : "smooth",
           });
         } else {
           container.scrollTop = 0;
@@ -174,13 +175,13 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     if (!this.hotelQuery || !tab || !this.hotelQuery.locationAreas) {
       return;
     }
-    this.hotelQuery.locationAreas = this.hotelQuery.locationAreas.map(t => {
+    this.hotelQuery.locationAreas = this.hotelQuery.locationAreas.map((t) => {
       t.active = t.tag == tab.tag || t.id == tab.id;
       return t;
     });
     this.secondaryItems = tab.items || [];
-    if (this.secondaryItems.some(it => it.items && it.items.length > 0)) {
-      const s = this.secondaryItems.find(sec => sec.isSelected);
+    if (this.secondaryItems.some((it) => it.items && it.items.length > 0)) {
+      const s = this.secondaryItems.find((sec) => sec.isSelected);
       if (!s) {
         this.secondaryItems[0].isSelected = true;
         this.thirdItems = this.secondaryItems[0].items;
@@ -203,7 +204,7 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     this.initMetros();
     this.initOtherTabs();
     const tab: IGeoTab<IGeoItem<GeoEntity>> =
-      this.hotelQuery.locationAreas.find(it => it.active) ||
+      this.hotelQuery.locationAreas.find((it) => it.active) ||
       this.hotelQuery.locationAreas[0];
     this.onTabClick(tab);
     this.hotelService.setHotelQuerySource(this.hotelQuery);
@@ -217,7 +218,7 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     await this.resetTabs();
   }
   onFilter() {
-    this.modalCtrl.getTop().then(t => {
+    this.modalCtrl.getTop().then((t) => {
       if (t) {
         t.dismiss();
       }
@@ -225,11 +226,16 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     this.geoFilterChange.emit();
   }
   private initMetros() {
-    if (!this.conditionModel || !this.conditionModel.Geos || !this.hotelQuery || !this.hotelQuery.locationAreas) {
+    if (
+      !this.conditionModel ||
+      !this.conditionModel.Geos ||
+      !this.hotelQuery ||
+      !this.hotelQuery.locationAreas
+    ) {
       return;
     }
     const metros = this.conditionModel.Geos.filter(
-      it => it.Tag == "Metro"
+      (it) => it.Tag == "Metro"
     ).reduce((lines, metro) => {
       const line = metro.VariablesJsonObj && metro.VariablesJsonObj["SubName"];
       if (line) {
@@ -246,22 +252,22 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
       id: "metro",
       label: "地铁",
       tag: "Metro",
-      items: mtros.map(line => {
+      items: mtros.map((line) => {
         return {
           id: line,
           label: line,
           level: "second",
           tag: metros[line][0].Tag,
-          items: metros[line].map(geo => {
+          items: metros[line].map((geo) => {
             return {
               label: geo.Name,
               id: geo.Id,
               tag: geo.Tag,
-              level: "third"
+              level: "third",
             } as IGeoItem<GeoEntity>;
-          })
+          }),
         } as IGeoItem<GeoEntity>;
-      })
+      }),
     };
     this.hotelQuery.locationAreas.push(metroTab);
   }
@@ -270,23 +276,23 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
       return;
     }
     this.conditionModel.Geos.filter(
-      it =>
+      (it) =>
         it.Tag != "RailwayStation" &&
         it.Tag != "CarStation" &&
         it.Tag != "Airport" &&
         it.Tag != "Metro" &&
         it.Tag != "Group" &&
         it.Tag != "Company"
-    ).forEach(geo => {
+    ).forEach((geo) => {
       this.switchCase(geo);
     });
     if (this.conditionModel.Tmc && this.conditionModel.Tmc.GroupCompany) {
       this.conditionModel.Geos.filter(
-        it =>
+        (it) =>
           (it.Tag == "Group" &&
             it.Number == this.conditionModel.Tmc.GroupCompany.Id) ||
           (it.Tag == "Company" && it.Number == this.conditionModel.Tmc.Id)
-      ).forEach(geo => this.switchCase(geo));
+      ).forEach((geo) => this.switchCase(geo));
     }
   }
   private switchCase(geo: GeoEntity) {
@@ -347,17 +353,19 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
     }
   }
   private processCase(label: string, geo: GeoEntity, tags?: string[]) {
-    if(!this.hotelQuery){return};
+    if (!this.hotelQuery) {
+      return;
+    }
     const geos = (this.hotelQuery && this.hotelQuery.Geos) || [];
     let tab = this.hotelQuery.locationAreas.find(
-      t => t.tag == geo.Tag || (tags && tags.some(tg => tg == t.tag))
+      (t) => t.tag == geo.Tag || (tags && tags.some((tg) => tg == t.tag))
     );
     if (!tab) {
       tab = {
         label: label,
         id: geo.Id,
         tag: geo.Tag as any,
-        items: []
+        items: [],
       };
       this.hotelQuery.locationAreas.push(tab);
     } else {
@@ -366,11 +374,11 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
         id: geo.Id,
         level: "normal",
         tag: geo.Tag,
-        isSelected: !!geos.find(gid => gid == geo.Id)
+        isSelected: !!geos.find((gid) => gid == geo.Id),
       });
     }
     if (tab.isMulti) {
-      tab.active = tab.items.some(it => it.isSelected);
+      tab.active = tab.items.some((it) => it.isSelected);
     }
   }
 }

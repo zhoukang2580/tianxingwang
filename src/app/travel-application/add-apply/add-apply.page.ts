@@ -560,8 +560,13 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       });
     } catch (e) {
       console.error(e);
-
-      AppHelper.alert(e);
+      let msg = e;
+      if (e.toLowerCase().includes("flownotexist")) {
+        msg = "未创建审批流程";
+      }
+      if (msg) {
+        AppHelper.alert(msg);
+      }
     }
   }
 
