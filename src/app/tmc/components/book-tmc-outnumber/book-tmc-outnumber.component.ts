@@ -132,6 +132,9 @@ export class BookTmcOutnumberComponent
             (result[info.staffNumber] && result[info.staffNumber].Data) || [];
           if (info.travelUrlInfos.length) {
             info.loadTravelUrlErrorMsg = info.loadTravelUrlErrorMsg || "请选择";
+            if (info.loadTravelUrlErrorMsg.includes("failure response")) {
+              info.loadTravelUrlErrorMsg = "暂无数据";
+            }
           }
           info.isLoadingNumber = false;
         });
