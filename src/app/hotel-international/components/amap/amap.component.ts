@@ -55,7 +55,7 @@ export class AmapComponent implements OnInit, OnChanges, AfterViewInit {
         this.addMarker(lnglat);
       }, 200);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
   private addMarker(lnglat: any) {
@@ -73,8 +73,8 @@ export class AmapComponent implements OnInit, OnChanges, AfterViewInit {
         ".amap-marker .amap-icon img"
       );
       if (img) {
-        img.style.width = "2em";
-        img.style.height = "2.5em";
+        img.style.width = "1.5em";
+        img.style.height = "1.5em";
       }
     }, 100);
   }
