@@ -10,9 +10,7 @@ import { ApiService } from "src/app/services/api/api.service";
 import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.component";
 import { SearchFlightModel } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
-import {
-  StaffService,
-} from "../../hr/staff.service";
+import { StaffService } from "../../hr/staff.service";
 import { AppHelper } from "src/app/appHelper";
 import { animate } from "@angular/animations";
 import { trigger, state, style, transition } from "@angular/animations";
@@ -22,12 +20,7 @@ import {
   ModalController,
   PopoverController,
 } from "@ionic/angular";
-import {
-  Observable,
-  Subscription,
-  Subject,
-  BehaviorSubject,
-} from "rxjs";
+import { Observable, Subscription, Subject, BehaviorSubject } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   Component,
@@ -40,10 +33,7 @@ import {
   ViewChildren,
   EventEmitter,
 } from "@angular/core";
-import {
-  delay,
-  map,
-} from "rxjs/operators";
+import { delay, map } from "rxjs/operators";
 import * as moment from "moment";
 import { CalendarService } from "../../tmc/calendar.service";
 import { DayModel } from "../../tmc/models/DayModel";
@@ -57,9 +47,7 @@ import { FilterConditionModel } from "../models/flight/advanced-search-cond/Filt
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
-import {
-  CanComponentDeactivate,
-} from "src/app/guards/candeactivate.guard";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -107,7 +95,7 @@ export class FlightListPage
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
   isRotateIcon = false;
-  @ViewChild("cnt",{static:true}) public cnt: IonContent;
+  @ViewChild("cnt", { static: true }) public cnt: IonContent;
   @ViewChildren("fli") public liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmFlightJourneyList: FlightJourneyEntity[];
@@ -451,7 +439,7 @@ export class FlightListPage
         if (!this.isStillOnCurrentPage()) {
           return;
         }
-        if(this.cnt && typeof this.cnt.scrollToTop=='function'){
+        if (this.cnt && typeof this.cnt.scrollToTop == "function") {
           this.cnt.scrollToTop(100);
         }
       }

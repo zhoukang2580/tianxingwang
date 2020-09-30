@@ -43,6 +43,7 @@ import { ConfigEntity } from "src/app/services/config/config.entity";
 import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
 import { LoginService } from "src/app/services/login/login.service";
 import { LangService } from "src/app/tmc/lang.service";
+import { CONFIG } from "src/app/config";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home.page.html",
@@ -80,7 +81,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     };
   };
   isShowRentalCar = !AppHelper.isWechatMini();
-  isShowoverseaHotel = environment.mockProBuild || !environment.production;
+  isShowoverseaFlight = CONFIG.mockProBuild;
   banners: { ImageUrl: string; Title: string; Id: string }[];
   config: ConfigEntity;
   constructor(

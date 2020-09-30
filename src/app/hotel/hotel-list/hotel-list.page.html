@@ -4,10 +4,9 @@
       <app-back-button defaultHref="" [backFn]='back.bind(this)' customeBack='true'></app-back-button>
       <div class="query">
         <app-date-city [langOpt]='{
-          checkin: "CheckIn",
-          checkout: "Checkout",
-          night: "Nights",
-          placeholder: "keywords"
+          checkin: "住",
+          checkout: "离",
+          night: "晚"
         }' [checkInDate]='searchHotelModel?.checkInDate' [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity' (cityClick)='onCityClick()'
           (dateChange)='onDateChange()' (searchBarClick)='onSearchByText()' [keywords]='searchHotelModel?.searchText?.Text||"地名/酒店/关键字"'>
         </app-date-city>
