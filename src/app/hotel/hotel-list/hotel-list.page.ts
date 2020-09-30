@@ -204,7 +204,7 @@ export class HotelListPage
       ...query,
     };
     this.hotelDayPrices = [];
-    this.doRefresh(true);
+    this.doRefresh(this.checkDestinationChanged());
   }
   doRefresh(isKeepQueryCondition = false) {
     this.hideQueryPannel();
