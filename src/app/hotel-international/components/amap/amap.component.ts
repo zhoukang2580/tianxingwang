@@ -38,6 +38,15 @@ export class AmapComponent implements OnInit, OnChanges, AfterViewInit {
   }
   ngAfterViewInit() {
     setTimeout(() => {
+      if (
+        this.el.nativeElement.clientHeight &&
+        this.el.nativeElement.clientWidth
+      ) {
+        this.container.nativeElement.style.width =
+          this.el.nativeElement.clientWidth + "px";
+        this.container.nativeElement.style.height =
+          this.el.nativeElement.clientHeight + "px";
+      }
       this.initMap();
       this.moveToCenter();
     }, 200);
@@ -73,8 +82,8 @@ export class AmapComponent implements OnInit, OnChanges, AfterViewInit {
         ".amap-marker .amap-icon img"
       );
       if (img) {
-        img.style.width = "1.5em";
-        img.style.height = "1.5em";
+        img.style.width = "1.7em";
+        img.style.height = "2em";
       }
     }, 100);
   }
