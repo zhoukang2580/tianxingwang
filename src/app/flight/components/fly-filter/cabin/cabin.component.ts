@@ -29,13 +29,13 @@ export class CabinComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() filterCondition: FilterConditionModel;
   @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   isSelf = true;
-  selectItem: any='unlimit';
+  selectItem: any = "unlimit";
   constructor(private staffService: StaffService) {
     this.filterConditionChange = new EventEmitter();
   }
 
   onReset() {
-    this.selectItem = null;
+    this.selectItem = "unlimit";
     if (this.filterCondition && this.filterCondition.cabins) {
       this.filterCondition.cabins = this.filterCondition.cabins.map((c) => {
         c.isChecked = false;
@@ -58,11 +58,11 @@ export class CabinComponent implements OnInit, OnDestroy, AfterViewInit {
           it.isChecked = it.id == c.id;
         });
       }
-    } else {
       this.selectItem = this.filterCondition.cabins.filter((it) => it.isChecked)
         .length
-        ? ""
+        ? c
         : "unlimit";
+    } else {
     }
     this.search();
   }

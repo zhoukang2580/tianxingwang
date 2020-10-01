@@ -95,6 +95,7 @@ export class FlightListPage
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
   isRotateIcon = false;
+  isOpenFilter = false;
   @ViewChild("cnt", { static: true }) public cnt: IonContent;
   @ViewChildren("fli") public liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
@@ -667,15 +668,30 @@ export class FlightListPage
     }
     console.log("initFilterConditionInfo", this.filterCondition);
   }
+  onCloseFilter() {
+    this.isOpenFilter = false;
+    this.modalCtrl.getTop().then((t) => {
+      if (t) {
+        t.dismiss();
+      }
+    });
+  }
   async onFilter() {
     this.activeTab = "filter";
     const m = await this.modalCtrl.create({
       component: FlyFilterComponent,
+      cssClass: "offset-top-40 top-radius-8",
+      showBackdrop: false,
+      swipeToClose: true,
       componentProps: {
         filterCondition: this.filterCondition,
       },
     });
     m.present();
+    this.isOpenFilter = true;
+    m.onWillDismiss().then(() => {
+      this.isOpenFilter = false;
+    });
     const res = await m.onDidDismiss();
     if (res && res.data) {
       const {

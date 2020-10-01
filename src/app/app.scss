@@ -1,7 +1,7 @@
 ion-row {
   align-items: center;
 }
-.select-text{
+.select-text {
   user-select: text;
   -webkit-user-select: text;
 }
@@ -281,4 +281,24 @@ ion-input[ValidateName] {
   display: flex;
   flex-flow: column;
   align-items: flex-end;
+}
+.backdrop {
+  background: rgba(var(--ion-color-dark-rgb), 0.5);
+  position: absolute;
+  z-index: 99;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+ion-modal.offset-top-40 {
+  top: 40%;
+  &.top-radius-8 {
+    border-top-right-radius: 0.8rem;
+    border-top-left-radius: 0.8rem;
+  }
+  &.top-radius-5 {
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+  }
 }

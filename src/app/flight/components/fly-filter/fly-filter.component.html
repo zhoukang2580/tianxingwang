@@ -1,22 +1,10 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button defaultHref="" [backFn]="onCancel.bind(this)"></app-back-button>
-    </ion-buttons>
-    <ion-title>过滤航班</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-
-<ion-content class='ion-margin-top'>
-  <ion-list lines='none' class='ion-no-margin'>
-    <ion-item>
-      <ion-label>仅直达</ion-label>
-      <ion-toggle [(ngModel)]="filterCondition.onlyDirect"></ion-toggle>
-    </ion-item>
-  </ion-list>
+<div class="non-stop">
+  <ion-toggle mode='md' [(ngModel)]="filterCondition.onlyDirect" class="ion-margin-end"></ion-toggle>
+  <ion-label>仅直达</ion-label>
+</div>
+<ion-content class="filter-container">
   <section class="search-cond">
-    <article class="left" style="margin-top: 1em">
+    <article class="left">
       <div class='tab' [class.active]='tab===1' [class.user-op]='userOps?.timespanOp' (click)='onTabClick(1)'>
         <span>起飞时段</span>
       </div>
@@ -36,39 +24,28 @@
         <span>舱位</span>
       </div>
     </article>
-    <ion-list style='flex:1'>
-      <article class="right">
+    <article class="right">
+      <ion-list>
         <app-take-off-timespan [class.hidden]='tab!==1' [(filterCondition)]='filterCondition'></app-take-off-timespan>
         <app-aircompany [class.hidden]='tab!==2' [(filterCondition)]='filterCondition'>
         </app-aircompany>
-        <app-airports #fromAirports [class.hidden]='tab!==3' [isFromAirports]="true"
-          [(filterCondition)]='filterCondition'>
+        <app-airports #fromAirports [class.hidden]='tab!==3' [isFromAirports]="true" [(filterCondition)]='filterCondition'>
         </app-airports>
-        <app-airports #toAirports [isFromAirports]="false" [(filterCondition)]='filterCondition'
-          [class.hidden]='tab!==6'>
+        <app-airports #toAirports [isFromAirports]="false" [(filterCondition)]='filterCondition' [class.hidden]='tab!==6'>
         </app-airports>
         <app-airtype [class.hidden]='tab!==4' [(filterCondition)]='filterCondition'></app-airtype>
         <app-cabin [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin>
-      </article>
-    </ion-list>
+      </ion-list>
+    </article>
   </section>
 </ion-content>
-<ion-footer>
-  <ion-row class='ion-margin-top ion-text-center'>
-    <ion-col>
-      <ion-button color='dark' fill='outline' size='small' (click)='onCancel()'>
-        取消
-      </ion-button>
-    </ion-col>
-    <ion-col>
-      <ion-button color='dark' fill='outline' size='small' (click)='onReset()'>
-        重置
-      </ion-button>
-    </ion-col>
-    <ion-col>
-      <ion-button color='secondary' size='small' fill='outline' type='submit' (click)='onSearch()'>
-        确定
-      </ion-button>
-    </ion-col>
-  </ion-row>
+<ion-footer class="ion-padding-horizontal">
+  <ion-buttons>
+    <ion-button fill='outline' expand='block' color='dark' (click)='onReset()'>
+      重置
+    </ion-button>
+    <ion-button fill='solid' expand='block' color='secondary' (click)='onSearch()'>
+      确定
+    </ion-button>
+  </ion-buttons>
 </ion-footer>
