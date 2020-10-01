@@ -4,7 +4,7 @@
       <ion-label>不限</ion-label>
       <ion-radio value='unlimit'></ion-radio>
     </ion-item>
-    <ion-item *ngFor="let c of filterCondition?. cabins">
+    <ion-item *ngFor="let c of filterCondition?. cabins" class="cabin">
       <ion-label>{{c?.label}}</ion-label>
       <ion-radio [value]="c" slot="end"></ion-radio>
     </ion-item>

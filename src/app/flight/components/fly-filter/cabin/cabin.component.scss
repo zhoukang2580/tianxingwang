@@ -1,3 +1,7 @@
-ion-radio,ion-checkbox{
-    --ion-color-primary:var(--ion-color-secondary);
-  }
+ion-radio,
+ion-checkbox {
+  --ion-color-primary: var(--ion-color-secondary);
+}
+.cabin {
+  --border-color: rgba(125, 125, 125, 0.1);
+}

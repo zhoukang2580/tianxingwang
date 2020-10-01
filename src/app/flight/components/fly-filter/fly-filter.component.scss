@@ -60,9 +60,9 @@ ion-toolbar {
       }
     }
 
-    .tab + .tab {
-      border-top: 0.8px solid rgba(var(--ion-color-dark-rgb), 0.12);
-    }
+    // .tab + .tab {
+    //   border-top: 0.8px solid rgba(var(--ion-color-dark-rgb), 0.12);
+    // }
   }
   .left,
   .right {
