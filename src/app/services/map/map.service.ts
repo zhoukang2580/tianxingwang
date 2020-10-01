@@ -19,7 +19,6 @@ export class MapService {
   private st = Date.now();
   private querys: any;
   private amap: any;
-  private amapContainer: HTMLElement;
   constructor(private apiService: ApiService) {
     this.querys = AppHelper.getQueryParamers();
     console.log("MapService,tree", this.querys);
@@ -88,7 +87,7 @@ export class MapService {
     };
     setTimeout(() => {
       try {
-        const url = `https://webapi.amap.com/maps?v=2.0&key=${GaodeMapKey}&callback=onAmapLoad`;
+        const url = `https://webapi.amap.com/maps?v=1.4.15&key=${GaodeMapKey}&callback=onAmapLoad`;
         const jsapi = document.createElement("script");
         jsapi.charset = "utf-8";
         jsapi.src = url;
@@ -154,8 +153,8 @@ export class MapService {
       map = new window["AMap"].Map(el, {
         zoom, // 级别
         resizeEnable: true,
-        lang: "zh_en",
-        center: [lnglat.lng, lnglat.lat], // 中心点坐标
+        lang: "en",
+        center: new AMap.LngLat(lnglat.lng, lnglat.lat), // 中心点坐标
         // viewMode: "3D" // 使用3D视图
       });
       // AMap.plugin(["AMap.ToolBar"], () => {
