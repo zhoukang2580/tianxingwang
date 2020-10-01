@@ -219,6 +219,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       component: TrainscheduleComponent,
       componentProps: {
         schedules: train.Schedules,
+        train,
         vmFromCity: this.vmFromCity,
         vmToCity: this.vmToCity,
       },
@@ -440,7 +441,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
         currentViewtTainItem
       );
     }
-    if(showResult){
+    if (showResult) {
       await this.showSelectedInfos();
     }
   }

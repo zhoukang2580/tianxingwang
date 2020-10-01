@@ -1,31 +1,39 @@
 <ion-header class='ion-text-center'>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button [backFn]='back.bind(this)' >
+      <app-back-button [backFn]='back.bind(this)'>
       </app-back-button>
     </ion-buttons>
-    <ion-title class='ion-text-center' color='secondary'>
-      <ion-text>{{vmFromCity?.Nickname}}</ion-text>
-      <i class='icon icon-search-train'></i>
-      <ion-text>{{ vmToCity?.Nickname}}</ion-text>
+    <ion-title class='ion-text-center'>
+      <ng-container *ngIf='train?.TrainCode'>{{train?.TrainCode}}时刻表</ng-container>
     </ion-title>
     <ion-buttons slot='end' class='collapse'>
-      <app-back-button [backFn]='back.bind(this)' >
+      <app-back-button [backFn]='back.bind(this)'>
       </app-back-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-grid>
-    <ion-row *ngFor='let item of schedules;let i=index;' class='ion-text-center'
-      [class.time-color]='getTimeColor(item.ArriveTime)||getTimeColor(item.StartTime)'>
-      <ion-col size='1' class='ion-text-start'>
-        <div class='station-no'>{{item.StationNo}}</div>
-      </ion-col>
-      <ion-col class='ion-text-start'>{{item.StationName}}</ion-col>
-      <ion-col>{{item.ArriveTime}}</ion-col>
-      <ion-col>{{item.StartTime}}</ion-col>
-      <ion-col>{{item.StayTime}}</ion-col>
-    </ion-row>
-  </ion-grid>
+  <ion-list>
+    <ion-grid>
+      <ion-row class="line-h sticky title">
+        <ion-col size='2'>序列</ion-col>
+        <ion-col>车站</ion-col>
+        <ion-col>到达</ion-col>
+        <ion-col>出发</ion-col>
+        <ion-col>停留</ion-col>
+      </ion-row>
+      <ion-row *ngFor='let item of schedules;let i=index;let odd=odd;let first=first;let last=last;' class='ion-text-center line-h' [class.active]='odd'>
+        <ion-col size='2'>
+          {{item.StationNo}}
+        </ion-col>
+        <ion-col>
+          <ion-text color='{{first||last?"secondary":""}}'>{{item.StationName}}</ion-text>
+        </ion-col>
+        <ion-col>{{item.ArriveTime}}</ion-col>
+        <ion-col>{{item.StartTime}}</ion-col>
+        <ion-col>{{item.StayTime}}</ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-list>
 </ion-content>

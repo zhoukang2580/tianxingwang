@@ -1,17 +1,3 @@
-.station-no {
-  width: 1.5em;
-  height: 1.5em;
-  min-width: 1.5em;
-  font-size: 0.6rem;
-  min-height: 1.5em;
-  border: 1px solid var(--ion-color-medium);
-  border-radius: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: content-box;
-  padding: 0.005em;
-}
 .time-color {
   color: var(--ion-color-medium);
 }
@@ -21,9 +7,41 @@ ion-col {
 ion-content {
   font-size: 0.8rem;
 }
-.collapse{
+.collapse {
   visibility: collapse;
 }
-.icon-search-train{
-  margin: 0 .2em;
+.icon-search-train {
+  margin: 0 0.2em;
+}
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: var(--ion-color-light);
+}
+
+.line-h {
+  text-align: center;
+  ion-col {
+    font-size: 0.75rem;
+    text-align: center;
+    opacity: 1;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+  }
+  height: 2.12rem;
+  &.active {
+    background: #dcebff;
+  }
+}
+.title {
+  background-color: var(--ion-color-secondary);
+  ion-col,
+  & {
+    color: var(--ion-color-light);
+  }
+}
+ion-list {
+  height: 100%;
 }
