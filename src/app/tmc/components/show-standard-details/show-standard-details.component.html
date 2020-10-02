@@ -1,16 +1,3 @@
-<!-- <ion-header>
-  <ion-toolbar>
-    <ion-title>{{title}}</ion-title>
-  </ion-toolbar>
-</ion-header>
-<ion-content class='ion-padding-end desc'>
-  <ion-list>
-    <ol>
-      <li *ngFor='let desc of details'>{{desc}}</li>
-    </ol>
-  </ion-list>
-</ion-content>
-<ion-button expand='block' class="ion-margin-horizontal ion-margin-bottom" color='secondary' (click)='back.bind(this)'>确定</ion-button> -->
 <div class="title">
   {{title}}
 </div>
@@ -21,6 +8,6 @@
     </ol>
   </ion-list>
 </ion-content>
-<div class="footer">
-  <ion-button  expand='block' class="ion-margin-horizontal ion-margin-bottom" color='secondary' (click)='back()'>确定</ion-button>
+<div class="footer"  (click)='back()'>
+  <ion-button  expand='block' class="ion-margin-horizontal ion-margin-bottom" color='secondary'>确定</ion-button>
 </div>
