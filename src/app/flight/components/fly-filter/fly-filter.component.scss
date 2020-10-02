@@ -37,7 +37,6 @@ ion-toolbar {
     height: 300px;
     overflow: auto;
     padding-bottom: 1em;
-    background: #f5f5f5;
     .tab {
       position: relative;
       &.user-op::after {
@@ -66,15 +65,14 @@ ion-toolbar {
   }
   .left,
   .right {
+    background: #f5f5f5;
     &::-webkit-scrollbar {
       display: none;
     }
     -webkit-overflow-scrolling: touch;
   }
   .right {
-    ion-list {
-      height: 100%;
-    }
+
     flex: 1;
     position: sticky;
     overflow: auto;

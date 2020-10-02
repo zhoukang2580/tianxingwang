@@ -117,7 +117,7 @@
     </ion-list>
   </ng-container>
 </ion-content>
-<div class="backdrop" *ngIf="isOpenFilter" (click)='onCloseFilter()'></div>
+<div class="backdrop" [class.show]='isOpenFilter' (click)='onCloseFilter()'></div>
 <ion-footer color="primary">
   <ion-toolbar>
     <div class="tabs">

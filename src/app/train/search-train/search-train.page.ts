@@ -101,6 +101,7 @@ export class SearchTrainPage
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
+      mode:"md",
       componentProps: {
         details: s.Policy.TrainDescription.split("。"),
       },

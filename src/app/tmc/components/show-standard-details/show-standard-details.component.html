@@ -1,13 +1,26 @@
-<ion-header>
-  <ion-toolbar color='secondary'>
-    <ion-buttons slot='start'>
-      <ion-button fill='clear' color='light' (click)='back()'>取消</ion-button>
-    </ion-buttons>
-    <ion-title class='ion-text-center'>{{title}}</ion-title>
+<!-- <ion-header>
+  <ion-toolbar>
+    <ion-title>{{title}}</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class='ion-padding-end'>
-  <ol>
-    <li *ngFor='let desc of details'>{{desc}}</li>
-  </ol>
+<ion-content class='ion-padding-end desc'>
+  <ion-list>
+    <ol>
+      <li *ngFor='let desc of details'>{{desc}}</li>
+    </ol>
+  </ion-list>
 </ion-content>
+<ion-button expand='block' class="ion-margin-horizontal ion-margin-bottom" color='secondary' (click)='back.bind(this)'>确定</ion-button> -->
+<div class="title">
+  {{title}}
+</div>
+<ion-content class='ion-padding-end desc'>
+  <ion-list>
+    <ol>
+      <li *ngFor='let desc of details'>{{desc}}</li>
+    </ol>
+  </ion-list>
+</ion-content>
+<div class="footer">
+  <ion-button  expand='block' class="ion-margin-horizontal ion-margin-bottom" color='secondary' (click)='back.bind(this)'>确定</ion-button>
+</div>
