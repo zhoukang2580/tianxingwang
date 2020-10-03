@@ -492,7 +492,7 @@ export class InternationalHotelDetailPage
             if (this.hotel) {
               this.hotel.stars = this.getStars(this.hotel.Category);
               const name = this.hotel.Name;
-              const enName = this.hotel.HotelSummaries.find(
+              const enName = (this.hotel.HotelSummaries||[]).find(
                 (it) => it.Tag == "Name" && it.Lang == "en"
               );
               this.hotelName = name;
