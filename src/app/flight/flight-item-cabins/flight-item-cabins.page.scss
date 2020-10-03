@@ -57,7 +57,7 @@ ion-content.padding-half-c {
   }
 
   .airport {
-    font-size: 0.44rem;
+    font-size: 0.6rem;
     font-family: PingFang SC;
     font-weight: 400;
     color: #343434;
@@ -65,7 +65,9 @@ ion-content.padding-half-c {
 
   .aircompany {
     padding: 0 1em 1.5em 2.2em;
-    font-size: 0.44rem;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
   }
 
   .aircompany img {
@@ -92,7 +94,7 @@ ion-content.padding-half-c {
 
   .duration,
   .fly {
-    font-size: 0.44rem;
+    font-size: 0.6rem;
     font-family: PingFang SC;
     font-weight: 400;
     color: #343434;
@@ -110,7 +112,7 @@ ion-content.padding-half-c {
     font-size: 0.75rem;
   }
   .remain {
-    font-size: 0.63rem;
+    font-size: 0.65rem;
   }
 }
 .cabin-list-item + .cabin-list-item {

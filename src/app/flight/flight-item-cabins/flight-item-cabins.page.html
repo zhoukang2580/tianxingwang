@@ -112,8 +112,8 @@
                 </ion-text>
               </h3>
               <h3 class="remain">
-                <ng-container *ngIf='cabin.Cabin?.Count<"10"'>余票{{cabin.Cabin?.Count}}张</ng-container>
-                <ion-text color='secondary' class="ion-margin-start">退改签政策详情&nbsp;> </ion-text>
+                <ng-container *ngIf='cabin.Cabin?.Count<"10"'><span class="ion-margin-end">余票{{cabin.Cabin?.Count}}张</span></ng-container>
+                <ion-text color='secondary' >退改签政策详情&nbsp;> </ion-text>
               </h3>
             </ion-label>
           </ion-col>
