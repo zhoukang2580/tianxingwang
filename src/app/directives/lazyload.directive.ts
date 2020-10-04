@@ -29,12 +29,13 @@ export class LazyloadDirective
   @Input() htmlStr;
   @Input() isCanView;
   @Input() isReload = false;
+  @Input() isPreventBgImage = false;
   constructor(
     private imageRecoverService: ImageRecoverService,
     private el: ElementRef<HTMLDivElement | HTMLImageElement>,
     private ngZone: NgZone,
     private lazyLoadService: LazyloadService
-  ) {}
+  ) { }
   ngOnChanges(c: SimpleChanges) {
     // console.log("lazyload changes",this.el.nativeElement,this.lazyLoad);
     this.ngZone.runOutsideAngular(() => {
@@ -62,6 +63,7 @@ export class LazyloadDirective
   private load(src?: string) {
     this.lazyLoadService.load({
       el: this.el.nativeElement,
+      isPreventBgImage: this.isPreventBgImage,
       src: src || this.lazyLoad,
       loadingImage: this.loadingImage,
       defaultImage: this.defaultImage,
@@ -81,7 +83,9 @@ export class LazyloadDirective
     if (this.el.nativeElement instanceof HTMLImageElement) {
       this.el.nativeElement.src = this.loadingImage;
     } else {
-      this.el.nativeElement.style.backgroundImage = `url('${this.loadingImage}')`;
+      if (!this.isPreventBgImage) {
+        this.el.nativeElement.style.backgroundImage = `url('${this.loadingImage}')`;
+      }
     }
   }
   private getNormalizeUrl(url: string) {

@@ -36,7 +36,7 @@ export class AppHelper {
   static _appDomain = !environment.mockProBuild
     ? CONFIG.appDomain.production
     : CONFIG.appDomain.debug;
-  constructor() {}
+  constructor() { }
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -58,7 +58,7 @@ export class AppHelper {
     function onOffline() {
       AppHelper.toast("网络中断，请检查网络设置", 2000, "middle");
     }
-    function onOnline() {}
+    function onOnline() { }
   }
   static showLoading(message: string, duration = 0) {
     return this.loadingController.create({ message, duration }).then((l) => {
@@ -138,10 +138,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-      ? msg.message
-      : msg && (msg.message || msg.Message)
-      ? msg.message || msg.Message
-      : JSON.stringify(msg);
+        ? msg.message
+        : msg && (msg.message || msg.Message)
+          ? msg.message || msg.Message
+          : JSON.stringify(msg);
   }
   private static isHttpFailureMsg(msg: any) {
     if (msg) {
@@ -790,14 +790,14 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static removeQueryParamers(key: string) {
     try {
       if (this._queryParamers[key]) {
         this._queryParamers[key] = null;
       }
-    } catch (ex) {}
+    } catch (ex) { }
   }
   static getQueryParamers() {
     return this._queryParamers as any;
@@ -913,5 +913,74 @@ export class AppHelper {
       day = `0${day}`;
     }
     return `${d.getFullYear()}-${m}-${day}`;
+  }
+
+  static jump(router: Router, url: string, queryParams: any) {
+    if (!url) {
+      return false;
+    }
+    queryParams = queryParams ? queryParams : {};
+    if (url.toLowerCase().startsWith("json://")) {
+      try {
+        const jumpInfo = url.startsWith("json://")
+          ? JSON.parse(url.substring("json://".length))
+          : {};
+        const wechatMiniAppId = jumpInfo.wechatMiniAppId;
+        const wechatMiniPath = jumpInfo.wechatMiniPath;
+        const title = jumpInfo.title;
+        if (AppHelper.isWechatMini() &&
+          jumpInfo.wechatMiniAppId &&
+          jumpInfo.wechatMiniPath
+        ) {
+          url = "/pages/jump/index?appId=" + wechatMiniAppId + "&jumpWechatMiniPath=" + wechatMiniPath + "&title=" + title;
+          if (queryParams && Object.keys(queryParams).length) {
+            url += "&" + Object.keys(queryParams).map(k => `${k}=${queryParams[k] || ""}`).join("&")
+          }
+          const wx = window["wx"];
+          wx.miniProgram.navigateTo({ url: url });
+          return true;
+        }
+        if (jumpInfo.path) {
+          url = "path://" + jumpInfo.path;
+        }
+        else if (jumpInfo.url) {
+          url = jumpInfo.url;
+        }
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
+    }
+
+    if (
+      url.toLowerCase().startsWith("http") ||
+      url.toLowerCase().startsWith("https")
+    ) {
+      queryParams.url = url;
+      queryParams.isOpenInAppBrowser = AppHelper.isApp();
+      queryParams.isHideTitle = true;
+      router.navigate(["open-url"], {
+        queryParams: queryParams,
+      });
+      return true;
+    }
+    if (url.toLowerCase().startsWith("path://")) {
+      url = decodeURIComponent(url).toLowerCase().replace("path://", "");
+      const arr = url.split("?");
+      const hasQuery = arr[1];
+      const path = arr.length ? arr[0] : url;
+      if (hasQuery) {
+        const queries = arr[1].split("&");
+        queries.forEach((it) => {
+          const a = it.split("=");
+          queryParams[a[0]] = a[1];
+        });
+      }
+      router.navigate([path], {
+        queryParams,
+      });
+      return true;
+    }
+    return false;
   }
 }
