@@ -17,6 +17,18 @@ export class TrainListItemComponent implements OnInit {
   @Input() seat: TrainSeatEntity;
   @Input() train: TrainEntity;
   @Input() bookInfo: ITrainInfo;
+  @Input() langOpt: any = {
+    about : "约",
+    time: "时",
+    minute: "分",
+    isStopInfo: "经停信息",
+    has:"有",
+    no: "无",
+    Left: "余票",
+    agreement: "协",
+    agreementDesc: "协议价",
+    reserve:"预订"
+  }
   @Output() scheduleEmit: EventEmitter<any>;
   @Output() bookTicket: EventEmitter<TrainSeatEntity>;
   @Output() seatPicker: EventEmitter<string>;

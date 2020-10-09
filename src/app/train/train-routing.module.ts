@@ -10,6 +10,12 @@ export const routes: Routes = [
       import("./train-list/train-list.module").then(m => m.TrainListPageModule)
   },
   {
+    path: "train-list_en",
+    canActivate: [ConfirmCredentialInfoGuard],
+    loadChildren: () =>
+      import("./train-list_en/train-list_en.module").then(m => m.TrainListEnPageModule)
+  },
+  {
     path: "search-train",
     canActivate: [ConfirmCredentialInfoGuard],
     loadChildren: () =>

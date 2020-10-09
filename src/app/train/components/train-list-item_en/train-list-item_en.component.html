@@ -3,7 +3,7 @@
     <div class='info'>
       <div class='time'>
         <strong>{{train?.StartShortTime}}</strong>
-        <div class='travel-time-name'>{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}
+        <div class='travel-time-name'>{{train?.TravelTimeName}}
         </div>
         <strong [class.has-add-day-tip]='train?.AddOneDayTip'
           [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
@@ -32,8 +32,8 @@
   <ion-row class='seat-outline' color='medium'>
     <ion-col size='4' *ngFor='let seat of getSeats()'>
       <span>{{seat.SeatTypeName}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"":"无票"}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"":"no"}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"no"}}票</span>
     </ion-col>
   </ion-row>
   <ion-grid class='seats' *ngIf='train["isShowSeats"]'>
@@ -62,7 +62,7 @@
   <div class='info'>
     <div class='time'>
       <strong>{{train?.StartShortTime}}</strong>
-      <div class='travel-time-name'>{{langOpt.about}}{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}</div>
+      <div class='travel-time-name'>{{langOpt.about}}{{train?.TravelTimeName}}</div>
       <strong [class.has-add-day-tip]='train?.AddOneDayTip'
         [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
     </div>
@@ -79,10 +79,10 @@
   <div class='seat' *ngIf='seat'>
     <div class='seat-item'>
       <span>{{seat.SeatTypeName}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"张":""}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"z":""}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"no"}}票</span>
     </div>
-    <div class='price' style='margin-left: auto'>￥{{seat.SalesPrice}}</div>
+    <div class='price' style='margin-left: auto'>${{seat.SalesPrice}}</div>
   </div>
   <div *ngIf='!bookInfo?.isExchange&&isShowSelectSeatLocation'>
     <app-seat-picker [selectdSeat]='seat' [selectSeatLocation]='selectSeatLocation' (seatPicker)='onSeatPicker($event)'>

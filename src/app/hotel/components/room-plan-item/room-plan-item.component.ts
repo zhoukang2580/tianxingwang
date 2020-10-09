@@ -31,6 +31,14 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   @Input() room: RoomEntity;
   @Input() hotel: HotelEntity;
   @Input() roomPlan: RoomPlanEntity;
+  @Input() langOpt: {
+    Exceeding: "超标";
+    Book: "预定";
+    NonBook: "不可预订";
+    NowPay: "现付";
+    PayIn: "预付";
+    MonthlyPay: "月结";
+  };
   @Output() bookRoom: EventEmitter<any>;
   HotelBookType = HotelBookType;
   HotelPaymentType = HotelPaymentType;

@@ -8,7 +8,7 @@ import {
   QueryList,
   Output,
   EventEmitter,
-  OnDestroy
+  OnDestroy, Input
 } from "@angular/core";
 import { Subscription } from "rxjs";
 import { QueryTabComponent } from '../query-tab/query-tab.component';
@@ -31,7 +31,12 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     isStarPrice: boolean;
     isLocationAreas: boolean;
   };
-
+  @Input() langOpt: {
+    Recommended: "推荐排序";
+    PriceStar: "星级价格";
+    Filter: "位置区域";
+    Location: "筛选";
+  };
   @Output() activeFilter: EventEmitter<IHotelQueryCompTab>;
   @Output() hotelQueryChange: EventEmitter<any>;
   @ViewChildren(QueryTabComponent)  queryTabComps: QueryList<

@@ -68,6 +68,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "hotel-detail_en",
+    loadChildren: () =>
+      import("./hotel-detail_en/hotel-detail_en.module").then(
+        m => m.HotelDetailEnPageModule
+      )
+  },
+  {
     path: "hotel-book",
     loadChildren: () => import("./book/book.module").then(m => m.BookPageModule)
   },

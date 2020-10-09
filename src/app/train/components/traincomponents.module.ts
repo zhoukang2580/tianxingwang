@@ -14,10 +14,12 @@ import { TrainFilterComponent } from "./train-filter/train-filter.component";
 import { SeatPickerComponent } from './seat-picker/seat-picker.component';
 import { TrainRefundComponent } from './train-refund/train-refund.component';
 import { TrainTicketComponent } from './train-ticket/train-ticket.component';
+import { TrainListItemEnComponent } from './train-list-item_en/train-list-item_en.component';
 
 @NgModule({
   declarations: [
     TrainListItemComponent,
+    TrainListItemEnComponent,
     SelectedTrainSegmentInfoComponent,
     TrainscheduleComponent,
     TimeSpanComponent,
@@ -38,6 +40,7 @@ import { TrainTicketComponent } from './train-ticket/train-ticket.component';
   ],
   exports: [
     TrainListItemComponent,
+    TrainListItemEnComponent,
     TrainscheduleComponent,
     TimeSpanComponent,
     TrainFilterComponent,

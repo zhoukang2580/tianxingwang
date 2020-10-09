@@ -4,8 +4,8 @@
 
       <app-back-button [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
-    <ion-text *ngIf='isShowSelectedInfos'>酒店查询</ion-text>
-    <ion-title *ngIf='!(isShowSelectedInfos)'>酒店查询</ion-title>
+    <ion-text *ngIf='isShowSelectedInfos'>Hotel</ion-text>
+    <ion-title *ngIf='!(isShowSelectedInfos)'>Hotel</ion-title>
     <ion-buttons class='small-font' slot='end'>
       <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
           <ion-text color='light'>{{selectedBookInfosNumber}}</ion-text>
@@ -22,7 +22,7 @@
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
-        policy
+        Policy
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -111,7 +111,7 @@
         </div>
       </div>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" *ngIf='!((canAddPassengers) && selectedPassengers==0)' color="secondary" expand="block">
-        <ion-text>查询酒店</ion-text>
+        <ion-text>Sreach</ion-text>
       </ion-button>
       <ion-button *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
         <ion-text>请添加乘客

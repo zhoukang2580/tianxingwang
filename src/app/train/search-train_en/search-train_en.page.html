@@ -3,8 +3,8 @@
     <ion-buttons slot='start'>
       <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
-    <ion-text *ngIf='isShowSelectedInfos$ |async'>火车票查询</ion-text>
-    <ion-title *ngIf='!(isShowSelectedInfos$ |async)'>火车票查询</ion-title>
+    <ion-text *ngIf='isShowSelectedInfos$ |async'>Train</ion-text>
+    <ion-title *ngIf='!(isShowSelectedInfos$ |async)'>Train</ion-title>
     <ion-buttons class='small-font' slot='end'>
       <ion-button *ngIf='(isShowSelectedInfos$ |async)&&(!searchTrainModel?.isExchange)' fill='clear' color='secondary'
         size='small' (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
@@ -16,7 +16,7 @@
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>policy
+      <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>Policy
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -55,7 +55,7 @@
       </section>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="searchTrain()"
         *ngIf='!(canAddPassengers&& selectedPassengers==0)' color="secondary" expand="block">
-        <ion-text>查询车次</ion-text>
+        <ion-text>Search</ion-text>
       </ion-button>
       <ng-container *ngIf='!searchTrainModel?.isExchange'>
         <ion-button class='ion-margin-top' style='width: 100%' (click)="onSelectPassenger()"

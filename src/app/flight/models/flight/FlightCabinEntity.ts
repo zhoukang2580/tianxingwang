@@ -92,7 +92,7 @@ export class FlightCabinEntity {
   /// <summary>
   /// 数量
   /// </summary>
-  Count: string;
+  Count: any;
   /// <summary>
   /// 变量体
   /// </summary>

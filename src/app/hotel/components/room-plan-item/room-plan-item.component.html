@@ -33,21 +33,21 @@
       <ion-text color='danger' class='avg-price'>￥{{getAvgPrice(roomPlan)}}</ion-text>
       <div class="btn-book" (click)='onBook(roomPlan,color)'>
         <ion-button slot='end' class='ion-no-margin' [class.disabled]='color.includes("danger")' expand='full'>
-          <ion-text color='light'>{{color.includes('danger_full')?"满房":color.includes("disabled")?"超标":"预订"}}
+          <ion-text color='light'>{{color.includes('danger_full')?"满房":color.includes("disabled")?langOpt.Exceeding:langOpt.Book}}
           </ion-text>
         </ion-button>
         <ng-container *ngIf='!isAgent'>
           <ng-container *ngIf='!color.includes("disabled")'>
-            <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>现付</ion-text>
-            <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>预付</ion-text>
-            <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>月结</ion-text>
+            <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>{{langOpt.NowPay}}</ion-text>
+            <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>{{langOpt.PayIn}}</ion-text>
+            <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>{{langOpt.MonthlyPay}}</ion-text>
           </ng-container>
-          <ion-text *ngIf='color.includes("disabled")' color='danger'>不可预订</ion-text>
+          <ion-text *ngIf='color.includes("disabled")' color='danger'>{{langOpt.NonBook}}</ion-text>
         </ng-container>
         <ng-container *ngIf='isAgent'>
-          <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>现付</ion-text>
-          <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>预付</ion-text>
-          <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>月结</ion-text>
+          <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>{{langOpt.NowPay}}</ion-text>
+          <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>{{langOpt.PayIn}}</ion-text>
+          <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>{{langOpt.MonthlyPay}}</ion-text>
         </ng-container>
       </div>
     </div>

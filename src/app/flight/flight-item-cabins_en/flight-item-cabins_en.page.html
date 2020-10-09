@@ -5,7 +5,7 @@
       <app-back-button defaultHref="" (click)='back()'></app-back-button>
     </ion-buttons>
     <ion-text>{{getMothDay()}}</ion-text>
-    <ion-buttons slot='end' *ngIf='(showOpenBtn$|async) as num'>
+    <!-- <ion-buttons slot='end' *ngIf='(showOpenBtn$|async) as num'>
       <ion-button fill='clear' color='secondary' (click)='onShowSelectedInfosPage()' size='small'>
         <ion-text class='xs-font-size'>
           已选行程
@@ -14,7 +14,7 @@
           <ion-text color='light'>{{num}}</ion-text>
         </ion-badge>
       </ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
     <!-- <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' (click)='filterPolicyFlights()' size='small'>
         <ion-text class='xs-font-size'>过滤差标</ion-text>

@@ -26,6 +26,13 @@ const routes: Routes = [
       )
   },
   {
+    path: "selected-flight-bookinfos_en",
+    loadChildren: () =>
+      import("./selected-flight-bookinfos_en/selected-flight-bookinfos_en.module").then(
+        m => m.SelectedFlightBookInfosEnPageModule
+      )
+  },
+  {
     path: "flight-list",
     loadChildren: () =>
       import("./flight-list/flight-list.module").then(
