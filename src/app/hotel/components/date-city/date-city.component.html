@@ -10,12 +10,12 @@
         <span class='date'>{{checkOutDate?.substring("2019-".length)}}</span>
       </div>
     </div>
-    <span class='date'>{{getDays()}}{{langOpt.night}}</span>
+    <!-- <span class='date'>{{getDays()}}{{langOpt.night}}</span> -->
+  </div>
+  <div class='city' (click)='onCityClick()'>
+    <ion-text color='secondary'>{{city?.Name}}</ion-text>
   </div>
   <div class="right">
-    <div class='city' (click)='onCityClick()'>
-      <ion-text color='secondary'>{{city?.Name}}</ion-text>
-    </div>
     <div class='search-bar' (click)='onSearchBarClick()'>
       <ion-icon name="search" mode='ios'></ion-icon>
       <input type="text" placeholder="{{keywords||langOpt.placeholder}}" disabled>

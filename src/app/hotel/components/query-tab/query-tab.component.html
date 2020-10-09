@@ -1,7 +1,9 @@
 <ion-buttons>
-  <ion-button color='{{isActive?"secondary":"dark"}}' size='small' [class.active]='isActive' (click)='onActive()'>
-    {{label}}
-    <ion-icon name="chevron-up-outline" mode='ios' size='small' *ngIf='isActive' color='secondary'></ion-icon>
-    <ion-icon name="chevron-down-outline"  size='small' *ngIf='!isActive' color='dark' mode='ios'></ion-icon>
-  </ion-button>
+  <div class="name"  size='small' [class.active]='isActive' (click)='onActive()'>
+    <ion-text color='{{isActive?"secondary":"dark"}}'>
+      {{label}}
+    </ion-text>
+    <ion-icon name="caret-up-outline" mode='ios' *ngIf='isActive' color='{{isActive?"secondary":"dark"}}'></ion-icon>
+    <ion-icon name="caret-down-outline" *ngIf='!isActive' color='dark' mode='ios'></ion-icon>
+  </div>
 </ion-buttons>

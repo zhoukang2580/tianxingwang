@@ -9,7 +9,7 @@
   max-width: 5em;
   overflow: hidden;
   white-space: nowrap;
-  font-size: 0.8rem;
+  font-size: 0.6rem;
   margin-left: 0.5em;
 }
 .nights {
@@ -29,7 +29,7 @@
 .date {
   color: var(--ion-color-secondary);
   font-size: 0.6rem;
-  margin:0 0.5em;
+  margin: 0 0.5em;
 }
 .right {
   font-size: 0.8rem;
@@ -42,10 +42,15 @@ input {
   background: transparent;
 }
 .search-bar {
-  margin-left: auto;
-  margin-right: 1em;
+  margin-left: 0.5em;
+  flex: 1;
   border-radius: 0.3em;
-  border: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
+  height: 1.88rem;
+  background: #f6f6f6;
+  border-radius: 0.2rem;
+  color: #9a9a9a;
+  text-align: center;
+  justify-content: center;
   ion-icon {
     font-size: 1rem;
     margin-left: 0.3em;
