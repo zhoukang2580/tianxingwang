@@ -21,7 +21,8 @@ import {
 } from "@ionic-native/in-app-browser/ngx";
 import { Clipboard } from "@ionic-native/clipboard/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
-
+import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
+import { Platform } from '@ionic/angular';
 @Component({
   selector: "app-open-rental-car",
   templateUrl: "./open-rental-car.page.html",
@@ -29,7 +30,9 @@ import { WechatHelper } from "src/app/wechatHelper";
 })
 export class OpenRentalCarPage implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
+  private safariSubscription = Subscription.EMPTY;
   private shareWebUrl$ = new BehaviorSubject(null);
+  private browser: InAppBrowserObject;
   isApp = AppHelper.isApp();
   url$: Observable<string>;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
@@ -38,18 +41,20 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private domSanitizer: DomSanitizer,
     private iab: InAppBrowser,
-    private clipboard: Clipboard
-  ) {}
+    private clipboard: Clipboard,
+    private safariController: SafariViewController,
+    private platform: Platform
+  ) { }
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
-    // try {
-    //   if (this.browser) {
-    //     this.browser.hide();
-    //     this.browser.close();
-    //   }
-    // } catch (e) {
-    //   console.error(e);
-    // }
+    try {
+      if (this.browser) {
+        this.browser.hide();
+        this.browser.close();
+      }
+    } catch (e) {
+      console.error(e);
+    }
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   private isIphoneX() {
@@ -85,14 +90,12 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     }
     return obj;
   }
-  // private closeBrowser() {
-  //   if (this.browser) {
-  //     this.browser.close();
-  //   }
-  //   if (this.openSystemBrowser) {
-  //     this.openSystemBrowser.close();
-  //   }
-  // }
+  private closeBrowser() {
+    if (this.browser) {
+      this.browser.close();
+      // this.backBtn.backToPrePage();
+    }
+  }
   private shareWebPage(url: string) {
     if (url) {
       WechatHelper.shareWebpage({
@@ -102,45 +105,62 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       });
     }
   }
-  // private async openInAppBrowser(url: string) {
-  //   if (AppHelper.platform.is("android")) {
-  //     this.openInMyBrowser(url);
-  //     return;
-  //   }
-  //   // if (this.browser) {
-  //   //   this.browser.close();
-  //   //   this.subscriptions.forEach((s) => s.unsubscribe());
-  //   // }
-  //   const color = "#2596D9";
-  //   const options: InAppBrowserOptions = {
-  //     usewkwebview: "yes",
-  //     location: "no",
-  //     toolbar: "yes",
-  //     zoom: "no",
-  //     footer: "no",
-  //     beforeload: "yes", // 设置后，beforeload事件才能触发
-  //     closebuttoncaption: "关闭(CLOSE)",
-  //     closebuttoncolor: "#2596D9",
-  //     navigationbuttoncolor: "#2596D9",
-  //     // toolbarcolor:"#2596D90f"
-  //   };
-  //   // if (AppHelper.platform.is("ios")) {
-  //   //   options.beforeload = "yes";
-  //   // }
-  //   // url = `http://test.version.testskytrip.com/download/test.html`;
-  //   if (
-  //     url.startsWith("weixin") ||
-  //     url.startsWith("alipays") ||
-  //     this.checkIfAliWechatPay(url)
-  //   ) {
-  //     this.openWechatOrAliApp(url);
-  //   } else {
-  //     // this.browser = this.iab.create(encodeURI(url), "_blank", options);
-  //     // this.addListeners();
-  //   }
-  // }
+  private async openInAppBrowser(url: string) {
+    if (this.platform.is("android")) {
+      this.openInMyBrowser(url);
+      return;
+    }
+    if (this.browser) {
+      this.browser.close();
+      this.subscriptions.forEach((s) => s.unsubscribe());
+    }
+    const color = "#2596D9";
+    const options: InAppBrowserOptions = {
+      usewkwebview: "yes",
+      location: "no",
+      toolbar: "yes",
+      zoom: "no",
+      footer: "no",
+      closebuttoncaption: "关闭(CLOSE)",
+      closebuttoncolor: color,
+      navigationbuttoncolor: color,
+      toolbarcolor: color
+    };
+    this.browser = this.iab.create(url, "_blank", options);
+    this.subscriptions.push(this.browser.on("exit").subscribe(() => {
+      this.back();
+    }))
+    // if (AppHelper.platform.is("ios")) {
+    //   options.beforeload = "yes";
+    // }
+    // url = `http://test.version.testskytrip.com/download/test.html`;
+  }
   private async openInMyBrowser(url: string) {
     try {
+      if (this.platform.is("ios")) {
+        if (await this.safariController.isAvailable()) {
+          this.safariSubscription.unsubscribe();
+          this.safariSubscription = this.safariController.show({ url, tintColor: "#2596d9" })
+            .subscribe((result: any) => {
+              if (result.event === 'opened') {
+                console.log('Opened');
+              }
+              else if (result.event === 'loaded') {
+                console.log('Loaded');
+              }
+              else if (result.event === 'closed') {
+                this.backBtn.popToPrePage();
+                console.log('Closed');
+              }
+            },
+              (error: any) => { console.error(error) }
+            );
+
+        } else {
+
+        }
+        return;
+      }
       const res = await AppHelper.payH5Url(url).catch(async (e) => {
         console.log("aliPay error", e);
         // await AppHelper.alert(e);

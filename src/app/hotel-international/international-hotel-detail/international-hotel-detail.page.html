@@ -29,12 +29,12 @@
     <ion-refresher-content></ion-refresher-content>
   </app-refresher>
   <ng-container *ngIf='hotel else retry'>
-    <div class="bg" #bg (click)='onShowHotelImages()'>
-      <div class="back-button" *ngIf='isHeaderHide'>
+    <div class="bg" #bg>
+      <div class="back-button">
         <app-back-button color='light'></app-back-button>
       </div>
-      <app-swiper-slides [loadingImage]='config?.PrerenderImageUrl' (slideChange)='onSlideChange($event)'
-        [options]='{autoplay:true}' [items]='hotelImages' [defaultImage]='config?.DefaultImageUrl'>
+      <app-swiper-slides (click)='onShowHotelImages()' (slideChange)='onSlideChange($event)' [options]='{autoplay:true}'
+        [items]='hotelImages' [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl'>
       </app-swiper-slides>
     </div>
     <ion-card *ngIf='hotel else fakeCard'>
@@ -63,7 +63,7 @@
           </div>
         </div>
         <ion-item (click)='onOpenMap()' lines='none'>
-          <ion-label color='secondary'>{{hotel?.Address}}</ion-label>
+          <ion-label color='secondary' class="ion-text-wrap">{{hotel?.Address}}</ion-label>
           <ion-icon name="location" color='secondary'></ion-icon>
         </ion-item>
         <ion-item lines='none'>
@@ -130,8 +130,7 @@
                   <ion-text style="font-weight: bold;">{{room.Name}}
                   </ion-text>
                 </h3>
-                <h4 *ngIf='room.RoomDetails' class='show-desc'
-                  (click)='onShowRoomPlans(room)'>
+                <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='onShowRoomPlans(room)'>
                   <ion-label class='ion-text-wrap'>
                     <div class="room-detail-desc">
                       <div *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</div>
@@ -147,8 +146,7 @@
                 <ion-text color='secondary' (click)='onShowRoomDetails(room)'>
                   详情
                 </ion-text>
-                <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 2em;"
-                  (click)='onShowRoomPlans(room)'>
+                <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 2em;" (click)='onShowRoomPlans(room)'>
                   <ng-container *ngIf='!isFullOnly(room.RoomPlans)'>
                     <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
                       <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span
@@ -190,7 +188,7 @@
               </ion-col>
               <ion-col size='10' (click)='onToggleDetails(detail)'>
                 <ion-text color='medium'>
-                  <div [innerHTML]='detail["isShowMoreDesc"]?detail.Description:detail.OverviewDesc'
+                  <div [innerHTML]='(detail["isShowMoreDesc"]?detail.Description:detail.OverviewDesc)'
                     class='description inner-html' [class.show]='detail["isShowMoreDesc"]'></div>
                 </ion-text>
               </ion-col>
@@ -199,24 +197,14 @@
         </ion-grid>
       </ng-container>
     </ion-list>
-    <!-- <ion-list #trafficInfo class='traffic-info'>
-      <ng-container>
-        <ion-item-divider (click)='onToggleOpenStatus(hotel,"isShowMap")'>交通信息
-          <ng-container *ngIf='hotel'>
-            <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
-            <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
-          </ng-container>
-        </ion-item-divider>
-        <ng-container *ngIf='hotel&&hotel["isShowMap"]'>
-          <div class="traffic-map">
-            <app-amap [latLng]='{lat:hotel.Lat,lng:hotel.Lng}' [zoom]='17'></app-amap>
-          </div>
-        </ng-container>
-      </ng-container>
-    </ion-list> -->
   </ng-container>
   <ng-template #retry>
     <ion-label>请重新刷新</ion-label>
   </ng-template>
-  <div  class='div-for-scroll'></div>
+  <div #divforscroll class='div-for-scroll'>
+    <ion-item detail (click)='onOpenMap()' lines='none'>
+      <ion-button fill='clear' color='secondary'>打开地图查看
+      </ion-button>
+    </ion-item>
+  </div>
 </ion-content>

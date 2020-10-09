@@ -1,5 +1,5 @@
 section.time-types {
-  --ion-color-primary:var(--ion-color-secondary);
+  --ion-color-primary: var(--ion-color-secondary);
   width: 100%;
   display: flex;
   align-items: center;
@@ -13,11 +13,18 @@ section.time-types {
       --background: transparent;
       --border-color: var(--ion-color-medium);
       color: var(--ion-color-medium);
+
       &.active {
         color: var(--ion-color-primary);
         --border-color: var(--ion-color-primary);
         --opacity: 1;
       }
+    }
+  }
+  article ion-button,
+  ion-button {
+    .ion-activated {
+      color: var(--ion-color-primary);
     }
   }
 }

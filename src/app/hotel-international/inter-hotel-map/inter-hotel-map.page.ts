@@ -16,7 +16,13 @@ export class InterHotelMapPage implements OnInit {
     private route: ActivatedRoute,
     private hotelService: InternationalHotelService
   ) {}
-
+  onReload() {
+    if (this.latLng) {
+      this.latLng = {
+        ...this.latLng,
+      };
+    }
+  }
   ngOnInit() {
     this.route.queryParamMap.subscribe(() => {
       this.hotel = this.hotelService.viewHotel;

@@ -84,6 +84,7 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
+      mode:"md",
       componentProps: {
         details: s.Policy.InternationalHotelDescription.split("。")
       },

@@ -1,7 +1,16 @@
-ion-icon {
-  opacity: 0.7;
-  font-size: 0.9rem;
-}
+
 .active ion-icon {
   opacity: 1;
+}
+.name {
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+}
+label {
+  height: 0.72rem;
+  font-size: 0.75rem;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #343434;
 }

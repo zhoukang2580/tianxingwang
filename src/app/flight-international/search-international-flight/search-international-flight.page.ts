@@ -80,6 +80,7 @@ export class SearchInternationalFlightPage
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
+      mode:"md",
       componentProps: {
         details: s.Policy.InternationalFlightDescription.split(","),
       },

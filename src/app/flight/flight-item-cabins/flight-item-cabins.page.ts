@@ -37,6 +37,7 @@ import { FlightCabinType } from "../models/flight/FlightCabinType";
 import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntity";
 import { OrderService } from "src/app/order/order.service";
 import { TripType } from "src/app/tmc/models/TripType";
+import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -60,6 +61,7 @@ export class FlightItemCabinsPage implements OnInit {
   selectedCabinType: number;
   cabinTypes: SearchTypeModel[];
   isSelf = true;
+  isAgreement = false;
   constructor(
     private flightService: FlightService,
     activatedRoute: ActivatedRoute,
@@ -74,6 +76,15 @@ export class FlightItemCabinsPage implements OnInit {
   ) {
     activatedRoute.queryParamMap.subscribe(async (p) => {
       this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
+      if (
+        this.vmFlightSegment &&
+        this.vmFlightSegment.Cabins &&
+        this.vmFlightSegment.Cabins.some(
+          (it) => it.FareType == FlightCabinFareType.Agreement
+        )
+      ) {
+        this.isAgreement = true;
+      }
       this.isSelf = await this.staffService.isSelfBookType();
       this.cabinTypes = this.getCabinTypes();
       const identity = await this.identityService

@@ -11,6 +11,7 @@ import {
   IPayWayItem,
 } from "src/app/components/pay/pay.component";
 import { finalize } from "rxjs/operators";
+import { Router } from '@angular/router';
 export const Wechat_Pay_Error_Message_Cancel = "";
 @Injectable({
   providedIn: "root",
@@ -22,6 +23,7 @@ export class PayService {
   constructor(
     private apiService: ApiService,
     private plt: Platform,
+    private router: Router,
     private popoverCtrl: PopoverController
   ) {
     plt.ready().then(() => {
@@ -299,7 +301,16 @@ export class PayService {
         "=" +
         (typeof req[r] == "string" ? req[r] : JSON.stringify(req[r]));
     }
-    window.location.href = url;
+    if (!AppHelper.isApp()) {
+      window.location.href = url;
+    } else {
+      this.router.navigate(['open-url'], {
+        queryParams: {
+          url,
+          isOpenInAppBrowser:true
+        }
+      })
+    }
   }
 
   process(req: RequestEntity) {

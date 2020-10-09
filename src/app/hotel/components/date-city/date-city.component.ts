@@ -8,13 +8,14 @@ import * as moment from "moment";
   styleUrls: ["./date-city.component.scss"],
 })
 export class DateCityComponent implements OnInit {
-  @Input() keywords: string;
-  @Input() langOpt: {
-    checkin: "住";
-    checkout: "离";
-    night: "晚";
-    placeholder: "地名/酒店/关键词";
+  private defaultLang = {
+    checkin: "住",
+    checkout: "离",
+    night: "晚",
+    placeholder: "地名/酒店/关键词",
   };
+  @Input() keywords: string;
+  @Input() langOpt = this.defaultLang;
   @Input() checkInDate: string;
   @Input() checkOutDate: string;
   @Input() city: TrafficlineEntity;
@@ -33,7 +34,12 @@ export class DateCityComponent implements OnInit {
       );
     }
   }
-  ngOnInit() {}
+  ngOnInit() {
+    this.langOpt = {
+      ...this.defaultLang,
+      ...this.langOpt,
+    };
+  }
   onCityClick() {
     this.cityClick.emit();
   }

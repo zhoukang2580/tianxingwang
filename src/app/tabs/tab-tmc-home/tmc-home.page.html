@@ -36,7 +36,7 @@
                     <div class="swiper-slide" *ngFor='let pic of banners'>
                         <div class="inner">
                             <img [lazyLoad]='pic.ImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' />
-                            <div class="desc" *ngIf='pic.Title'>{{pic.Title}}</div>
+                            <!-- <div class="desc" *ngIf='pic.Title'>{{pic.Title}}</div> -->
                         </div>
                     </div>
                 </ng-container>
@@ -83,7 +83,7 @@
                             <ion-text>国内机票</ion-text>
                         </div>
                     </ion-col>
-                    <ion-col size="4" *ngIf='isShowoverseaHotel'>
+                    <ion-col size="4" *ngIf='isShowoverseaFlight'>
                         <div class="item" (click)='goToPage("international-flight")'>
                             <ion-label>
                                 <!-- <i class="icon icon-home-plane"></i> -->

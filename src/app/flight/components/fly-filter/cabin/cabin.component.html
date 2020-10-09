@@ -1,10 +1,10 @@
 <ng-container *ngIf='isSelf else normal'>
   <ion-radio-group [value]='selectItem' (ionChange)='onionChange($event)'>
-    <ion-item>
+    <ion-item class="cabin">
       <ion-label>不限</ion-label>
       <ion-radio value='unlimit'></ion-radio>
     </ion-item>
-    <ion-item *ngFor="let c of filterCondition?. cabins">
+    <ion-item *ngFor="let c of filterCondition?. cabins" class="cabin">
       <ion-label>{{c?.label}}</ion-label>
       <ion-radio [value]="c" slot="end"></ion-radio>
     </ion-item>
@@ -12,8 +12,8 @@
 </ng-container>
 <ng-template #normal>
   <ion-list lines='none'>
-    <ion-radio-group [value]='selectItem'  (ionChange)='onionChange($event)'>
-      <ion-item >
+    <ion-radio-group [value]='selectItem' (ionChange)='onionChange($event)'>
+      <ion-item>
         <ion-label>不限</ion-label>
         <ion-radio value='unlimit'></ion-radio>
       </ion-item>

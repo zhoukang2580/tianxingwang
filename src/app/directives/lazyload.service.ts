@@ -10,7 +10,7 @@ export class LazyloadService {
   constructor(
     private ngZone: NgZone,
     private imageRecoverService: ImageRecoverService
-  ) {}
+  ) { }
   getNormalizeUrl(url: string) {
     if (url) {
       const m = url.includes("?v") ? url.substring(0, url.indexOf("?v")) : url;
@@ -76,7 +76,7 @@ export class LazyloadService {
         img.onerror = () => {
           img.style.opacity = "1";
         };
-        this.addIO(img, lazyLoad, defaultImage, loadingImage);
+        this.addIO(img, lazyLoad, defaultImage, loadingImage, false);
       });
     }
     df.append(div);
@@ -88,12 +88,14 @@ export class LazyloadService {
     el: HTMLElement,
     lazyLoad: string,
     defaultImage: string,
-    loadingImage: string
+    loadingImage: string,
+    isPreventBgImage: boolean
   ) {
     if (!lazyLoad) {
       if (defaultImage) {
         this.load({
           el,
+          isPreventBgImage,
           src: lazyLoad,
           defaultImage,
           loadingImage,
@@ -118,11 +120,11 @@ export class LazyloadService {
           //   "IntersectionObserver  isIntersecting 耗时：",
           //   Date.now() - this.time
           // );
-          this.load({ el, src: el["lazyLoad"], defaultImage, loadingImage });
+          this.load({ el, src: el["lazyLoad"], defaultImage, loadingImage, isPreventBgImage });
           this.removeIO(el);
         } else if (AppHelper.isDingtalkH5()) {
           setTimeout(() => {
-            this.load({ el, src: el["lazyLoad"], defaultImage, loadingImage });
+            this.load({ el, src: el["lazyLoad"], defaultImage, loadingImage, isPreventBgImage });
             this.removeIO(el);
           }, 200);
         }
@@ -135,7 +137,7 @@ export class LazyloadService {
       // this.addToQueue(this.lazyLoad);
       setTimeout(
         () =>
-          this.load({ el, src: el["lazyLoad"], loadingImage, defaultImage }),
+          this.load({ el, src: el["lazyLoad"], loadingImage, defaultImage, isPreventBgImage }),
         200
       );
     }
@@ -154,6 +156,7 @@ export class LazyloadService {
   load(data: {
     el: HTMLElement | HTMLImageElement;
     src: string;
+    isPreventBgImage: boolean;
     defaultImage: string;
     loadingImage: string;
   }) {
@@ -164,10 +167,12 @@ export class LazyloadService {
     src = src || this.addVersion(el["lazyLoad"]);
     const url = this.addVersion(src);
     this.ngZone.runOutsideAngular(() => {
-      if (el instanceof HTMLDivElement) {
-        el.style.backgroundImage = `url('${loadingImage}')`;
-      } else {
-        el["src"] = loadingImage;
+      if (!data.isPreventBgImage) {
+        if (el instanceof HTMLDivElement) {
+          el.style.backgroundImage = `url('${loadingImage}')`;
+        } else {
+          el["src"] = loadingImage;
+        }
       }
       el.classList.add("lazyloading");
       el.style.opacity = `0.01`;
@@ -178,7 +183,9 @@ export class LazyloadService {
         url,
         (loadedSrc) => {
           if (el instanceof HTMLDivElement) {
-            el.style.backgroundImage = `url('${loadedSrc}')`;
+            if (!data.isPreventBgImage) {
+              el.style.backgroundImage = `url('${loadedSrc}')`;
+            }
           } else {
             el["src"] = loadedSrc;
           }
@@ -196,9 +203,10 @@ export class LazyloadService {
           el.classList.remove("lazyloaderror");
           el.classList.remove("lazyloading");
           if (el instanceof HTMLDivElement) {
-            el.style.backgroundImage = `url('${
-              defaultImage || failoverDefaultUrl
-            }')`;
+            if (!data.isPreventBgImage) {
+              el.style.backgroundImage = `url('${defaultImage || failoverDefaultUrl
+                }')`;
+            }
           } else {
             el["src"] = defaultImage || failoverDefaultUrl;
           }

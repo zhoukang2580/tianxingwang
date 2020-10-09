@@ -3,10 +3,17 @@ ion-content {
     bottom: 3em;
   }
 }
+ion-toolbar {
+  --border-width: 0;
+}
 ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+}
+.hotel-query-wrapper {
+  background-color: var(--ion-color-light);
+  padding: 0.5em 0;
 }
 .filter-condition {
   z-index: -200;
@@ -14,7 +21,7 @@ ul {
   left: 0;
   right: 0;
   top: 5.5em;
-  background-color: white;
+  background-color: var(--ion-color-light);
   will-change: transform opacity;
   transition: all ease-in-out 200ms;
   transform: translate3d(0, -150%, 0);
@@ -41,4 +48,7 @@ ul {
     opacity: 1;
     z-index: 1;
   }
+}
+.query {
+  width: 100%;
 }

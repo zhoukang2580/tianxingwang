@@ -154,6 +154,7 @@ export class SearchFlightPage
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
+      mode:"md",
       componentProps: {
         details: s.Policy.FlightDescription.split(","),
       },

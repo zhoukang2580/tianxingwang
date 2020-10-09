@@ -3,16 +3,14 @@
     <ion-buttons slot='start'>
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
-    <ion-title color='{{searchFlightModel?.isLocked?"medium":"secondary"}}' [class.ion-text-start]='showAddPassenger'
-      [class.ion-text-center]='!showAddPassenger'>
+    <ion-title color='{{searchFlightModel?.isLocked?"medium":"secondary"}}' [class.ion-text-start]='showAddPassenger' [class.ion-text-center]='!showAddPassenger'>
       <ion-text (click)='onSelectCity(true)' class='from-city'>
         <span>
           {{searchFlightModel?.fromCity?.CityName}}
         </span>
         <ion-icon name='caret-down-outline' *ngIf='!searchFlightModel?.isLocked'></ion-icon>
       </ion-text>
-      <div (@rotateIcon.done)='onRotateIconDone($event)' [@rotateIcon]='isRotateIcon' class='rotate-icon'
-        [class.small-margin]='showAddPassenger'>
+      <div (@rotateIcon.done)='onRotateIconDone()' [@rotateIcon]='isRotateIcon' class='rotate-icon' [class.small-margin]='showAddPassenger'>
         <i class='icon icon-flight-plane' (click)='onSwapCity()'></i>
       </div>
       <ion-text (click)='onSelectCity(false)' class='to-city'>
@@ -119,11 +117,11 @@
     </ion-list>
   </ng-container>
 </ion-content>
+<div class="backdrop" [class.show]='isOpenFilter' (click)='onCloseFilter()'></div>
 <ion-footer color="primary">
   <ion-toolbar>
     <div class="tabs">
-      <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()"
-        [class.filtered]='filterConditionIsFiltered'>
+      <div class="tab" [class.active]="activeTab === 'filter'" (click)="onFilter()" [class.filtered]='filterConditionIsFiltered'>
         <ion-icon name="funnel"></ion-icon>
         <ion-note>筛选</ion-note>
       </div>

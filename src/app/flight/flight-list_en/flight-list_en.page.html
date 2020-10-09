@@ -11,7 +11,7 @@
         </span>
         <ion-icon name='caret-down-outline' *ngIf='!searchFlightModel?.isLocked'></ion-icon>
       </ion-text>
-      <div (@rotateIcon.done)='onRotateIconDone($event)' [@rotateIcon]='isRotateIcon' class='rotate-icon'
+      <div (@rotateIcon.done)='onRotateIconDone()' [@rotateIcon]='isRotateIcon' class='rotate-icon'
         [class.small-margin]='showAddPassenger'>
         <i class='icon icon-flight-plane' (click)='onSwapCity()'></i>
       </div>
