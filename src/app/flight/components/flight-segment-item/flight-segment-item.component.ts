@@ -1,12 +1,24 @@
 import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
-import { Component, OnInit, Input } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  OnChanges,
+  SimpleChange,
+  SimpleChanges,
+} from "@angular/core";
+import { AppHelper } from "src/app/appHelper";
+import { LanguageHelper } from "src/app/languageHelper";
+import { FlightFareType } from "../../models/flight/FlightFareType";
+import { FlightCabinFareType } from "../../models/flight/FlightCabinFareType";
 
 @Component({
   selector: "app-flight-segment-item",
   templateUrl: "./flight-segment-item.component.html",
   styleUrls: ["./flight-segment-item.component.scss"],
 })
-export class FlightSegmentItemComponent implements OnInit {
+export class FlightSegmentItemComponent implements OnInit, OnChanges {
+  isHasAgreement: boolean;
   @Input() segment: FlightSegmentEntity;
   @Input() isHasFiltered: boolean;
   @Input() isRecomendSegment: boolean;
@@ -17,11 +29,30 @@ export class FlightSegmentItemComponent implements OnInit {
     directFly: "直飞",
     no: "无",
     common: "共享",
+    agreement: "协",
+    agreementDesc: "协议价",
     planeType: "机型",
     lowestPrice: "最低价",
     lowestPriceRecommend: "最低价推荐",
   };
   constructor() {}
-
+  ngOnChanges(s: SimpleChanges) {
+    if (s && s.segment && s.segment.currentValue) {
+      this.isHasAgreement =
+        this.segment.Cabins &&
+        this.segment.Cabins.some(
+          (c) => c.FareType == FlightCabinFareType.Agreement
+        );
+    }
+  }
   ngOnInit() {}
+
+  onShowAgreement(evt: CustomEvent) {
+    evt.stopPropagation();
+    AppHelper.alert(
+      this.langOpt.agreementDesc,
+      false,
+      LanguageHelper.getConfirmTip()
+    );
+  }
 }

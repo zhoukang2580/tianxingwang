@@ -79,17 +79,17 @@
   <ion-list>
     <ul class='flight recomend' *ngIf='lowestPriceSegments?.length==1'>
       <li *ngFor='let s of lowestPriceSegments' class='lowest-item' (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [segment]='s' 
+        <app-flight-segment-item-en [segment]='s' 
         [langOpt]='langOpt' [isRecomendSegment]='true' [isHasFiltered]='filterConditionIsFiltered'>
-        </app-flight-segment-item>
+        </app-flight-segment-item-en>
         <ion-button color='secondary' (click)='onBookLowestSegment($event,s)' [disabled]='s["disabled"]' size='small'>预订</ion-button>
       </li>
     </ul>
     <ul class='flight'>
       <li *ngFor='let s of vmFlights; trackBy:trackById' #fli (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [segment]='s'
+        <app-flight-segment-item-en [segment]='s'
         [langOpt]='langOpt'
-         [isHasFiltered]='filterConditionIsFiltered'></app-flight-segment-item>
+         [isHasFiltered]='filterConditionIsFiltered'></app-flight-segment-item-en>
       </li>
     </ul>
   </ion-list>

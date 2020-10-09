@@ -25,7 +25,16 @@ import {
   AfterViewInit
 } from "@angular/core";
 import { HotelService } from "../hotel.service";
-import { ISearchTextValue } from "src/app/hotel-international/international-hotel.service";
+interface ISearchTextValue {
+  Text: string;
+  Value?: string; // Code
+  Id?: string; // Code
+  CityName?: string; // Code
+  CountryEnName?: string;
+  CountryId?: string; // Code
+  CountryName?: string; // Code
+  CountryCode?: string; // Code
+}
 @Component({
   selector: "app-search-hotel-byText",
   templateUrl: "./combox-search-hotel.page.html",

@@ -1,8 +1,7 @@
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { Subscription, of } from "rxjs";
 import {
-  InternationalHotelService,
-  ISearchTextValue
+  InternationalHotelService
 } from "./../international-hotel.service";
 import {
   Component,
@@ -35,6 +34,16 @@ import { trigger, transition, style, animate } from "@angular/animations";
 import { DestinationAreaType } from "src/app/tmc/models/DestinationAreaType";
 import { AppHelper } from "src/app/appHelper";
 import { RefresherComponent } from "src/app/components/refresher";
+interface ISearchTextValue {
+  Text: string;
+  Value?: string; // Code
+  Id?: string; // Code
+  CityName?: string; // Code
+  CountryEnName?: string;
+  CountryId?: string; // Code
+  CountryName?: string; // Code
+  CountryCode?: string; // Code
+}
 interface ITab {
   active?: boolean;
   name: "非洲" | "欧洲" | "南美洲" | "北美洲" | "大洋洲" | "亚洲";

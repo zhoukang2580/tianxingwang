@@ -59,9 +59,18 @@ import {
   transition,
   animate,
 } from "@angular/animations";
-import { ISearchTextValue } from "src/app/hotel-international/international-hotel.service";
-import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+interface ISearchTextValue {
+  Text: string;
+  Value?: string; // Code
+  Id?: string; // Code
+  CityName?: string; // Code
+  CountryEnName?: string;
+  CountryId?: string; // Code
+  CountryName?: string; // Code
+  CountryCode?: string; // Code
+}
 @Component({
   selector: "app-hotel-list",
   templateUrl: "./hotel-list.page.html",
