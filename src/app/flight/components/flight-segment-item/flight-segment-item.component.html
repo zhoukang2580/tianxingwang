@@ -1,38 +1,38 @@
-<div class="tip recomend-segment" *ngIf='isRecomendSegment'>{{langOpt.lowestPrice}}</div>
-<div class="list-item" [class.recomend-segment]='isRecomendSegment' *ngIf='segment' #fli [class.shade]='isHasFiltered&&!segment.Cabins?.length'>
-  <div class='item'>
-    <div class='left'>
-      <h4 class="time">
-        <strong>{{segment.TakeoffShortTime}}</strong>
-        <span class="line">-----&nbsp;{{segment.IsStop||segment.StopCities ? langOpt.isStop:langOpt.directFly}}&nbsp;-----</span>
-        <strong>{{segment.ArrivalShortTime}}
-          <span *ngIf='segment.AddOneDayTip' class='addoneday'>{{segment.AddOneDayTip}}</span>
-        </strong>
-      </h4>
-      <div class="airports">
-        <span>{{segment.FromAirportName}}
-          <ng-container *ngIf='segment.FromTerminal'>
-            ({{segment.FromTerminal}})
-          </ng-container>
-        </span>
-        <span>{{segment.ToAirportName}}
-          <ng-container *ngIf='segment.ToTerminal'>
-            ({{segment.ToTerminal}})
-          </ng-container>
-        </span>
-      </div>
-    </div>
-    <div class="price">
-      <div>￥{{segment.LowestFare}}</div>
-      <div class="tip" *ngIf='segment.isLowestPrice'>{{langOpt.lowestPrice}}</div>
-    </div>
-  </div>
-  <div class="desc">
-    <img [src]="segment.AirlineSrc" class="airlinesrc">
-    <label>{{segment.AirlineName}}</label>
-    <label>|{{segment.Number}}</label>
-    <label *ngIf='segment.CodeShareNumber'>|<span class='code-share-number'>{{langOpt.common}}{{segment.CodeShareNumber}}</span> </label>
-    <label *ngIf=' segment.PlaneType'>|{{langOpt.planeType}}{{segment.PlaneType}}</label>
-    <label>|{{segment.Meal?langOpt.has:langOpt.no}}{{langOpt.meal}}</label>
-  </div>
+<div class="tip recomend-segment" *ngIf='isRecomendSegment'>{{langOpt.lowestPrice}}</div>
+<div class="list-item" [class.recomend-segment]='isRecomendSegment' *ngIf='segment' #fli [class.shade]='isHasFiltered&&!segment.Cabins?.length'>
+  <div class='item'>
+    <div class='left'>
+      <h4 class="time">
+        <strong>{{segment.TakeoffShortTime}}</strong>
+        <span class="line">-----&nbsp;{{segment.IsStop||segment.StopCities ? langOpt.isStop:langOpt.directFly}}&nbsp;-----</span>
+        <strong>{{segment.ArrivalShortTime}}
+          <span *ngIf='segment.AddOneDayTip' class='addoneday'>{{segment.AddOneDayTip}}</span>
+        </strong>
+      </h4>
+      <div class="airports">
+        <span>{{segment.FromAirportName}}
+          <ng-container *ngIf='segment.FromTerminal'>
+            ({{segment.FromTerminal}})
+          </ng-container>
+        </span>
+        <span>{{segment.ToAirportName}}
+          <ng-container *ngIf='segment.ToTerminal'>
+            ({{segment.ToTerminal}})
+          </ng-container>
+        </span>
+      </div>
+    </div>
+    <div class="price">
+      <div>￥{{segment.LowestFare}}</div>
+      <div class="tip" *ngIf='segment.isLowestPrice'>{{langOpt.lowestPrice}}</div>
+    </div>
+  </div>
+  <div class="desc">
+    <img [src]="segment.AirlineSrc" class="airlinesrc">
+    <label>{{segment.AirlineName}}</label>
+    <label>|{{segment.Number}}</label>
+    <label *ngIf='segment.CodeShareNumber'>|<span class='code-share-number'>{{langOpt.common}}{{segment.CodeShareNumber}}</span> </label>
+    <label *ngIf=' segment.PlaneType'>|{{langOpt.planeType}}{{segment.PlaneType}}</label>
+    <label>|{{segment.Meal?langOpt.has:langOpt.no}}{{langOpt.meal}}</label>
+  </div>
 </div>
