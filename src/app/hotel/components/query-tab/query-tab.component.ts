@@ -1,12 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
+import { IHotelQueryCompTab } from "../hotel-query/hotel-query.component";
 
 @Component({
   selector: "app-query-tab",
   templateUrl: "./query-tab.component.html",
-  styleUrls: ["./query-tab.component.scss"]
+  styleUrls: ["./query-tab.component.scss"],
 })
 export class QueryTabComponent implements OnInit {
-  @Input() label: string;
+  @Input() tab: IHotelQueryCompTab;
   @Output() active: EventEmitter<any>;
   isActive = false;
   constructor() {
@@ -15,8 +16,9 @@ export class QueryTabComponent implements OnInit {
   onActive() {
     this.isActive = !this.isActive;
     this.active.emit({
-      label: this.label,
-      isActive: this.isActive
+      ...this.tab,
+      label: this.tab.label,
+      isActive: this.isActive,
     });
   }
   ngOnInit() {}

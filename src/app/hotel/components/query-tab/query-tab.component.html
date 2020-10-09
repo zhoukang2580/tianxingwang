@@ -1,7 +1,7 @@
 <ion-buttons>
-  <div class="name"  size='small' [class.active]='isActive' (click)='onActive()'>
+  <div class="name" size='small' [class.active]='isActive' (click)='onActive()'>
     <ion-text color='{{isActive?"secondary":"dark"}}'>
-      {{label}}
+      {{tab?.label}}
     </ion-text>
     <ion-icon name="caret-up-outline" mode='ios' *ngIf='isActive' color='{{isActive?"secondary":"dark"}}'></ion-icon>
     <ion-icon name="caret-down-outline" *ngIf='!isActive' color='dark' mode='ios'></ion-icon>

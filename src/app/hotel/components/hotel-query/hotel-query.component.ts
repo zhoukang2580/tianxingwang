@@ -8,10 +8,11 @@ import {
   QueryList,
   Output,
   EventEmitter,
-  OnDestroy, Input
+  OnDestroy,
+  Input,
 } from "@angular/core";
 import { Subscription } from "rxjs";
-import { QueryTabComponent } from '../query-tab/query-tab.component';
+import { QueryTabComponent } from "../query-tab/query-tab.component";
 export interface IHotelQueryCompTab {
   label: string;
   id: string;
@@ -20,7 +21,7 @@ export interface IHotelQueryCompTab {
 @Component({
   selector: "app-hotel-query",
   templateUrl: "./hotel-query.component.html",
-  styleUrls: ["./hotel-query.component.scss"]
+  styleUrls: ["./hotel-query.component.scss"],
 })
 export class HotelQueryComponent implements OnInit, OnDestroy {
   private hotelQueryModel: HotelQueryEntity;
@@ -31,17 +32,15 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     isStarPrice: boolean;
     isLocationAreas: boolean;
   };
-  @Input() langOpt: {
-    Recommended: "推荐排序";
-    PriceStar: "星级价格";
-    Filter: "位置区域";
-    Location: "筛选";
+  @Input() langOpt = {
+    Recommended: "推荐",
+    PriceStar: "星级/价格",
+    Filter: "位置区域",
+    Location: "筛选",
   };
   @Output() activeFilter: EventEmitter<IHotelQueryCompTab>;
   @Output() hotelQueryChange: EventEmitter<any>;
-  @ViewChildren(QueryTabComponent)  queryTabComps: QueryList<
-    QueryTabComponent
-  >;
+  @ViewChildren(QueryTabComponent) queryTabComps: QueryList<QueryTabComponent>;
   isActiveTab = false;
   activeTab: IHotelQueryCompTab;
   constructor(private hotelService: HotelService) {
@@ -56,9 +55,9 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
       return;
     }
     if (this.queryTabComps) {
-      this.queryTabComps.forEach(comp => {
+      this.queryTabComps.forEach((comp) => {
         if (comp) {
-          comp.isActive = comp.label == tab.label && tab.isActive;
+          comp.isActive = comp.tab.id == tab.id && tab.isActive;
         }
       });
     }
@@ -69,34 +68,34 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     return !!(
       this.hotelQueryModel &&
       this.hotelQueryModel.ranks &&
-      this.hotelQueryModel.ranks.some(it => it.value != "Category")
+      this.hotelQueryModel.ranks.some((it) => it.value != "Category")
     );
   }
   get isFiltersConditionFiltered() {
     return !!(
       this.hotelQueryModel &&
       this.hotelQueryModel.filters &&
-      this.hotelQueryModel.filters.some(it => it.hasFilterItem)
+      this.hotelQueryModel.filters.some((it) => it.hasFilterItem)
     );
   }
   get isStarPriceHasConditionFiltered() {
     return !!(
       this.hotelQueryModel &&
       this.hotelQueryModel.starAndPrices &&
-      this.hotelQueryModel.starAndPrices.some(t => t.hasItemSelected)
+      this.hotelQueryModel.starAndPrices.some((t) => t.hasItemSelected)
     );
   }
   get isLocationAreasHasConditionFiltered() {
     return !!(
       this.hotelQueryModel &&
       this.hotelQueryModel.locationAreas &&
-      this.hotelQueryModel.locationAreas.some(it => it.hasFilterItem)
+      this.hotelQueryModel.locationAreas.some((it) => it.hasFilterItem)
     );
   }
   async onReset() {
     this.hotelQueryModel = new HotelQueryEntity();
     if (this.queryTabComps) {
-      this.queryTabComps.forEach(it => {
+      this.queryTabComps.forEach((it) => {
         if (it) {
           it.onReset();
         }
@@ -116,13 +115,13 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     this.hotelQueryModelSub = this.hotelService
       .getHotelQuerySource()
       .pipe(delay(0))
-      .subscribe(query => {
+      .subscribe((query) => {
         this.hotelQueryModel = query;
         this.filterItemInfo = {
           isFilters: this.isFiltersConditionFiltered,
           isLocationAreas: this.isLocationAreasHasConditionFiltered,
           isRanks: this.isRanksHasConditionFiltered,
-          isStarPrice: this.isStarPriceHasConditionFiltered
+          isStarPrice: this.isStarPriceHasConditionFiltered,
         };
         // console.log("filter infor", this.filterItemInfo);
       });
@@ -135,7 +134,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
         searchGeoId:
           query.Geos && query.Geos.length && !query.searchGeoId
             ? query.Geos[0]
-            : query.searchGeoId || ""
+            : query.searchGeoId || "",
       };
     }
     this.hideQueryPannel();
@@ -148,7 +147,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.activeTab = {
         label: "none",
-        isActive: false
+        isActive: false,
       } as any;
       this.activeFilter.emit(this.activeTab);
     }, 100);
