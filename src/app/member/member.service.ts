@@ -9,7 +9,8 @@ import { ValidatorService } from "../services/validator/validator.service";
 import { AppHelper } from "../appHelper";
 import { LanguageHelper } from "../languageHelper";
 import { Platform } from "@ionic/angular";
-import { CalendarService } from "../tmc/calendar.service";
+import * as moment from "moment";
+// import { CalendarService } from "../tmc/calendar.service";
 export const CHINESE_REG = /^[\u4e00-\u9fa5]+$/; // 只能输入中文
 export const ENGLISH_SURNAME_REG = /^[A-Za-z]+$/; // 英文姓的正则，匹配由26个英文字母组成的字符串
 export const ENGLISH_GIVEN_NAME_REG = /(^[A-Za-z]{1,}\s{0,}[A-Za-z]{1,}$)/; // 英文名的正则，匹配首尾空格的正则表达式
@@ -91,8 +92,7 @@ export class MemberService {
   constructor(
     private apiService: ApiService,
     private validatorService: ValidatorService,
-    private plt: Platform,
-    private calendarService: CalendarService
+    private plt: Platform
   ) {
     this.credentialsChanges = new BehaviorSubject(undefined);
   }
@@ -357,16 +357,23 @@ export class MemberService {
       return false;
     }
   }
+  private getFormatedDate(d: string) {
+    if (!d) {
+      return d;
+    }
+    if (this.plt.is("ios")) {
+      return d.replace(/-/g, "/");
+    }
+  }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c) {
       return false;
     }
     if (c.isLongPeriodOfTime) {
-      c.ExpirationDate = this.calendarService.getFormatedDate(
-        this.calendarService
-          .getMoment(100 * 365, c.Birthday)
-          .format("YYYY-MM-DD")
-      );
+      c.ExpirationDate = moment(c.Birthday)
+        .add(100 * 365, "days")
+        .format("YYYY-MM-DD");
+      c.ExpirationDate = this.getFormatedDate(c.ExpirationDate);
     }
     const info = await this.validatorService
       .get("Beeant.Domain.Entities.Member.CredentialsEntity", "Add")
@@ -413,12 +420,14 @@ export class MemberService {
     if (!c.Birthday) {
       return this.checkProperty(c, "Birthday", rules, container);
     }
-    c.Birthday = this.calendarService.getFormatedDate(c.Birthday);
+    c.Birthday = moment(c.Birthday).format("YYYY-MM-DD");
+    c.Birthday = this.getFormatedDate(c.Birthday);
     console.log(c.Birthday);
     if (!c.ExpirationDate) {
       return this.checkProperty(c, "ExpirationDate", rules, container);
     }
-    c.ExpirationDate = this.calendarService.getFormatedDate(c.ExpirationDate);
+    c.ExpirationDate = moment(c.ExpirationDate).format("YYYY-MM-DD");
+    c.ExpirationDate = this.getFormatedDate(c.ExpirationDate);
     if (!c.Country) {
       return this.checkProperty(c, "Country", rules, container);
     }
@@ -436,9 +445,7 @@ export class MemberService {
           const b = this.getBirthByIdNumber(value);
           if (b) {
             const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
-            credential.Birthday = this.plt.is("ios")
-              ? str.replace(/-/g, "/")
-              : str;
+            credential.Birthday = this.getFormatedDate(str);
           } else {
             // one.Birthday = null;
           }

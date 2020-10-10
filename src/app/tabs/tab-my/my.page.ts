@@ -19,6 +19,7 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { LangService } from "src/app/tmc/lang.service";
+import { MemberService } from "src/app/member/member.service";
 interface PageModel {
   Name: string;
   RealName: string;
@@ -247,21 +248,10 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   async load(forceLoad = false) {
-    const req = new RequestEntity();
-    if (this.Model && !forceLoad) {
-      if (this.Model && this.Model.HeadUrl) {
-        this.Model.HeadUrl = this.addVersionToUrl(this.Model.HeadUrl);
-      }
-      return this.Model;
-    }
-    req.Method = "ApiMemberUrl-Home-Get";
-    this.Model = await this.apiService
-      .getPromiseData<PageModel>(req)
-      .catch((_) => null);
-    if (this.Model && this.Model.HeadUrl) {
+    this.Model = await this.tmcService.getMemberDetail().catch(() => null);
+    if (this.Model && forceLoad) {
       this.Model.HeadUrl = this.addVersionToUrl(this.Model.HeadUrl);
     }
-    console.log("my load this.model", this.Model);
   }
   private addVersionToUrl(url: string) {
     if (url) {

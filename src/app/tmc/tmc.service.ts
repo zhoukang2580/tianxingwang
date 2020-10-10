@@ -8,7 +8,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
-import { MemberCredential } from "../member/member.service";
+import { MemberCredential, MemberService } from "../member/member.service";
 import { OrderTravelPayType } from "../order/models/OrderTravelEntity";
 import { StaffEntity } from "../hr/staff.service";
 import { CredentialsEntity } from "./models/CredentialsEntity";
@@ -61,6 +61,7 @@ export class TmcService {
   private fetchingTmcPromise: Promise<TmcEntity>;
   private companies: GroupCompanyEntity[];
   private banners: any[];
+  private memberDetail: any;
   // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
   private identity: IdentityEntity;
@@ -73,13 +74,24 @@ export class TmcService {
     private storage: Storage,
     private identityService: IdentityService,
     private payService: PayService,
-    private platform: Platform
+    private platform: Platform,
+    private memberService: MemberService
   ) {
     this.selectedCompanySource = new BehaviorSubject(null);
     this.identityService.getIdentitySource().subscribe((id) => {
       this.identity = id;
       this.disposal();
       this.banners = [];
+      this.memberDetail = null;
+    });
+  }
+  async getMemberDetail() {
+    if (this.memberDetail) {
+      return this.memberDetail;
+    }
+    return this.memberService.getMemberDetails().then((md) => {
+      this.memberDetail = md;
+      return md;
     });
   }
   private disposal() {
