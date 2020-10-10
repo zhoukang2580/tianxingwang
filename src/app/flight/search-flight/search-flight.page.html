@@ -1,7 +1,6 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
     <ion-text *ngIf='(isShowBookInfos$|async)'>机票查询</ion-text>
@@ -22,6 +21,7 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+<img src="assets/images/" alt="">
 <ion-content>
   <ion-card class='ion-padding'>
     <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>

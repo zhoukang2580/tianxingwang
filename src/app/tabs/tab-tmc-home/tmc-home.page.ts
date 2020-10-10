@@ -131,7 +131,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     this.destroySwiper();
   }
   private async loadBanners() {
-    if (!this.banners || this.banners.length == 0) {
+    if (!this.banners || !this.banners.length) {
       if (!(await this.hasTicket())) {
         return;
       }
@@ -350,7 +350,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       setTimeout(() => {
         this.swiper.update();
         this.startAutoPlay();
-      }, 2000);
+      }, 200);
     }
   }
   private async loadNotices() {

@@ -1,5 +1,5 @@
-import { PopoverController } from '@ionic/angular';
-import { AppHelper } from './../../../appHelper';
+import { PopoverController } from "@ionic/angular";
+import { AppHelper } from "./../../../appHelper";
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { HotelService } from "./../../hotel.service";
 import {
@@ -9,7 +9,7 @@ import {
   OnChanges,
   SimpleChanges,
   EventEmitter,
-  Output
+  Output,
 } from "@angular/core";
 import { RoomEntity } from "../../models/RoomEntity";
 import { RoomPlanRuleType } from "../../models/RoomPlanRuleType";
@@ -20,30 +20,30 @@ import { map, tap } from "rxjs/operators";
 import { StaffService } from "src/app/hr/staff.service";
 import { HotelEntity } from "../../models/HotelEntity";
 import { HotelPaymentType } from "../../models/HotelPaymentType";
-import { ShowMsgComponent } from '../show-msg/show-msg.component';
+import { ShowMsgComponent } from "../show-msg/show-msg.component";
 
 @Component({
   selector: "app-room-plan-item",
   templateUrl: "./room-plan-item.component.html",
-  styleUrls: ["./room-plan-item.component.scss"]
+  styleUrls: ["./room-plan-item.component.scss"],
 })
 export class RoomPlanItemComponent implements OnInit, OnChanges {
   @Input() room: RoomEntity;
   @Input() hotel: HotelEntity;
   @Input() roomPlan: RoomPlanEntity;
-  @Input() langOpt: {
-    Exceeding: "超标";
-    Book: "预定";
-    NonBook: "不可预订";
-    NowPay: "现付";
-    PayIn: "预付";
-    MonthlyPay: "月结";
+  @Input() langOpt = {
+    Exceeding: "超标",
+    Book: "预定",
+    NonBook: "不可预订",
+    NowPay: "现付",
+    PayIn: "预付",
+    MonthlyPay: "月结",
   };
   @Output() bookRoom: EventEmitter<any>;
   HotelBookType = HotelBookType;
   HotelPaymentType = HotelPaymentType;
   @Input() colors: { [k: string]: string };
-  get isAgent(){
+  get isAgent() {
     return this.hotelService.isAgent;
   }
   constructor(
@@ -61,8 +61,8 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
       const m = await this.popoverCtrl.create({
         component: ShowMsgComponent,
         componentProps: {
-          msg
-        }
+          msg,
+        },
       });
       if (m) {
         await m.present();
@@ -96,8 +96,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   onBook(roomPlan: RoomPlanEntity, color: string) {
     this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room, color });
   }
-  ngOnInit() {
-  }
+  ngOnInit() {}
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.room && changes.room.firstChange) {
       // this.initFilterPolicy();
