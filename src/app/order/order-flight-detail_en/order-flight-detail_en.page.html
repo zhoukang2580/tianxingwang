@@ -3,7 +3,7 @@
     <ion-buttons slot='start'>
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
-    <ion-title>机票订单详情</ion-title>
+    <ion-title>Ticket order details</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -17,24 +17,24 @@
           </ion-item-divider>
           <div>
             <ion-row>
-              <ion-col size='3'>订单编号</ion-col>
+              <ion-col size='3'>OrderId</ion-col>
               <ion-col>{{orderDetail.Order.Id}}</ion-col>
             </ion-row>
             <ion-row>
-              <ion-col size='3'>订单状态</ion-col>
+              <ion-col size='3'>Orderstatus</ion-col>
               <ion-col>{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" : orderDetail.Order.StatusName}}
               </ion-col>
             </ion-row>
             <ion-row>
-              <ion-col size='3'>付款方式</ion-col>
+              <ion-col size='3'>Paymet</ion-col>
               <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col>
             </ion-row>
             <ion-row>
-              <ion-col size='3'>完成时间</ion-col>
+              <ion-col size='3'>OverTime</ion-col>
               <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
             </ion-row>
             <ion-row (click)='showPricePopover()' *ngIf='orderDetail.Order?.Type=="Flight"'>
-              <ion-col size='3'>应付金额</ion-col>
+              <ion-col size='3'>Amount due</ion-col>
               <ion-col>
                 <div>
                   <ion-text color="danger">￥{{orderDetail.Order.TotalAmount}}
@@ -65,11 +65,11 @@
               </ng-container>
             </ng-container>
             <ion-row>
-              <ion-col size='3'>已付金额</ion-col>
+              <ion-col size='3'>amountPaid</ion-col>
               <ion-col>{{orderDetail.Order.PayAmount}}</ion-col>
             </ion-row>
             <ion-row>
-              <ion-col size='3' *ngIf="orderDetail?.Order?.OrderNumbers">外部编号</ion-col>
+              <ion-col size='3' *ngIf="orderDetail?.Order?.OrderNumbers">ExternalId</ion-col>
               <ion-col>
                 <div *ngFor='let n of orderDetail?.Order?.OrderNumbers'>
                   <span *ngIf='n.Tag=="TmcOutNumber"'>{{n.Name}}:{{n.Number}}</span>

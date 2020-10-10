@@ -24,7 +24,7 @@
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
-        policy
+        Policy
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -52,7 +52,7 @@
           </app-search-day-comp>
         </section>
       </ion-item>
-      <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
+      <div *ngIf='totalFlyDays'>{{ totalFlyDays}}晚</div>
       <div class='destination' (click)='onSearchCity()'>
         <ion-item lines='full' detail>
           <ion-label>destination</ion-label>
@@ -89,7 +89,7 @@
         </ion-item>
       </div>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" color="secondary" expand="block">
-        <ion-text>查询酒店</ion-text>
+        <ion-text>Sreach</ion-text>
       </ion-button>
       <ion-button *ngIf='false&&(canAddPassengers) && selectedPassengers?.length==0' class='ion-margin-top'
         style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">

@@ -44,9 +44,9 @@ img.access-by-IdCard {
   left: -0.5em;
   top: -1.6em;
 }
-// .seat-count {
-//   color: var(--ion-color-danger);
-// }
+.seat-count {
+  color: var(--ion-color-danger);
+}
 .info {
   font-size: 0.9rem;
   flex: 1;
@@ -71,9 +71,10 @@ img.access-by-IdCard {
 
 .seat-outline {
   font-size: 0.7rem;
+  display: contents;
 }
 .seats {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   ion-row {
     border: 2px solid var(--ion-color-medium);
     border-radius: 4px;

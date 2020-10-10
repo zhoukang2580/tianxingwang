@@ -7,7 +7,7 @@
     </div>
     <div class='grade-stars'>
       <ion-text class="grade" color='danger' *ngIf='item.Hotel?.Grade'>
-        {{item.Hotel?.Grade}}分
+        {{item.Hotel?.Grade}}{{langOpt.branch}}
       </ion-text>
       <div class='stars' class='ion-margin-end' *ngIf='item.Hotel["stars"]'>
         <ng-container *ngFor='let s of item.Hotel["stars"]'>
@@ -16,7 +16,7 @@
         </ng-container>
       </div>
       <ion-text  class="ion-text-end ion-padding-end price" color='danger'><small>￥</small> <strong>{{item.Hotel["avgPrice"]}}</strong>
-        <small>起</small> </ion-text>
+        <small>{{langOpt.rise}}</small> </ion-text>
     </div>
     <div class='ion-text-wrap location'>
       <ion-icon name="location" color='secondary'></ion-icon>

@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button [backFn]='back.bind(this)' >
+      </app-back-button>
+    </ion-buttons>
+    <ng-template #el>
+      <ion-title>Train information</ion-title>
+    </ng-template>
+    <ion-title *ngIf='isExchange else el' color='danger'>正在被改签的火车信息</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-item-group *ngFor='let bookInfo of bookInfos$|async'>
+    <ng-container *ngIf='bookInfo?.bookInfo'>
+      <ion-item-divider color='primary' sticky>
+        <ion-label color='dark'>{{bookInfo?.credential?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
+      </ion-item-divider>
+      <ion-item lines='none'>
+        <div class='detail'>
+          <div class='date'>
+            <strong>{{getDate(bookInfo?.bookInfo?.trainEntity)}}
+              <!-- <ion-text color='secondary' *ngIf='!bookInfo.bookInfo?.isExchange'>
+                {{getTripTypeTip(bookInfo?.bookInfo)}}</ion-text> -->
+              </strong>
+            <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
+              <ion-icon name="trash" color='danger' mode='ios'>
+              </ion-icon>
+              <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
+                <ion-button fill='clear' expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'
+                  *ngIf='!bookInfo.bookInfo?.isExchange'>Reset
+                </ion-button>
+              </div>
+            </ion-button>
+          </div>
+          <ion-label class='train-item'>
+            <app-train-list-item_en [seat]='bookInfo.bookInfo?.selectedSeat' [isShowSelectSeatLocation]="false"
+              [selectSeatLocation]='bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'
+              (seatPicker)='onSeatPicked($event,bookInfo)' [bookInfo]='bookInfo?.bookInfo'
+              [train]='bookInfo?.bookInfo?.trainEntity'>
+            </app-train-list-item_en>
+          </ion-label>
+          <ion-label class='rules ion-text-wrap' color='danger' >
+            {{bookInfo?.bookInfo?.trainPolicy?.Rules?.join("; ")}}
+          </ion-label>
+        </div>
+      </ion-item>
+      <!-- <ion-item lines='none' *ngIf='(showSelectReturnTrip$|async)&&bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
+        <ion-button slot='end' *ngIf='!isExchange' expand='block' color='secondary' (click)='onSelectReturnTrip()'>
+          选择回程
+        </ion-button>
+      </ion-item> -->
+    </ng-container>
+  </ion-item-group>
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar>
+    <ion-button (click)='nextStep()' slot='end' color='secondary' [disabled]='!canGoToNext()'>Next</ion-button>
+  </ion-toolbar>
+</ion-footer>

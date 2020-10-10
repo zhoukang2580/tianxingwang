@@ -45,6 +45,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "order-flight-detail_en",
+    loadChildren: () =>
+      import("./order-flight-detail_en/order-flight-detail_en.module").then(
+        m => m.OrderFlightDetailEnPageModule
+      )
+  },
+  {
     path: "order-hotel-detail",
     loadChildren: () =>
       import("./order-hotel-detail/order-hotel-detail.module").then(

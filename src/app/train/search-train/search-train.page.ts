@@ -28,6 +28,8 @@ import { PassengerBookInfo, TmcService } from "src/app/tmc/tmc.service";
 import { map } from "rxjs/operators";
 import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
+import { LangService } from 'src/app/tmc/lang.service';
+import { SelectedTrainSegmentInfoEnComponent } from '../components/selected-train-segment-info_en/selected-train-segment-info_en.component';
 @Component({
   selector: "app-search-train",
   templateUrl: "./search-train.page.html",
@@ -58,11 +60,16 @@ export class SearchTrainPage
     private trainService: TrainService,
     private calendarService: CalendarService,
     private modalCtrl: ModalController,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private langService:LangService
   ) {}
   async onShowSelectedBookInfos() {
+    let c = SelectedTrainSegmentInfoComponent;
+    if (this.langService.isEn) {
+      c = SelectedTrainSegmentInfoEnComponent;
+    }
     const m = await this.modalCtrl.create({
-      component: SelectedTrainSegmentInfoComponent,
+      component: c,
     });
     m.present();
   }

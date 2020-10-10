@@ -38,9 +38,10 @@
     .btn-book {
       display: flex;
       flex-flow: column nowrap;
-      max-width: 5em;
+      max-width: 8em;
       justify-content: center;
-      align-items: center;
+      // align-items: center;
+      text-align: center;
       border: 2px solid tomato;
       float: right;
       border-radius: 5px;

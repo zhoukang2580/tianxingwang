@@ -1,3 +1,4 @@
+import { LangService } from "./../../tmc/lang.service";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
 import { flyInOut } from "./../../animations/flyInOut";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -45,6 +46,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { map, tap, switchMap } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
 import { trigger, transition, style, animate } from "@angular/animations";
+import { SelectedTrainSegmentInfoEnComponent } from "../components/selected-train-segment-info_en/selected-train-segment-info_en.component";
 @Component({
   selector: "app-train-list",
   templateUrl: "./train-list.page.html",
@@ -120,7 +122,8 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     private popoverController: PopoverController,
     private navCtrl: NavController,
     private modalCtrl: ModalController,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private langService: LangService
   ) {
     this.filterCondition = FilterTrainCondition.init();
   }
@@ -351,8 +354,12 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     console.timeEnd("price");
   }
   async showSelectedBookInfos() {
+    let c = SelectedTrainSegmentInfoComponent;
+    if (this.langService.isEn) {
+      c = SelectedTrainSegmentInfoEnComponent;
+    }
     const modal = await this.modalCtrl.create({
-      component: SelectedTrainSegmentInfoComponent,
+      component: c,
     });
     await this.trainService.dismissAllTopOverlays();
     await modal.present();
@@ -446,8 +453,12 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private async showSelectedInfos() {
+    let c = SelectedTrainSegmentInfoComponent;
+    if (this.langService.isEn) {
+      c = SelectedTrainSegmentInfoEnComponent;
+    }
     const m = await this.modalCtrl.create({
-      component: SelectedTrainSegmentInfoComponent,
+      component: c,
     });
     m.present();
   }

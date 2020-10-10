@@ -76,7 +76,7 @@
 <ion-footer>
   <ion-toolbar>
     <ion-button *ngIf='!searchModel?.isExchange' slot='end' (click)='nextStep()' color='secondary'
-      [disabled]='bookInfos?.length <= 0'>下一步
+      [disabled]='bookInfos?.length <= 0'>Next
     </ion-button>
     <ion-button *ngIf='searchModel?.isExchange' slot='end' (click)='onExchange()' color='secondary'
       [disabled]='bookInfos?.length <= 0'>确认改签

@@ -65,7 +65,7 @@
         <ng-container *ngIf='isLastTrip&&fr.isShowFares'>
           <ng-container *ngFor='let fare of fr.vmFares'>
             <ion-buttons class="ion-justify-content-between" class="buttons-wrapper">
-              <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(fare)' class="rulemsg-pkg">退改签|行李规定
+              <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(fare)' class="rulemsg-pkg">signature|regulations
               </ion-button>
               <div style="display: flex;align-items: center;">
                 <ion-text color='danger'>￥{{fare.SalesPrice}}<ng-container *ngIf='fare.Variables?.AccountCode'>
@@ -76,7 +76,7 @@
                   </ng-container>
                 </ion-text>
                 <ion-button class="book-btn" [color]='fare.color' [disabled]='fare.disabled' (click)='onBook(fr,fare)' fill='solid' expand='block' size='small'>
-                  <ion-text color='light'>预订</ion-text>
+                  <ion-text color='light'>Book</ion-text>
                 </ion-button>
               </div>
             </ion-buttons>
@@ -107,14 +107,14 @@
           <ion-icon color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}' name="funnel-outline" style="font-size:1.3rem" [class.has-filter]='condition?.isFilter'>
           </ion-icon>
         </div>
-        <ion-text color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}'>筛选</ion-text>
+        <ion-text color='{{condition?.time=="none"&&condition?.price=="none"?"secondary":""}}'>Screen</ion-text>
       </ion-col>
       <ion-col (click)='onSortByTime()'>
         <div>
           <ion-icon color='{{condition?.time!="none"?"secondary":""}}' name="swap-vertical-outline" style="font-size:1.3rem">
           </ion-icon>
         </div>
-        <ion-text color='{{condition?.time!="none"?"secondary":""}}'>时间
+        <ion-text color='{{condition?.time!="none"?"secondary":""}}'>Time
           <ng-container *ngIf='condition?.time=="asc"'><strong>早</strong>-晚</ng-container>
           <ng-container *ngIf='condition?.time=="desc"'><strong>晚</strong>-早</ng-container>
         </ion-text>
@@ -124,7 +124,7 @@
           <ion-icon color='{{condition?.price!="none"?"secondary":""}}' name="logo-yen" style="font-size:1.3rem">
           </ion-icon>
         </div>
-        <ion-text color='{{condition?.price!="none"?"secondary":""}}'>价格
+        <ion-text color='{{condition?.price!="none"?"secondary":""}}'>Price
           <ng-container *ngIf='condition?.price=="asc"'><strong>低</strong>-高</ng-container>
           <ng-container *ngIf='condition?.price=="desc"'><strong>高</strong>-低</ng-container>
         </ion-text>

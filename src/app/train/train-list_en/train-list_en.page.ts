@@ -14,11 +14,11 @@ export class TrainListEnPage extends TrainListPage {
     time: "H",
     minute: "m",
     isStopInfo: "Stop",
-    has:"",
+    has: "",
     no: "no",
     Left: "Left",
-    agreement: "协",
-    agreementDesc: "协议价",
-    reserve:"Book"
+    agreement: "agreement",
+    agreementDesc: "agreementDesc",
+    reserve: "Book"
   }
 }

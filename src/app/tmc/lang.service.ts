@@ -29,6 +29,14 @@ export class LangService {
       this.translate();
     });
   }
+  get isEn(){
+    return AppHelper.getStyle() &&
+    AppHelper.getStyle().toLowerCase() == "en"
+  }
+  get isCn(){
+    return AppHelper.getStyle() &&
+    AppHelper.getStyle().toLowerCase() == "cn"
+  }
   translate() {
     try {
       if (this.identity && this.identity.Id != "0" && this.identity.Ticket) {
