@@ -109,6 +109,7 @@ export class MyPage implements OnDestroy, OnInit {
       buttons: [
         {
           text: "English",
+          cssClass:"notranslate",
           role: style == "en" ? "selected" : "",
           handler: () => {
             this.langService.setLang("en");
@@ -117,6 +118,7 @@ export class MyPage implements OnDestroy, OnInit {
         },
         {
           text: "中文",
+          cssClass:"notranslate",
           role: !style ? "selected" : "",
           handler: () => {
             this.langService.setLang("cn");
