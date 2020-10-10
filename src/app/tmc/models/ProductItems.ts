@@ -1,5 +1,6 @@
 export class ProductItem {
   label: string;
+  labelEn: string;
   value: ProductItemType;
   imageSrc: string;
   isDisplay?: boolean;

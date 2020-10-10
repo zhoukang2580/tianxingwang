@@ -43,6 +43,12 @@ export const routes: Routes = [
     canActivate: [ConfirmCredentialInfoGuard],
     loadChildren: () =>
       import("./train-book/book.module").then(m => m.TrainBookPageModule)
+  },
+  {
+    path: "train-book_en",
+    canActivate: [ConfirmCredentialInfoGuard],
+    loadChildren: () =>
+      import("./train-book_en/book.module_en").then(m => m.TrainBookEnPageModule)
   }
 ];
 @NgModule({

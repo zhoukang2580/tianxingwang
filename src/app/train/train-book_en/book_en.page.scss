@@ -1,0 +1,93 @@
+.sticky {
+  border-left: 4px solid var(--ion-color-secondary);
+}
+.back-icon {
+  color: rgba(var(--ion-color-dark-rgb), 0.5);
+}
+ion-input.TravelNumber {
+  // opacity: .8;
+  font-size: 0.8rem;
+}
+ion-content {
+  ion-list + ion-list {
+    padding: 0.3em 0;
+    margin: 1em 0;
+  }
+  ion-col {
+    align-self: center;
+  }
+
+  .change-policy-btn {
+    --padding-start: 0;
+    margin-left: 0;
+  }
+  .date {
+    margin-bottom: -0.5em;
+  }
+  .price {
+    display: flex;
+    align-items: flex-end;
+    flex-flow: column nowrap;
+    margin: -0.5em 0 0.5em;
+    padding-right: 0.5em;
+  }
+  .refund-change-info {
+    font-size: 0.8rem;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+  }
+  ion-item-group {
+    margin: 0.5em;
+  }
+}
+.spacebetween {
+  display        : flex;
+  justify-content: space-between;
+  font-size      : 0.8em;
+  color: var(--ion-color-dark)
+}
+
+.fee {
+  background-color: var(--ion-color-primary);
+  border-top-right-radius: 10px;
+  border-top-left-radius : 10px;
+  font-size              : 0.9rem;
+  box-shadow             : 0.1em 0.2em 0.6em rgba(0, 0, 0, .1);
+}
+
+.transfrom {
+  transform : translate(0, 100%);
+  position  : fixed;
+  transition: all ease-in-out 200ms;
+  bottom    : 0;
+  left      : 0;
+  right     : 0;
+  z-index   : -1;
+  opacity   : 0;
+  max-width: 100%;
+  width: 100%;
+  &.show {
+    z-index  : 1;
+    opacity  : 1;
+    transform: translate(0, -44px);
+  }
+  .wrapper{
+    
+    display: flex;
+    width: 100%;
+    // max-width: 100%;
+    overflow: scroll;
+  }
+}
+
+.zz {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  opacity: 0.5;
+  background-color: var(--ion-color-dark);;
+}

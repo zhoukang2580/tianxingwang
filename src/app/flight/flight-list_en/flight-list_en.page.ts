@@ -1,3 +1,4 @@
+import { LangService } from './../../tmc/lang.service';
 import { SelectFlightPassengerComponent } from "./../components/select-flight-passenger/select-flight-passenger.component";
 import { IFlightSegmentInfo } from "./../models/PassengerFlightInfo";
 import {
@@ -153,7 +154,8 @@ export class FlightListEnPage
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
     private storage: Storage,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private langService:LangService
   ) {
     this.subscriptions.push(
       flightService

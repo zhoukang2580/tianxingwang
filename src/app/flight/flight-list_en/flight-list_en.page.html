@@ -133,14 +133,15 @@
       <div class="tab" [class.active]="activeTab === 'time'" (click)="onTimeOrder()">
         <ion-icon name="time"></ion-icon>
         <ion-note *ngIf="activeTab !== 'time'">Time</ion-note>
-        <ion-note *ngIf="activeTab === 'time' && timeOrdM2N">从早到晚</ion-note>
-        <ion-note *ngIf="activeTab === 'time' && !timeOrdM2N">从晚到早</ion-note>
+        <ion-icon name="arrow-up-outline" *ngIf="activeTab === 'time' && timeOrdM2N"></ion-icon>
+        <ion-icon name="arrow-down-outline" *ngIf="activeTab === 'time' && !timeOrdM2N"></ion-icon>
+
       </div>
       <div class="tab" [class.active]="activeTab === 'price'" (click)="onPriceOrder()">
         <ion-icon name="logo-yen"></ion-icon>
         <ion-note *ngIf="activeTab !== 'price'">Price</ion-note>
-        <ion-note *ngIf="activeTab === 'price' && priceOrderL2H">从低到高</ion-note>
-        <ion-note *ngIf="activeTab === 'price' && !priceOrderL2H">从高到低</ion-note>
+        <ion-icon name="arrow-up-outline" *ngIf="activeTab === 'price' && priceOrderL2H"></ion-icon>
+        <ion-icon name="arrow-down-outline"*ngIf="activeTab === 'price' && !priceOrderL2H"></ion-icon>
       </div>
     </div>
   </ion-toolbar>

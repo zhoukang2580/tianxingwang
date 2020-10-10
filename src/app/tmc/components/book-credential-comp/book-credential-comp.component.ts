@@ -29,6 +29,9 @@ export class BookCredentialCompComponent
   // @Input() isExchange: boolean;
   @Input() credential: CredentialsEntity;
   @Input() credentials: CredentialsEntity[];
+  @Input() langOpt:{
+    
+  }
   // @Input() isFlightTrainHotel: "flight" | "train" | "hotel";
   @Output() savecredential: EventEmitter<any>;
   @Output() modify: EventEmitter<any>;
