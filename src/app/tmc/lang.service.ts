@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Subscription } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { ApiService } from "../services/api/api.service";
 import { RequestEntity } from "../services/api/Request.entity";
 import { IdentityService } from "../services/identity/identity.service";
@@ -19,6 +19,7 @@ export class LangService {
   private len = 1500;
   private identity: IdentityEntity;
   private isTranslate = false;
+  private langSource = new BehaviorSubject("cn");
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
@@ -29,13 +30,11 @@ export class LangService {
       this.translate();
     });
   }
-  get isEn(){
-    return AppHelper.getStyle() &&
-    AppHelper.getStyle().toLowerCase() == "en"
+  get isEn() {
+    return AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() == "en";
   }
-  get isCn(){
-    return AppHelper.getStyle() &&
-    AppHelper.getStyle().toLowerCase() == "cn"
+  get isCn() {
+    return AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() == "cn";
   }
   translate() {
     try {
@@ -64,9 +63,13 @@ export class LangService {
   setLang(lang = "cn") {
     AppHelper.setStyle(lang);
     AppHelper.setStorage("language", lang);
+    this.langSource.next(lang);
   }
   getLang() {
     return AppHelper.getLanguage();
+  }
+  getLangSource() {
+    return this.langSource.asObservable();
   }
   private getTranslateContent(result: string[]) {
     const req = new RequestEntity();
@@ -185,7 +188,7 @@ export class LangService {
         if (parent.nodeType == Node.TEXT_NODE) {
           // 文本节点
           if (parent.textContent.match(/[\u4E00-\u9FA5]/g)) {
-            if (tags.map((it) => it.textContent).join("").length <=this.len) {
+            if (tags.map((it) => it.textContent).join("").length <= this.len) {
               tags.push(parent);
             } else {
               return;

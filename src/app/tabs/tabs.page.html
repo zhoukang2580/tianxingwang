@@ -4,17 +4,17 @@
       <!-- <i class='icon icon-tab-home {{tab==="home"?"active":""}}'></i> -->
       <i class='icon icon-tab-home{{tab==="tmc-home"?"-fill":""}}'></i>
       <!-- <img src="assets/svgs/tab-home.svg" appLazyloadimage alt="首页"> -->
-      <ion-label >{{langOpt.HomePage}}</ion-label>
+      <ion-label notranslate>{{langOpt.HomePage}}</ion-label>
     </ion-tab-button>
     <ion-tab-button [class.tab-selected]='tab==="trip"' (click)='onTabActive("trip")'>
       <i class='icon icon-tab-trip{{tab==="trip"?"-fill":""}}'></i>
       <!-- <img src="assets/svgs/tab-trip.svg" appLazyloadimage alt="首页"> -->
-      <ion-label>{{langOpt.WaiToTra}}</ion-label>
+      <ion-label notranslate>{{langOpt.WaiToTra}}</ion-label>
     </ion-tab-button>
     <ion-tab-button [class.tab-selected]='tab==="my"' (click)='onTabActive("my")'>
       <i class='icon icon-tab-my{{tab==="my"?"-fill":""}}'></i>
       <!-- <img src="assets/svgs/tab-my.svg" appLazyloadimage alt="首页"> -->
-      <ion-label>{{langOpt.My}}</ion-label>
+      <ion-label notranslate>{{langOpt.My}}</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

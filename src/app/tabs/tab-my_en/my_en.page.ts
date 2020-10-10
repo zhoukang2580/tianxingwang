@@ -116,6 +116,7 @@ export class MyEnPage implements OnDestroy, OnInit {
         },
         {
           text: "中文",
+          cssClass: "notranslate",
           role: !style ? "selected" : "",
           handler: () => {
             AppHelper.setStyle("cn");
