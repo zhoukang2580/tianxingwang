@@ -661,43 +661,43 @@ export class CalendarService {
     return d.date.substring("2018-".length + 1, "2018-11".length);
   }
   getDescOfDate(date: string) {
-    // const curDay = moment(); // 今天
+    const curDay = moment(); // 今天
     const d = this.generateDayModelByDate(date);
 
     // console.log(d.date);
-    // switch (date) {
-    //   case this.generateDayModel(curDay).date: {
-    //     return LanguageHelper.getTodayTip();
-    //   }
+    switch (date) {
+      case this.generateDayModel(curDay).date: {
+        return LanguageHelper.getTodayTip();
+      }
 
-    //   case this.generateDayModel(curDay.add(1, "days")).date: {
-    //     return LanguageHelper.getTomorrowTip();
-    //   }
-    //   case this.generateDayModel(curDay.add(1, "days")).date: {
-    //     return LanguageHelper.getTheDayAfterTomorrowTip();
-    //   }
+      // case this.generateDayModel(curDay.add(1, "days")).date: {
+      //   return LanguageHelper.getTomorrowTip();
+      // }
+      // case this.generateDayModel(curDay.add(1, "days")).date: {
+      //   return LanguageHelper.getTheDayAfterTomorrowTip();
+      // }
 
-    //   default:
-    //   }
+      default:
+      }
     return d.dayOfWeekName;
   }
   getDescOfDay(d: DayModel) {
-    // const curDay = moment(); // 今天
-    // // console.log(d.date);
-    // switch (d.date) {
-    //   case this.generateDayModel(curDay).date: {
-    //     return LanguageHelper.getTodayTip();
-    //   }
+    const curDay = moment(); // 今天
+    // console.log(d.date);
+    switch (d.date) {
+      case this.generateDayModel(curDay).date: {
+        return LanguageHelper.getTodayTip();
+      }
 
-    //   case this.generateDayModel(curDay.add(1, "days")).date: {
-    //     return LanguageHelper.getTomorrowTip();
-    //   }
-    //   case this.generateDayModel(curDay.add(1, "days")).date: {
-    //     return LanguageHelper.getTheDayAfterTomorrowTip();
-    //   }
+      // case this.generateDayModel(curDay.add(1, "days")).date: {
+      //   return LanguageHelper.getTomorrowTip();
+      // }
+      // case this.generateDayModel(curDay.add(1, "days")).date: {
+      //   return LanguageHelper.getTheDayAfterTomorrowTip();
+      // }
 
-    //   default:
-    // }
+      default:
+    }
     return d.dayOfWeekName;
   }
   generateDayModelByDate(date: string) {
