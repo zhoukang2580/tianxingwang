@@ -29,6 +29,7 @@ import {
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { InternationalFlightService } from "../international-flight.service";
 import { TmcService } from "src/app/tmc/tmc.service";
+import { LangService } from "src/app/tmc/lang.service";
 @Component({
   selector: "app-select-international-flight-city",
   templateUrl: "./select-city.page.html",
@@ -61,12 +62,14 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   isIos = false;
   isActiveHot = false;
+  isEn = false;
   constructor(
     plt: Platform,
     route: ActivatedRoute,
     private flightService: InternationalFlightService,
     private storage: Storage,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private langService: LangService
   ) {
     this.isIos = plt.is("ios");
     this.subscription = route.queryParamMap.subscribe((q) => {
@@ -97,6 +100,7 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.isSearching = false;
   }
   async ngOnInit() {
+    this.isEn = this.langService.isEn;
     this.doRefresh();
   }
   private async initData(forceRefresh: boolean = false) {

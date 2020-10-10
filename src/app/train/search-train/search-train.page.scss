@@ -59,3 +59,9 @@ ion-content {
     }
   }
 }
+.city-name {
+  flex-basis: 45%;
+  &.disabled {
+    color: var(--ion-color-medium);
+  }
+}

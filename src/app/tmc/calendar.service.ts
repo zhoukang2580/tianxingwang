@@ -15,6 +15,7 @@ import { TripType } from "./models/TripType";
 import { connect } from "http2";
 import { AppHelper } from "../appHelper";
 import { TmcCalendarComponent } from "./components/tmc-calendar/tmc-calendar.page";
+import { LangService } from "./lang.service";
 const lunarCalendar = window["LunarCalendar"];
 const _KEY_HOLIDAYS = "_key_holidays";
 @Injectable({
@@ -33,15 +34,13 @@ export class CalendarService {
   private selectedDays: DayModel[];
   private holidays: ICalendarEntity[] = [];
   private fetchingHolidaysPromise: Promise<ICalendarEntity[]>;
-  private get lang() {
-    return AppHelper.getLanguage();
-  }
-  
+
   constructor(
     private apiService: ApiService,
     private storage: Storage,
     private plt: Platform,
-    private router: Router
+    private router: Router,
+    private langService: LangService
   ) {
     this.selectedDaysSource = new EventEmitter();
     this.calendars = [];
@@ -80,7 +79,7 @@ export class CalendarService {
   }) {
     const m = await AppHelper.modalController.create({
       component: TmcCalendarComponent,
-      animated: false,
+      // animated: false,
       componentProps: {
         calendarService: this,
         ...data,
@@ -205,19 +204,19 @@ export class CalendarService {
   getDayOfWeekNames(n: number) {
     switch (n) {
       case 0:
-        return LanguageHelper.getSundayTip(this.lang);
+        return LanguageHelper.getSundayTip();
       case 1:
-        return LanguageHelper.getMondayTip(this.lang);
+        return LanguageHelper.getMondayTip();
       case 2:
-        return LanguageHelper.getTuesdayTip(this.lang);
+        return LanguageHelper.getTuesdayTip();
       case 3:
-        return LanguageHelper.getWednesdayTip(this.lang);
+        return LanguageHelper.getWednesdayTip();
       case 4:
-        return LanguageHelper.getThursdayTip(this.lang);
+        return LanguageHelper.getThursdayTip();
       case 5:
-        return LanguageHelper.getFridayTip(this.lang);
+        return LanguageHelper.getFridayTip();
       case 6:
-        return LanguageHelper.getSaturdayTip(this.lang);
+        return LanguageHelper.getSaturdayTip();
     }
   }
   private getCalendars(beginDate: string, endDate: string) {

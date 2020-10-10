@@ -15,6 +15,7 @@ import { CredentialsEntity } from "./models/CredentialsEntity";
 import { TrafficlineEntity } from "./models/TrafficlineEntity";
 import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
+import * as moment from "moment";
 import { InsuranceProductEntity } from "../insurance/models/InsuranceProductEntity";
 import { PayService } from "../services/pay/pay.service";
 import { TmcDataEntity } from "./models/TmcDataEntity";
@@ -93,6 +94,22 @@ export class TmcService {
       this.memberDetail = md;
       return md;
     });
+  }
+  getMonthDays(year: number, month: number) {
+    const m = moment(`${year}-${month < 10 ? "0" + month : month}-01`);
+    const days: number[] = [];
+    const len = m.endOf("month").date();
+    const curY = moment().year();
+    const curM = moment().month() + 1;
+    const curDate = moment().date();
+    for (let i = 1; i <= len; i++) {
+      if (curY == year && curM == month) {
+        if (i < curDate) {
+          continue;
+        }
+      }
+      days.push(i);
+    }
   }
   private disposal() {
     this.companies = null;

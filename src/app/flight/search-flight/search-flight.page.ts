@@ -26,6 +26,7 @@ import {
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
+import { LangService } from "src/app/tmc/lang.service";
 @Component({
   selector: "app-search-flight",
   templateUrl: "./search-flight.page.html",
@@ -51,6 +52,7 @@ export class SearchFlightPage
   get selectedPassengers() {
     return this.flightService.getPassengerBookInfos().length;
   }
+  isEn = false;
   constructor(
     private router: Router,
     route: ActivatedRoute,
@@ -63,9 +65,11 @@ export class SearchFlightPage
     private apiService: ApiService,
     private tmcService: TmcService,
     private modalCtrl: ModalController,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private langService: LangService
   ) {
     const sub = route.queryParamMap.subscribe(async (q) => {
+      this.isEn = this.langService.isEn;
       this.isSelf = await this.staffService.isSelfBookType();
       this.isleave = false;
       this.isCanleave = false;
@@ -154,7 +158,7 @@ export class SearchFlightPage
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
-      mode:"md",
+      mode: "md",
       componentProps: {
         details: s.Policy.FlightDescription.split(","),
       },

@@ -9,14 +9,14 @@ import {
   IonRefresher,
   IonHeader,
   ModalController,
-  IonInfiniteScroll
+  IonInfiniteScroll,
 } from "@ionic/angular";
 import {
   Component,
   OnInit,
   ViewChild,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import * as jsPy from "js-pinyin";
 import {
@@ -24,10 +24,11 @@ import {
   state,
   style,
   animate,
-  transition
+  transition,
 } from "@angular/animations";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { FlightService } from "../flight.service";
+import { LangService } from "src/app/tmc/lang.service";
 @Component({
   selector: "app-select-flight-city",
   templateUrl: "./select-flight-city.page.html",
@@ -36,9 +37,9 @@ import { FlightService } from "../flight.service";
     trigger("openclose", [
       state("true", style({ transform: "scale(1)" })),
       state("false", style({ transform: "scale(0)" })),
-      transition("true<=>false", animate("300ms ease-in-out"))
-    ])
-  ]
+      transition("true<=>false", animate("300ms ease-in-out")),
+    ]),
+  ],
 })
 export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
   private cities: TrafficlineEntity[] = [];
@@ -50,6 +51,7 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
   vmKeyowrds = "";
   isSearching = false;
   activeTab = "";
+  isEn = false;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
@@ -60,10 +62,11 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
     plt: Platform,
     route: ActivatedRoute,
     private flightService: FlightService,
-    private storage: Storage
+    private storage: Storage,
+    private langService: LangService
   ) {
     this.isIos = plt.is("ios");
-    this.subscription = route.queryParamMap.subscribe(q => {
+    this.subscription = route.queryParamMap.subscribe((q) => {
       this.isFromCity = q.get("requestCode") == "select_from_city";
     });
   }
@@ -72,7 +75,7 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
     if (tab == "hot") {
       this.cities = this.cities || [];
       this.textSearchResults = this.cities.filter(
-        it => it.IsHot && !it.IsDeprecated
+        (it) => it.IsHot && !it.IsDeprecated
       );
     }
     if (tab == "history") {
@@ -85,13 +88,14 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.isSearching = false;
   }
   async ngOnInit() {
+    this.isEn = this.langService.isEn;
     this.doRefresh();
   }
   private async initData(forceRefresh: boolean = false) {
     this.cities =
       (await this.flightService.getDomesticAirports(forceRefresh)) || [];
     this.cities.sort((c1, c2) => c1.Sequence - c2.Sequence);
-    this.cities = this.cities.map(it => {
+    this.cities = this.cities.map((it) => {
       if (
         it.Name == "北京南苑" ||
         it.Nickname == "北京南苑" ||
@@ -103,8 +107,8 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
     });
     this.histories = (await this.storage.get("historyDomesticAirports")) || [];
     this.cities = this.cities
-      .filter(it => it.IsHot)
-      .concat(this.cities.filter(it => !it.IsHot));
+      .filter((it) => it.IsHot)
+      .concat(this.cities.filter((it) => !it.IsHot));
     return true;
   }
   ngOnDestroy() {
@@ -112,7 +116,7 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.unsubscribe();
   }
   async doRefresh(forceFetch = false) {
-    await this.initData(forceFetch).catch(_ => 0);
+    await this.initData(forceFetch).catch((_) => 0);
     if (this.refresher) {
       this.refresher.complete();
     }
@@ -130,7 +134,7 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit() {}
   async onCitySelected(city: TrafficlineEntity) {
-    if (this.histories && !this.histories.find(it => it.Id == city.Id)) {
+    if (this.histories && !this.histories.find((it) => it.Id == city.Id)) {
       this.histories.unshift(city);
       if (this.histories.length > 20) {
         this.histories = this.histories.slice(0, 20);
@@ -150,12 +154,12 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
     let name = (this.vmKeyowrds && this.vmKeyowrds.trim()) || "";
     name = name.toLowerCase();
     const arr = this.cities
-      .filter(c => {
+      .filter((c) => {
         if (!name) {
           return true;
         }
         const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
-        return keys.some(k => {
+        return keys.some((k) => {
           // console.log(`key=${k}`, c[k]);
           const n: string = ((c[k] && c[k]) || "").toLowerCase();
           if (name == "北京南苑") {
@@ -169,7 +173,7 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
           }
         });
       })
-      .filter(it => !it.IsDeprecated);
+      .filter((it) => !it.IsDeprecated);
     this.scroller.complete();
     const temp = arr.slice(
       this.textSearchResults.length,

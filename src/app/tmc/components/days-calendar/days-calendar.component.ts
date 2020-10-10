@@ -20,7 +20,7 @@ import { CalendarService } from "src/app/tmc/calendar.service";
 @Component({
   selector: "app-days-calendar",
   templateUrl: "./days-calendar.component.html",
-  styleUrls: ["./days-calendar.component.scss"]
+  styleUrls: ["./days-calendar.component.scss"],
 })
 export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
@@ -49,10 +49,10 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.initDays(moment().format("YYYY-MM-DD"));
     this.subscription = this.calendarService
       .getSelectedDaysSource()
-      .subscribe(days => {
+      .subscribe((days) => {
         setTimeout(() => {
           if (days && days.length) {
-            const selectedDate = days.find(it => it.selected);
+            const selectedDate = days.find((it) => it.selected);
             this.initDays(days[0].date, selectedDate);
             this.moveDateToView();
           } else {
@@ -64,7 +64,11 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private initDays(date: string, selectedDate: DayModel = null) {
     this.days = [];
-    for (let i = 0; i < 7; i++) {
+    let idx = moment(date).diff(moment().format("YYYY-MM-DD"), "days");
+    if (idx > 7) {
+      idx = 7;
+    }
+    for (let i = -idx; i < 7; i++) {
       const nextDay = moment(date).add(i, "days");
       const day = this.calendarService.generateDayModel(nextDay);
       day.dayOfWeekName = this.calendarService.getWeekName(day);
@@ -94,7 +98,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   private moveDateToView() {
     setTimeout(() => {
-      const d = this.days.find(it => it.selected);
+      const d = this.days.find((it) => it.selected);
       if (d) {
         this.onDaySelected(d, false);
       }
@@ -115,7 +119,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (!this.daysEle || !this.daysEle.nativeElement) {
       // 如果这里的日历找不到对应的日期，结束
-      if (!this.days.find(item => item.date == day.date)) {
+      if (!this.days.find((item) => item.date == day.date)) {
         const ele = this.daysEle.nativeElement.querySelector(".active");
         // console.log("日期变更停止",ele);
         if (ele) {
@@ -128,7 +132,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     let selectedEle;
     // console.dir(this.dayItems);
     if (this.dayItems && this.dayItems.length) {
-      this.dayItems.forEach(item => {
+      this.dayItems.forEach((item) => {
         // console.log(item.nativeElement.getAttribute("date"));
         if (item.nativeElement.getAttribute("date") == day.date) {
           selectedEle = item.nativeElement;
@@ -139,17 +143,17 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     if (daysEle && selectedEle) {
-      this.domCtrl.read(_ => {
+      this.domCtrl.read((_) => {
         const clientRect = selectedEle.getBoundingClientRect();
         // console.dir(daysEle);
         const dist =
           clientRect.width / 2 + clientRect.left - this.plt.width() / 2;
         // console.dir(dist);
-        this.domCtrl.write(_ => {
+        this.domCtrl.write((_) => {
           daysEle.scrollBy({
             left: dist,
             top: 0,
-            behavior: "smooth"
+            behavior: "smooth",
           });
         });
       });

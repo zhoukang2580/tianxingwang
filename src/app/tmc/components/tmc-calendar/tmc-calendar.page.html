@@ -21,10 +21,20 @@
   </app-refresher>
   <ul *ngFor='let ym of calendars;let last=last;' [attr.ym]='ym.yearMonth' class='calendar' #calendar>
     <li style="width: 100%;display: block;height: 1em;">
-      <strong>{{ym.yearMonth?.substr(0,4)}}年{{ym.yearMonth?.substr(5,2)}}月</strong>
+      <ng-container *ngIf='isEn else cntpl'>
+        <strong>{{ym.yearMonth?.substr(0,4)}}-{{ym.yearMonth?.substr(5,2)}}</strong>
+      </ng-container>
+      <ng-template #cntpl>
+        <strong>{{ym.yearMonth?.substr(0,4)}}年{{ym.yearMonth?.substr(5,2)}}月</strong>
+      </ng-template>
     </li>
     <li *ngFor='let day of ym.dayList' class='day' [ngClass]='day.clazz()'>
-      <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
+      <ng-container *ngIf='isEn else cn'>
+        <app-day-en [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day-en>
+      </ng-container>
+      <ng-template #cn>
+        <app-day [dayModel]='day' (daySelected)='onDaySelected(day)'></app-day>
+      </ng-template>
     </li>
     <div class='shadow-month'>
       {{ym.yearMonth?.substr(5,2)<"10"?ym.yearMonth?.substr(5,2)?.replace('0',""):ym.yearMonth?.substr(5,2)}}</div>

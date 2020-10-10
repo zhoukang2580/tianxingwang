@@ -1,6 +1,9 @@
 export class LanguageHelper {
   static get lang() {
-    return window.localStorage.getItem("language");
+    return (
+      window.localStorage.getItem("language") ||
+      window.localStorage.getItem("style")
+    );
   }
   static Train = {
     getDontAllowBookTip: () => {
@@ -373,49 +376,52 @@ export class LanguageHelper {
   static getBackDateTip() {
     return "请选择返程日期";
   }
-  static getSundayTip(lang: string = "") {
-    if (lang == "en") {
+  static getSundayTip() {
+    if (this.lang == "en") {
       return "Sunday";
     }
     return "周日";
   }
-  static getMondayTip(lang = "") {
-    if (lang == "en") {
+  static getMondayTip() {
+    if (this.lang == "en") {
       return "Monday";
     }
     return "周一";
   }
-  static getTuesdayTip(lang = "") {
-    if (lang == "en") {
+  static getTuesdayTip() {
+    if (this.lang == "en") {
       return "Tuesday";
     }
     return "周二";
   }
-  static getWednesdayTip(lang = "") {
-    if (lang == "en") {
+  static getWednesdayTip() {
+    if (this.lang == "en") {
       return "Wednesday";
     }
     return "周三";
   }
-  static getThursdayTip(lang = "") {
-    if (lang == "en") {
+  static getThursdayTip() {
+    if (this.lang == "en") {
       return "Thursday";
     }
     return "周四";
   }
-  static getFridayTip(lang = "") {
-    if (lang == "en") {
+  static getFridayTip() {
+    if (this.lang == "en") {
       return "Friday";
     }
     return "周五";
   }
-  static getSaturdayTip(lang = "") {
-    if (lang == "en") {
+  static getSaturdayTip() {
+    if (this.lang == "en") {
       return "Saturday";
     }
     return "周六";
   }
   static getTodayTip() {
+    if (this.lang == "en") {
+      return "Today";
+    }
     return "今天";
   }
   static getTomorrowTip() {

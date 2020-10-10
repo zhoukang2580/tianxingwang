@@ -28,6 +28,7 @@ import { WaitingCheckPayComponent } from "./waiting-check-pay/waiting-check-pay.
 import { ShowStandardDetailsComponent } from "./show-standard-details/show-standard-details.component";
 import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-expense-types-comp.component";
 import { TmcCalendarComponent } from "./tmc-calendar/tmc-calendar.page";
+import { DayEnComponent } from "./day-en/dayEn.component";
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { TmcCalendarComponent } from "./tmc-calendar/tmc-calendar.page";
     BookOrganizationCompComponent,
     BookAddcontactsCompComponent,
     DayComponent,
+    DayEnComponent,
     SelectCountryModalComponent,
     SelectWheelComponent,
     DateSelectWheelPopoverComponent,
@@ -63,6 +65,7 @@ import { TmcCalendarComponent } from "./tmc-calendar/tmc-calendar.page";
     MemberPipesModule,
   ],
   exports: [
+    DayEnComponent,
     BookCredentialCompComponent,
     BookIllegalReasonCompComponent,
     BookCostcenterCompComponent,

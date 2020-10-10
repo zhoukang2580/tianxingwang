@@ -93,3 +93,9 @@ ion-content {
   justify-content: space-between;
   padding: 0.5em 0;
 }
+.city-name {
+  flex-basis: 45%;
+  &.disabled {
+    color: var(--ion-color-medium);
+  }
+}

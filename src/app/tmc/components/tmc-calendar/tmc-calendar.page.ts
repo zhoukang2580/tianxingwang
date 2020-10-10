@@ -18,6 +18,7 @@ import { TripType } from "../../models/TripType";
 import { AppHelper } from "src/app/appHelper";
 import { LanguageHelper } from "src/app/languageHelper";
 import { RefresherComponent } from "src/app/components/refresher";
+import { LangService } from "../../lang.service";
 
 @Component({
   selector: "app-tmc-calendar",
@@ -75,7 +76,8 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   title = "请选择日期";
   calendars: AvailableDate[];
   weeks: string[];
-  constructor(private plt: Platform) {}
+  isEn = false;
+  constructor(private plt: Platform, private langService: LangService) {}
 
   ngOnDestroy() {
     if (this.timeoutId) {
@@ -117,8 +119,11 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   ngOnInit() {
+    this.isEn = this.langService.isEn;
     this.st = Date.now();
-    this.weeks =new Array(7).fill(0).map((k) => this.calendarService.getDayOfWeekNames(k));
+    this.weeks = new Array(7)
+      .fill(0)
+      .map((k) => this.calendarService.getDayOfWeekNames(k));
     this.initCalendars();
   }
   private initCalendars() {
