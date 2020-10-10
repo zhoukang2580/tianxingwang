@@ -22,7 +22,7 @@
       <ion-thumbnail size='small'>
         <img [src]='flightSegment?.AirlineSrc' />
       </ion-thumbnail>
-      <label (click)="onShowAgreement($event)" *ngIf='cabin?.Cabin?.FareType==FlightFareType.Agreement' class="agreement">
+      <label (click)="onShowAgreement($event)" *ngIf='isAgreement' class="agreement">
         {{langOpt.agreement}}<span class="line"></span>
       </label>
       <ion-text class='ion-text-nowrap' color='medium'>|{{flightSegment?.Number}}</ion-text>

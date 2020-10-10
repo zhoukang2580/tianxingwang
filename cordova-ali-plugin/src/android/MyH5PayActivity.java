@@ -24,8 +24,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
+import android.webkit.GeolocationPermissions;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -108,8 +111,17 @@ public class MyH5PayActivity extends Activity {
         params.weight = 1;
         mWebView.setVisibility(View.VISIBLE);
         linearLayout.addView(mWebView, params);
-        initWebViewSettings();
+        mWebView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                // 这里是处理是否同意定位权限，可以在这里写一个 AlertDialog 来模仿浏览器弹出来的定位权限申请。
+                //public void invoke(String origin, boolean allow, boolean retain);
+                callback.invoke(origin, true, false);
+            }
+
+        });
         mWebView.setWebViewClient(new MyWebViewClient());
+        initWebViewSettings();
         mWebView.loadUrl(url);
     }
 
@@ -286,7 +298,11 @@ public class MyH5PayActivity extends Activity {
         // Fix for CB-1405
         // Google issue 4641
         String defaultUserAgent = settings.getUserAgentString();
-
+        if(TextUtils.isEmpty(defaultUserAgent)){
+            defaultUserAgent="Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1";
+        }
+        settings.setUserAgentString(defaultUserAgent);
+        settings.setSafeBrowsingEnabled(false);
         // Fix for CB-3360
 //		String overrideUserAgent = preferences.getString("OverrideUserAgent", null);
 //		if (overrideUserAgent != null) {
