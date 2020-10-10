@@ -75,6 +75,13 @@ const routes: Routes = [
       import("src/app/flight/book/book.module").then(
         m => m.FlightBookPageModule
       )
+  },
+  {
+    path: "flight-book_en",
+    loadChildren: () =>
+      import("src/app/flight/book_en/book_en.module").then(
+        m => m.FlightBookEnPageModule
+      )
   }
 ];
 @NgModule({
