@@ -13,7 +13,7 @@ import {
   QueryList,
   ViewChildren,
   OnDestroy,
-  Input
+  Input,
 } from "@angular/core";
 import * as moment from "moment";
 import { CalendarService } from "src/app/tmc/calendar.service";
@@ -27,8 +27,8 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() itemSelected: EventEmitter<DayModel>;
   @Output() calenderClick: EventEmitter<any>;
   @Input() langOpt: {
-    calendar: '日历'
-  }
+    calendar: "日历";
+  };
   @ViewChild("daysContainer") daysEle: ElementRef<HTMLElement>;
   @ViewChildren("dayItem") dayItems: QueryList<ElementRef<HTMLElement>>;
   days: DayModel[];
@@ -73,6 +73,11 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       const day = this.calendarService.generateDayModel(nextDay);
       day.dayOfWeekName = this.calendarService.getWeekName(day);
       day.topDesc = this.calendarService.getDescOfDay(day);
+      if (day.topDesc) {
+        if (day.topDesc.toLowerCase() != "today") {
+          day.topDesc = day.topDesc.substr(0, 3) + ".";
+        }
+      }
       day.selected = (selectedDate && selectedDate.date == day.date) || i == 0;
       this.days.push(day);
     }
