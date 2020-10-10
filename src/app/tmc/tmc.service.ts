@@ -60,6 +60,7 @@ export class TmcService {
   private selectedCompanySource: BehaviorSubject<string>;
   private fetchingTmcPromise: Promise<TmcEntity>;
   private companies: GroupCompanyEntity[];
+  private banners: any[];
   // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
   private identity: IdentityEntity;
@@ -78,6 +79,7 @@ export class TmcService {
     this.identityService.getIdentitySource().subscribe((id) => {
       this.identity = id;
       this.disposal();
+      this.banners = [];
     });
   }
   private disposal() {
@@ -95,13 +97,19 @@ export class TmcService {
     );
   }
   async getBanners() {
+    if (this.banners && this.banners.length) {
+      return this.banners;
+    }
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Banner-List";
     req.IsRedirctNoAuthorize = false;
     req.IsRedirctLogin = false;
-    return this.apiService.getPromiseData<
-      { ImageUrl: string; Title: string; Id: string }[]
-    >(req);
+    return this.apiService
+      .getPromiseData<{ ImageUrl: string; Title: string; Id: string }[]>(req)
+      .then((r) => {
+        this.banners = r;
+        return r;
+      });
   }
   setTravelFormNumber(tn: string) {
     AppHelper.setQueryParamers("TravelNumber", tn);

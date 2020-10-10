@@ -101,7 +101,7 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private async initData(forceRefresh: boolean = false) {
     try {
-      const keys = `Code,Name,Nickname,CityName,Pinyin,AirportCityCode`.split(
+      const keys = `Code,Name,Nickname,CityName,Pinyin,AirportCityCode,Initial,FirstLetter,EnglishName`.split(
         ","
       );
       if (this.isInitData) {
