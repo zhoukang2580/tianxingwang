@@ -68,7 +68,7 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
     if (idx > 7) {
       idx = 7;
     }
-    for (let i = -idx; i < 7; i++) {
+    for (let i = -idx; i < 7 + idx; i++) {
       const nextDay = moment(date).add(i, "days");
       const day = this.calendarService.generateDayModel(nextDay);
       day.dayOfWeekName = this.calendarService.getWeekName(day);
@@ -81,19 +81,19 @@ export class DaysCalendarComponent implements OnInit, AfterViewInit, OnDestroy {
       day.selected = (selectedDate && selectedDate.date == day.date) || i == 0;
       this.days.push(day);
     }
-    let n = Math.abs(moment().diff(moment(date), "days"));
-    n = n > 10 ? 7 : n;
-    for (let i = -1; i >= -n; i--) {
-      const nextDay = moment(date).add(i, "days");
-      const day = this.calendarService.generateDayModel(nextDay);
-      if (day.timeStamp < Math.floor(new Date().getTime() / 1000)) {
-        break;
-      }
-      day.dayOfWeekName = this.calendarService.getWeekName(day);
-      day.topDesc = this.calendarService.getDescOfDay(day);
-      this.days.unshift(day);
-    }
-    console.log("days calendar", `n=${n}`, this.days);
+    // let n = Math.abs(moment(date).diff(moment().format("YYYY-MM-DD"), "days"));
+    // n = n > 10 ? 7 : n;
+    // for (let i = -1; i >= -n; i--) {
+    //   const nextDay = moment(date).add(i, "days");
+    //   const day = this.calendarService.generateDayModel(nextDay);
+    //   if (day.timeStamp < Math.floor(new Date().getTime() / 1000)) {
+    //     break;
+    //   }
+    //   day.dayOfWeekName = this.calendarService.getWeekName(day);
+    //   day.topDesc = this.calendarService.getDescOfDay(day);
+    //   this.days.unshift(day);
+    // }
+    // console.log("days calendar", `n=${n}`, this.days);
   }
   onCalendar() {
     this.calenderClick.emit();
