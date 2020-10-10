@@ -54,6 +54,14 @@ export class TabsPage implements OnInit {
   tabChangeHooks: () => any;
   constructor(private router: Router, private langService: LangService) {
     // this.tab = "home";
+   
+  }
+  onTabActive(tab: string) {
+    this.tab = tab;
+    this.router.navigate([AppHelper.getRoutePath(`tabs/${tab}`)]);
+  }
+  ngOnInit() {
+    this.tab = "tmc-home";
     this.langService.getLangSource().subscribe((lang) => {
       if (this.langService.isEn) {
         this.langOpt.HomePage = "Home";
@@ -65,13 +73,6 @@ export class TabsPage implements OnInit {
         this.langOpt.WaiToTra = "待出行";
       }
     });
-  }
-  onTabActive(tab: string) {
-    this.tab = tab;
-    this.router.navigate([AppHelper.getRoutePath(`tabs/${tab}`)]);
-  }
-  ngOnInit() {
-    this.tab = "tmc-home";
     // this.subscription = this.router.events
     //   .pipe(filter(evt => evt instanceof NavigationStart))
     //   .subscribe((evt: NavigationStart) => {
