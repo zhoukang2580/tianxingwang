@@ -6,7 +6,7 @@ import { AppHelper } from "src/app/appHelper";
 import { ProductListPage } from '../product-list/product-list.page';
 export const ORDER_TABS: ProductItem[] = [
   {
-    label: "Plane",
+    label: "Flight",
     value: ProductItemType.plane,
     // product-plane
     imageSrc: "assets/svgs/product-plane1.svg",

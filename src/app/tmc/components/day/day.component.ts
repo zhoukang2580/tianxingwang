@@ -9,10 +9,8 @@ import { DayModel } from "../../models/DayModel";
 })
 export class DayComponent implements OnInit {
   bottomDesc: string;
-  @Input()
-  dayModel: DayModel;
-  @Output()
-  daySelected: EventEmitter<DayModel>;
+  @Input()  dayModel: DayModel;
+  @Output()  daySelected: EventEmitter<DayModel>;
   constructor() {
     this.daySelected = new EventEmitter();
   }

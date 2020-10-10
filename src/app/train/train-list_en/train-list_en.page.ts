@@ -15,7 +15,7 @@ export class TrainListEnPage extends TrainListPage {
     minute: "m",
     isStopInfo: "Stop",
     has: "",
-    no: "no",
+    no: "0",
     Left: "Left",
     agreement: "agreement",
     agreementDesc: "agreementDesc",

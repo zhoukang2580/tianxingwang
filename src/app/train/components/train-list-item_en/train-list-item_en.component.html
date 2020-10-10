@@ -32,8 +32,8 @@
   <ion-row class='seat-outline' color='medium'>
     <ion-col size='4' *ngFor='let seat of getSeats()'>
       <span>{{seat.SeatTypeName}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"":"no"}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"no"}}票</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"":"0"}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"0"}}票</span>
     </ion-col>
   </ion-row>
   <ion-grid class='seats' *ngIf='train["isShowSeats"]'>
@@ -80,7 +80,7 @@
     <div class='seat-item'>
       <span>{{seat.SeatTypeName}}</span>
       <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"Zhang":""}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"no"}}{{langOpt.Left}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"0"}}{{langOpt.Left}}</span>
     </div>
     <div class='price' style='margin-left: auto'>￥{{seat.SalesPrice}}</div>
   </div>
