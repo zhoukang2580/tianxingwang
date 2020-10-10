@@ -30,10 +30,10 @@
                   {{getDate(combindInfo?.bookInfo?.bookInfo?.trainEntity)}}
                 </ion-label>
               </strong>
-              <app-train-list-item [train]='combindInfo?.bookInfo?.bookInfo?.trainEntity' [showBookBtn]='false'
+              <app-train-list-item_en [langOpt]='langOpt' [train]='combindInfo?.bookInfo?.bookInfo?.trainEntity' [showBookBtn]='false'
                 [seat]='combindInfo?.bookInfo?.bookInfo?.selectedSeat' (seatPicker)='onSeatPicker($event,combindInfo)'
                 [selectSeatLocation]='combindInfo.bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'>
-              </app-train-list-item>
+              </app-train-list-item_en>
             </div>
           </ion-item>
         </ion-item-group>
@@ -41,7 +41,7 @@
           <ion-item-divider>Passenger information:</ion-item-divider>
           <ion-item [disabled]='searchTrainModel?.isExchange'>
             <div style='width: 100%'>
-              <app-book-credential-comp [attr.credentialcompid]='combindInfo.id'
+              <app-book-credential-comp_en [attr.credentialcompid]='combindInfo.id'
                 [credential]='combindInfo?.vmCredential' *ngIf='!searchTrainModel?.isExchange else excredentialTemp'
                 [canEdit]='true' [canEditNumber]='false'
                 [isself]='isSelfBookType'
@@ -49,7 +49,7 @@
                 [canEditName]='combindInfo?.vmCredential.Type==CredentialsType.HvPass||combindInfo?.vmCredential.Type==CredentialsType.Taiwan'
                 (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'
                 (modify)='onModify(combindInfo)'>
-              </app-book-credential-comp>
+              </app-book-credential-comp_en>
               <ng-template #excredentialTemp>
                 <app-book-credential-comp [attr.credentialcompid]='combindInfo.id' [canEdit]='false' 
                   [credential]='combindInfo?.vmCredential' (savecredential)='onSavecredential($event,combindInfo)'
@@ -98,7 +98,7 @@
             </ion-item>
             <ion-item [disabled]='searchTrainModel?.isExchange'>
               <ion-label style='margin-right: 0.5em'>其他号码：</ion-label>
-              <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='请输入其他号码'></ion-input>
+              <ion-input style="margin-left: -6px; font-size: 15px;" [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='Please enter another number'></ion-input>
             </ion-item>
           </div>
         </ion-item-group>
@@ -114,7 +114,7 @@
             </ion-item>
             <ion-item class='ion-no-margin' [disabled]='searchTrainModel?.isExchange'>
               <ion-label>其他邮箱：</ion-label>
-              <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
+              <ion-input style="font-size:15px" [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='Please enter another email'></ion-input>
             </ion-item>
           </div>
         </ion-item-group>

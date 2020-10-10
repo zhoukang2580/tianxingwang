@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, Input,
 } from "@angular/core";
 // tslint:disable-next-line: max-line-length
 import { TrainListPage } from '../train-list/train-list.page';
@@ -9,7 +9,7 @@ import { TrainListPage } from '../train-list/train-list.page';
   styleUrls: ["./train-list_en.page.scss"],
 })
 export class TrainListEnPage extends TrainListPage {
-  langOpt = {
+  @Input() langOpt = {
     about : "",
     time: "H",
     minute: "m",

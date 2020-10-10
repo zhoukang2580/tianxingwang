@@ -1,5 +1,6 @@
 import {
   Component} from "@angular/core";
+import { BookCredentialCompComponent } from '../book-credential-comp/book-credential-comp.component';
 
 @Component({
   selector: "app-book-credential-comp_en",

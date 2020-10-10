@@ -29,6 +29,7 @@ import { ShowStandardDetailsComponent } from "./show-standard-details/show-stand
 import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-expense-types-comp.component";
 import { TmcCalendarComponent } from "./tmc-calendar/tmc-calendar.page";
 import { DayEnComponent } from "./day-en/dayEn.component";
+import { BookCredentialCompEnComponent } from './book-credential-comp_en/book-credential-comp_en.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { DayEnComponent } from "./day-en/dayEn.component";
     AddcontactsModalComponent,
     BookIllegalReasonCompComponent,
     BookCredentialCompComponent,
+    BookCredentialCompEnComponent,
     BookCostcenterCompComponent,
     BookOrganizationCompComponent,
     BookAddcontactsCompComponent,
@@ -69,6 +71,7 @@ import { DayEnComponent } from "./day-en/dayEn.component";
     BookCredentialCompComponent,
     BookIllegalReasonCompComponent,
     BookCostcenterCompComponent,
+    BookCredentialCompEnComponent,
     BookOrganizationCompComponent,
     BookAddcontactsCompComponent,
     BookTmcOutnumberComponent,

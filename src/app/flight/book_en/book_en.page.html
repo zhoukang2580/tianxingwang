@@ -89,9 +89,9 @@
         </ion-item-group>
         <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
           <ion-item-divider color="primary">TIS:</ion-item-divider>
-          <app-book-credential-comp [credential]='combindInfo.vmCredential' [isself]="isself" (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
+          <app-book-credential-comp_en [credential]='combindInfo.vmCredential' [isself]="isself" (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
             (modify)='onModify(combindInfo)' [attr.credentialcompid]='combindInfo.id'>
-          </app-book-credential-comp>
+          </app-book-credential-comp_en>
           <ng-container *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
             <app-book-illegal-reason-comp [illegalReasons]='illegalReasons' [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
               (ionchange)='onIllegalReason($event,combindInfo)'>

@@ -1,5 +1,5 @@
 import {
-  Component,
+  Component, Input,
 } from "@angular/core";
 import { TrainBookPage } from '../train-book/book.page';
 
@@ -9,5 +9,16 @@ import { TrainBookPage } from '../train-book/book.page';
   styleUrls: ["./book_en.page.scss"],
 })
 export class TrainBookEnPage extends TrainBookPage {
-  
+  @Input() langOpt = {
+    about : "",
+    time: "H",
+    minute: "m",
+    isStopInfo: "Stop",
+    has: "",
+    no: "0",
+    Left: "Left",
+    agreement: "agreement",
+    agreementDesc: "agreementDesc",
+    reserve: "Book"
+  }
 }
