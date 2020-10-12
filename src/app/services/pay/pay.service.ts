@@ -11,7 +11,7 @@ import {
   IPayWayItem,
 } from "src/app/components/pay/pay.component";
 import { finalize } from "rxjs/operators";
-import { Router } from '@angular/router';
+import { Router } from "@angular/router";
 export const Wechat_Pay_Error_Message_Cancel = "";
 @Injectable({
   providedIn: "root",
@@ -57,6 +57,13 @@ export class PayService {
     const messages: IPayMessage[] = [];
     if (AppHelper.isApp()) {
       const isAlipayAppInstalled = await AppHelper.isAliPayAppInstalled();
+      console.log(
+        "ail" +
+          " " +
+          typeof window["ali"] +
+          " isAlipayAppInstalled " +
+          isAlipayAppInstalled
+      );
       if (!isAlipayAppInstalled) {
         result = true;
         req.Data.CreateType = "Mobile";
@@ -148,7 +155,7 @@ export class PayService {
         const sub = this.apiService.getResponse<any>(req).subscribe(
           async (r) => {
             if (r.Status && r.Data) {
-              if (typeof r.Data.Status == 'boolean') {
+              if (typeof r.Data.Status == "boolean") {
                 if (!r.Data.Status) {
                   reject(r.Data.Message || r.Data.Code);
                   return;
@@ -173,7 +180,9 @@ export class PayService {
                   r.Data.paySign +
                   "&openid=" +
                   WechatHelper.getMiniOpenId() +
-                  "&" + AppHelper.getTicketName() + "=" +
+                  "&" +
+                  AppHelper.getTicketName() +
+                  "=" +
                   AppHelper.getTicket() +
                   "&path=" +
                   path +
@@ -187,7 +196,7 @@ export class PayService {
                 WechatHelper.checkStep(key, this.apiService, (val) => {
                   try {
                     callback(r.Data.Number || "支付操作完成");
-                  } catch (e) { }
+                  } catch (e) {}
                 });
                 resolve(r.Data.Number || "支付操作完成");
               } else if (AppHelper.isWechatH5()) {
@@ -256,13 +265,15 @@ export class PayService {
                       e.message || `${e}`.includes("-2")
                         ? "用户取消"
                         : `${e}`.includes("-1")
-                          ? "签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配"
-                          : `微信支付结果：${e}`.replace(",(null)", "")
+                        ? "签名错误、未注册APPID、项目设置APPID不正确、注册的APPID与设置的不匹配"
+                        : `微信支付结果：${e}`.replace(",(null)", "")
                     );
                   });
               }
             } else {
-              reject(r && (r.Message || (r.Data && r.Data.Message)) || "操作失败");
+              reject(
+                (r && (r.Message || (r.Data && r.Data.Message))) || "操作失败"
+              );
             }
           },
           (e) => {
@@ -294,7 +305,10 @@ export class PayService {
       path +
       "&openid=" +
       (WechatHelper.getOpenId() || "");
-    for (let r in req) {
+    for (const r in req) {
+      if (r.toLowerCase() == AppHelper.getTicketName()) {
+        continue;
+      }
       url +=
         "&" +
         r +
@@ -304,12 +318,12 @@ export class PayService {
     if (!AppHelper.isApp()) {
       window.location.href = url;
     } else {
-      this.router.navigate(['open-url'], {
+      this.router.navigate(["open-url"], {
         queryParams: {
           url,
-          isOpenInAppBrowser:true
-        }
-      })
+          isOpenInAppBrowser: true,
+        },
+      });
     }
   }
 
@@ -371,14 +385,14 @@ export interface IAliPayPluginPayResult {
       其它	 其它支付错误
    */
   resultStatus:
-  | "9000"
-  | "8000"
-  | "4000"
-  | "5000"
-  | "6001"
-  | "6002"
-  | "6004"
-  | "其它"; // 9000
+    | "9000"
+    | "8000"
+    | "4000"
+    | "5000"
+    | "6001"
+    | "6002"
+    | "6004"
+    | "其它"; // 9000
 }
 export interface Ali {
   pay: (payInfo: string) => Promise<IAliPayPluginPayResult>;
