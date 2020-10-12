@@ -51,6 +51,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "hotel-room-bookedinfos_en",
+    loadChildren: () =>
+      import("./hotel-room-bookedinfos_en/hotel-room-bookedinfos_en.module").then(
+        m => m.HotelRoomBookedInfosEnPageModule
+      )
+  },
+  {
     path: "hotel-list",
     loadChildren: () =>
       import("./hotel-list/hotel-list.module").then(m => m.HotelListPageModule)
@@ -77,6 +84,10 @@ export const routes: Routes = [
   {
     path: "hotel-book",
     loadChildren: () => import("./book/book.module").then(m => m.BookPageModule)
+  },
+  {
+    path: "hotel-book_en",
+    loadChildren: () => import("./book_en/book_en.module").then(m => m.BookEnPageModule)
   },
   {
     path: 'hotel-map',

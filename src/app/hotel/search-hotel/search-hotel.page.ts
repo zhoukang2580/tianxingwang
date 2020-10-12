@@ -92,7 +92,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
   }
 
   constructor(
-    private router: Router,
+    public router: Router,
     private hotelService: HotelService,
     route: ActivatedRoute,
     private modalController: ModalController,

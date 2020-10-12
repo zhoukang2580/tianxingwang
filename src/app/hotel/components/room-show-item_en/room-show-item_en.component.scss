@@ -1,0 +1,59 @@
+.date,
+.price-detail,
+.desc {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  ion-button {
+    margin-left: auto;
+  }
+}
+.price-detail ion-label {
+  margin-left: auto;
+}
+.hotel-name {
+  margin-left: 0.7em;
+  margin-bottom: -0.5em;
+  padding-top: 0.5em;
+}
+.price small {
+  font-size: 0.6rem;
+}
+.dashed-line {
+  height: 2px;
+  //   background-color: var(--ion-color-secondary);
+  border-bottom: 1px dashed var(--ion-color-secondary);
+  width: 100%;
+  margin-bottom: 0.5em;
+}
+.desc {
+  ul {
+    list-style: none;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    &,
+    li {
+      margin: 0;
+      padding: 0;
+    }
+    span {
+      margin: 0 0.25em;
+    }
+  }
+  ion-label {
+    flex: 1;
+    small {
+      margin: 0 0.25em;
+    }
+  }
+  ion-button {
+    font-size: 0.7rem;
+  }
+}
+ion-card {
+  margin: 0.5em;
+  ion-card-content {
+    padding: 0.5em;
+  }
+}

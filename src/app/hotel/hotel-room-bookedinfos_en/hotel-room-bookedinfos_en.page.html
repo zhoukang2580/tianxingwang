@@ -1,0 +1,44 @@
+<div class="back-drop" *ngIf='isShowPriceDetail'></div>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref=''></app-back-button>
+    </ion-buttons>
+    <ion-title>Reservation information</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-refresher slot='fixed' (ionRefresh)='doRefresh()'></ion-refresher>
+  <ion-item-group *ngFor='let bookInfo of bookInfos$|async'>
+    <ng-container *ngIf='bookInfo?.bookInfo'>
+      <ion-item-divider sticky>
+        <ion-label color='dark'>{{bookInfo?.credential?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
+        <ion-icon name='trash' color='danger' (click)='onRemoveBookInfo(bookInfo)' slot='end' class='ion-margin-end'>
+        </ion-icon>
+      </ion-item-divider>
+      <app-room-show-item_en [bookInfo]='bookInfo' [disabledEdit]='false' (bedChange)='onbedChange($event,bookInfo)'
+        (showRoomDetail)='onShowRoomDetail(bookInfo)' (showPriceDetailEvt)='onShowPriceDetails($event)'>
+      </app-room-show-item_en>
+    </ng-container>
+  </ion-item-group>
+</ion-content>
+<ion-footer *ngIf='!isShowChangeDateComp'>
+  <ion-toolbar>
+    <ion-button slot='end' (click)='nextStep()' color='secondary' [disabled]='!canGoToNext()' size='small'>Next
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
+<app-change-roomplan-date (close)='isShowChangeDateComp=false' *ngIf='isShowChangeDateComp' (confirm)='onConfirm()'
+  (openCalendar)='onOpenCalendar($event)'>
+</app-change-roomplan-date>
+<ion-backdrop *ngIf='isShowPriceDetail' (ionBackdropTap)='onShowPriceDetails({isShow:false})'></ion-backdrop>
+<div [class.show]='isShowPriceDetail' class="price-list">
+  <ion-item-divider>{{calcNights()}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
+  </ion-item-divider>
+  <ul>
+    <li *ngFor='let d of dates'>
+      <span>{{d.date}}</span>
+      <ion-label class='ion-margin-start'>1&times;<small>￥</small>{{d.price}}</ion-label>
+    </li>
+  </ul>
+</div>

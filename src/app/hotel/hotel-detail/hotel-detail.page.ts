@@ -107,7 +107,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     private mapService: MapService,
     private route: ActivatedRoute,
     private hotelService: HotelService,
-    private router: Router,
+    public router: Router,
     private domCtrl: DomController,
     private render: Renderer2,
     private calendarService: CalendarService,
@@ -396,7 +396,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onSegmentChanged(evt: CustomEvent) {
     this.activeTab = evt.detail.value;
-    if(this.activeTab=='trafficInfo'){
+    if(this.activeTab == 'trafficInfo'){
       this.onOpenMap();
       return;
     }
@@ -643,7 +643,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     }
     return true;
   }
-  private async onShowBookInfos() {
+  public async onShowBookInfos() {
     // const m = await this.modalCtrl.create({
     //   component: HotelRoomBookedinfosComponent
     // });
