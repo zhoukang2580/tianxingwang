@@ -323,36 +323,34 @@ export class FlightItemCabinsPage implements OnInit {
         lowestPrice = Math.min(+it.SalesPrice, lowestPrice);
       });
     }
-    const isfirstAgreementCabin = cabins.find(
-      (it) => it.Cabin && +it.Cabin.FareType == FlightFareType.Agreement
-    );
-
-    cabins
+    const isfirstAgreementCabin = cabins
       .sort((a, b) => +a.Cabin.SalesPrice - +b.Cabin.SalesPrice)
-      .forEach((it) => {
-        if (
-          it.Cabin &&
-          it.Cabin.Type == FlightCabinType.Y &&
-          // 最低价
-          (it.Cabin.SalesPrice == `${lowestPrice}` ||
-            // 全价
-            +it.Cabin.Discount >= 1 ||
-            // 协议价
-            +it.Cabin.FareType == FlightFareType.Agreement)
-        ) {
-          if (+it.Cabin.FareType == FlightFareType.Agreement) {
-            if (it == isfirstAgreementCabin) {
-              this.economyClassCabins.push(it);
-            } else {
-              this.moreCabins.push(it);
-            }
-          } else if (+it.Cabin.FareType != FlightFareType.Agreement) {
+      .find((it) => it.Cabin && +it.Cabin.FareType == FlightFareType.Agreement);
+
+    cabins.forEach((it) => {
+      if (
+        it.Cabin &&
+        it.Cabin.Type == FlightCabinType.Y &&
+        // 最低价
+        (it.Cabin.SalesPrice == `${lowestPrice}` ||
+          // 全价
+          +it.Cabin.Discount >= 1 ||
+          // 协议价
+          +it.Cabin.FareType == FlightFareType.Agreement)
+      ) {
+        if (+it.Cabin.FareType == FlightFareType.Agreement) {
+          if (it == isfirstAgreementCabin) {
             this.economyClassCabins.push(it);
+          } else {
+            this.moreCabins.push(it);
           }
-        } else if (it.Cabin) {
-          this.moreCabins.push(it);
+        } else if (+it.Cabin.FareType != FlightFareType.Agreement) {
+          this.economyClassCabins.push(it);
         }
-      });
+      } else if (it.Cabin) {
+        this.moreCabins.push(it);
+      }
+    });
     this.hasMoreCabins = !!this.moreCabins.length;
     this.economyClassCabins.sort((a, b) =>
       b.Cabin && a.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
