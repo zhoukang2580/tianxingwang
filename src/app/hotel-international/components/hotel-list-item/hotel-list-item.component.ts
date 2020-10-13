@@ -13,7 +13,7 @@ export class HotelListItemComponent implements OnInit {
   @Input() hotel: any;
   @Input() defaultImage: any;
   @Input() loadingImage:any;
-  @Input() langOpt:{
+  @Input() langOpt={
     rise: '起'
   }
   constructor() {}
