@@ -23,7 +23,7 @@
   </app-refresher>
   <ion-toolbar #toolbar class="search">
     <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" style='padding:0' animated
-      placeholder="员工号、姓名、手机号、空格键 开始查询" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
+      placeholder="员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
     </ion-searchbar>
   </ion-toolbar>
   <ng-container *ngIf='vmStaffs else addTempl'>
