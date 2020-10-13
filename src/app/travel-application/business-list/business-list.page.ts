@@ -108,7 +108,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
         })
       )
       .subscribe((r) => {
-        const arr = (r && r.Data && r.Data.TravelForms) || [];
+        const arr = (r && r.Data) || [];
         if (this.scroller) {
           this.scroller.disabled = arr.length < this.searchModel.PageSize;
         }
@@ -258,7 +258,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
   onGotoDetail(item: any, evt: CustomEvent) {
     const id = item.Id;
     console.log(id);
-    if (item.StatusType == ApprovalStatusType.WaiteSubmit) {
+    if (item.Status == ApprovalStatusType.WaiteSubmit) {
       try {
         if (evt) {
           evt.stopPropagation();

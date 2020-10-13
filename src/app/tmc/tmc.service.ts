@@ -885,7 +885,7 @@ export class TravelFormEntity extends BaseVariablesEntity {
   /// <summary>
   /// 状态描述
   /// </summary>
-  Status: string;
+  Status: number;
 
   NoRoute: boolean;
   // 机票首航段
@@ -981,6 +981,8 @@ export class TravelFormEntity extends BaseVariablesEntity {
   /// </summary>
   Numbers: TravelInfoNumberEntity[];
   ApplyTime: string;
+  Applicant: string;
+  ApprovalName: string;
   applyTimeDate: string;
   applyTimeTime: string;
   StatusTypeName: string;
@@ -992,6 +994,7 @@ export class TravelFormEntity extends BaseVariablesEntity {
   DayCount: number;
   ProjectId: string;
   IsOverdue: boolean;
+  OrganizationId: string;
 }
 export class TravelInfoFlightEntity {
   /// <summary>
