@@ -23,6 +23,7 @@ import {
   ViewChild,
   OnDestroy,
   EventEmitter,
+  ChangeDetectorRef,
 } from "@angular/core";
 import { SearchTicketModalComponent } from "../components/search-ticket-modal/search-ticket-modal.component";
 import { SearchTicketConditionModel } from "../../tmc/models/SearchTicketConditionModel";
@@ -44,6 +45,7 @@ import { FlightService } from "src/app/flight/flight.service";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
+import { monitorEventLoopDelay } from "perf_hooks";
 @Component({
   selector: "app-order-list",
   templateUrl: "./order-list.page.html",
@@ -84,7 +86,8 @@ export class OrderListPage implements OnInit, OnDestroy {
     private orderService: OrderService,
     private identityService: IdentityService,
     private flightService: FlightService,
-    private pickerCtrl: PickerController
+    private pickerCtrl: PickerController,
+    private cdref: ChangeDetectorRef
   ) {}
 
   ngOnDestroy() {
@@ -332,64 +335,6 @@ export class OrderListPage implements OnInit, OnDestroy {
       console.dir(this.datetime);
       await this.datetime.open();
       const p = await this.pickerCtrl.getTop();
-      console.dir(p);
-      const curY = new Date().getFullYear();
-      const curM = new Date().getMonth() + 1;
-      const curDay = new Date().getDate();
-      if (p) {
-        const colums = p.querySelectorAll("ion-picker-column");
-        if (colums && colums.length == 3) {
-          const y = colums[0];
-          const m = colums[1];
-          const d = colums[2];
-          y.ontransitionend = () => {
-            const selectedY = y.querySelector(".picker-opt-selected");
-            if (selectedY) {
-              const months = m.querySelectorAll(".picker-opt");
-              if (curY == +selectedY.textContent) {
-                if (months) {
-                  months.forEach((month) => {
-                    month.classList.remove("picker-opt-disabled");
-                    if (+month.textContent < curM) {
-                      month.classList.add("picker-opt-disabled");
-                    }
-                  });
-                }
-              } else {
-                months.forEach((month) => {
-                  month.classList.remove("picker-opt-disabled");
-                });
-              }
-            }
-          };
-          m.ontransitionend = () => {
-            const selectedM = m.querySelector(".picker-opt-selected");
-            const selectedY = y.querySelector(".picker-opt-selected");
-            if (selectedM) {
-              const days = d.querySelectorAll(".picker-opt");
-              if (
-                curM == +selectedM.textContent &&
-                curY == +selectedY.textContent
-              ) {
-                if (days) {
-                  days.forEach((day) => {
-                    day.classList.toggle(
-                      "picker-opt-disabled",
-                      +day.textContent < curDay
-                    );
-                  });
-                }
-              } else {
-                if (days) {
-                  days.forEach((day) => {
-                    day.classList.remove("picker-opt-disabled");
-                  });
-                }
-              }
-            }
-          };
-        }
-      }
     });
   }
   async onExchangeFlightTicket(data: {
