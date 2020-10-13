@@ -1,3 +1,4 @@
+import { SearchModel } from './../travel.service';
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
 import {
   Component,
@@ -23,8 +24,8 @@ import {
   TmcService,
   TmcEntity,
 } from "src/app/tmc/tmc.service";
+import * as moment from "moment";
 import {
-  SearchModel,
   TravelService,
   TravelFormTripEntity,
   TmcTravelApprovalType,
@@ -548,7 +549,8 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       }
 
       if (this.searchModel.TravelForm) {
-        this.searchModel.OrganizationId =
+        this.searchModel.TravelForm.OrganizationId =
+          this.searchModel.OrganizationId =
           this.searchModel.TravelForm.Organization &&
           this.searchModel.TravelForm.Organization.Id;
       }
@@ -561,7 +563,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     } catch (e) {
       console.error(e);
       let msg = e;
-      if (e.toLowerCase().includes("flownotexist")) {
+      if (e && e.toLowerCase().includes("flownotexist")) {
         msg = "未创建审批流程";
       }
       if (msg) {
@@ -632,11 +634,12 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       }
       this.getAllTravelDays();
       this.processOutNumbers();
-      const r = await this.service.getTravelSave(this.searchModel);
+      const r = await this.service.getTravelSave({...this.searchModel,...this.searchModel.TravelForm});
       this.router.navigate([AppHelper.getRoutePath("business-list")], {
         queryParams: { doRefresh: true },
       });
     } catch (e) {
+      console.error(e);
       AppHelper.alert(e);
     }
   }
@@ -667,8 +670,13 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       );
     }
   }
+
   onAddTrip() {
-    const item: TravelFormTripEntity = {} as any;
+    const item: TravelFormTripEntity = {
+      
+    } as any;
+    item.EndDate=moment().format("YYYY-MM-DD");
+    item.StartDate=moment().format("YYYY-MM-DD");
     // item.StartDate
     if (!this.searchModel.TravelForm.Trips) {
       this.searchModel.TravelForm.Trips = [];
@@ -692,5 +700,5 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }
     return this.searchModel.TravelForm.DayCount;
   }
-  getCashSuccess() {}
+  getCashSuccess() { }
 }

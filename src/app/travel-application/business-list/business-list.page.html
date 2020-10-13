@@ -40,7 +40,7 @@
         <div class="item" [ngClass]="{first:first,last:last}" *ngFor="let item of items;let first=first;let last=last;let key=index" (click)="onGotoDetail(item,$event)">
             <div class="row">
                 <div class="start">出行人：</div>
-                <div class="main">{{item?.Account?.RealName}}</div>
+                <div class="main">{{item?.Applicant}}</div>
                 <div class="end" *ngIf="ApprovalStatusType.Pass==item.StatusType || ApprovalStatusType.Refuse==item.StatusType || ApprovalStatusType.Waiting==item.StatusType">
                     {{item.ApplyTime}}
                 </div>
@@ -64,7 +64,7 @@
             </div>
             <div class="row" *ngIf="item.Trips&&tmc?.TravelApprovalType!=TravelApprovalType.Free&&tmc?.TravelApprovalType!=TravelApprovalType.Approver">
                 <div class="start">审批人:</div>
-                <div class="main">{{item?.VariablesJsonObj?.ApprovalName}}</div>
+                <div class="main">{{item?.ApprovalName}}</div>
             </div>
             <div class="row" *ngIf="item.ApprovalTime ">
                 <div class="start">审批时间：</div>
@@ -86,28 +86,28 @@
                     <ng-template #apTpl> 申请状态： </ng-template>
                 </div>
                 <div class="main">
-                    <ng-container *ngIf="(ApprovalStatusType.Pass==item.StatusType||ApprovalStatusType.Refuse==item.StatusType||ApprovalStatusType.WaiteSubmit==item.StatusType||ApprovalStatusType.Waiting==item.StatusType) else statusTpl ">
-                        <ion-text color="secondary " *ngIf="ApprovalStatusType.Pass==item.StatusType ">{{item.StatusTypeName}}</ion-text>
-                        <ion-text color="danger " *ngIf="ApprovalStatusType.Refuse==item.StatusType ">{{item.StatusTypeName}}</ion-text>
-                        <ion-text color="success " *ngIf="ApprovalStatusType.WaiteSubmit==item.StatusType ">{{item.StatusTypeName}}</ion-text>
-                        <ion-text color="warning " *ngIf="ApprovalStatusType.Waiting==item.StatusType ">{{item.StatusTypeName}}</ion-text>
-                        <ion-text color="medium" *ngIf="ApprovalStatusType.Closed==item.StatusType">{{item.StatusTypeName}}</ion-text>
+                    <ng-container *ngIf="(ApprovalStatusType.Pass==item.Status||ApprovalStatusType.Refuse==item.Status||ApprovalStatusType.WaiteSubmit==item.Status||ApprovalStatusType.Waiting==item.Status) else statusTpl ">
+                        <ion-text color="secondary " *ngIf="ApprovalStatusType.Pass==item.Status">{{item.StatusTypeName}}</ion-text>
+                        <ion-text color="danger " *ngIf="ApprovalStatusType.Refuse==item.Status">{{item.StatusTypeName}}</ion-text>
+                        <ion-text color="success " *ngIf="ApprovalStatusType.WaiteSubmit==item.Status">{{item.StatusTypeName}}</ion-text>
+                        <ion-text color="warning " *ngIf="ApprovalStatusType.Waiting==item.Status">{{item.StatusTypeName}}</ion-text>
+                        <ion-text color="medium" *ngIf="ApprovalStatusType.Closed==item.Status">{{item.StatusTypeName}}</ion-text>
                         <ion-text color="secondary " *ngIf="item?.IsOverdue">已过期</ion-text>
                     </ng-container>
                     <ng-template #statusTpl>
                         <ion-text>{{item.StatusTypeName}}</ion-text>
                     </ng-template>
-                    <button *ngIf="item.StatusType==ApprovalStatusType.Waiting" (click)="onCancel(item.Id,$event)">
+                    <button *ngIf="item.Status==ApprovalStatusType.Waiting" (click)="onCancel(item.Id,$event)">
                         撤销
                     </button>
                     <!-- <button *ngIf="item.StatusType==ApprovalStatusType.WaiteSubmit" (click)="onTravelEdit(item.Id,$event)">编辑</button> -->
                 </div>
 
-                <ion-icon slot="end" style="font-size: 18px; margin-right: 22px" name="trash-outline" color="danger" class="trash-outline" *ngIf="ApprovalStatusType.WaiteSubmit == item.StatusType" (click)="onDelete(item,key,$event)" class="ion-text-end"></ion-icon>
+                <ion-icon slot="end" style="font-size: 18px; margin-right: 22px" name="trash-outline" color="danger" class="trash-outline" *ngIf="ApprovalStatusType.WaiteSubmit == item.Status" (click)="onDelete(item,key,$event)" class="ion-text-end"></ion-icon>
             </div>
-            <img src="assets/images/pass.png" *ngIf="ApprovalStatusType.Pass==item.StatusType " alt="" />
-            <img src="assets/images/deny.png" *ngIf="ApprovalStatusType.Refuse==item.StatusType " alt="" />
-            <img src="assets/images/close.png" *ngIf="ApprovalStatusType.Closed==item.StatusType" alt="" />
+            <img src="assets/images/pass.png" *ngIf="ApprovalStatusType.Pass==item.Status" alt="" />
+            <img src="assets/images/deny.png" *ngIf="ApprovalStatusType.Refuse==item.Status" alt="" />
+            <img src="assets/images/close.png" *ngIf="ApprovalStatusType.Closed==item.Status" alt="" />
             <img src="assets/images/overdue.png" *ngIf="item?.IsOverdue" alt="" />
         </div>
     </div>
