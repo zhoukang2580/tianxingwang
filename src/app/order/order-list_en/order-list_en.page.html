@@ -81,13 +81,13 @@
     <ng-container *ngIf='!isLoading else fakeList'>
       <ng-container *ngIf='tasks?.length else nomoredate'>
         <ion-list>
-          <ion-item [attr.detail]='!!getTaskUrl(task)' *ngFor='let task of tasks' (click)='onTaskDetail(task)'>
+          <ion-item [attr.detail]='!!task.VariablesJsonObj["TaskUrl"] ' *ngFor='let task of tasks' (click)='onTaskDetail(task)'>
             <ion-label>
               <h3>任务：
                 <ng-template #labelTemp>
                   <span>{{task.Name}}</span>
                 </ng-template>
-                <ion-text class='ion-text-wrap' *ngIf='getTaskUrl(task) as url else labelTemp' color='secondary'>
+                <ion-text class='ion-text-wrap' *ngIf='task.VariablesJsonObj["TaskUrl"]  else labelTemp' color='secondary'>
                   {{task.Name}}</ion-text>
               </h3>
               <h4 *ngIf='task?.VariablesJsonObj' style="user-select: text;">

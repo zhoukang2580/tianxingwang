@@ -21,7 +21,7 @@
                         <span class="apply_info_tit"><span>审批状态：</span
               ><span class="apply_past">
                 <ng-container
-                  *ngIf="(ApprovalStatusType?.Pass==detail?.StatusType||ApprovalStatusType?.Refuse==detail?.StatusType) else statusTpl"
+                  *ngIf="(ApprovalStatusType?.Pass==detail?.StatusType||ApprovalStatusType?.Refuse==detail?.StatusType||ApprovalStatusType?.Waiting==detail?.StatusType) else statusTpl"
                 >
                   <ion-text
                     style="color: #2596d9"
@@ -36,8 +36,8 @@
                     >{{detail?.TravelForm.StatusTypeName}}</ion-text
                   >
                   <ion-text
-                    color="success "
-                    *ngIf="ApprovalStatusType.WaiteSubmit==detail?.StatusType"
+                    style="color:#fec114"
+                    *ngIf="ApprovalStatusType?.Waiting==detail?.StatusType"
                     >{{detail?.TravelForm.StatusTypeName}}</ion-text
                   >
                   <ion-text
@@ -45,6 +45,7 @@
                     *ngIf="ApprovalStatusType?.Closed==detail?.StatusType"
                     >{{detail?.TravelForm.StatusTypeName}}</ion-text
                   >
+                  
                   <ion-text
                     style="color: #2596d9"
                     *ngIf="detail?.TravelForm?.IsOverdue"
@@ -93,7 +94,7 @@
                     </p>
                     <p>
                         <span class="apply_info_tit"><span>客户或公司：</span
-              ><span>{{detail?.TravelForm.CompanyName}}</span></span><span class="apply_info_time"></span>
+              ><span>{{detail?.TravelForm?.CustomerName}}</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
                         <span class="apply_info_tit"><span>成本中心：</span

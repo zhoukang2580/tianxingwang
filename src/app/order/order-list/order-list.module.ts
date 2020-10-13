@@ -8,6 +8,7 @@ import { IonicModule } from "@ionic/angular";
 
 import { OrderListPage } from "./order-list.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
+import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 
 const routes: Routes = [
   {
@@ -23,6 +24,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     OrderComponentsModule,
+    TmcComponentsModule,
     AppComponentsModule,
   ],
   declarations: [OrderListPage],

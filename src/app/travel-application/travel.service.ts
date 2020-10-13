@@ -28,7 +28,7 @@ export class TravelService {
     req.Data = {
       ...dto,
     };
-    return this.apiService.getResponse<SearchModel>(req);
+    return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
 
   getStaff() {
@@ -111,7 +111,7 @@ export class TravelService {
     if (dto && dto.TravelForm) {
       if (dto.TravelForm.Trips) {
         dto.TravelForm.Trips.forEach((trip) => {
-          if (!trip.TravelTool.toLowerCase().includes("hotel")) {
+          if (trip.TravelTool&&!trip.TravelTool.toLowerCase().includes("hotel")) {
             trip.CheckInCityName = "";
             trip.CheckInCityCode = "";
           }
@@ -257,6 +257,7 @@ export class TravelFormTripEntity extends BaseEntity {
   toCity: TrafficlineEntity;
   ToCities: TrafficlineEntity[];
   ToCityArrive: TrafficlineEntity[];
+  CustomerName: string;
 
   /// <summary>
   /// 到达城市Code

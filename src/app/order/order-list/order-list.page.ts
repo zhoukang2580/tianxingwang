@@ -1,9 +1,7 @@
 import { BackButtonComponent } from "../../components/back-button/back-button.component";
-import { RefresherComponent } from "../../components/refresher/refresher.component";
 import { IdentityService } from "../../services/identity/identity.service";
 import { OrderTripModel } from "../models/OrderTripModel";
 import { OrderService } from "../order.service";
-import { ApiService } from "../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
 import { OrderModel } from "src/app/order/models/OrderModel";
 import {
@@ -15,7 +13,6 @@ import { ActivatedRoute, Router } from "@angular/router";
 import {
   ModalController,
   IonInfiniteScroll,
-  IonRefresher,
   IonContent,
   IonDatetime,
   PickerController,
@@ -26,6 +23,7 @@ import {
   ViewChild,
   OnDestroy,
   EventEmitter,
+  ChangeDetectorRef,
 } from "@angular/core";
 import { SearchTicketModalComponent } from "../components/search-ticket-modal/search-ticket-modal.component";
 import { SearchTicketConditionModel } from "../../tmc/models/SearchTicketConditionModel";
@@ -37,19 +35,17 @@ import { OrderTrainTicketStatusType } from "src/app/order/models/OrderTrainTicke
 import { OrderFlightTicketEntity } from "src/app/order/models/OrderFlightTicketEntity";
 import * as moment from "moment";
 import { Subscription } from "rxjs";
-import { finalize, take } from "rxjs/operators";
+import { finalize } from "rxjs/operators";
 import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ORDER_TABS } from "../product-list/product-list.page";
-import { PayService } from "src/app/services/pay/pay.service";
-import { StaffService, StaffEntity } from "src/app/hr/staff.service";
+import { StaffEntity } from "src/app/hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
-import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
-
+import { monitorEventLoopDelay } from "perf_hooks";
 @Component({
   selector: "app-order-list",
   templateUrl: "./order-list.page.html",
@@ -87,13 +83,12 @@ export class OrderListPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private tmcService: TmcService,
     private router: Router,
-    private apiService: ApiService,
     private orderService: OrderService,
     private identityService: IdentityService,
-    private staffService: StaffService,
     private flightService: FlightService,
-    private pickerCtrl: PickerController
-  ) { }
+    private pickerCtrl: PickerController,
+    private cdref: ChangeDetectorRef
+  ) {}
 
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
@@ -208,8 +203,8 @@ export class OrderListPage implements OnInit, OnDestroy {
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-          ? "Hotel"
-          : "Train";
+        ? "Hotel"
+        : "Train";
     this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
@@ -322,21 +317,24 @@ export class OrderListPage implements OnInit, OnDestroy {
           handler: (data: { year: TV; month: TV; day: TV }) => {
             this.selectDateChange.emit(
               `${data.year.value}-${
-              +data.month.value < 10
-                ? "0" + data.month.value
-                : data.month.value
+                +data.month.value < 10
+                  ? "0" + data.month.value
+                  : data.month.value
               }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
             );
           },
         }
       );
     }
-    return new Promise<string>((resolve) => {
+    return new Promise<string>(async (resolve) => {
       this.selectDateSubscription.unsubscribe();
       this.selectDateSubscription = this.selectDateChange.subscribe((d) => {
         resolve(d);
       });
-      this.datetime.open();
+      this.datetime["el"].querySelector("selected");
+      console.dir(this.datetime);
+      await this.datetime.open();
+      const p = await this.pickerCtrl.getTop();
     });
   }
   async onExchangeFlightTicket(data: {
@@ -574,7 +572,7 @@ export class OrderListPage implements OnInit, OnDestroy {
       (task.VariablesJsonObj["OrderId"] || task.VariablesJsonObj["ConsumerId"])
     );
   }
-  getTaskUrl(task: TaskEntity) {
+  private getTaskUrl(task: TaskEntity) {
     return task && task.VariablesJsonObj["TaskUrl"];
   }
   private async doSearchOrderList() {
@@ -593,10 +591,10 @@ export class OrderListPage implements OnInit, OnDestroy {
           this.activeTab.value == ProductItemType.plane
             ? "Flight"
             : this.activeTab.value == ProductItemType.train
-              ? "Train"
-              : this.activeTab.value == ProductItemType.car
-                ? "Car"
-                : "Hotel";
+            ? "Train"
+            : this.activeTab.value == ProductItemType.car
+            ? "Car"
+            : "Hotel";
       }
       this.orderModel.Type = m.Type;
       if (
@@ -662,11 +660,11 @@ export class OrderListPage implements OnInit, OnDestroy {
     if (url.includes("?")) {
       url = `${url}&taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
-        }`;
+      }`;
     } else {
       url = `${url}?taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
-        }`;
+      }`;
     }
     return url;
   }
@@ -823,10 +821,9 @@ export class OrderListPage implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
-        const plane = ORDER_TABS
-          .find(
-            (it) => it.value == ProductItemType.plane
-          );
+        const plane = ORDER_TABS.find(
+          (it) => it.value == ProductItemType.plane
+        );
         let tab = plane;
         if (d && d.get("tabId")) {
           tab = ORDER_TABS.find((it) => it.value == +d.get("tabId")) || plane;
@@ -845,17 +842,14 @@ export class OrderListPage implements OnInit, OnDestroy {
       this.subscriptions.push(this.selectDateSubscription);
       this.subscriptions.push(this.loadDataSub);
       this.doRefresh();
-      this.tabs = ORDER_TABS
-      .filter(
+      this.tabs = ORDER_TABS.filter(
         (t) => t.value != ProductItemType.waitingApprovalTask
       )
-      .filter(
-        (t) => t.value != ProductItemType.more && t.isDisplay
-      )
-      .map((t) => {
-        t["isActive"] = t.value == this.activeTab.value;
-        return t;
-      });
+        .filter((t) => t.value != ProductItemType.more && t.isDisplay)
+        .map((t) => {
+          t["isActive"] = t.value == this.activeTab.value;
+          return t;
+        });
       this.tmc = await this.tmcService.getTmc();
     } catch (e) {
       console.error(e);
@@ -889,7 +883,7 @@ export class OrderListPage implements OnInit, OnDestroy {
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-        OrderTravelPayType.Person) &&
+          OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;
