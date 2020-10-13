@@ -14,7 +14,7 @@
       </ion-button>
       <ion-button fill='clear' *ngIf='isSelf' color='secondary' size='small' (click)='onShowStandardDesc();'>Policy
       </ion-button>
-      <ion-button fill='clear' *ngIf='!isSelf' color='secondary' size='small' (click)='onSelectPassenger()'>添加乘客
+      <ion-button fill='clear' *ngIf='!isSelf' color='secondary' size='small' (click)='onSelectPassenger()'>Add Passengers
         <ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
@@ -55,7 +55,7 @@
         <ion-text>Search</ion-text>
       </ion-button>
       <ion-button style='width: 100%' (click)="onSelectPassenger()" class='ion-margin-top' *ngIf='(!isSelf && selectedPassengers==0)' color="secondary" expand="block">
-        <ion-text>请添加乘客</ion-text>
+        <ion-text>Please Add Passengers</ion-text>
       </ion-button>
     </ion-card-content>
   </ion-card>

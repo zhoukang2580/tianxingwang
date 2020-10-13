@@ -8,7 +8,6 @@
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content>
   <ng-container *ngIf='!error else retryTempl'>
     <app-refresher slot='fixed' (ionRefresh)='doRefresh(true)'></app-refresher>
@@ -32,9 +31,9 @@
             <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
               <ion-label>通知语言:</ion-label>
               <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
-                <ion-select-option value=''>不发</ion-select-option>
-                <ion-select-option value='cn'>中文</ion-select-option>
-                <ion-select-option value='en'>英文</ion-select-option>
+                <ion-select-option value=''>No hair</ion-select-option>
+                <ion-select-option value='cn' notranslate>中文</ion-select-option>
+                <ion-select-option value='en'>english</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>

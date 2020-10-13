@@ -24,10 +24,10 @@
     </ion-title>
     <ion-buttons slot='end'>
       <ion-button fill='clear' color='secondary' *ngIf='' (click)='selectFilterPolicyPasseger()' size='small'>
-        <ion-text class='sm-font-size'>过滤差标</ion-text>
+        <ion-text class='sm-font-size'>Policy</ion-text>
       </ion-button>
       <ion-button fill='clear' *ngIf='showAddPassenger' color='secondary' size='small' (click)='onSelectPassenger()'>
-        <ion-text class='sm-font-size'>添加旅客</ion-text>
+        <ion-text class='sm-font-size'>Add passengers</ion-text>
         <ion-badge color='danger'>
           <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers}}</ion-text>
         </ion-badge>
@@ -82,7 +82,7 @@
         <app-flight-segment-item-en [segment]='s' 
         [langOpt]='langOpt' [isRecomendSegment]='true' [isHasFiltered]='filterConditionIsFiltered'>
         </app-flight-segment-item-en>
-        <ion-button color='secondary' (click)='onBookLowestSegment($event,s)' [disabled]='s["disabled"]' size='small'>预订</ion-button>
+        <ion-button color='secondary' (click)='onBookLowestSegment($event,s)' [disabled]='s["disabled"]' size='small'>Book</ion-button>
       </li>
     </ul>
     <ul class='flight'>

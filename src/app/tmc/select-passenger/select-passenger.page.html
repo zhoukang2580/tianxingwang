@@ -4,9 +4,9 @@
 
       <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
-    <ion-title>{{title}}</ion-title>
+    <ion-title notranslate>{{title}}</ion-title>
     <ion-buttons slot='end' *ngIf='bookInfos$'>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
+      <ion-button notranslate fill='clear' color='secondary' size='small' (click)='onShow()'>
         已选旅客
         <ion-badge color='danger'>
           <ion-text color='light'>{{(bookInfos$|async).length}}</ion-text>
@@ -31,17 +31,17 @@
       <ng-container *ngIf='vmStaffs?.length;else nodata'>
         <ion-item *ngFor='let item of vmStaffs' @flyInOut detail (click)='onSelect(item)'>
           <ion-label color='medium' *ngIf='forType != FlightHotelTrainType.InternationalFlight'>
-            <ion-text color='dark'>{{item?.Name}}</ion-text>
-            <ng-container *ngIf='!item.CredentialsInfo'>
+            <ion-text color='dark' notranslate>{{item?.Name}}</ion-text>
+            <ng-container *ngIf='!item.CredentialsInfo' notranslate>
               {{item.Number}}
             </ng-container>
-            <span *ngIf='item.CredentialsInfo'>
+            <span *ngIf='item.CredentialsInfo' notranslate>
               {{item?.CredentialsInfo}}
             </span>
           </ion-label>
-          <ion-label color='{{selectedPassengerPolicy?.Id==item.Policy?.Id?"secondary":"medium"}}' class='ion-text-wrap'
+          <ion-label notranslate color='{{selectedPassengerPolicy?.Id==item.Policy?.Id?"secondary":"medium"}}' class='ion-text-wrap'
             *ngIf='forType == FlightHotelTrainType.InternationalFlight'>
-            <ion-text color='{{selectedPassengerPolicy?.Id==item.Policy?.Id?"secondary":"dark"}}'>{{item?.Name}}
+            <ion-text notranslate color='{{selectedPassengerPolicy?.Id==item.Policy?.Id?"secondary":"dark"}}'>{{item?.Name}}
             </ion-text>
             {{item?.CredentialsInfo}}
           </ion-label>
@@ -66,18 +66,18 @@
           <ng-container *ngIf='item!=vmNewCredential'>
             <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'
               style="border-bottom:0.01rem solid #cccccc">
-              <div
-                style="width: 4em;max-width: 4em;white-space: pre-wrap;text-align: end;margin-left:-0.5em;padding: 0.5em;">
+              <div notranslate
+                style="width: 4em;max-width: 4em;white-space: pre-wrap;text-align: end;margin-left:-0.5em;padding: 0.3em;">
                 {{item.Type|credential}}</div>
               <div style="flex: 1;font-size: 0.6rem;padding: .5em;">
                 <div>
-                  <ion-text color='medium'>
-                    旅客姓名<span style="margin-left: 1em;">{{item.Name}}</span>
+                  <ion-text color='medium' notranslate>
+                    旅客姓名<span style="margin-left: 1em;" notranslate>{{item.Name}}</span>
                   </ion-text>
                 </div>
                 <div>
-                  <ion-text color='medium'>
-                    证件号码<span style="margin-left: 1em;">{{item.Number}}</span>
+                  <ion-text color='medium' notranslate>
+                    证件号码<span style="margin-left: 1em;" notranslate>{{item.Number}}</span>
                   </ion-text>
                 </div>
               </div>
@@ -88,31 +88,31 @@
             <ion-item lines='none' [@flyInOut] *ngIf='selectedCredentialId ==item.Id'>
               <div class='credential-item'>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     证件号:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Number}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     证件姓名:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Surname}}{{item?.Givenname}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     国籍:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Country}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     出生年月:
                   </ion-col>
                   <ion-col>
@@ -120,18 +120,18 @@
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     到期日期:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.ExpirationDate}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     性别:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
                   </ion-col>
                 </ion-row>
@@ -142,18 +142,18 @@
         <ng-container *ngIf='isShowNewCredential'>
           <ion-item-divider color='primary' (click)='onSelectCredential(vmNewCredential?.Id)'>
             <ion-label>
-              <ion-text *ngIf='!vmNewCredential?.isNotWhiteList'>此人其他证件：</ion-text>
-              <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>证件：</ion-text>
+              <ion-text *ngIf='!vmNewCredential?.isNotWhiteList' notranslate>此人其他证件：</ion-text>
+              <ion-text *ngIf='vmNewCredential?.isNotWhiteList'notranslate>证件：</ion-text>
             </ion-label>
             <ion-radio slot='end' class="ion-margin-end" disabled="disabled" style="opacity:1" mode='md'
-              name='credentialType' value="{{vmNewCredential?.Id}}">
+              name='credentialType' value="{{vmNewCredential?.Id}}" notranslate>
             </ion-radio>
           </ion-item-divider>
           <ion-grid #addForm [@flyInOut] *ngIf='selectedCredentialId ==vmNewCredential.Id'>
             <app-credentials-comp [(credential)]='vmNewCredential' [filteredCredentialsTypes]='filteredCredentialsTypes'></app-credentials-comp>
             <ion-row>
               <ion-col size='12'>
-                <ion-item class='ion-no-margin ion-no-padding' lines='none'>
+                <ion-item class='ion-no-margin ion-no-padding' lines='none' notranslate>
                   旅客类别：
                 </ion-item>
               </ion-col>
@@ -163,8 +163,8 @@
                   <ion-item *ngFor='let r of credentialsRemarks'
                     [style.opacity]='vmNewCredential?.Id !=selectedCredentialId?0.7:1'
                     [disabled]='vmNewCredential?.Id !=selectedCredentialId'>
-                    <ion-label>{{r.value}}</ion-label>
-                    <ion-radio value="{{r.value}}"></ion-radio>
+                    <ion-label notranslate>{{r.value}}</ion-label>
+                    <ion-radio value="{{r.value}}" notranslate></ion-radio>
                   </ion-item>
                 </ion-radio-group>
               </ion-col>
@@ -173,73 +173,73 @@
         </ng-container>
         <ng-container *ngIf='frqPassengerCredentials?.length'>
           <ion-item-divider color='primary' class='ion-margin-top'>
-            <ion-text color='secondary'>常旅客</ion-text>
+            <ion-text color='secondary' notranslate>常旅客</ion-text>
           </ion-item-divider>
           <ng-container *ngFor='let item of frqPassengerCredentials'>
             <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'>
-              <ion-label>
+              <ion-label notranslate>
                 <!-- {{item.Type|credential}} -->
                 {{item?.Surname}}{{item?.Givenname}}
               </ion-label>
               <ion-radio slot='end' name='credentialType' disabled="disabled" style="opacity:1" mode='md'
-                class="ion-margin-end" value="{{item.Id}}">
+                class="ion-margin-end" value="{{item.Id}}" notranslate>
               </ion-radio>
             </ion-item-divider>
             <ion-item lines='none' [@flyInOut] *ngIf='selectedCredentialId ==item.Id'>
               <div class='credential-item'>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     证件号:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Number}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     证件姓名:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Surname}}{{item?.Givenname}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     登机名:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Name}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     国籍:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Country}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     出生年月:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Birthday}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     到期日期:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.ExpirationDate}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col>
+                  <ion-col notranslate>
                     性别:
                   </ion-col>
-                  <ion-col>
+                  <ion-col notranslate>
                     {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
                   </ion-col>
                 </ion-row>
@@ -251,7 +251,7 @@
     </ion-radio-group>
   </ng-template>
   <ion-infinite-scroll (ionInfinite)="loadMore()">
-    <ion-infinite-scroll-content>
+    <ion-infinite-scroll-content notranslate>
       正在加载...
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
@@ -259,7 +259,7 @@
 <ion-footer>
   <ion-toolbar>
     <ion-buttons slot='end'>
-      <ion-button (click)='onAddPassenger()' fill='solid' color='secondary' [disabled]='!selectedPassenger'>确定
+      <ion-button (click)='onAddPassenger()' fill='solid' color='secondary' [disabled]='!selectedPassenger' notranslate>确定
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

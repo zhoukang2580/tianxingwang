@@ -10,7 +10,7 @@
   <ion-item-group *ngFor='let bookInfo of  passengerAndBookInfos$|async'>
     <ng-container *ngIf='bookInfo.bookInfo'>
       <ion-item-divider color='primary' sticky>
-        <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;&nbsp;{{bookInfo?.credential?.Number}}</ion-label>
+        <ion-label color='dark' notranslate>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;&nbsp;{{bookInfo?.credential?.Number}}</ion-label>
       </ion-item-divider>
       <ion-item>
         <div class='detail'>
@@ -59,9 +59,9 @@
           </ion-label>
           <ion-label class='rules ion-text-wrap' color='dark' (click)='onSelectLowestSegment(bookInfo)'
             *ngIf='canShowLowerSegment(bookInfo)'>
-            当前航班前后60分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
-            {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}
-            <ion-button color='secondary' size='small'>选择更低价</ion-button>
+            There is a cheaper flight within 60 minutes before and after the flight you choose:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
+            {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},Fare:￥{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}
+            <ion-button color='warning' size='small'>tacke this flight</ion-button>
           </ion-label>
         </div>
       </ion-item>
@@ -79,7 +79,7 @@
       [disabled]='bookInfos?.length <= 0'>Next
     </ion-button>
     <ion-button *ngIf='searchModel?.isExchange' slot='end' (click)='onExchange()' color='secondary'
-      [disabled]='bookInfos?.length <= 0'>确认改签
+      [disabled]='bookInfos?.length <= 0'>Ok
     </ion-button>
   </ion-toolbar>
 </ion-footer>
