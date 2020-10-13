@@ -15,13 +15,13 @@
           <ion-icon name='star-half' color='warning' *ngIf='s<1'></ion-icon>
         </ng-container>
       </div>
-      <ion-text  class="ion-text-end ion-padding-end price" color='danger'><small>￥</small> <strong>{{item.Hotel["avgPrice"]}}</strong>
-        <small>{{langOpt.rise}}</small> </ion-text>
+      <ion-text class="ion-text-end ion-padding-end price" color='danger'><small>￥</small> <strong>{{item.Hotel["avgPrice"]}}</strong>
+        <small>{{langOpt?.rise}}</small> </ion-text>
     </div>
     <div class='ion-text-wrap location'>
       <ion-icon name="location" color='secondary'></ion-icon>
       <div class="ion-text-wrap">{{item.Hotel?.Address}}</div>
-      <ion-label color='medium' *ngIf='item.Hotel?.VariablesJsonObj["GeoDistance"]'>
+      <ion-label color='medium' *ngIf='item.Hotel?.VariablesJsonObj&&item.Hotel?.VariablesJsonObj["GeoDistance"]'>
         距离{{item.Hotel?.VariablesJsonObj["geoDistance"].name}}直线距离约{{item.Hotel?.VariablesJsonObj["geoDistance"].distance}}km
       </ion-label>
     </div>
