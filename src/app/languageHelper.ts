@@ -2,7 +2,8 @@ export class LanguageHelper {
   static get lang() {
     const lang =
       window.localStorage.getItem("language") ||
-      window.localStorage.getItem("style");
+      window.localStorage.getItem("style") ||
+      "";
     return lang.replace(/"/g, "") || "cn";
   }
   static Train = {
