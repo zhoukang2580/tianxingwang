@@ -23,9 +23,10 @@
         <img [src]='flightSegment?.AirlineSrc' />
       </ion-thumbnail>
       <label (click)="onShowAgreement($event)" *ngIf='isAgreement' class="agreement">
-        {{langOpt.agreement}}<span class="line"></span>
+        <span style="color: red;">{{langOpt.agreement}}</span>
+        <span style="color: black;">|</span>
       </label>
-      <ion-text class='ion-text-nowrap' color='medium'>|{{flightSegment?.Number}}</ion-text>
+      <ion-text class='ion-text-nowrap' color='medium'>{{flightSegment?.Number}}</ion-text>
       <ion-text color='secondary' *ngIf='flightSegment?.CodeShareNumber'><span class='seperator'></span>|{{langOpt.common}}{{flightSegment?.CodeShareNumber}}</ion-text>
       <ion-text color='medium'> <span class='seperator'>|</span>{{langOpt.planeType}}{{flightSegment?.PlaneType}}</ion-text>
       <ion-text color='medium'> <span class='seperator'>|</span>{{flightSegment?.FlyTimeName}}

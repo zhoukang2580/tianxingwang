@@ -91,14 +91,14 @@ export class FlightListEnPage
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private lastFetchTime = 0;
-  langOpt={
+  langOpt = {
     meal: "Meal",
     isStop: "Stop over",
     directFly: "NON-Stop",
     agreementDesc: "'A' menans Corporate Fares",
-    no: "No",
+    no: "No ",
     common: "Operated by ",
-    agreement:"A",
+    agreement: "A",
     planeType: "Aircraft ",
     lowestPrice: "LowestPrice",
     lowestPriceRecommend: "LowestPriceRecommend"

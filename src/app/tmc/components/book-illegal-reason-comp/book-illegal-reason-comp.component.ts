@@ -12,6 +12,10 @@ export class BookIllegalReasonCompComponent implements OnInit {
   @Input() disabled: boolean;
   @Input() isAllowCustomReason: boolean;
   @Input() illegalReasons: IllegalReasonEntity[] = [];
+  @Input() langOpt = {
+    Excess : "超标原因",
+    Other : "其他原因",
+  }
   @Output() ionchange: EventEmitter<any>;
   isOtherIllegalReason: boolean;
   otherIllegalReason: string;

@@ -3,7 +3,7 @@
     <ion-buttons slot='start'>
       <app-back-button></app-back-button>
     </ion-buttons>
-    <ion-title>Confirmation information</ion-title>
+    <ion-title>Confirmation Information</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -41,7 +41,7 @@
             </ion-item>
             <ion-item>
               <div style='width: 100%'>
-                <app-fly-list-item [flightSegment]='s.flightSegment' [showDetails]='true' [flightPolicy]='s.flightPolicy'>
+                <app-fly-list-item [langOpt]='langOpt' [flightSegment]='s.flightSegment' [showDetails]='true' [flightPolicy]='s.flightPolicy'>
                 </app-fly-list-item>
                 <div class='price'>
                   <ion-label color='danger'>Air ticket price:￥{{s.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
@@ -93,20 +93,32 @@
             (modify)='onModify(combindInfo)' [attr.credentialcompid]='combindInfo.id'>
           </app-book-credential-comp_en>
           <ng-container *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
-            <app-book-illegal-reason-comp [illegalReasons]='illegalReasons' [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
+            <app-book-illegal-reason-comp [langOpt]='{
+              Excess:"Excess reason",
+              Other:"Other"
+            }' [illegalReasons]='illegalReasons' [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
               (ionchange)='onIllegalReason($event,combindInfo)'>
             </app-book-illegal-reason-comp>
           </ng-container>
           <ng-container *ngIf='expenseTypes?.length'>
-            <app-book-expense-types-comp [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
+            <app-book-expense-types-comp [langOpt]='{
+              FeeType:"FeeType"
+            }'
+             [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
             </app-book-expense-types-comp>
           </ng-container>
-          <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter' [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
+          <app-book-costcenter-comp [langOpt]='{
+            CostCenter: "CostCenter",
+            Other:"Other"
+          }' [isOtherCostCenter]='combindInfo.isOtherCostCenter' [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
             [otherCostCenterName]='combindInfo.otherCostCenterName' (ionChange)='onCostCenterChange($event,combindInfo)'></app-book-costcenter-comp>
-          <app-book-organization-comp (ionChange)='onOrganizationChange($event,combindInfo)' [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
+          <app-book-organization-comp [langOpt]='{
+            department: "Department",
+            other:"Other"
+          }' (ionChange)='onOrganizationChange($event,combindInfo)' [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
             [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp>
           <ion-item-divider color="primary">
-            contact information:
+            Contact information:
           </ion-item-divider>
           <div class='mobiles' [attr.mobileid]='combindInfo.id'>
             <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'>
@@ -114,8 +126,8 @@
               <ion-label style='margin-left: 0.5em'>{{mobile.mobile}}</ion-label>
             </ion-item>
             <ion-item>
-              <ion-label style='margin-right: 0.5em'>Other number:</ion-label>
-              <ion-input style="font-size: 15px;margin-left: 15px;" [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='Please enter another number'></ion-input>
+              <ion-label style='margin-right: 0.5em'>Contact number:</ion-label>
+              <ion-input style="font-size: 14px;margin-left: 15px;" [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='Please enter another number'></ion-input>
             </ion-item>
           </div>
           <ion-item-divider color="primary">
@@ -127,8 +139,8 @@
               <ion-label style='margin-left: 0.5em'>{{email.email}}</ion-label>
             </ion-item>
             <ion-item>
-              <ion-label style='margin-right: 0.5em'>Other mailbox：</ion-label>
-              <ion-input style="font-size: 15px;" [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='Please enter another email'></ion-input>
+              <ion-label style='margin-right: 0.5em'>Contact mailbox：</ion-label>
+              <ion-input style="font-size: 14px;" [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='Please enter another email'></ion-input>
             </ion-item>
           </div>
           <ng-container *ngIf='combindInfo?.insuranceProducts?.length'>
@@ -141,7 +153,7 @@
                   <ion-item style="--background:transparent;flex: 1;">
                     <ion-radio [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
                     <ion-label class="ion-margin-horizontal">
-                      {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
+                      {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}RMB)</ion-label>
                   </ion-item>
                   <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
                     详情
@@ -187,7 +199,6 @@
               </div>
             </ion-item>
           </ng-container>
-
           <ion-item *ngIf='false'>
             <div class='travel-type ion-margin-top'>
               差旅类型:
@@ -208,11 +219,11 @@
         <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item-group>
             <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
-              <ion-label>通知语言:</ion-label>
+              <ion-label>Notofication language:</ion-label>
               <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
-                <ion-select-option value=''>不发</ion-select-option>
-                <ion-select-option value='cn'>中文</ion-select-option>
-                <ion-select-option value='en'>英文</ion-select-option>
+                <ion-select-option value=''>No hair</ion-select-option>
+                <ion-select-option notranslate value='cn'>中文</ion-select-option>
+                <ion-select-option value='en'>English</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>
@@ -241,7 +252,7 @@
       </ion-list>
       <ion-item-group>
         <ion-item-divider color="primary">
-          授权账号查看订单:
+          Authorized account to view order:
         </ion-item-divider>
         <ion-item>
           <app-book-addcontacts-comp buttonText='授权账号查看订单' [(contacts)]='addContacts'>
@@ -250,7 +261,7 @@
       </ion-item-group>
       <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
         <ion-item-divider color="primary">
-          支付方式：
+          Payment method：
         </ion-item-divider>
         <ion-item>
           <div style='width: 100%'>
@@ -258,7 +269,7 @@
               <ion-item *ngFor='let pt of orderTravelPayTypes'>
                 <ion-label>{{pt.label}}
                   <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>
-                    (请在20分钟内完成支付)
+                    
                   </ng-container>
                 </ion-label>
                 <ion-radio [value]="pt.value">
@@ -286,13 +297,13 @@
         <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)|flightprice:"1"}}</ion-text>
         <ion-icon name='caret-up-outline' slot='end' color='secondary' mode='md'></ion-icon>
       </ion-button> -->
-      <ion-text color="secondary">总计:</ion-text>
+      <ion-text color="secondary">Total:</ion-text>
       <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
       <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
       <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
     <ion-button slot='end' size='small' *ngIf='isCanSave' color='secondary' (click)='bookFlight(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
-    <ion-button slot='end' size='small' color='secondary' (click)='bookFlight(false,$event)' [disabled]='isSubmitDisabled'> 提交
+    <ion-button slot='end' size='small' color='secondary' (click)='bookFlight(false,$event)' [disabled]='isSubmitDisabled'> Submit
     </ion-button>
   </ion-toolbar>
 </ion-footer>
@@ -301,31 +312,31 @@
   <div class="wrapper">
     <!-- <div *ngFor="let vm of vmCombindInfos" style="    min-width: 90%;"> -->
     <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee" [style.min-width]='vmCombindInfos.length>1?"90%":"100%"'>
-      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmCredential?.Number}})
+      <div style="color: var(--ion-color-dark);" notranslate>{{infos?.vmCredential?.Name}}({{infos?.vmCredential?.Number}})
       </div>
       <div class="spacebetween">
         <ion-text color="secondary">{{infos.modal?.bookInfo?.flightSegment?.FromCityName}}</ion-text>
         <ion-text color="secondary">{{infos.modal?.bookInfo?.flightSegment?.ToCityName}}</ion-text>
       </div>
       <div class="spacebetween" *ngIf="infos.modal?.bookInfo?.flightPolicy?.Cabin?.SalesPrice">
-        <ion-text style="color: #ccc;">机票票价</ion-text>
-        <ion-text>{{infos?.modal?.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}元</ion-text>
+        <ion-text style="color: #ccc;">Air ticket price</ion-text>
+        <ion-text>{{infos?.modal?.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}RMB</ion-text>
       </div>
       <div class="spacebetween" *ngIf="infos.modal?.bookInfo?.flightSegment?.Tax">
-        <ion-text style="color: #ccc;">税费</ion-text>
-        <ion-text>{{infos?.modal?.bookInfo?.flightSegment?.Tax}}元</ion-text>
+        <ion-text style="color: #ccc;">Tax</ion-text>
+        <ion-text>{{infos?.modal?.bookInfo?.flightSegment?.Tax}}RMB</ion-text>
       </div>
       <ng-container>
         <div *ngFor='let insurance of infos?.insuranceProducts'>
           <div class="spacebetween" *ngIf="insurance.insuranceResult?.Id==infos.selectedInsuranceProductId">
             <ion-text style="color: #ccc;">{{insurance.insuranceResult?.Name}}</ion-text>
-            <ion-text>{{insurance?.insuranceResult?.Price}}元</ion-text>
+            <ion-text>{{insurance?.insuranceResult?.Price}}RMB</ion-text>
           </div>
         </div>
       </ng-container>
       <div class="spacebetween" *ngIf="identity?.Numbers?.AgentId||tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)">
         <ion-text style="color: #ccc;">服务费</ion-text>
-        <ion-text>{{passengerServiceFeesObj[infos.modal?.id]}}元</ion-text>
+        <ion-text>{{passengerServiceFeesObj[infos.modal?.id]}}RMB</ion-text>
       </div>
     </div>
   </div>

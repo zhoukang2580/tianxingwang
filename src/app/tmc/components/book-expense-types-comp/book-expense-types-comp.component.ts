@@ -8,6 +8,9 @@ import { Component, OnInit, EventEmitter, Input, Output } from "@angular/core";
 export class BookExpenseTypesCompComponent implements OnInit {
   @Input() expenseType: string;
   @Input() expenseTypes: string[];
+  @Input() langOpt = {
+    FeeType: "费用类别",
+  };
   @Output() expenseTypeChange: EventEmitter<any>;
   constructor() {
     this.expenseTypeChange = new EventEmitter();

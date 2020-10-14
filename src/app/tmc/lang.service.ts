@@ -15,7 +15,7 @@ export class LangService {
   private subscription = Subscription.EMPTY;
   private intervalId: any;
   private html: any;
-  private timer = 1000;
+  private timer = 800;
   private len = 1500;
   private identity: IdentityEntity;
   private isTranslate = false;

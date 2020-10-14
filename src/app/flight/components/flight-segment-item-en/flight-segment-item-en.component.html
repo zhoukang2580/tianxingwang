@@ -31,7 +31,8 @@
     <img [src]="segment.AirlineSrc" class="airlinesrc">
     <!-- <label>{{segment.AirlineName}}</label> agreementDesc-->
     <label (click)="onShowAgreement($event)" *ngIf='isHasAgreement' class="agreement">
-      {{langOpt.agreement}}<span class="line"></span>
+      <span style="color: red;">{{langOpt.agreement}}</span>
+      <span style="color: black;">|</span>
     </label>
     <label>{{segment.Number}}</label>
     <label *ngIf='segment.CodeShareNumber'>|<span class='code-share-number'>{{langOpt.common}}{{segment.CodeShareNumber}}</span> </label>

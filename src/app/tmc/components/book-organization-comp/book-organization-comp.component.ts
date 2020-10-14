@@ -18,6 +18,10 @@ import { OrganizationEntity } from "src/app/hr/staff.service";
 export class BookOrganizationCompComponent implements OnInit {
   @Input() isOtherOrganization: boolean;
   @Input() organization: OrganizationEntity;
+  @Input() langOpt = {
+    department: "部门",
+    other: "其他"
+  }
   @Output() ionChange: EventEmitter<any>;
   @Input() otherOrganizationName: string;
   constructor(private modalCtrl: ModalController) {

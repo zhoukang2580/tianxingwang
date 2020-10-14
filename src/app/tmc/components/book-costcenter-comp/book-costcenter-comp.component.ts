@@ -19,6 +19,10 @@ export class BookCostcenterCompComponent implements OnInit {
   @Input() isOtherCostCenter: boolean;
   @Input() otherCostCenterCode: string;
   @Input() otherCostCenterName: string;
+  @Input() langOpt = {
+    CostCenter: "成本中心",
+    Other:"其他"
+  };
   @Input() costCenter: {
     code: string;
     name: string;

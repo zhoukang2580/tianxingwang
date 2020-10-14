@@ -1,12 +1,12 @@
 <ion-item detail lines='none' (click)='searchCostCenter()' [disabled]='isOtherCostCenter'>
-  <ion-label><strong>成本中心:</strong></ion-label>
+  <ion-label><strong>{{langOpt.CostCenter}}:</strong></ion-label>
   <ion-label class='ion-text-end'>{{costCenter?.name}}</ion-label>
 </ion-item>
 <ion-item lines='none'>
   <ion-checkbox class="ion-margin-end" color="secondary" (ionChange)='onCheckboxValueChange($event)'
     [(ngModel)]='isOtherCostCenter'>
   </ion-checkbox>
-  <ion-label style='margin-right: 0.5em' [color]='isOtherCostCenter?"":"medium"'>其他</ion-label>
+  <ion-label style='margin-right: 0.5em' [color]='isOtherCostCenter?"":"medium"'>{{langOpt.Other}}</ion-label>
   <ion-input *ngIf="isOtherCostCenter" [disabled]='false&&!isOtherCostCenter' [(ngModel)]='otherCostCenterName'
     placeholder='名称' (ionChange)='onValueChange()'>
   </ion-input>
