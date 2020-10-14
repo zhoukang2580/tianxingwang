@@ -7,10 +7,10 @@
         <div class="date">
           <div (click)='onChangeDate()' class="checkin-checkout-date">
             <div>
-              <span>Live</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
+              <span>Check in</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
             </div>
             <div>
-              <span>Leave</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
+              <span>Check out</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
             </div>
           </div>
           <div class="search-box" (click)='onSearchText()'>
@@ -76,7 +76,7 @@
     <ng-container *ngIf='hotels?.length else nodata'>
       <ion-list lines='full' *ngIf='hotels?.length else nodata'>
         <app-hotel-list-item [langOpt]='{
-            rise:"up"
+            rise:" From"
           }' [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels'
           (click)='onViewHotel(hotel)' [hotel]='hotel' [defaultImage]='config?.DefaultImageUrl'></app-hotel-list-item>
       </ion-list>

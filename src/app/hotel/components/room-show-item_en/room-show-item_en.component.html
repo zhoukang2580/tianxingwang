@@ -7,7 +7,7 @@
       <div class='date' (click)='onChangeDate()'>
         <span>{{getDate(bookInfo?.bookInfo?.roomPlan?.BeginDate)}}&nbsp;</span>
         <span>{{getDayDesc(bookInfo?.bookInfo?.roomPlan?.BeginDate)}}</span>
-        <ion-chip color='{{disabledEdit?"":"secondary"}}'>{{calcNights()}}night</ion-chip>
+        <ion-chip color='{{disabledEdit?"":"secondary"}}'>{{calcNights()}}Night</ion-chip>
         <span>{{getDate(bookInfo?.bookInfo?.roomPlan?.EndDate)}}&nbsp;</span>
         <span>{{getDayDesc(bookInfo?.bookInfo?.roomPlan?.EndDate)}}</span>
         <ion-button fill='clear' size='small' color='secondary' *ngIf='false&&!disabledEdit'>修改</ion-button>
@@ -18,17 +18,17 @@
         </span>
         <ion-label class='price ion-text-end' *ngIf='bookInfo?.bookInfo?.roomPlan?.TotalAmount as m' color='danger'>
           <small>￥</small>{{m}}<ion-text color='secondary' (click)='onShowPriceDetail()'>
-            detailed
+            Details
           </ion-text>
         </ion-label>
       </div>
       <div class="dashed-line"></div>
       <div (click)='onShowRoomDetail()'>
-        <div><strong>{{bookInfo?.bookInfo?.hotelRoom?.Name}}</strong></div>
+        <div><strong style="text-transform:capitalize;">{{bookInfo?.bookInfo?.hotelRoom?.Name}}</strong></div>
         <div class='desc'>
           <ul>
             <ng-container *ngFor='let it of items;let last=last;'>
-              <li>{{it}} </li>
+              <li>{{it.replace('无早','No Breakfast')}} </li>
               <span *ngIf='!last'>|</span>
             </ng-container>
           </ul>
@@ -37,7 +37,7 @@
       </div>
       <ion-item class='ion-no-margin ion-no-padding' *ngIf='getRules(bookInfo?.bookInfo?.roomPlan) as rules'
         lines='none'>
-        <ion-label color='danger' class='ion-text-wrap'>超标：{{rules}}</ion-label>
+        <ion-label color='danger' class='ion-text-wrap'>Exceeding:{{rules}}</ion-label>
       </ion-item>
       <ion-item class='ion-no-margin ion-no-padding' *ngIf='disabledEdit' lines='none'>
         <ion-label style="font-weight: bold;">

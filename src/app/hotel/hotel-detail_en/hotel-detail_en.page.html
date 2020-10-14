@@ -53,10 +53,10 @@
     <ion-card-subtitle>
       <div class='grade-stars'>
         <span *ngIf='hotel?.Grade as grade else nograde'>
-          <ion-text color='secondary'>评分</ion-text>{{grade}}
+          <ion-text color='secondary'>Score</ion-text>{{grade}}
         </span>
         <ng-template #nograde>
-          暂无评分
+          No score
         </ng-template>
         <div class='stars' *ngIf='getStars(hotel) as stars'>
           <ng-container *ngFor='let s of stars'>
@@ -71,7 +71,7 @@
       </ion-item>
       <ion-item lines='none'>
         <ion-label>
-          电话
+          <img src="assets/images/telephone.png">
           <ion-text class="ion-padding-start" style="user-select: text;">{{hotel?.Phone}}</ion-text>
         </ion-label>
       </ion-item>
@@ -79,7 +79,7 @@
     <ion-card-content>
       <div class='date' (click)="onOpenCalendar()">
         <div class='checkinoutdate'>{{queryModel?.checkInDate}} <span class='weekName'>{{getWeekName(queryModel?.checkInDate)}}</span></div>
-        <div>{{totalNights}}晚</div>
+        <div style="padding-right: 40px;">{{totalNights}}Night</div>
         <div class='checkinoutdate'>{{queryModel?.checkOutDate}} <span class='weekName'>{{getWeekName(queryModel?.checkOutDate)}}</span></div>
       </div>
       <ion-button (click)='onSearch()' color='secondary' expand='block'>Sreach</ion-button>
@@ -98,7 +98,7 @@
           <ion-skeleton-text style="height: 1em;width:40%"></ion-skeleton-text>
           <ion-skeleton-text style="height: 1em;width:40%"></ion-skeleton-text>
         </div>
-        <ion-button [disabled]='true' color='secondary' expand='block'>搜索</ion-button>
+        <ion-button [disabled]='true' color='secondary' expand='block'>Search</ion-button>
       </ion-card-content>
     </ion-card>
   </ng-template>
@@ -114,7 +114,7 @@
         <ion-text color='danger'>红色代表违规不可预订</ion-text>
       </div>
     </div>
-    <ion-item-divider>房型信息</ion-item-divider>
+    <ion-item-divider>Room type information</ion-item-divider>
     <ng-container *ngFor='let room of hotel?.Rooms'>
       <ion-item>
         <div class='item-wrapper'>
@@ -122,13 +122,13 @@
             <ion-thumbnail (click)='onShowRoomImages(room)'>
               <ng-container *ngIf='getRoomImages(room) as images'>
                 <img [lazyLoad]='images[0]?.replace("Mobile640_960", "Hotel70_70")||(config?.DefaultImageUrl)' [defaultImage]='config?.PrerenderImageUrl' [loadingImage]='config?.PrerenderImageUrl' />
-                <div class='images-nums' *ngIf='images.length as len'>{{len}}张</div>
+                <div class='images-nums' *ngIf='images.length as len'>{{len}}</div>
               </ng-container>
             </ion-thumbnail>
             <ion-label class='item'>
               <h3 style="display: inline-flex;">
-                <ion-label class='ion-margin-end'>{{room.Name}}</ion-label>
-                <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
+                <ion-label class='ion-margin-end' style="text-transform:capitalize;">{{room.Name}}</ion-label>
+                <ion-text color='secondary' (click)='onShowRoomDetails(room)'>Details</ion-text>
               </h3>
               <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='onShowRoomPlans(room)'>
                 <ion-label class='ion-text-wrap'>
@@ -140,14 +140,14 @@
                   </div>
                 </ion-label>
                 <ion-button color='danger' [disabled]='true' *ngIf='isFullOnly(room.RoomPlans)'>
-                  <ion-text color='light'>已满房</ion-text>
+                  <ion-text color='light'>Room full</ion-text>
                 </ion-button>
               </h4>
               <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 2em;" (click)='onShowRoomPlans(room)'>
                 <ng-container *ngIf='!isFullOnly(room.RoomPlans)'>
                   <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
                     <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span style="font-size: 1rem">{{price}}</span>
-                      <small style="font-size:.6rem;margin-left:.2em">起</small></strong>
+                      <small style="font-size:.6rem;margin-left:.2em">From</small></strong>
                   </ion-text>
                   <ion-icon class='arrow-icon' name='caret-down-outline' mode='ios' color='secondary' *ngIf='!room["isShowRoomPlans"]'></ion-icon>
                   <ion-icon class='arrow-icon' name="caret-up-outline" mode='ios' color='secondary' *ngIf='room["isShowRoomPlans"]'></ion-icon>
@@ -173,7 +173,7 @@
   </ion-list>
   <ion-list #hotelInfo class='hotel-info'>
     <ion-item-divider (click)='hotel["ishoteldetails"]=!hotel["ishoteldetails"]'>
-      酒店信息
+      Hotel Information
       <ng-container *ngIf='hotel'>
         <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["ishoteldetails"]'></ion-icon>
         <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
@@ -188,8 +188,8 @@
               <ion-col size='2'>{{detail.Name}}</ion-col>
               <ion-col size='10'>
                 <ion-text color='medium'>
-                  <span *ngIf='detail.Tag=="ArrivalTime"'>{{detail.Description}}点之后</span>
-                  <span *ngIf='detail.Tag=="DepartureTime"'>{{detail.Description}}点之前</span>
+                  <span *ngIf='detail.Tag=="ArrivalTime"'>{{detail.Description}}after</span>
+                  <span *ngIf='detail.Tag=="DepartureTime"'>{{detail.Description}}before</span>
                   <span *ngIf='detail.Tag!="DepartureTime"&&detail.Tag!="ArrivalTime"'>{{detail.Description}}</span>
                 </ion-text>
               </ion-col>
@@ -231,7 +231,7 @@
   </ion-list> -->
   <div #divforscroll class='div-for-scroll'>
     <ion-item detail (click)='onOpenMap()' lines='none'>
-      <ion-button fill='clear' color='secondary'>打开地图查看
+      <ion-button fill='clear' color='secondary'>Open map view
       </ion-button>
     </ion-item>
   </div>

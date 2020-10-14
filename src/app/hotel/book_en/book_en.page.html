@@ -16,7 +16,7 @@
         <ion-list lines='none'>
           <ion-item-divider>
             <div style="width: 100%;">
-              <div style="padding: 0.5em 0;">
+              <div style="padding: 0.5em 0;" notranslate>
                 {{combindInfo?.vmCredential?.Name}}
                 【Adult】
                 <span style="color:var(--ion-color-medium)">{{combindInfo?.vmCredential?.Number}}</span>
@@ -29,25 +29,25 @@
           </ion-item-divider>
           <ng-container *ngIf='combindInfo.isShowApprovalInfo'>
             <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
-              <ion-label>通知语言:</ion-label>
-              <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
+              <ion-label>Notification language:</ion-label>
+              <ion-select value='cn' okText="Determine" cancelText="Cancel" [(ngModel)]='combindInfo.notifyLanguage'>
                 <ion-select-option value=''>No hair</ion-select-option>
                 <ion-select-option value='cn' notranslate>中文</ion-select-option>
-                <ion-select-option value='en'>english</ion-select-option>
+                <ion-select-option value='en'>English</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>
-              <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
+              <ion-label style='margin-right: 0.5em'>Skip approval:</ion-label>
               <ion-checkbox class='ion-margin-end' color="secondary" [(ngModel)]='combindInfo.isSkipApprove'>
               </ion-checkbox>
             </ion-item>
             <ion-item class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
-              <ion-label>服务费:</ion-label>
+              <ion-label>service fee:</ion-label>
               <ion-label slot='end' class='ion-text-end ion-padding-end'>{{getServiceFee(combindInfo)}}RMB</ion-label>
             </ion-item>
             <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' [attr.approverid]='combindInfo.id' (click)='openApproverModal(combindInfo)'>
               <ion-label>
-                审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
+                Approved by:<ion-text *ngIf='combindInfo?.appovalStaff'>
                   {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
                 </ion-text>
               </ion-label>
@@ -56,14 +56,14 @@
         </ion-list>
         <ion-list [attr.arrivalHoteltimeid]='combindInfo.id'>
           <ion-list-header>
-            <strong>酒店预订信息</strong>
+            <strong>Hotel Reservation information</strong>
             <ion-text class="ion-margin-start" color='danger' *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan?.PaymentType==HotelPaymentType.SelfPay'>
-              (到酒店支付)
+              (Pay at hotel)
             </ion-text>
           </ion-list-header>
-          <app-room-show-item [attr.dataid]='combindInfo.id' [bookInfo]='combindInfo.bookInfo' (arrivalHotel)='onArrivalHotel($event,combindInfo)' (showPriceDetailEvt)='onShowPriceDetails($event)'
+          <app-room-show-item_en [attr.dataid]='combindInfo.id' [bookInfo]='combindInfo.bookInfo' (arrivalHotel)='onArrivalHotel($event,combindInfo)' (showPriceDetailEvt)='onShowPriceDetails($event)'
             [disabledEdit]='true' [showRules]='false' (bedChange)='onBedchange($event,combindInfo)'>
-          </app-room-show-item>
+          </app-room-show-item_en>
           <ion-item lines='none' *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
             <ion-label style='font-size: 0.9rem;' class='ion-text-wrap' color='danger'>超标:{{msg}}
             </ion-label>
@@ -134,31 +134,42 @@
           </ion-item>
         </ion-list>
         <ion-list style="padding-bottom:0">
-          <ion-list-header><strong>旅客信息</strong></ion-list-header>
-          <app-book-credential-comp [credential]='combindInfo?.vmCredential' [isself]='isSelfBookType' [canMaintainCredentials]='combindInfo.isCanEditCrendentails'
+          <ion-list-header><strong>Passenger information</strong></ion-list-header>
+          <app-book-credential-comp_en [credential]='combindInfo?.vmCredential' [isself]='isSelfBookType' [canMaintainCredentials]='combindInfo.isCanEditCrendentails'
             [attr.credentialsid]='combindInfo.id' (savecredential)='onSavecredential($event,combindInfo)' (managementCredentials)='onManagementCredentials(combindInfo)'
             [credentials]='combindInfo?.credentials' (modify)='onModify(combindInfo)'>
-          </app-book-credential-comp>
+          </app-book-credential-comp_en>
         </ion-list>
         <ion-list>
           <ng-container *ngIf='combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist'>
-            <app-book-illegal-reason-comp [illegalReasons]='illegalReasons' [attr.illegalReasonsid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
+            <app-book-illegal-reason-comp [langOpt]='{
+              Excess:"Excess reason",
+              Other:"Other"
+            }' [illegalReasons]='illegalReasons' [attr.illegalReasonsid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
               (ionchange)='onIllegalReason($event,combindInfo)'>
             </app-book-illegal-reason-comp>
           </ng-container>
           <ng-container *ngIf='expenseTypes?.length'>
-            <app-book-expense-types-comp [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
+            <app-book-expense-types-comp [langOpt]='{
+              FeeType:"FeeType"
+            }' [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
             </app-book-expense-types-comp>
           </ng-container>
-          <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter' [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
+          <app-book-costcenter-comp [langOpt]='{
+            CostCenter: "CostCenter",
+            Other:"Other"
+          }' [isOtherCostCenter]='combindInfo.isOtherCostCenter' [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
             [otherCostCenterName]='combindInfo.otherCostCenterName' (ionChange)='onCostCenterChange($event,combindInfo)'>
           </app-book-costcenter-comp>
-          <app-book-organization-comp (ionChange)='onOrganizationChange($event,combindInfo)' [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
+          <app-book-organization-comp [langOpt]='{
+            department: "Department",
+            other:"Other"
+          }' (ionChange)='onOrganizationChange($event,combindInfo)' [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
             [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp>
         </ion-list>
         <ion-list [attr.mobilesid]='combindInfo.id'>
           <ion-list-header>
-            <strong>联系方式</strong>
+            <strong>Contact number</strong>
           </ion-list-header>
           <div class='mobiles'>
             <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'>
@@ -166,14 +177,14 @@
               <ion-label style='margin-left: 0.5em'>{{mobile.mobile}}</ion-label>
             </ion-item>
             <ion-item>
-              <ion-label style='margin-right: 0.5em'>其他号码:</ion-label>
-              <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='请输入其他号码'></ion-input>
+              <ion-label style='margin-right: 0.5em'>Contact number:</ion-label>
+              <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" style="font-size: 14px;" placeholder='Please enter another number'></ion-input>
             </ion-item>
           </div>
         </ion-list>
         <ion-list [attr.emailsid]='combindInfo.id'>
           <ion-list-header>
-            <strong> 联系邮箱</strong>
+            <strong> Contact email</strong>
           </ion-list-header>
           <div class='emails'>
             <ion-item *ngFor='let email of combindInfo?.credentialStaffEmails'>
@@ -181,14 +192,14 @@
               <ion-label style='margin-left: 0.5em'>{{email.email}}</ion-label>
             </ion-item>
             <ion-item class='ion-no-margin'>
-              <ion-label>其他邮箱</ion-label>
-              <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
+              <ion-label>Contact mailbox</ion-label>
+              <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" style="font-size: 14px;" placeholder='Please enter another email'></ion-input>
             </ion-item>
           </div>
         </ion-list>
         <ion-list *ngIf="isShowApprove(combindInfo)">
           <ion-list-header>
-            <strong>审批人</strong>
+            <strong>Approved by</strong>
           </ion-list-header>
           <ion-item>
             <div>
@@ -223,14 +234,14 @@
       </ng-container>
       <ion-list [attr.orderTravelPayTypeid]='"orderTravelPayType"'>
         <ion-list-header>
-          <strong>支付方式</strong>
+          <strong>Payment method</strong>
         </ion-list-header>
         <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='onOrderTravelPayTypeSelect()'>
           <!-- 酒店预付月结 -->
           <ng-container *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item>
-                <ion-label>{{pt.label}}</ion-label>
+                <ion-label>{{pt.label.replace('公付','Company')}}</ion-label>
                 <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'> </ion-radio>
               </ion-item>
             </ng-container>
@@ -240,7 +251,7 @@
             <ng-container *ngIf='(!tmc?.IsShowServiceFee||!serviceFee) else zhifu3'>
               <ng-container *ngIf='!serviceFee else zfTpl'>
                 <ion-item>
-                  <ion-label>前台现付</ion-label>
+                  <ion-label>Pay at hotel</ion-label>
                   <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
                 </ion-item>
               </ng-container>
@@ -255,7 +266,7 @@
                 <ng-container *ngIf='tmc?.HotelPayType else configPayTpl'>
                   <ng-container *ngIf='tmc.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc.HotelPayType else configPayTpl'>
                     <ion-item>
-                      <ion-label>前台现付</ion-label>
+                      <ion-label>Pay at hotel</ion-label>
                       <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
                     </ion-item>
                   </ng-container>
@@ -269,7 +280,7 @@
           <ng-template #configPayTpl>
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item>
-                <ion-label>前台现付（服务费:{{pt.label}}）</ion-label>
+                <ion-label>Pay at hotel(Service fee):{{pt.label}}）</ion-label>
                 <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'> </ion-radio>
               </ion-item>
             </ng-container>
@@ -290,14 +301,14 @@
 <ion-footer>
   <ion-toolbar (click)="onShowFeesDetails()">
     <ion-buttons slot='start'>
-      <ion-button color='secondary'>总计:
+      <ion-button color='secondary'>Total amount:
         <ion-text slot='end' color='danger'>￥{{totalPrice}}</ion-text>
       </ion-button>
       <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
       <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
     <ion-button slot='end' color='secondary' [disabled]='isSubmitDisabled' size='small' (click)='onBook(false,$event)'>
-      提交
+      Submit
     </ion-button>
     <!-- <ion-buttons slot='end' *ngIf='identity?.Numbers?.AgentId'>
       <ion-button color='secondary' (click)='onBook(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
@@ -305,7 +316,7 @@
   </ion-toolbar>
 </ion-footer>
 <div [class.show]='isShowPriceDetail' class="price-list">
-  <div>{{calcNights()}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
+  <div>{{calcNights()}}Night<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
   </div>
   <ul>
     <li *ngFor='let d of dates'>
@@ -320,9 +331,9 @@
     <div *ngFor="let infos of combindInfos" class="ion-padding fee" [style.min-width]="combindInfos.length>1?'90%':'100%'">
       <div class="spacebetween">
         <ion-text style="font-weight: bold;" *ngIf="hotelPaymentType==HotelPaymentType.SelfPay">
-          到店支付</ion-text>
-        <ion-text style="font-weight: bold;" *ngIf="!(hotelPaymentType==HotelPaymentType.SelfPay)">房费明细</ion-text>
-        <ion-text>{{calcNights()}}晚,共
+          Pay at hotel</ion-text>
+        <ion-text style="font-weight: bold;" *ngIf="!(hotelPaymentType==HotelPaymentType.SelfPay)">Room fare details</ion-text>
+        <ion-text>{{calcNights()}}Night,
           <ion-text style="font-weight: bold;" color="danger"><small>￥</small>
             {{infos.bookInfo?.bookInfo?.roomPlan?.TotalAmount}}
           </ion-text>
@@ -336,7 +347,7 @@
       (orderTravelPayType==OrderTravelPayType.Person||
       orderTravelPayType==OrderTravelPayType.Credit)" style="margin-top: 2px;">
         <ion-text style="font-weight: bold;">
-          服务费
+          Service fee
         </ion-text>
         <ion-text>
           {{detailServiceFee}}

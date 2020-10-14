@@ -59,18 +59,18 @@
           <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkinDate' [isCheckIn]='true' [langOpt]='{
             checkin: "Check in",
             checkout: "Check out",
-            night: "Nights"
+            night: "Night"
           }' (click)="onSelecDate(true)" [disabled]='false'>
           </app-search-day-comp>
           <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkOutDate:interHotelSearchCondition?.checkoutDate' [isCheckOut]='true' [langOpt]='{
             checkin: "Check in",
             checkout: "Check out",
-            night: "Nights"
+            night: "Night"
           }' (click)="onSelecDate(false)" [disabled]='false'>
           </app-search-day-comp>
         </section>
       </ion-item>
-      <div *ngIf='totalFlyDays'>Total<span style='margin:0 0.25em'>{{totalFlyDays}}</span>晚</div>
+      <div *ngIf='totalFlyDays'>Total<span style='margin:0 0.25em'>{{totalFlyDays}}</span>Night</div>
       <ng-container *ngIf='changeDateTipMsg as msg'>
         <div class="show-select-yeasterday-date-tip">
           <ion-icon name="caret-up-outline" class="up"></ion-icon>

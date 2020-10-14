@@ -44,6 +44,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "hotel-room-detail_en",
+    loadChildren: () =>
+      import("./room-detail_en/room-detail_en.module").then(
+        m => m.RoomDetailEnPageModule
+      )
+  },
+  {
     path: "hotel-room-bookedinfos",
     loadChildren: () =>
       import("./hotel-room-bookedinfos/hotel-room-bookedinfos.module").then(

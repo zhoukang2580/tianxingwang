@@ -48,7 +48,7 @@
         <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
           <app-hotel-list-item [langOpt]='{
             branch: "/5",
-            rise: "up"
+            rise: "From"
           }' [item]='item' [config]='config'></app-hotel-list-item>
         </li>
       </ul>

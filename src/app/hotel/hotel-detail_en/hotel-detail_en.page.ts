@@ -681,24 +681,7 @@ export class HotelDetailEnPage implements OnInit, AfterViewInit, OnDestroy {
       config: this.config,
       agent: this.agent,
     };
-    this.router.navigate(["hotel-room-detail"]);
-    // const m = await this.modalCtrl.create({
-    //   component: RoomDetailComponent,
-    //   componentProps: {
-    //     room,
-    //     hotelName:this.hotel&&this.hotel.Name,
-    //     roomImages,
-    //     config: this.config,
-    //     agent: this.agent
-    //   }
-    // });
-    // if (m) {
-    //   await m.present();
-    //   const result = await m.onDidDismiss();
-    //   const data = result && (result.data as RoomPlanEntity);
-    //   if (data) {
-    //   }
-    // }
+    this.router.navigate(["hotel-room-detail_en"]);
   }
   onShowRoomImages(room: RoomEntity) {
     this.hotelService.showImages = this.getRoomImages(room).map((it) => {

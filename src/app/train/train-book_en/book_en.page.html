@@ -60,7 +60,10 @@
           </ion-item>
           <ion-item *ngIf='combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist'>
             <div style='width: 100%'>
-              <app-book-illegal-reason-comp [attr.illegalReasonid]='combindInfo.id' #illegalReasonsEle
+              <app-book-illegal-reason-comp [langOpt]='{
+                Excess:"Excess reason",
+                Other:"Other"
+              }' [attr.illegalReasonid]='combindInfo.id' #illegalReasonsEle
                 [illegalReasons]='viewModel?.illegalReasons' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
                 (ionchange)='onIllegalReason($event,combindInfo)'>
               </app-book-illegal-reason-comp>
@@ -68,20 +71,28 @@
           </ion-item>
           <ng-container *ngIf='viewModel?.expenseTypes?.length'>
             <ion-item lines='none'>
-              <app-book-expense-types-comp style="width: 100%;" [expenseTypes]='viewModel.expenseTypes'
+              <app-book-expense-types-comp [langOpt]='{
+                FeeType:"FeeType"
+              }' style="width: 100%;" [expenseTypes]='viewModel.expenseTypes'
                 [(expenseType)]='combindInfo.expenseType'>
               </app-book-expense-types-comp>
             </ion-item>
           </ng-container>
           <ion-item>
-            <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
+            <app-book-costcenter-comp [langOpt]='{
+              CostCenter: "CostCenter",
+              Other:"Other"
+            }' [isOtherCostCenter]='combindInfo.isOtherCostCenter'
               [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
               [otherCostCenterName]='combindInfo.otherCostCenterName'
               (ionChange)='onCostCenterChange($event,combindInfo)'>
             </app-book-costcenter-comp>
           </ion-item>
           <ion-item>
-            <app-book-organization-comp (ionChange)='onOrganizationChange($event,combindInfo)'
+            <app-book-organization-comp [langOpt]='{
+              department: "Department",
+              other:"Other"
+            }' (ionChange)='onOrganizationChange($event,combindInfo)'
               [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
               [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp>
           </ion-item>
@@ -121,7 +132,7 @@
         <ng-container *ngIf='combindInfo?.insuranceProducts?.length'>
           <ion-item-group>
             <ion-item-divider color="primary">
-              保险:
+              Insurance:
             </ion-item-divider>
             <ion-radio-group [disabled]='searchTrainModel?.isExchange' allow-empty-selection='true'
               [value]='combindInfo.selectedInsuranceProduct' [(ngModel)]='combindInfo.selectedInsuranceProduct'
@@ -135,7 +146,7 @@
                       {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}RMB)</ion-label>
                   </ion-item>
                   <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
-                    详情
+                    Details
                     <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
                     </ion-icon>
                     <ion-icon name="caret-down-outline" *ngIf='!insurance.showDetail'>
@@ -154,7 +165,7 @@
                   </ion-row>
                   <ion-item style="--background: transparent;" *ngIf='insurance.insuranceResult?.DetailUrl' detail
                     button (click)='onShowProductDetail(insurance.insuranceResult,$event)'>
-                    <ion-label color='secondary'>显示更多</ion-label>
+                    <ion-label color='secondary'>Show more</ion-label>
                   </ion-item>
                 </div>
               </div>
@@ -163,7 +174,7 @@
         </ng-container>
         <ion-item-group *ngIf="isShowApprove(combindInfo)">
           <ion-item-divider>
-            审批人:
+            Approved by:
           </ion-item-divider>
           <ion-item>
             <div style='width: 100%;'>
@@ -173,7 +184,7 @@
                     <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
                       第{{it.Tag}}级审批:
                       <ion-label class='ion-text-wrap' *ngFor='let ap of it.approvers;let last'>
-                        {{ap.Name}}({{it?.Type==1?"所有通过":"任意通过"}})
+                        {{ap.Name}}({{it?.Type==1?"All pass":"Any pass"}})
                       </ion-label>
                     </app-timeline-item>
                   </app-timeline>
@@ -199,19 +210,19 @@
               </ion-select>
             </ion-item>
             <ion-item class="ion-no-margin" *ngIf='viewModel?.isCanSkipApproval$|async'>
-              <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
+              <ion-label style='margin-right: 0.5em'>Skip approval:</ion-label>
               <ion-checkbox class='ion-margin-end' color="secondary" [(ngModel)]='combindInfo.isSkipApprove'>
               </ion-checkbox>
             </ion-item>
             <ion-item class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || viewModel?.identity?.Numbers?.AgentId'>
-              <ion-label>Service fee:</ion-label>S
+              <ion-label>Service fee:</ion-label>
               <ion-label slot='end' class='ion-text-end ion-padding-end'>{{combindInfo.serviceFee}}RMB</ion-label>
             </ion-item>
             <ng-container *ngIf='!searchTrainModel?.isExchange else exApproval'>
               <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
                 (click)='openApproverModal(combindInfo)' [attr.approvalid]='combindInfo.id'>
                 <ion-label>
-                  审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
+                  Approved by:<ion-text *ngIf='combindInfo?.appovalStaff'>
                     {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
                   </ion-text>
                 </ion-label>
@@ -221,7 +232,7 @@
               <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' disabled
                 [attr.approvalid]='combindInfo.id'>
                 <ion-label>
-                  审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
+                  Approved by:<ion-text *ngIf='combindInfo?.appovalStaff'>
                     {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
                   </ion-text>
                 </ion-label>
@@ -239,7 +250,7 @@
       <ion-list>
         <ion-item-group *ngIf='!searchTrainModel?.isExchange'>
           <ion-item-divider>
-            授权账号查看订单：
+            Authorized account to view orders:
           </ion-item-divider>
           <ion-item>
             <app-book-addcontacts-comp  buttonText='授权账号查看订单' [(contacts)]='addContacts'>
@@ -248,7 +259,7 @@
         </ion-item-group>
         <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
           <ion-item-divider>
-            支付方式：
+            Payment method:
           </ion-item-divider>
           <ion-item [disabled]='searchTrainModel?.isExchange'>
             <div style='width: 100%'>
@@ -270,8 +281,8 @@
   <ng-template #retryTempl>
     <ion-row style="position: relative;top:35%">
       <ion-col class='ion-text-center'>
-        <ion-label color='danger'>请求数据出错</ion-label>
-        <ion-button fill='clear' expand='block' color='secondary' (click)='doRefresh(true)'>点击重试</ion-button>
+        <ion-label color='danger'>Error in request data</ion-label>
+        <ion-button fill='clear' expand='block' color='secondary' (click)='doRefresh(true)'>Try click</ion-button>
       </ion-col>
     </ion-row>
   </ng-template>
@@ -309,4 +320,4 @@
   </div>
   </div>
 </div>
-<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍后...</app-waiting-check-pay>
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>Booking in progress, please wait...</app-waiting-check-pay>

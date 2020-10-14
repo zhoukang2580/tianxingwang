@@ -2,7 +2,7 @@
   <div *ngIf='room?.RoomDetails'>
     <div class="room-detail-desc">
       <span *ngIf='getBreakfast(roomPlan) as it'>
-        <ion-text color='success'>{{it}}</ion-text>
+        <ion-text color='success'>{{it.replace('无早','No Breakfast')}}</ion-text>
       </span>
       <ng-container *ngIf='getBedType(room) as it'>
         <span *ngIf='it.Description'>{{it.Description}}</span>
@@ -23,9 +23,9 @@
 
     <div class="room-detail-desc">
       <!-- *ngIf='roomPlan?.BookType == HotelBookType.Elong || roomPlan?.BookType == HotelBookType.Inventory' -->
-      <ion-text color='secondary' class='desc' (click)='showRoomRateRuleMessage(roomPlan)'>{{getRules(roomPlan)}}
+      <ion-text color='secondary' class='desc' (click)='showRoomRateRuleMessage(roomPlan)'>{{getRules(roomPlan).replace('不可取消','Non-refundable')}}
       </ion-text>
-      （即时确认）
+      （Immediate confirmation）
     </div>
     <!-- <div>{{colors|json}} {{getRoomPlanUniqueId(roomPlan)}}</div> -->
     <div class="price" *ngIf='colors[getRoomPlanUniqueId(roomPlan)] as color' [class.can-not-be-book]='color.includes("danger")||color.includes("medium")'

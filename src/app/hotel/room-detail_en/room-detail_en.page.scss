@@ -1,0 +1,19 @@
+.images {
+  height: 30vh;
+}
+.desc {
+  margin-right: 1em;
+}
+.name {
+  font-weight: bold;
+}
+ion-col {
+  align-self: flex-start;
+  &:first-child {
+    font-weight: bold;
+  }
+}
+
+:host{
+  z-index: 100;
+}

@@ -12,7 +12,7 @@
   <ion-item-group *ngFor='let bookInfo of bookInfos$|async'>
     <ng-container *ngIf='bookInfo?.bookInfo'>
       <ion-item-divider sticky>
-        <ion-label color='dark'>{{bookInfo?.credential?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
+        <ion-label color='dark' notranslate>{{bookInfo?.credential?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
         <ion-icon name='trash' color='danger' (click)='onRemoveBookInfo(bookInfo)' slot='end' class='ion-margin-end'>
         </ion-icon>
       </ion-item-divider>
@@ -33,7 +33,7 @@
 </app-change-roomplan-date>
 <ion-backdrop *ngIf='isShowPriceDetail' (ionBackdropTap)='onShowPriceDetails({isShow:false})'></ion-backdrop>
 <div [class.show]='isShowPriceDetail' class="price-list">
-  <ion-item-divider>{{calcNights()}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
+  <ion-item-divider>{{calcNights()}}night,<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
   </ion-item-divider>
   <ul>
     <li *ngFor='let d of dates'>
