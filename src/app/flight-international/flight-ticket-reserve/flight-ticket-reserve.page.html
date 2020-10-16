@@ -12,8 +12,7 @@
     <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ng-container *ngIf='vmCombindInfos?.length'>
       <ion-list *ngFor='let combindInfo of vmCombindInfos;let idx=index;let first=first;' lines='none'>
-        <ion-item-divider color='primary' class="backg_w sticky"
-          *ngIf='searchModel?.voyageType!=FlightVoyageType.GoBack||(searchModel?.voyageType==FlightVoyageType.GoBack&&first)'
+        <ion-item-divider color='primary' class="backg_w sticky" *ngIf='searchModel?.voyageType!=FlightVoyageType.GoBack||(searchModel?.voyageType==FlightVoyageType.GoBack&&first)'
           [class.not-sticky]='isDingTalk' style="z-index: 200;
         box-shadow: 0.1em 0.2em 0.6em rgba(0,0,0,.1);
         padding-bottom: 0.5em;">
@@ -55,20 +54,17 @@
             </ng-container>
           </div>
         </ion-item>
-        <ion-item-group
-          *ngIf='combindInfo?.bookInfo &&(searchModel?.voyageType!=FlightVoyageType.GoBack||(searchModel?.voyageType==FlightVoyageType.GoBack&&first))'>
+        <ion-item-group *ngIf='combindInfo?.bookInfo'>
           <ion-item-divider color="primary">旅客信息:</ion-item-divider>
-          <app-book-credential-comp [credential]='combindInfo.vmCredential'
-            (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
-            (modify)='onModify(combindInfo)' (managementCredentials)='onManagementCredentials()'
-            [isNotWihte]='combindInfo.bookInfo.isNotWhitelist'
-            [canMaintainCredentials]='combindInfo.credentials?.length==0||!combindInfo.vmCredential'
-            [attr.credentialcompid]='combindInfo.id'>
+          <app-book-credential-comp [credential]='combindInfo.vmCredential' (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
+            (modify)='onModify(combindInfo)' (managementCredentials)='onManagementCredentials()' [isNotWihte]='combindInfo.bookInfo.isNotWhitelist'
+            [canMaintainCredentials]='combindInfo.credentials?.length==0||!combindInfo.vmCredential' [attr.credentialcompid]='combindInfo.id'>
           </app-book-credential-comp>
-          <ng-container
-            *ngIf='combindInfo?.bookInfo && !combindInfo.bookInfo.isNotWhitelist&&combindInfo?.bookInfo.bookInfo?.flightRoute?.selectFlightFare?.policy?.Message'>
-            <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons'
-              [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
+          <div class="tips" *ngIf='combindInfo.tipForPass'>
+            <ion-label class="ion-text-wrap ion-padding-horizontal" color='danger'>{{combindInfo.tipForPass}}</ion-label>
+          </div>
+          <ng-container *ngIf='combindInfo?.bookInfo && !combindInfo.bookInfo.isNotWhitelist&&combindInfo?.bookInfo.bookInfo?.flightRoute?.selectFlightFare?.policy?.Message'>
+            <app-book-illegal-reason-comp #illegalReasonsEle [illegalReasons]='illegalReasons' [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
               (ionchange)='onIllegalReason($event,combindInfo)'>
             </app-book-illegal-reason-comp>
           </ng-container>
@@ -76,12 +72,9 @@
             <app-book-expense-types-comp [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
             </app-book-expense-types-comp>
           </ng-container>
-          <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter'
-            [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
-            [otherCostCenterName]='combindInfo.otherCostCenterName'
-            (ionChange)='onCostCenterChange($event,combindInfo)'></app-book-costcenter-comp>
-          <app-book-organization-comp (ionChange)='onOrganizationChange($event,combindInfo)'
-            [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
+          <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter' [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
+            [otherCostCenterName]='combindInfo.otherCostCenterName' (ionChange)='onCostCenterChange($event,combindInfo)'></app-book-costcenter-comp>
+          <app-book-organization-comp (ionChange)='onOrganizationChange($event,combindInfo)' [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
             [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp>
           <ion-item-divider color="primary">
             联系方式:
@@ -150,8 +143,7 @@
               <ion-label>服务费:</ion-label>
               <ion-label slot='end' class='ion-text-end ion-padding-end'>{{combindInfo.serviceFee}}元</ion-label>
             </ion-item>
-            <ion-item [attr.approvalid]='combindInfo?.id' class="ion-no-margin" detail
-              *ngIf='isAllowSelectApprove(combindInfo)' (click)='openApproverModal(combindInfo)'>
+            <ion-item [attr.approvalid]='combindInfo?.id' class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' (click)='openApproverModal(combindInfo)'>
               <ion-label style="flex: 1;">
                 审批人:
               </ion-label>
@@ -161,8 +153,8 @@
             </ion-item>
           </ion-item-group>
           <ion-item-group>
-            <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
-              [isShowGroupedInfo]="true" (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+            <app-book-tmc-outnumber [attr.outnumber]='combindInfo.id' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true"
+              (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
             </app-book-tmc-outnumber>
           </ion-item-group>
         </ng-container>
@@ -210,7 +202,7 @@
   </ng-template>
 </ion-content>
 
-<ion-footer #footerEl >
+<ion-footer #footerEl>
   <ion-toolbar (click)="onToggleIsShowFee(transfromEl,footerEl['el'])">
     <ion-buttons slot='start'>
       <ion-text color="secondary">总价:</ion-text>
@@ -218,18 +210,15 @@
       <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
       <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
-    <ion-button slot='end' size='small' *ngIf='isCanSave' color='secondary' (click)='bookFlight(true,$event)'
-      [disabled]='isSubmitDisabled'>保存订单</ion-button>
-    <ion-button slot='end' size='small' color='secondary' (click)='bookFlight(false,$event)'
-      [disabled]='isSubmitDisabled'> 提交
+    <ion-button slot='end' size='small' *ngIf='isCanSave' color='secondary' (click)='bookFlight(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
+    <ion-button slot='end' size='small' color='secondary' (click)='bookFlight(false,$event)' [disabled]='isSubmitDisabled'> 提交
     </ion-button>
   </ion-toolbar>
 </ion-footer>
 <div class="zz" *ngIf="isShowFee" (click)="isShowFee=!isShowFee"></div>
 <div [class.show]="isShowFee" class="transfrom" #transfromEl>
   <div class="wrapper">
-    <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee"
-      [style.min-width]="vmCombindInfos.length>1?'90%':'100%'">
+    <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee" [style.min-width]="vmCombindInfos.length>1?'90%':'100%'">
       <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmCredential?.Number}})
       </div>
       <div *ngFor="let trip of searchModel?.trips">
@@ -246,9 +235,7 @@
         <ion-text style="color: #ccc;">税费</ion-text>
         <ion-text>{{infos?.bookInfo?.bookInfo?.flightRoute?.selectFlightFare?.Tax}}</ion-text>
       </div>
-      <div
-        *ngIf="tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)||identity?.Numbers?.AgentId"
-        class="spacebetween">
+      <div *ngIf="tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)||identity?.Numbers?.AgentId" class="spacebetween">
         <ion-text style="color: #ccc;">服务费</ion-text>
         <ion-text>{{infos.serviceFee}}</ion-text>
       </div>

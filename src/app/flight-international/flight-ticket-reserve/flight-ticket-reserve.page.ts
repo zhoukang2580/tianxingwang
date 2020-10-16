@@ -91,6 +91,7 @@ export class FlightTicketReservePage
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
   private checkPayCountIntervalId: any;
+
   isNotWihte = true;
   FlightVoyageType = FlightVoyageType;
   searchModel: IInternationalFlightSearchModel;
@@ -820,12 +821,12 @@ export class FlightTicketReservePage
     bookDto: OrderBookDto,
     combindInfos: ICombindInfo[]
   ) {
-    const showErrorMsg = (
+    const showErrorMsg = async (
       msg: string,
       item: ICombindInfo,
       ele: HTMLElement
     ) => {
-      AppHelper.toast(
+      await AppHelper.alert(
         `${
           (item.credentialStaff && item.credentialStaff.Name) ||
           (item.bookInfo.credential &&
@@ -833,14 +834,11 @@ export class FlightTicketReservePage
               item.bookInfo.credential.Givenname)
         } 【${
           item.bookInfo.credential && item.bookInfo.credential.Number
-        }】 ${msg} 信息不能为空`,
-        2000,
-        "bottom"
+        }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
     };
     bookDto.Passengers = [];
-    let i = 0;
     const trips = this.flightService.getSearchModel().trips || [];
     const flightRoutes = [];
     trips
@@ -866,9 +864,11 @@ export class FlightTicketReservePage
       this.searchModel &&
       this.searchModel.voyageType == FlightVoyageType.GoBack;
     const last = trips.slice(0).pop();
+    let i = 0;
+    const isSelf = await this.staffService.isSelfBookType();
     for (const combindInfo of combindInfos) {
       i++;
-      if (isGoBack && i > 1) {
+      if (isGoBack && i > 1 && isSelf) {
         break;
       }
       const info = combindInfo.bookInfo.bookInfo;
@@ -1086,7 +1086,7 @@ export class FlightTicketReservePage
           p.OutNumbers = {};
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
-              const el = this.getEleByAttr("outnumber", "outnumber");
+              const el = this.getEleByAttr("outnumber", combindInfo.id);
               showErrorMsg(it.label + "必填", combindInfo, el);
               return;
             }
@@ -1149,8 +1149,6 @@ export class FlightTicketReservePage
         item.bookInfo.passenger.AccountId,
       ]);
       const credentials = res && res[item.bookInfo.passenger.AccountId];
-      item.bookInfo.isNotWhitelist;
-
       item.credentials = credentials;
       // if (credentials.length) {
       //   const exist = item.credentials[0];
@@ -1181,25 +1179,36 @@ export class FlightTicketReservePage
   }
 
   filterCredentials(credentials: CredentialsEntity[]) {
+    let tmp = credentials;
+    tmp = [];
     if (credentials) {
       credentials = credentials.filter((t) => t.Type != CredentialsType.IdCard);
       if (this.searchModel && this.searchModel.trips) {
         const hasHKMO = this.searchModel.trips.some((t) => {
-          return (
-            t.fromCity.CountryCode == "HK" ||
-            t.fromCity.CountryCode == "MO" ||
-            t.toCity.CountryCode == "HK" ||
-            t.toCity.CountryCode == "MO"
+          return "HK,MO".includes(
+            t.bookInfo &&
+              t.bookInfo.flightRoute &&
+              t.bookInfo.flightRoute.ToCountry
           );
         });
+        const hasTW = this.searchModel.trips.some((t) => {
+          return (
+            t.bookInfo &&
+            t.bookInfo.flightRoute &&
+            t.bookInfo.flightRoute.ToCountry == "TW"
+          );
+        });
+        for (const c of credentials) {
+          if (!hasHKMO) {
+            tmp.push(c);
+          }
+        }
         if (!hasHKMO) {
           credentials = credentials.filter(
-            (t) => t.Type != CredentialsType.HmPass
-          );
+            (t) => t
+          );  
         }
-        const hasTW = this.searchModel.trips.some((t) => {
-          return t.fromCity.CountryCode == "TW" || t.toCity.CountryCode == "TW";
-        });
+
         if (!hasTW) {
           credentials = credentials.filter(
             (t) => t.Type != CredentialsType.TwPass
@@ -1405,24 +1414,90 @@ export class FlightTicketReservePage
       return acc;
     }, {});
   }
+  private initTipForPass() {
+    const trips = this.searchModel.trips || [];
+    if (this.vmCombindInfos) {
+      const hongKongMacao = "HK,MO";
+      const tanWan = "TW";
+      const chinaPR = "CN";
+      this.vmCombindInfos.forEach((it) => {
+        const country = it.vmCredential.Country || it.vmModal.passenger.Country;
+        if (trips.length) {
+          const isTanWa = trips.some(
+            (t) =>
+              t.bookInfo &&
+              t.bookInfo.flightRoute &&
+              t.bookInfo.flightRoute.ToCountry == tanWan
+          );
+          const isHongKongMacao = trips.some(
+            (t) =>
+              t.bookInfo &&
+              t.bookInfo.flightRoute &&
+              hongKongMacao.includes(t.bookInfo.flightRoute.ToCountry)
+          );
+          const isChinaPR = trips.some(
+            (t) =>
+              t.bookInfo &&
+              t.bookInfo.flightRoute &&
+              (t.bookInfo.flightRoute.ToCountry == chinaPR ||
+                t.bookInfo.flightRoute.FromCountry == chinaPR)
+          );
+          if (
+            it.vmCredential.Type != CredentialsType.Passport &&
+            !isHongKongMacao &&
+            !isTanWa
+          ) {
+            it.tipForPass =
+              "非港澳台地区出行，请选择护照，证件信息请重新填写！";
+          } else if (country == "CN") {
+            if (isHongKongMacao && isTanWa) {
+              it.tipForPass =
+                "大陆乘客往来台湾，请使用台湾通行证;如在台湾中转/经停，请选择护照并携带后续航班行程单 // 大陆乘客往来香港或澳门，请使用港澳通行证;使用护照出行的乘客，须同时持有7天内前往第三国或地区的机票";
+            } else if (isHongKongMacao) {
+              it.tipForPass =
+                "大陆乘客往来香港或澳门，请使用港澳通行证;使用护照出行的乘客，须同时持有7天内前往第三国或地区的机票";
+            } else if (isTanWa) {
+              it.tipForPass =
+                "大陆乘客往来台湾，请使用台湾通行证;如在台湾中转/经停，请选择护照并携带后续航班行程单";
+            }
+          } else if (country == "HK" || country == "MO") {
+            if (isChinaPR) {
+              it.tipForPass =
+                "中国香港或中国澳门乘客来往内地，建议使用回乡证出行";
+            }
+          } else if (country == "TW") {
+            if (isChinaPR) {
+              it.tipForPass = "中国台湾乘客来往内地，建议使用台胞证出行";
+            }
+          }
+        }
+      });
+    }
+  }
   private async initCombindInfos() {
     try {
       const accountIdTmcOutNumberInfosMap: {
         [accountId: string]: ITmcOutNumberInfo[];
       } = {} as any;
+      const isSelf = await this.staffService.isSelfBookType();
       const isSelfOrisSecretary =
         (await this.staffService.isSecretaryBookType()) ||
         (await this.staffService.isSelfBookType());
-      let pfs = this.flightService.getBookInfos();
-      if (
-        this.searchModel &&
-        this.searchModel.voyageType == FlightVoyageType.GoBack
-      ) {
-        pfs = [pfs[0]];
-      }
+      const pfs = this.flightService.getBookInfos();
+      // if (
+      //   this.searchModel &&
+      //   this.searchModel.voyageType == FlightVoyageType.GoBack &&
+      //   isSelf
+      // ) {
+      //   pfs = [pfs[0]];
+      // }
       const accountIds = pfs.map((it) => it.passenger.AccountId);
       const id2Credentials = await this.getCredentials(accountIds);
+      let i = 0;
       for (const item of pfs) {
+        if (isSelf && ++i > 1) {
+          continue;
+        }
         const cs = this.initialBookDtoModel.Staffs.find(
           (it) => it.Account.Id == item.passenger.AccountId
         );
@@ -1581,6 +1656,7 @@ export class FlightTicketReservePage
         console.log(this.vmCombindInfos, "this.vmCombindInfos");
       }
       await this.initCombineInfosShowApproveInfo();
+      this.initTipForPass();
     } catch (e) {
       console.error(e);
     }
@@ -1819,4 +1895,5 @@ interface ICombindInfo {
   tmcOutNumberInfos: ITmcOutNumberInfo[];
   isTmcOutNumberRequeired: boolean;
   travelType: OrderTravelType; // 因公、因私
+  tipForPass: string;
 }

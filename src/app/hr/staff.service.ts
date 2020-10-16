@@ -457,6 +457,7 @@ export class StaffEntity {
   /// </summary>
   Policy: PolicyEntity;
   StaffNumber: string;
+  Country: string;
   BookTypeName: string;
   Password: string;
   ApproveId: string; // ApproveId Id
