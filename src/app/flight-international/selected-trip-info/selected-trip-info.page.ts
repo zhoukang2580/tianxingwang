@@ -29,7 +29,7 @@ export class SelectedTripInfoPage implements OnInit, OnDestroy {
   isSelf = true;
   passengers: PassengerBookInfo<IInternationalFlightSegmentInfo>[];
   constructor(
-    private router: Router,
+    public router: Router,
     private flightService: InternationalFlightService,
     private staffService: StaffService,
     private route: ActivatedRoute
@@ -76,7 +76,7 @@ export class SelectedTripInfoPage implements OnInit, OnDestroy {
     console.log(this.searchModel, "this.searchModel1111");
   }
   onReserve() {
-    this.router.navigate(["flight-ticket-reserve_en"]);
+    this.router.navigate(["flight-ticket-reserve"]);
   }
   onSelectSeat() {
     this.router.navigate(["choose-flight-seat"]);

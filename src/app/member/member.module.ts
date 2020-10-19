@@ -23,6 +23,13 @@ const routes: Routes = [
       import(
         "./member-credential-management/member-credential-management.module"
       ).then(m => m.MemberCredentialManagementPageModule)
+  },
+  {
+    path: "member-credential-management_en",
+    loadChildren: () =>
+      import(
+        "./member-credential-management_en/member-credential-management_en.module"
+      ).then(m => m.MemberCredentialManagementEnPageModule)
   }
 ];
 @NgModule({

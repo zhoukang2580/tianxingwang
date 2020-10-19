@@ -8,5 +8,16 @@ import { BookCredentialCompComponent } from '../book-credential-comp/book-creden
   styleUrls: ["./book-credential-comp_en.component.scss"]
 })
 export class BookCredentialCompEnComponent extends BookCredentialCompComponent{
-  
+  onMaintainCredentials() {
+    this.managementCredentials.emit();
+    this.addCredential();
+  }
+  addCredential() {
+    if (!this.canEdit) {
+      return;
+    }
+    this.router.navigate(["member-credential-management_en"], {
+      queryParams: { addNew: true },
+    });
+  }
 }

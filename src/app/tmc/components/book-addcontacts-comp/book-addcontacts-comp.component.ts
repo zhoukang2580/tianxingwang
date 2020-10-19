@@ -1,3 +1,4 @@
+import { LangService } from './../../lang.service';
 import { LanguageHelper } from "./../../../languageHelper";
 import { AppHelper } from "./../../../appHelper";
 import { ModalController } from "@ionic/angular";
@@ -11,6 +12,7 @@ import {
 } from "@angular/core";
 import { AddcontactsModalComponent } from "../addcontacts-modal/addcontacts-modal.component";
 import { AddContact } from "../../models/AddContact";
+import { AddcontactsModalEnComponent } from '../addcontacts-modal_en/addcontacts-modal_en.component';
 
 @Component({
   selector: "app-book-addcontacts-comp",
@@ -18,10 +20,11 @@ import { AddContact } from "../../models/AddContact";
   styleUrls: ["./book-addcontacts-comp.component.scss"],
 })
 export class BookAddcontactsCompComponent implements OnInit {
+  private LangService: LangService;
   @Input() buttonText = "添加联系人";
   @Input() contacts: AddContact[];
   @Output() contactsChange: EventEmitter<any>;
-  constructor(private modalCtrl: ModalController) {
+  constructor(public modalCtrl: ModalController) {
     this.contactsChange = new EventEmitter();
   }
 

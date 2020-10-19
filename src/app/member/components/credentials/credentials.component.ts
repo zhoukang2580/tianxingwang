@@ -46,6 +46,27 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() credential: MemberCredential; // 新增的证件
   @Output() credentialChange: EventEmitter<MemberCredential>;
   @Input() filteredCredentialsTypes: CredentialsType[];
+  @Input() langOpt = {
+    docType: "证件类型",
+    idsurname: "证件性",
+    inputsur: "请保持和证件姓一致",
+    inputenglishx: "请输入证件姓拼音/英文",
+    inputenglishm: "请输入证件名拼音/英文",
+    idname: "证件名",
+    inputname: "请保持和证件名一致",
+    Gender: "性别",
+    male: "男",
+    famale: "女",
+    idnumber: "证件号码",
+    inputidnum: "请输入你的证件号",
+    dateofbirth: "出生日期",
+    inputdate: "请选择日期",
+    dateofdoc: "证件到期日期",
+    setlongterm: "设置为长期有效",
+    longterm: "长期有效",
+    nationality: "国籍",
+    lssuingcou: "发政国"
+  };
   CredentialsType = CredentialsType;
   identityTypes: { key: string; value: string }[];
   @ViewChild(IonDatetime) datetimeComp: IonDatetime;

@@ -1,0 +1,40 @@
+<div class='link-man'>
+  <ion-row *ngFor='let man of contacts'>
+    <ion-col size='12'>
+      <ion-item lines='none' class="ion-no-margin">
+        <ion-label >Passenger name:</ion-label>
+        <ion-input name='name' notranslate placeholder='请输入' (ionChange)='onChange()' [(ngModel)]='man.name'></ion-input>
+        <ion-icon name='trash' mode='ios' color='danger' (click)='remove(man)'></ion-icon> 
+      </ion-item>
+    </ion-col>
+    <ion-col size='12'>
+      <ion-item lines='none' class="ion-no-margin">
+        <ion-label >Telephone:</ion-label>
+        <ion-input name='mobile'  placeholder='请输入' (ionChange)='onChange()' [(ngModel)]='man.mobile'></ion-input>
+      </ion-item>
+    </ion-col>
+    <ion-col size='12'>
+      <ion-item lines='none' class="ion-no-margin">
+        <ion-label >Email:</ion-label>
+        <ion-input name='email' [(ngModel)]='man.email' (ionChange)='onChange()' placeholder='请输入'></ion-input>
+      </ion-item>
+    </ion-col>
+    <ion-col size='12'>
+      <ion-item lines='none' class="ion-no-margin">
+        <ion-label>Notification language:</ion-label>
+        <ion-select value="cn" okText="确定" cancelText="取消" (ionChange)='onChange()' [(ngModel)]='man.notifyLanguage'>
+          <ion-select-option value=''>No hair</ion-select-option>
+          <ion-select-option value='cn' notranslate>中文</ion-select-option>
+          <ion-select-option value='en'>English</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+  <ion-row style="border-bottom: none;">
+    <ion-col>
+      <ion-button fill='outline' expand='block' color='secondary' (click)='onAddContacts()'>
+        <ion-icon name="add-circle-outline" color='secondary' slot='start'></ion-icon> {{buttonText}}
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</div>

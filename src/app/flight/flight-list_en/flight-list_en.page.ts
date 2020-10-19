@@ -725,7 +725,7 @@ export class FlightListEnPage
           Arrival: "Arrival Airport",
           Aircraft: "Aircraft",
           Cabins: "Cabins",
-          any: "Any",
+          any: "All",
           all: "All",
           takeoff: "Take off",
           land: "Landing",

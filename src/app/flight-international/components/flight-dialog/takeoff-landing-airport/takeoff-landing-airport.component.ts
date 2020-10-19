@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, Input } from "@angular/core";
 import {
   InternationalFlightService,
   IFilterCondition,
@@ -11,6 +11,11 @@ import { Subscription } from "rxjs";
   styleUrls: ["./takeoff-landing-airport.component.scss"],
 })
 export class TakeoffLandingAirportComponent implements OnInit, OnDestroy {
+  @Input() langOpt = {
+    all: "不限",
+    Departure: "起飞机场",
+    Arrival: "到达机场",
+  }
   private subscription = Subscription.EMPTY;
   condition: IFilterCondition;
   unlimited = true;

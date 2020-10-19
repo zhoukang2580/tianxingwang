@@ -27,6 +27,7 @@ import { RefundChangeDetailComponent } from "../components/refund-change-detail/
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { FlightFareRuleEntity } from "src/app/flight/models/FlightFareRuleEntity";
 import { FlightListPage } from 'src/app/flight/flight-list/flight-list.page';
+import { LangService } from 'src/app/tmc/lang.service';
 interface Iisblue {
   isshow: false;
 }
@@ -61,7 +62,8 @@ export class FlightListEnPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private flightService: InternationalFlightService,
     public modalController: ModalController,
-    public popoverController: PopoverController
+    public popoverController: PopoverController,
+    private langService: LangService
   ) {}
   private scrollToTop() {
     this.content.scrollToTop();
@@ -468,6 +470,39 @@ export class FlightListEnPage implements OnInit, OnDestroy {
     });
     const modal = await this.modalController.create({
       component: FlightDialogComponent,
+      componentProps: {
+        langOpt: this.langService.isEn ? {
+          NonStopOnly: "NonStop only",
+          TakeTime: "Take off Time",
+          Airlines: "Airlines",
+          Departure: "Departure Airport",
+          Arrival: "Arrival Airport",
+          Aircraft: "Aircraft",
+          Cabins: "Cabins",
+          any: "Any",
+          all: "All",
+          takeoff: "Take off",
+          land: "Landing",
+          takeoffland: "Take off and landing Airport",
+          morning: "A.M.",
+          afternoon: "P.M."
+        } : {
+          NonStopOnly: "仅直达",
+          TakeTime: "起飞时段",
+          Airlines: "航空公司",
+          Departure: "起飞机场",
+          Arrival: "到达机场",
+          Aircraft: "机型",
+          Cabins: "舱位",
+          any: "不限",
+          all: "不限",
+          takeoff: "起飞",
+          land: "降落",
+          takeoffland: "起降机场",
+          morning: "上午",
+          afternoon: "午后"
+        }
+      },
     });
     await modal.present();
     const r = await modal.onDidDismiss();

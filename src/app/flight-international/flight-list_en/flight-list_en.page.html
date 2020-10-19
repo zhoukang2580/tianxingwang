@@ -38,7 +38,7 @@
     </ion-col>
     <ng-template #localTimeTpl>
       <ion-col>
-        local time
+        Local time
       </ion-col>
     </ng-template>
     <ion-col size="2">
@@ -70,12 +70,13 @@
         <ng-container *ngIf='isLastTrip&&fr.isShowFares'>
           <ng-container *ngFor='let fare of fr.vmFares'>
             <ion-buttons class="ion-justify-content-between" class="buttons-wrapper">
-              <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(fare)' class="rulemsg-pkg">signature|regulations
+              <ion-button fill='clear' size='small' color='secondary' (click)='onShowRuleExplain(fare)' class="rulemsg-pkg">signature|regulations<ion-text *ngIf='fare.Variables?.AccountCode' color='danger'>|'A'</ion-text>
               </ion-button>
               <div style="display: flex;align-items: center;">
-                <ion-text color='danger'>￥{{fare.SalesPrice}}<ng-container *ngIf='fare.Variables?.AccountCode'>
-                    <ion-text color='secondary'>Joint</ion-text>
-                  </ng-container>
+                <ion-text color='danger'>￥{{fare.SalesPrice}}
+                  <!-- <ng-container *ngIf='fare.Variables?.AccountCode'>
+                    <ion-text color='danger'>'A'</ion-text>
+                  </ng-container> -->
                   <ng-container *ngIf='fare.TypeName'>
                     <ion-text color='medium' style="font-size:0.8rem;">({{fare.TypeName}})</ion-text>
                   </ng-container>

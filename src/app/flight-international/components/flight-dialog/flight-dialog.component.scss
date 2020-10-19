@@ -13,7 +13,7 @@
 
     .tab {
       position       : relative;
-      width          : 7em;
+      width          : 8.8em;
       align-items    : center;
       display        : flex;
       justify-content: center;
@@ -74,4 +74,7 @@
   margin-left     : 0.4em;
   position        : absolute;
   left            : 83%;
+}
+.item.sc-ion-label-ios-h, .item .sc-ion-label-ios-h{
+  font-size: 13px;
 }

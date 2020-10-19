@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, Input } from '@angular/core';
 import { ModalController, MenuController } from '@ionic/angular';
 import { DirectFlyComponent } from './direct-fly/direct-fly.component';
 import { AirCompanyComponent } from './air-company/air-company.component';
@@ -19,6 +19,22 @@ export class FlightDialogComponent implements OnInit, OnDestroy {
   @ViewChild(AirCompanyComponent) aircompany: AirCompanyComponent;
   @ViewChild(TakeoffLandingAirportComponent) TakeoffLandingAirport: TakeoffLandingAirportComponent;
   @ViewChild(TakeoffTimeComponent) TakeoffTime: TakeoffTimeComponent;
+  @Input() langOpt = {
+    NonStopOnly: "仅直达",
+    TakeTime: "起飞时段",
+    Airlines: "航空公司",
+    Departure: "起飞机场",
+    Arrival: "到达机场",
+    Aircraft: "机型",
+    Cabins: "舱位",
+    any: "不限",
+    all: "不限",
+    takeoff: "起飞",
+    land: "降落",
+    takeoffland: "起降机场",
+    morning: "上午",
+    afternoon: "午后"
+  };
   tab: number;
   condition: IFilterCondition;
   selectInfo: {

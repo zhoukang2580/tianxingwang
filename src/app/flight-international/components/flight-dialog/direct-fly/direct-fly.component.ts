@@ -11,6 +11,10 @@ import { Subscription } from "rxjs";
   styleUrls: ["./direct-fly.component.scss"],
 })
 export class DirectFlyComponent implements OnInit, OnDestroy {
+  @Input() langOpt = {
+    all: "不限",
+    NonStopOnly: "仅直达",
+  };
   private subscription = Subscription.EMPTY;
   condition: IFilterCondition;
   unlimited = true;

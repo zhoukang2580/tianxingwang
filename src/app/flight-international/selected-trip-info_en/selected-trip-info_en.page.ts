@@ -7,5 +7,7 @@ import { SelectedTripInfoPage } from '../selected-trip-info/selected-trip-info.p
   styleUrls: ["./selected-trip-info_en.page.scss"],
 })
 export class SelectedTripInfoEnPage extends SelectedTripInfoPage {
-  
+  onReserve() {
+    this.router.navigate(["flight-ticket-reserve_en"]);
+  }
 }

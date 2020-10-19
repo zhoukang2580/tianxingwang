@@ -1,9 +1,9 @@
 <ion-header>
   <ion-toolbar>
     <ion-row>
-      <ion-col (click)="dismiss()" class="ion-padding-start">取消</ion-col>
-      <ion-col (click)="onReset()" class="ion-text-center">重置</ion-col>
-      <ion-col (click)="onSearch()" class="ion-text-end ion-padding-end">确定</ion-col>
+      <ion-col (click)="dismiss()" class="ion-padding-start">Cancel</ion-col>
+      <ion-col (click)="onReset()" class="ion-text-center">Reset</ion-col>
+      <ion-col (click)="onSearch()" class="ion-text-end ion-padding-end">Determine</ion-col>
     </ion-row>
   </ion-toolbar>
 </ion-header>
@@ -12,28 +12,28 @@
 
     <article class="left">
       <div class='tab' [class.active]='tab===1' (click)='onTabClick(1)'>
-        <span>直飞/中转</span>
+        <span>{{langOpt.NonStopOnly}}</span>
         <div [class.border-raduis]='selectInfo?.isDirect'></div>
       </div>
       <div class='tab' [class.active]='tab===2' (click)='onTabClick(2)'>
-        <span>航空公司</span>
+        <span>{{langOpt.Airlines}}</span>
         <div [class.border-raduis]='selectInfo?.aircompony'></div>
       </div>
       <div class='tab' [class.active]='tab===3' (click)='onTabClick(3)'>
-        <span>起飞时段</span>
+        <span>{{langOpt.TakeTime}}</span>
         <div [class.border-raduis]='selectInfo?.timeSpan'></div>
       </div>
       <div class='tab' [class.active]='tab===4' (click)='onTabClick(4)'>
-        <span>起降机场</span>
+        <span>{{langOpt.takeoffland}}</span>
         <div [class.border-raduis]='selectInfo?.fromAir||selectInfo?.toAir'></div>
       </div>
     </article>
     <ion-list style='flex:1;padding: 1em;width: 75%;'>
       <article class="right">
-        <app-direct-fly [class.hidden]='tab!==1'></app-direct-fly>
-        <app-air-company [class.hidden]='tab!==2'></app-air-company>
-        <app-takeoff-time [class.hidden]='tab!==3'></app-takeoff-time>
-        <app-takeoff-landing-airport [class.hidden]='tab!==4'></app-takeoff-landing-airport>
+        <app-direct-fly [langOpt]='langOpt' [class.hidden]='tab!==1'></app-direct-fly>
+        <app-air-company [langOpt]='langOpt' [class.hidden]='tab!==2'></app-air-company>
+        <app-takeoff-time [langOpt]='langOpt' [class.hidden]='tab!==3'></app-takeoff-time>
+        <app-takeoff-landing-airport [langOpt]='langOpt' [class.hidden]='tab!==4'></app-takeoff-landing-airport>
       </article>
     </ion-list>
   </section>

@@ -1,6 +1,6 @@
 <ion-list>
   <ion-item (click)="onReset()">
-    <ion-label>不限</ion-label>
+    <ion-label>{{langOpt.all}}</ion-label>
     <ion-checkbox slot="end" [(ngModel)]="unlimited"></ion-checkbox>
   </ion-item>
   <ion-item *ngFor="let item of condition?.airComponies">

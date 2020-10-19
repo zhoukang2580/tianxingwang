@@ -1,3 +1,4 @@
+import { LangService } from './../../lang.service';
 import { Subscription } from "rxjs";
 import { StaffService } from "./../../../hr/staff.service";
 import { IonSelect } from "@ionic/angular";
@@ -26,6 +27,7 @@ import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 export class BookCredentialCompComponent
   implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
+  private langService: LangService;
   // @Input() isExchange: boolean;
   @Input() credential: CredentialsEntity;
   @Input() credentials: CredentialsEntity[];
@@ -43,7 +45,7 @@ export class BookCredentialCompComponent
   isModified = false;
   CredentialsType = CredentialsType;
   @ViewChild(IonSelect) ionSelect: IonSelect;
-  constructor(private router: Router) {
+  constructor(public router: Router) {
     this.savecredential = new EventEmitter();
     this.modify = new EventEmitter();
     this.managementCredentials = new EventEmitter();
@@ -70,6 +72,11 @@ export class BookCredentialCompComponent
     if (!this.canEdit) {
       return;
     }
+    this.langService.isEn ?
+    this.router.navigate(["member-credential-management_en"], {
+      queryParams: { addNew: true },
+    })
+    :
     this.router.navigate(["member-credential-management"], {
       queryParams: { addNew: true },
     });

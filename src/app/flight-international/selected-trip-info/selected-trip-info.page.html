@@ -109,7 +109,7 @@
   </ion-list>
 </ion-content>
 <ion-footer>
-  <div *ngIf='curTrip?.bookInfo.flightRoute?.selectFlightFare?.policy' class="policy-message">
+  <div *ngIf='curTrip?.bookInfo?.flightRoute?.selectFlightFare?.policy' class="policy-message">
     {{curTrip?.bookInfo.flightRoute?.selectFlightFare?.policy?.Message}}
   </div>
   <ion-button color="{{curTrip?.bookInfo?.flightRoute?.color||'secondary'}}" expand='full' (click)="onReserve()">

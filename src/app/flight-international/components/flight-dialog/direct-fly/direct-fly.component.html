@@ -1,11 +1,11 @@
 
 <ion-radio-group>
     <ion-item (click)='onReset()'>
-        <ion-label>不限</ion-label>
+        <ion-label>{{langOpt.all}}</ion-label>
       <ion-checkbox [(ngModel)]="unlimited"></ion-checkbox>
       </ion-item>
     <ion-item (click)="onChangeChecked()">
-      <ion-label>仅直达</ion-label>
+      <ion-label>{{langOpt.NonStopOnly}}</ion-label>
       <ion-checkbox [(ngModel)]='condition.isDirectFly'></ion-checkbox>
     </ion-item>
   </ion-radio-group>

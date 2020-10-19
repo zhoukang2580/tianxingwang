@@ -30,6 +30,8 @@ import { BookExpenseTypesCompComponent } from "./book-expense-types-comp/book-ex
 import { TmcCalendarComponent } from "./tmc-calendar/tmc-calendar.page";
 import { DayEnComponent } from "./day-en/dayEn.component";
 import { BookCredentialCompEnComponent } from './book-credential-comp_en/book-credential-comp_en.component';
+import { AddcontactsModalEnComponent } from './addcontacts-modal_en/addcontacts-modal_en.component';
+import { BookAddcontactsCompEnComponent } from './book-addcontacts-comp_en/book-addcontacts-comp_en.component';
 
 @NgModule({
   declarations: [
@@ -40,12 +42,14 @@ import { BookCredentialCompEnComponent } from './book-credential-comp_en/book-cr
     OrganizationComponent,
     SelectTravelNumberComponent,
     AddcontactsModalComponent,
+    AddcontactsModalEnComponent,
     BookIllegalReasonCompComponent,
     BookCredentialCompComponent,
     BookCredentialCompEnComponent,
     BookCostcenterCompComponent,
     BookOrganizationCompComponent,
     BookAddcontactsCompComponent,
+    BookAddcontactsCompEnComponent,
     DayComponent,
     DayEnComponent,
     SelectCountryModalComponent,
@@ -74,6 +78,7 @@ import { BookCredentialCompEnComponent } from './book-credential-comp_en/book-cr
     BookCredentialCompEnComponent,
     BookOrganizationCompComponent,
     BookAddcontactsCompComponent,
+    BookAddcontactsCompEnComponent,
     BookTmcOutnumberComponent,
     DayComponent,
     SelectWheelComponent,

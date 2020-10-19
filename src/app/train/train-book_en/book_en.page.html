@@ -99,7 +99,7 @@
         </ion-item-group>
         <ion-item-group>
           <ion-item-divider>
-            联系方式:
+            Contact information:
           </ion-item-divider>
           <div class='mobiles' [attr.mobileid]='combindInfo.id'>
             <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'
@@ -205,7 +205,7 @@
               <ion-label>Notification language:</ion-label>
               <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
                 <ion-select-option value=''>No hair</ion-select-option>
-                <ion-select-option notranslate value='cn'>中文</ion-select-option>
+                <ion-select-option value='cn' notranslate>中文</ion-select-option>
                 <ion-select-option value='en'>English</ion-select-option>
               </ion-select>
             </ion-item>
@@ -250,11 +250,11 @@
       <ion-list>
         <ion-item-group *ngIf='!searchTrainModel?.isExchange'>
           <ion-item-divider>
-            Authorized account to view orders:
+            Add contacts:
           </ion-item-divider>
           <ion-item>
-            <app-book-addcontacts-comp  buttonText='授权账号查看订单' [(contacts)]='addContacts'>
-            </app-book-addcontacts-comp>
+            <app-book-addcontacts-comp_en  buttonText='Add contacts' [(contacts)]='addContacts'>
+            </app-book-addcontacts-comp_en>
           </ion-item>
         </ion-item-group>
         <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>

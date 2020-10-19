@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy, Input } from "@angular/core";
 import { IonRange, DomController } from "@ionic/angular";
 import {
   InternationalFlightService,
@@ -12,6 +12,10 @@ import { Subscription } from "rxjs";
   styleUrls: ["./takeoff-time.component.scss"],
 })
 export class TakeoffTimeComponent implements OnInit, OnDestroy {
+  @Input() langOpt = {
+    morning: '上午',
+    afternoon: "午后"
+  };
   private subscription = Subscription.EMPTY;
   time: "forenoon" | "afternoon" | "none" | "night";
   @ViewChild("range") range: IonRange;
@@ -39,15 +43,15 @@ export class TakeoffTimeComponent implements OnInit, OnDestroy {
         break;
       }
       case "afternoon": {
-        this.range.value = { lower: 12, upper: 18 };
+        this.range.value = { lower: 12, upper: 24 };
         this.changeView();
         break;
       }
-      case "night": {
-        this.range.value = { lower: 18, upper: 24 };
-        this.changeView();
-        break;
-      }
+      // case "night": {
+      //   this.range.value = { lower: 18, upper: 24 };
+      //   this.changeView();
+      //   break;
+      // }
       default: {
         this.range.value = { lower: 0, upper: 24 };
         this.changeView();

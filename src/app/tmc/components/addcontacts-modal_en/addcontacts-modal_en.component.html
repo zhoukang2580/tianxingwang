@@ -13,16 +13,16 @@
     <ion-refresher-content refreshingText="正在加载...">
     </ion-refresher-content>
   </ion-refresher>
-  <ion-toolbar #toolbar>
+  <ion-toolbar #toolbar style='padding:0;font-size: 12px;'>
     <!-- Searchbar with a custom debounce -->
-    <ion-searchbar class='ion-no-margin ion-no-padding' style='padding:0;font-size: 12px;' debounce="400" animated placeholder="employee name,employee number,mobile phone" (ionChange)='doSearch()' [(ngModel)]='vmKeyword'>
+    <ion-searchbar class='ion-no-margin ion-no-padding' debounce="400" animated placeholder="employee name,employee number,mobile phone" (ionChange)='doSearch()' [(ngModel)]='vmKeyword'>
     </ion-searchbar>
   </ion-toolbar>
   <ion-list *ngIf='!loading;else loadingTemp'>
     <ng-container *ngIf='items?.length;else nodata'>
       <ion-item *ngFor='let item of items' detail (click)='onSelect(item)'>
-        <ion-label color='medium' notranslate>
-          {{item?.Text}}
+        <ion-label color='medium'>
+          {{item?.Text}}<ion-text notranslate>({{item?.Text}})</ion-text>
         </ion-label>
       </ion-item>
     </ng-container>
