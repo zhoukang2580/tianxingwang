@@ -66,7 +66,8 @@ service 以.service 结尾，文件名以 - 切分 比如 mms-shopcart.service
 ## 发布
 `ng build --prod --base-href /www/`
 ng serve --disableHostCheck
-
+如果出现内存溢出，则需要修改
+`npm run build-prod`
 ## 修改wechat app id 
 1. 到项目目录下面找到config.xml，找到里面的 `<preference name="WECHATAPPID" value="wx58e8910e60cd69ac" />`
 2. 将其值修改对应的appid即可
