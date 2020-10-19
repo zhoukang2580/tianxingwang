@@ -17,12 +17,12 @@
   <ion-col size="2.3" class="ion-text-center">
     <div class="ion-text-nowrap" style="font-size: 0.8rem;">
       <div style="display: flex;align-items: center;flex-flow: column;" color="secondary" (click)="onTransfer($event)">
-        <ion-text *ngIf="fr.isTransfer else directfly" color='secondary'>转机</ion-text>
+        <ion-text *ngIf="fr.isTransfer else directfly" color='secondary'>{{langOpt.turningPoint}}</ion-text>
         <ion-text>-----------</ion-text>
         <ion-text>{{fr.flyTime}}</ion-text>
       </div>
       <ng-template #directfly>
-        <ion-text color='secondary'>直飞</ion-text>
+        <ion-text color='secondary'>{{langOpt.directFly}}</ion-text>
       </ng-template>
     </div>
   </ion-col>
@@ -43,11 +43,11 @@
   <ion-col size="3.1" class="ion-text-center">
     <div [class.margin-t11]="fr?.toSegment?.Variables?.AddDaysTip&&fr.toSegment?.Variables?.AddDaysTip>'0'" style="padding-top: 0.4em;">
       <ion-text color="danger" class="flightMoney">
-        <small style="font-size: 0.6rem;">¥</small> <span style="font-weight:bold"></span>{{fr.minPriceFlightFare?.SalesPrice}}<small style="font-size: 0.6rem;">起</small>
+        <small style="font-size: 0.6rem;">¥</small> <span style="font-weight:bold"></span>{{fr.minPriceFlightFare?.SalesPrice}}<small style="font-size: 0.6rem;">{{langOpt.from}}</small>
       </ion-text>
       <div style="font-size: 0.7rem" *ngIf="fr.minPriceFlightFare?.Tax">
         <ion-text color="danger">
-          税<span style="font-weight:bold">¥</span>{{fr.minPriceFlightFare?.Tax}}
+          {{langOpt.tax}}<span style="font-weight:bold">¥</span>{{fr.minPriceFlightFare?.Tax}}
         </ion-text>
       </div>
       <div class="fontSize typename">

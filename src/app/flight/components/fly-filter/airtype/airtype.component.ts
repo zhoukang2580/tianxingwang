@@ -28,6 +28,9 @@ import { FilterConditionModel } from "src/app/flight/models/flight/advanced-sear
 export class AirtypeComponent
   implements OnInit, OnDestroy, AfterViewInit {
   @Input() filterCondition: FilterConditionModel;
+  @Input() langOpt = {
+    any: "不限"
+  };
   @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   constructor() {
     this.filterConditionChange = new EventEmitter();

@@ -42,8 +42,8 @@
             <ion-row>
               <ion-col class='ion-text-end'>
                 <div style="display: flex;align-items: center;justify-content: flex-end;width: 100%;">
-                  <ion-label color='danger'>机票票价:￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
-                  <ion-label color='danger' class='ion-margin-start'>Tax:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}
+                  <ion-label color='danger'>￥{{bookInfo.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+                  <ion-label color='danger' style="font-size: 12px;" class='ion-margin-start'>Tax:￥{{bookInfo.bookInfo?.flightSegment?.Tax}}
                   </ion-label>
                 </div>
               </ion-col>
@@ -61,7 +61,7 @@
             *ngIf='canShowLowerSegment(bookInfo)'>
             There is a cheaper flight within 60 minutes before and after the flight you choose:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
             {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},Fare:￥{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}
-            <ion-button color='warning' size='small'>tacke this flight</ion-button>
+            <ion-button color='warning' size='small'>take this flight</ion-button>
           </ion-label>
         </div>
       </ion-item>

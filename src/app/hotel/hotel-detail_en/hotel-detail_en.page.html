@@ -175,8 +175,8 @@
     <ion-item-divider (click)='hotel["ishoteldetails"]=!hotel["ishoteldetails"]'>
       Hotel Information
       <ng-container *ngIf='hotel'>
-        <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["ishoteldetails"]'></ion-icon>
-        <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
+        <ion-icon name='caret-down-outline' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
+        <ion-icon name='caret-up-outline' color='secondary' *ngIf='!hotel["ishoteldetails"]'></ion-icon>
       </ng-container>
     </ion-item-divider>
     <ng-container *ngIf='hotel?.HotelDetails' @flyInOut>

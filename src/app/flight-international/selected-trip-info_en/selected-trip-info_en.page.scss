@@ -1,0 +1,49 @@
+.border-t {
+  background: linear-gradient(
+    to left,
+    var(--ion-color-light),
+    rgba(var(--ion-color-secondary-rgb), 0.1)
+  );
+}
+
+.trip-number {
+  background-color: var(--ion-color-secondary);
+  color: var(--ion-color-light);
+  text-align: center;
+}
+
+.font-prime {
+  font-size: 0.2em;
+  display: flex;
+  align-items: center;
+  padding-left: 1.8em;
+}
+.policy-message {
+  font-size: 0.6rem;
+  color: var(--ion-color-danger);
+  padding: 0.5em;
+}
+.day-tip {
+  font-size: 0.6rem;
+  text-align: center;
+  color: sandybrown;
+  position: absolute;
+  bottom: 2.3em;
+  right: 0em;
+  white-space: nowrap;
+}
+.border-left {
+  padding-left: 1em;
+  border-left: 0.2em solid var(--ion-color-medium);
+  margin-left: 0.8em;
+}
+
+.padding-s {
+  width: 1.3em;
+  margin-top: 0.4em;
+}
+
+.carriername {
+  padding-left: 0.3em;
+  font-size: 0.8em;
+}

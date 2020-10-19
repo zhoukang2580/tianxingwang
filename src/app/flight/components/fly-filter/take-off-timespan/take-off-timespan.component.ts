@@ -20,6 +20,10 @@ import { IonRange, DomController } from "@ionic/angular";
 export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit {
   time: "forenoon" | "afternoon" | "none" | "night";
   @Input() filterCondition: FilterConditionModel;
+  @Input() langOpt = {
+    morning: "上午",
+    afternoon: "午后"
+  };
   @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   @ViewChild("range") range: IonRange;
   constructor(private domCtrl: DomController) {
@@ -48,7 +52,7 @@ export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit {
   }
   ngOnDestroy() {
   }
-  onTimeSelect(time: "forenoon" | "afternoon" | "none" | "night") {
+  onTimeSelect(time: "forenoon" | "afternoon" | "none") {
     this.time = time;
     switch (this.time) {
       case "forenoon": {
@@ -57,15 +61,15 @@ export class TakeOffTimeSpanComponent implements OnInit, AfterViewInit {
         break;
       }
       case "afternoon": {
-        this.range.value = { lower: 12, upper: 18 };
+        this.range.value = { lower: 12, upper: 24 };
         this.changeView();
         break;
       }
-      case "night": {
-        this.range.value = { lower: 18, upper: 24 };
-        this.changeView();
-        break;
-      }
+      // case "night": {
+      //   this.range.value = { lower: 18, upper: 24 };
+      //   this.changeView();
+      //   break;
+      // }
       default: {
         this.range.value = { lower: 0, upper: 24 };
         this.changeView();

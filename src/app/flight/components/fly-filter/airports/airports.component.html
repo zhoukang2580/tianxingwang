@@ -1,17 +1,17 @@
 <ion-list lines='none' *ngIf='filterCondition'>
-  <ion-list-header  class='ion-no-margin'>
-    <ion-label *ngIf='isFromAirports'>{{filterCondition.fromCity?.CityName}}起飞</ion-label>
-    <ion-label *ngIf='!isFromAirports'>{{filterCondition.toCity?.CityName}}降落</ion-label>
+  <ion-list-header  class='ion-no-margin' style="font-size: inherit;">
+    <ion-label *ngIf='isFromAirports'>{{filterCondition.fromCity?.CityName}}{{langOpt.takeoff}}</ion-label>
+    <ion-label *ngIf='!isFromAirports'>{{filterCondition.toCity?.CityName}}{{langOpt.land}}</ion-label>
   </ion-list-header>
   <ion-radio-group *ngIf='!isFromAirports' [value]="filterCondition.userOps?.toAirportOp?'':'unlimit'">
     <ion-item  (click)='onReset()'>
-      <ion-label>不限</ion-label>
+      <ion-label>{{langOpt.any}}</ion-label>
       <ion-radio value='unlimit'></ion-radio>
     </ion-item>
   </ion-radio-group>
   <ion-radio-group *ngIf='isFromAirports' [value]="filterCondition.userOps?.fromAirportOp?'':'unlimit'">
     <ion-item  (click)='onReset()'>
-      <ion-label>不限</ion-label>
+      <ion-label>{{langOpt.any}}</ion-label>
       <ion-radio value='unlimit'></ion-radio>
     </ion-item>
   </ion-radio-group>

@@ -12,12 +12,12 @@
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&!selectedPassengers'>
-        添加旅客<ion-badge color='danger'>
+        Add passengers<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&selectedPassengers'>
-        已选旅客<ion-badge color='danger'>
+        Selected passengers<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
@@ -114,7 +114,7 @@
         <ion-text>Sreach</ion-text>
       </ion-button>
       <ion-button *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
-        <ion-text>请添加乘客
+        <ion-text>Please Add Passengers
         </ion-text>
       </ion-button>
     </ion-card-content>

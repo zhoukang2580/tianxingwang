@@ -26,6 +26,11 @@ export class AirportsComponent
   implements OnInit, AfterViewInit, OnDestroy {
   @Input() isFromAirports: boolean;
   @Input() filterCondition: FilterConditionModel;
+  @Input() langOpt = {
+    any: "不限",
+    takeoff: "起飞",
+    land: "降落"
+  };
   @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
   constructor() {
     this.filterConditionChange = new EventEmitter();

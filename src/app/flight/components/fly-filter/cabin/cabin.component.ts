@@ -28,6 +28,9 @@ import { SearchTypeModel } from "src/app/flight/models/flight/advanced-search-co
 export class CabinComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() filterCondition: FilterConditionModel;
   @Output() filterConditionChange: EventEmitter<FilterConditionModel>;
+  @Input() langOpt = {
+    any: "不限"
+  };
   isSelf = true;
   selectItem: any = "unlimit";
   constructor(private staffService: StaffService) {

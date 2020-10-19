@@ -15,7 +15,7 @@
   </div>
   <ion-list class="house-info">
     <ion-item-divider>
-      {{room?.Name}}详情
+      {{room?.Name}}Details
     </ion-item-divider>
     <ion-item-group>
       <ion-item *ngIf='room?.RoomDetails'>
@@ -23,7 +23,7 @@
           <ng-container *ngFor='let it of room.RoomDetails'>
             <ng-container *ngIf='it.Description'>
               <div>
-                <span class='name'>{{it.Name}}：</span>
+                <span class='name' style="text-transform:capitalize;">{{it.Name}}：</span>
                 <span class='desc'>{{it.Description}}</span>
               </div>
             </ng-container>

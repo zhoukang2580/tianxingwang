@@ -42,7 +42,7 @@
           <ion-col style="flex:3">{{seat.SeatTypeName}}</ion-col>
           <ion-col>
             <ion-text color='danger'>
-              ￥{{seat.SalesPrice}}
+              <!-- ￥{{seat.SalesPrice}} -->
             </ion-text>
           </ion-col>
           <ion-col size='4'>
@@ -73,13 +73,13 @@
           <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='train?.IsAccessByIdCard' alt="">
         </div>
       </div>
-      <div class='to-station-name'>{{train?.ToStationName}}</div>
+      <div class='to-station-name' notranslate>{{train?.ToStationName}}</div>
     </div>
   </div>
   <div class='seat' *ngIf='seat'>
     <div class='seat-item'>
       <span>{{seat.SeatTypeName}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"Zhang":""}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"":""}}</span>
       <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"0"}}{{langOpt.Left}}</span>
     </div>
     <div class='price' style='margin-left: auto'>￥{{seat.SalesPrice}}</div>

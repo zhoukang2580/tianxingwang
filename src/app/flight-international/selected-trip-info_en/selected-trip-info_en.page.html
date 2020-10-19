@@ -1,0 +1,118 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button></app-back-button>
+    </ion-buttons>
+    <ion-title>已选行程</ion-title>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngFor="let trip of searchModel?.trips;let i=index;">
+    <ion-row class="border-t">
+      <ion-col size="2" class="trip-number">
+         {{i+1}}
+      </ion-col>
+      <ion-col class="font-prime">
+        {{trip.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,10)}}
+        {{trip.fromCity?.CityName}}-{{trip?.toCity?.CityName}}
+      </ion-col>
+      <ion-col class="font-prime">
+        Flight duration{{getFlyTime(trip.bookInfo?.flightRoute?.Duration)}}
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="ion-padding">
+        <div>
+          <ion-row style="margin-bottom: 0.2em;">
+            <ion-col size="2" style="text-align:end">
+              {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(10,16)}}
+            </ion-col>
+            <ion-col class="border-left">
+              {{trip?.bookInfo?.fromSegment?.FromAirport}} {{trip?.bookInfo?.fromSegment?.FromAirportName}}
+              {{trip?.bookInfo?.fromSegment?.FromTerminal}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="2">
+
+            </ion-col>
+            <ion-col>
+              <div *ngFor="let item of trip?.bookInfo?.flightRoute?.transferSegments;let index=index">
+                <div>
+                  <ion-text color="medium" style="font-size:0.7rem">
+                    {{getTransferSegments(index,item,trip?.bookInfo?.flightRoute?.transferSegments)}}
+                    <!-- {{item.FromCityName}} {{item.FromAirport}} {{item.FromAirportName}} | 
+                      {{item.ToCityName}} {{item.ToAirport}} {{item.ToAirportName}} -->
+                  </ion-text>
+                </div>
+              </div>
+            </ion-col>
+          </ion-row>
+          <ion-row style="margin-top:1em">
+            <ion-col size="2" style="text-align:end">
+              <div class="day-tip" *ngIf='trip.bookInfo?.flightRoute?.addDays'>
+                +{{trip.bookInfo?.flightRoute?.addDays}}Day</div>
+              {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
+            </ion-col>
+            <ion-col class="border-left">
+              {{trip.bookInfo?.toSegment?.ToAirport}}{{trip.bookInfo?.toSegment?.ToAirportName}}
+              {{trip.bookInfo?.toSegment?.ToTerminal}}
+            </ion-col>
+          </ion-row>
+          <ion-row *ngFor="let air of trip.bookInfo?.flightRoute?.transferSegments">
+            <ion-col size="2">
+            </ion-col>
+            <ion-col style="display: flex;align-items: flex-end;">
+              <div class="padding-s">
+                <img [src]="air?.AirlineSrc">
+              </div>
+              <ion-text class="carriername" color="medium">
+                {{air?.AirlineName}}
+                {{air?.Number?.trim()}} <ng-container *ngIf='air.CodeShareNumber'><span style="opacity: .4;margin: 0 0.25em;">|</span>共享{{air.CodeShareNumber}}</ng-container>
+              </ion-text>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngIf=''>
+            <ion-col size="2">
+            </ion-col>
+            <ion-col style="display: flex;align-items: center;justify-content: flex-end;font-size: 0.9rem;">
+               <ion-text color="medium" style="display: flex;align-items: center;" (click)="onSelectSeat()">
+                选择舱位 <ion-icon name="chevron-forward-outline"></ion-icon>
+              </ion-text>
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col class="ion-padding-start">
+        <ion-text *ngIf="getOneWay()&&i==(searchModel.trips.length)-1" color="danger" style="font-size: 0.9rem;">
+          单程提醒：持商务、旅游等短期签证的旅客或免签的旅客建议购买返程机票或第三地机票，以免无法办理乘机和出境手续
+        </ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-list *ngIf='!isSelf'>
+    <ion-item-divider>
+      旅客
+    </ion-item-divider>
+    <ion-item *ngFor='let item of passengers'>
+      <ion-label>
+        <h2>
+          {{item.credential?.Name}}
+        </h2>
+        <p>{{item.credential?.Type|credential}}:{{item.credential?.Number}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+<ion-footer>
+  <div *ngIf='curTrip?.bookInfo.flightRoute?.selectFlightFare?.policy' class="policy-message">
+    {{curTrip?.bookInfo.flightRoute?.selectFlightFare?.policy?.Message}}
+  </div>
+  <ion-button color="{{curTrip?.bookInfo?.flightRoute?.color||'secondary'}}" expand='full' (click)="onReserve()">
+    <ion-text color='light'>Determine</ion-text>
+  </ion-button>
+</ion-footer>

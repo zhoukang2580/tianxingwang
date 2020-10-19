@@ -76,7 +76,7 @@ export class SelectedTripInfoPage implements OnInit, OnDestroy {
     console.log(this.searchModel, "this.searchModel1111");
   }
   onReserve() {
-    this.router.navigate(["flight-ticket-reserve"]);
+    this.router.navigate(["flight-ticket-reserve_en"]);
   }
   onSelectSeat() {
     this.router.navigate(["choose-flight-seat"]);

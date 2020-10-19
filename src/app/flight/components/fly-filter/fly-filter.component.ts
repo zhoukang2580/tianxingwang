@@ -28,6 +28,21 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(AirtypeComponent) airTypeComp: AirtypeComponent;
   @ViewChild(CabinComponent) cabinComp: CabinComponent;
   @ViewChild(TakeOffTimeSpanComponent) timeSpanComp: TakeOffTimeSpanComponent;
+  @Input() langOpt = {
+    NonStopOnly: "仅直达",
+    TakeTime: "起飞时段",
+    Airlines: "航空公司",
+    Departure: "起飞机场",
+    Arrival: "到达机场",
+    Aircraft: "机型",
+    Cabins: "舱位",
+    any: "不限",
+    all: "不限",
+    takeoff: "起飞",
+    land: "降落",
+    morning: "上午",
+    afternoon: "午后"
+  };
   filterCondition: FilterConditionModel;
   tab: number;
   userOps: any;
