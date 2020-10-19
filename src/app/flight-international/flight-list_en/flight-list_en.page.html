@@ -23,7 +23,7 @@
               {{trip?.bookInfo?.fromSegment?.TakeoffTime?.replace("T"," ").substring(5,16)}} --
               {{trip?.bookInfo?.toSegment?.ArrivalTime?.replace("T"," ").substring(10,16)}}
               <span *ngIf="trip.bookInfo.flightRoute.addDays>0">
-                (+{{trip?.bookInfo?.flightRoute.addDays}}天)</span>
+                (+{{trip?.bookInfo?.flightRoute.addDays}}Day)</span>
             </div>
           </div>
         </ion-col>
@@ -34,20 +34,20 @@
     <ion-col size="0.8">
     </ion-col>
     <ion-col *ngIf="curTrip?.fromCity?.CountryCode?.toLowerCase()=='cn' else localTimeTpl" style="text-align: left;">
-      北京时间
+      Beijing time
     </ion-col>
     <ng-template #localTimeTpl>
       <ion-col>
-        当地时间
+        local time
       </ion-col>
     </ng-template>
     <ion-col size="2">
     </ion-col>
     <ion-col *ngIf="curTrip?.toCity?.CountryCode?.toLowerCase()=='cn' else localTimeTpl">
-      北京时间
+      Beijing time
     </ion-col>
     <ion-col size="3.1" class="ion-text-nowrap">
-      多程总价
+      Total price
     </ion-col>
   </ion-row>
 </ion-header>
@@ -59,7 +59,12 @@
   <ion-list *ngIf='!isLoading'>
     <ng-container *ngIf='flightRoutes?.length else nodata'>
       <div *ngFor='let fr of flightRoutes' class="item-wrapper {{fr.color}}">
-        <app-flight-list-item [ngClass]="{open:fr.isShowFares,sticky:isLastTrip}" (click)='onSelectTrip(fr)' [isShowFares]='fr.isShowFares' (toggleFlightFare)='onToggleFlightFare(fr)'
+        <app-flight-list-item [langOpt]=' {
+          directFly: "Non-Stop",
+          turningPoint: "TurningPoint",
+          tax: "Tax",
+          from: " From"
+        }' [ngClass]="{open:fr.isShowFares,sticky:isLastTrip}" (click)='onSelectTrip(fr)' [isShowFares]='fr.isShowFares' (toggleFlightFare)='onToggleFlightFare(fr)'
           [flightRoute]='fr' (transfer)='onTransfer(fr)'>
         </app-flight-list-item>
         <ng-container *ngIf='isLastTrip&&fr.isShowFares'>
@@ -69,7 +74,7 @@
               </ion-button>
               <div style="display: flex;align-items: center;">
                 <ion-text color='danger'>￥{{fare.SalesPrice}}<ng-container *ngIf='fare.Variables?.AccountCode'>
-                    <ion-text color='secondary'>协</ion-text>
+                    <ion-text color='secondary'>Joint</ion-text>
                   </ng-container>
                   <ng-container *ngIf='fare.TypeName'>
                     <ion-text color='medium' style="font-size:0.8rem;">({{fare.TypeName}})</ion-text>

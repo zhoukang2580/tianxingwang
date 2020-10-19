@@ -10,7 +10,7 @@ export class SelectedFlightBookInfosEnPage extends SelectedFlightBookInfosPage {
   langOpt={
     meal: "Meal",
     isStop: "Stop over",
-    no: "No",
+    no: "No ",
     common: "Operated by ",
     agreement:"A",
     planeType: "Aircraft ",

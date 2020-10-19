@@ -15,7 +15,7 @@
     </app-refresher>
     <ng-container *ngIf='viewModel?.combindInfos?.length'>
       <ion-list *ngFor="let combindInfo of viewModel?.combindInfos" lines='none'>
-        <ion-item-divider color='primary' class="sticky">
+        <ion-item-divider notranslate color='primary' class="sticky">
           {{combindInfo?.vmCredential?.Name}}
           【{{tmc?.Name}}】
           [Adult]
@@ -266,7 +266,7 @@
               <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'
                 (ionChange)="calcTotalPrice()">
                 <ion-item *ngFor='let pt of orderTravelPayTypes'>
-                  <ion-label>{{pt.label}}</ion-label>
+                  <ion-label>{{pt.label.replace('公付','Company')}}</ion-label>
                   <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)'
                     [class.radio-checked]='pt.checked'>
                   </ion-radio>

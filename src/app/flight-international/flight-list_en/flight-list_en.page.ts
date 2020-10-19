@@ -137,7 +137,7 @@ export class FlightListEnPage implements OnInit, OnDestroy {
       id: AppHelper.uuid(),
     };
     this.flightService.setSearchModelSource(this.searchModel);
-    this.router.navigate(["selected-trip-info"], {
+    this.router.navigate(["selected-trip-info_en"], {
       queryParams: { doRefresh: "false", queryParamsHandling: "merge" },
     });
   }

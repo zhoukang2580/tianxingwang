@@ -111,7 +111,7 @@
                   </ion-text>
                 </h3>
                 <h3>
-                  <ion-text color='secondary'>Refund and change policy&nbsp;> </ion-text>
+                  <ion-text color='secondary'>Policies&nbsp;> </ion-text>
                 </h3>
                 <h3 *ngIf="cabin.Cabin?.Count<10" >{{cabin.Cabin?.Count}} Left</h3>
               </ion-label>
@@ -120,7 +120,7 @@
               <ion-text color='danger'>￥{{cabin.Cabin?.SalesPrice}}</ion-text>
               <ion-button [color]='cabin.color' class='ion-margin-top' expand='block' [class.disabled]='!cabin?.IsAllowBook'
                 (click)='onBookTicket(cabin.Cabin)'>
-                <ion-text color='light'>预订</ion-text>
+                <ion-text color='light'>Book</ion-text>
               </ion-button>
             </ion-col>
           </ion-row>
@@ -140,7 +140,7 @@
   </ion-list>
   <div class='show-more'>
     <ion-chip color='secondary' (click)='onShowMoreCabins()' *ngIf='hasMoreCabins'>
-      <ion-label>显示全部</ion-label>
+      <ion-label>Show all</ion-label>
       <ion-icon name="chevron-forward-outline" mode='ios'></ion-icon>
     </ion-chip>
   </div>

@@ -30,6 +30,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: "international-flight-list_en",
+    loadChildren: () =>
+      import("./flight-list_en/flight-list_en.module").then(
+        (m) => m.FlightListEnPageModule
+      ),
+  },
+  {
     path: "selected-trip-info",
     loadChildren: () =>
       import("./selected-trip-info/selected-trip-info.module").then(
@@ -37,10 +44,24 @@ const routes: Routes = [
       ),
   },
   {
+    path: "selected-trip-info_en",
+    loadChildren: () =>
+      import("./selected-trip-info_en/selected-trip-info_en.module").then(
+        (m) => m.SelectedTripInfoEnPageModule
+      ),
+  },
+  {
     path: "flight-ticket-reserve",
     loadChildren: () =>
       import("./flight-ticket-reserve/flight-ticket-reserve.module").then(
         (m) => m.FlightTicketReservePageModule
+      ),
+  },
+  {
+    path: "flight-ticket-reserve_en",
+    loadChildren: () =>
+      import("./flight-ticket-reserve_en/flight-ticket-reserve_en.module").then(
+        (m) => m.FlightTicketReserveEnPageModule
       ),
   },
   {

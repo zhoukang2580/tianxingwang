@@ -2,7 +2,7 @@
   <ion-row *ngFor='let man of contacts'>
     <ion-col size='12'>
       <ion-item lines='none' class="ion-no-margin">
-        <ion-label notranslate>旅客名称:</ion-label>
+        <ion-label >旅客名称:</ion-label>
         <ion-input name='name' notranslate placeholder='请输入' (ionChange)='onChange()' [(ngModel)]='man.name'></ion-input>
         <ion-icon name='trash' mode='ios' color='danger' (click)='remove(man)'></ion-icon> 
       </ion-item>
@@ -10,18 +10,18 @@
     <ion-col size='12'>
       <ion-item lines='none' class="ion-no-margin">
         <ion-label notranslate>手机号:</ion-label>
-        <ion-input name='mobile' notranslate placeholder='请输入' (ionChange)='onChange()' [(ngModel)]='man.mobile'></ion-input>
+        <ion-input name='mobile'  placeholder='请输入' (ionChange)='onChange()' [(ngModel)]='man.mobile'></ion-input>
       </ion-item>
     </ion-col>
     <ion-col size='12'>
       <ion-item lines='none' class="ion-no-margin">
-        <ion-label notranslate>邮箱:</ion-label>
+        <ion-label >邮箱:</ion-label>
         <ion-input name='email' [(ngModel)]='man.email' (ionChange)='onChange()' placeholder='请输入'></ion-input>
       </ion-item>
     </ion-col>
     <ion-col size='12'>
       <ion-item lines='none' class="ion-no-margin">
-        <ion-label notranslate>通知语言:</ion-label>
+        <ion-label>通知语言:</ion-label>
         <ion-select value="cn" notranslate okText="确定" cancelText="取消" (ionChange)='onChange()' [(ngModel)]='man.notifyLanguage'>
           <ion-select-option value=''>不发</ion-select-option>
           <ion-select-option value='cn'>中文</ion-select-option>

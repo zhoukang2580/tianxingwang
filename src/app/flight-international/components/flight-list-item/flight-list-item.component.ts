@@ -22,6 +22,13 @@ export class FlightListItemComponent implements OnInit, OnChanges {
   @Output() toggleFlightFare: EventEmitter<any>;
   fr: FlightRouteEntity;
   @Input() isShowFares = false;
+  @Input() langOpt: any = {
+    directFly: "直飞",
+    planeType: "机型",
+    turningPoint: "转机",
+    tax: "税",
+    from: "起"
+  };
   constructor() {
     this.transfer = new EventEmitter();
     this.toggleFlightFare = new EventEmitter();

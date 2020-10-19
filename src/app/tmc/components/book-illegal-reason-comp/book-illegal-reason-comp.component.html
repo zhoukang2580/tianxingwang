@@ -1,7 +1,7 @@
 <ng-container *ngIf='illegalReasons?.length else elsetemp'>
   <ion-item lines='none' detail-icon='caret-down-sharp' detail (click)='onOpenSelect()'
     [disabled]='isOtherIllegalReason'>
-    <ion-label style="flex:1">
+    <ion-label style="flex:2">
       <strong>{{langOpt.Excess}}:</strong>
     </ion-label>
     <ion-label style="flex:2;text-align: end;">{{illegalReason}}</ion-label>
