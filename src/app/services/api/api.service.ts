@@ -54,18 +54,18 @@ export class ApiService {
     private route: ActivatedRoute
   ) {
     this.loadingSubject = new BehaviorSubject({ isLoading: false, msg: "" });
-    this.storage
-      .get(`KEY_API_CONFIG`)
-      .then((config) => {
-        if (config) {
-          this.apiConfig = config;
-        }
-      })
-      .finally(() => {
-        this.loadApiConfig(true)
-          .then((_) => { })
-          .catch(() => { });
-      });
+    // this.storage
+    //   .get(`KEY_API_CONFIG`)
+    //   .then((config) => {
+    //     if (config) {
+    //       this.apiConfig = config;
+    //     }
+    //   })
+    //   .finally(() => {
+    //     this.loadApiConfig(true)
+    //       .then((_) => { })
+    //       .catch(() => { });
+    //   });
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -457,16 +457,16 @@ export class ApiService {
   }
   private async loadApiConfig(forceRefresh = false): Promise<ApiConfig> {
     if (!forceRefresh) {
-      if (!this.apiConfig || !this.apiConfig.Urls) {
-        const local = await this.storage.get(`KEY_API_CONFIG`);
-        if (local) {
-          if (typeof local == "string") {
-            this.apiConfig = JSON.parse(local);
-          } else {
-            this.apiConfig = local;
-          }
-        }
-      }
+      // if (!this.apiConfig || !this.apiConfig.Urls) {
+      //   const local = await this.storage.get(`KEY_API_CONFIG`);
+      //   if (local) {
+      //     if (typeof local == "string") {
+      //       this.apiConfig = JSON.parse(local);
+      //     } else {
+      //       this.apiConfig = local;
+      //     }
+      //   }
+      // }
       if (this.apiConfig && this.apiConfig.Urls) {
         return this.apiConfig;
       }
@@ -500,7 +500,7 @@ export class ApiService {
               } else {
                 this.apiConfig = local;
               }
-              this.storage.set(`KEY_API_CONFIG`, this.apiConfig);
+              // this.storage.set(`KEY_API_CONFIG`, this.apiConfig);
               const identityEntity = await this.identityService.getIdentityAsync();
               if (identityEntity) {
                 this.identityService.setIdentity(identityEntity);
