@@ -58,7 +58,7 @@ export class WechatHelper {
   static LaunchUrl: string;
   static jssdkUrlConfig: JssdkResult;
   static wx = window["wx"];
-  private static timeoutids: { [key: string]: any } = {};
+  private static timeoutid;
   static getOpenId() {
     return (
       AppHelper.getQueryParamers()["wechatopenid"] ||
@@ -290,26 +290,36 @@ export class WechatHelper {
   ) {
     if (count > 30) {
       AppHelper.alert("操作超时,请重新操作");
-      if (this.timeoutids[key]) {
-        clearTimeout(this.timeoutids[key]);
+      if (this.timeoutid) {
+        clearTimeout(this.timeoutid);
+        this.timeoutid = null;
       }
       if (typeof callback == "function") {
         callback();
       }
       return;
     }
+    if (this.timeoutid) {
+      clearTimeout(this.timeoutid);
+      this.timeoutid = null;
+    }
     const tid = setTimeout(async () => {
       const result = await this.getMiniResult(key, apiService);
+      // console.log("result", result);
+      // console.log("result", this.timeoutid);
       if (result) {
-        if (this.timeoutids[key]) {
-          clearTimeout(this.timeoutids[key]);
+        if (this.timeoutid) {
+          clearTimeout(this.timeoutid);
+          this.timeoutid = null;
         }
         callback(result);
       } else {
-        this.checkStep(key, apiService, callback, 1000, count++);
+        count++;
+        // console.log("count", count);
+        this.checkStep(key, apiService, callback, 1000, count);
       }
     }, timeout);
-    this.timeoutids[key] = tid;
+    this.timeoutid = tid;
   }
 
   private static async getMiniResult(key, apiService: ApiService) {
