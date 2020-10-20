@@ -15,6 +15,13 @@ export const routes: Routes = [
       import("./select-passenger/select-passenger.module").then(
         m => m.SelectPassengerPageModule
       )
+  },
+  {
+    path: "select-passenger_en",
+    loadChildren: () =>
+      import("./select-passenger_en/select-passenger_en.module").then(
+        m => m.SelectPassengerEnPageModule
+      )
   }
 
 ];

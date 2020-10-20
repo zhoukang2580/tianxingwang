@@ -123,9 +123,9 @@ export class InternationalHotelListPage
   totalHotels = 0;
   config: ConfigEntity;
   constructor(
-    private hotelService: InternationalHotelService,
+    public hotelService: InternationalHotelService,
     private imageRecoverService: ImageRecoverService,
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private configService: ConfigService,
     private plt: Platform

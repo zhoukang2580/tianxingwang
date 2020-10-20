@@ -28,5 +28,10 @@ import { SearchInternationalFlightPage } from '../search-international-flight/se
   styleUrls: ["./search-international-flight_en.page.scss"],
 })
 export class SearchInternationalFlightEnPage extends SearchInternationalFlightPage{
-
+  onSelectPassenger() {
+    this.isCanleave = true;
+    this.router.navigate([AppHelper.getRoutePath("select-passenger_en")], {
+      queryParams: { forType: FlightHotelTrainType.InternationalFlight },
+    });
+  }
 }

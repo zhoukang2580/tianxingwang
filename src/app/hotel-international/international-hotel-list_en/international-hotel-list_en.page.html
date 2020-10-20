@@ -101,7 +101,12 @@
   [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="rank"' (rank)='onRank($event)'
   (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'>
 </app-inter-recommend-rank>
-<app-inter-hotel-starprice class='query-condition' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+<app-inter-hotel-starprice [langOpt]='{
+  customprice: "Custom price",
+    any: "all",
+    reset: "Reset",
+    determine: "Determine"
+}' class='query-condition' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
   [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"'
   (starPriceChange)='onStarPriceChange()'>
 </app-inter-hotel-starprice>

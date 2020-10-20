@@ -3,8 +3,8 @@
     <ion-buttons slot='start'>
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
-    <ion-text *ngIf='isShowSelectedInfos'>酒店查询</ion-text>
-    <ion-title *ngIf='!(isShowSelectedInfos)'>酒店查询</ion-title>
+    <ion-text *ngIf='isShowSelectedInfos'>Hotel</ion-text>
+    <ion-title *ngIf='!(isShowSelectedInfos)'>Hotel</ion-title>
     <ion-buttons class='small-font' slot='end'>
       <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small'
         (click)='onShowSelectedBookinfos()'>已选行程<ion-badge color='danger'>
@@ -13,13 +13,13 @@
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
         *ngIf='canAddPassengers&&!selectedPassengers?.length'>
-        添加旅客<ion-badge color='danger'>
+        Add passenger<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()'
         *ngIf='canAddPassengers&&selectedPassengers?.length'>
-        已选旅客<ion-badge color='danger'>
+        Selected PAX<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
         </ion-badge>
       </ion-button>
@@ -61,7 +61,7 @@
       <div *ngIf='totalFlyDays'>{{ totalFlyDays}}Night</div>
       <div class='destination' (click)='onSearchCity()'>
         <ion-item lines='full' detail>
-          <ion-label>destination</ion-label>
+          <ion-label>Destination</ion-label>
           <ion-label class="ion-text-wrap">
             {{searchCondition?.destinationCity?.Name}}
             <ion-text *ngIf='searchCondition?.destinationCity?.Country' color='medium' class="ion-margin-start">
@@ -77,7 +77,7 @@
       </div>
       <div class='destination' (click)='onSelectNationality()'>
         <ion-item detail lines='full'>
-          <ion-label>nationality</ion-label>
+          <ion-label>Nationality</ion-label>
           <ion-label class="ion-text-wrap">
             {{searchCondition?.country?.Name}}
             <p>{{searchCondition?.country?.EnglishName}}</p>
@@ -95,11 +95,11 @@
         </ion-item>
       </div>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" color="secondary" expand="block">
-        <ion-text>Sreach</ion-text>
+        <ion-text>Search</ion-text>
       </ion-button>
       <ion-button *ngIf='false&&(canAddPassengers) && selectedPassengers?.length==0' class='ion-margin-top'
         style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
-        <ion-text>请添加乘客
+        <ion-text>Please Add Passengers
         </ion-text>
       </ion-button>
     </ion-card-content>

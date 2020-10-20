@@ -36,7 +36,7 @@
                   Passenger
                 </div>
                 <div>
-                  <span>{{trip.OrderFlightTicket?.Passenger?.Name}}</span>
+                  <span notranslate>{{trip.OrderFlightTicket?.Passenger?.Name}}</span>
                   <span>
                     <ion-text color='medium'>({{ticket.StatusName}})</ion-text>
                   </span>
@@ -142,7 +142,7 @@
             <ion-row *ngIf='order?.OrderPassengers?.length' style="align-items: center;" class="order-flight-ticket"
               [class.btn-show-margin]="orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn||orderTrainTicket.VariablesJsonObj.isShowExchangeButton">
               <ion-col size='2'>
-                <ion-text color="medium"> travel</ion-text>
+                <ion-text color="medium">Travel</ion-text>
               </ion-col>
               <ion-col style="align-items: center;display: flex;">
                 <ng-container *ngIf='orderTrainTicket.Passenger as p'>
@@ -206,14 +206,14 @@
             <ion-text color="medium"> Pay</ion-text>
           </ion-col>
           <ion-col>
-            <div style="align-items: center;display: flex;flex-wrap: wrap;">
+            <div style="align-items: center;display: flex;">
               <ion-text color='danger'>
                 <ion-text>￥{{order.TotalAmount}}</ion-text>
               </ion-text>
               <ion-text color='medium'>
                 {{orderHotel.PaymentType==2?"(nowadvance)":orderHotel.PaymentType==1?"(advance)":""}}
               </ion-text>
-              <ion-text color='medium'>
+              <ion-text color='medium' style="min-width: fit-content;">
                 （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
               </ion-text>
               <ion-button *ngIf='order["checkPay"]' (click)='onPay($event)' size='small' color='secondary'>To pay
@@ -228,7 +228,7 @@
           <ion-col>
             <ng-container *ngIf='orderHotel.Passenger as p'>
               <div>
-                <span>
+                <span notranslate>
                   {{p.Name}}
                 </span>
                 <ion-text color="medium">
@@ -246,13 +246,13 @@
             <div>
               {{orderHotel.HotelName}}
               <br />
-              {{orderHotel.BeginDate}}&nbsp;{{orderHotel.countDay}}晚
+              {{orderHotel.BeginDate}}&nbsp;{{orderHotel.countDay}}Night
             </div>
           </ion-col>
         </ion-row>
         <ion-row *ngIf='orderHotel.ConfirmNumber as cnumber'>
           <ion-col size='3'>
-            酒店确认号
+            Hotel confirm number
           </ion-col>
           <ion-col>
             {{cnumber}}

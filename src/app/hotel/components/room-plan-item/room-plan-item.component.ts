@@ -38,6 +38,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
     NowPay: "现付",
     PayIn: "预付",
     MonthlyPay: "月结",
+    SoldOut: "满房"
   };
   @Output() bookRoom: EventEmitter<any>;
   HotelBookType = HotelBookType;

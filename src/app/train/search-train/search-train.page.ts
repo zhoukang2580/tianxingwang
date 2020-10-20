@@ -51,7 +51,7 @@ export class SearchTrainPage
   selectedBookInfos: number;
   staff: StaffEntity;
   constructor(
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private storage: Storage,
     private staffService: StaffService,

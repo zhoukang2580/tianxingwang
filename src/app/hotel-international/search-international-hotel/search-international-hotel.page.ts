@@ -57,7 +57,7 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
   searchCondition: IInterHotelSearchCondition;
   constructor(
     private hotelService: InternationalHotelService,
-    private router: Router,
+    public router: Router,
     private modalController: ModalController,
     private staffService: StaffService,
     private popoverCtrl: PopoverController,

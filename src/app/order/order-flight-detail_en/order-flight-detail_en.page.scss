@@ -18,6 +18,7 @@ ion-row ion-col {
   &:first-child {
     color: var(--ion-color-medium);
     min-width: 12em;
+    text-transform: capitalize;
   }
 }
 .display-flex {

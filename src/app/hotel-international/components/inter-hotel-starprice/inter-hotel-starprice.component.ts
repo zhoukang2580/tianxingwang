@@ -44,6 +44,12 @@ export class InterHotelStarPriceComponent
       }
     ]
   };
+  @Input() langOpt = {
+    customprice: "自定义价格",
+    any: "不限",
+    reset: "重置",
+    determine: "确定"
+  };
   value: ILowerUper = { lower: 0, upper: Infinity };
   hotelQuery: HotelQueryEntity;
   @ViewChild(IonRange) rangeEle: IonRange;

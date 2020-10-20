@@ -6,7 +6,7 @@
         <ion-searchbar animated='true' style='padding:0' name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>
         </ion-searchbar>
       </form>
-      <ion-button color='secondary' fill='clear' type='submit' (click)='onSelect()'>确认</ion-button>
+      <ion-button color='secondary' style="text-transform: capitalize;" fill='clear' type='submit' (click)='onSelect()'>确认</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -18,7 +18,7 @@
   <ion-list *ngIf='!isLoading else fakeList'>
     <ion-list *ngIf='searchResult?.length else nodata'>
       <ion-item *ngFor='let t of searchResult' @flyInOut (click)='onSelect(t)'>
-        <ion-label class="ion-text-wrap">
+        <ion-label class="ion-text-wrap" notranslate>
           {{t.Text}}
         </ion-label>
       </ion-item>

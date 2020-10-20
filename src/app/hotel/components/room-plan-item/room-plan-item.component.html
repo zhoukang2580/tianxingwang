@@ -33,7 +33,7 @@
       <ion-text color='danger' class='avg-price'>￥{{getAvgPrice(roomPlan)}}</ion-text>
       <div class="btn-book" (click)='onBook(roomPlan,color)'>
         <ion-button slot='end' class='ion-no-margin' [class.disabled]='color.includes("danger")' expand='full'>
-          <ion-text color='light'>{{color.includes('danger_full')?"满房":color.includes("disabled")?langOpt.Exceeding:langOpt.Book}}
+          <ion-text color='light'>{{color.includes('danger_full')?langOpt.SoldOut:color.includes("disabled")?langOpt.Exceeding:langOpt.Book}}
           </ion-text>
         </ion-button>
         <ng-container *ngIf='!isAgent'>

@@ -82,7 +82,7 @@
         <div style="padding-right: 40px;">{{totalNights}}Night</div>
         <div class='checkinoutdate'>{{queryModel?.checkOutDate}} <span class='weekName'>{{getWeekName(queryModel?.checkOutDate)}}</span></div>
       </div>
-      <ion-button (click)='onSearch()' color='secondary' expand='block'>Sreach</ion-button>
+      <ion-button (click)='onSearch()' color='secondary' expand='block'>Search</ion-button>
     </ion-card-content>
   </ion-card>
   <ng-template #fakeCard>
@@ -162,7 +162,8 @@
               NonBook: "NonBook",
               NowPay: "Pay at hotel",
               PayIn: "Prepay",
-              MonthlyPay: "MonthlyPay"
+              MonthlyPay: "MonthlyPay",
+              SoldOut:"Sold out"
             }'
              [colors]='colors' [room]='room' [roomPlan]='plan' [hotel]='hotel' (bookRoom)='onBookRoomPlan($event)'>
             </app-room-plan-item>
@@ -226,7 +227,6 @@
       </ng-container>
     </ion-item-divider>
     <div class="traffic-map" [style.display]='!hotel||!hotel["isShowMap"]?"none":"block"'>
-   
     </div>
   </ion-list> -->
   <div #divforscroll class='div-for-scroll'>

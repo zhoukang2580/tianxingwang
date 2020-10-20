@@ -54,7 +54,7 @@ export class SearchFlightPage
   }
   isEn = false;
   constructor(
-    private router: Router,
+    public router: Router,
     route: ActivatedRoute,
     private identityService: IdentityService,
     private calendarService: CalendarService,

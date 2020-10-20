@@ -4,10 +4,10 @@
 
       <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
-    <ion-title>{{title}}</ion-title>
+    <ion-title style="text-align: left;">{{title}}</ion-title>
     <ion-buttons slot='end' *ngIf='bookInfos$'>
       <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
-        已选旅客
+        Selected PAX
         <ion-badge color='danger'>
           <ion-text color='light'>{{(bookInfos$|async).length}}</ion-text>
         </ion-badge>
@@ -23,7 +23,7 @@
   </app-refresher>
   <ion-toolbar #toolbar class="search">
     <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" style='padding:0' animated
-      placeholder="员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
+      placeholder="Employee name and mobile phone" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
     </ion-searchbar>
   </ion-toolbar>
   <ng-container *ngIf='vmStaffs else addTempl'>
@@ -66,18 +66,18 @@
           <ng-container *ngIf='item!=vmNewCredential'>
             <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'
               style="border-bottom:0.01rem solid #cccccc">
-              <div 
-                style="width: 4em;max-width: 4em;white-space: pre-wrap;text-align: end;margin-left:-0.5em;padding: 0.3em;">
+              <div notranslate
+                style="width: 6em;min-width: 6em;font-size:12px;white-space: pre-wrap;margin-left:-0.5em;padding: 0.3em;">
                 {{item.Type|credential}}</div>
               <div style="flex: 1;font-size: 0.6rem;padding: .5em;">
                 <div>
                   <ion-text color='medium' >
-                    旅客姓名<span style="margin-left: 1em;" >{{item.Name}}</span>
+                    Passenger Name<span style="margin-left: 1em;" notranslate>{{item.Name}}</span>
                   </ion-text>
                 </div>
                 <div>
                   <ion-text color='medium' >
-                    证件号码<span style="margin-left: 1em;" >{{item.Number}}</span>
+                    ID number<span style="margin-left: 1em;" >{{item.Number}}</span>
                   </ion-text>
                 </div>
               </div>
@@ -99,7 +99,7 @@
                   <ion-col >
                     证件姓名:
                   </ion-col>
-                  <ion-col >
+                  <ion-col notranslate>
                     {{item?.Surname}}{{item?.Givenname}}
                   </ion-col>
                 </ion-row>
@@ -259,7 +259,7 @@
 <ion-footer>
   <ion-toolbar>
     <ion-buttons slot='end'>
-      <ion-button (click)='onAddPassenger()' fill='solid' color='secondary' [disabled]='!selectedPassenger' >确定
+      <ion-button (click)='onAddPassenger()' fill='solid' color='secondary' [disabled]='!selectedPassenger' >Determine
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

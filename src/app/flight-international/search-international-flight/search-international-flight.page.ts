@@ -51,7 +51,7 @@ export class SearchInternationalFlightPage
     private staffService: StaffService,
     private flightService: InternationalFlightService,
     private popoverCtrl: PopoverController,
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute
   ) {}
   compareWithFn = (o1, o2) => {

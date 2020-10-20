@@ -17,7 +17,7 @@
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&selectedPassengers'>
-        Selected passengers<ion-badge color='danger'>
+        Selected PAX<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
@@ -111,7 +111,7 @@
         </div>
       </div>
       <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" *ngIf='!((canAddPassengers) && selectedPassengers==0)' color="secondary" expand="block">
-        <ion-text>Sreach</ion-text>
+        <ion-text>Search</ion-text>
       </ion-button>
       <ion-button *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
         <ion-text>Please Add Passengers
