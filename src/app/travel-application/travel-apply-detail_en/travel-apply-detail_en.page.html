@@ -60,12 +60,12 @@
               </span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
-                        <span class="apply_info_tit"><span>申请人：</span><span>{{detail?.Staff.Name}}</span></span><span class="apply_info_time"></span>
+                        <span class="apply_info_tit"><span>申请人：</span><span notranslate>{{detail?.Staff.Name}}</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
                         <span class="apply_info_tit">
               <span>申请时间：</span>
-                        <span>{{detail?.TravelForm.applyTimeDate}}{{detail?.TravelForm.applyTimeTime||''}}</span
+                        <span style="font-size: 11px;">{{detail?.TravelForm.applyTimeDate}}{{detail?.TravelForm.applyTimeTime||''}}</span
               >
             </span>
                         <span class="apply_info_time">{{detail?.TravelForm.approvalTimeDate?.startsWith("1800")||detail?.TravelForm.approvalTimeDate?.startsWith("0001")?"
@@ -113,26 +113,26 @@
         <section>
             <div>
                 <p class="h_line h_line_mini"></p>
-                <p class="travel_man">出行人：{{detail?.Staff.Name}}</p>
+                <p class="travel_man">出行人：<span notranslate>{{detail?.Staff.Name}}</span></p>
                 <div class="travel_step" *ngFor="let trip of detail?.TravelForm?.Trips;let idx=index;">
                     <div class="travel_step_i">
                         <p class="travel_step_i_tit">
                             <i class="dot"></i><span>行程{{idx+1}}</span>
                         </p>
                         <div class="travel_step_detail" style="background: #f4f9fd">
-                            <p class="p">
+                            <p>
                                 <span style="display: flex;">
-                                  <span style="min-width: 9.2em;">到达城市:</span>
+                                <span style="min-width: 9.2em;">到达城市:</span>
                                 <span style="width: 13.2em;">{{trip.FromCityName}}~{{trip.ToCityName}}</span>
                                 </span>
                             </p>
-                            <p class="p">
+                            <p>
                                 <span style="display: flex;">
                                 <span style="min-width: 9.2em;">入住城市:</span>
                                 <span style="width: 13.2em;">{{trip.CheckInCityName}}</span>
                                 </span>
                             </p>
-                            <p class="p">
+                            <p>
                                 <span>出发时间：</span>
                                 <span>{{trip.StartDate}}~{{trip.EndDate}}</span
                 ><i
@@ -176,7 +176,7 @@
                         <span style="width: 280px">
               <div class="approver">
                 <div *ngFor="let h of detail?.Histories;let last=last;">
-                  <span>{{h?.Name}}</span>
+                  <span notranslate>{{h?.Name}}</span>
                         <ion-text color="secondary" *ngIf="ApprovalStatusType.Pass==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
                         <ion-text color="danger" *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
                         <ion-text color="warning" *ngIf="ApprovalStatusType.WaiteSubmit==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>

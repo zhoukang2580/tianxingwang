@@ -99,23 +99,6 @@ section div {
     background: white;
 }
 
-// .travel_step_detail {
-//     .up,
-//     .down {
-//         display: inline-flex;
-//         width: 15px;
-//         height: 5px;
-//         background-repeat: no-repeat;
-//         background-size: contain;
-//         background-position: center center;
-//     }
-//     .up {
-//         background-image: url(/assets/images/up.png);
-//     }
-//     .down {
-//         background-image: url(/assets/images/down.png);
-//     }
-// }
 .apply_info_status {
     display: inline-flex;
     width: 130px;
@@ -125,14 +108,6 @@ section div {
     top: 21px;
 }
 
-// .apply_info_status_pass {
-//     background-repeat: no-repeat;
-//     background-size: 57%;
-// }
-// .apply_info_status_deny {
-//     background-repeat: no-repeat;
-//     background-size: 57%;
-// }
 img {
     position: absolute;
     right: 2em;
@@ -142,9 +117,6 @@ img {
     opacity: 0.5;
 }
 
-// .apply_info {
-//     padding: 18px 23px;
-// }
 .apply_info p {
     display: flex;
     justify-content: space-between;
@@ -275,7 +247,6 @@ img {
     flex-wrap: nowrap;
     position: relative;
     font-size: 14px;
-    ;
 }
 
 .travel_step_btn {
