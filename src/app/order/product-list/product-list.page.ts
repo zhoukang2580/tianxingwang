@@ -23,7 +23,7 @@ export const ORDER_TABS: ProductItem[] = [
   },
   {
     label: "火车票",
-    labelEn:"Trains",
+    labelEn:"Train",
     value: ProductItemType.train,
     imageSrc: "assets/svgs/product-train1.svg",
     isDisplay: true,
