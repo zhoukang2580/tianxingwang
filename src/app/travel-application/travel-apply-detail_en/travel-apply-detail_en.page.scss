@@ -8,6 +8,7 @@
     width: 9.9rem;
     margin-right: 5px;
     color: rgba(102, 102, 102, 1);
+    text-transform: capitalize;
 }
 
 .travel_step_btn button {
@@ -16,6 +17,16 @@
     color: #fff;
     font-size: 12px;
     background: rgba(0, 131, 233, 1);
-    border-radius: 18px;
+    border-radius: 30px;
     outline: none;
+}
+
+.approved-by ion-text {
+    text-transform: capitalize;
+}
+
+.apply_info_tit[_ngcontent-sjn-c318] .apply_info_reason[_ngcontent-sjn-c318] {
+    width: 239px;
+    line-height: 20px;
+    text-transform: capitalize;
 }

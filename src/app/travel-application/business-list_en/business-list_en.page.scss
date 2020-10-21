@@ -58,6 +58,7 @@ form {
         }
         .start {
             flex-basis: 30%;
+            text-transform: capitalize;
         }
         .end {
             // flex-basis: 33%;
@@ -94,6 +95,7 @@ form {
         margin-left: .5em;
         float: right;
         margin-right: 15px;
+        text-transform: capitalize;
     }
     .btn_all {
         background: #ffa252;

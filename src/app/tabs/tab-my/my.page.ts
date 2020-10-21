@@ -63,7 +63,7 @@ export class MyPage implements OnDestroy, OnInit {
     return false;
   }
   constructor(
-    private router: Router,
+    public router: Router,
     plt: Platform,
     private tmcService: TmcService,
     private identityService: IdentityService,

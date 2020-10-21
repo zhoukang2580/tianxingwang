@@ -3,7 +3,7 @@
         <ion-buttons slot="start">
             <app-back-button></app-back-button>
         </ion-buttons>
-        <ion-title style="font: inherit; margin: auto">出差申请详情</ion-title>
+        <ion-title style="font: inherit; margin: auto">Travel application details</ion-title>
     </ion-toolbar>
 </ion-header>
 
@@ -18,7 +18,7 @@
                 <img src="assets/images/close.png" class="apply_info_status_deny" *ngIf="detail?.TravelForm?.IsOverdue" />
                 <div class="apply_info" style="padding: 18px 23px">
                     <p>
-                        <span class="apply_info_tit"><span>审批状态：</span
+                        <span class="apply_info_tit"><span>Apply status：</span
               ><span class="apply_past">
                 <ng-container
                   *ngIf="(ApprovalStatusType?.Pass==detail?.StatusType||ApprovalStatusType?.Refuse==detail?.StatusType||ApprovalStatusType?.Waiting==detail?.StatusType) else statusTpl"
@@ -60,12 +60,12 @@
               </span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
-                        <span class="apply_info_tit"><span>申请人：</span><span notranslate>{{detail?.Staff.Name}}</span></span><span class="apply_info_time"></span>
+                        <span class="apply_info_tit"><span>Applicant：</span><span notranslate>{{detail?.Staff.Name}}</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
                         <span class="apply_info_tit">
-              <span>申请时间：</span>
-                        <span style="font-size: 11px;">{{detail?.TravelForm.applyTimeDate}}{{detail?.TravelForm.applyTimeTime||''}}</span
+              <span>Application time：</span>
+                        <span>{{detail?.TravelForm.applyTimeDate}}{{detail?.TravelForm.applyTimeTime||''}}</span
               >
             </span>
                         <span class="apply_info_time">{{detail?.TravelForm.approvalTimeDate?.startsWith("1800")||detail?.TravelForm.approvalTimeDate?.startsWith("0001")?"
@@ -73,36 +73,36 @@
             </span>
                     </p>
                     <p>
-                        <span class="apply_info_tit"><span>出差天数：</span
+                        <span class="apply_info_tit"><span>Travel Days：</span
               ><span>{{detail?.TravelForm.DayCount}}天</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
-                        <span class="apply_info_tit"><span>单号：</span><span>{{detail?.TravelFormId}}</span></span><span class="apply_info_time"></span>
+                        <span class="apply_info_tit"><span>Odd Numbers：</span><span>{{detail?.TravelFormId}}</span></span><span class="apply_info_time"></span>
                     </p>
                 </div>
                 <div class="border_top">
                     <p>
-                        <span class="apply_info_tit"><span>所属部门：</span
-              ><span>{{detail?.Staff.Organization.Name}}</span></span><span class="apply_info_time"></span>
+                        <span class="apply_info_tit"><span>Department：</span
+              ><span style="text-transform: capitalize;">{{detail?.Staff.Organization.Name}}</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
-                        <span class="apply_info_tit" style="display: flex"><span>出差事由：</span
+                        <span class="apply_info_tit" style="display: flex"><span>Business trip：</span
               ><span class="apply_info_reason"
                 >{{detail?.TravelForm.Subject}}</span
               ></span
             ><span class="apply_info_time"></span>
                     </p>
                     <p>
-                        <span class="apply_info_tit"><span>客户或公司：</span
-              ><span>{{detail?.TravelForm?.CustomerName}}</span></span><span class="apply_info_time"></span>
+                        <span class="apply_info_tit"><span>Cust or Co：</span
+              ><span style="text-transform: capitalize;">{{detail?.TravelForm?.CustomerName}}</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
-                        <span class="apply_info_tit"><span>成本中心：</span
-              ><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
+                        <span class="apply_info_tit"><span>Cost center：</span
+              ><span style="text-transform: capitalize;">{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
                     </p>
                     <p>
-                        <span class="apply_info_tit" style="display: flex"><span>备注：</span
-              ><span class="apply_info_reason"
+                        <span class="apply_info_tit" style="display: flex"><span>Remarks：</span
+              ><span  class="apply_info_reason"
                 >{{detail?.TravelForm.Detail}}</span
               ></span
             ><span class="apply_info_time"></span>
@@ -113,27 +113,27 @@
         <section>
             <div>
                 <p class="h_line h_line_mini"></p>
-                <p class="travel_man">出行人：<span notranslate>{{detail?.Staff.Name}}</span></p>
+                <p class="travel_man">Travelers：<span notranslate>{{detail?.Staff.Name}}</span></p>
                 <div class="travel_step" *ngFor="let trip of detail?.TravelForm?.Trips;let idx=index;">
                     <div class="travel_step_i">
                         <p class="travel_step_i_tit">
-                            <i class="dot"></i><span>行程{{idx+1}}</span>
+                            <i class="dot"></i><span>Trip{{idx+1}}</span>
                         </p>
                         <div class="travel_step_detail" style="background: #f4f9fd">
                             <p>
                                 <span style="display: flex;">
-                                <span style="min-width: 9.2em;">到达城市:</span>
-                                <span style="width: 13.2em;">{{trip.FromCityName}}~{{trip.ToCityName}}</span>
+                                <span style="min-width: 9.2em;">Arriving city:</span>
+                                <span style="width: 17.5em;">{{trip.FromCityName}}~{{trip.ToCityName}}</span>
                                 </span>
                             </p>
                             <p>
                                 <span style="display: flex;">
-                                <span style="min-width: 9.2em;">入住城市:</span>
-                                <span style="width: 13.2em;">{{trip.CheckInCityName}}</span>
+                                <span style="min-width: 9.2em;">Move to city:</span>
+                                <span style="width: 17.5em;">{{trip.CheckInCityName}}</span>
                                 </span>
                             </p>
                             <p>
-                                <span>出发时间：</span>
+                                <span style="min-width: 9.2em;">Departure time：</span>
                                 <span>{{trip.StartDate}}~{{trip.EndDate}}</span
                 ><i
                   class="toggle"
@@ -143,22 +143,22 @@
                 ></i>
               </p>
               <p>
-                <span>天数：</span
-                ><span>{{detail?.TravelForm.DayCount}}天</span>
+                <span style="min-width: 9.2em;">Days：</span
+                ><span>{{detail?.TravelForm.DayCount}}Day</span>
                             </p>
 
                             <p class="travel_step_btn" *ngIf='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType ' style="justify-content: space-evenly">
                                 <button *ngIf='trip["hasFlight"]' (click)='goToPage("flight")'>
-                  预订国内机票
+                  Book Domestic Flight
                 </button>
                                 <button *ngIf='trip["hasTrain"]' (click)='goToPage("train")'>
-                  预订火车票
+                  Book Trains
                 </button>
                                 <button *ngIf='trip["hasHotel"]' (click)='goToPage("hotel")'>
-                  预订国内酒店
+                  Book Domestic Hotel
                 </button>
                                 <button *ngIf='trip["InternationalHotel"]' (click)='goToPage("international-hotel")'>
-                  预订国际酒店
+                  Book Overseas Hotel
                 </button>
                             </p>
 
@@ -172,10 +172,10 @@
                 <p class="h_line h_line_mini"></p>
                 <div class="apply_info">
                     <p>
-                        <span class="apply_info_tit"><span>审批人：</span></span>
+                        <span class="apply_info_tit"><span>Approved by：</span></span>
                         <span style="width: 280px">
               <div class="approver">
-                <div *ngFor="let h of detail?.Histories;let last=last;">
+                <div class="approved-by" *ngFor="let h of detail?.Histories;let last=last;">
                   <span notranslate>{{h?.Name}}</span>
                         <ion-text color="secondary" *ngIf="ApprovalStatusType.Pass==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
                         <ion-text color="danger" *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
@@ -201,7 +201,7 @@
                 </p>
             </div>
             <p *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">
-                <span class="apply_info_tit"><span>备注：</span
+                <span class="apply_info_tit"><span>Remark：</span
               ><span class="apply_info_reason"></span>{{remark}}</span><span class="apply_info_time"></span>
             </p>
     </div>

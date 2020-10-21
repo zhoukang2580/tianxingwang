@@ -3,30 +3,30 @@
         <ion-item-group style="margin: .5em;">
             <ion-item-divider>
                 <span style="color: red;margin-top: 5px;margin-right: 4px;">*</span>
-                <ion-text class="text-trip"><span style="font-size:12px">行程{{index+1}}</span></ion-text>
+                <ion-text class="text-trip"><span style="font-size:12px;text-transform: capitalize;">Trip{{index+1}}</span></ion-text>
                 <ion-icon slot="end" name="trash-outline" color="secondary" class="trash-outline" (click)="onDelete()" class="ion-text-end" *ngIf="enable&&index != 0"></ion-icon>
             </ion-item-divider>
             <ion-item [attr.tripType]='"tripType"' style="line-height: initial;">
                 <ion-text [color]="!enable?'dark':'dark'">
-                    出差类别
+                    Travel type
                 </ion-text>
-                <ion-select mode='ios' class="ion-text-end" [(ngModel)]="trip.TripType" okText="确定" cancelText="取消" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(trip.TripType)" [disabled]="!enable">
-                    <ion-select-option value="Domestic" *ngIf="domestic">国内</ion-select-option>
-                    <ion-select-option value="International" *ngIf="international">国际*港澳台</ion-select-option>
+                <ion-select mode='ios' class="ion-text-end" [(ngModel)]="trip.TripType" okText="Determine" cancelText="Cancel" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(trip.TripType)" [disabled]="!enable">
+                    <ion-select-option value="Domestic" *ngIf="domestic">Domestic</ion-select-option>
+                    <ion-select-option value="International" *ngIf="international">INT*HK&MAC&TW</ion-select-option>
                 </ion-select>
             </ion-item>
             <!-- *ngIf='vmRegionTypes?.length' -->
             <ion-item style="line-height: initial;">
                 <ion-text [color]="!enable?'dark':'dark'">
-                    交通住宿
+                    Traffic of stay
                 </ion-text>
-                <ion-select mode='ios' (ionChange)='onRegionTypeChange($event)' [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.travelTools" okText="确定" multiple="true" cancelText="取消" [compareWith]="compareTravelToolWithFn">
+                <ion-select mode='ios' (ionChange)='onRegionTypeChange($event)' [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.travelTools" okText="Determine" multiple="true" cancelText="Cancel" [compareWith]="compareTravelToolWithFn">
                     <ion-select-option value="{{t.value}}" *ngFor='let t of vmRegionTypes'>{{t.label}}</ion-select-option>
                 </ion-select>
             </ion-item>
             <ion-item detail (click)="onStartingCity(true)" style="line-height: initial;">
                 <ion-text [color]="!enable?'dark':'dark'">
-                    出发城市
+                    Starting city
                 </ion-text>
                 <ion-label class="ion-text-end">
                     <ion-text [color]="!enable?'medium':'dark'">{{trip.FromCityName||" "}}</ion-text>
@@ -34,7 +34,7 @@
             </ion-item>
             <ion-item detail (click)="onSelectCity(false,false,trip)" style="line-height: initial;">
                 <ion-text [color]="!enable?'dark':'dark'" class="selectCity">
-                    到达城市
+                    Arrival city
                 </ion-text>
                 <!-- {{trip.ToCities|json}} -->
                 <label class="ion-text-end city" style="margin-right: 9px;">
@@ -44,7 +44,7 @@
             </ion-item>
             <ion-item *ngIf='isShowCheckInCity' detail (click)="onSelectCheckInCity(false,false,trip)" style="line-height: initial;">
                 <ion-text [color]="!enable?'dark':'dark'" class="selectCity">
-                    入住城市
+                    Move to city
                 </ion-text>
                 <label style="margin-right: 9px;" class="ion-text-end city">
                     <ion-text [color]="!enable?'medium':'dark'" >{{trip['toCityInName']}} 
@@ -54,15 +54,15 @@
             </ion-item>
 
             <ion-item detail style="line-height: initial;">
-                <ion-text [color]="!enable?'dark':'dark'">
-                    开始时间
+                <ion-text class="start" [color]="!enable?'dark':'dark'">
+                    Strat time
                 </ion-text>
                 <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" max="2100" [(ngModel)]="trip.StartDate" doneText="确定" cancelText="取消">
                 </ion-datetime>
             </ion-item>
             <ion-item detail style="line-height: initial;">
                 <ion-text [color]="!enable?'dark':'dark'">
-                    结束时间
+                    End time
                 </ion-text>
                 <ion-datetime style="max-width: initial;flex: 3; text-align: end;" [disabled]="!enable" displayFormat="YYYY-MM-DD" max="2100" [(ngModel)]="trip.EndDate" (ionChange)="duageTime(trip.StartDate,trip.EndDate)" doneText="确定" cancelText="取消">
                 </ion-datetime>
@@ -71,7 +71,7 @@
                 <div class="pass">
                     <div *ngFor='let t of trip.travelTools'>
                         <ion-button slot='end' color="secondary" style="height: 2.4em;" (click)="goReserve(t)">
-                            预订{{getTravelTools(t)}}
+                            Reserve{{getTravelTools(t)}}
                         </ion-button>
                     </div>
                 </div>

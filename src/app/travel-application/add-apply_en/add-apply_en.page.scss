@@ -1,0 +1,99 @@
+.red {
+    color: red;
+    margin-top: 7px;
+}
+
+.hydrated {
+    visibility: inherit;
+    line-height: 30px;
+}
+
+.ion-btn {
+    margin: auto;
+    text-align: center;
+}
+
+.button-native {
+    margin-left: -30px;
+    border-radius: 24px;
+}
+
+ion-text {
+    font-size: 1rem;
+}
+
+ion-input {
+    font-size: 1rem;
+}
+
+div ion-button {
+    margin-left: 30px;
+    border-radius: 10%;
+}
+
+.ion-div {
+    padding: 22px 33px 30px;
+    // background: #F5F7F9;
+    // display: flex;
+    // justify-content: space-between;
+    // align-items: center;
+}
+
+textarea {
+    display: flex;
+    text-align: revert;
+    line-height: 20px;
+    width: 335px;
+    height: 70px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    margin-left: 5px;
+    margin-top: -10px;
+}
+
+.div-travel {
+    // text-align: inherit;
+    // line-height: 16px;
+    width: 374px;
+}
+
+.no_border_bottom text {
+    flex-wrap: wrap;
+}
+
+button {
+    border: none;
+    outline: none;
+}
+
+.apply_button {
+    padding: 31px 73px 51px;
+    display: flex;
+}
+
+.apply_button button {
+    width: 114px;
+    height: 44px;
+    background: #0083e9;
+    border-radius: 44px;
+    font-size: 16px;
+    font-weight: 400;
+    color: white;
+    margin-right: 138px;
+    margin-left: -58px;
+}
+
+ion-lable {
+    margin-left: 77px;
+}
+
+// .button-native {
+//     background: #0083e9;
+//     margin: auto;
+//     width: 100px;
+// }
+.native-textarea.sc-ion-textarea-ios {
+    --padding-top: aliceblue;
+    --padding-bottom: aliceblue;
+}

@@ -1,0 +1,63 @@
+<ion-header>
+    <ion-toolbar>
+        <form (ngSubmit)='onSearchByKeywords()'>
+            <ion-buttons>
+                <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
+                <ion-searchbar name='searchbar' style="padding: 0;margin-right: 1em;" type='search' [debounce]='300' [(ngModel)]='vmKeyowrds' [animated]='true' placeholder="City name/Pinyin/keywords" (ionChange)='onSearchByKeywords()' mode='ios'>
+                </ion-searchbar>
+            </ion-buttons>
+        </form>
+    </ion-toolbar>
+</ion-header>
+<ion-header *ngIf='selectedCitys?.length'>
+    <div class="container">
+        <div class="con-left">
+            <ion-label class="ion-text-wrap" color='secondary'>
+                <ion-chip *ngFor='let g of selectedCitys' class="icon-label">
+                    <ion-label color='secondary'>
+                        <div style="padding-left: 4px;">{{g?.Name}}</div>
+                    </ion-label>
+                    <ion-icon name="close-outline" (click)='onDeleteSelectedTag(g)' style="font-size: 14px;"></ion-icon>
+                </ion-chip>
+            </ion-label>
+        </div>
+        <div class="con-right">
+            <ion-text (click)='onDetermine()' style="display: flex;width: 100px;margin: auto;" color="secondary">确定</ion-text>
+        </div>
+    </div>
+
+</ion-header>
+<ion-content>
+    <app-refresher (ionRefresh)='doRefresh(true)' slot='fixed'>
+        <ion-refresher-content>正在刷新数据</ion-refresher-content>
+    </app-refresher>
+    <ng-container *ngIf='isSearching else n'>
+        <ion-label>正在搜索...</ion-label>
+    </ng-container>
+    <ng-template #n>
+        <!-- <ion-list class='holder'>
+        </ion-list> -->
+        <ion-list *ngIf='textSearchResults?.length else nodatatempl'>
+            <ion-item *ngFor='let item of textSearchResults' (click)='onCitySelected(item)'>
+                <ion-label>
+                    <ion-text notranslate style="position: relative;padding-left: 1em;" [color]="item?.Selected?'secondary':'dark'">
+                        <ion-icon *ngIf='item.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon>
+                        {{item?.Name}}
+                    </ion-text>
+                    <ng-container *ngIf='!isDomestic'>
+                        <ion-text *ngIf='item.Code&&item.Country' color='medium'>({{item.Country.Name}})</ion-text>
+                    </ng-container>
+                    <ng-container *ngIf='isDomestic'>
+                        <ion-text *ngIf='item.Code&&item.Pinyin' color='medium'>({{item.Pinyin}})</ion-text>
+                    </ng-container>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </ng-template>
+    <ng-template #nodatatempl>
+        <app-or-comp *ngIf='!isLoading'>暂无数据</app-or-comp>
+    </ng-template>
+    <ion-infinite-scroll (ionInfinite)='loadMore()'>
+        <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+</ion-content>

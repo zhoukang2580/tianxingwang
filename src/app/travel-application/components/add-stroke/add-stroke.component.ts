@@ -63,7 +63,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     private tmcService: TmcService,
     private trainService: TrainService,
     private calendarService: CalendarService,
-    private modalCtrl: ModalController
+    public modalCtrl: ModalController
   ) {
     this.remove = new EventEmitter();
   }

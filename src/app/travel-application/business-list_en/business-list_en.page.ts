@@ -7,5 +7,7 @@ import { BusinessListPage } from '../business-list/business-list.page';
   styleUrls: ["./business-list_en.page.scss"],
 })
 export class BusinessListEnPage extends BusinessListPage {
- 
+  customPopoverOptions: any = {
+    header: "Select approval doc status",
+  };
 }

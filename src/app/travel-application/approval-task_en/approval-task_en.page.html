@@ -1,0 +1,92 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <app-back-button></app-back-button>
+        </ion-buttons>
+        <ion-title style="font:inherit;margin:auto">Apprival task</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+        <ion-refresher-content>正在加载...</ion-refresher-content>
+    </app-refresher>
+    <div class="container">
+        <div class="tabbar">
+            <span class="tabbar_wait" (click)="onTaskApp()" [class.active]='isactivename=="待我审批"'>Approved by me</span>
+            <span class="tabbar_has" (click)="onTaskReviewed()" [class.active]='isactivename=="已审任务"'>Task reviewed</span>
+        </div>
+        <div class="no_appcalition" *ngIf="!isLoading&&!tasks?.length">
+            <div>
+                <div>
+                    <img class="app_img" src="assets/images/no_application.png" />
+                </div>
+                <div class="div_app">
+                    <p *ngIf="isStates">No approval</p>
+                    <p *ngIf="!isStates">No content</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg wait_apply" *ngIf='tasks?.length'>
+            <div *ngFor="let task of tasks" (click)='onTaskDetail(task)' class="task-item">
+                <section class="section" *ngIf="task.Tag=='TravelForm' ">
+                    <p class="h_line h_line_mini"></p>
+                    <div class="apply_info" style="padding: 18px 23px;">
+                        <p><span class="apply_info_tit"><span>Applicant：</span><span>{{task?.Applicant}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>Applicant time：</span><span>{{task?.ApplicationTime}}</span></span><span class="apply_info_time"></span></p>
+                        <p>
+                            <span class="apply_info_tit" style="display: flex;">
+                                <span class="start">
+                                    Trip：
+                                </span>
+                            <span>
+                                    <span style="min-width: 220px;color: black;">
+                                        {{task?.Trip}}
+                                    </span>
+                            </span>
+                            <!-- <span>出差城市：</span><span>{{task?.Trip}}</span></span> -->
+                            </span>
+                            <span class="apply_info_time"></span>
+                        </p>
+                        <p *ngIf="isChenkInCity">
+                            <span class="apply_info_tit"><span>入住城市：
+                                </span><span>{{task?.CheckInCity}}</span></span><span class="apply_info_time"></span>
+                        </p>
+                        <p><span class="apply_info_tit"><span>Days：</span><span>{{task?.DayCount}}</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>Category：</span><span *ngIf="task?.Tag=='TravelForm'">Prior approval</span><span *ngIf="task?.Tag!='TravelForm'">订单预定</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>Odd Numbers：</span><span>{{task?.ConsumerId}}</span></span><span class="apply_info_time"></span></p>
+                    </div>
+                </section>
+                <section class="section" *ngIf="task.Tag!='TravelForm'">
+                    <p class=" h_line h_line_mini "></p>
+                    <div class="apply_info ">
+                        <p><span class="apply_info_tit "><span>Applicant：</span><span notranslate>{{task?.Name}}</span></span><span class="apply_info_time "></span></p>
+                        <p><span class="apply_info_tit "><span>Travelers：</span><span notranslate>{{task?.Name}}</span></span><span class="apply_info_time "></span></p>
+                        <p><span class="apply_info_tit "><span>Travel time：</span><span>{{task?.TravelTime}}</span></span><span class="apply_info_time "></span></p>
+                        <p><span class="apply_info_tit " style="display: flex; ">
+                            <span class="start ">
+                                Trip:
+                            </span>
+                            <span class="main ">
+                                <span style="min-width: 220px;color: black; ">
+                                    {{task?.Trip}}
+                                </span>
+                            </span>
+                            </span><span class="apply_info_time "></span>
+                        </p>
+                        <p><span class="apply_info_tit "><span>Category：</span><span>Order Booking</span></span><span class="apply_info_time "></span></p>
+                        <p><span class="apply_info_tit "><span>Odd Numbers：</span><span>{{task?.OrderId}}</span></span><span class="apply_info_time "></span></p>
+                    </div>
+                </section>
+                <img class="img" src="assets/images/pass.png " *ngIf='task.imageStatus=="isPassed"' alt=" ">
+                <img class="img" src="assets/images/deny.png " *ngIf='task.imageStatus=="isRejected"' alt=" ">
+                <img class="img" src="assets/images/close.png " *ngIf='task.imageStatus=="isClosed"' alt=" ">
+                <img class="img" src="assets/images/overdue.png" *ngIf='task.imageStatus=="isOverdue"'>
+
+            </div>
+        </div>
+    </div>
+    <ion-infinite-scroll (ionInfinite)='doLoadMoreTasks()'>
+        <ion-infinite-scroll-content>加载更多</ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+</ion-content>

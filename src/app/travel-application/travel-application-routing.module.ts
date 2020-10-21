@@ -11,6 +11,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: "approval-task_en",
+    loadChildren: () =>
+      import("./approval-task_en/approval-task_en.module").then(
+        (m) => m.ApprovalTaskEnPageModule
+      ),
+  },
+  {
     path: 'business-list',
     loadChildren: () => import('./business-list/business-list.module').then(m => m.BusinessListPageModule)
   },
@@ -21,6 +28,10 @@ export const routes: Routes = [
   {
     path: 'add-apply',
     loadChildren: () => import('./add-apply/add-apply.module').then(m => m.AddApplyPageModule)
+  },
+  {
+    path: 'add-apply_en',
+    loadChildren: () => import('./add-apply_en/add-apply_en.module').then(m => m.AddApplyEnPageModule)
   },
   {
     path: 'travel-apply-detail',

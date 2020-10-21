@@ -1,0 +1,125 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <app-back-button></app-back-button>
+        </ion-buttons>
+        <ion-title *ngIf="addstatus" style="font:inherit;">New travel application</ion-title>
+        <ion-title *ngIf="!addstatus" style="font:inherit;">Travel edit</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list style="background: transparent;">
+        <ion-item style="margin-top: 8px;">
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
+            <ion-text [color]="!enable?'dark':'dark'">Travelers:</ion-text>
+            <ion-label class="ion-text-end" notranslate>{{searchModel?.Staff?.Name}}</ion-label>
+        </ion-item>
+        <ion-item detail (click)='onSelectOrg()' [attr.organization]='"organization"'>
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
+            <ion-text [color]="!enable?'dark':'dark'">
+                Department:
+            </ion-text>
+            <ion-text [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;" class="ion-text-end">{{searchModel.TravelForm?.Organization?.Name||" "}}
+                <ng-container *ngIf="searchModel.TravelForm?.Organization?.Code">({{searchModel.TravelForm?.Organization?.Code}})
+                </ng-container>
+            </ion-text>
+        </ion-item>
+        <ion-item style="margin-top: 8px;" [attr.CustomerName]='"CustomerName"'>
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
+            <ion-text [color]="!enable?'dark':'dark'">Cust or Co:</ion-text>
+            <ion-input placeholder="Please enter" maxlength="11" slot="end" class="ion-text-end" [(ngModel)]="searchModel.TravelForm.CustomerName" [disabled]="!enable">
+
+            </ion-input>
+        </ion-item>
+        <ion-item [attr.Subject]='"Subject"'>
+            <div class="no_border_bottom text">
+                <span class="red" style="position: absolute;margin: 14px 0px;">*</span>
+                <span style="line-height: 3;margin-left: 10px;">
+                <ion-text [color]="!enable?'dark':'dark'">Business Trip:</ion-text>
+                </span>
+                <ion-textarea type="text" style="width: 20em;--padding-top: aliceblue;padding-left: 10px;" [disabled]="!enable" name="reason" placeholder="Please enter" (ionChange)="onTextarea($event)" [(ngModel)]="searchModel.TravelForm.Subject" [disabled]="!enable"
+                    rows="3"></ion-textarea>
+
+            </div>
+        </ion-item>
+        <app-add-stroke_en [regionTypes]='vmRegionTypes' [TravelApprovalContent]="vmTravelApprovalContent" [international]='international' [domestic]='domestic' [travelFromId]="searchModel.TravelForm.Id" [enable]="enable" [pass]="pass" [attr.addStroke]='idx'
+            *ngFor="let item of searchModel.TravelForm.Trips;let idx=index;" [index]="idx" [trip]='item' (remove)='onRemoveTrip($event)'>
+        </app-add-stroke_en>
+        <ion-button color='secondary' class="ion-padding-horizontal" expand='block' fill='outline' (click)="onAddTrip()" *ngIf="enable">
+            <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
+            Add journey
+        </ion-button>
+        <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType==TravelApprovalType.Free&&enable" [attr.accountId]='"accountId"'>
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
+            <ion-text [color]="!enable?'dark':'dark'">
+                Approved by:
+            </ion-text>
+            <ion-text notranslate [color]="!enable?'medium':'dark'" style="max-width: initial;flex: 3; text-align: end;" class="ion-text-end" *ngIf="searchModel?.ApprovalName">
+                {{searchModel.ApprovalName}}
+            </ion-text>
+        </ion-item>
+        <ion-item detail (click)="onSelectCostCenter()">
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
+            <ion-text [color]="!enable?'dark':'dark'">Cost Center:</ion-text>
+            <ion-label class="ion-text-end" color="{{searchModel.TravelForm?.CostCenterName}}" [color]="!enable?'medium':'dark'">
+                {{searchModel.TravelForm?.CostCenterName||" "}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
+            <ion-text [color]="!enable?'dark':'dark'">
+                Travel days:
+            </ion-text>
+            <ion-label slot="end" class="ion-text-end" [color]="!enable?'medium':'dark'" *ngIf="searchModel?.TravelForm?.DayCount">
+                {{searchModel?.TravelForm?.DayCount}}
+            </ion-label>
+        </ion-item>
+        <ion-item>
+            <div class="no_border_bottom text">
+                <span style="line-height: 2.5;"><ion-text [color]="!enable?'dark':'dark'" style="font-size: 16px;">Remarks:</ion-text></span>
+                <ion-textarea style="width: 20em;--padding-top: aliceblue;" maxlength="50" (ionChange)='onTextarea($event)' type="text" [disabled]="!enable" name="reason" placeholder="Please enter" [(ngModel)]="searchModel.TravelForm.Detail" [disabled]="!enable" rows="3"></ion-textarea>
+            </div>
+
+        </ion-item>
+        <ion-item *ngIf="!enable">
+            <div *ngIf="searchModel.Histories" style="width: 100%;">
+                <ion-item-divider>
+                    审批记录
+                </ion-item-divider>
+                <div *ngFor="let h of searchModel?.Histories">
+                    <div style="display: flex">
+                        <label>审批时间:</label>
+                        <ion-label color="medium">
+                            {{h?.HandleTime?.startsWith("1800")||h.HandleTime?.startsWith("0001")?" ":h.HandleTime?.replace("T"," ")?.substring(0,16)}}
+                        </ion-label>
+                    </div>
+                    <div style="display: flex;">
+                        <label>审批人:</label>
+                        <ion-label color="medium" notranslate>{{h.Account?.RealName}}</ion-label>
+                    </div>
+                    <div style="display: flex;">
+                        <label>审批结果:</label>
+                        <ion-label color="medium">{{h?.StatusName}}</ion-label>
+                    </div>
+                    <div style="display: flex;">
+                        <ion-label style="width: 55%;">审批意见:</ion-label>
+                        <div>
+                            <ion-text color="medium">{{h?.Remark}}</ion-text>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ion-item>
+        <ion-item *ngIf="waiting" class="ion-btn">
+
+
+            <div class="ion-div">
+                <ion-button slot='end' shape='round' color="secondary" on-touch="getCashSuccess();" data-ng-disabled="!isCashTest()" style="width: 7em;height: 3em;" (click)="onSave()">
+                    Save
+                </ion-button>
+                <ion-button slot='end' shape='round' color="secondary" (click)="onSubmit()" style="width: 7em;height: 3em;">
+                    Submit
+                </ion-button>
+            </div>
+        </ion-item>
+    </ion-list>
+</ion-content>
