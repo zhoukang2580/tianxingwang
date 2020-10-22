@@ -71,7 +71,14 @@ export const routes: Routes = [
       import('./order-train-detail/order-train-detail.module').then(
         m => m.OrderTrainDetailPageModule
       )
-  }
+  },
+  {
+     path: "order-train-detail_en",
+     loadChildren: () =>
+       import('./order-train-detail_en/order-train-detail_en.module').then(
+         m => m.OrderTrainDetailEnPageModule
+       )
+   }
 
 ];
 @NgModule({

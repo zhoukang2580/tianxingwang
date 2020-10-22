@@ -11,7 +11,7 @@ import { OrderListPage } from '../order-list/order-list.page';
 })
 export class OrderListEnPage extends OrderListPage {
   activeTab: ProductItem;
-  title = "Flight Orders";
+  // title = "Flight Orders";
   tabs: ProductItem[] = [];
   onTabClick(tab: ProductItem) {
     this.isLoading = true;
@@ -19,7 +19,7 @@ export class OrderListEnPage extends OrderListPage {
     this.activeTab = tab;
     this.dataCount = 0;
     this.myTripsTotalCount = 0;
-    this.title = tab.labelEn + " Orders";
+    this.title = tab.labelEn;
     if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
         this.title = tab.labelEn;
     }

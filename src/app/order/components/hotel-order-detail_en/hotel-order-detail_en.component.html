@@ -1,0 +1,133 @@
+<ng-container *ngFor='let orderHotel of hotels' class='hotels'>
+    <ion-row>
+        <ion-col size='3'>Transaction No.</ion-col>
+        <ion-col>
+            {{orderHotel.Id}}
+        </ion-col>
+        <ion-col class="ion-text-end ion-padding-end">
+            {{orderHotel.StatusName}}
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col size='3'>
+            Check in
+        </ion-col>
+        <ion-col>
+            {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col size='3'>
+            Check out
+        </ion-col>
+        <ion-col>
+            {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col size='3'>
+            Hotel Name
+        </ion-col>
+        <ion-col>
+            {{orderHotel.HotelName}}
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col size='3'>
+            Room type
+        </ion-col>
+        <ion-col>
+            {{orderHotel.RoomName}}
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col size='3'>
+            Breakfast quantity
+        </ion-col>
+        <ion-col>
+            {{orderHotel.Breakfast}}
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col size='3'>
+            Room fare
+        </ion-col>
+        <ion-col>
+            {{getHotelRoomFee(orderHotel.Key)}}
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col size='3'>
+            Payment method
+        </ion-col>
+        <ion-col>
+            {{orderHotel.PaymentType==2?"现付":orderHotel.PaymentType==1?"预付":"月结"}}
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col size='3'>
+            Hotel address
+        </ion-col>
+        <ion-col>
+            {{orderHotel.HotelAddress}}
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col size='3'>
+            Hotle tel.
+        </ion-col>
+        <ion-col>
+            {{orderHotel.HotelContact}}
+        </ion-col>
+    </ion-row>
+    <ng-container *ngIf='orderHotel.OrderTravel as orderTravel'>
+        <ion-row>
+            <ion-col size='3'>
+                Violations
+            </ion-col>
+            <ion-col>
+                <div class='clip-text' [class.show]='orderHotel["isShowIllegalPolicy"]' (click)='orderHotel["isShowIllegalPolicy"]=!orderHotel["isShowIllegalPolicy"]'>
+                    {{orderTravel.IllegalPolicy}}
+                </div>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size='3'>
+                Violations reason
+            </ion-col>
+            <ion-col>
+                <div class='clip-text' [class.show]='orderHotel["isShowIllegalReason"]' (click)='orderHotel["isShowIllegalReason"]=!orderHotel["isShowIllegalReason"]'>
+                    {{orderTravel.IllegalReason}}
+                </div>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size='3'>
+                Cost center
+            </ion-col>
+            <ion-col>
+                <div class='clip-text' [class.show]='orderHotel["isShowCostCenter"]' (click)='orderHotel["isShowCostCenter"]=!orderHotel["isShowCostCenter"]'>
+                    {{orderTravel.CostCenterCode}}->{{orderTravel.CostCenterName}}
+                    <div *ngIf='getOrderNumbers() as orderNumbers'>
+                        <ng-container *ngFor='let number of orderNumbers'>
+                            <span>{{number.Name}}</span>:<span>{{number.Number}}</span>
+                        </ng-container>
+                    </div>
+                </div>
+            </ion-col>
+        </ion-row>
+    </ng-container>
+    <ion-row *ngIf='getVariable(orderHotel,"ExceptionMessage") as ExceptionMessage'>
+        <ion-col size='3'>异常消息</ion-col>
+        <ion-col>
+            <div>{{ExceptionMessage}}</div>
+        </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col>
+            <div class='clip-text' (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]' [class.show]='orderHotel["isShowDetail"]'>
+                {{orderHotel.RuleDescription}}
+            </div>
+        </ion-col>
+    </ion-row>
+</ng-container>

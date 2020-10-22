@@ -12,6 +12,13 @@ let routes: Route[] = [
       )
   },
   {
+    path: "account-setting_en",
+    loadChildren: () =>
+      import("./account-setting_en/account-setting_en.module").then(
+        m => m.AccountSettingEnPageModule
+      )
+  },
+  {
     path: "account-security",
     loadChildren: () =>
       import("./account-security/account-security.module").then(
@@ -73,7 +80,8 @@ let routes: Route[] = [
       import("./account-mobile/account-mobile.module").then(
         m => m.AccountMobilePageModule
       )
-  },  {
+  },
+  {
     path: 'account-items',
     loadChildren: () => import('./account-items/account-items.module').then( m => m.AccountItemsPageModule)
   }

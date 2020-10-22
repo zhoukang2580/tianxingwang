@@ -1,36 +1,35 @@
 <div style="width: 100%;">
-  <ng-container *ngIf='trip'>
-    <ion-card>
-      <ion-item lines='none'>
-        <ion-label color='secondary' class='title'>
-          <img src="assets/svgs/hotel.svg" alt="酒店">
-          <strong class='ion-margin-start'>酒店</strong>
-        </ion-label>
-        <ion-button [disabled]='true' fill="clear" color='secondary' slot="end">{{trip.Status}}</ion-button>
-      </ion-item>
-      <ion-card-content>
-        <ion-label>
-          <strong>{{trip.Name}}</strong>
-        </ion-label>
-        <div class="passenger" *ngIf='trip?.Passenger'>
-          <span>
+    <ng-container *ngIf='trip'>
+        <ion-card>
+            <ion-item lines='none'>
+                <ion-label color='secondary' class='title'>
+                    <img src="assets/svgs/hotel.svg" alt="酒店">
+                    <strong class='ion-margin-start'>Hetol</strong>
+                </ion-label>
+                <ion-button [disabled]='true' fill="clear" color='secondary' slot="end">{{trip.Status}}</ion-button>
+            </ion-item>
+            <ion-card-content>
+                <ion-label>
+                    <strong>{{trip.Name}}</strong>
+                </ion-label>
+                <div class="passenger" *ngIf='trip?.Passenger'>
+                    <span>
             {{trip.Passenger.Name}}:
           </span>
-          <span>{{trip.Passenger.CredentialsNumber}}</span>
-        </div>
-        <ion-label>
-          <p>
-            {{trip.StartTime?.substr(0,"yyyy-mm-dd".length)}} <small>至</small>
-            {{trip.EndTime?.substr(0,"yyyy-mm-dd".length)}}
-          </p>
-          <p>
-            <span>订单编号:{{trip.OrderId}}</span>
-          </p>
-          <!-- <p>
+                    <span>{{trip.Passenger.CredentialsNumber}}</span>
+                </div>
+                <ion-label>
+                    <p>
+                        {{trip.StartTime?.substr(0,"yyyy-mm-dd".length)}} <small>至</small> {{trip.EndTime?.substr(0,"yyyy-mm-dd".length)}}
+                    </p>
+                    <p>
+                        <span>Odd No.:{{trip.OrderId}}</span>
+                    </p>
+                    <!-- <p>
             <span>酒店事务号:{{trip.OrderTicketId}}</span>
           </p> -->
-        </ion-label>
-      </ion-card-content>
-    </ion-card>
-  </ng-container>
+                </ion-label>
+            </ion-card-content>
+        </ion-card>
+    </ng-container>
 </div>

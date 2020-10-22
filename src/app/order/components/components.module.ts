@@ -28,6 +28,7 @@ import { TrainTripEnComponent } from './train-trip_en/train-trip_en.component';
 import { FlightTripEnComponent } from './flight-trip_en/flight-trip_en.component';
 import { HotelTripEnComponent } from './hotel-trip_en/hotel-trip_en.component';
 import { OrderItemEnComponent } from './order-item_en/order-item_en.component';
+import { FlightOrderDetailEnComponent } from './flight-order-detail_en/flight-order-detail_en.component';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { OrderItemEnComponent } from './order-item_en/order-item_en.component';
     SelectTicketPopoverComponent,
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,
+    FlightOrderDetailEnComponent,
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
     TrainTripComponent,
@@ -70,6 +72,7 @@ import { OrderItemEnComponent } from './order-item_en/order-item_en.component';
     CarItemComponent,
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,
+    FlightOrderDetailEnComponent,
     HotelOrderDetailComponent,
     InsuranceOrderDetailComponent,
     SwiperSlideContentComponent,

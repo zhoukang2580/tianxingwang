@@ -3,14 +3,14 @@
     <ng-container *ngIf="order.OrderFlightTickets?.length">
         <ng-container *ngIf="order.OrderFlightTickets?.length">
             <div class="item">
-                <div>Id</div>
+                <div>Odd No.</div>
                 <div class="select-text">
                     <span style="font-weight: bold">{{ order.Id }}</span>
                     <span *ngIf="order.InsertDateTime">{{ order.InsertDateTime }}</span>
                 </div>
             </div>
             <div class="item">
-                <div [style.align-self]="order['checkPay'] ? 'center' : ''">Pay</div>
+                <div [style.align-self]="order['checkPay'] ? 'center' : ''">Total amount</div>
                 <div style="display: flex; align-items: center">
                     <ion-text color="danger" class="ion-text-nowrap">
                         <ion-text>￥{{ order.TotalAmount }}</ion-text>
@@ -19,7 +19,7 @@
                     <span>
             <ion-text color="medium" class="ion-text-nowrap">
               ({{
-                order.StatusName == "等待处理" ? "等待审批" : order.StatusName
+                order.StatusName == "等待处理" ? "Pending approval" : order.StatusName
               }})
             </ion-text>
           </span>
@@ -110,7 +110,7 @@
             <ion-grid class="train">
                 <ion-row>
                     <ion-col size="2">
-                        <ion-text color="medium"> Id</ion-text>
+                        <ion-text color="medium"> Odd No.</ion-text>
                     </ion-col>
                     <ion-col class="select-text" class="dark">
                         <strong style="user-select: text">{{ order.Id }}</strong>
@@ -121,7 +121,7 @@
                 </ion-row>
                 <ion-row [class.btn-show-margin]="order.VariablesJsonObj.isPay" style="align-items: center">
                     <ion-col size="2">
-                        <ion-text color="medium"> Pay</ion-text>
+                        <ion-text color="medium"> Total amount</ion-text>
                     </ion-col>
                     <ion-col style="display: flex; align-items: center">
                         <ion-text color="danger">
@@ -129,7 +129,7 @@
                             <span *ngIf="order.OrderInsurances?.length"> (含保险) </span>
                         </ion-text>
                         <ion-text color="medium">
-                            （{{ order.StatusName == "等待处理" ? "等待审批" : order.StatusName }}）
+                            （{{ order.StatusName == "等待处理" ? "Pending approval" : order.StatusName }}）
                         </ion-text>
                         <ng-container *ngIf="order.VariablesJsonObj.isPay">
                             <ion-button (click)="onPay($event)" size="small" color="secondary">To Pay
@@ -167,7 +167,7 @@
                                         <ion-button (click)="onRefundTrainTicket($event, orderTrainTicket)" color="secondary" *ngIf="
                         orderTrainTicket.VariablesJsonObj.isShowRefundButton
                       ">
-                                            <span>Paid</span>
+                                            <span>Paid </span>
                                         </ion-button>
                                     </ng-container>
                                     <ion-button size="small" *ngIf="orderTrainTicket.VariablesJsonObj.isShowCancelButton" (click)="onAbolishTraninOrder($event, orderTrainTicket)" color="secondary">
@@ -211,7 +211,7 @@
             <ion-grid class="hotel" style="margin-left: -8px; min-width: 5.7em">
                 <ion-row>
                     <ion-col size="2" style="min-width: 5.7em">
-                        <ion-text color="medium"> Id</ion-text>
+                        <ion-text color="medium"> Odd No.</ion-text>
                     </ion-col>
                     <ion-col class="select-text" class="dark">
                         <strong>{{ order.Id }}</strong>
@@ -222,7 +222,7 @@
                 </ion-row>
                 <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center">
                     <ion-col size="2" style="min-width: 5.7em">
-                        <ion-text color="medium"> Pay</ion-text>
+                        <ion-text color="medium">Total amount</ion-text>
                     </ion-col>
                     <ion-col>
                         <div style="align-items: center; display: flex">
@@ -230,10 +230,10 @@
                                 <ion-text>￥{{ order.TotalAmount }}</ion-text>
                             </ion-text>
                             <ion-text color="medium">
-                                {{ orderHotel.PaymentType == 2 ? "(nowadvance)" : orderHotel.PaymentType == 1 ? "(advance)" : "" }}
+                                {{ orderHotel.PaymentType == 2 ? "(Pay at hote)" : orderHotel.PaymentType == 1 ? "(Prepay)" : "" }}
                             </ion-text>
                             <ion-text color="medium" style="min-width: fit-content">
-                                （{{ order.StatusName == "等待处理" ? "等待审批" : order.StatusName }}）
+                                （{{ order.StatusName == "Pending approval" ? "Pending approval" : order.StatusName }}）
                             </ion-text>
                             <ion-button *ngIf="order['checkPay']" (click)="onPay($event)" size="small" color="secondary">To pay
                             </ion-button>
