@@ -32,12 +32,14 @@ import { DayEnComponent } from "./day-en/dayEn.component";
 import { BookCredentialCompEnComponent } from './book-credential-comp_en/book-credential-comp_en.component';
 import { AddcontactsModalEnComponent } from './addcontacts-modal_en/addcontacts-modal_en.component';
 import { BookAddcontactsCompEnComponent } from './book-addcontacts-comp_en/book-addcontacts-comp_en.component';
+import { SearchApprovalEnComponent } from './search-approval_en/search-approval_en.component';
 
 @NgModule({
   declarations: [
     FilterPassengersPolicyComponent,
     SelectAirportsModalComponent,
     SearchApprovalComponent,
+    SearchApprovalEnComponent,
     SearchCostcenterComponent,
     OrganizationComponent,
     SelectTravelNumberComponent,

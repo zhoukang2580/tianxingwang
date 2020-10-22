@@ -1,68 +1,62 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button defaultHref=''></app-back-button>
-    </ion-buttons>
-    <ion-text *ngIf='isShowSelectedInfos$ |async'>Train</ion-text>
-    <ion-title *ngIf='!(isShowSelectedInfos$ |async)'>Train</ion-title>
-    <ion-buttons class='small-font' slot='end'>
-      <ion-button *ngIf='(isShowSelectedInfos$ |async)&&(!searchTrainModel?.isExchange)' fill='clear' color='secondary'
-        size='small' (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedBookInfos}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
-        *ngIf='canAddPassengers&&(!searchTrainModel?.isExchange)'>添加乘客<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>Policy
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref=''></app-back-button>
+        </ion-buttons>
+        <ion-text *ngIf='isShowSelectedInfos$ |async'>Train</ion-text>
+        <ion-title *ngIf='!(isShowSelectedInfos$ |async)'>Train</ion-title>
+        <ion-buttons class='small-font' slot='end'>
+            <ion-button *ngIf='(isShowSelectedInfos$ |async)&&(!searchTrainModel?.isExchange)' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookInfos()'>已选行程
+                <ion-badge color='danger'>
+                    <ion-text color='light'>{{selectedBookInfos}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&(!searchTrainModel?.isExchange)'>
+                <ion-icon name="person-add-outline"></ion-icon>
+                <ion-badge color='danger'>
+                    <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>Policy
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-card class='ion-padding'>
-    <ion-card-content>
-      <ion-segment (ionChange)="onSegmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary'
-        *ngIf='showReturnTrip' [disabled]='searchTrainModel?.isExchange'>
-        <ion-segment-button value="single">
-          <ion-label><strong>单程</strong></ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="roundtrip">
-          <ion-label><strong>往返</strong></ion-label>
-        </ion-segment-button>
-      </ion-segment>
-      <ion-text color='danger' style="opacity: 0.7;font-size: 0.7rem;" *ngIf='searchTrainModel?.isExchange'>正在改签
-      </ion-text>
-      <ion-buttons class="ion-justify-content-between">
-        <ion-button [disabled]='searchTrainModel?.isLocked && searchTrainModel?.isExchange'
-          (click)='onSelectCity(true)' color='{{searchTrainModel?.isLocked && searchTrainModel?.isExchange?"medium":"secondary"}}'>
-          {{searchTrainModel?.fromCity?.Nickname}}</ion-button>
-        <ion-button color='{{searchTrainModel?.isLocked&&searchTrainModel?.isExchange?"medium":"secondary"}}' [disabled]='searchTrainModel?.isLocked&&searchTrainModel?.isExchange'
-          (click)='onSwapCity()'>
-          <ion-icon name="swap-horizontal-outline" color='{{searchTrainModel?.isLocked&&searchTrainModel?.isExchange?"medium":"secondary"}}'>
-          </ion-icon>
-        </ion-button>
-        <ion-button [disabled]='searchTrainModel?.isLocked && !searchTrainModel?.isExchange' (click)='onSelectCity(false)'
-          color='{{searchTrainModel?.isLocked&&!searchTrainModel?.isExchange?"medium":"secondary"}}'>
-          {{searchTrainModel?.toCity?.Nickname}}</ion-button>
-      </ion-buttons>
-      <section class="flight-date">
-        <app-search-day-comp [day]='goDate' (click)="onSelecDate(true,false)"
-          [disabled]='searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'>
-        </app-search-day-comp>
-      </section>
-      <ion-button class='ion-margin-top' style='width: 100%' (click)="searchTrain()"
-        *ngIf='!(canAddPassengers&& selectedPassengers==0)' color="secondary" expand="block">
-        <ion-text>Search</ion-text>
-      </ion-button>
-      <ng-container *ngIf='!searchTrainModel?.isExchange'>
-        <ion-button class='ion-margin-top' style='width: 100%' (click)="onSelectPassenger()"
-          *ngIf='canAddPassengers&& selectedPassengers==0' color="secondary" expand="block">
-          <ion-text>Please Add Passengers</ion-text>
-        </ion-button>
-      </ng-container>
-    </ion-card-content>
-  </ion-card>
+    <ion-card class='ion-padding'>
+        <ion-card-content>
+            <ion-segment (ionChange)="onSegmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary' *ngIf='showReturnTrip' [disabled]='searchTrainModel?.isExchange'>
+                <ion-segment-button value="single">
+                    <ion-label><strong>单程</strong></ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="roundtrip">
+                    <ion-label><strong>往返</strong></ion-label>
+                </ion-segment-button>
+            </ion-segment>
+            <ion-text color='danger' style="opacity: 0.7;font-size: 0.7rem;" *ngIf='searchTrainModel?.isExchange'>正在改签
+            </ion-text>
+            <ion-buttons class="ion-justify-content-between">
+                <ion-button [disabled]='searchTrainModel?.isLocked && searchTrainModel?.isExchange' (click)='onSelectCity(true)' color='{{searchTrainModel?.isLocked && searchTrainModel?.isExchange?"medium":"secondary"}}'>
+                    {{searchTrainModel?.fromCity?.Nickname}}</ion-button>
+                <ion-button color='{{searchTrainModel?.isLocked&&searchTrainModel?.isExchange?"medium":"secondary"}}' [disabled]='searchTrainModel?.isLocked&&searchTrainModel?.isExchange' (click)='onSwapCity()'>
+                    <ion-icon name="swap-horizontal-outline" color='{{searchTrainModel?.isLocked&&searchTrainModel?.isExchange?"medium":"secondary"}}'>
+                    </ion-icon>
+                </ion-button>
+                <ion-button [disabled]='searchTrainModel?.isLocked && !searchTrainModel?.isExchange' (click)='onSelectCity(false)' color='{{searchTrainModel?.isLocked&&!searchTrainModel?.isExchange?"medium":"secondary"}}'>
+                    {{searchTrainModel?.toCity?.Nickname}}</ion-button>
+            </ion-buttons>
+            <section class="flight-date">
+                <app-search-day-comp [day]='goDate' (click)="onSelecDate(true,false)" [disabled]='searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'>
+                </app-search-day-comp>
+            </section>
+            <ion-button class='ion-margin-top' style='width: 100%' (click)="searchTrain()" *ngIf='!(canAddPassengers&& selectedPassengers==0)' color="secondary" expand="block">
+                <ion-text>Search</ion-text>
+            </ion-button>
+            <ng-container *ngIf='!searchTrainModel?.isExchange'>
+                <ion-button class='ion-margin-top' style='width: 100%' (click)="onSelectPassenger()" *ngIf='canAddPassengers&& selectedPassengers==0' color="secondary" expand="block">
+                    <ion-text>Please Add Passengers</ion-text>
+                </ion-button>
+            </ng-container>
+        </ion-card-content>
+    </ion-card>
 </ion-content>

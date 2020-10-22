@@ -1,62 +1,64 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
 
-      <app-back-button defaultHref=""></app-back-button>
-    </ion-buttons>
-    <ion-text *ngIf='(isShowBookInfos$|async)'>Flight</ion-text>
-    <ion-title *ngIf='!(isShowBookInfos$|async)'>Flight</ion-title>
-    <ion-buttons slot='end'>
-      <ion-button fill='clear' *ngIf='(isShowBookInfos$|async) as num' color='secondary' size='small' (click)='onShowSelectedInfosPage();isCanleave=true'>已选航班
-        <ion-badge slot='end' color='danger'>
-          <ion-text color='light'>{{num}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' *ngIf='isSelf' color='secondary' size='small' (click)='onShowStandardDesc();'>Policy
-      </ion-button>
-      <ion-button fill='clear' *ngIf='!isSelf' color='secondary' size='small' (click)='onSelectPassenger()'>Add Passengers
-        <ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers}}</ion-text>
-        </ion-badge>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+            <app-back-button defaultHref=""></app-back-button>
+        </ion-buttons>
+        <ion-text *ngIf='(isShowBookInfos$|async)'>Flight</ion-text>
+        <ion-title *ngIf='!(isShowBookInfos$|async)'>Flight</ion-title>
+        <ion-buttons slot='end'>
+            <ion-button fill='clear' *ngIf='(isShowBookInfos$|async) as num' color='secondary' size='small' (click)='onShowSelectedInfosPage();isCanleave=true'>已选航班
+                <ion-badge slot='end' color='danger'>
+                    <ion-text color='light'>{{num}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' *ngIf='isSelf' color='secondary' size='small' (click)='onShowStandardDesc();'>Policy
+            </ion-button>
+
+            <ion-button fill='clear' *ngIf='!isSelf' color='secondary' size='small' (click)='onSelectPassenger()'>
+                <ion-icon name="person-add-outline"></ion-icon>
+                <ion-badge color='danger'>
+                    <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
+                </ion-badge>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-card class='ion-padding'>
-    <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>
-    <ion-card-content>
-      <ion-segment mode='ios' (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary' *ngIf='showReturnTrip' [disabled]='disabled'>
-        <ion-segment-button value="single">
-          <ion-label><strong>One-way</strong></ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="roundtrip">
-          <ion-label><strong>Round-trip</strong></ion-label>
-        </ion-segment-button>
-      </ion-segment>
-      <ion-buttons class="city">
-        <ion-text class="ion-text-wrap city-name ion-text-start" [class.disabled]='disabled' (click)='onSelectCity(true)' color='{{disabled?"medium":"secondary"}}'>
-          {{isEn?searchFlightModel?.fromCity?.EnglishName|| searchFlightModel?.fromCity?.Nickname:searchFlightModel?.fromCity?.Nickname}}</ion-text>
-        <ion-button color='{{disabled?"medium":"secondary"}}' [disabled]='disabled' (click)='onSwapCity()'>
-          <ion-icon name="swap-horizontal-outline" color='{{disabled?"medium":"secondary"}}'>
-          </ion-icon>
-        </ion-button>
-        <ion-text class="ion-text-wrap city-name ion-text-end" [class.disabled]='disabled' (click)='onSelectCity(false)' color='{{disabled?"medium":"secondary"}}'>
-          {{isEn?searchFlightModel?.toCity?.EnglishName|| searchFlightModel?.toCity?.Nickname:searchFlightModel?.toCity?.Nickname}}</ion-text>
-      </ion-buttons>
-      <section class="flight-date">
-        <app-search-day-comp [day]='goDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
-        </app-search-day-comp>
-        <div *ngIf="">{{ totalFlyDays }}天</div>
-        <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
-        </app-search-day-comp>
-      </section>
-      <ion-button style='width: 100%' (click)="searchFlight()" class='ion-margin-top' *ngIf='isSelf||(!isSelf&&selectedPassengers>0)' color="secondary" expand="block">
-        <ion-text>Search</ion-text>
-      </ion-button>
-      <ion-button style='width: 100%' (click)="onSelectPassenger()" class='ion-margin-top' *ngIf='(!isSelf && selectedPassengers==0)' color="secondary" expand="block">
-        <ion-text>Please Add Passengers</ion-text>
-      </ion-button>
-    </ion-card-content>
-  </ion-card>
+    <ion-card class='ion-padding'>
+        <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>
+        <ion-card-content>
+            <ion-segment mode='ios' (ionChange)="segmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary' *ngIf='showReturnTrip' [disabled]='disabled'>
+                <ion-segment-button value="single">
+                    <ion-label><strong>One-way</strong></ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="roundtrip">
+                    <ion-label><strong>Round-trip</strong></ion-label>
+                </ion-segment-button>
+            </ion-segment>
+            <ion-buttons class="city">
+                <ion-text class="ion-text-wrap city-name ion-text-start" [class.disabled]='disabled' (click)='onSelectCity(true)' color='{{disabled?"medium":"secondary"}}'>
+                    {{isEn?searchFlightModel?.fromCity?.EnglishName|| searchFlightModel?.fromCity?.Nickname:searchFlightModel?.fromCity?.Nickname}}</ion-text>
+                <ion-button color='{{disabled?"medium":"secondary"}}' [disabled]='disabled' (click)='onSwapCity()'>
+                    <ion-icon name="swap-horizontal-outline" color='{{disabled?"medium":"secondary"}}'>
+                    </ion-icon>
+                </ion-button>
+                <ion-text class="ion-text-wrap city-name ion-text-end" [class.disabled]='disabled' (click)='onSelectCity(false)' color='{{disabled?"medium":"secondary"}}'>
+                    {{isEn?searchFlightModel?.toCity?.EnglishName|| searchFlightModel?.toCity?.Nickname:searchFlightModel?.toCity?.Nickname}}</ion-text>
+            </ion-buttons>
+            <section class="flight-date">
+                <app-search-day-comp [day]='goDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
+                </app-search-day-comp>
+                <div *ngIf="">{{ totalFlyDays }}天</div>
+                <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
+                </app-search-day-comp>
+            </section>
+            <ion-button style='width: 100%' (click)="searchFlight()" class='ion-margin-top' *ngIf='isSelf||(!isSelf&&selectedPassengers>0)' color="secondary" expand="block">
+                <ion-text>Search</ion-text>
+            </ion-button>
+            <ion-button style='width: 100%' (click)="onSelectPassenger()" class='ion-margin-top' *ngIf='(!isSelf && selectedPassengers==0)' color="secondary" expand="block">
+                <ion-text>Please Add Passengers</ion-text>
+            </ion-button>
+        </ion-card-content>
+    </ion-card>
 </ion-content>

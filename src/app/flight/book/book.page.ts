@@ -150,7 +150,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     private identityService: IdentityService,
     private tmcService: TmcService,
     private natCtrl: NavController,
-    private modalCtrl: ModalController,
+    public modalCtrl: ModalController,
     private calendarService: CalendarService,
     private route: ActivatedRoute,
     private popoverCtrl: PopoverController,

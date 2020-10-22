@@ -1,108 +1,104 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button defaultHref=""></app-back-button>
-    </ion-buttons>
-    <ion-text *ngIf='isShowSelectedInfos'>Hotel</ion-text>
-    <ion-title *ngIf='!(isShowSelectedInfos)'>Hotel</ion-title>
-    <ion-buttons class='small-font' slot='end'>
-      <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small'
-        (click)='onShowSelectedBookinfos()'>已选行程<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengersNumbers}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
-        *ngIf='canAddPassengers&&!selectedPassengers?.length'>
-        Add passenger<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()'
-        *ngIf='canAddPassengers&&selectedPassengers?.length'>
-        Selected PAX<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
-        Policy
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref=""></app-back-button>
+        </ion-buttons>
+        <ion-text *ngIf='isShowSelectedInfos'>Hotel</ion-text>
+        <ion-title *ngIf='!(isShowSelectedInfos)'>Hotel</ion-title>
+        <ion-buttons class='small-font' slot='end'>
+            <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookinfos()'>已选行程
+                <ion-badge color='danger'>
+                    <ion-text color='light'>{{selectedPassengersNumbers}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&!selectedPassengers?.length'>
+                <ion-icon name="person-add-outline"></ion-icon>
+                <ion-badge color='danger'>
+                    <ion-text color='light' class="danger">{{selectedPassengers?.length}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&selectedPassengers?.length'>
+                <ion-icon name="person-add-outline"></ion-icon>
+                <ion-badge color='danger'>
+                    <ion-text color='light' class="danger">{{selectedPassengers?.length}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
+                Policy
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-card>
-    <ion-card-content>
-      <div class='ion-padding-top' *ngIf='' >
-        <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" color="secondary" value="{{searchCondition?.hotelType}}">
-          <ion-segment-button value="normal">
-            <ion-label>No agreement</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="agreement">
-            <ion-label>Agreement</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </div>
-      <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;margin-bottom: 1em;" >
-        <section class="flight-date">
-          <app-search-day-comp [langOpt]='{
+    <ion-card>
+        <ion-card-content>
+            <div class='ion-padding-top' *ngIf=''>
+                <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" color="secondary" value="{{searchCondition?.hotelType}}">
+                    <ion-segment-button value="normal">
+                        <ion-label>No agreement</ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button value="agreement">
+                        <ion-label>Agreement</ion-label>
+                    </ion-segment-button>
+                </ion-segment>
+            </div>
+            <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;margin-bottom: 1em;">
+                <section class="flight-date">
+                    <app-search-day-comp [langOpt]='{
             checkin: "Check in",
             night: "Nights"
-          }' [day]='searchCondition?.checkinDate' [isCheckIn]='true' (click)="onSelecDate(true)"
-            [disabled]='false'>
-          </app-search-day-comp>
-          <app-search-day-comp [langOpt]='{
+          }' [day]='searchCondition?.checkinDate' [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>
+                    </app-search-day-comp>
+                    <app-search-day-comp [langOpt]='{
             checkout: "Check out",
             night: "Nights"
-          }' [day]='searchCondition?.checkoutDate' [isCheckOut]='true' (click)="onSelecDate(false)"
-            [disabled]='false'>
-          </app-search-day-comp>
-        </section>
-      </ion-item>
-      <div *ngIf='totalFlyDays'>{{ totalFlyDays}}Night</div>
-      <div class='destination' (click)='onSearchCity()'>
-        <ion-item lines='full' detail>
-          <ion-label>Destination</ion-label>
-          <ion-label class="ion-text-wrap">
-            {{searchCondition?.destinationCity?.Name}}
-            <ion-text *ngIf='searchCondition?.destinationCity?.Country' color='medium' class="ion-margin-start">
-              {{searchCondition?.destinationCity?.Country?.Name}}
-            </ion-text>
-            <p>
-              {{searchCondition?.destinationCity?.EnglishName}}
-              <span
-                *ngIf='searchCondition?.destinationCity?.Country?.EnglishName' class="ion-text-start">({{searchCondition?.destinationCity?.Country?.EnglishName}})</span>
-            </p>
-          </ion-label>
-        </ion-item>
-      </div>
-      <div class='destination' (click)='onSelectNationality()'>
-        <ion-item detail lines='full'>
-          <ion-label>Nationality</ion-label>
-          <ion-label class="ion-text-wrap">
-            {{searchCondition?.country?.Name}}
-            <p>{{searchCondition?.country?.EnglishName}}</p>
-          </ion-label>
-        </ion-item>
-      </div>
-      <div class="destination">
-        <ion-item lines='full' detail (click)='onAddAdultAndChildren()'>
-          <ion-label>
-            Occupancy
-          </ion-label>
-          <ion-label>
-            {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
-          </ion-label>
-        </ion-item>
-      </div>
-      <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" color="secondary" expand="block">
-        <ion-text>Search</ion-text>
-      </ion-button>
-      <ion-button *ngIf='false&&(canAddPassengers) && selectedPassengers?.length==0' class='ion-margin-top'
-        style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
-        <ion-text>Please Add Passengers
-        </ion-text>
-      </ion-button>
-    </ion-card-content>
-  </ion-card>
+          }' [day]='searchCondition?.checkoutDate' [isCheckOut]='true' (click)="onSelecDate(false)" [disabled]='false'>
+                    </app-search-day-comp>
+                </section>
+            </ion-item>
+            <div *ngIf='totalFlyDays'>{{ totalFlyDays}}Night</div>
+            <div class='destination' (click)='onSearchCity()'>
+                <ion-item lines='full' detail>
+                    <ion-label>Destination</ion-label>
+                    <ion-label class="ion-text-wrap">
+                        {{searchCondition?.destinationCity?.Name}}
+                        <ion-text *ngIf='searchCondition?.destinationCity?.Country' color='medium' class="ion-margin-start">
+                            {{searchCondition?.destinationCity?.Country?.Name}}
+                        </ion-text>
+                        <p>
+                            {{searchCondition?.destinationCity?.EnglishName}}
+                            <span *ngIf='searchCondition?.destinationCity?.Country?.EnglishName' class="ion-text-start">({{searchCondition?.destinationCity?.Country?.EnglishName}})</span>
+                        </p>
+                    </ion-label>
+                </ion-item>
+            </div>
+            <div class='destination' (click)='onSelectNationality()'>
+                <ion-item detail lines='full'>
+                    <ion-label>Nationality</ion-label>
+                    <ion-label class="ion-text-wrap">
+                        {{searchCondition?.country?.Name}}
+                        <p>{{searchCondition?.country?.EnglishName}}</p>
+                    </ion-label>
+                </ion-item>
+            </div>
+            <div class="destination">
+                <ion-item lines='full' detail (click)='onAddAdultAndChildren()'>
+                    <ion-label>
+                        Occupancy
+                    </ion-label>
+                    <ion-label>
+                        {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
+                    </ion-label>
+                </ion-item>
+            </div>
+            <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" color="secondary" expand="block">
+                <ion-text>Search</ion-text>
+            </ion-button>
+            <ion-button *ngIf='false&&(canAddPassengers) && selectedPassengers?.length==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
+                <ion-text>Please Add Passengers
+                </ion-text>
+            </ion-button>
+        </ion-card-content>
+    </ion-card>
 
 </ion-content>
