@@ -14,10 +14,10 @@
         <form [formGroup]='form' class='ion-padding'>
             <ion-segment (ionChange)="segmentChanged($event)" value="user" color='secondary'>
                 <ion-segment-button value="user">
-                    <ion-label>Account password login</ion-label>
+                    <ion-label>Account login</ion-label>
                 </ion-segment-button>
                 <ion-segment-button value="mobile">
-                    <ion-label>Mobile phone quick login</ion-label>
+                    <ion-label>Phone login</ion-label>
                 </ion-segment-button>
             </ion-segment>
             <ng-container *ngIf='loginType=="user" else mobilelogintemp'>
@@ -26,14 +26,14 @@
                         <ion-label color='secondary'>
                             <i class='icon icon-person'></i>
                         </ion-label>
-                        <ion-input type='text' placeholder='Please enter the user name/mobile number' clear-input='true' required='true' formControlName="Name">
+                        <ion-input type='text' placeholder='Username/Telephone' clear-input='true' required='true' formControlName="Name">
                         </ion-input>
                     </ion-item>
                     <ion-item>
                         <ion-label color='secondary'>
                             <i class='icon icon-lock'></i>
                         </ion-label>
-                        <ion-input [type]='eyeType' placeholder='Please input a password' clear-input='true' required='true' formControlName="Password"></ion-input>
+                        <ion-input [type]='eyeType' placeholder='Password' clear-input='true' required='true' formControlName="Password"></ion-input>
                         <ion-button (click)='onToggleEye()' fill='clear' color='secondary'>
                             <ion-icon name='eye' *ngIf='eyeOn'></ion-icon>
                             <ion-icon name='eye-off' *ngIf='!eyeOn'></ion-icon>
@@ -48,15 +48,15 @@
                         <ion-label color='secondary'>
                             <i class='icon icon-mobile'></i>
                         </ion-label>
-                        <ion-input placeholder='Please input the bound mobile phone number' clear-input='true' required='true' formControlName="Mobile" type="number" min="11"></ion-input>
+                        <ion-input placeholder='Username/Telephone' clear-input='true' required='true' formControlName="Mobile" type="number" min="11"></ion-input>
                     </ion-item>
                     <ion-item>
                         <ion-label color='secondary'>
                             <i class='icon icon-verify'></i>
                         </ion-label>
-                        <ion-input clear-input='true' required='true' type='text' placeholder='Please enter the verification code' [maxlength]='6' formControlName="MobileCode"></ion-input>
+                        <ion-input clear-input='true' required='true' type='text' placeholder='Verification Code' [maxlength]='6' formControlName="MobileCode"></ion-input>
                         <ion-button slot='end' color='secondary' fill='outline' *ngIf='!countDown||countDown <= 0' (click)="showImageCode('sendmobilecode')">
-                            Send verification code</ion-button>
+                            Send CAPTCHA</ion-button>
                         <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='countDown'>{{countDown}} Resend in seconds
                         </ion-button>
                     </ion-item>
@@ -67,7 +67,7 @@
                 <ion-label color="danger">{{ message }}</ion-label>
             </ion-item>
             <div *ngIf='isShowWechatMiniTip' class="ion-text-center">
-                <ion-text color='danger'>请勿使用微信用户的用户名或密码!</ion-text>
+                <ion-text color='danger'>Do not use wechat user name or password!</ion-text>
             </div>
             <ion-button color='secondary' class='login-btn' expand='block' strong='true' (click)="onLoginButton('login')">
                 <span *ngIf="!isLogining">Sign in</span>
@@ -75,7 +75,7 @@
             </ion-button>
             <ion-button class="register-btn" color='secondary' expand='block' strong='true' *ngIf='!isGetWechatMiniMobile && isWechatMini' (click)="getWechatMiniMobile()">使用微信手机号登录</ion-button>
             <section class='register-forgetpassword'>
-                <ion-button fill='clear' color='secondary' strong='true' (click)="forgetPassword()">忘记密码</ion-button>
+                <ion-button fill='clear' color='secondary' strong='true' (click)="forgetPassword()">Forget the password</ion-button>
                 <ng-container>
                     <span class='line'></span>
                     <ion-button fill='clear' color='secondary' strong='true' (click)="register()">

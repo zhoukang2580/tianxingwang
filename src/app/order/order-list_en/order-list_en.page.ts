@@ -11,7 +11,7 @@ import { OrderListPage } from '../order-list/order-list.page';
 })
 export class OrderListEnPage extends OrderListPage {
   activeTab: ProductItem;
-  // title = "Flight Orders";
+  title = "Flight";
   tabs: ProductItem[] = [];
   onTabClick(tab: ProductItem) {
     this.isLoading = true;

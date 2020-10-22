@@ -83,7 +83,7 @@
                             <div class='credential-item'>
                                 <ion-row>
                                     <ion-col>
-                                        证件号:
+                                        ID No.:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.Number}}
@@ -91,7 +91,7 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        证件姓名:
+                                        ID name:
                                     </ion-col>
                                     <ion-col notranslate>
                                         {{item?.Surname}}{{item?.Givenname}}
@@ -99,7 +99,7 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        国籍:
+                                        Nationality:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.Country}}
@@ -107,7 +107,7 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        出生年月:
+                                        Birth Date:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.Birthday}}
@@ -115,7 +115,7 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        到期日期:
+                                        Due date:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.ExpirationDate}}
@@ -123,10 +123,10 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        性别:
+                                        Gender:
                                     </ion-col>
                                     <ion-col>
-                                        {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
+                                        {{item?.Gender=="F"?"Female":item?.Gender=="M"?"Male":"Unknown"}}
                                     </ion-col>
                                 </ion-row>
                             </div>
@@ -136,8 +136,8 @@
                 <ng-container *ngIf='isShowNewCredential'>
                     <ion-item-divider color='primary' (click)='onSelectCredential(vmNewCredential?.Id)'>
                         <ion-label>
-                            <ion-text *ngIf='!vmNewCredential?.isNotWhiteList'>此人其他证件：</ion-text>
-                            <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>证件：</ion-text>
+                            <ion-text *ngIf='!vmNewCredential?.isNotWhiteList'>Other documents of this person：</ion-text>
+                            <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>ID：</ion-text>
                         </ion-label>
                         <ion-radio slot='end' class="ion-margin-end" disabled="disabled" style="opacity:1" mode='md' name='credentialType' value="{{vmNewCredential?.Id}}">
                         </ion-radio>
@@ -147,7 +147,7 @@
                         <ion-row>
                             <ion-col size='12'>
                                 <ion-item class='ion-no-margin ion-no-padding' lines='none'>
-                                    旅客类别：
+                                    Passenger type：
                                 </ion-item>
                             </ion-col>
                             <ion-col size='12'>
@@ -163,7 +163,7 @@
                 </ng-container>
                 <ng-container *ngIf='frqPassengerCredentials?.length'>
                     <ion-item-divider color='primary' class='ion-margin-top'>
-                        <ion-text color='secondary'>常旅客</ion-text>
+                        <ion-text color='secondary'>Frequent travellers</ion-text>
                     </ion-item-divider>
                     <ng-container *ngFor='let item of frqPassengerCredentials'>
                         <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'>
@@ -178,7 +178,7 @@
                             <div class='credential-item'>
                                 <ion-row>
                                     <ion-col>
-                                        证件号:
+                                        ID No.:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.Number}}
@@ -186,7 +186,7 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        证件姓名:
+                                        ID name:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.Surname}}{{item?.Givenname}}
@@ -194,7 +194,7 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        登机名:
+                                        Boarding name:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.Name}}
@@ -202,7 +202,7 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        国籍:
+                                        Nationality:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.Country}}
@@ -210,7 +210,7 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        出生年月:
+                                        Birth Date:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.Birthday}}
@@ -218,7 +218,7 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        到期日期:
+                                        Due date:
                                     </ion-col>
                                     <ion-col>
                                         {{item?.ExpirationDate}}
@@ -226,10 +226,10 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col>
-                                        性别:
+                                        Gender:
                                     </ion-col>
                                     <ion-col>
-                                        {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
+                                        {{item?.Gender=="F"?"Famale":item?.Gender=="M"?"Male":"Unknown"}}
                                     </ion-col>
                                 </ion-row>
                             </div>

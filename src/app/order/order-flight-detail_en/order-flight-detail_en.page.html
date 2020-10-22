@@ -22,12 +22,12 @@
                         </ion-row>
                         <ion-row>
                             <ion-col size='3'>Order status</ion-col>
-                            <ion-col>{{orderDetail.Order.StatusName == "Pending approval" ? "Pending approval" : orderDetail.Order.StatusName}}
+                            <ion-col>{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" : orderDetail.Order.StatusName.replace('等待审批','Pending payment').replace('等待处理','Pending payment')}}
                             </ion-col>
                         </ion-row>
                         <ion-row>
                             <ion-col size='3'>Payment method:</ion-col>
-                            <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col>
+                            <ion-col>{{orderDetail.TravelType.replace('因公','Company').replace('私付','Individual payment')}}-{{orderDetail.TravelPayType.replace('公付','Company')}}</ion-col>
                         </ion-row>
                         <ion-row>
                             <ion-col size='3'>Completion time:</ion-col>
