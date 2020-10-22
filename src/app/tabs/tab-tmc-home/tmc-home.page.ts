@@ -57,20 +57,25 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("container", { static: true }) containerEl: ElementRef<
     HTMLElement
   >;
+  @ViewChild("announcementEl", { static: true }) announcementEl: ElementRef<
+    HTMLElement
+  >;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   private swiper: any;
+  private announcementElSwiper: any;
   private isLoadingBanners = false;
   identity: IdentityEntity;
   isLoadingNotice = false;
+  isAgent = false;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
-  selectedCompany$: Observable<string>;
+  selectedCompany: string;
   companies: any[];
   agentNotices: { text: string; active?: boolean; id: number }[];
-  canSelectCompany$ = of(false);
+  canSelectCompany = false;
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
-  options = {};
+  // options = {};
   swiperOption: {
     loop: true;
     // autoplay:true,//等同于以下设置
@@ -84,6 +89,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   isShowoverseaFlight = CONFIG.mockProBuild;
   banners: { ImageUrl: string; Title: string; Id: string }[];
   config: ConfigEntity;
+  curIndex = 0;
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -105,16 +111,11 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     private langService: LangService
   ) {
     this.staff = null;
-    this.selectedCompany$ = tmcService.getSelectedCompanySource();
     route.queryParamMap.subscribe(async (p) => {
       // this.updateSwiper();
       this.clearBookInfos();
       this.check();
-      this.canSelectCompany$ = from(this.staffService.isSelfBookType()).pipe(
-        map((isSelf) => {
-          return !isSelf;
-        })
-      );
+      this.isAgent = this.tmcService.isAgent;
       if (p.get("selectedCompany")) {
         this.tmcService.setSelectedCompanySource(p.get("selectedCompany"));
       }
@@ -129,6 +130,9 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.destroySwiper();
+  }
+  goBusiness() {
+    this.router.navigate([AppHelper.getRoutePath("business-list")]);
   }
   private async loadBanners() {
     if (!this.banners || !this.banners.length) {
@@ -191,20 +195,9 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private initSwiper() {
-    this.options = {
-      loop: true,
-      autoplay: {
-        delay: 3000,
-      },
-      speed: 1000,
-      direction: "vertical",
-      freeMode: true,
-      isShowText: true,
-    };
     if (this.containerEl && this.containerEl.nativeElement) {
       this.swiper = new Swiper(this.containerEl.nativeElement, {
         loop: true,
-        // autoplay:true,//等同于以下设置
         autoplay: {
           delay: 3000,
           stopOnLastSlide: false,
@@ -214,10 +207,46 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.swiper.on("touchEnd", () => {
         this.onTouchEnd();
       });
+      const that = this;
+      this.swiper.on("transitionEnd", function () {
+        that.onTouchEnd();
+        that.curIndex = this.activeIndex;
+      });
+    }
+    if (this.announcementEl && this.announcementEl.nativeElement) {
+      this.initAnnouncementSwiper();
+    }
+  }
+  private initAnnouncementSwiper() {
+    const options: any = {
+      loop: true,
+      autoplay: {
+        delay: 3000,
+        stopOnLastSlide: false,
+        disableOnInteraction: true,
+      },
+      speed: 1000,
+      direction: "vertical",
+      isShowText: true,
+    };
+    if (this.announcementEl && this.announcementEl.nativeElement) {
+      this.announcementElSwiper = new Swiper(
+        this.announcementEl.nativeElement,
+        options
+      );
+      this.announcementElSwiper.on("touchEnd", () => {
+        this.onTouchEnd();
+      });
     }
   }
   async ngOnInit() {
+    this.identityService.getIdentitySource().subscribe((id) => {
+      this.canSelectCompany = id && id.Numbers && !!id.Numbers.AgentId;
+    });
     this.initSwiper();
+    this.tmcService.getSelectedCompanySource().subscribe((c) => {
+      this.selectedCompany = c;
+    });
     this.subscription = this.identityService
       .getIdentitySource()
       .subscribe((_) => {
@@ -253,6 +282,13 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   private startAutoPlay() {
     if (this.swiper && this.swiper.autoplay && this.swiper.autoplay.start) {
       this.swiper.autoplay.start();
+    }
+    if (
+      this.announcementElSwiper &&
+      this.announcementElSwiper.autoplay &&
+      this.announcementElSwiper.autoplay.start
+    ) {
+      this.announcementElSwiper.autoplay.start();
     }
   }
 
@@ -365,6 +401,11 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       this.isLoadingNotice = true;
       this.getAgentNotices().finally(() => {
         this.isLoadingNotice = false;
+        setTimeout(() => {
+          if (this.announcementElSwiper) {
+            this.announcementElSwiper.update();
+          }
+        }, 200);
       });
     }
   }
@@ -441,6 +482,9 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   onSwitchCustomer() {
+    if (!this.canSelectCompany) {
+      return;
+    }
     this.router.navigate([AppHelper.getRoutePath("select-customer")]);
   }
   onSwitchCompany() {

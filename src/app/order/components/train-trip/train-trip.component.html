@@ -1,50 +1,44 @@
 <ion-card>
-  <ion-item lines='none'>
-    <ion-label color='secondary'>
-      <i slot='start' class='icon icon-search-train'></i>
-      <strong class='ion-margin-start'>火车</strong>
+  <div class="row">
+    <ion-label color='secondary' class='title'>
+      <img src="assets/images/3.png" alt="火车">
+      <span class="name">火车</span>
     </ion-label>
-    <ion-button disabled color='secondary' slot='end' fill='clear'>{{trip?.Status}}</ion-button>
-  </ion-item>
+    <ion-button [disabled]='true' size='small' fill="clear" color='secondary' slot="end">{{trip.Status}}</ion-button>
+  </div>
   <ion-card-content>
     <div class='ticket'>
       <div class="start">
-        <div>{{trip?.FromName}}</div>
-        <div>
-          <strong>{{getStHHmm()}}</strong>
+        <div class="time">
+          {{trip.StartTime}}
         </div>
+        <div class="airport-name">{{trip?.FromName}}</div>
       </div>
       <div class="center">
-        <div class='stop-line-stop' [attr.data]='trip?.Name'>
-          <div class="line"></div>
+        <div class="code">{{trip?.Name}}</div>
+        <div class="arrow">
+          <img src="assets/images/right-arrow.png" class="right-arrow" alt="">
         </div>
+        <div class="duration" *ngIf='trip["duration"]'>{{trip["duration"]}}</div>
       </div>
-      <div class="end ion-text-end" >
-        <div>{{trip.ToName}}</div>
-        <div>
-          <strong>{{getEndHHmm()}}</strong>
+      <div class="end ion-text-end">
+        <div class="time">
+          {{trip.EndTime}}
         </div>
+        <div class="airport-name">{{trip.ToName}}</div>
       </div>
     </div>
-    <div class='time'>
-      <ion-text color='dark'>发车时间：{{getDate()}}</ion-text>
+    <div class='date'>
+      发车时间：{{trip&&trip['goDate']}}
     </div>
     <div class="passenger" *ngIf='trip?.Passenger'>
-      <strong>
-        {{trip.Passenger.Name}}:
-      </strong>
-      <span>{{trip.Passenger.CredentialsNumber}}</span>
+      {{trip.Passenger.Name}}：<span>{{trip.Passenger.CredentialsNumber}}</span>
     </div>
-    <ion-text color='medium'>
-      <p>
-        订单编号：<span>{{trip?.OrderId}}</span>
-      </p>
-      <!-- <p>
-        火车票事务号：<span>{{trip?.OrderTicketId}}</span>
-      </p> -->
-    </ion-text>
-    <ion-label class='ion-text-wrap' *ngIf='getTrainProducts(trip) as products'>
-      <span *ngFor='let product of products ' class='ion-margin-end'>{{product.Name}}({{product.Price}})</span>
+    <div class="orderno">
+      订单编号：<span>{{trip?.OrderId}}</span>
+    </div>
+    <ion-label class='ion-text-wrap' *ngIf='trip&&trip["trainProducts"]'>
+      <span *ngFor='let product of trip["trainProducts"]' class='ion-margin-end'>{{product.Name}}({{product.Price}})</span>
     </ion-label>
   </ion-card-content>
 </ion-card>

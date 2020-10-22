@@ -26,6 +26,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
   @Output() payInsuranceEvt: EventEmitter<any>;
   @Output() showInsuranceEvt: EventEmitter<any>;
   // products: InsuranceProductEntity[];
+  orderInsurad: any;
   startDate: string;
   endHHmm: string;
   startHHmm: string;
@@ -41,6 +42,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
     this.startDate = this.getDate();
     this.endHHmm = this.getHHmm(this.trip && this.trip.EndTime);
     this.startHHmm = this.getHHmm(this.trip && this.trip.StartTime);
+    this.orderInsurad = this.getOrderInsurad();
   }
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.trip && changes && changes.trip.currentValue) {
@@ -63,7 +65,7 @@ export class FlightTripComponent implements OnInit, OnChanges {
     }
     return true;
   }
-  getOrderInsurad() {
+  private getOrderInsurad() {
     if (!this.trip || !this.trip.OrderInsurances) {
       return;
     }

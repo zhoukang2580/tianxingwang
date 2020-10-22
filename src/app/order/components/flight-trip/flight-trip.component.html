@@ -1,57 +1,50 @@
 <div style="width: 100%;" *ngIf='trip'>
   <ion-card>
-    <ion-item lines='none'>
+    <div class="row">
       <ion-label color='secondary' class='title'>
-        <img src="assets/svgs/home-plane.svg" alt="机票">
-        <strong class='ion-margin-start'>机票</strong>
+        <img src="assets/images/1.png" alt="机票">
+        <span class="name">机票</span>
       </ion-label>
-      <ion-button [disabled]='true' fill="clear" color='secondary' slot="end">{{trip.Status}}</ion-button>
-    </ion-item>
+      <ion-button [disabled]='true' size='small' fill="clear" color='secondary' slot="end">{{trip.Status}}</ion-button>
+    </div>
     <ion-card-content>
       <div class='ticket'>
         <div class="start">
-          <div>{{trip.FromName?.replace("国际机场","")?.replace("机场","")}}</div>
-          <div>
-            <strong>{{startHHmm}}</strong>
+          <div class="time">
+            {{startHHmm}}
           </div>
+          <div class="airport-name">{{trip.FromName?.replace("国际机场","")?.replace("机场","")}}</div>
         </div>
         <div class="center">
-          <div class='stop-line-stop' [attr.data]='trip?.Name'>
-            <div class="line"></div>
+          <div class="flightno">{{trip.Name}}</div>
+          <div class="arrow">
+            <img src="assets/images/right-arrow.png" class="right-arrow" alt="">
           </div>
+          <div class="duration" *ngIf='trip?.Number'>{{trip?.Number}}</div>
         </div>
         <div class="end ion-text-end">
-          <div>{{trip.ToName?.replace("国际机场","")?.replace("机场","")}}</div>
-          <div>
-            <strong>{{endHHmm}}</strong>
+          <div class="time">
+            {{endHHmm}}
           </div>
+          <div class="airport-name">{{trip.ToName?.replace("国际机场","")?.replace("机场","")}}</div>
         </div>
       </div>
-      <div class='time'>
-        <ion-text color='dark'>起飞日期：{{startDate}}</ion-text>
+      <div class='date'>
+        起飞日期：{{startDate}}
       </div>
       <div class="passenger" *ngIf='trip.Passenger'>
-        <strong>
-          {{trip.Passenger.Name}}:
-        </strong>
-        <span>{{trip.Passenger.CredentialsNumber}}</span>
+        <span>{{trip.Passenger.Name}}</span>：{{trip.Passenger.CredentialsNumber}}
       </div>
-      <ion-text color='medium'>
-        <p>
-          订单编号：<span>{{trip.OrderId}}</span>
-        </p>
-      </ion-text>
+      <div class="orderno">
+        <span>订单编号：</span>{{trip.OrderId}}
+      </div>
       <div class='btns' *ngIf='isShowInsurance'>
-        <!-- orderDetail.insuranceAmount -->
-        <!-- <ng-container *ngIf="trip.OrderInsurances.length>0"> -->
-
         <ng-container *ngFor='let p of trip.InsuranceProducts'>
           <ion-button color='secondary' size='small' (click)='onShowSelectedInsurance(p,trip,$event)'>
             {{p.Name}}({{p.Price}})
           </ion-button>
         </ng-container>
-        <!-- </ng-container> -->
-        <ng-container *ngIf='getOrderInsurad() as orderInsurad'>
+        <ng-container *ngIf='orderInsurad'>
           <ion-button color='secondary' (click)='payInsurance(orderInsurad.Key,trip.OrderId,$event)' size='small'>
             继续支付{{orderInsurad.Name}}
           </ion-button>

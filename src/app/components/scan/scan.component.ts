@@ -8,17 +8,18 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { WechatHelper } from "src/app/wechatHelper";
 import { Subscription } from "rxjs";
-import { ScanService } from 'src/app/services/scan/scan.service';
+import { ScanService } from "src/app/services/scan/scan.service";
 @Component({
   selector: "app-scan-comp",
   templateUrl: "./scan.component.html",
-  styleUrls: ["./scan.component.scss"]
+  styleUrls: ["./scan.component.scss"],
 })
 export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
   private identityEntity: IdentityEntity;
   private identityEntitySub = Subscription.EMPTY;
   private scanResultSub = Subscription.EMPTY;
   @Input() showText = false;
+  @Input() tplRef;
   @Input() isAutoCloseScanPage = false;
   @Output() scanResult: EventEmitter<any>;
   canShow = true;
@@ -34,7 +35,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     this.scanResult = new EventEmitter();
     this.identityEntitySub = this.identityService
       .getIdentitySource()
-      .subscribe(id => {
+      .subscribe((id) => {
         this.identityEntity = id;
       });
   }
@@ -42,7 +43,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     if (AppHelper.isWechatH5()) {
       WechatHelper.ready();
       setTimeout(async () => {
-        await WechatHelper.getJssdk().catch(_ => null);
+        await WechatHelper.getJssdk().catch((_) => null);
         // this.canShow = false;
         // this.canShow = !!WechatHelper.jssdkUrlConfig;
       }, 0);
@@ -55,13 +56,13 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.canShow = AppHelper.isApp() || AppHelper.isWechatH5();
     if (AppHelper.isWechatH5()) {
-      WechatHelper.isReadyFinishObservable.subscribe(ok => {
+      WechatHelper.isReadyFinishObservable.subscribe((ok) => {
         this.canShow = ok;
-      })
+      });
     }
     this.scanResultSub = this.qrScanService
       .getScanResultSource()
-      .subscribe(txt => {
+      .subscribe((txt) => {
         this.scanResult.emit(txt);
       });
   }
@@ -81,10 +82,10 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     if (AppHelper.isApp()) {
       this.appScan()
-        .then(r => {
+        .then((r) => {
           this.showScanResult(r);
         })
-        .catch(e => {
+        .catch((e) => {
           AppHelper.alert(e || LanguageHelper.getJSSDKScanErrorTip());
         });
     }
@@ -94,7 +95,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     const status = await this.qrScanService.prepare();
     if (status.authorized == "1") {
       this.router.navigate(["qrscan"], {
-        queryParams: { autoClose: this.isAutoCloseScanPage }
+        queryParams: { autoClose: this.isAutoCloseScanPage },
       });
     } else {
       throw new Error("您拒绝使用相机功能");
@@ -130,6 +131,8 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
     }
-    this.router.navigate([AppHelper.getRoutePath("scan-result")], { queryParams: { scanResult: r } });
+    this.router.navigate([AppHelper.getRoutePath("scan-result")], {
+      queryParams: { scanResult: r },
+    });
   }
 }

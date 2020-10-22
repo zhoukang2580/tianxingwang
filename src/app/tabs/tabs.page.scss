@@ -1,13 +1,18 @@
 ion-tabs {
-    ion-tab-bar {
-        --color-selected: var(--ion-color-secondary);
-        --color: var(--ion-color-dark);
-        padding-top: 0.2em;
-        [class*="icon"] {
-            font-size: 1.5rem;
-        }
-        ion-label {
-            font-size: 0.6rem;
-        }
+  ion-tab-bar {
+    --color-selected: var(--ion-color-secondary);
+    --color: var(--ion-color-dark);
+    padding-top: 0.2em;
+    [class*="icon"] {
+      font-size: 1.5rem;
     }
+    ion-label {
+      font-size: 0.6rem;
+    }
+  }
+  img {
+    width: 21.5px;
+    height: 21.5px;
+    object-fit: cover;
+  }
 }

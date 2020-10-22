@@ -22,96 +22,99 @@ import { CarModule } from "./car/car.module";
 import { HotelInternationalModule } from "./hotel-international/hotel-international.module";
 import { WorkflowModule } from "./workflow/workflow.module";
 import { FlightInternationalModule } from "./flight-international/international-flight.module";
-import { TravelApplicationModule } from './travel-application/travel-application.module';
+import { TravelApplicationModule } from "./travel-application/travel-application.module";
+import { LoginEnModule } from "./login_en/login_en.module";
 
 const routes: Routes = [
   {
     path: "crop-avatar",
     loadChildren: () =>
       import("./pages/crop-avatar/crop-avatar.module").then(
-        m => m.CropAvatarPageModule
-      )
+        (m) => m.CropAvatarPageModule
+      ),
   },
   {
     path: "function-test",
     loadChildren: () =>
       import("./pages/function-test/function-test.module").then(
-        m => m.FunctionTestPageModule
-      )
+        (m) => m.FunctionTestPageModule
+      ),
   },
   {
     path: "scan-result",
     loadChildren: () =>
       import("./pages/scan-result/scan-result.module").then(
-        m => m.ScanResultPageModule
-      )
+        (m) => m.ScanResultPageModule
+      ),
   },
   {
     path: "open-url",
     loadChildren: () =>
-      import("./pages/open-url/open-url.module").then(m => m.OpenUrlPageModule)
+      import("./pages/open-url/open-url.module").then(
+        (m) => m.OpenUrlPageModule
+      ),
   },
   {
     path: "contact-us",
     loadChildren: () =>
       import("./pages/contact-us/contact-us.module").then(
-        m => m.ContactUsPageModule
-      )
+        (m) => m.ContactUsPageModule
+      ),
   },
   {
     path: "no-authorize",
     loadChildren: () =>
       import("./pages/no-authorize/no-authorize.module").then(
-        m => m.NoAuthorizePageModule
-      )
+        (m) => m.NoAuthorizePageModule
+      ),
   },
   {
     path: "developer-options",
     loadChildren: () =>
       import("./pages/developer-options/developer-options.module").then(
-        m => m.DeveloperOptionsPageModule
-      )
+        (m) => m.DeveloperOptionsPageModule
+      ),
   },
   {
     path: "open-my-calendar",
     loadChildren: () =>
       import("./pages/open-my-calendar/open-my-calendar.module").then(
-        m => m.OpenMyCalendarPageModule
-      )
+        (m) => m.OpenMyCalendarPageModule
+      ),
   },
   {
     path: "workflow-list",
     loadChildren: () =>
       import("./workflow/workflow-list/workflow-list.module").then(
-        m => m.WorkflowListPageModule
-      )
+        (m) => m.WorkflowListPageModule
+      ),
   },
   {
     path: "member-credential-list",
     loadChildren: () =>
       import(
         "./member/member-credential-list/member-credential-list.module"
-      ).then(m => m.MemberCredentialListPageModule)
+      ).then((m) => m.MemberCredentialListPageModule),
   },
   {
     path: "qrscan",
     loadChildren: () =>
-      import("./pages/qrscan/qrscan.module").then(m => m.QrscanPageModule)
+      import("./pages/qrscan/qrscan.module").then((m) => m.QrscanPageModule),
   },
   {
     path: "home",
     loadChildren: () =>
-      import("./pages/home/home.module").then(m => m.HomePageModule)
+      import("./pages/home/home.module").then((m) => m.HomePageModule),
   },
   {
     path: "",
     component: TabsPage,
-    pathMatch: "full"
+    pathMatch: "full",
   },
   {
     path: "**",
     loadChildren: () =>
-      import("./page404/page404.module").then(m => m.Page404PageModule)
+      import("./page404/page404.module").then((m) => m.Page404PageModule),
   },
 ];
 @NgModule({
@@ -119,6 +122,7 @@ const routes: Routes = [
     CarModule,
     RegisterModule,
     LoginModule,
+    LoginEnModule,
     FlightModule,
     FlightInternationalModule,
     AccountModule,
@@ -139,9 +143,9 @@ const routes: Routes = [
     RouterModule.forRoot(routes, {
       preloadingStrategy: PreloadAllModules,
       enableTracing: !true,
-      useHash: true
-    })
+      useHash: true,
+    }),
   ],
-  exports: [RouterModule, MessageModule]
+  exports: [RouterModule, MessageModule],
 })
 export class AppRoutingModule {}

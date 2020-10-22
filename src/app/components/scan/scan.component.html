@@ -1,5 +1,9 @@
 <div *ngIf='canShow' class='scan-comp' (click)='onScan()'>
-  <ion-icon name="scan-circle-outline" style='font-size: 1.5rem;'  color='secondary'></ion-icon>
-  <!-- <i class='icon icon-scan' ></i> -->
-  <ion-label *ngIf='showText'>{{scanText}}</ion-label>
+  <ng-container *ngIf='tplRef else scanElTpl'>
+    <ng-content></ng-content>
+  </ng-container>
+  <ng-template #scanElTpl>
+    <ion-icon name="scan-circle-outline" style='font-size: 1.5rem;' color='secondary'></ion-icon>
+    <ion-label *ngIf='showText'>{{scanText}}</ion-label>
+  </ng-template>
 </div>

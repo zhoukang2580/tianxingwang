@@ -1,35 +1,29 @@
 <div style="width: 100%;">
   <ng-container *ngIf='trip'>
     <ion-card>
-      <ion-item lines='none'>
+      <div class="row">
         <ion-label color='secondary' class='title'>
-          <img src="assets/svgs/hotel.svg" alt="酒店">
-          <strong class='ion-margin-start'>酒店</strong>
+          <img src="assets/images/2.png" alt="酒店">
+          <span class="name">酒店</span>
         </ion-label>
-        <ion-button [disabled]='true' fill="clear" color='secondary' slot="end">{{trip.Status}}</ion-button>
-      </ion-item>
+        <ion-button [disabled]='true' size='small' fill="clear" color='secondary' slot="end">{{trip.Status}}</ion-button>
+      </div>
       <ion-card-content>
-        <ion-label>
-          <strong>{{trip.Name}}</strong>
-        </ion-label>
+        <div class="hotel-name">
+          {{trip.Name}}
+        </div>
+        <div class="date">
+          <span>日期</span>： {{trip.StartTime?.substr(0,"yyyy-mm-dd".length)}} <span style='margin:.25em'>~</span> {{trip.EndTime?.substr(0,"yyyy-mm-dd".length)}}
+        </div>
         <div class="passenger" *ngIf='trip?.Passenger'>
           <span>
             {{trip.Passenger.Name}}:
           </span>
           <span>{{trip.Passenger.CredentialsNumber}}</span>
         </div>
-        <ion-label>
-          <p>
-            {{trip.StartTime?.substr(0,"yyyy-mm-dd".length)}} <small>至</small>
-            {{trip.EndTime?.substr(0,"yyyy-mm-dd".length)}}
-          </p>
-          <p>
-            <span>订单编号:{{trip.OrderId}}</span>
-          </p>
-          <!-- <p>
-            <span>酒店事务号:{{trip.OrderTicketId}}</span>
-          </p> -->
-        </ion-label>
+        <div class="orderno">
+          <span>订单编号</span>：{{trip.OrderId}}
+        </div>
       </ion-card-content>
     </ion-card>
   </ng-container>
