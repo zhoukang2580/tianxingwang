@@ -126,7 +126,7 @@
                     <ion-col style="display: flex; align-items: center">
                         <ion-text color="danger">
                             <ion-text>￥{{ order.TotalAmount }}</ion-text>
-                            <span *ngIf="order.OrderInsurances?.length"> (含保险) </span>
+                            <span *ngIf="order.OrderInsurances?.length"> (Including insurance) </span>
                         </ion-text>
                         <ion-text color="medium">
                             （{{ order.StatusName == "等待处理" ? "等待审批".replace('等待处理','Pending approval').replace('等待审批','Pending approval'): order.StatusName.replace('等待处理','Pending approval').replace('等待审批','Pending approval') }}）

@@ -1,3 +1,5 @@
+import { PayEnComponent } from './../../components/pay_en/pay_en.component';
+import { LangService } from 'src/app/tmc/lang.service';
 import { App } from "./../../app.component";
 import { AppHelper } from "./../../appHelper";
 import { Platform, PopoverController } from "@ionic/angular";
@@ -24,7 +26,8 @@ export class PayService {
     private apiService: ApiService,
     private plt: Platform,
     private router: Router,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private LangService: LangService
   ) {
     plt.ready().then(() => {
       this.ali = window["ali"];
@@ -35,7 +38,7 @@ export class PayService {
     paytypes?: { label: string; value: string }[]
   ): Promise<IPayWayItem> {
     const m = await this.popoverCtrl.create({
-      component: PayComponent,
+      component: this.LangService.isEn ? PayEnComponent : PayComponent,
       componentProps: {
         payWays: paytypes,
       },

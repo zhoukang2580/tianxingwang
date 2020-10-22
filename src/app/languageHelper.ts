@@ -245,9 +245,15 @@ export class LanguageHelper {
   };
   static PayWays = {
     getAliPayTip: () => {
+      if (LanguageHelper.lang == "en") {
+        return "Alipay payment";
+      }
       return "支付宝支付";
     },
     getWechatPayTip: () => {
+      if (LanguageHelper.lang == "en") {
+        return "WeChat payment";
+      }
       return "微信支付";
     },
   };
@@ -545,6 +551,9 @@ export class LanguageHelper {
     return "邮箱绑定成功";
   }
   static getCancelTip() {
+    if (this.lang == "en") {
+      return "Cancel"
+    }
     return "取消";
   }
 

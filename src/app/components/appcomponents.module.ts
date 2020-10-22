@@ -36,6 +36,7 @@ import { EditorComponent } from "./editor/editor.component";
 import { ImagesMangerComponent } from './images-manager/images-manager.component';
 import { TabsContainerComponent } from './tabs-container/tabs-container.component';
 import { SelectComponent } from './select/select.component';
+import { PayEnComponent } from './pay_en/pay_en.component';
 @NgModule({
   declarations: [
     MapComponent,
@@ -54,6 +55,7 @@ import { SelectComponent } from './select/select.component';
     TimelineComponent,
     TimelineItemComponent,
     PayComponent,
+    PayEnComponent,
     SlidesComponent,
     MyCalendarComponent,
     BaseInputComponent,
@@ -100,6 +102,7 @@ import { SelectComponent } from './select/select.component';
     TimelineComponent,
     TimelineItemComponent,
     PayComponent,
+    PayEnComponent,
     SlidesComponent,
     AppDirectivesModule,
     MenuPopoverComponent,

@@ -1,3 +1,5 @@
+import { LangService } from 'src/app/tmc/lang.service';
+import { LangService } from 'src/app/tmc/lang.service';
 import { environment } from "./../../../../environments/environment";
 import { OrderFlightTripEntity } from "./../../models/OrderFlightTripEntity";
 import { TrainService } from "./../../../train/train.service";
@@ -84,7 +86,8 @@ export class OrderItemComponent implements OnInit, OnChanges {
     private calendarService: CalendarService,
     private popoverCtrl: PopoverController,
     private trainService: TrainService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private LangService: LangService
   ) {
     this.payaction = new EventEmitter();
     this.refundTrainTicket = new EventEmitter();
@@ -102,6 +105,9 @@ export class OrderItemComponent implements OnInit, OnChanges {
   onHelp(evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
+    }
+    if(this.LangService.isEn){
+      AppHelper.alert("It takes 3-15 days for refund and 7-10 days for refund");
     }
     AppHelper.alert("退票操作需3-15个工作日，退款操作需7-10个工作日");
   }
