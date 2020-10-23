@@ -4,8 +4,8 @@
             <app-scan-comp></app-scan-comp>
         </ion-buttons>
         <ion-title class='ion-text-center' appShowtip>
-            <ng-container *ngIf='(canSelectCompany$|async)'>
-                <ion-text *ngIf='(selectedCompany$|async) as company'>{{company}}</ion-text>
+            <ng-container *ngIf='(canSelectCompany)'>
+                <ion-text *ngIf='(selectedCompany)'>{{selectedCompany}}</ion-text>
             </ng-container>
             <ion-text class="ion-margin-start">欢迎你
                 <ng-container *ngIf='identity?.Name'>,<label notranslate>{{identity?.Name}}</label> </ng-container>
@@ -19,7 +19,7 @@
             </ion-button>
         </ion-buttons>
         <ng-template #selectCompany>
-            <ion-button fill='clear' size='small' (click)='onSwitchCompany()' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
+            <ion-button fill='clear' size='small' (click)='onSwitchCompany()' *ngIf="(canSelectCompany)&&companies?.length>1">
                 <ion-chip color='success'>
                     <ion-label>切换公司</ion-label>
                 </ion-chip>
@@ -57,7 +57,7 @@
         </ng-container>
         <ng-template #noticeTpl>
             <div class="blueBack" *ngIf="agentNotices?.length" (click)='goToBulletinList("agentNotice")'>
-                <ion-slides class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
+                <ion-slides class="announcement-container" [options]='swiperOption' (ionSlideTouchEnd)='onSlideTouchEnd()'>
                     <ion-slide *ngFor='let n of agentNotices'>
                         <div class='announcement'>
                             <ion-icon name="notifications-outline" color="secondary" style="font-size:18px;padding-right: 5px">
