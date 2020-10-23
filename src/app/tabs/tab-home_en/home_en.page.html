@@ -6,8 +6,8 @@
             </ion-button>
         </ion-buttons>
         <ion-title class='ion-text-center' appShowtip>
-            <ng-container *ngIf='canSelectCompany$|async'>
-                <ion-text *ngIf='selectedCompany$|async as company'>{{company}}</ion-text>
+            <ng-container *ngIf='canSelectCompany'>
+                <ion-text *ngIf='selectedCompany'>{{selectedCompany}}</ion-text>
             </ng-container>
             {{identity?.Name}}
         </ion-title>
@@ -19,7 +19,7 @@
             </ion-button>
         </ion-buttons>
         <ng-template #selectCompany>
-            <ion-buttons slot='end' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
+            <ion-buttons slot='end' *ngIf=" canSelectCompany &&companies?.length>1">
                 <ion-button fill='clear' size='small' (click)='onSwitchCompany()'>
                     <ion-chip color='success'>
                         <ion-label>Switch Company</ion-label>
@@ -35,7 +35,7 @@
         <img [src]='"assets/images/home_top_bg.jpg"' />
     </div>
     <ion-toolbar class="text-swiper" (click)='goToBulletinList("agentNotice")'>
-        <ion-slides class="announcement-container" [options]='options' (ionSlideTouchEnd)='onSlideTouchEnd()'>
+        <ion-slides class="announcement-container" [options]='swiperOption' (ionSlideTouchEnd)='onSlideTouchEnd()'>
             <ion-slide *ngFor='let n of agentNotices'>
                 <div class='announcement'>
                     <img src="assets/svgs/announcement.svg" alt="通知图片">

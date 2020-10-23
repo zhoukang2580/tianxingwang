@@ -62,7 +62,7 @@ export class InternationalHotelService {
   private bookInfos: PassengerBookInfo<IInterHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IInterHotelInfo>[]>;
   private hotelQuerySource: Subject<HotelQueryEntity>;
-  private hotelQueryModel: HotelQueryEntity;
+  private hotelQueryModel: HotelQueryEntity = {} as any;
   private searchConditon: IInterHotelSearchCondition;
   private searchConditionSource: Subject<IInterHotelSearchCondition>;
   private trafficlines: ILocalCache<TrafficlineEntity[]>;
@@ -369,7 +369,7 @@ export class InternationalHotelService {
     req.Method = `TmcApiInternationalHotelUrl-Home-List`;
     const cond = this.getSearchCondition();
     // console.log("hotelQueryModel", this.hotelQueryModel);
-    this.hotelQueryModel.Tag = cond.tag;
+    this.hotelQueryModel.Tag = cond && cond.tag;
     req.Data = {
       ...this.hotelQueryModel,
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",

@@ -275,6 +275,8 @@ ion-action-sheet.language {
   --button-color: var(--ion-color-secondary);
 }
 ion-button,
+ion-segment-button,
+ion-segment-button ion-label,
 button.alert-button,
 .alert-button-inner {
   text-transform: initial;

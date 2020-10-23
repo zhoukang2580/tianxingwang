@@ -11,7 +11,7 @@
       <div class="start">
         <div>{{trip?.FromName}}</div>
         <div>
-          <strong>{{getStHHmm()}}</strong>
+          <strong>{{trip?.StartTime}}</strong>
         </div>
       </div>
       <div class="center">
@@ -22,12 +22,12 @@
       <div class="end ion-text-end" >
         <div>{{trip.ToName}}</div>
         <div>
-          <strong>{{getEndHHmm()}}</strong>
+          <strong>{{trip?.EndTime}}</strong>
         </div>
       </div>
     </div>
     <div class='time'>
-      <ion-text color='dark'>发车时间：{{getDate()}}</ion-text>
+      <ion-text color='dark'>发车时间：{{trip&&trip['goDate']}}</ion-text>
     </div>
     <div class="passenger" *ngIf='trip?.Passenger'>
       <strong>
@@ -43,8 +43,8 @@
         火车票事务号：<span>{{trip?.OrderTicketId}}</span>
       </p> -->
     </ion-text>
-    <ion-label class='ion-text-wrap' *ngIf='getTrainProducts(trip) as products'>
-      <span *ngFor='let product of products ' class='ion-margin-end'>{{product.Name}}({{product.Price}})</span>
+    <ion-label class='ion-text-wrap' *ngIf='trip&&trip["trainProducts"]'>
+      <span *ngFor='let product of trip["trainProducts"] ' class='ion-margin-end'>{{product.Name}}({{product.Price}})</span>
     </ion-label>
   </ion-card-content>
 </ion-card>
