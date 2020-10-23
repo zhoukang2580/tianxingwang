@@ -1,15 +1,15 @@
 <ion-tabs color='primary' (ionTabsDidChange)='onTabChanged($event)' (ionTabsWillChange)='onIonTabsWillChange($event)'>
   <ion-tab-bar slot="bottom" translucent='false'>
-    <ion-tab-button [class.tab-selected]='tab?.includes("tmc-home")' (click)='onTabActive("tmc-home")'>
-      <img src="assets/home/tab-home{{((tab?.includes("tmc-home"))?'-active':'')}}.png" alt="首页">
+    <ion-tab-button [class.tab-selected]='tab?.includes("home")' (click)='onTabActive("tmc-home")'>
+      <img src="assets/home/tab-home{{((tab?.includes('home'))?'-active':'')}}.png" alt="首页">
       <ion-label notranslate>{{langOpt.HomePage}}</ion-label>
     </ion-tab-button>
     <ion-tab-button [class.tab-selected]='tab?.includes("trip")' (click)='onTabActive("trip")'>
-      <img [src]="'assets/home/tab-trip'+(tab?.includes("trip")?'-active':'')+'.png'" alt="待出行">
+      <img [src]="'assets/home/tab-trip'+(tab?.includes('trip')?'-active':'')+'.png'" alt="待出行">
       <ion-label notranslate>{{langOpt.WaiToTra}}</ion-label>
     </ion-tab-button>
     <ion-tab-button [class.tab-selected]='tab?.includes("my")' (click)='onTabActive("my")'>
-      <img src="assets/home/tab-my{{tab?.includes("my")?'-active':''}}.png" alt="我的">
+      <img src="assets/home/tab-my{{tab?.includes('my')?'-active':''}}.png" alt="我的">
       <ion-label notranslate>{{langOpt.My}}</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
