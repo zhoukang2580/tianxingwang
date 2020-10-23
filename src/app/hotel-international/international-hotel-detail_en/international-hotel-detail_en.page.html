@@ -6,17 +6,17 @@
     <ion-text>{{hotelName}}</ion-text>
     <ion-buttons slot='end' [class.can-add-passengers]='!isSelf'>
       <ion-button fill='clear' color='secondary' *ngIf='canAddPassengers' (click)='onFilteredPassenger()' size='small'>
-        <ion-text>过滤差标</ion-text>
+        <ion-text>filter</ion-text>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
         *ngIf='canAddPassengers&&!selectedPassengers?.length'>
-        添加旅客<ion-badge color='danger'>
+        add<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()'
         *ngIf='canAddPassengers&&selectedPassengers?.length'>
-        已选旅客<ion-badge color='danger'>
+        selected<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers?.length}}</ion-text>
         </ion-badge>
       </ion-button>
@@ -62,7 +62,7 @@
             </ng-container>
           </div>
         </div>
-        <ion-item (click)='onOpenMap()' lines='none'>
+        <ion-item  lines='none'>
           <ion-label color='secondary' class="ion-text-wrap">{{hotel?.Address}}</ion-label>
           <ion-icon name="location" color='secondary'></ion-icon>
         </ion-item>
@@ -201,7 +201,7 @@
   <ng-template #retry>
     <ion-label>请重新刷新</ion-label>
   </ng-template>
-  <div #divforscroll class='div-for-scroll'>
+  <div #divforscroll class='div-for-scroll' *ngIf=''>
     <ion-item detail (click)='onOpenMap()' lines='none'>
       <ion-button fill='clear' color='secondary'>打开地图查看
       </ion-button>
