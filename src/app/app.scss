@@ -274,7 +274,11 @@ a {
 ion-action-sheet.language {
   --button-color: var(--ion-color-secondary);
 }
-
+ion-button,
+button.alert-button,
+.alert-button-inner {
+  text-transform: initial;
+}
 .domestic-hotel-filter-condition {
   top: 6.5em;
 }

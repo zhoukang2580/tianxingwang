@@ -1,36 +1,33 @@
+<div class="bg">
+  <img src="assets/images/hotel-search-bg.png" alt="">
+</div>
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar class="header-toolbar">
     <ion-buttons slot='start'>
-
       <app-back-button [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
-    <ion-text *ngIf='isShowSelectedInfos'>酒店查询</ion-text>
-    <ion-title *ngIf='!(isShowSelectedInfos)'>酒店查询</ion-title>
     <ion-buttons class='small-font' slot='end'>
-      <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small'
-        (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
+      <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
           <ion-text color='light'>{{selectedBookInfosNumber}}</ion-text>
         </ion-badge>
       </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()'
-        *ngIf='canAddPassengers&&!selectedPassengers'>
+      <ion-button fill='clear' color='light' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&!selectedPassengers'>
         添加旅客<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()'
-        *ngIf='canAddPassengers&&selectedPassengers'>
+      <ion-button fill='clear' color='light' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&selectedPassengers'>
         已选旅客<ion-badge color='danger'>
           <ion-text color='light'>{{selectedPassengers}}</ion-text>
         </ion-badge>
       </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
+      <ion-button fill='clear' color='light' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
         差旅标准
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content>
+<ion-content class="cnt">
   <ion-card>
     <ion-card-header *ngIf=''>
       <div class='segments'>
@@ -46,33 +43,31 @@
     <ion-card-content>
       <div class='ion-padding-top'>
         <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}" color="secondary">
-          <ion-segment-button  value="normal" >
+          <ion-segment-button value="normal">
             <ion-label>非协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button  value="agreement" >
+          <ion-segment-button value="agreement">
             <ion-label>协议酒店</ion-label>
           </ion-segment-button>
-          <ion-segment-button  value="specialprice" >
+          <ion-segment-button value="specialprice">
             <ion-label>特价酒店</ion-label>
           </ion-segment-button>
         </ion-segment>
       </div>
       <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;" class="ion-margin-top">
         <section class="flight-date">
-          <app-search-day-comp  [day]='isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkinDate'
-            [isCheckIn]='true'  (click)="onSelecDate(true)" [disabled]='false'>
+          <app-search-day-comp [day]='(isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkinDate)' [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>
           </app-search-day-comp>
           <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
-          <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkOutDate:interHotelSearchCondition?.checkoutDate'
-            [isCheckOut]='true' (click)="onSelecDate(false)" [disabled]='false'>
+          <app-search-day-comp [day]='(isDomestic?searchHotelModel?.checkOutDate:interHotelSearchCondition?.checkoutDate)' [isCheckOut]='true' (click)="onSelecDate(false)" [disabled]='false'>
           </app-search-day-comp>
         </section>
       </ion-item>
-      <ng-container *ngIf='changeDateTipMsg as msg'>
+      <ng-container *ngIf='changeDateTipMsg'>
         <div class="show-select-yeasterday-date-tip">
           <ion-icon name="caret-up-outline" class="up"></ion-icon>
           <ion-icon name="moon" class="moon"></ion-icon>
-          <span>{{msg}}</span>  
+          <span>{{changeDateTipMsg}}</span>
         </div>
       </ng-container>
       <div class='destination' lines='none' detail *ngIf='isDomestic' (click)='onSearchCity()'>
@@ -107,16 +102,13 @@
           </ion-item>
         </div>
       </div>
-      <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()"
-        *ngIf='!((canAddPassengers) && selectedPassengers==0)' color="secondary" expand="block">
+      <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" *ngIf='!((canAddPassengers) && selectedPassengers==0)' color="secondary" expand="block">
         <ion-text>查询酒店</ion-text>
       </ion-button>
-      <ion-button *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%'
-        (click)='onSelectPassenger()' color="secondary" expand="block">
+      <ion-button *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
         <ion-text>请添加乘客
         </ion-text>
       </ion-button>
     </ion-card-content>
   </ion-card>
-
 </ion-content>
