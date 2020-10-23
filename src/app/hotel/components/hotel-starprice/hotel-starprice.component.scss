@@ -1,23 +1,32 @@
 .custome-price {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 1em;
-  flex: 1;
-  color: var(--ion-color-danger);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 1em;
+    flex: 1;
+    color: var(--ion-color-danger);
 }
+
 ion-chip {
-  width: 100%;
-  justify-content: center;
+    width: 100%;
+    justify-content: center;
+    text-transform: capitalize;
 }
+
+ion-item-divider {
+    text-transform: capitalize;
+}
+
 .wrapper {
-  -webkit-overflow-scrolling: touch;
-  height: 60vh;
-  overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    height: 60vh;
+    overflow: auto;
 }
+
 ion-range {
-  --knob-size: 1.5em;
+    --knob-size: 1.5em;
 }
+
 :host {
-  display: block;
+    display: block;
 }

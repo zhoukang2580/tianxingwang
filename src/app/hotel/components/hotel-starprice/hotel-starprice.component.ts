@@ -29,6 +29,12 @@ interface ILowerUper {
 })
 export class HotelStarPriceComponent
   implements OnInit, AfterViewInit, OnDestroy {
+  @Input() langOpt = {
+    any: "不限",
+    Cuspri: "自定义价格",
+    Reset: "重置",
+    determine: "确定"
+  }
   private subscription = Subscription.EMPTY;
   private customepriceTab: IStarPriceTab<IStarPriceTabItem> = {
     label: "自定义价格",
