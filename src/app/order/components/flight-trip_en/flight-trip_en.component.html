@@ -51,7 +51,7 @@
           </ion-button>
         </ng-container>
         <!-- </ng-container> -->
-        <ng-container *ngIf='getOrderInsurad() as orderInsurad'>
+        <ng-container *ngIf=' orderInsurad'>
           <ion-button color='secondary' (click)='payInsurance(orderInsurad.Key,trip.OrderId,$event)' size='small'>
             继续支付{{orderInsurad.Name}}
           </ion-button>
