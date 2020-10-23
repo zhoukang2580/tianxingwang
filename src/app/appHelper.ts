@@ -36,7 +36,7 @@ export class AppHelper {
   static _appDomain = !environment.mockProBuild
     ? CONFIG.appDomain.production
     : CONFIG.appDomain.debug;
-  constructor() { }
+  constructor() {}
   static _domain;
   static _queryParamers = {};
   static platform: Platform;
@@ -58,7 +58,7 @@ export class AppHelper {
     function onOffline() {
       AppHelper.toast("网络中断，请检查网络设置", 2000, "middle");
     }
-    function onOnline() { }
+    function onOnline() {}
   }
   static showLoading(message: string, duration = 0) {
     return this.loadingController.create({ message, duration }).then((l) => {
@@ -138,10 +138,10 @@ export class AppHelper {
     return typeof msg === "string"
       ? msg
       : msg instanceof Error
-        ? msg.message
-        : msg && (msg.message || msg.Message)
-          ? msg.message || msg.Message
-          : JSON.stringify(msg);
+      ? msg.message
+      : msg && (msg.message || msg.Message)
+      ? msg.message || msg.Message
+      : JSON.stringify(msg);
   }
   private static isHttpFailureMsg(msg: any) {
     if (msg) {
@@ -538,7 +538,11 @@ export class AppHelper {
     AppHelper.setStorage("style", style);
   }
   static getLanguage() {
-    return AppHelper.getStorage<string>("language");
+    return (
+      AppHelper.getStorage<string>("language") ||
+      (this._queryParamers && this._queryParamers["language"]) ||
+      ""
+    );
   }
   static getToPageAfterAuthorize() {
     return this.toPage || { path: "" };
@@ -790,14 +794,14 @@ export class AppHelper {
   static setQueryParamers(key: string, value: string) {
     try {
       this._queryParamers[key] = value;
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static removeQueryParamers(key: string) {
     try {
       if (this._queryParamers[key]) {
         this._queryParamers[key] = null;
       }
-    } catch (ex) { }
+    } catch (ex) {}
   }
   static getQueryParamers() {
     return this._queryParamers as any;
@@ -928,13 +932,24 @@ export class AppHelper {
         const wechatMiniAppId = jumpInfo.wechatMiniAppId;
         const wechatMiniPath = jumpInfo.wechatMiniPath;
         const title = jumpInfo.title;
-        if (AppHelper.isWechatMini() &&
+        if (
+          AppHelper.isWechatMini() &&
           jumpInfo.wechatMiniAppId &&
           jumpInfo.wechatMiniPath
         ) {
-          url = "/pages/jump/index?appId=" + wechatMiniAppId + "&jumpWechatMiniPath=" + wechatMiniPath + "&title=" + title;
+          url =
+            "/pages/jump/index?appId=" +
+            wechatMiniAppId +
+            "&jumpWechatMiniPath=" +
+            wechatMiniPath +
+            "&title=" +
+            title;
           if (queryParams && Object.keys(queryParams).length) {
-            url += "&" + Object.keys(queryParams).map(k => `${k}=${queryParams[k] || ""}`).join("&")
+            url +=
+              "&" +
+              Object.keys(queryParams)
+                .map((k) => `${k}=${queryParams[k] || ""}`)
+                .join("&");
           }
           const wx = window["wx"];
           wx.miniProgram.navigateTo({ url: url });
@@ -942,8 +957,7 @@ export class AppHelper {
         }
         if (jumpInfo.path) {
           url = "path://" + jumpInfo.path;
-        }
-        else if (jumpInfo.url) {
+        } else if (jumpInfo.url) {
           url = jumpInfo.url;
         }
       } catch (e) {
