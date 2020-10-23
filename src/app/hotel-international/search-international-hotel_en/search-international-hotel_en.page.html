@@ -62,11 +62,13 @@
                     <ion-label>Destination</ion-label>
                     <ion-label class="ion-text-wrap">
                         {{searchCondition?.destinationCity?.Name}}
-                        <ion-text *ngIf='searchCondition?.destinationCity?.Country' color='medium' class="ion-margin-start">
+                        <ion-text *ngIf='searchCondition?.destinationCity?.Country' color='medium' class="ion-margin-start" notranslate>
                             {{searchCondition?.destinationCity?.Country?.Name}}
                         </ion-text>
                         <p>
-                            {{searchCondition?.destinationCity?.EnglishName}}
+                            <span>
+                                {{searchCondition?.destinationCity?.EnglishName}}
+                            </span>
                             <span *ngIf='searchCondition?.destinationCity?.Country?.EnglishName' class="ion-text-start">({{searchCondition?.destinationCity?.Country?.EnglishName}})</span>
                         </p>
                     </ion-label>
@@ -76,7 +78,7 @@
                 <ion-item detail lines='full'>
                     <ion-label>Nationality</ion-label>
                     <ion-label class="ion-text-wrap">
-                        {{searchCondition?.country?.Name}}
+                        <p notranslate>{{searchCondition?.country?.Name}}</p>
                         <p>{{searchCondition?.country?.EnglishName}}</p>
                     </ion-label>
                 </ion-item>
@@ -87,7 +89,7 @@
                         Occupancy
                     </ion-label>
                     <ion-label>
-                        {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
+                        {{searchCondition?.adultCount}}Adult{{searchCondition?.children?.length}}Children
                     </ion-label>
                 </ion-item>
             </div>

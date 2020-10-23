@@ -1,5 +1,4 @@
 import { LangService } from 'src/app/tmc/lang.service';
-import { LangService } from 'src/app/tmc/lang.service';
 import { RefresherComponent } from "src/app/components/refresher";
 import { ActivatedRoute } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";

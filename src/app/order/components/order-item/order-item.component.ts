@@ -1,5 +1,4 @@
 import { LangService } from 'src/app/tmc/lang.service';
-import { LangService } from 'src/app/tmc/lang.service';
 import { environment } from "./../../../../environments/environment";
 import { OrderFlightTripEntity } from "./../../models/OrderFlightTripEntity";
 import { TrainService } from "./../../../train/train.service";
