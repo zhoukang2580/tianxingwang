@@ -1,43 +1,43 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons>
-      <app-back-button defaultHref=""></app-back-button>
-      <form (ngSubmit)='onSelect()'>
-        <ion-searchbar style='padding:0'  name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>
-        </ion-searchbar>
-      </form>
-      <ion-button color='secondary' fill='clear' type='submit' style="text-transform: capitalize;" (click)='onSelect()'>确认</ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-buttons>
+            <app-back-button defaultHref=""></app-back-button>
+            <form (ngSubmit)='onSelect()'>
+                <ion-searchbar style='padding:0' name='searchbar' (ionChange)='onSearch()' [(ngModel)]='searchText' type='search'>
+                </ion-searchbar>
+            </form>
+            <ion-button color='secondary' fill='clear' type='submit' style="text-transform: capitalize;" (click)='onSelect()'>{{this.config}}</ion-button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
-    <ion-refresher-content>正在加载...</ion-refresher-content>
-  </app-refresher>
-  <ng-container *ngIf='!isLoading else fakeList'>
-    <ion-list *ngIf='searchResult?.length else nodata'>
-      <ion-item *ngFor='let t of searchResult' @flyInOut (click)='onSelect(t)'>
-        <ion-label class="ion-text-wrap" notranslate>
-          {{t.Text}}
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </ng-container>
-  <ng-template #nodata>
-    <app-or-comp>暂无数据</app-or-comp>
-  </ng-template>
-  <ng-template #fakeList>
-    <ion-list>
-      <ion-item *ngFor='let t of [5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];let odd=odd;let even=even;'>
-        <ion-label class="ion-text-wrap">
-          <ion-skeleton-text style="height: 1em;" [animated]='odd' [style.width.%]='t>9?100:t*10'>
-          </ion-skeleton-text>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </ng-template>
-  <ion-infinite-scroll (ionInfinite)='loadMore()'>
-    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+    <app-refresher slot='fixed' (ionRefresh)='doRefresh()'>
+        <ion-refresher-content>正在加载...</ion-refresher-content>
+    </app-refresher>
+    <ng-container *ngIf='!isLoading else fakeList'>
+        <ion-list *ngIf='searchResult?.length else nodata'>
+            <ion-item *ngFor='let t of searchResult' @flyInOut (click)='onSelect(t)'>
+                <ion-label class="ion-text-wrap">
+                    {{t.Text}}
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </ng-container>
+    <ng-template #nodata>
+        <app-or-comp>暂无数据</app-or-comp>
+    </ng-template>
+    <ng-template #fakeList>
+        <ion-list>
+            <ion-item *ngFor='let t of [5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];let odd=odd;let even=even;'>
+                <ion-label class="ion-text-wrap">
+                    <ion-skeleton-text style="height: 1em;" [animated]='odd' [style.width.%]='t>9?100:t*10'>
+                    </ion-skeleton-text>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </ng-template>
+    <ion-infinite-scroll (ionInfinite)='loadMore()'>
+        <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 </ion-content>

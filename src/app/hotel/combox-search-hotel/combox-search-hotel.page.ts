@@ -1,3 +1,5 @@
+import { LangService } from 'src/app/tmc/lang.service';
+import { LangService } from 'src/app/tmc/lang.service';
 import { RefresherComponent } from "src/app/components/refresher";
 import { ActivatedRoute } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";
@@ -49,17 +51,24 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscription2 = Subscription.EMPTY;
   searchText: string;
+  config: String;
   searchResult: ISearchTextValue[];
   isLoading = false;
   constructor(
     private hotelService: HotelService,
     private navCtrl: NavController,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private LangService: LangService
   ) {}
   ngOnInit() {
     this.subscription2 = this.route.queryParamMap.subscribe(() => {
       this.doRefresh();
     });
+    if (this.LangService.isCn){
+      this.config = "确定";
+    } else {
+      this.config = "OK";
+    }
   }
   ngAfterViewInit() {
     setTimeout(() => {
