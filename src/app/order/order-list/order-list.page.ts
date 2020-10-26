@@ -82,9 +82,9 @@ export class OrderListPage implements OnInit, OnDestroy {
   constructor(
     private modalCtrl: ModalController,
     private route: ActivatedRoute,
-    private tmcService: TmcService,
+    public tmcService: TmcService,
     private router: Router,
-    private orderService: OrderService,
+    public orderService: OrderService,
     private identityService: IdentityService,
     private flightService: FlightService,
     private pickerCtrl: PickerController,

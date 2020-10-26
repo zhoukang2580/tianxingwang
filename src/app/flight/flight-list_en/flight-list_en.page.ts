@@ -726,37 +726,23 @@ export class FlightListEnPage
       component: FlyFilterComponent,
       componentProps: {
         filterCondition: this.filterCondition,
-        langOpt: this.langService.isEn
-          ? {
-              NonStopOnly: "NonStop only",
-              TakeTime: "Take off Time",
-              Airlines: "Airlines",
-              Departure: "Departure Airport",
-              Arrival: "Arrival Airport",
-              Aircraft: "Aircraft",
-              Cabins: "Cabins",
-              any: "All",
-              all: "All",
-              takeoff: "Take off",
-              land: "Landing",
-              morning: "A.M.",
-              afternoon: "P.M.",
-            }
-          : {
-              NonStopOnly: "仅直达",
-              TakeTime: "起飞时段",
-              Airlines: "航空公司",
-              Departure: "起飞机场",
-              Arrival: "到达机场",
-              Aircraft: "机型",
-              Cabins: "舱位",
-              any: "不限",
-              all: "不限",
-              takeoff: "起飞",
-              land: "降落",
-              morning: "上午",
-              afternoon: "午后",
-            },
+        langOpt: {
+          NonStopOnly: "NonStop only",
+          TakeTime: "Take off Time",
+          Airlines: "Airlines",
+          Departure: "Departure Airport",
+          Arrival: "Arrival Airport",
+          Aircraft: "Aircraft",
+          Cabins: "Cabins",
+          any: "All",
+          all: "All",
+          takeoff: "Take off",
+          land: "Landing",
+          morning: "A.M.",
+          afternoon: "P.M.",
+          Reset: "Reset",
+          Determine: "Determine"
+        }
       },
     });
     m.present();
@@ -892,7 +878,7 @@ export class FlightListEnPage
       if (this.isCanLeave) {
         return true;
       }
-      return AppHelper.alert("是否放弃改签？", true, "是", "否");
+      return AppHelper.alert("是否放弃改签?", true, "是", "否");
     }
     return true;
   }

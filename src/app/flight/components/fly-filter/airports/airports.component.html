@@ -17,13 +17,15 @@
   </ion-radio-group>
   <ng-container *ngIf='isFromAirports else toTpl'>
     <ion-item *ngFor="let entry of filterCondition.fromAirports">
-      <ion-label>{{entry?.label}}</ion-label>
+      <!-- <ion-label>{{entry?.label}}</ion-label> -->
+      <label class="ion-text-wrap">{{entry?.label}}</label>
       <ion-checkbox  slot="end" [(ngModel)]="entry.isChecked" (ionChange)='onionChange()'></ion-checkbox>
     </ion-item>
   </ng-container>
   <ng-template #toTpl>
     <ion-item *ngFor="let entry of filterCondition.toAirports"  >
-      <ion-label>{{entry?.label}}</ion-label>
+      <!-- <ion-label>{{entry?.label}}</ion-label> -->
+      <label class="ion-text-wrap">{{entry?.label}}</label>
       <ion-checkbox  slot="end" [(ngModel)]="entry.isChecked" (ionChange)='onionChange()'></ion-checkbox>
     </ion-item>
   </ng-template>
