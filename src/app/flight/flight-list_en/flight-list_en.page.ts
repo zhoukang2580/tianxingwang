@@ -730,7 +730,9 @@ export class FlightListEnPage
           takeoff: "Take off",
           land: "Landing",
           morning: "A.M.",
-          afternoon: "P.M."
+          afternoon: "P.M.",
+          Reset: "Reset",
+          Determine: "Determine"
         } : {
           NonStopOnly: "仅直达",
           TakeTime: "起飞时段",
@@ -744,7 +746,9 @@ export class FlightListEnPage
           takeoff: "起飞",
           land: "降落",
           morning: "上午",
-          afternoon: "午后"
+          afternoon: "午后",
+          Reset: "重置",
+          Determine: "确定"
         }
       },
     });
@@ -881,7 +885,7 @@ export class FlightListEnPage
       if (this.isCanLeave) {
         return true;
       }
-      return AppHelper.alert("是否放弃改签？", true, "是", "否");
+      return AppHelper.alert("是否放弃改签?", true, "是", "否");
     }
     return true;
   }

@@ -41,7 +41,9 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     takeoff: "起飞",
     land: "降落",
     morning: "上午",
-    afternoon: "午后"
+    afternoon: "午后",
+    Reset: "重置",
+    Determine: "确定"
   };
   filterCondition: FilterConditionModel;
   tab: number;

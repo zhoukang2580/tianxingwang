@@ -1,55 +1,54 @@
 <div class="non-stop">
-  <ion-toggle mode='md' [(ngModel)]="filterCondition.onlyDirect" class="ion-margin-end"></ion-toggle>
-  <ion-label>{{langOpt.NonStopOnly}}</ion-label>
+    <ion-toggle mode='md' [(ngModel)]="filterCondition.onlyDirect" class="ion-margin-end"></ion-toggle>
+    <ion-label>{{langOpt.NonStopOnly}}</ion-label>
 </div>
 <ion-content class="filter-container">
-  <section class="search-cond">
-    <article class="left">
-      <div class='tab' [class.active]='tab===1' [class.user-op]='userOps?.timespanOp' (click)='onTabClick(1)'>
-        <span>{{langOpt.TakeTime}}</span>
-      </div>
-      <div class='tab' [class.active]='tab===2' [class.user-op]='userOps?.airCompanyOp' (click)='onTabClick(2)'>
-        <span>{{langOpt.Airlines}}</span>
-      </div>
-      <div class='tab' [class.active]='tab===3' [class.user-op]='userOps?.fromAirportOp' (click)='onTabClick(3)'>
-        <span>{{langOpt.Departure}}</span>
-      </div>
-      <div class='tab' [class.active]='tab===6' [class.user-op]='userOps?.toAirportOp' (click)='onTabClick(6)'>
-        <span>{{langOpt.Arrival}}</span>
-      </div>
-      <div class='tab' [class.active]='tab===4' [class.user-op]='userOps?.airTypeOp' (click)='onTabClick(4)'>
-        <span>{{langOpt.Aircraft}}</span>
-      </div>
-      <div class='tab' [class.active]='tab===5' [class.user-op]='userOps?.cabinOp' (click)='onTabClick(5)'>
-        <span>{{langOpt.Cabins}}</span>
-      </div>
-    </article>
-    <article class="right">
-      <ion-list>
-        <app-take-off-timespan [langOpt] = 'langOpt' [class.hidden]='tab!==1' [(filterCondition)]='filterCondition'></app-take-off-timespan>
-        <app-aircompany [langOpt] = 'langOpt'
-         [class.hidden]='tab!==2' [(filterCondition)]='filterCondition'>
-        </app-aircompany>
-        <app-airports [langOpt] = 'langOpt' #fromAirports [class.hidden]='tab!==3' [isFromAirports]="true" [(filterCondition)]='filterCondition'>
-        </app-airports>
-        <app-airports [langOpt] = 'langOpt' #toAirports [isFromAirports]="false" [(filterCondition)]='filterCondition' [class.hidden]='tab!==6'>
-        </app-airports>
-        <app-airtype [langOpt] = 'langOpt' [class.hidden]='tab!==4' [(filterCondition)]='filterCondition'></app-airtype>
-        <!-- <app-cabin_en [langOpt] = '{
+    <section class="search-cond">
+        <article class="left">
+            <div class='tab' [class.active]='tab===1' [class.user-op]='userOps?.timespanOp' (click)='onTabClick(1)'>
+                <span>{{langOpt.TakeTime}}</span>
+            </div>
+            <div class='tab' [class.active]='tab===2' [class.user-op]='userOps?.airCompanyOp' (click)='onTabClick(2)'>
+                <span>{{langOpt.Airlines}}</span>
+            </div>
+            <div class='tab' [class.active]='tab===3' [class.user-op]='userOps?.fromAirportOp' (click)='onTabClick(3)'>
+                <span>{{langOpt.Departure}}</span>
+            </div>
+            <div class='tab' [class.active]='tab===6' [class.user-op]='userOps?.toAirportOp' (click)='onTabClick(6)'>
+                <span>{{langOpt.Arrival}}</span>
+            </div>
+            <div class='tab' [class.active]='tab===4' [class.user-op]='userOps?.airTypeOp' (click)='onTabClick(4)'>
+                <span>{{langOpt.Aircraft}}</span>
+            </div>
+            <div class='tab' [class.active]='tab===5' [class.user-op]='userOps?.cabinOp' (click)='onTabClick(5)'>
+                <span>{{langOpt.Cabins}}</span>
+            </div>
+        </article>
+        <article class="right">
+            <ion-list>
+                <app-take-off-timespan [langOpt]='langOpt' [class.hidden]='tab!==1' [(filterCondition)]='filterCondition'></app-take-off-timespan>
+                <app-aircompany [langOpt]='langOpt' [class.hidden]='tab!==2' [(filterCondition)]='filterCondition'>
+                </app-aircompany>
+                <app-airports [langOpt]='langOpt' #fromAirports [class.hidden]='tab!==3' [isFromAirports]="true" [(filterCondition)]='filterCondition'>
+                </app-airports>
+                <app-airports [langOpt]='langOpt' #toAirports [isFromAirports]="false" [(filterCondition)]='filterCondition' [class.hidden]='tab!==6'>
+                </app-airports>
+                <app-airtype [langOpt]='langOpt' [class.hidden]='tab!==4' [(filterCondition)]='filterCondition'></app-airtype>
+                <!-- <app-cabin_en [langOpt] = '{
           any: "Any"
         }' [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin_en> -->
-        <app-cabin_en [langOpt] = 'langOpt' [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin_en>
-      </ion-list>
-    </article>
-  </section>
+                <app-cabin [langOpt]='langOpt' [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin>
+            </ion-list>
+        </article>
+    </section>
 </ion-content>
 <ion-footer class="ion-padding-horizontal">
-  <ion-buttons>
-    <ion-button fill='outline' expand='block' color='dark' (click)='onReset()'>
-      Reset
-    </ion-button>
-    <ion-button fill='solid' expand='block' color='secondary' (click)='onSearch()'>
-      Determine
-    </ion-button>
-  </ion-buttons>
+    <ion-buttons>
+        <ion-button fill='outline' expand='block' color='dark' (click)='onReset()'>
+            {{langOpt.Reset}}
+        </ion-button>
+        <ion-button fill='solid' expand='block' color='secondary' (click)='onSearch()'>
+            {{langOpt.Determine}}
+        </ion-button>
+    </ion-buttons>
 </ion-footer>
