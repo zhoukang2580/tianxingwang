@@ -1,4 +1,4 @@
-import { LangService } from './../../lang.service';
+import { LangService } from '../../../services/lang.service';
 import { Subscription } from "rxjs";
 import { StaffService } from "./../../../hr/staff.service";
 import { IonSelect } from "@ionic/angular";

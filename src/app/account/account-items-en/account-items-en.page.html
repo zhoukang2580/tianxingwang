@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons>
+      <app-back-button></app-back-button>
+      <ion-title>{{title}}</ion-title>
+    </ion-buttons>
+  </ion-toolbar>
+
+</ion-header>
+<ion-item lines='none' class="date">
+  <ion-label>Date</ion-label>
+  <ion-datetime displayFormat='YYYY-MM' #datetime [(ngModel)]='date' (ionChange)='doRefresh()'></ion-datetime>
+  <ion-icon name="chevron-down-outline" (click)='datetime.open()'></ion-icon>
+  <ion-label color='danger' slot='end' class="ion-text-end">{{typeName}}：{{balance||0}}</ion-label>
+</ion-item>
+<ion-content>
+  <div class="bar sticky">
+    <div class="date"></div>
+  </div>
+  <app-refresher (ionRefresh)='doRefresh()' slot='fixed'>
+    <ion-refresher-content>Refreshing...</ion-refresher-content>
+  </app-refresher>
+  <ion-list>
+    <ion-item *ngFor='let it of items' class="ion-no-padding">
+      <div class="item">
+        <div class="left">
+          <div class="name">{{it.Name}}</div>
+          <div class="remark"> {{it.Remark}}</div>
+          <div class="time"> <span>{{it.InserTime}}</span> </div>
+        </div>
+        <div class="price" slot='end'>
+          {{it.Amount}}
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>Loading...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

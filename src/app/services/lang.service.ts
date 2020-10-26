@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Subscription } from "rxjs";
-import { ApiService } from "../services/api/api.service";
-import { RequestEntity } from "../services/api/Request.entity";
-import { IdentityService } from "../services/identity/identity.service";
-import { IdentityEntity } from "../services/identity/identity.entity";
+import { ApiService } from "./api/api.service";
+import { RequestEntity } from "./api/Request.entity";
+import { IdentityService } from "./identity/identity.service";
+import { IdentityEntity } from "./identity/identity.entity";
 import { AppHelper } from "../appHelper";
 import { finalize } from "rxjs/operators";
 import { Router } from "@angular/router";

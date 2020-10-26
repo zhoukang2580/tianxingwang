@@ -1,4 +1,4 @@
-import { LangService } from "src/app/tmc/lang.service";
+import { LangService } from "src/app/services/lang.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Component, OnInit } from "@angular/core";
 import { ProductItemType, ProductItem } from "../../tmc/models/ProductItems";

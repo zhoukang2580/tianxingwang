@@ -7,14 +7,15 @@ import { ActionSheetController, NavController } from "@ionic/angular";
 import { ThemeService } from "src/app/services/theme/theme.service";
 import { TTSService } from "src/app/services/tts/tts.service";
 import { CONFIG } from "src/app/config";
-import { LangService } from "src/app/services/lang.service";
+import { AccountSettingPage } from '../account-setting/account-setting.page';
+import { LangService } from 'src/app/services/lang.service';
 
 @Component({
-  selector: "app-setting",
-  templateUrl: "./account-setting.page.html",
-  styleUrls: ["./account-setting.page.scss"],
+  selector: "app-setting-en",
+  templateUrl: "./account-setting-en.page.html",
+  styleUrls: ["./account-setting-en.page.scss"],
 })
-export class AccountSettingPage implements OnInit, OnDestroy {
+export class AccountSettingEnPage implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   appVersion: string = "3.0.1";
   isDarkMode: boolean;

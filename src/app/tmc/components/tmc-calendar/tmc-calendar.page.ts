@@ -18,7 +18,7 @@ import { TripType } from "../../models/TripType";
 import { AppHelper } from "src/app/appHelper";
 import { LanguageHelper } from "src/app/languageHelper";
 import { RefresherComponent } from "src/app/components/refresher";
-import { LangService } from "../../lang.service";
+import { LangService } from "../../../services/lang.service";
 
 @Component({
   selector: "app-tmc-calendar",

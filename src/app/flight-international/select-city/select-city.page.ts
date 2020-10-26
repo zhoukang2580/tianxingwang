@@ -29,7 +29,7 @@ import {
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { InternationalFlightService } from "../international-flight.service";
 import { TmcService } from "src/app/tmc/tmc.service";
-import { LangService } from "src/app/tmc/lang.service";
+import { LangService } from "src/app/services/lang.service";
 @Component({
   selector: "app-select-international-flight-city",
   templateUrl: "./select-city.page.html",

@@ -28,7 +28,7 @@ import { PassengerBookInfo, TmcService } from "src/app/tmc/tmc.service";
 import { map } from "rxjs/operators";
 import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
-import { LangService } from 'src/app/tmc/lang.service';
+import { LangService } from 'src/app/services/lang.service';
 import { SelectedTrainSegmentInfoEnComponent } from '../components/selected-train-segment-info_en/selected-train-segment-info_en.component';
 @Component({
   selector: "app-search-train",

@@ -27,7 +27,7 @@ import { RefundChangeDetailComponent } from "../components/refund-change-detail/
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { FlightFareRuleEntity } from "src/app/flight/models/FlightFareRuleEntity";
 import { FlightListPage } from 'src/app/flight/flight-list/flight-list.page';
-import { LangService } from 'src/app/tmc/lang.service';
+import { LangService } from 'src/app/services/lang.service';
 interface Iisblue {
   isshow: false;
 }

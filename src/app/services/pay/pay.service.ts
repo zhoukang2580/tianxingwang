@@ -1,5 +1,5 @@
 import { PayEnComponent } from './../../components/pay_en/pay_en.component';
-import { LangService } from 'src/app/tmc/lang.service';
+import { LangService } from 'src/app/services/lang.service';
 import { App } from "./../../app.component";
 import { AppHelper } from "./../../appHelper";
 import { Platform, PopoverController } from "@ionic/angular";

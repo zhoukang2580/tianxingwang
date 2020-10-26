@@ -1,4 +1,4 @@
-import { LangService } from './../../tmc/lang.service';
+import { LangService } from '../../services/lang.service';
 import { BackButtonComponent } from "../../components/back-button/back-button.component";
 import { IdentityService } from "../../services/identity/identity.service";
 import { OrderTripModel } from "../models/OrderTripModel";

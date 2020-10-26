@@ -26,7 +26,7 @@ import {
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
-import { LangService } from "src/app/tmc/lang.service";
+import { LangService } from "src/app/services/lang.service";
 @Component({
   selector: "app-search-flight",
   templateUrl: "./search-flight.page.html",

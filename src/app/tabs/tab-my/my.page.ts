@@ -18,7 +18,7 @@ import { tap, map } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
-import { LangService } from "src/app/tmc/lang.service";
+import { LangService } from "src/app/services/lang.service";
 import { MemberService } from "src/app/member/member.service";
 interface PageModel {
   Name: string;
@@ -102,40 +102,7 @@ export class MyPage implements OnDestroy, OnInit {
   private goToProductListPage() {
     this.router.navigate([AppHelper.getRoutePath(`product-list`)]);
   }
-  async onLanguageSettings() {
-    const style = AppHelper.getStyle();
-    const ash = await this.actionSheetCtrl.create({
-      cssClass: "language",
-      buttons: [
-        {
-          text: "English",
-          cssClass:"notranslate",
-          role: style == "en" ? "selected" : "",
-          handler: () => {
-            this.langService.setLang("en");
-            this.reloadPage();
-          },
-        },
-        {
-          text: "中文",
-          cssClass:"notranslate",
-          role: !style ? "selected" : "",
-          handler: () => {
-            this.langService.setLang("cn");
-            this.reloadPage();
-          },
-        },
-        {
-          text: "取消",
-          role: "destructive",
-          handler: () => {
-            ash.dismiss();
-          },
-        },
-      ],
-    });
-    ash.present();
-  }
+  
   async goToPage(name: string, params?: any) {
     const tmc = await this.tmcService.getTmc();
     const msg = "您没有预订权限";
@@ -195,13 +162,7 @@ export class MyPage implements OnDestroy, OnInit {
       queryParams: { bulletinType: params },
     });
   }
-  private reloadPage() {
-    this.router
-      .navigate([AppHelper.getRoutePath(this.router.url)], { replaceUrl: true })
-      .then(() => {
-        this.langService.translate();
-      });
-  }
+  
   onProductClick(tab: ProductItem) {
     if (tab.value != ProductItemType.more) {
       this.goToProductTabsPage(tab);

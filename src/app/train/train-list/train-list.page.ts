@@ -1,4 +1,4 @@
-import { LangService } from "./../../tmc/lang.service";
+import { LangService } from "../../services/lang.service";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
 import { flyInOut } from "./../../animations/flyInOut";
 import { IdentityService } from "src/app/services/identity/identity.service";

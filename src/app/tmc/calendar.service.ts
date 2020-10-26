@@ -15,7 +15,7 @@ import { TripType } from "./models/TripType";
 import { connect } from "http2";
 import { AppHelper } from "../appHelper";
 import { TmcCalendarComponent } from "./components/tmc-calendar/tmc-calendar.page";
-import { LangService } from "./lang.service";
+import { LangService } from "../services/lang.service";
 const lunarCalendar = window["LunarCalendar"];
 const _KEY_HOLIDAYS = "_key_holidays";
 @Injectable({

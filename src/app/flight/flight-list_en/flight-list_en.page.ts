@@ -1,5 +1,5 @@
 import { CabintypePipe } from "./../pipes/cabintype.pipe";
-import { LangService } from "./../../tmc/lang.service";
+import { LangService } from "../../services/lang.service";
 import { SelectFlightPassengerComponent } from "./../components/select-flight-passenger/select-flight-passenger.component";
 import { IFlightSegmentInfo } from "./../models/PassengerFlightInfo";
 import {

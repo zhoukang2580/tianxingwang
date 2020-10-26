@@ -1,4 +1,3 @@
-import { StylePageGuard } from './../../guards/style-page.guard';
 import { AppComponentsModule } from "../../components/appcomponents.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
@@ -7,14 +6,14 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { AccountSettingEnPage } from "./account-setting_en.page";
+import { AccountSettingEnPage } from "./account-setting-en.page";
 import { AuthorityGuard } from "src/app/guards/authority.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: AccountSettingEnPage,
-    canActivate: [AuthorityGuard,StylePageGuard]
+    canActivate: [AuthorityGuard]
   }
 ];
 

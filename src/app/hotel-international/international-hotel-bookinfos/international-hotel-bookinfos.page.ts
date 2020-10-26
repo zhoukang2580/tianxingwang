@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/tmc/lang.service';
+import { LangService } from 'src/app/services/lang.service';
 import { InternationalHotelService } from "./../international-hotel.service";
 import {
   Component,
