@@ -86,13 +86,13 @@
 <div #queryconditoneleContainer>
     <app-recommend-rank class="filter-condition" (rank)='onRank()' [class.show]='filterTab?.id=="Recommended"&&filterTab.isActive'>
     </app-recommend-rank>
-    <app-hotel-starprice [langOpt]='{
+    <app-hotel-starprice_en [langOpt]='{
     any:"All",
     Cuspri:"Custom price",
     Reset: "Reset",
     determine: "Determine"
   }' class="filter-condition" [class.show]='filterTab?.id=="PriceStar"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
-    </app-hotel-starprice>
+    </app-hotel-starprice_en>
     <app-hotel-filter [langOpt]='{
       any:"All",
       Reset: "Reset",

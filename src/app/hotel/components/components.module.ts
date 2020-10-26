@@ -21,6 +21,7 @@ import { WarrantyComponent } from './warranty/warranty.component';
 import { OverHotelComponent } from './over-hotel/over-hotel.component';
 import { RoomShowItemEnComponent } from './room-show-item_en/room-show-item_en.component';
 import { RoomPlanItemEnComponent } from './room-plan-item_en/room-plan-item_en.component';
+import { HotelStarPriceEnComponent } from './hotel-starprice_en/hotel-starprice_en.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,7 @@ import { RoomPlanItemEnComponent } from './room-plan-item_en/room-plan-item_en.c
     RecommendRankComponent,
     HotelFilterComponent,
     HotelStarPriceComponent,
-    HotelStarPriceComponent,
+    HotelStarPriceEnComponent,
     HotelListItemComponent,
     RoomPlanItemComponent,
     RoomPlanItemEnComponent,
@@ -60,7 +61,7 @@ import { RoomPlanItemEnComponent } from './room-plan-item_en/room-plan-item_en.c
     HotelFilterComponent,
     RecommendRankComponent,
     HotelStarPriceComponent,
-    HotelStarPriceComponent,
+    HotelStarPriceEnComponent,
     RoomPlanItemComponent,
     RoomPlanItemEnComponent,
     RoomShowItemComponent,
