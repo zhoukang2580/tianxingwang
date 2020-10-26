@@ -20,6 +20,9 @@ export class CabintypePipe implements PipeTransform {
       case FlightCabinType[FlightCabinType.C]:
       case "公务舱":
         return this.lang == "en" ? "Business class" : "公务舱";
+      case "商务舱":
+      case "商务":
+        return this.lang == "en" ? "Business class" : "商务舱";
       case FlightCabinType.F:
       case FlightCabinType[FlightCabinType.F]:
       case "头等舱":
@@ -28,6 +31,8 @@ export class CabintypePipe implements PipeTransform {
       case FlightCabinType[FlightCabinType.SeniorY]:
       case "高端经济舱":
         return this.lang == "en" ? "High-end economy" : "高端经济舱";
+      case "超级经济舱":
+        return this.lang == "en" ? "Super Economy" : "超级经济舱";
       case FlightCabinType.DiscountC:
       case FlightCabinType[FlightCabinType.DiscountC]:
       case "折扣公务舱":

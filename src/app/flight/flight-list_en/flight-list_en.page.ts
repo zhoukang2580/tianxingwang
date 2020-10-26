@@ -1,5 +1,5 @@
-import { CabintypePipe } from './../pipes/cabintype.pipe';
-import { LangService } from './../../tmc/lang.service';
+import { CabintypePipe } from "./../pipes/cabintype.pipe";
+import { LangService } from "./../../tmc/lang.service";
 import { SelectFlightPassengerComponent } from "./../components/select-flight-passenger/select-flight-passenger.component";
 import { IFlightSegmentInfo } from "./../models/PassengerFlightInfo";
 import {
@@ -102,8 +102,8 @@ export class FlightListEnPage
     agreement: "A",
     planeType: "Aircraft ",
     lowestPrice: "LowestPrice",
-    lowestPriceRecommend: "LowestPriceRecommend"
-  }
+    lowestPriceRecommend: "LowestPriceRecommend",
+  };
   lowestPriceSegments: FlightSegmentEntity[];
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
@@ -156,8 +156,8 @@ export class FlightListEnPage
     private popoverController: PopoverController,
     private storage: Storage,
     private tmcService: TmcService,
-    private langService:LangService,
-    private cabintypePipe:CabintypePipe
+    private langService: LangService,
+    private cabintypePipe: CabintypePipe
   ) {
     this.subscriptions.push(
       flightService
@@ -299,11 +299,19 @@ export class FlightListEnPage
         const airports = await this.flightService.getDomesticAirports();
         if (airports && airports.length) {
           segs.forEach((seg) => {
-            const fap = airports.find((it) => it.Code == seg.FromAirport
-            &&(this.searchFlightModel.FromAsAirport?it.Tag=="Airport":"AirportCity")
+            const fap = airports.find(
+              (it) =>
+                it.Code == seg.FromAirport &&
+                (this.searchFlightModel.FromAsAirport
+                  ? it.Tag == "Airport"
+                  : "AirportCity")
             );
-            const tap = airports.find((it) => it.Code == seg.ToAirport
-            &&(this.searchFlightModel.FromAsAirport?it.Tag=="Airport":"AirportCity")
+            const tap = airports.find(
+              (it) =>
+                it.Code == seg.ToAirport &&
+                (this.searchFlightModel.FromAsAirport
+                  ? it.Tag == "Airport"
+                  : "AirportCity")
             );
             if (fap) {
               seg.FromAirportName = fap.EnglishName.replace("International", "")
@@ -449,7 +457,7 @@ export class FlightListEnPage
       this.apiService.hideLoadingView();
       this.isLoading = false;
       if (this.activeTab != "none" && this.activeTab != "filter") {
-       await this.sortFlights(this.activeTab);
+        await this.sortFlights(this.activeTab);
       }
       if (loadDataFromServer || !keepSearchCondition) {
         this.initFilterConditionInfo();
@@ -648,12 +656,13 @@ export class FlightListEnPage
         f.FlightRoutes.forEach((r) => {
           r.FlightSegments.forEach((s) => {
             s.Cabins.forEach((c) => {
-              if (
-                !this.filterCondition.cabins.find((a) => a.label == c.TypeName)
-              ) {
+              const cbn = (this.cabintypePipe.transform(c.TypeName) || "")
+                .replace("class", "")
+                .trim();
+              if (!this.filterCondition.cabins.find((a) => a.label == cbn)) {
                 this.filterCondition.cabins.push({
                   id: c.Type,
-                  label:(this.cabintypePipe.transform(c.TypeName)||"").replace("class",'').trim(),
+                  label: cbn,
                   isChecked: false,
                 });
               }
@@ -672,7 +681,7 @@ export class FlightListEnPage
             ) {
               this.filterCondition.airCompanies.push({
                 id: s.Airline,
-                label:this.langService.isEn?s.Airline: s.AirlineName,
+                label: this.langService.isEn ? s.Airline : s.AirlineName,
                 isChecked: false,
                 icon: s.AirlineSrc,
               });
@@ -717,35 +726,37 @@ export class FlightListEnPage
       component: FlyFilterComponent,
       componentProps: {
         filterCondition: this.filterCondition,
-        langOpt: this.langService.isEn? {
-          NonStopOnly: "NonStop only",
-          TakeTime: "Take off Time",
-          Airlines: "Airlines",
-          Departure: "Departure Airport",
-          Arrival: "Arrival Airport",
-          Aircraft: "Aircraft",
-          Cabins: "Cabins",
-          any: "All",
-          all: "All",
-          takeoff: "Take off",
-          land: "Landing",
-          morning: "A.M.",
-          afternoon: "P.M."
-        } : {
-          NonStopOnly: "仅直达",
-          TakeTime: "起飞时段",
-          Airlines: "航空公司",
-          Departure: "起飞机场",
-          Arrival: "到达机场",
-          Aircraft: "机型",
-          Cabins: "舱位",
-          any: "不限",
-          all: "不限",
-          takeoff: "起飞",
-          land: "降落",
-          morning: "上午",
-          afternoon: "午后"
-        }
+        langOpt: this.langService.isEn
+          ? {
+              NonStopOnly: "NonStop only",
+              TakeTime: "Take off Time",
+              Airlines: "Airlines",
+              Departure: "Departure Airport",
+              Arrival: "Arrival Airport",
+              Aircraft: "Aircraft",
+              Cabins: "Cabins",
+              any: "All",
+              all: "All",
+              takeoff: "Take off",
+              land: "Landing",
+              morning: "A.M.",
+              afternoon: "P.M.",
+            }
+          : {
+              NonStopOnly: "仅直达",
+              TakeTime: "起飞时段",
+              Airlines: "航空公司",
+              Departure: "起飞机场",
+              Arrival: "到达机场",
+              Aircraft: "机型",
+              Cabins: "舱位",
+              any: "不限",
+              all: "不限",
+              takeoff: "起飞",
+              land: "降落",
+              morning: "上午",
+              afternoon: "午后",
+            },
       },
     });
     m.present();
