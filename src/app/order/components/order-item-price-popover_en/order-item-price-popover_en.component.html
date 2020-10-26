@@ -1,0 +1,47 @@
+<ion-content class='ion-padding'>
+    <ion-slides>
+        <ion-slide *ngFor='let t of order?.OrderFlightTickets'>
+            <ion-grid>
+                <div style="font-size:0.9rem">
+                    <ion-row *ngIf="getPassenger(t)">
+                        <ion-col style="font-size:1rem">
+                            <ion-text>
+                                {{getPassenger(t)?.Name}}
+                            </ion-text>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="t.Id">
+                        <ion-col class="ion-text-nowrap">
+                            Affair No&nbsp;
+                            <span>{{t.Id}}&nbsp;</span>
+                            <ion-text color="medium"> ({{t.StatusName.replace('预订成功','Book success')}})</ion-text>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngFor="let o of getOrderFees(t)">
+                        <ion-col class="ion-text-nowrap">
+                            <span>{{o.Name}}</span>
+                        </ion-col>
+                        <ion-col size='1'>
+                            <ion-text class="price ion-text-nowrap" #price>{{o.Value}}</ion-text>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngFor="let insurance of getInsurances(t)">
+                        <ion-col size='7'>{{insurance.Name}}</ion-col>
+                        <ion-col class='price'>{{insurance.Premium}}</ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="t.StatusName=='废除'">
+                        <ion-col size="7">应付</ion-col>
+                        <ion-col class="price">0</ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="t.StatusName!='废除'">
+                        <ion-col size='7'>总计</ion-col>
+                        <ion-col class='price'>{{getPriceAmount(t)}}</ion-col>
+                    </ion-row>
+                </div>
+            </ion-grid>
+        </ion-slide>
+    </ion-slides>
+    <div class="bullets" *ngIf='order?.OrderFlightTickets?.length>1'>
+        <div *ngFor='let b of order?.OrderFlightTickets;let i=index;' class="bullet" [class.active]='b.Id==order?.OrderFlightTickets[activeIdx].Id'></div>
+    </div>
+</ion-content>

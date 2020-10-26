@@ -47,6 +47,7 @@ import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
+import { SearchTicketModalEnComponent } from '../components/search-ticket-modal_en/search-ticket-modal_en.component';
 @Component({
   selector: "app-order-list_en",
   templateUrl: "./order-list_en.page.html",
@@ -259,7 +260,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
   async openSearchModal() {
     const condition = new SearchTicketConditionModel();
     const m = await this.modalCtrl.create({
-      component: SearchTicketModalComponent,
+      component: this.LangService.isCn ? SearchTicketModalComponent : SearchTicketModalEnComponent,
       componentProps: {
         type: this.activeTab,
         condition: {

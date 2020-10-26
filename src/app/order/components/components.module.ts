@@ -29,6 +29,8 @@ import { FlightTripEnComponent } from './flight-trip_en/flight-trip_en.component
 import { HotelTripEnComponent } from './hotel-trip_en/hotel-trip_en.component';
 import { OrderItemEnComponent } from './order-item_en/order-item_en.component';
 import { FlightOrderDetailEnComponent } from './flight-order-detail_en/flight-order-detail_en.component';
+import { OrderItemPricePopoverEnComponent } from './order-item-price-popover_en/order-item-price-popover_en.component';
+import { SearchTicketModalEnComponent } from './search-ticket-modal_en/search-ticket-modal_en.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,7 @@ import { FlightOrderDetailEnComponent } from './flight-order-detail_en/flight-or
     OrderItemEnComponent,
     CarItemComponent,
     OrderItemPricePopoverComponent,
+    OrderItemPricePopoverEnComponent,
     HotelOrderPricePopoverComponent,
     TrainOrderPricePopoverComponent,
     UploadFileComponent,
@@ -43,6 +46,7 @@ import { FlightOrderDetailEnComponent } from './flight-order-detail_en/flight-or
     SendEmailComponent,
     TripRulePopoverComponent,
     SearchTicketModalComponent,
+    SearchTicketModalEnComponent,
     SelectTicketPopoverComponent,
     TrainOrderDetailComponent,
     FlightOrderDetailComponent,
