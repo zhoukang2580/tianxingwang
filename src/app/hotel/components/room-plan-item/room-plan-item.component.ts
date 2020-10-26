@@ -89,7 +89,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   getBreakfast(plan: RoomPlanEntity) {
     return this.hotelService.getBreakfast(plan);
   }
-  onBook(color: string) {
+  onBook(rp,color: string) {
     this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room, color });
   }
   ngOnInit() {}
