@@ -18,6 +18,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "search-hotel_df",
+    loadChildren: () =>
+      import("./search-hotel-df/search-hotel-df.module").then(
+        m => m.SearchHotelDfPageModule
+      )
+  },
+  {
     path: "hotel-city",
     loadChildren: () =>
       import("./hotel-city/hotel-city.module").then(m => m.HotelCityPageModule)
@@ -73,6 +80,11 @@ export const routes: Routes = [
     path: "hotel-list_en",
     loadChildren: () =>
       import("./hotel-list_en/hotel-list_en.module").then(m => m.HotelListEnPageModule)
+  },
+  {
+    path: "hotel-list_df",
+    loadChildren: () =>
+      import("./hotel-list-df/hotel-list-df.module").then(m => m.HotelListDfPageModule)
   },
   {
     path: "hotel-detail",

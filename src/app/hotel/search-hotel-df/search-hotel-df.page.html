@@ -1,0 +1,117 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button [backFn]='back.bind(this)'></app-back-button>
+    </ion-buttons>
+    <ion-buttons class='small-font' slot='end'>
+      <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookInfos()'>已选行程
+        <ion-badge color='danger'>
+          <ion-text color='light'>{{selectedBookInfosNumber}}</ion-text>
+        </ion-badge>
+      </ion-button>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&!selectedPassengers'>
+        <ion-icon name="person-add-outline"></ion-icon>
+        <ion-badge color='danger'>
+          <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
+        </ion-badge>
+      </ion-button>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&selectedPassengers'>
+        <ion-icon name="person-add-outline"></ion-icon>
+        <ion-badge color='danger'>
+          <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
+        </ion-badge>
+      </ion-button>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
+        差旅标准
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<div class="img">
+  <img src="assets/images/hotelbg.png" alt="">
+</div>
+<ion-content class="cnt">
+  <ion-card>
+    <ion-card-header *ngIf=''>
+      <div class='segments'>
+        <div class="segment-button left" [class.active]='isDomestic' (click)='onToggleDomestic()'>
+          <ion-label>国内酒店</ion-label>
+        </div>
+        <div class="segment-button right" [class.active]='!isDomestic' (click)='onToggleDomestic()'>
+          <ion-label>国外*港澳台</ion-label>
+        </div>
+        <div class='indicator' [class.left]='isDomestic' [class.right]='!isDomestic'></div>
+      </div>
+    </ion-card-header>
+    <ion-card-content>
+      <div class='ion-padding-top'>
+        <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}" color="secondary">
+          <ion-segment-button value="normal">
+            <ion-label>非协议酒店</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="agreement">
+            <ion-label>协议酒店</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="specialprice">
+            <ion-label>特价酒店</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+      <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;" class="ion-margin-top">
+        <section class="flight-date">
+          <app-search-day-comp [day]='(isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkinDate)' [isCheckIn]='true' (click)="onSelecDate(true)" [disabled]='false'>
+          </app-search-day-comp>
+          <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
+          <app-search-day-comp [day]='(isDomestic?searchHotelModel?.checkOutDate:interHotelSearchCondition?.checkoutDate)' [isCheckOut]='true' (click)="onSelecDate(false)" [disabled]='false'>
+          </app-search-day-comp>
+        </section>
+      </ion-item>
+      <ng-container *ngIf='changeDateTipMsg'>
+        <div class="show-select-yeasterday-date-tip">
+          <ion-icon name="caret-up-outline" class="up"></ion-icon>
+          <ion-icon name="moon" class="moon"></ion-icon>
+          <span>{{changeDateTipMsg}}</span>
+        </div>
+      </ng-container>
+      <div class='destination' lines='none' detail *ngIf='isDomestic' (click)='onSearchCity()'>
+        <ion-item lines='none'>
+          <ion-label>目的地</ion-label>
+          <ion-label>
+            <ng-container *ngIf='isPositioning else no'>
+              请选择目的地
+            </ng-container>
+            <ng-template #no>
+              <ion-label class="ion-text-wrap">
+                <h2>{{searchHotelModel?.destinationCity?.Name}}</h2>
+              </ion-label>
+            </ng-template>
+          </ion-label>
+          <ion-button fill='clear' *ngIf='' color='secondary' size='small' (click)='onPosition()'>
+            <div class='pos' slot='end'>
+              <ion-icon name="locate" mode='md' size='small' color='secondary'></ion-icon>
+              我的位置
+            </div>
+          </ion-button>
+        </ion-item>
+      </div>
+      <div *ngIf='!isDomestic'>
+        <div class='destination' (click)='onSearchCity()'>
+          <ion-item lines='none'>
+            <ion-label>目的地</ion-label>
+            <ion-label>
+              {{interHotelSearchCondition?.destinationCity?.Name}}
+              <ion-text color='medium'>{{interHotelSearchCondition?.destinationCity?.EnglishName}}</ion-text>
+            </ion-label>
+          </ion-item>
+        </div>
+      </div>
+      <ion-button class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" *ngIf='!((canAddPassengers) && selectedPassengers==0)' color="secondary" expand="block">
+        <ion-text>查询酒店</ion-text>
+      </ion-button>
+      <ion-button *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
+        <ion-text>请添加乘客
+        </ion-text>
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

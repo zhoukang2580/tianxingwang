@@ -40,8 +40,7 @@ export class LangService {
     try {
       if (this.identity && this.identity.Id != "0" && this.identity.Ticket) {
         if (
-          AppHelper.getStyle() &&
-          AppHelper.getStyle().toLowerCase() != "cn"
+          this.isEn
         ) {
           this.start();
         } else {
