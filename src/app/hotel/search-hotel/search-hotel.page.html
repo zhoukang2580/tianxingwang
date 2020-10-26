@@ -1,31 +1,34 @@
-<div class="bg">
-  <img src="assets/images/hotel-search-bg.png" alt="">
-</div>
 <ion-header>
-  <ion-toolbar class="header-toolbar">
-    <ion-buttons slot='start'>
-      <app-back-button [backFn]='back.bind(this)'></app-back-button>
-    </ion-buttons>
-    <ion-buttons class='small-font' slot='end'>
-      <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedBookInfosNumber}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' color='light' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&!selectedPassengers'>
-        添加旅客<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' color='light' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&selectedPassengers'>
-        已选旅客<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' color='light' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
-        差旅标准
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+
+            <app-back-button [backFn]='back.bind(this)'></app-back-button>
+        </ion-buttons>
+        <ion-text *ngIf='isShowSelectedInfos'>酒店</ion-text>
+        <ion-title *ngIf='!(isShowSelectedInfos)'>酒店</ion-title>
+        <ion-buttons class='small-font' slot='end'>
+            <ion-button *ngIf='isShowSelectedInfos' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookInfos()'>已选行程
+                <ion-badge color='danger'>
+                    <ion-text color='light'>{{selectedBookInfosNumber}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&!selectedPassengers'>
+                <ion-icon name="person-add-outline"></ion-icon>
+                <ion-badge color='danger'>
+                    <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' color='secondary' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&selectedPassengers'>
+                <ion-icon name="person-add-outline"></ion-icon>
+                <ion-badge color='danger'>
+                    <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
+                差旅标准
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
 </ion-header>
 <ion-content class="cnt">
   <ion-card>
