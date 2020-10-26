@@ -103,6 +103,7 @@ ion-card {
 .hotel-info {
     ion-grid ion-row ion-col {
         align-self: flex-start;
+        min-width: 9rem;
     }
     .line {
         margin: 0 0.25em;

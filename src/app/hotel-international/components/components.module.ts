@@ -17,12 +17,14 @@ import { AmapComponent } from "./amap/amap.component";
 import { OverHotelComponent } from './over-hotel/over-hotel.component';
 import { InterHotelQueryEnComponent } from './inter-hotel-query_en/inter-hotel-query_en.component';
 import { InterRoomShowItemEnComponent } from './inter-room-show-item_en/inter-room-show-item_en.component';
+import { InterRoomPlanItemEnComponent } from './inter-room-plan-item_en/inter-room-plan-item_en.component';
 
 @NgModule({
   declarations: [
     HotelListItemComponent,
     InterHotelWarrantyComponent,
     InterRoomPlanItemComponent,
+    InterRoomPlanItemEnComponent,
     InterShowMsgComponent,
     InterRoomShowItemComponent,
     InterRoomShowItemEnComponent,
@@ -49,6 +51,7 @@ import { InterRoomShowItemEnComponent } from './inter-room-show-item_en/inter-ro
     HotelListItemComponent,
     AppComponentsModule,
     InterRoomPlanItemComponent,
+    InterRoomPlanItemEnComponent,
     InterRoomShowItemComponent,
     InterRoomShowItemEnComponent,
     ChangeInterRoomPlanDateComponent,

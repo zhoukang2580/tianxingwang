@@ -158,7 +158,7 @@
                             </ion-label>
                         </div>
                         <div class='room-plans' *ngIf='room["isShowRoomPlans"]' @fadeInOut>
-                            <app-inter-room-plan-item [langOpt]='{
+                            <app-inter-room-plan-item_en [langOpt]='{
                                             Exceeding: "Exceeding",
                                             Book: "Book",
                                             NonBook: "NonBook",
@@ -168,7 +168,7 @@
                                             SoldOut:"Sold out",
                                             Ok: "Immediate confirmation"
                                           }' *ngFor='let plan of room.RoomPlans' [colors]='colors' [room]='room' [roomPlan]='plan' [hotel]='hotel' (bookRoom)='onBookRoomPlan($event)'>
-                            </app-inter-room-plan-item>
+                            </app-inter-room-plan-item_en>
                         </div>
                     </div>
                 </ion-item>
