@@ -92,9 +92,9 @@ export class InternationalHotelDetailPage
   colors: {};
   isIos = false;
   constructor(
-    private hotelService: InternationalHotelService,
+    public hotelService: InternationalHotelService,
     private route: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     private configService: ConfigService,
     private domCtrl: DomController,
     private render: Renderer2,
@@ -102,7 +102,7 @@ export class InternationalHotelDetailPage
     private navCtrl: NavController,
     private popoverController: PopoverController,
     private staffService: StaffService,
-    private modalController: ModalController
+    public modalController: ModalController
   ) {
     this.isIos = plt.is("ios");
   }
@@ -219,7 +219,7 @@ export class InternationalHotelDetailPage
       }
     }
   }
-  private async initFilterPolicy() {
+  public async initFilterPolicy() {
     await this.getPolicy();
     const filteredPassenger = this.hotelService
       .getBookInfos()
@@ -744,7 +744,7 @@ export class InternationalHotelDetailPage
       this.onShowBookInfos();
     }
   }
-  private onShowBookInfos() {
+  public onShowBookInfos() {
     this.router.navigate(["international-hotel-bookinfos"]);
   }
   private checkIfPassengerCanBookRoomPlan(

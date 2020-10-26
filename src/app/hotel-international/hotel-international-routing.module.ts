@@ -53,6 +53,13 @@ export const routes: Routes = [
       ).then(m => m.InternationalRoomDetailPageModule)
   },
   {
+    path: "international-room-detail_en",
+    loadChildren: () =>
+      import(
+        "./international-room-detail_en/international-room-detail_en.module"
+      ).then(m => m.InternationalRoomDetailEnPageModule)
+  },
+  {
     path: 'combo-search-inter-hotel',
     loadChildren: () => import('./combo-search-inter-hotel/combo-search-inter-hotel.module').then( m => m.ComboSearchInterHotelPageModule)
   },
@@ -61,8 +68,17 @@ export const routes: Routes = [
     loadChildren: () => import('./international-hotel-bookinfos/international-hotel-bookinfos.module').then( m => m.InternationalHotelBookinfosPageModule)
   },
   {
+    path: 'international-hotel-bookinfos_en',
+    // tslint:disable-next-line: max-line-length
+    loadChildren: () => import('./international-hotel-bookinfos_en/international-hotel-bookinfos_en.module').then( m => m.InternationalHotelBookinfosEnPageModule)
+  },
+  {
     path: 'international-hotel-book',
     loadChildren: () => import('./inter-hotel-book/inter-hotel-book.module').then( m => m.InterHotelBookPageModule)
+  },
+  {
+    path: 'international-hotel-book_en',
+    loadChildren: () => import('./inter-hotel-book_en/inter-hotel-book_en.module').then( m => m.InterHotelBookEnPageModule)
   },
   {
     path: 'search-international-hotel',

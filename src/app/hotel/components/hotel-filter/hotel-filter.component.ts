@@ -23,6 +23,11 @@ import { HotelService } from "../../hotel.service";
   styleUrls: ["./hotel-filter.component.scss"]
 })
 export class HotelFilterComponent implements OnInit, OnDestroy {
+  @Input() langOpt ={
+    any: "不限",
+    Reset: "重置",
+    determine: "确定"
+  }
   private subscription = Subscription.EMPTY;
   private conditionModel: HotelConditionModel;
   @Output() filter: EventEmitter<any>;

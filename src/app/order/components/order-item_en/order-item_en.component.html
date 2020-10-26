@@ -24,7 +24,7 @@
             </ion-text>
           </span>
                     <ng-container *ngIf="order.VariablesJsonObj.isPay">
-                        <ion-button (click)="onPay($event)" size="small" color="secondary">To Pay
+                        <ion-button (click)="onPay($event)" size="small" color="secondary">Pay now
                         </ion-button>
                     </ng-container>
                 </div>
@@ -51,7 +51,7 @@
                                 </div>
                                 <ng-container>
                                     <ion-button *ngIf="ticket.VariablesJsonObj.isShowRefundButton" size="small" (click)="onRefundFlightTicket($event, ticket)" color="danger">
-                                        <ion-text color="light">ReTick </ion-text>
+                                        <ion-text color="light">ReTick</ion-text>
                                     </ion-button>
                                     <ng-container *ngIf="ticket.VariablesJsonObj.isCustomApplyRefunding">
                                         <ion-text color="medium" (click)="onHelp($event)">

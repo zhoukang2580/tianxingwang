@@ -1,3 +1,4 @@
+import { LangService } from 'src/app/tmc/lang.service';
 import { InternationalHotelService } from "./../international-hotel.service";
 import {
   Component,
@@ -43,10 +44,11 @@ export class InternationalHotelBookinfosPage implements OnInit {
   dates: { date: string; price: string|number }[] = [];
   constructor(
     private modalCtrl: ModalController,
-    private hotelService: InternationalHotelService,
+    public hotelService: InternationalHotelService,
     private calendarService: CalendarService,
     private configService: ConfigService,
-    private router: Router
+    public router: Router,
+    private LangService: LangService
   ) {
     this.bookInfos$ = this.hotelService.getBookInfoSource();
   }

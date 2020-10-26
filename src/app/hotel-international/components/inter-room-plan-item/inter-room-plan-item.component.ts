@@ -1,3 +1,4 @@
+import { LangService } from './../../../tmc/lang.service';
 import { InternationalHotelService } from "./../../international-hotel.service";
 import {
   Component,
@@ -24,6 +25,16 @@ export class InterRoomPlanItemComponent implements OnInit {
   @Input() room: RoomEntity;
   @Input() hotel: HotelEntity;
   @Input() roomPlan: RoomPlanEntity;
+  @Input() langOpt = {
+      Exceeding: "超标",
+      Book: "预定",
+      NonBook: "不可预订",
+      NowPay: "现付",
+      PayIn: "预付",
+      MonthlyPay: "月结",
+      SoldOut: "满房",
+      Ok: "及时确认"
+    };
   @Output() bookRoom: EventEmitter<any>;
   HotelBookType = HotelBookType;
   HotelPaymentType = HotelPaymentType;
@@ -33,7 +44,8 @@ export class InterRoomPlanItemComponent implements OnInit {
   }
   constructor(
     private hotelService: InternationalHotelService,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private LangService: LangService
   ) {
     this.bookRoom = new EventEmitter();
   }

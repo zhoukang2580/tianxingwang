@@ -1,63 +1,67 @@
 .tab {
-  position: relative;
-  padding: 0.5em 1em;
-  &.has-item-filtered::after {
-    position: absolute;
-    right: 2em;
-    background-color: var(--ion-color-secondary);
-    top: 0.5em;
-    display: block;
-    content: "";
-    height: 0.5em;
-    width: 0.5em;
-    border-radius: 50%;
-    min-width: 0.5em;
-    min-height: 0.5em;
-  }
-  color: var(--ion-color-medium);
-  &.active {
-    color: var(--ion-color-secondary);
-    &::before {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      display: block;
-      content: "";
-      width: 0.3em;
-      background-color: var(--ion-color-secondary);
+    position: relative;
+    padding: 0.5em 1em;
+    text-transform: capitalize;
+    &.has-item-filtered::after {
+        position: absolute;
+        right: 2em;
+        background-color: var(--ion-color-secondary);
+        top: 0.5em;
+        display: block;
+        content: "";
+        height: 0.5em;
+        width: 0.5em;
+        border-radius: 50%;
+        min-width: 0.5em;
+        min-height: 0.5em;
     }
-  }
+    color: var(--ion-color-medium);
+    &.active {
+        color: var(--ion-color-secondary);
+        &::before {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            display: block;
+            content: "";
+            width: 0.3em;
+            background-color: var(--ion-color-secondary);
+        }
+    }
 }
+
 .wrapper {
-  display: flex;
-  height: 55vh;
-  padding-top: 0.5em;
-  .tabs {
-    width: 30%;
-    // background: var(--ion-color-primary);
-    overflow: scroll;
-  }
-  .items {
-    -webkit-overflow-scrolling: touch;
-    overflow: auto;
-    width: 75%;
-    ul {
-      margin: 0;
-      padding: 0;
-      list-style: none;
+    display: flex;
+    height: 55vh;
+    padding-top: 0.5em;
+    .tabs {
+        width: 30%;
+        // background: var(--ion-color-primary);
+        overflow: scroll;
     }
-    ul li {
-      display: inline-block;
-      margin: 0 0.08em 0.08em 0;
-      padding: 0.09em 0.13em;
+    .items {
+        -webkit-overflow-scrolling: touch;
+        overflow: auto;
+        width: 75%;
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        ul li {
+            display: inline-block;
+            margin: 0 0.08em 0.08em 0;
+            padding: 0.09em 0.13em;
+        }
+        ion-chip {
+            width: 100%;
+            justify-content: center;
+            text-transform: capitalize;
+        }
     }
-    ion-chip {
-      width: 100%;
-      justify-content: center;
-    }
-  }
 }
+
 :host {
-  display: block;
+    display: block;
 }
