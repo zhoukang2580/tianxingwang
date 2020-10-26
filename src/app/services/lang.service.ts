@@ -118,20 +118,24 @@ export class LangService {
         txt: string;
       }[] = [];
       tags.forEach((t, idx) => {
-        const arr = t.textContent.match(/[\u4e00-\u9fa5]{1,}/g);
-        if (arr) {
-          arr.forEach((it) => {
-            contents.push({
-              tag: t,
-              txt: it,
-            });
-          });
-        } else {
-          contents.push({
-            tag: t,
-            txt: t.textContent,
-          });
-        }
+        // const arr = t.textContent.match(/[\u4e00-\u9fa5]{1,}/g);
+        // if (arr) {
+        //   arr.forEach((it) => {
+        //     contents.push({
+        //       tag: t,
+        //       txt: it,
+        //     });
+        //   });
+        // } else {
+        //   contents.push({
+        //     tag: t,
+        //     txt: t.textContent,
+        //   });
+        // }
+        contents.push({
+          tag: t,
+          txt: t.textContent,
+        });
       });
       this.subscription = this.getTranslateContent(contents.map((it) => it.txt))
         .pipe(
