@@ -155,7 +155,7 @@
                         </ion-label>
                     </div>
                     <div class='room-plans' *ngIf='room["isShowRoomPlans"]' @flyInOut>
-                        <app-room-plan-item *ngFor='let plan of room.RoomPlans' [langOpt]='{
+                        <app-room-plan-item_en *ngFor='let plan of room.RoomPlans' [langOpt]='{
               Exceeding: "Exceeding",
               Book: "Book",
               NonBook: "NonBook",
@@ -164,7 +164,7 @@
               MonthlyPay: "MonthlyPay",
               SoldOut:"Sold out"
             }' [colors]='colors' [room]='room' [roomPlan]='plan' [hotel]='hotel' (bookRoom)='onBookRoomPlan($event)'>
-                        </app-room-plan-item>
+                        </app-room-plan-item_en>
                     </div>
                 </div>
             </ion-item>

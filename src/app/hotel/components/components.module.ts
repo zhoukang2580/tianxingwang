@@ -20,6 +20,7 @@ import { HotelStarPriceComponent } from './hotel-starprice/hotel-starprice.compo
 import { WarrantyComponent } from './warranty/warranty.component';
 import { OverHotelComponent } from './over-hotel/over-hotel.component';
 import { RoomShowItemEnComponent } from './room-show-item_en/room-show-item_en.component';
+import { RoomPlanItemEnComponent } from './room-plan-item_en/room-plan-item_en.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { RoomShowItemEnComponent } from './room-show-item_en/room-show-item_en.c
     HotelStarPriceComponent,
     HotelListItemComponent,
     RoomPlanItemComponent,
+    RoomPlanItemEnComponent,
     RoomShowItemComponent,
     RoomShowItemEnComponent,
     ChangeRoomplanDateComponent,
@@ -60,6 +62,7 @@ import { RoomShowItemEnComponent } from './room-show-item_en/room-show-item_en.c
     HotelStarPriceComponent,
     HotelStarPriceComponent,
     RoomPlanItemComponent,
+    RoomPlanItemEnComponent,
     RoomShowItemComponent,
     RoomShowItemEnComponent,
     TmcComponentsModule,

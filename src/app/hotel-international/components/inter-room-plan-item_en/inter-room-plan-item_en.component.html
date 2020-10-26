@@ -2,17 +2,11 @@
     <div *ngIf='room?.RoomDetails'>
         <div class="room-detail-desc">
             <span *ngIf='getBreakfast(roomPlan) as it'>
-        <ion-text color='success'>{{it}}</ion-text>
+        <ion-text color='success'>{{it.replace('无早','No Breakfast')}}</ion-text>
       </span>
-            <ng-container *ngIf='getBedType(room) as it'>
-                <span *ngIf='it.Description'>{{it.Description}}</span>
-            </ng-container>
-            <ng-container *ngIf='getCapacity(room) as it'>
-                <span *ngIf='it.Description'>可住{{it.Description}}人</span>
-            </ng-container>
-            <ng-container *ngIf='getRoomArea(room) as it'>
-                <span *ngIf='it.Description'>{{it.Description}}m²</span>
-            </ng-container>
+            <span *ngIf='getBedType(room) as it'>{{it.Description}}</span>
+            <span *ngIf='getCapacity(room) as it'>可住{{it.Description}}人</span>
+            <span *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</span>
         </div>
         <div class="room-detail-desc">
             <span>
@@ -23,12 +17,12 @@
 
         <div class="room-detail-desc">
             <!-- *ngIf='roomPlan?.BookType == HotelBookType.Elong || roomPlan?.BookType == HotelBookType.Inventory' -->
-            <ion-text color='secondary' class='desc' (click)='showRoomRateRuleMessage(roomPlan)'>{{getRules(roomPlan)}}
+            <ion-text color='secondary' class='desc' (click)='showRoomRateRuleMessage(roomPlan)'>{{getRules(roomPlan).replace('不可取消','Non-refundable')}}
             </ion-text>
-            {{langOpt.Ok}}
+            ({{langOpt.Ok}})
         </div>
         <!-- <div>{{colors|json}} {{getRoomPlanUniqueId(roomPlan)}}</div> -->
-        <div class="price" *ngIf='colors[getRoomPlanUniqueId(roomPlan)] as color' [class.can-not-be-book]='color.includes("danger")||color.includes("medium")' [attr.color]='color.includes("danger")?"danger":color'>
+        <div class="price" *ngIf='colors[getRoomPlanUniqueId(roomPlan)] as color' [class.can-not-be-book]='color.includes("danger")' [attr.color]='color.includes("danger")?"danger":color'>
             <ion-text color='danger' class='avg-price'>￥{{getAvgPrice(roomPlan)}}</ion-text>
             <div class="btn-book" (click)='onBook(roomPlan,color)'>
                 <ion-button slot='end' class='ion-no-margin' [class.disabled]='color.includes("danger")' expand='full'>
@@ -44,9 +38,11 @@
                     <ion-text *ngIf='color.includes("disabled")' color='danger'>{{langOpt.NonBook}}</ion-text>
                 </ng-container>
                 <ng-container *ngIf='isAgent'>
-                    <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>{{langOpt.NowPay}}</ion-text>
-                    <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>{{langOpt.PayIn}}</ion-text>
-                    <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>{{langOpt.MonthlyPay}}</ion-text>
+                    <ng-container>
+                        <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>{{langOpt.NowPay}}</ion-text>
+                        <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>{{langOpt.PayIn}}</ion-text>
+                        <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>{{langOpt.MonthlyPay}}</ion-text>
+                    </ng-container>
                 </ng-container>
             </div>
         </div>

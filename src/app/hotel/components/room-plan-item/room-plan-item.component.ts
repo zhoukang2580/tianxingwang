@@ -1,5 +1,5 @@
+import { LangService } from 'src/app/tmc/lang.service';
 import { PopoverController } from "@ionic/angular";
-import { AppHelper } from "./../../../appHelper";
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { HotelService } from "./../../hotel.service";
 import {
@@ -12,12 +12,7 @@ import {
   Output,
 } from "@angular/core";
 import { RoomEntity } from "../../models/RoomEntity";
-import { RoomPlanRuleType } from "../../models/RoomPlanRuleType";
-import { HotelSupplierType } from "../../models/HotelSupplierType";
 import { HotelBookType } from "../../models/HotelBookType";
-import { of, Subscription } from "rxjs";
-import { map, tap } from "rxjs/operators";
-import { StaffService } from "src/app/hr/staff.service";
 import { HotelEntity } from "../../models/HotelEntity";
 import { HotelPaymentType } from "../../models/HotelPaymentType";
 import { ShowMsgComponent } from "../show-msg/show-msg.component";
@@ -38,7 +33,8 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
     NowPay: "现付",
     PayIn: "预付",
     MonthlyPay: "月结",
-    SoldOut: "满房"
+    SoldOut: "满房",
+    Ok: "及时确认"
   };
   @Output() bookRoom: EventEmitter<any>;
   HotelBookType = HotelBookType;
@@ -49,8 +45,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   }
   constructor(
     private hotelService: HotelService,
-    private popoverCtrl: PopoverController
-  ) {
+    private popoverCtrl: PopoverController  ) {
     this.bookRoom = new EventEmitter();
   }
   getRules(roomPlan: RoomPlanEntity) {
@@ -94,7 +89,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   getBreakfast(plan: RoomPlanEntity) {
     return this.hotelService.getBreakfast(plan);
   }
-  onBook(roomPlan: RoomPlanEntity, color: string) {
+  onBook(color: string) {
     this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room, color });
   }
   ngOnInit() {}
