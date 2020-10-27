@@ -242,6 +242,9 @@ export class MemberService {
         }
       };
       idInputEle.onblur = () => {
+        if (IDCARDRULE_REG.test(idInputEle.value)) {
+          this.changeBirthByIdNumber(idInputEle.value, credential);
+        }
         this.idNumberTip(idInputEle, credential);
       };
     }
@@ -364,6 +367,7 @@ export class MemberService {
     if (this.plt.is("ios")) {
       return d.replace(/-/g, "/");
     }
+    return d;
   }
   async validateCredential(c: MemberCredential, container: HTMLElement) {
     if (!c) {
@@ -446,6 +450,7 @@ export class MemberService {
           if (b) {
             const str = `${b.substr(0, 4)}-${b.substr(4, 2)}-${b.substr(6, 2)}`;
             credential.Birthday = this.getFormatedDate(str);
+            console.log("b", b, " credential.Birthday " + credential.Birthday);
           } else {
             // one.Birthday = null;
           }

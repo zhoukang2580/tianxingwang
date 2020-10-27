@@ -6,15 +6,16 @@ import { Routes, RouterModule } from "@angular/router";
 import { IonicModule } from "@ionic/angular";
 
 import { AccountSecurityEnPage } from "./account-security-en.page";
-import { AuthorityGuard } from 'src/app/guards/authority.guard';
-import { AppComponentsModule } from 'src/app/components/appcomponents.module';
+import { AuthorityGuard } from "src/app/guards/authority.guard";
+import { AppComponentsModule } from "src/app/components/appcomponents.module";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: AccountSecurityEnPage,
-    canActivate:[AuthorityGuard]
-  }
+    canActivate: [AuthorityGuard, StylePageGuard],
+  },
 ];
 
 @NgModule({
@@ -23,8 +24,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule
+    AppComponentsModule,
   ],
-  declarations: [AccountSecurityEnPage]
+  declarations: [AccountSecurityEnPage],
 })
 export class AccountSecurityEnPageModule {}
