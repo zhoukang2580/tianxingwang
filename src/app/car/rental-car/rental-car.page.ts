@@ -293,7 +293,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
         //   }
         // });
         this.router.navigate([AppHelper.getRoutePath("open-rental-car")], {
-          queryParams: { url },
+          queryParams: { url: encodeURIComponent(url) },
         });
       } else {
         this.carService.setOpenUrlSource(url);
