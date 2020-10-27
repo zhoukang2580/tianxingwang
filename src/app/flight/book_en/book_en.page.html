@@ -134,11 +134,11 @@
                         <ion-item-divider color="primary">
                             Insurance:
                         </ion-item-divider>
-                        <ion-radio-group allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId' (ionChange)='calcTotalPrice()'>
+                        <ion-radio-group mode="md" allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId' (ionChange)='calcTotalPrice()'>
                             <div *ngFor='let insurance of combindInfo?.insuranceProducts' style="margin-top: 1em;background-color: var(--ion-color-primary);padding-right: 1em;">
                                 <ion-buttons>
                                     <ion-item style="--background:transparent;flex: 1;">
-                                        <ion-radio [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
+                                        <ion-radio mode="md" [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
                                         <ion-label class="ion-margin-horizontal">
                                             {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}RMB)</ion-label>
                                     </ion-item>
