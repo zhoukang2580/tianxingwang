@@ -62,9 +62,9 @@
             </ng-container>
           </div>
         </div>
-        <ion-item (click)='onOpenMap()' lines='none'>
+        <ion-item  lines='none'>
           <ion-label color='secondary' class="ion-text-wrap">{{hotel?.Address}}</ion-label>
-          <ion-icon name="location" color='secondary'></ion-icon>
+          <ion-icon name="location" color='secondary' *ngIf=''></ion-icon>
         </ion-item>
         <ion-item lines='none'>
           <ion-label>
@@ -202,7 +202,7 @@
     <ion-label>请重新刷新</ion-label>
   </ng-template>
   <div #divforscroll class='div-for-scroll'>
-    <ion-item detail (click)='onOpenMap()' lines='none'>
+    <ion-item detail (click)='onOpenMap()' lines='none' *ngIf=''>
       <ion-button fill='clear' color='secondary'>打开地图查看
       </ion-button>
     </ion-item>
