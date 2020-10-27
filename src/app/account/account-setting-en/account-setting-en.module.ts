@@ -8,12 +8,13 @@ import { IonicModule } from "@ionic/angular";
 
 import { AccountSettingEnPage } from "./account-setting-en.page";
 import { AuthorityGuard } from "src/app/guards/authority.guard";
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: AccountSettingEnPage,
-    canActivate: [AuthorityGuard]
+    canActivate: [AuthorityGuard,StylePageGuard]
   }
 ];
 
