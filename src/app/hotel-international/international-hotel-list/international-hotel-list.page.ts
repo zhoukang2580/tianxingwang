@@ -296,10 +296,10 @@ export class InternationalHotelListPage
   private checkSearchTextChanged() {
     if (this.searchCondition) {
       return (
-        this.searchCondition.searchText &&
-        this.oldSearchText &&
-        (this.searchCondition.searchText.Value != this.oldSearchText.Value ||
-          this.searchCondition.searchText.Text != this.oldSearchText.Text)
+        !this.searchCondition.searchText ||
+        !this.oldSearchText ||
+        this.searchCondition.searchText.Value != this.oldSearchText.Value ||
+        this.searchCondition.searchText.Text != this.oldSearchText.Text
       );
     }
     return false;
