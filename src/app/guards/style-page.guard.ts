@@ -26,13 +26,13 @@ export class StylePageGuard implements CanActivate {
     | UrlTree {
     try {
       const style: string = AppHelper.getStyle();
-      if (
-        !style ||
-        style.toLowerCase() == "cn" ||
-        style.toLowerCase() == "zh_cn"
-      ) {
-        return true;
-      }
+      // if (
+      //   !style ||
+      //   style.toLowerCase() == "cn" ||
+      //   style.toLowerCase() == "zh_cn"
+      // ) {
+      //   return true;
+      // }
       const routePath = this.getRoute(state.url);
       const segs = routePath.split("/");
       const styleRoute = `${this.getRoute(state.url)}_${style}`;
