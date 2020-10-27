@@ -25,6 +25,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "select-inter-city_en",
+    loadChildren: () =>
+      import("./select-inter-city_en/select-inter-city_en.module").then(
+        m => m.SelectInterCityEnPageModule
+      )
+  },
+  {
     path: "international-hotel-detail",
     loadChildren: () =>
       import(

@@ -180,7 +180,7 @@ export class SearchHotelEnPage implements OnInit, OnDestroy {
     if (this.isDomestic) {
       this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
     } else {
-      this.router.navigate([AppHelper.getRoutePath("select-inter-city")]);
+      this.router.navigate([AppHelper.getRoutePath("select-inter-city_en")]);
     }
   }
 

@@ -405,7 +405,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
   onAbolishFlightOrder(evt: CustomEvent, ticket: OrderFlightTicketEntity) {
     evt.stopPropagation();
     AppHelper.alert(
-      "确定取消订单？",
+      this.LangService.isCn ? "确定取消订单?" : "Confirm order cancellation",
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
@@ -422,7 +422,7 @@ export class OrderItemComponent implements OnInit, OnChanges {
   onAbolishTraninOrder(evt: CustomEvent, train: OrderTrainTicketEntity) {
     evt.stopPropagation();
     AppHelper.alert(
-      "确定取消订单？",
+      this.LangService.isCn ? "确定取消订单?" : "Confirm order cancellation",
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
