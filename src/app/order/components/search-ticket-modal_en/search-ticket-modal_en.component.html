@@ -1,0 +1,57 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
+        </ion-buttons>
+        <ion-title>{{title||"Order query conditions"}}</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item>
+            <ion-label>Passenger name</ion-label>
+            <ion-input type='text' placeholder='Passenger name' [(ngModel)]='condition.passengerName'></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Start date</ion-label>
+            <!-- <ion-input type='date' placeholder='开始日期' [(ngModel)]='condition.vmFromDate' value='{{condition.vmFromDate}}'>
+      </ion-input> -->
+            <ion-datetime displayFormat="YYYY-MM-DD" placeholder='Start date' [(ngModel)]='condition.vmFromDate' doneText="确定" value="{{condition.vmFromDate}}" cancelText="取消">
+            </ion-datetime>
+        </ion-item>
+        <ion-item>
+            <ion-label>End date</ion-label>
+            <!-- <ion-input type='date' placeholder='结束日期' [(ngModel)]='condition.vmToDate' value="{{condition.vmToDate}}">
+      </ion-input> -->
+            <ion-datetime displayFormat="YYYY-MM-DD" placeholder='End data' [(ngModel)]='condition.vmToDate' doneText="确定" value="{{condition.vmToDate}}" cancelText="取消">
+            </ion-datetime>
+        </ion-item>
+        <ion-item>
+            <ion-label>Order No</ion-label>
+            <ion-input type='text' placeholder='Order No' [(ngModel)]='condition.orderNumber'></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Order status</ion-label>
+            <ion-select value="" okText="Determine" cancelText="Cancel" [(ngModel)]='condition.orderStatus'>
+                <ion-select-option [value]="item.value" *ngFor='let item of orderStatus' notranslate>{{item.label}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item *ngIf='condition?.orderFlightTicketStatusTypes?.length'>
+            <ion-label>Ticket status</ion-label>
+            <ion-select value="" okText="Determine" cancelText="Cancel" [(ngModel)]='condition.orderFlightTicketStatusType'>
+                <ion-select-option [value]="item.Value" *ngFor='let item of condition.orderFlightTicketStatusTypes'>
+                    {{item.Text}}</ion-select-option>
+            </ion-select>
+        </ion-item>
+        <ion-item>
+            <ion-label>Starting city</ion-label>
+            <ion-input type='text' placeholder='Starting city' [(ngModel)]='condition.fromCityName'></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Arrival City</ion-label>
+            <ion-input type='text' placeholder='Arrival City' [(ngModel)]='condition.toCityName'></ion-input>
+        </ion-item>
+    </ion-list>
+    <ion-button class='ion-margin-start ion-margin-end' (click)='search()' color='secondary' expand='block'>Search
+    </ion-button>
+</ion-content>
