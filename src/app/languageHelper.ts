@@ -508,6 +508,9 @@ export class LanguageHelper {
     return "请输入验证码";
   }
   static getSlidvalidateInnerTip() {
+    if (this.lang == "en") {
+      return "Slide right to fill puzzle";
+    }
     return "向右滑动填充拼图";
   }
   static getLoginNameTip() {
