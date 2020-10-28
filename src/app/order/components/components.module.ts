@@ -31,6 +31,7 @@ import { OrderItemEnComponent } from './order-item_en/order-item_en.component';
 import { FlightOrderDetailEnComponent } from './flight-order-detail_en/flight-order-detail_en.component';
 import { OrderItemPricePopoverEnComponent } from './order-item-price-popover_en/order-item-price-popover_en.component';
 import { SearchTicketModalEnComponent } from './search-ticket-modal_en/search-ticket-modal_en.component';
+import { CarItemEnComponent } from './car-item-en/car-item-en.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { SearchTicketModalEnComponent } from './search-ticket-modal_en/search-ti
     FlightTripComponent,
     FlightTripEnComponent,
     SwiperSlideContentComponent,
-    RefundFlightTicketTipComponent
+    RefundFlightTicketTipComponent,
+    CarItemEnComponent
   ],
   imports: [
     CommonModule,
@@ -71,6 +73,7 @@ import { SearchTicketModalEnComponent } from './search-ticket-modal_en/search-ti
   ],
   exports: [
     OrderItemComponent,
+    CarItemEnComponent,
     OrderItemEnComponent,
     UploadFileComponent,
     CarItemComponent,

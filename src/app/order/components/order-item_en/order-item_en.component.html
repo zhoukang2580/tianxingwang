@@ -64,7 +64,7 @@
                                         <ion-text color="medium">改签申请中</ion-text>
                                     </ng-container>
                                     <ion-button *ngIf="ticket.VariablesJsonObj.isShowCancelButton" size="small" (click)="onAbolishFlightOrder($event, ticket)" color="secondary">
-                                        <ion-text color="light">CANCEL</ion-text>
+                                        <ion-text color="light">Cancel</ion-text>
                                     </ion-button>
                                 </ng-container>
                             </div>
@@ -208,7 +208,7 @@
         <ng-container *ngFor="let orderHotel of order.OrderHotels">
             <ion-grid class="hotel" style="margin-left: -8px; min-width: 5.7em">
                 <ion-row>
-                    <ion-col size="2" style="min-width: 5.7em">
+                    <ion-col size="3" style="min-width: 5.7em">
                         <ion-text color="medium"> Odd No.</ion-text>
                     </ion-col>
                     <ion-col class="select-text" class="dark">
@@ -219,7 +219,7 @@
                     </ion-col>
                 </ion-row>
                 <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center">
-                    <ion-col size="2" style="min-width: 5.7em">
+                    <ion-col size="3" style="min-width: 5.7em">
                         <ion-text color="medium">Payable</ion-text>
                     </ion-col>
                     <ion-col>
@@ -239,7 +239,7 @@
                     </ion-col>
                 </ion-row>
                 <ion-row *ngIf="order?.OrderPassengers?.length">
-                    <ion-col size="2" style="min-width: 5.7em">
+                    <ion-col size="3" style="min-width: 5.7em">
                         <ion-text color="medium">Passenger</ion-text>
                     </ion-col>
                     <ion-col>
@@ -256,7 +256,7 @@
                     </ion-col>
                 </ion-row>
                 <ion-row>
-                    <ion-col size="2" style="min-width: 5.7em">
+                    <ion-col size="3" style="min-width: 5.7em">
                         <ion-text color="medium">Trip</ion-text>
                     </ion-col>
                     <ion-col>
@@ -291,7 +291,7 @@
         </ng-container>
     </ng-container>
     <ng-container *ngIf="order.OrderCars?.length">
-        <app-car-item [order]="order"></app-car-item>
+        <app-car-item-en [order]="order"></app-car-item-en>
     </ng-container>
 </div>
 <!-- <ion-datetime cancelText='取消' doneText='确定' class="hidden ion-hide" displayFormat="YYYY-MM-DD" ></ion-datetime> -->
