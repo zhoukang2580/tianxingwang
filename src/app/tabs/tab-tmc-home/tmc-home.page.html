@@ -59,10 +59,10 @@
             <div class="blueBack" *ngIf="agentNotices?.length" (click)='goToBulletinList("agentNotice")'>
                 <ion-slides class="announcement-container" [options]='swiperOption' (ionSlideTouchEnd)='onSlideTouchEnd()'>
                     <ion-slide *ngFor='let n of agentNotices'>
-                        <div class='announcement'>
+                        <div class='announcement notranslate'>
                             <ion-icon name="notifications-outline" color="secondary" style="font-size:18px;padding-right: 5px">
                             </ion-icon>
-                            <div class="text ion-text-start">{{n.text}}</div>
+                            <div class="text ion-text-start notranslate">{{n.text}}</div>
                             <ion-icon name="chevron-forward-outline" style="font-size:18px"></ion-icon>
                         </div>
                     </ion-slide>
