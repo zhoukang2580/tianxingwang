@@ -15,7 +15,7 @@ export class LanguageHelper {
     },
     getCanSwipeIdCardTip(): any {
       if (LanguageHelper.lang == "en") {
-        return "Can Swipe ID Card Enter Station";
+        return "Can Swipe ID Card To Enter Station";
       }
       return "可刷身份证进站";
     },
