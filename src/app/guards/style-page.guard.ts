@@ -27,18 +27,18 @@ export class StylePageGuard implements CanActivate {
     try {
       const style: string = AppHelper.getStyle();
       let styleRoute = `${this.getRoute(state.url)}_${style}`;
-      if (
-        !style ||
-        style.toLowerCase() == "cn" ||
-        style.toLowerCase() == "zh_cn"
-      ) {
-        styleRoute = `${this.getRoute(state.url)}`;
-        console.log("styleRoute ", styleRoute);
-        this.router.navigate([styleRoute], {
-          queryParams: next.queryParams,
-        });
-        return false;
-      }
+      // if (
+      //   !style ||
+      //   style.toLowerCase() == "cn" ||
+      //   style.toLowerCase() == "zh_cn"
+      // ) {
+      //   styleRoute = `${this.getRoute(state.url)}`;
+      //   console.log("styleRoute ", styleRoute);
+      //   this.router.navigate([styleRoute], {
+      //     queryParams: next.queryParams,
+      //   });
+      //   return false;
+      // }
       const routePath = this.getRoute(state.url);
       const segs = routePath.split("/");
       if (segs.length > 1) {
