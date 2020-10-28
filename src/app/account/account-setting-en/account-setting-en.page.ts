@@ -64,7 +64,7 @@ export class AccountSettingEnPage implements OnInit, OnDestroy {
           cssClass: "notranslate",
           role: !style ? "selected" : "",
           handler: () => {
-            this.langService.setLang("cn");
+            this.langService.setLang("");
             this.reloadPage();
           },
         },
