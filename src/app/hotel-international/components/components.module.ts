@@ -18,6 +18,7 @@ import { OverHotelComponent } from './over-hotel/over-hotel.component';
 import { InterHotelQueryEnComponent } from './inter-hotel-query_en/inter-hotel-query_en.component';
 import { InterRoomShowItemEnComponent } from './inter-room-show-item_en/inter-room-show-item_en.component';
 import { InterRoomPlanItemEnComponent } from './inter-room-plan-item_en/inter-room-plan-item_en.component';
+import { InterHotelStarPriceEnComponent } from './inter-hotel-starprice_en/inter-hotel-starprice_en.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { InterRoomPlanItemEnComponent } from './inter-room-plan-item_en/inter-ro
     InterHotelQueryComponent,
     InterHotelQueryEnComponent,
     InterHotelStarPriceComponent,
+    InterHotelStarPriceEnComponent,
     InterRecommendRankComponent,
     AmapComponent,
     OverHotelComponent
@@ -56,6 +58,7 @@ import { InterRoomPlanItemEnComponent } from './inter-room-plan-item_en/inter-ro
     InterRoomShowItemEnComponent,
     ChangeInterRoomPlanDateComponent,
     InterHotelStarPriceComponent,
+    InterHotelStarPriceEnComponent,
     InterRecommendRankComponent,
     OverHotelComponent
   ]

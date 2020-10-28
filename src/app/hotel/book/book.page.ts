@@ -1248,7 +1248,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       const c = this.combindInfos.find((it) => !it.arrivalHotelTime);
       if (c) {
         this.showErrorMsg(
-          "请选择到店信息",
+          this.LangService.isCn ? "请选择到店信息" : "Please select store information",
           c,
           this.getEleByAttr("arrivalHoteltimeid", c.id)
         );
@@ -1334,9 +1334,15 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["order-list"], {
-      queryParams: { tabId: tab },
-    });
+    if(this.LangService.isCn){
+      this.router.navigate(["order-list"], {
+        queryParams: { tabId: tab },
+      });
+    } else {
+      this.router.navigate(["order-list_en"], {
+        queryParams: { tabId: tab },
+      });
+    }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {

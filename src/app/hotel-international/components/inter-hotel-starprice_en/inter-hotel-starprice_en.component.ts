@@ -23,11 +23,11 @@ interface ILowerUper {
   upper: number;
 }
 @Component({
-  selector: "app-inter-hotel-starprice",
-  templateUrl: "./inter-hotel-starprice.component.html",
-  styleUrls: ["./inter-hotel-starprice.component.scss"]
+  selector: "app-inter-hotel-starprice_en",
+  templateUrl: "./inter-hotel-starprice_en.component.html",
+  styleUrls: ["./inter-hotel-starprice_en.component.scss"]
 })
-export class InterHotelStarPriceComponent
+export class InterHotelStarPriceEnComponent
   implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   private customepriceTab: IStarPriceTab<IStarPriceTabItem> = {
@@ -97,26 +97,13 @@ export class InterHotelStarPriceComponent
   private resetTabs() {
     if (this.hotelQuery) {
       this.hotelQuery.starAndPrices = [];
-      // this.hotelQuery.starAndPrices.push({
-      //   id: AppHelper.uuid(),
-      //   tag: "types",
-      //   label: "分类(可多选)",
-      //   items: ["公寓", "客栈", "舒适", "高档", "豪华"].map((it, idx) => {
-      //     return {
-      //       label: `${it}`,
-      //       isMulti: true,
-      //       id: `${idx}`,
-      //       value: `${idx + 1}`
-      //     } as IStarPriceTabItem;
-      //   })
-      // });
       this.hotelQuery.starAndPrices.push(this.customepriceTab);
 
       this.hotelQuery.starAndPrices.push({
         id: AppHelper.uuid(),
         label: "价格",
         tag: "price",
-        items: ["400以下", "401-700", "701-1000", "1001-1300", "1300以上"].map(
+        items: ["400 Or Less", "401-700", "701-1000", "1001-1300", "1300 Or More"].map(
           (it, idx) => {
             const minPrice =
               idx === 0 ? 0 : it.includes("上") ? 1300 : it.split("-")[0];
@@ -137,7 +124,7 @@ export class InterHotelStarPriceComponent
         id: AppHelper.uuid(),
         label: "星级(可多选)",
         tag: "stars",
-        items: ["一星", "二星", "三星", "四星", "五星"].map((it, idx) => {
+        items: ["1 Star", "2 Stars", "3 Stars", "4 Stars", "5 Stars"].map((it, idx) => {
           return {
             label: `${it}`,
             isMulti: true,

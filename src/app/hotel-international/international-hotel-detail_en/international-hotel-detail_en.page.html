@@ -186,7 +186,7 @@
                     <ng-container *ngFor='let detail of hotelDetails'>
                         <ion-row *ngIf='detail.Description' class="detail-info">
                             <ion-col size='2'>
-                                <ion-text fill='clear' (click)='detail["isShowMoreDesc"]=!detail["isShowMoreDesc"]'>
+                                <ion-text class="ion-text" fill='clear' (click)='detail["isShowMoreDesc"]=!detail["isShowMoreDesc"]'>
                                     {{detail.Name}}
                                 </ion-text>
                             </ion-col>

@@ -792,7 +792,7 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["order-list"], {
+    this.router.navigate(["order-list_en"], {
       queryParams: { tabId: tab, fromRoute: "bookflight" },
     });
   }

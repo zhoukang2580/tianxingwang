@@ -1,3 +1,4 @@
+import { LangService } from 'src/app/services/lang.service';
 import { FlightFareEntity } from "./../flight/models/FlightFareEntity";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
@@ -207,7 +208,8 @@ export class InternationalFlightService {
     private modalCtrl: ModalController,
     private staffService: StaffService,
     private memerService: MemberService,
-    private storage: Storage
+    private storage: Storage,
+    private LangService: LangService
   ) {
     this.searchModelSource = new BehaviorSubject({} as any);
     this.bookInfoSource = new BehaviorSubject([]);
@@ -1389,7 +1391,9 @@ export class InternationalFlightService {
     }
     this.setSearchModelSource(this.searchModel);
     this.router.navigate(
-      [AppHelper.getRoutePath("select-international-flight-city")],
+
+      this.LangService.isCn ? [AppHelper.getRoutePath("select-international-flight-city")] :
+      [AppHelper.getRoutePath("select-international-flight-city_en")],
       {
         queryParams: { requestCode: isFrom ? "select_from_city" : "to_city" },
       }

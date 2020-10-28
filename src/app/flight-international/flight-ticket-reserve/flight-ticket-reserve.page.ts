@@ -734,9 +734,15 @@ export class FlightTicketReservePage
     });
   }
   private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["order-list"], {
-      queryParams: { tabId: tab },
-    });
+    if(this.LangService.isCn){
+      this.router.navigate(["order-list"], {
+        queryParams: { tabId: tab },
+      });
+    } else {
+        this.router.navigate(["order-list_en"], {
+          queryParams: { tabId: tab },
+        });
+    }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {

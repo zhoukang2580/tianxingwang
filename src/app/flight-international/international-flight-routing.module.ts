@@ -23,6 +23,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: "select-international-flight-city_en",
+    loadChildren: () =>
+      import("./select-city_en/select-city_en.module").then(
+        (m) => m.SelectFlightCityEnPageModule
+      ),
+  },
+  {
     path: "international-flight-list",
     loadChildren: () =>
       import("./flight-list/flight-list.module").then(

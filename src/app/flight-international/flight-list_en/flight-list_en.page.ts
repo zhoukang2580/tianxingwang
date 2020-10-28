@@ -485,7 +485,10 @@ export class FlightListEnPage implements OnInit, OnDestroy {
           land: "Landing",
           takeoffland: "Take off and landing Airport",
           morning: "A.M.",
-          afternoon: "P.M."
+          afternoon: "P.M.",
+          Determine: "Determine",
+          Reset: "Reset",
+          Cancel: "Cancel",
         } : {
           NonStopOnly: "仅直达",
           TakeTime: "起飞时段",
@@ -500,7 +503,10 @@ export class FlightListEnPage implements OnInit, OnDestroy {
           land: "降落",
           takeoffland: "起降机场",
           morning: "上午",
-          afternoon: "午后"
+          afternoon: "午后",
+          Determine: "确定",
+          Reset: "重置",
+          Cancel: "取消",
         }
       },
     });

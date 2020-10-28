@@ -1,3 +1,4 @@
+import { LangService } from 'src/app/services/lang.service';
 import { fadeInOut } from "./../../animations/fadeInOut";
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { AppHelper } from "./../../appHelper";
@@ -128,7 +129,8 @@ export class InternationalHotelListPage
     public router: Router,
     private route: ActivatedRoute,
     private configService: ConfigService,
-    private plt: Platform
+    private plt: Platform,
+    private LangService: LangService
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
   }
@@ -241,7 +243,11 @@ export class InternationalHotelListPage
   }
   onViewHotel(hotel: HotelEntity) {
     this.hotelService.viewHotel = hotel;
-    this.router.navigate(["international-hotel-detail"]);
+    this.LangService.isCn
+    ?
+    this.router.navigate(["international-hotel-detail"])
+    :
+    this.router.navigate(["international-hotel-detail_en"]);
   }
   async onChangeDate() {
     await this.hotelService.openCalendar();

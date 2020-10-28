@@ -10,17 +10,11 @@
 ion-chip {
     width: 100%;
     justify-content: center;
-    text-transform: capitalize;
-    font-size: 13px;
-}
-
-ion-item-divider {
-    text-transform: capitalize;
+    font-size: 12px;
 }
 
 .wrapper {
-    -webkit-overflow-scrolling: touch;
-    height: 60vh;
+    // height: 60vh;
     overflow: auto;
 }
 
