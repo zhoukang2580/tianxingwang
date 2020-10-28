@@ -29,6 +29,9 @@
   </div>
   <div class="desc">
     <img [src]="segment.AirlineSrc" class="airlinesrc">
+    <ng-container>
+      <ion-text color='danger' *ngIf='isHasAgreement' style="margin: 0 .25em;">{{langOpt.agreement}}</ion-text>|
+    </ng-container>
     <label>{{segment.AirlineName}}</label>
     <label>|{{segment.Number}}</label>
     <label *ngIf='segment.CodeShareNumber'>|<span class='code-share-number'>{{langOpt.common}}{{segment.CodeShareNumber}}</span> </label>
