@@ -5,7 +5,7 @@ import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit } from "@angular/core";
 
 import { OnDestroy } from "@angular/core";
-import { Router, ActivatedRoute } from "@angular/router";
+import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
@@ -14,7 +14,7 @@ import { Subscription, Observable, of, from, combineLatest } from "rxjs";
 import { Platform, ActionSheetController } from "@ionic/angular";
 import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
 import { StaffService, StaffEntity } from "src/app/hr/staff.service";
-import { tap, map } from "rxjs/operators";
+import { tap, map, filter } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -102,7 +102,7 @@ export class MyPage implements OnDestroy, OnInit {
   private goToProductListPage() {
     this.router.navigate([AppHelper.getRoutePath(`product-list`)]);
   }
-  
+
   async goToPage(name: string, params?: any) {
     const tmc = await this.tmcService.getTmc();
     const msg = "您没有预订权限";
@@ -162,7 +162,7 @@ export class MyPage implements OnDestroy, OnInit {
       queryParams: { bulletinType: params },
     });
   }
-  
+
   onProductClick(tab: ProductItem) {
     if (tab.value != ProductItemType.more) {
       this.goToProductTabsPage(tab);
@@ -187,14 +187,29 @@ export class MyPage implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.items = ORDER_TABS.filter((it) => it.isDisplay);
-    this.items = this.items.filter(
-      (it) =>
-        it.value != ProductItemType.more &&
-        it.value != ProductItemType.waitingApprovalTask
-    );
-
+    this.router.events
+      .pipe(
+        filter(
+          (evt) =>
+            evt instanceof NavigationEnd && this.router.url.includes("tabs/my")
+        )
+      )
+      .subscribe(() => {
+        if (this.langService.isCn) {
+          if (this.router.url.endsWith("en")) {
+            this.router.navigate([
+              this.router.url.substr(1, this.router.url.lastIndexOf("_")),
+            ]);
+          }
+        }
+      });
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (_) => {
+        this.items = this.items.filter(
+          (it) =>
+            it.value != ProductItemType.more &&
+            it.value != ProductItemType.waitingApprovalTask
+        );
         this.msgCount$ = this.messageService.getMsgCount();
         this.config = await this.configService.getConfigAsync();
         this.load(

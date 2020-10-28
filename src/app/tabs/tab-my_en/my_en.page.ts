@@ -1,23 +1,24 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Router, ActivatedRoute } from '@angular/router';
-import { Platform, ActionSheetController } from '@ionic/angular';
-import { Subscription, Observable } from 'rxjs';
-import { AppHelper } from 'src/app/appHelper';
-import { StaffEntity, StaffService } from 'src/app/hr/staff.service';
-import { PageModel } from 'src/app/member/member.service';
-import { MessageService } from 'src/app/message/message.service';
-import { ORDER_TABS } from 'src/app/order/product-list/product-list.page';
-import { ApiService } from 'src/app/services/api/api.service';
-import { ConfigEntity } from 'src/app/services/config/config.entity';
-import { ConfigService } from 'src/app/services/config/config.service';
-import { IdentityEntity } from 'src/app/services/identity/identity.entity';
-import { IdentityService } from 'src/app/services/identity/identity.service';
-import { LangService } from 'src/app/services/lang.service';
-import { ProductItem, ProductItemType } from 'src/app/tmc/models/ProductItems';
-import { TmcService } from 'src/app/tmc/tmc.service';
-import { environment } from 'src/environments/environment';
+import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
+import { Platform, ActionSheetController } from "@ionic/angular";
+import { Subscription, Observable } from "rxjs";
+import { filter } from "rxjs/operators";
+import { AppHelper } from "src/app/appHelper";
+import { StaffEntity, StaffService } from "src/app/hr/staff.service";
+import { PageModel } from "src/app/member/member.service";
+import { MessageService } from "src/app/message/message.service";
+import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
+import { ApiService } from "src/app/services/api/api.service";
+import { ConfigEntity } from "src/app/services/config/config.entity";
+import { ConfigService } from "src/app/services/config/config.service";
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
+import { IdentityService } from "src/app/services/identity/identity.service";
+import { LangService } from "src/app/services/lang.service";
+import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
+import { TmcService } from "src/app/tmc/tmc.service";
+import { environment } from "src/environments/environment";
 
-import { MyPage } from '../tab-my/my.page';
+import { MyPage } from "../tab-my/my.page";
 @Component({
   selector: "app-my_en",
   templateUrl: "my_en.page.html",
@@ -94,7 +95,7 @@ export class MyEnPage implements OnDestroy, OnInit {
   private goToProductListPage() {
     this.router.navigate([AppHelper.getRoutePath(`product-list`)]);
   }
-  
+
   async goToPage(name: string, params?: any) {
     const tmc = await this.tmcService.getTmc();
     const msg = "您没有预订权限";
@@ -154,7 +155,7 @@ export class MyEnPage implements OnDestroy, OnInit {
       queryParams: { bulletinType: params },
     });
   }
-  
+
   onProductClick(tab: ProductItem) {
     if (tab.value != ProductItemType.more) {
       this.goToProductTabsPage(tab);
@@ -178,15 +179,25 @@ export class MyEnPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
+    this.router.events
+      .pipe(filter((evt) => evt instanceof NavigationEnd))
+      .subscribe(() => {
+        if (this.router.url.includes("tabs/my_en")) {
+          if (!this.langService.isEn) {
+            this.router.navigate([
+              this.router.url.substr(1, this.router.url.lastIndexOf("_")),
+            ]);
+          }
+        }
+      });
     this.items = ORDER_TABS.filter((it) => it.isDisplay);
-    this.items = this.items.filter(
-      (it) =>
-        it.value != ProductItemType.more &&
-        it.value != ProductItemType.waitingApprovalTask
-    );
-
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (_) => {
+        this.items = this.items.filter(
+          (it) =>
+            it.value != ProductItemType.more &&
+            it.value != ProductItemType.waitingApprovalTask
+        );
         this.msgCount$ = this.messageService.getMsgCount();
         this.config = await this.configService.getConfigAsync();
         this.load(
