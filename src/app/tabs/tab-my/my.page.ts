@@ -186,7 +186,6 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.items = ORDER_TABS.filter((it) => it.isDisplay);
     this.router.events
       .pipe(
         filter(
@@ -205,6 +204,7 @@ export class MyPage implements OnDestroy, OnInit {
       });
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (_) => {
+        this.items = ORDER_TABS.filter((it) => it.isDisplay);
         this.items = this.items.filter(
           (it) =>
             it.value != ProductItemType.more &&

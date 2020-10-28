@@ -32,7 +32,7 @@
     <!-- <label>{{segment.AirlineName}}</label> agreementDesc-->
     <label (click)="onShowAgreement($event)" *ngIf='isHasAgreement' class="agreement">
       <span style="color: red;">{{langOpt.agreement}}</span>
-      <span style="color: black;">|</span>
+      <span style="color: black;margin: 0 0.15em;">|</span>
     </label>
     <label>{{segment.Number}}</label>
     <label *ngIf='segment.CodeShareNumber'>|<span class='code-share-number'>{{langOpt.common}}{{segment.CodeShareNumber}}</span> </label>
