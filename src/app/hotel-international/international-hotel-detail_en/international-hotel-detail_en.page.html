@@ -4,7 +4,7 @@
             <app-back-button defaultHref=''></app-back-button>
         </ion-buttons>
 
-        <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotelName}}</ion-title>
+        <ion-title [class.has-add-passenger]='!isSelf'>{{hotelName}}</ion-title>
         <!-- <ion-text>{{hotelName}}</ion-text> -->
         <ion-buttons slot='end' [class.can-add-passengers]='!isSelf'>
             <ion-button fill='clear' color='secondary' *ngIf='canAddPassengers' (click)='onFilteredPassenger()' size='small'>

@@ -50,6 +50,8 @@ import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { RoomEntity } from "src/app/hotel/models/RoomEntity";
 import { LanguageHelper } from "src/app/languageHelper";
 import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
+import { LangService } from "src/app/services/lang.service";
+import { SelectPassengerEnPage } from 'src/app/tmc/select-passenger_en/select-passenger_en.page';
 
 @Component({
   selector: "app-international-hotel-detail",
@@ -102,7 +104,8 @@ export class InternationalHotelDetailPage
     private navCtrl: NavController,
     private popoverController: PopoverController,
     private staffService: StaffService,
-    public modalController: ModalController
+    public modalController: ModalController,
+    public langService: LangService
   ) {
     this.isIos = plt.is("ios");
   }
@@ -492,7 +495,7 @@ export class InternationalHotelDetailPage
             if (this.hotel) {
               this.hotel.stars = this.getStars(this.hotel.Category);
               const name = this.hotel.Name;
-              const enName = (this.hotel.HotelSummaries||[]).find(
+              const enName = (this.hotel.HotelSummaries || []).find(
                 (it) => it.Tag == "Name" && it.Lang == "en"
               );
               this.hotelName = name;
@@ -555,7 +558,9 @@ export class InternationalHotelDetailPage
       .filter((it) => it.passenger && it.passenger.AccountId)
       .map((it) => it.passenger && it.passenger.AccountId);
     const m = await this.modalController.create({
-      component: SelectPassengerPage,
+      component: this.langService.isEn
+        ? SelectPassengerEnPage
+        : SelectPassengerPage,
       componentProps: {
         forType: FlightHotelTrainType.HotelInternational,
         removeitem: remove,
