@@ -1,3 +1,4 @@
+import { LangService } from 'src/app/services/lang.service';
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { BookCredentialCompComponent } from "./../../tmc/components/book-credential-comp/book-credential-comp.component";
 import { flyInOut } from "./../../animations/flyInOut";
@@ -141,7 +142,8 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     route: ActivatedRoute,
     private payService: PayService,
-    private plt: Platform
+    private plt: Platform,
+    private LangService: LangService
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(() => {
@@ -1357,7 +1359,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast("下单成功!", 1400, "top");
+          AppHelper.toast(this.LangService.isCn ? "订单已保存!" : "Order saved", 1400, "top");
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
           if (
@@ -1387,12 +1389,12 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           } else {
             if (isSave) {
               await AppHelper.alert(
-                "订单已保存",
+                this.LangService.isCn ? "订单已保存!" : "Order saved",
                 true,
                 LanguageHelper.getConfirmTip()
               );
             } else {
-              await AppHelper.alert("下单成功");
+              await AppHelper.alert(this.LangService.isCn ? "下单成功!" : "Checkout success");
             }
           }
           this.hotelService.removeAllBookInfos();

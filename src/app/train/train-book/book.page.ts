@@ -1,3 +1,4 @@
+import { LangService } from 'src/app/services/lang.service';
 import { RefresherComponent } from "src/app/components/refresher";
 import { SearchTrainModel } from "./../train.service";
 import { IBookOrderResult } from "./../../tmc/tmc.service";
@@ -120,7 +121,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     private tmcService: TmcService,
     private router: Router,
     private calendarService: CalendarService,
-    private plt: Platform
+    private plt: Platform,
+    private LangService : LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -569,7 +571,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           AppHelper.toast(
             exchangeInfo && exchangeInfo.exchangeInfo
               ? exchangeTip
-              : "下单成功!",
+              : this.LangService.isCn ? "下单成功!" : "Checkout success",
             1400,
             "top"
           );
@@ -603,12 +605,12 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
             }
           } else {
             if (isSave) {
-              await AppHelper.alert("订单已保存", true);
+              await AppHelper.alert(this.LangService.isCn ? "订单已保存!" : "Order saved", true);
             } else {
               await AppHelper.alert(
                 exchangeInfo && exchangeInfo.exchangeInfo
                   ? res.Message || exchangeTip
-                  : "下单成功",
+                  : this.LangService.isCn ? "下单成功!" : "Checkout success",
                 true
               );
             }
