@@ -852,11 +852,12 @@ export class OrderListEnPage implements OnInit, OnDestroy {
       )
         .filter((t) => t.value != ProductItemType.more && t.isDisplay)
         .map((t) => {
+          const it = { ...t };
           if (this.langService.isEn) {
-            t.label = t.labelEn;
+            it.label = t.labelEn;
           }
-          t["isActive"] = t.value == this.activeTab.value;
-          return t;
+          it["isActive"] = t.value == this.activeTab.value;
+          return it;
         });
       this.tmc = await this.tmcService.getTmc();
     } catch (e) {

@@ -1,4 +1,4 @@
-import { LangService } from '../../services/lang.service';
+import { LangService } from "../../services/lang.service";
 import { BackButtonComponent } from "../../components/back-button/back-button.component";
 import { IdentityService } from "../../services/identity/identity.service";
 import { OrderTripModel } from "../models/OrderTripModel";
@@ -90,7 +90,7 @@ export class OrderListPage implements OnInit, OnDestroy {
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
     private LangService: LangService
-  ) { }
+  ) {}
 
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
@@ -205,8 +205,8 @@ export class OrderListPage implements OnInit, OnDestroy {
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-          ? "Hotel"
-          : "Train";
+        ? "Hotel"
+        : "Train";
     this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
@@ -318,9 +318,10 @@ export class OrderListPage implements OnInit, OnDestroy {
           text: "确定",
           handler: (data: { year: TV; month: TV; day: TV }) => {
             this.selectDateChange.emit(
-              `${data.year.value}-${+data.month.value < 10
-                ? "0" + data.month.value
-                : data.month.value
+              `${data.year.value}-${
+                +data.month.value < 10
+                  ? "0" + data.month.value
+                  : data.month.value
               }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
             );
           },
@@ -592,10 +593,10 @@ export class OrderListPage implements OnInit, OnDestroy {
           this.activeTab.value == ProductItemType.plane
             ? "Flight"
             : this.activeTab.value == ProductItemType.train
-              ? "Train"
-              : this.activeTab.value == ProductItemType.car
-                ? "Car"
-                : "Hotel";
+            ? "Train"
+            : this.activeTab.value == ProductItemType.car
+            ? "Car"
+            : "Hotel";
       }
       this.orderModel.Type = m.Type;
       if (
@@ -659,11 +660,13 @@ export class OrderListPage implements OnInit, OnDestroy {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }`;
+      url = `${url}&taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }`;
+      url = `${url}?taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }`;
     }
     return url;
   }
@@ -846,12 +849,13 @@ export class OrderListPage implements OnInit, OnDestroy {
       )
         .filter((t) => t.value != ProductItemType.more && t.isDisplay)
         .map((t) => {
+          const it = { ...t };
           if (this.LangService.isEn) {
-            t.label = t.labelEn;
+            it.label = t.labelEn;
           } else {
-            t["isActive"] = t.value == this.activeTab.value;
+            it["isActive"] = t.value == this.activeTab.value;
           }
-          return t;
+          return it;
         });
       this.tmc = await this.tmcService.getTmc();
     } catch (e) {
@@ -886,7 +890,7 @@ export class OrderListPage implements OnInit, OnDestroy {
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-        OrderTravelPayType.Person) &&
+          OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;

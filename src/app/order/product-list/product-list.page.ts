@@ -54,9 +54,7 @@ export const ORDER_TABS: ProductItem[] = [
   //   imageSrc: "assets/svgs/product-more.svg",
   //   isDisplay: true
   // }
-].map((it) => {
-  return { ...it };
-});
+]
 @Component({
   selector: "app-product-list",
   templateUrl: "./product-list.page.html",
