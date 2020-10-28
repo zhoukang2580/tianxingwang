@@ -1,21 +1,24 @@
 ion-row ion-col:first-child {
-  color: var(--ion-color-medium);
-}
-ion-item ion-label {
-  &:first-child{
-    flex: 0.3;
     color: var(--ion-color-medium);
-    align-self: flex-start;
-  }
-  &:last-child{
-    white-space: pre-wrap;
-  }
 }
+
+ion-item ion-label {
+    &:first-child {
+        flex: 1.7;
+        color: var(--ion-color-medium);
+        align-self: flex-start;
+    }
+    &:last-child {
+        white-space: pre-wrap;
+    }
+}
+
 ion-label {
-  user-select: text;
+    user-select: text;
 }
+
 ion-footer {
-  text-align: center;
-  color: var(--ion-color-medium);
-  font-size: 0.8rem;
+    text-align: center;
+    color: var(--ion-color-medium);
+    font-size: 0.8rem;
 }
