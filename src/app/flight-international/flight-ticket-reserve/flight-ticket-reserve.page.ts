@@ -136,7 +136,7 @@ export class FlightTicketReservePage
     private popoverCtrl: PopoverController,
     private router: Router,
     private modalCtrl: ModalController,
-    private LangService: LangService
+    private langService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -676,7 +676,7 @@ export class FlightTicketReservePage
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(this.LangService.isCn ? "下单成功!" : "Checkout success", 1400, "top");
+          AppHelper.toast(this.langService.isCn ? "下单成功!" : "Checkout success", 1400, "top");
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
           if (
@@ -705,9 +705,9 @@ export class FlightTicketReservePage
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(this.LangService.isCn ? "订单已保存" : "Order saved");
+              await AppHelper.alert(this.langService.isCn ? "订单已保存" : "Order saved");
             } else {
-              await AppHelper.alert(this.LangService.isCn ? "下单成功!" : "Checkout success");
+              await AppHelper.alert(this.langService.isCn ? "下单成功!" : "Checkout success");
             }
           }
           this.goToMyOrders(ProductItemType.plane);
@@ -734,7 +734,7 @@ export class FlightTicketReservePage
     });
   }
   private goToMyOrders(tab: ProductItemType) {
-    if(this.LangService.isCn){
+    if(this.langService.isCn){
       this.router.navigate(["order-list"], {
         queryParams: { tabId: tab },
       });
