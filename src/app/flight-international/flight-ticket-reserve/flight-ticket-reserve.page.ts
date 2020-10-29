@@ -1104,7 +1104,7 @@ export class FlightTicketReservePage
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumber", combindInfo.id);
-              showErrorMsg(it.label + "必填", combindInfo, el);
+              showErrorMsg(it.label + this.langService.isCn ? "必填" : " Required ", combindInfo, el);
               return;
             }
             if (it.value) {

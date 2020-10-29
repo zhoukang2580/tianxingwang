@@ -850,7 +850,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumberid", combindInfo.id);
-              this.showErrorMsg(it.label + "必填", combindInfo, el);
+              this.showErrorMsg(it.label + this.LangService.isCn ? "必填" : " Required ", combindInfo, el);
               return;
             }
             if (it.value) {
