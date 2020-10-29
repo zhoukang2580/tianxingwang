@@ -42,8 +42,8 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
 import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
 import { LoginService } from "src/app/services/login/login.service";
-import { LangService } from "src/app/tmc/lang.service";
 import { CONFIG } from "src/app/config";
+import { LangService } from 'src/app/services/lang.service';
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home-df.page.html",

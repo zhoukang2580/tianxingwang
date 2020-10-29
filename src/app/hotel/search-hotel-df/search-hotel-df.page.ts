@@ -146,6 +146,12 @@ export class SearchHotelDfPage implements OnInit, OnDestroy {
   onToggleDomestic() {
     this.isDomestic = !this.isDomestic;
   }
+  onSelectNationality() {
+    this.router.navigate([AppHelper.getRoutePath('select-nationality')])
+  }
+  onAddAdultAndChildren() {
+    this.router.navigate([AppHelper.getRoutePath("room-count-children")]);
+  }
   async onShowStandardDesc() {
     this.isSelf = await this.staffService.isSelfBookType();
     if (!this.isSelf) {
