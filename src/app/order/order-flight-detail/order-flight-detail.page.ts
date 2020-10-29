@@ -1,3 +1,4 @@
+import { LangService } from "src/app/services/lang.service";
 import { Subscription } from "rxjs";
 import { SwiperSlideContentComponent } from "../components/swiper-slide-content/swiper-slide-content.component";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -54,6 +55,7 @@ import { MOCK_TMC_DATA } from "../mock-data";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
 import { OrderFlightTicketType } from "../models/OrderFlightTicketType";
 import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
+import { OrderItemPricePopoverEnComponent } from '../components/order-item-price-popover_en/order-item-price-popover_en.component';
 
 export interface TabItem {
   label: string;
@@ -104,7 +106,8 @@ export class OrderFlightDetailPage implements OnInit, AfterViewInit, OnDestroy {
     private popoverCtrl: PopoverController,
     private domCtrl: DomController,
     private orderService: OrderService,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private langService: LangService
   ) { }
   scrollTop: number;
 
@@ -760,7 +763,7 @@ export class OrderFlightDetailPage implements OnInit, AfterViewInit, OnDestroy {
         orderItems = orderItems.filter((it) => !(it.Tag || "").endsWith("Fee"));
       }
       const p = await this.popoverCtrl.create({
-        component: OrderItemPricePopoverComponent,
+        component: this.langService.isCn ? OrderItemPricePopoverComponent : OrderItemPricePopoverEnComponent,
         cssClass: "ticket-changing",
         componentProps: {
           order: this.orderDetail && this.orderDetail.Order,

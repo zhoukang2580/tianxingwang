@@ -1,3 +1,4 @@
+import { LangService } from 'src/app/services/lang.service';
 import { PriceDetailComponent } from "./../components/price-detail/price-detail.component";
 import { OrderBookDto } from "./../../order/models/OrderBookDto";
 import {
@@ -157,7 +158,8 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
     private popoverCtrl: PopoverController,
     private plt: Platform,
     private router: Router,
-    private storage: Storage
+    private storage: Storage,
+    private LangService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -733,7 +735,7 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast("下单成功!", 1400, "top");
+          AppHelper.toast(this.LangService.isCn ? "下单成功!" : "checkout success!", 1400, "top");
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
           if (
@@ -762,9 +764,9 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
             }
           } else {
             if (isSave) {
-              await AppHelper.alert("订单已保存");
+              await AppHelper.alert(this.LangService.isCn ? "订单已保存!" : "Order saved");
             } else {
-              await AppHelper.alert("下单成功!");
+              await AppHelper.alert(this.LangService.isCn ? "下单成功!" : "checkout success!");
             }
           }
           const hasRight = await this.tmcService.checkHasHotelBookRight();
@@ -790,7 +792,7 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["order-list"], {
+    this.router.navigate(["order-list_en"], {
       queryParams: { tabId: tab, fromRoute: "bookflight" },
     });
   }

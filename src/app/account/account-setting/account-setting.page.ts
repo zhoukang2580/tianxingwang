@@ -3,10 +3,11 @@ import { AppHelper } from "../../appHelper";
 import { LoginService } from "../../services/login/login.service";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
-import { NavController } from "@ionic/angular";
+import { ActionSheetController, NavController } from "@ionic/angular";
 import { ThemeService } from "src/app/services/theme/theme.service";
 import { TTSService } from "src/app/services/tts/tts.service";
 import { CONFIG } from "src/app/config";
+import { LangService } from "src/app/services/lang.service";
 
 @Component({
   selector: "app-setting",
@@ -24,7 +25,9 @@ export class AccountSettingPage implements OnInit, OnDestroy {
     private router: Router,
     private navCtrl: NavController,
     private themeService: ThemeService,
-    private ttsService: TTSService
+    private ttsService: TTSService,
+    private actionSheetCtrl: ActionSheetController,
+    private langService: LangService
   ) {
     this.ttsEnabled = ttsService.getEnabled();
     if (CONFIG["accountSetting"]) {
@@ -33,6 +36,47 @@ export class AccountSettingPage implements OnInit, OnDestroy {
   }
   back() {
     this.navCtrl.pop();
+  }
+  private reloadPage() {
+    this.router
+      .navigate([AppHelper.getRoutePath(this.router.url)], { replaceUrl: true })
+      .then(() => {
+        this.langService.translate();
+      });
+  }
+  async onLanguageSettings() {
+    const style = AppHelper.getStyle();
+    const ash = await this.actionSheetCtrl.create({
+      cssClass: "language",
+      buttons: [
+        {
+          text: "English",
+          cssClass: "notranslate",
+          role: style == "en" ? "selected" : "",
+          handler: () => {
+            this.langService.setLang("en");
+            this.reloadPage();
+          },
+        },
+        {
+          text: "中文",
+          cssClass: "notranslate",
+          role: !style ? "selected" : "",
+          handler: () => {
+            this.langService.setLang("");
+            this.reloadPage();
+          },
+        },
+        {
+          text: "取消",
+          role: "destructive",
+          handler: () => {
+            ash.dismiss();
+          },
+        },
+      ],
+    });
+    ash.present();
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();

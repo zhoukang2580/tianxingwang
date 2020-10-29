@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Subscription } from "rxjs";
-import { ApiService } from "../services/api/api.service";
-import { RequestEntity } from "../services/api/Request.entity";
-import { IdentityService } from "../services/identity/identity.service";
-import { IdentityEntity } from "../services/identity/identity.entity";
+import { ApiService } from "./api/api.service";
+import { RequestEntity } from "./api/Request.entity";
+import { IdentityService } from "./identity/identity.service";
+import { IdentityEntity } from "./identity/identity.entity";
 import { AppHelper } from "../appHelper";
 import { finalize } from "rxjs/operators";
 import { Router } from "@angular/router";
@@ -95,21 +95,21 @@ export class LangService {
   }
   private translateTags() {
     const innerHtml = document.body.innerHTML;
-    const is = document.body.textContent.match(/[\u4E00-\u9FA5]/g);
+    const is = document.body.innerHTML.match(/[\u4E00-\u9FA5]/g);
     if (!is) {
-      console.log("当前页面无需翻译");
+      // console.log("当前页面无需翻译");
       return;
     }
     if (this.html == innerHtml && !this.isTranslate) {
-      console.log("当前页面正在翻译 translateTags");
+      // console.log("当前页面正在翻译 translateTags return");
       return;
     }
     this.isTranslate = false;
     this.html = innerHtml;
     const tags: ChildNode[] = [];
-    console.time("getTags");
+    // console.time("getTags");
     this.getTags(document.body, tags);
-    console.timeEnd("getTags");
+    // console.timeEnd("getTags");
     if (tags.length) {
       this.subscription.unsubscribe();
       const contents: {
@@ -117,19 +117,21 @@ export class LangService {
         txt: string;
       }[] = [];
       tags.forEach((t, idx) => {
-        const arr = t.textContent.match(/[\u4e00-\u9fa5]{1,}/g);
-        if (arr) {
-          arr.forEach((it) => {
+        try {
+          const tag = this.getPlaceholderTag(t as any);
+          if (tag) {
+            contents.push({
+              tag,
+              txt: tag.getAttribute("placeholder"),
+            });
+          } else {
             contents.push({
               tag: t,
-              txt: it,
+              txt: t.textContent,
             });
-          });
-        } else {
-          contents.push({
-            tag: t,
-            txt: t.textContent,
-          });
+          }
+        } catch (e) {
+          console.error(e);
         }
       });
       this.subscription = this.getTranslateContent(contents.map((it) => it.txt))
@@ -145,10 +147,15 @@ export class LangService {
             } else {
               for (let i = 0; i < contents.length; i++) {
                 const t = contents[i];
-                t.tag.textContent = t.tag.textContent.replace(
-                  t.txt,
-                  r.Data.Content[i]
-                );
+                const phtag = this.getPlaceholderTag(t.tag as any);
+                if (phtag) {
+                  phtag.setAttribute("placeholder", r.Data.Content[i]);
+                } else {
+                  t.tag.textContent = t.tag.textContent.replace(
+                    t.txt,
+                    r.Data.Content[i]
+                  );
+                }
               }
               this.isTranslate = true;
             }
@@ -157,6 +164,35 @@ export class LangService {
           }
         });
     }
+  }
+  private isHanzi(txt: string) {
+    return txt && txt.match(/[\u4E00-\u9FA5]/g);
+  }
+  private getPlaceholderTag(el: Element) {
+    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+      return el;
+    }
+    if (el && typeof el.querySelectorAll == "function") {
+      const phs =
+        el.querySelectorAll("input[placeholder]") ||
+        el.querySelectorAll("textarea[placeholder]");
+      if (phs) {
+        let ph: Element;
+        for (let i = 0; i < phs.length; i++) {
+          const item = phs.item(i);
+          if (
+            item &&
+            typeof item.getAttribute == "function" &&
+            this.isHanzi(item.getAttribute("placeholder"))
+          ) {
+            ph = item;
+            break;
+          }
+        }
+        return ph;
+      }
+    }
+    return null;
   }
   private getTags(parent: ChildNode, tags: ChildNode[] = []) {
     try {
@@ -177,8 +213,17 @@ export class LangService {
               continue;
             }
           }
-          if (tags.map((it) => it.textContent).join("").length <= this.len) {
-            this.getTags(el as Element, tags);
+          if (this.isTagsContentsLessThen(tags as any)) {
+            const phtag = this.getPlaceholderTag(parent as any);
+            if (phtag) {
+              if (this.isHanzi(phtag.getAttribute("placeholder"))) {
+                if (!tags.find((it) => it == phtag)) {
+                  tags.push(phtag);
+                }
+              }
+            } else {
+              this.getTags(el as Element, tags);
+            }
           } else {
             break;
           }
@@ -187,8 +232,10 @@ export class LangService {
         if (parent.nodeType == Node.TEXT_NODE) {
           // 文本节点
           if (parent.textContent.match(/[\u4E00-\u9FA5]/g)) {
-            if (tags.map((it) => it.textContent).join("").length <= this.len) {
-              tags.push(parent);
+            if (this.isTagsContentsLessThen(tags as any)) {
+              if (!tags.find((t) => t == parent)) {
+                tags.push(parent);
+              }
             } else {
               return;
             }
@@ -198,5 +245,16 @@ export class LangService {
     } catch (e) {
       console.error(e);
     }
+  }
+  private isTagsContentsLessThen(tags: HTMLElement[]) {
+    return (
+      (tags &&
+        tags
+          .map((it) => {
+            const t = this.getPlaceholderTag(it);
+            return it.textContent || (t && t.getAttribute("placeholder")) || "";
+          })
+          .join("").length) <= this.len
+    );
   }
 }

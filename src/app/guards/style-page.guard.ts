@@ -26,21 +26,28 @@ export class StylePageGuard implements CanActivate {
     | UrlTree {
     try {
       const style: string = AppHelper.getStyle();
-      if (
-        !style ||
-        style.toLowerCase() == "cn" ||
-        style.toLowerCase() == "zh_cn"
-      ) {
-        return true;
-      }
+      let styleRoute = `${this.getRoute(state.url)}_${style}`;
+      // if (
+      //   !style ||
+      //   style.toLowerCase() == "cn" ||
+      //   style.toLowerCase() == "zh_cn"
+      // ) {
+      //   styleRoute = `${this.getRoute(state.url)}`;
+      //   console.log("styleRoute ", styleRoute);
+      //   this.router.navigate([styleRoute], {
+      //     queryParams: next.queryParams,
+      //   });
+      //   return false;
+      // }
       const routePath = this.getRoute(state.url);
       const segs = routePath.split("/");
-      const styleRoute = `${this.getRoute(state.url)}_${style}`;
       if (segs.length > 1) {
         const route = this.router.config.find((it) => it.path == segs[0]);
         if (route && route.children) {
           const one = route.children.find(
-            (it) => it.path.toLowerCase() == styleRoute.replace(`${segs[0]}/`,"").toLowerCase()
+            (it) =>
+              it.path.toLowerCase() ==
+              styleRoute.replace(`${segs[0]}/`, "").toLowerCase()
           );
           if (one) {
             this.router.navigate([styleRoute], {

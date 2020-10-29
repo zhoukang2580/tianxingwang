@@ -28,7 +28,7 @@ import {
 } from "@angular/animations";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { FlightService } from "../flight.service";
-import { LangService } from "src/app/tmc/lang.service";
+import { LangService } from "src/app/services/lang.service";
 @Component({
   selector: "app-select-flight-city",
   templateUrl: "./select-flight-city.page.html",

@@ -43,6 +43,11 @@ export class FlightSegmentItemComponent implements OnInit, OnChanges {
         this.segment.Cabins.some(
           (c) => c.FareType == FlightCabinFareType.Agreement
         );
+      // if (!this.isHasAgreement) {
+      //   this.langOpt.agreement = "";
+      // } else {
+      //   console.log("isHasAgreement", this.isHasAgreement);
+      // }
     }
   }
   ngOnInit() {}

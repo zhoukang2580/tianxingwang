@@ -1,112 +1,106 @@
 <ion-header size='large'>
-  <ion-toolbar>
-    <ion-buttons>
-      <app-back-button defaultHref="" [backFn]='back.bind(this)'>
-      </app-back-button>
-      <div class="bar">
-        <div class="date">
-          <div (click)='onChangeDate()' class="checkin-checkout-date">
-            <div>
-              <span>Check in</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
-            </div>
-            <div>
-              <span>Check out</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
-            </div>
-          </div>
-          <div class="search-box" (click)='onSearchText()'>
-            <ion-icon name='search' style="font-size: 1rem;"></ion-icon>
-            <div class='hint'>
-              {{searchCondition?.searchText?.Text||"关键字/酒店名"}}
-            </div>
-            <ion-icon name='close' style="font-size: 1rem;"
-              [style.visibility]='searchCondition?.searchText?.Text?"visible":"hidden"' (click)='onClearText($event)'>
-            </ion-icon>
-          </div>
-        </div>
-        <div class="name">
-          <ion-text color='secondary' (click)='onChangeCity()'>
-            {{searchCondition?.destinationCity?.Name}}
-          </ion-text>
-        </div>
+    <ion-toolbar>
+        <ion-buttons>
+            <app-back-button defaultHref="" [backFn]='back.bind(this)'>
+            </app-back-button>
+            <div class="bar">
+                <div class="date">
+                    <div (click)='onChangeDate()' class="checkin-checkout-date">
+                        <div>
+                            <span>Check in</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
+                        </div>
+                        <div>
+                            <span>Check out</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
+                        </div>
+                    </div>
+                    <div class="search-box" (click)='onSearchText()'>
+                        <ion-icon name='search' style="font-size: 1rem;"></ion-icon>
+                        <div class='hint'>
+                            {{searchCondition?.searchText?.Text||"关键字/酒店名"}}
+                        </div>
+                        <ion-icon name='close' style="font-size: 1rem;" [style.visibility]='searchCondition?.searchText?.Text?"visible":"hidden"' (click)='onClearText($event)'>
+                        </ion-icon>
+                    </div>
+                </div>
+                <div class="name">
+                    <ion-text color='secondary' (click)='onChangeCity()'>
+                        {{searchCondition?.destinationCity?.Name}}
+                    </ion-text>
+                </div>
 
-        <div (click)='onModifyAdultCount()' *ngIf=''>
-          <ion-text color='secondary'>
-            {{searchCondition?.adultCount}}成人{{searchCondition?.children?.length}}儿童
-          </ion-text>
+                <div (click)='onModifyAdultCount()' *ngIf=''>
+                    <ion-text color='secondary'>
+                        {{searchCondition?.adultCount}}Adult{{searchCondition?.children?.length}}Children
+                    </ion-text>
+                </div>
+            </div>
+        </ion-buttons>
+        <div>
+            <app-inter-hotel-query_en (showPanel)='onShowPanel($event)' class="{{classMode}}" (queryFilter)='onQueryFilter()'>
+            </app-inter-hotel-query_en>
         </div>
-      </div>
-    </ion-buttons>
-    <div>
-      <app-inter-hotel-query_en (showPanel)='onShowPanel($event)' class="{{classMode}}" (queryFilter)='onQueryFilter()'>
-      </app-inter-hotel-query_en>
-    </div>
-  </ion-toolbar>
+    </ion-toolbar>
 </ion-header>
 <ion-content [scrollY]='!(filterTab&&filterTab.active)'>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='filterTab&&filterTab.active'>
-    <ion-refresher-content>正在加载...</ion-refresher-content>
-  </app-refresher>
-  <ng-container *ngIf='isLoading else showlist'>
-    <ion-list>
-      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11,12,13]' class="fake">
-        <ion-thumbnail style="width: 5em;height: 5em;">
-          <ion-skeleton-text style="width: 5em;height: 5em;" animated></ion-skeleton-text>
-        </ion-thumbnail>
-        <ion-label class="ion-margin-start">
-          <h2>
-            <ion-skeleton-text style="width:60%;" animated></ion-skeleton-text>
-          </h2>
-          <h2>
-            <ion-skeleton-text style="width:70%"></ion-skeleton-text>
-          </h2>
-          <h2>
-            <ion-skeleton-text style="width:80%" animated></ion-skeleton-text>
-          </h2>
-          <h2>
-            <ion-skeleton-text style="width:90%" animated></ion-skeleton-text>
-          </h2>
-        </ion-label>
-      </ion-item>
-    </ion-list>
-  </ng-container>
-  <ng-template #showlist>
-    <ng-template #nodata>
-      <app-or-comp *ngIf='!isLoading'>暂无数据</app-or-comp>
-    </ng-template>
-    <ng-container *ngIf='hotels?.length else nodata'>
-      <ion-list lines='full' *ngIf='hotels?.length else nodata'>
-        <app-hotel-list-item [langOpt]='{
-            rise:" From"
-          }' [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels'
-          (click)='onViewHotel(hotel)' [hotel]='hotel' [defaultImage]='config?.DefaultImageUrl'></app-hotel-list-item>
-      </ion-list>
+    <app-refresher slot='fixed' (ionRefresh)='doRefresh()' [disabled]='filterTab&&filterTab.active'>
+        <ion-refresher-content>正在加载...</ion-refresher-content>
+    </app-refresher>
+    <ng-container *ngIf='isLoading else showlist'>
+        <ion-list>
+            <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11,12,13]' class="fake">
+                <ion-thumbnail style="width: 5em;height: 5em;">
+                    <ion-skeleton-text style="width: 5em;height: 5em;" animated></ion-skeleton-text>
+                </ion-thumbnail>
+                <ion-label class="ion-margin-start">
+                    <h2>
+                        <ion-skeleton-text style="width:60%;" animated></ion-skeleton-text>
+                    </h2>
+                    <h2>
+                        <ion-skeleton-text style="width:70%"></ion-skeleton-text>
+                    </h2>
+                    <h2>
+                        <ion-skeleton-text style="width:80%" animated></ion-skeleton-text>
+                    </h2>
+                    <h2>
+                        <ion-skeleton-text style="width:90%" animated></ion-skeleton-text>
+                    </h2>
+                </ion-label>
+            </ion-item>
+        </ion-list>
     </ng-container>
-  </ng-template>
-  <ion-fab>
-    <app-pin-fab horizontal="end" vertical="bottom">
-      <div *ngIf='hotels?.length&&totalHotels'>
-        <ion-text color='light'>
-          <div style="border-bottom: 1px solid white;"> {{hotels.length}}</div>
-          <div> {{totalHotels}}</div>
-        </ion-text>
-      </div>
-    </app-pin-fab>
-  </ion-fab>
-  <ion-infinite-scroll (ionInfinite)='loadMore()'>
-    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+    <ng-template #showlist>
+        <ng-template #nodata>
+            <app-or-comp *ngIf='!isLoading'>暂无数据</app-or-comp>
+        </ng-template>
+        <ng-container *ngIf='hotels?.length else nodata'>
+            <ion-list lines='full' *ngIf='hotels?.length else nodata'>
+                <app-hotel-list-item [langOpt]='{
+            rise:" From"
+          }' [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel' [defaultImage]='config?.DefaultImageUrl'></app-hotel-list-item>
+            </ion-list>
+        </ng-container>
+    </ng-template>
+    <ion-fab>
+        <app-pin-fab horizontal="end" vertical="bottom">
+            <div *ngIf='hotels?.length&&totalHotels'>
+                <ion-text color='light'>
+                    <div style="border-bottom: 1px solid white;"> {{hotels.length}}</div>
+                    <div> {{totalHotels}}</div>
+                </ion-text>
+            </div>
+        </app-pin-fab>
+    </ion-fab>
+    <ion-infinite-scroll (ionInfinite)='loadMore()'>
+        <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 </ion-content>
 <div class='backdrop' [class.show]='isShowBackDrop'></div>
-<app-inter-recommend-rank class='query-condition'
-  [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="rank"' (rank)='onRank($event)'
-  (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'>
+<app-inter-recommend-rank class='query-condition' [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="rank"' (rank)='onRank($event)' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'>
 </app-inter-recommend-rank>
-<app-inter-hotel-starprice [langOpt]='{
+<app-inter-hotel-starprice_en [langOpt]='{
   customprice: "Custom price",
-    any: "all",
+    any: "All",
     reset: "Reset",
     determine: "Determine"
-}' class='query-condition' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"'
-  (starPriceChange)='onStarPriceChange()'>
-</app-inter-hotel-starprice>
+}' class='query-condition' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()' [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"' (starPriceChange)='onStarPriceChange()'>
+</app-inter-hotel-starprice_en>

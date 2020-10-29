@@ -1,3 +1,4 @@
+import { LangService } from 'src/app/services/lang.service';
 import { AppHelper } from "src/app/appHelper";
 import { Subscription } from "rxjs";
 import {

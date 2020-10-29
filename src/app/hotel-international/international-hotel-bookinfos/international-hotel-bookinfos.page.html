@@ -17,10 +17,10 @@
         <ion-icon name='trash' color='danger' (click)='onRemoveBookInfo(bookInfo)' slot='end' class='ion-margin-end'>
         </ion-icon>
       </ion-item-divider>
-      <app-inter-room-show-item [bookInfo]='bookInfo' (changeDate)='onChangeDate(bookInfo)'
+      <app-inter-room-show-item-en [bookInfo]='bookInfo' (changeDate)='onChangeDate(bookInfo)'
         (bedChange)='onbedChange($event,bookInfo)' (showRoomDetail)='onShowRoomDetail(bookInfo)'
         (showPriceDetailEvt)='onShowPriceDetails($event)'>
-      </app-inter-room-show-item>
+      </app-inter-room-show-item-en>
     </ng-container>
   </ion-item-group> 
 </ion-content>

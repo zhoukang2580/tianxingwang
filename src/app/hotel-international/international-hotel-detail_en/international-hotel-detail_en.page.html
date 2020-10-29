@@ -4,7 +4,7 @@
             <app-back-button defaultHref=''></app-back-button>
         </ion-buttons>
 
-        <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotelName}}</ion-title>
+        <ion-title [class.has-add-passenger]='!isSelf'>{{hotelName}}</ion-title>
         <!-- <ion-text>{{hotelName}}</ion-text> -->
         <ion-buttons slot='end' [class.can-add-passengers]='!isSelf'>
             <ion-button fill='clear' color='secondary' *ngIf='canAddPassengers' (click)='onFilteredPassenger()' size='small'>
@@ -65,7 +65,7 @@
                 </div>
                 <ion-item lines='none'>
                     <ion-label color='secondary' class="ion-text-wrap">{{hotel?.Address}}</ion-label>
-                    <ion-icon name="location" color='secondary'></ion-icon>
+                    <ion-icon name="location" color='secondary' *ngIf=''></ion-icon>
                 </ion-item>
                 <ion-item lines='none'>
                     <ion-label>
@@ -80,7 +80,7 @@
                     <div *ngIf='totalNights as n'>{{n}}Night</div>
                     <div class='checkinoutdate'>{{queryModel?.checkoutDate}} <span class='weekName'>{{getWeekName(queryModel?.checkoutDate)}}</span></div>
                 </div>
-                <ion-button (click)='onSearch()' color='secondary' expand='block'>搜索</ion-button>
+                <ion-button (click)='onSearch()' color='secondary' expand='block'>Search</ion-button>
             </ion-card-content>
         </ion-card>
         <ng-template #fakeCard>
@@ -186,7 +186,7 @@
                     <ng-container *ngFor='let detail of hotelDetails'>
                         <ion-row *ngIf='detail.Description' class="detail-info">
                             <ion-col size='2'>
-                                <ion-text fill='clear' (click)='detail["isShowMoreDesc"]=!detail["isShowMoreDesc"]'>
+                                <ion-text class="ion-text" fill='clear' (click)='detail["isShowMoreDesc"]=!detail["isShowMoreDesc"]'>
                                     {{detail.Name}}
                                 </ion-text>
                             </ion-col>

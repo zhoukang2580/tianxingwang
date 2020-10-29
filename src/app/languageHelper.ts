@@ -13,6 +13,12 @@ export class LanguageHelper {
     getCannotBookMorePassengerTip: () => {
       return "不能添加更多旅客";
     },
+    getCanSwipeIdCardTip(): any {
+      if (LanguageHelper.lang == "en") {
+        return "Can Swipe ID Card To Enter Station";
+      }
+      return "可刷身份证进站";
+    },
   };
   static Order = {
     getStatusCancelTypeTip: () => {
@@ -508,6 +514,9 @@ export class LanguageHelper {
     return "请输入验证码";
   }
   static getSlidvalidateInnerTip() {
+    if (this.lang == "en") {
+      return "Slide right to fill puzzle";
+    }
     return "向右滑动填充拼图";
   }
   static getLoginNameTip() {
@@ -552,7 +561,7 @@ export class LanguageHelper {
   }
   static getCancelTip() {
     if (this.lang == "en") {
-      return "Cancel"
+      return "Cancel";
     }
     return "取消";
   }

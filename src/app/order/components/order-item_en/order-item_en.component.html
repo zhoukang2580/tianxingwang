@@ -17,12 +17,12 @@
                         <ion-text *ngIf="order.OrderInsurances?.length">(Including insurance)</ion-text>
                     </ion-text>
                     <span>
-            <ion-text color="medium" class="ion-text-nowrap">
-              ({{
+                        <ion-text color="medium" class="ion-text-nowrap">
+                            ({{
                 order.StatusName == "等待处理" ? "等待审批".replace('等待处理','Pending approval').replace('等待审批','Pending approval'): order.StatusName.replace('等待处理','Pending approval').replace('等待审批','Pending approval').replace('等待支付','Pending to pay')
               }})
-            </ion-text>
-          </span>
+                        </ion-text>
+                    </span>
                     <ng-container *ngIf="order.VariablesJsonObj.isPay">
                         <ion-button (click)="onPay($event)" size="small" color="secondary">Pay now
                         </ion-button>
@@ -44,10 +44,8 @@
                     trip.OrderFlightTicket?.Passenger?.Name
                   }}</span>
                                     <span>
-                    <ion-text color="medium"
-                      >({{ ticket.StatusName }})</ion-text
-                    >
-                  </span>
+                                        <ion-text color="medium">({{ ticket.StatusName }})</ion-text>
+                                    </span>
                                 </div>
                                 <ng-container>
                                     <ion-button *ngIf="ticket.VariablesJsonObj.isShowRefundButton" size="small" (click)="onRefundFlightTicket($event, ticket)" color="danger">
@@ -66,7 +64,7 @@
                                         <ion-text color="medium">改签申请中</ion-text>
                                     </ng-container>
                                     <ion-button *ngIf="ticket.VariablesJsonObj.isShowCancelButton" size="small" (click)="onAbolishFlightOrder($event, ticket)" color="secondary">
-                                        <ion-text color="light">CANCEL</ion-text>
+                                        <ion-text color="light">Cancel</ion-text>
                                     </ion-button>
                                 </ng-container>
                             </div>
@@ -77,23 +75,23 @@
                         ? first
                         : true
                     ">
-                    Trip
-                  </span>
+                                        Trip
+                                    </span>
                                 </div>
                                 <div>
                                     <div>
                                         <span>
-                      {{ trip.TakeoffDate }}
-                    </span>
+                                            {{ trip.TakeoffDate }}
+                                        </span>
                                         <span *ngIf="trip['dateWeekName']">
-                      ({{ trip["dateWeekName"] }})
-                    </span>
+                                            ({{ trip["dateWeekName"] }})
+                                        </span>
                                         <span>
-                      {{ trip.TakeoffShortTime }}
-                    </span>
+                                            {{ trip.TakeoffShortTime }}
+                                        </span>
                                         <span>
-                      {{ trip.FlightNumber }}
-                    </span>
+                                            {{ trip.FlightNumber }}
+                                        </span>
                                     </div>
                                     <div>{{ trip.FromCityName }}---{{ trip.ToCityName }}</div>
                                 </div>
@@ -109,7 +107,7 @@
         <ng-container *ngIf="order.OrderTrainTickets?.length">
             <ion-grid class="train">
                 <ion-row>
-                    <ion-col size="2">
+                    <ion-col size="2.5">
                         <ion-text color="medium" class="train_frist"> Odd No.</ion-text>
                     </ion-col>
                     <ion-col class="select-text" class="dark">
@@ -120,7 +118,7 @@
                     </ion-col>
                 </ion-row>
                 <ion-row [class.btn-show-margin]="order.VariablesJsonObj.isPay" style="align-items: center">
-                    <ion-col size="2">
+                    <ion-col size="2.5">
                         <ion-text color="medium" class="train_frist"> Payable</ion-text>
                     </ion-col>
                     <ion-col style="display: flex; align-items: center;flex-wrap: wrap;">
@@ -146,7 +144,7 @@
                 orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn ||
                 orderTrainTicket.VariablesJsonObj.isShowExchangeButton
               ">
-                            <ion-col size="2">
+                            <ion-col size="2.5">
                                 <ion-text color="medium" class="train_frist">Travel</ion-text>
                             </ion-col>
                             <ion-col style="align-items: center; display: flex;flex-wrap: wrap;">
@@ -154,7 +152,7 @@
                                     <ion-text notranslate>
                                         {{ p.Name }}
                                     </ion-text>
-                                    <ion-text color="medium" class="ion-padding-end" notranslate>({{ orderTrainTicket.StatusName}})</ion-text>
+                                    <ion-text color="medium" class="ion-padding-end">({{ orderTrainTicket.StatusName}})</ion-text>
                                     <ng-container *ngIf="
                       orderTrainTicket.VariablesJsonObj
                         .isShowRefundOrExchangeBtn
@@ -177,7 +175,7 @@
                             </ion-col>
                         </ion-row>
                         <ion-row>
-                            <ion-col size="2">
+                            <ion-col size="2.5">
                                 <ion-text color="medium" class="train_frist">Trip</ion-text>
                             </ion-col>
                             <ion-col>
@@ -210,7 +208,7 @@
         <ng-container *ngFor="let orderHotel of order.OrderHotels">
             <ion-grid class="hotel" style="margin-left: -8px; min-width: 5.7em">
                 <ion-row>
-                    <ion-col size="2" style="min-width: 5.7em">
+                    <ion-col size="3" style="min-width: 5.7em">
                         <ion-text color="medium"> Odd No.</ion-text>
                     </ion-col>
                     <ion-col class="select-text" class="dark">
@@ -221,7 +219,7 @@
                     </ion-col>
                 </ion-row>
                 <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center">
-                    <ion-col size="2" style="min-width: 5.7em">
+                    <ion-col size="3" style="min-width: 5.7em">
                         <ion-text color="medium">Payable</ion-text>
                     </ion-col>
                     <ion-col>
@@ -241,15 +239,15 @@
                     </ion-col>
                 </ion-row>
                 <ion-row *ngIf="order?.OrderPassengers?.length">
-                    <ion-col size="2" style="min-width: 5.7em">
+                    <ion-col size="3" style="min-width: 5.7em">
                         <ion-text color="medium">Passenger</ion-text>
                     </ion-col>
                     <ion-col>
                         <ng-container *ngIf="orderHotel.Passenger as p">
                             <div>
                                 <span notranslate>
-                  {{ p.Name }}
-                </span>
+                                    {{ p.Name }}
+                                </span>
                                 <ion-text color="medium">
                                     （{{ orderHotel.StatusName }}）
                                 </ion-text>
@@ -258,7 +256,7 @@
                     </ion-col>
                 </ion-row>
                 <ion-row>
-                    <ion-col size="2" style="min-width: 5.7em">
+                    <ion-col size="3" style="min-width: 5.7em">
                         <ion-text color="medium">Trip</ion-text>
                     </ion-col>
                     <ion-col>
@@ -293,7 +291,7 @@
         </ng-container>
     </ng-container>
     <ng-container *ngIf="order.OrderCars?.length">
-        <app-car-item [order]="order"></app-car-item>
+        <app-car-item-en [order]="order"></app-car-item-en>
     </ng-container>
 </div>
 <!-- <ion-datetime cancelText='取消' doneText='确定' class="hidden ion-hide" displayFormat="YYYY-MM-DD" ></ion-datetime> -->

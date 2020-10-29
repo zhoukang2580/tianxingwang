@@ -21,8 +21,8 @@ import {
 } from "@ionic-native/in-app-browser/ngx";
 import { Clipboard } from "@ionic-native/clipboard/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
-import { SafariViewController } from '@ionic-native/safari-view-controller/ngx';
-import { Platform } from '@ionic/angular';
+import { SafariViewController } from "@ionic-native/safari-view-controller/ngx";
+import { Platform } from "@ionic/angular";
 @Component({
   selector: "app-open-rental-car",
   templateUrl: "./open-rental-car.page.html",
@@ -44,7 +44,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     private clipboard: Clipboard,
     private safariController: SafariViewController,
     private platform: Platform
-  ) { }
+  ) {}
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
     try {
@@ -124,43 +124,49 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: color,
       navigationbuttoncolor: color,
-      toolbarcolor: color
+      toolbarcolor: color,
     };
     this.browser = this.iab.create(url, "_blank", options);
-    this.subscriptions.push(this.browser.on("exit").subscribe(() => {
-      this.back();
-    }))
+    this.subscriptions.push(
+      this.browser.on("exit").subscribe(() => {
+        this.back();
+      })
+    );
     // if (AppHelper.platform.is("ios")) {
     //   options.beforeload = "yes";
     // }
     // url = `http://test.version.testskytrip.com/download/test.html`;
   }
   private async openInMyBrowser(url: string) {
+    if (url) {
+      url = decodeURIComponent(url);
+    }
     try {
       if (this.platform.is("ios")) {
         if (await this.safariController.isAvailable()) {
           this.safariSubscription.unsubscribe();
-          this.safariSubscription = this.safariController.show({ url, tintColor: "#2596d9" })
-            .subscribe((result: any) => {
-              if (result.event === 'opened') {
-                console.log('Opened');
+          this.safariSubscription = this.safariController
+            .show({ url, tintColor: "#2596d9" })
+            .subscribe(
+              (result: any) => {
+                if (result.event === "opened") {
+                  console.log("Opened");
+                } else if (result.event === "loaded") {
+                  console.log("Loaded");
+                } else if (result.event === "closed") {
+                  this.backBtn.popToPrePage();
+                  console.log("Closed");
+                }
+              },
+              (error: any) => {
+                console.error(error);
               }
-              else if (result.event === 'loaded') {
-                console.log('Loaded');
-              }
-              else if (result.event === 'closed') {
-                this.backBtn.popToPrePage();
-                console.log('Closed');
-              }
-            },
-              (error: any) => { console.error(error) }
             );
-
         } else {
-
         }
         return;
       }
+      console.log("openInMyBrowser,url" + url);
       const res = await AppHelper.payH5Url(url).catch(async (e) => {
         console.log("aliPay error", e);
         // await AppHelper.alert(e);
@@ -330,13 +336,14 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     if (AppHelper.isApp()) {
       this.subscriptions.push(
         this.route.queryParamMap.subscribe((q) => {
-          if (q.get("url")) {
-            this.openInMyBrowser(q.get("url"));
+          let url = q.get("url");
+          if (url) {
+            this.openInMyBrowser(url);
           } else if (
             AppHelper.getQueryParamers()["path"] &&
             AppHelper.getQueryParamers()["path"].includes("rental-car")
           ) {
-            const url = AppHelper.getQueryParamers()["url"];
+            url = AppHelper.getQueryParamers()["url"];
             if (url) {
               this.openInMyBrowser(url);
             }

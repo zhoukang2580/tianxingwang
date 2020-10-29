@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/tmc/lang.service';
+import { LangService } from 'src/app/services/lang.service';
 import { PopoverController } from "@ionic/angular";
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { HotelService } from "./../../hotel.service";

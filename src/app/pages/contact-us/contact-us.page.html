@@ -1,47 +1,47 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button></app-back-button>
-    </ion-buttons>
-    <ion-title>联系我们</ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button></app-back-button>
+        </ion-buttons>
+        <ion-title style="text-transform: capitalize;">联系我们</ion-title>
+    </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item *ngIf='tmc?.FieldHotline'>
-      <ion-label>驻场电话</ion-label>
-      <ion-label>{{tmc.FieldHotline}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf='tmc?.FlightHotline'>
-      <ion-label>飞机票专员</ion-label>
-      <ion-label>{{tmc.FlightHotline}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf='tmc?.TrainHotline'>
-      <ion-label>火车票专员</ion-label>
-      <ion-label>{{tmc.TrainHotline}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf='tmc?.HotelHotline'>
-      <ion-label>酒店预订专员</ion-label>
-      <ion-label>{{tmc.HotelHotline}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf='tmc?.MangerHotline'>
-      <ion-label>销售经理</ion-label>
-      <ion-label>{{tmc.MangerHotline}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf='tmc?.CustomerHotline'>
-      <ion-label>客服经理</ion-label>
-      <ion-label>{{tmc.CustomerHotline}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf='tmc?.EmergencyHotline'>
-      <ion-label>紧急直线</ion-label>
-      <ion-label>{{tmc.EmergencyHotline}}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>客服专线</ion-label>
-      <ion-label>{{tmc?.Hotline}}</ion-label>
-    </ion-item>
-  </ion-list>
+    <ion-list>
+        <ion-item *ngIf='tmc?.FieldHotline'>
+            <ion-label>驻场电话</ion-label>
+            <ion-label>{{tmc.FieldHotline}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf='tmc?.FlightHotline'>
+            <ion-label>飞机票专员</ion-label>
+            <ion-label>{{tmc.FlightHotline}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf='tmc?.TrainHotline'>
+            <ion-label>火车票专员</ion-label>
+            <ion-label>{{tmc.TrainHotline}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf='tmc?.HotelHotline'>
+            <ion-label>酒店预订专员</ion-label>
+            <ion-label>{{tmc.HotelHotline}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf='tmc?.MangerHotline'>
+            <ion-label>销售经理</ion-label>
+            <ion-label>{{tmc.MangerHotline}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf='tmc?.CustomerHotline'>
+            <ion-label>客服经理</ion-label>
+            <ion-label>{{tmc.CustomerHotline}}</ion-label>
+        </ion-item>
+        <ion-item *ngIf='tmc?.EmergencyHotline'>
+            <ion-label>紧急直线</ion-label>
+            <ion-label>{{tmc.EmergencyHotline}}</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label>客服专线</ion-label>
+            <ion-label>{{tmc?.Hotline}}</ion-label>
+        </ion-item>
+    </ion-list>
 </ion-content>
 <!-- <ion-footer>
   <div>上海东美在线旅行社 版权所有</div>

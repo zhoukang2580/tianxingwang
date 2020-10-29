@@ -12,10 +12,10 @@
         <section>
             <div>
                 <p class="h_line h_line_mini"></p>
-                <img src="assets/images/pass.png" class="apply_info_status_pass" *ngIf="ApprovalStatusType?.Pass==detail?.StatusType" />
-                <img src="assets/images/deny.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Refuse==detail?.StatusType" />
-                <img src="assets/images/close.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Closed==detail?.StatusType" />
-                <img src="assets/images/close.png" class="apply_info_status_deny" *ngIf="detail?.TravelForm?.IsOverdue" />
+                <img src="assets/images/pass_en.png" class="apply_info_status_pass" *ngIf="ApprovalStatusType?.Pass==detail?.StatusType" />
+                <img src="assets/images/deny_en.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Refuse==detail?.StatusType" />
+                <img src="assets/images/close_en.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Closed==detail?.StatusType" />
+                <img src="assets/images/overdue_en.png" class="apply_info_status_deny" *ngIf="detail?.TravelForm?.IsOverdue" />
                 <div class="apply_info" style="padding: 18px 23px">
                     <p>
                         <span class="apply_info_tit"><span>Apply status：</span
@@ -123,13 +123,13 @@
                             <p>
                                 <span style="display: flex;">
                                 <span style="min-width: 9.2em;">Arriving city:</span>
-                                <span style="width: 17.5em;">{{trip.FromCityName}}~{{trip.ToCityName}}</span>
+                                <span style="width: 14.5em;">{{trip.FromCityName}}~{{trip.ToCityName}}</span>
                                 </span>
                             </p>
                             <p>
                                 <span style="display: flex;">
                                 <span style="min-width: 9.2em;">Move to city:</span>
-                                <span style="width: 17.5em;">{{trip.CheckInCityName}}</span>
+                                <span style="width: 14.5em;">{{trip.CheckInCityName}}</span>
                                 </span>
                             </p>
                             <p>

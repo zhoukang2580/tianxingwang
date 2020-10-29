@@ -1,3 +1,4 @@
+import { LangService } from 'src/app/services/lang.service';
 import { RefresherComponent } from "src/app/components/refresher";
 import { BookTmcOutnumberComponent } from "./../../tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { PayService } from "src/app/services/pay/pay.service";
@@ -136,7 +137,8 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private payService: PayService,
     private plt: Platform,
-    route: ActivatedRoute
+    route: ActivatedRoute,
+    private LangService: LangService
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(() => {
@@ -1246,7 +1248,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       const c = this.combindInfos.find((it) => !it.arrivalHotelTime);
       if (c) {
         this.showErrorMsg(
-          "请选择到店信息",
+          this.LangService.isCn ? "请选择到店信息" : "Please select store information",
           c,
           this.getEleByAttr("arrivalHoteltimeid", c.id)
         );
@@ -1285,7 +1287,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast("下单成功!", 1400, "top");
+          AppHelper.toast(this.LangService.isCn ? "下单成功!" : "Checkout success", 1400, "top");
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
           if (
@@ -1320,7 +1322,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
                 LanguageHelper.getConfirmTip()
               );
             } else {
-              await AppHelper.alert("下单成功");
+              await AppHelper.alert(this.LangService.isCn ? "下单成功!" : "Checkout success");
             }
           }
           this.hotelService.removeAllBookInfos();
@@ -1332,9 +1334,15 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["order-list"], {
-      queryParams: { tabId: tab },
-    });
+    if(this.LangService.isCn){
+      this.router.navigate(["order-list"], {
+        queryParams: { tabId: tab },
+      });
+    } else {
+      this.router.navigate(["order-list_en"], {
+        queryParams: { tabId: tab },
+      });
+    }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {

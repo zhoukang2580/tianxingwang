@@ -77,10 +77,10 @@ interface ISearchTextValue {
   styleUrls: ["./hotel-list.page.scss"],
   animations: [],
 })
-export class HotelListPage
-  implements OnInit, OnDestroy, AfterViewInit {
+export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
-  private oldSearchText: ISearchTextValue;
+  // private oldSearchText: ISearchTextValue;
+  private isUseSearchText = false;
   private oldDestinationCode: string;
   @ViewChild(IonHeader) headerEl: IonHeader;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
@@ -255,9 +255,9 @@ export class HotelListPage
       .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
-
           setTimeout(() => {
             this.isLoadingHotels = false;
+            this.isUseSearchText = false;
             if (this.scroller) {
               this.scroller.complete();
             }
@@ -266,8 +266,9 @@ export class HotelListPage
       )
       .subscribe(
         (result) => {
-          this.oldSearchText = this.searchHotelModel.searchText;
-          this.oldDestinationCode = this.searchHotelModel.destinationCity &&
+          // this.oldSearchText = this.searchHotelModel.searchText;
+          this.oldDestinationCode =
+            this.searchHotelModel.destinationCity &&
             this.searchHotelModel.destinationCity.Code;
           if (this.refresher) {
             if (this.hotelQueryModel.PageIndex < 1) {
@@ -344,6 +345,7 @@ export class HotelListPage
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
   onSearchByText() {
+    this.isUseSearchText = true;
     this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")]);
   }
   private checkDestinationChanged() {
@@ -356,15 +358,15 @@ export class HotelListPage
     return false;
   }
   private checkSearchTextChanged() {
-    if (this.searchHotelModel) {
-      return (
-        this.searchHotelModel.searchText &&
-        this.oldSearchText &&
-        (this.searchHotelModel.searchText.Value != this.oldSearchText.Value ||
-          this.searchHotelModel.searchText.Text != this.oldSearchText.Text)
-      );
-    }
-    return false;
+    // if (this.searchHotelModel) {
+    //   return (
+    //     this.searchHotelModel.searchText &&
+    //     this.oldSearchText &&
+    //     (this.searchHotelModel.searchText.Value != this.oldSearchText.Value ||
+    //       this.searchHotelModel.searchText.Text != this.oldSearchText.Text)
+    //   );
+    // }
+    return this.isUseSearchText;
   }
   back() {
     this.hideQueryPannel();
@@ -395,7 +397,11 @@ export class HotelListPage
       this.hideQueryPannel();
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
-      const isrefresh = this.checkSearchTextChanged() || this.checkDestinationChanged() || !this.hotelDayPrices || !this.hotelDayPrices.length;
+      const isrefresh =
+        this.checkSearchTextChanged() ||
+        this.checkDestinationChanged() ||
+        !this.hotelDayPrices ||
+        !this.hotelDayPrices.length;
       if (isrefresh) {
         this.doRefresh(true);
       }

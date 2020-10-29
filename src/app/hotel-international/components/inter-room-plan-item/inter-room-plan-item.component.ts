@@ -1,4 +1,4 @@
-import { LangService } from './../../../tmc/lang.service';
+import { LangService } from '../../../services/lang.service';
 import { InternationalHotelService } from "./../../international-hotel.service";
 import {
   Component,
@@ -27,7 +27,7 @@ export class InterRoomPlanItemComponent implements OnInit {
   @Input() roomPlan: RoomPlanEntity;
   @Input() langOpt = {
       Exceeding: "超标",
-      Book: "预定",
+      Book: "预订",
       NonBook: "不可预订",
       NowPay: "现付",
       PayIn: "预付",

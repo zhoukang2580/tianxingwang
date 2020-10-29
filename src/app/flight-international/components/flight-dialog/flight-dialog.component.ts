@@ -33,7 +33,11 @@ export class FlightDialogComponent implements OnInit, OnDestroy {
     land: "降落",
     takeoffland: "起降机场",
     morning: "上午",
-    afternoon: "午后"
+    afternoon: "午后",
+    Determine: "确定",
+    Reset: "重置",
+    Cancel: "取消",
+
   };
   tab: number;
   condition: IFilterCondition;

@@ -42,7 +42,7 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
 import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
 import { LoginService } from "src/app/services/login/login.service";
-import { LangService } from "src/app/tmc/lang.service";
+import { LangService } from "src/app/services/lang.service";
 import { TmcHomePage } from '../tab-tmc-home/tmc-home.page';
 @Component({
   selector: "app-tmc-home",

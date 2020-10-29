@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item detail (click)="accountSecurityPage()">
+      <ion-label>Account number and security</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf='appVersion'>
+    <ion-item>
+      <ion-label>Application version</ion-label>
+      <ion-label slot='end' class="ion-text-end">
+        {{appVersion}}
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-item>
+      <ion-label>Mode</ion-label>
+      <ion-toggle (ionChange)='onToggleDarkMode($event)'  color='secondary' [checked]='isDarkMode'></ion-toggle>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-item (click)="onLanguageSettings()" detail>
+      <ion-label class="has-left-icon">
+        Language
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf='isShowTTsOption'>
+    <ion-item>
+      <ion-label>语音播报</ion-label>
+      <ion-toggle (ionChange)='onTts()'  color='secondary' [checked]='ttsEnabled'></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+  <ion-list (click)="logout()">
+    <ion-item>
+      <ion-label class='ion-text-center' color='danger'>Logout</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

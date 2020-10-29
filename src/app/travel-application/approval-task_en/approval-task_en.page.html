@@ -40,7 +40,7 @@
                                     Trip：
                                 </span>
                             <span>
-                                    <span style="min-width: 220px;color: black;">
+                                    <span style="min-width: 190px;color: black;">
                                         {{task?.Trip}}
                                     </span>
                             </span>
@@ -53,7 +53,7 @@
                                 </span><span>{{task?.CheckInCity}}</span></span><span class="apply_info_time"></span>
                         </p>
                         <p><span class="apply_info_tit"><span>Days：</span><span>{{task?.DayCount}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>Category：</span><span *ngIf="task?.Tag=='TravelForm'">Prior approval</span><span *ngIf="task?.Tag!='TravelForm'">订单预定</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>Category：</span><span *ngIf="task?.Tag=='TravelForm'">Prior approval</span><span *ngIf="task?.Tag!='TravelForm'">订单预订</span></span><span class="apply_info_time"></span></p>
                         <p><span class="apply_info_tit"><span>Odd Numbers：</span><span>{{task?.ConsumerId}}</span></span><span class="apply_info_time"></span></p>
                     </div>
                 </section>
@@ -68,7 +68,7 @@
                                 Trip:
                             </span>
                             <span class="main ">
-                                <span style="min-width: 220px;color: black; ">
+                                <span style="min-width: 190px;color: black; ">
                                     {{task?.Trip}}
                                 </span>
                             </span>
@@ -78,10 +78,10 @@
                         <p><span class="apply_info_tit "><span>Odd Numbers：</span><span>{{task?.OrderId}}</span></span><span class="apply_info_time "></span></p>
                     </div>
                 </section>
-                <img class="img" src="assets/images/pass.png " *ngIf='task.imageStatus=="isPassed"' alt=" ">
-                <img class="img" src="assets/images/deny.png " *ngIf='task.imageStatus=="isRejected"' alt=" ">
-                <img class="img" src="assets/images/close.png " *ngIf='task.imageStatus=="isClosed"' alt=" ">
-                <img class="img" src="assets/images/overdue.png" *ngIf='task.imageStatus=="isOverdue"'>
+                <img class="img" src="assets/images/pass_en.png " *ngIf='task.imageStatus=="isPassed"' alt=" ">
+                <img class="img" src="assets/images/deny_en.png " *ngIf='task.imageStatus=="isRejected"' alt=" ">
+                <img class="img" src="assets/images/close_en.png " *ngIf='task.imageStatus=="isClosed"' alt=" ">
+                <img class="img" src="assets/images/overdue_en.png" *ngIf='task.imageStatus=="isOverdue"'>
 
             </div>
         </div>

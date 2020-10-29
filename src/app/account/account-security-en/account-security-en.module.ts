@@ -1,5 +1,3 @@
-import { StylePageGuard } from './../../guards/style-page.guard';
-import { AppComponentsModule } from "../../components/appcomponents.module";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -7,15 +5,17 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { AccountSettingEnPage } from "./account-setting_en.page";
+import { AccountSecurityEnPage } from "./account-security-en.page";
 import { AuthorityGuard } from "src/app/guards/authority.guard";
+import { AppComponentsModule } from "src/app/components/appcomponents.module";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
-    component: AccountSettingEnPage,
-    canActivate: [AuthorityGuard,StylePageGuard]
-  }
+    component: AccountSecurityEnPage,
+    canActivate: [AuthorityGuard, StylePageGuard],
+  },
 ];
 
 @NgModule({
@@ -24,8 +24,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule
+    AppComponentsModule,
   ],
-  declarations: [AccountSettingEnPage]
+  declarations: [AccountSecurityEnPage],
 })
-export class AccountSettingEnPageModule {}
+export class AccountSecurityEnPageModule {}

@@ -1,4 +1,4 @@
-import { LangService } from './../../tmc/lang.service';
+import { LangService } from "../../services/lang.service";
 import { BackButtonComponent } from "../../components/back-button/back-button.component";
 import { IdentityService } from "../../services/identity/identity.service";
 import { OrderTripModel } from "../models/OrderTripModel";
@@ -47,6 +47,7 @@ import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
+import { SearchTicketModalEnComponent } from "../components/search-ticket-modal_en/search-ticket-modal_en.component";
 @Component({
   selector: "app-order-list_en",
   templateUrl: "./order-list_en.page.html",
@@ -89,8 +90,8 @@ export class OrderListEnPage implements OnInit, OnDestroy {
     private flightService: FlightService,
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
-    private LangService: LangService
-  ) { }
+    private langService: LangService
+  ) {}
 
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
@@ -205,8 +206,8 @@ export class OrderListEnPage implements OnInit, OnDestroy {
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-          ? "Hotel"
-          : "Train";
+        ? "Hotel"
+        : "Train";
     this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
@@ -259,7 +260,9 @@ export class OrderListEnPage implements OnInit, OnDestroy {
   async openSearchModal() {
     const condition = new SearchTicketConditionModel();
     const m = await this.modalCtrl.create({
-      component: SearchTicketModalComponent,
+      component: this.langService.isCn
+        ? SearchTicketModalComponent
+        : SearchTicketModalEnComponent,
       componentProps: {
         type: this.activeTab,
         condition: {
@@ -318,9 +321,10 @@ export class OrderListEnPage implements OnInit, OnDestroy {
           text: "确定",
           handler: (data: { year: TV; month: TV; day: TV }) => {
             this.selectDateChange.emit(
-              `${data.year.value}-${+data.month.value < 10
-                ? "0" + data.month.value
-                : data.month.value
+              `${data.year.value}-${
+                +data.month.value < 10
+                  ? "0" + data.month.value
+                  : data.month.value
               }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
             );
           },
@@ -592,10 +596,10 @@ export class OrderListEnPage implements OnInit, OnDestroy {
           this.activeTab.value == ProductItemType.plane
             ? "Flight"
             : this.activeTab.value == ProductItemType.train
-              ? "Train"
-              : this.activeTab.value == ProductItemType.car
-                ? "Car"
-                : "Hotel";
+            ? "Train"
+            : this.activeTab.value == ProductItemType.car
+            ? "Car"
+            : "Hotel";
       }
       this.orderModel.Type = m.Type;
       if (
@@ -659,11 +663,13 @@ export class OrderListEnPage implements OnInit, OnDestroy {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }`;
+      url = `${url}&taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }`;
+      url = `${url}?taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }`;
     }
     return url;
   }
@@ -830,7 +836,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
         this.activeTab = this.isOpenUrl
           ? this.activeTab
           : this.activeTab || tab;
-        this.titles = tab.label;
+        this.titles = tab.labelEn + " Orders";
         // console.log("order-list", this.activeTab);
         this.isOpenUrl = false;
         if (d && d.get("doRefresh") == "true") {
@@ -846,12 +852,12 @@ export class OrderListEnPage implements OnInit, OnDestroy {
       )
         .filter((t) => t.value != ProductItemType.more && t.isDisplay)
         .map((t) => {
-          if (this.LangService.isEn) {
-            t.label = t.labelEn;
-          } else {
-            t["isActive"] = t.value == this.activeTab.value;
+          const it = { ...t };
+          if (this.langService.isEn) {
+            it.label = t.labelEn;
           }
-          return t;
+          it["isActive"] = t.value == this.activeTab.value;
+          return it;
         });
       this.tmc = await this.tmcService.getTmc();
     } catch (e) {
@@ -886,7 +892,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-        OrderTravelPayType.Person) &&
+          OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;

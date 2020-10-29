@@ -27,7 +27,7 @@ import { RefundChangeDetailComponent } from "../components/refund-change-detail/
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { FlightFareRuleEntity } from "src/app/flight/models/FlightFareRuleEntity";
 import { FlightListPage } from 'src/app/flight/flight-list/flight-list.page';
-import { LangService } from 'src/app/tmc/lang.service';
+import { LangService } from 'src/app/services/lang.service';
 interface Iisblue {
   isshow: false;
 }
@@ -485,7 +485,10 @@ export class FlightListEnPage implements OnInit, OnDestroy {
           land: "Landing",
           takeoffland: "Take off and landing Airport",
           morning: "A.M.",
-          afternoon: "P.M."
+          afternoon: "P.M.",
+          Determine: "Determine",
+          Reset: "Reset",
+          Cancel: "Cancel",
         } : {
           NonStopOnly: "仅直达",
           TakeTime: "起飞时段",
@@ -500,7 +503,10 @@ export class FlightListEnPage implements OnInit, OnDestroy {
           land: "降落",
           takeoffland: "起降机场",
           morning: "上午",
-          afternoon: "午后"
+          afternoon: "午后",
+          Determine: "确定",
+          Reset: "重置",
+          Cancel: "取消",
         }
       },
     });

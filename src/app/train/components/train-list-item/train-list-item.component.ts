@@ -4,11 +4,12 @@ import { ITrainInfo } from "./../../train.service";
 import { Component, OnInit, Input, EventEmitter, Output } from "@angular/core";
 import { TrainEntity, TrainSeatType } from "../../models/TrainEntity";
 import { TrainSeatEntity } from "../../models/TrainSeatEntity";
+import { LanguageHelper } from "src/app/languageHelper";
 
 @Component({
   selector: "app-train-list-item",
   templateUrl: "./train-list-item.component.html",
-  styleUrls: ["./train-list-item.component.scss"]
+  styleUrls: ["./train-list-item.component.scss"],
 })
 export class TrainListItemComponent implements OnInit {
   @Input() isShowSelectSeatLocation: boolean = true;
@@ -18,17 +19,17 @@ export class TrainListItemComponent implements OnInit {
   @Input() train: TrainEntity;
   @Input() bookInfo: ITrainInfo;
   @Input() langOpt: any = {
-    about : "约",
+    about: "约",
     time: "时",
     minute: "分",
     isStopInfo: "经停信息",
-    has:"有",
+    has: "有",
     no: "无",
     Left: "余票",
     agreement: "协",
     agreementDesc: "协议价",
-    reserve:"预订"
-  }
+    reserve: "预订",
+  };
   @Output() scheduleEmit: EventEmitter<any>;
   @Output() bookTicket: EventEmitter<TrainSeatEntity>;
   @Output() seatPicker: EventEmitter<string>;
@@ -44,7 +45,11 @@ export class TrainListItemComponent implements OnInit {
       evt.preventDefault();
       evt.stopPropagation();
     }
-    AppHelper.toast("可刷身份证进站", 1000, "middle");
+    AppHelper.toast(
+      LanguageHelper.Train.getCanSwipeIdCardTip(),
+      2000,
+      "middle"
+    );
   }
   getLowestSeatPrice() {
     if (!this.train || !this.train.Seats || !this.train.Seats.length) {
@@ -57,11 +62,11 @@ export class TrainListItemComponent implements OnInit {
     return (
       this.train &&
       this.train.Seats &&
-      this.train.Seats.some(it => +it.Count > 0)
+      this.train.Seats.some((it) => +it.Count > 0)
     );
   }
   onShowSeats(train: TrainEntity) {
-    if (!train || train.Seats.every(it => +it.Count <= 0)) {
+    if (!train || train.Seats.every((it) => +it.Count <= 0)) {
       return;
     }
     train.isShowSeats = !train.isShowSeats;
@@ -77,7 +82,7 @@ export class TrainListItemComponent implements OnInit {
         const bookInfos = this.trainService.getBookInfos();
         if (bookInfos && bookInfos.length) {
           const info = bookInfos.find(
-            it =>
+            (it) =>
               it.bookInfo &&
               it.bookInfo.id == (this.bookInfo && this.bookInfo.id)
           );

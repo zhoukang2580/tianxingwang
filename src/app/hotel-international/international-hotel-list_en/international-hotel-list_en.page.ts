@@ -11,8 +11,5 @@ import { InternationalHotelListPage } from '../international-hotel-list/internat
 
 })
 export class InternationalHotelListEnPage extends InternationalHotelListPage{
-  onViewHotel(hotel: HotelEntity) {
-    this.hotelService.viewHotel = hotel;
-    this.router.navigate(["international-hotel-detail_en"]);
-  }
+  
 }

@@ -1,4 +1,4 @@
-import { LangService } from './../../lang.service';
+import { LangService } from '../../../services/lang.service';
 import { LanguageHelper } from "./../../../languageHelper";
 import { AppHelper } from "./../../../appHelper";
 import { ModalController } from "@ionic/angular";

@@ -14,7 +14,7 @@ let routes: Route[] = [
   {
     path: "account-setting_en",
     loadChildren: () =>
-      import("./account-setting_en/account-setting_en.module").then(
+      import("./account-setting-en/account-setting-en.module").then(
         m => m.AccountSettingEnPageModule
       )
   },
@@ -23,6 +23,13 @@ let routes: Route[] = [
     loadChildren: () =>
       import("./account-security/account-security.module").then(
         m => m.AccountSecurityPageModule
+      )
+  },
+  {
+    path: "account-security_en",
+    loadChildren: () =>
+      import("./account-security-en/account-security-en.module").then(
+        m => m.AccountSecurityEnPageModule
       )
   },
   {
@@ -54,10 +61,24 @@ let routes: Route[] = [
       )
   },
   {
+    path: "account-email_en",
+    loadChildren: () =>
+      import("./account-email-en/account-email-en.module").then(
+        m => m.AccountEmailEnPageModule
+      )
+  },
+  {
     path: "account-password",
     loadChildren: () =>
       import("./account-password/account-password.module").then(
         m => m.AccountPasswordPageModule
+      )
+  },
+  {
+    path: "account-password_en",
+    loadChildren: () =>
+      import("./account-password-en/account-password-en.module").then(
+        m => m.AccountPasswordEnPageModule
       )
   },
   {
@@ -82,8 +103,19 @@ let routes: Route[] = [
       )
   },
   {
+    path: "account-mobile_en",
+    loadChildren: () =>
+      import("./account-mobile-en/account-mobile-en.module").then(
+        m => m.AccountMobileEnPageModule
+      )
+  },
+  {
     path: 'account-items',
     loadChildren: () => import('./account-items/account-items.module').then( m => m.AccountItemsPageModule)
+  },
+  {
+    path: 'account-items_en',
+    loadChildren: () => import('./account-items-en/account-items-en.module').then( m => m.AccountItemsEnPageModule)
   }
 
 ];

@@ -28,7 +28,7 @@ import {
 } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
-import { Router } from "@angular/router";
+import { NavigationStart, Router } from "@angular/router";
 import { AppHelper } from "./appHelper";
 import { ConfigService } from "./services/config/config.service";
 import { HttpClient } from "@angular/common/http";
@@ -46,6 +46,7 @@ import {
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
 import { ThemeService } from "./services/theme/theme.service";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
+import { filter } from "rxjs/operators";
 export interface App {
   loadUrl: (
     url: string,
@@ -109,9 +110,11 @@ export class AppComponent
     this.message$ = messageService.getMessage();
     this.loading$ = apiService.getLoading();
     if (AppHelper.isApp()) {
-      this.router.events.subscribe((evt) => {
-        this.keybord.hide();
-      });
+      this.router.events
+        .pipe(filter((evt) => evt instanceof NavigationStart))
+        .subscribe(() => {
+          this.keybord.hide();
+        });
     }
     if (this.platform.is("ios")) {
       AppHelper.setDeviceName("ios");
@@ -254,10 +257,12 @@ export class AppComponent
       this.apiService.hideLoadingView();
       if (
         curUrl == "/login" ||
+        curUrl == "/login_" + AppHelper.getStyle() ||
         curUrl == "/tabs/tmc-home" ||
-        curUrl == "/home" ||
-        curUrl == "/tabs/my" ||
-        curUrl == "/tabs/trip"
+        curUrl == "/tabs/tmc-home_" + AppHelper.getStyle() ||
+        curUrl == "/home_" + AppHelper.getStyle() ||
+        curUrl == "/tabs/my_" + AppHelper.getStyle() ||
+        curUrl == "/tabs/trip_" + AppHelper.getStyle()
       ) {
         // console.log("is exit app", Date.now() - this.lastClickTime);
         if (Date.now() - this.lastClickTime <= 2000) {

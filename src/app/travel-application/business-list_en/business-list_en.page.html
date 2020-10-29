@@ -97,10 +97,10 @@
 
                 <ion-icon slot="end" style="font-size: 18px; margin-right: 22px" name="trash-outline" color="danger" class="trash-outline" *ngIf="ApprovalStatusType.WaiteSubmit == item.Status" (click)="onDelete(item,key,$event)" class="ion-text-end"></ion-icon>
             </div>
-            <img src="assets/images/pass.png" *ngIf="ApprovalStatusType.Pass==item.Status" alt="" />
-            <img src="assets/images/deny.png" *ngIf="ApprovalStatusType.Refuse==item.Status" alt="" />
-            <img src="assets/images/close.png" *ngIf="ApprovalStatusType.Closed==item.Status" alt="" />
-            <img src="assets/images/overdue.png" *ngIf="item?.IsOverdue" alt="" />
+            <img src="assets/images/pass_en.png" *ngIf="ApprovalStatusType.Pass==item.Status" alt="" />
+            <img src="assets/images/deny_en.png" *ngIf="ApprovalStatusType.Refuse==item.Status" alt="" />
+            <img src="assets/images/close_en.png" *ngIf="ApprovalStatusType.Closed==item.Status" alt="" />
+            <img src="assets/images/overdue_en.png" *ngIf="item?.IsOverdue" alt="" />
         </div>
     </div>
     <ion-list class="ion-padding-horizontal"> </ion-list>

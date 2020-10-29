@@ -11,7 +11,7 @@ import {
 import { Component, OnInit, HostBinding, Input } from "@angular/core";
 import { Router, NavigationStart } from "@angular/router";
 import { TripPage } from "./tab-trip/trip.page";
-import { LangService } from "../tmc/lang.service";
+import { LangService } from "../services/lang.service";
 
 @Component({
   selector: "app-tabs",

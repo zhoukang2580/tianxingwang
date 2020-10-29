@@ -65,7 +65,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     setlongterm: "设置为长期有效",
     longterm: "长期有效",
     nationality: "国籍",
-    lssuingcou: "发政国"
+    lssuingcou: "发证国"
   };
   CredentialsType = CredentialsType;
   identityTypes: { key: string; value: string }[];
