@@ -6,6 +6,7 @@ import { PassengerBookInfo } from "./../../../tmc/tmc.service";
 import { Component, OnInit } from "@angular/core";
 import { FlightSegmentEntity } from "../../models/flight/FlightSegmentEntity";
 import { FlightCabinEntity } from "../../models/flight/FlightCabinEntity";
+import { FlightCabinFareType } from '../../models/flight/FlightCabinFareType';
 interface IViewItem {
   info: PassengerBookInfo<IFlightSegmentInfo>;
   isSelected: boolean;
@@ -20,6 +21,7 @@ export class SelectAndReplacebookinfoComponent implements OnInit {
   selectedItems: PassengerBookInfo<IFlightSegmentInfo>[] = [];
   flightCabin: FlightCabinEntity;
   flightSegment: FlightSegmentEntity;
+  FlightCabinFareType=FlightCabinFareType;
   private flightService: FlightService;
   constructor(private modal: ModalController) {}
   back(evt?: CustomEvent) {

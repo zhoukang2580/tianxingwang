@@ -36,7 +36,7 @@
             </div>
           </div>
           <app-fly-list-item [flightSegment]='bookInfo.bookInfo?.flightSegment' [langOpt]='langOpt' [showDetails]='true'
-            [flightPolicy]='bookInfo.bookInfo?.flightPolicy'>
+            [flightPolicy]='bookInfo.bookInfo?.flightPolicy' [isAgreement]='bookInfo.bookInfo?.flightPolicy?.Cabin?.FareType==FlightCabinFareType.Agreement'>
           </app-fly-list-item>
           <div>
             <ion-row>

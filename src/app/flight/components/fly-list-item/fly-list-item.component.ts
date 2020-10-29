@@ -20,7 +20,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { FlightPolicy } from "../../models/PassengerFlightInfo";
 import { FlightFareType } from "../../models/flight/FlightFareType";
 import { FlightCabinFareType } from "../../models/flight/FlightCabinFareType";
-import { AppHelper } from 'src/app/appHelper';
+import { AppHelper } from "src/app/appHelper";
 
 @Component({
   selector: "app-fly-list-item",
@@ -33,6 +33,7 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() showDetails: boolean;
   @Input() itmIndex: number;
   @Input() flightPolicy: FlightPolicy;
+  @Input() isAgreement = false;
   @Input() langOpt: any = {
     meal: "餐食",
     isStop: "经停",
@@ -46,7 +47,6 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
     lowestPriceRecommend: "最低价推荐",
   };
   showIndex = !environment.production;
-  isAgreement = false;
   constructor(private calendarService: CalendarService) {}
   ngOnChanges(changes: SimpleChanges) {}
   ngAfterViewInit() {}
@@ -73,18 +73,24 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
     )} ${this.calendarService.getWeekName(d)}`;
   }
   ngOnInit() {
-    if (
-      this.flightSegment &&
-      this.flightSegment.Cabins &&
-      this.flightSegment.Cabins.some(
-        (it) => it.FareType == FlightCabinFareType.Agreement
-      )
-    ) {
-      this.isAgreement = true;
-    }
+    // if (!this.isAgreement) {
+    //   if (
+    //     this.flightSegment &&
+    //     this.flightSegment.Cabins &&
+    //     this.flightSegment.Cabins.some(
+    //       (it) => it.FareType == FlightCabinFareType.Agreement
+    //     )
+    //   ) {
+    //     this.isAgreement = true;
+    //   }
+    // }
   }
-  onShowAgreement(evt:CustomEvent){
+  onShowAgreement(evt: CustomEvent) {
     evt.stopPropagation();
-    AppHelper.alert(this.langOpt.agreementDesc,false,LanguageHelper.getConfirmTip());
+    AppHelper.alert(
+      this.langOpt.agreementDesc,
+      false,
+      LanguageHelper.getConfirmTip()
+    );
   }
 }

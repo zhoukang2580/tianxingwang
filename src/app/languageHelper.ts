@@ -579,6 +579,9 @@ export class LanguageHelper {
     return "提示";
   }
   static getAppDoubleClickExit() {
+    if(LanguageHelper.lang=='en'){
+      return "Press again to exit";
+    }
     return "再按一次退出应用";
   }
   static slideValidateUseTime() {

@@ -84,6 +84,7 @@ import {
   CanComponentDeactivate,
 } from "src/app/guards/candeactivate.guard";
 import { SearchApprovalEnComponent } from 'src/app/tmc/components/search-approval_en/search-approval_en.component';
+import { FlightCabinFareType } from '../models/flight/FlightCabinFareType';
 
 @Component({
   selector: "app-book-en",
@@ -105,6 +106,7 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
     lowestPriceRecommend: "LowestPriceRecommend"
   }
   private isShowInsuranceBack = false;
+  FlightCabinFareType=FlightCabinFareType;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
