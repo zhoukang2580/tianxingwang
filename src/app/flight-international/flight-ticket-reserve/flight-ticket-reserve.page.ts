@@ -835,6 +835,7 @@ export class FlightTicketReservePage
       ele: HTMLElement
     ) => {
       await AppHelper.alert(
+        this.langService.isCn ?
         `${
           (item.credentialStaff && item.credentialStaff.Name) ||
           (item.bookInfo.credential &&
@@ -842,7 +843,15 @@ export class FlightTicketReservePage
               item.bookInfo.credential.Givenname)
         } 【${
           item.bookInfo.credential && item.bookInfo.credential.Number
-        }】 ${msg} 信息不能为空`
+        }】 ${msg} 信息不能为空`:
+        `${
+          (item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+              item.bookInfo.credential.Givenname)
+        } 【${
+          item.bookInfo.credential && item.bookInfo.credential.Number
+        }】 ${msg} Information cannot be empty`
       );
       this.moveRequiredEleToViewPort(ele);
     };

@@ -468,10 +468,15 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     ele: HTMLElement
   ) {
     await AppHelper.alert(
+      this.LangService.isCn ?
       `${
         (item.credentialStaff && item.credentialStaff.Name) ||
         (item.credential && item.credential.Surname + item.credential.Givenname)
-      } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空`
+      } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空` :
+      `${
+        (item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential && item.credential.Surname + item.credential.Givenname)
+      } 【${item.credential && item.credential.Number}】 ${msg} Information cannot be empty`
     );
     this.moveRequiredEleToViewPort(ele);
   }

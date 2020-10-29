@@ -1017,6 +1017,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       ele: HTMLElement
     ) => {
       AppHelper.toast(
+        this.LangService.isCn ?
         `${
           (item.credentialStaff && item.credentialStaff.Name) ||
           (item.bookInfo.credential &&
@@ -1024,7 +1025,16 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
               item.bookInfo.credential.Givenname)
         } 【${
           item.bookInfo.credential && item.bookInfo.credential.Number
-        }】 ${msg} 信息不能为空`,
+        }】 ${msg} 信息不能为空` :
+        `${
+          (item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+              item.bookInfo.credential.Givenname)
+        } 【${
+          item.bookInfo.credential && item.bookInfo.credential.Number
+        }】 ${msg} Information cannot be empty`
+        ,
         2000,
         "bottom"
       );
