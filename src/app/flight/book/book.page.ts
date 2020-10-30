@@ -761,7 +761,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       if (res) {
         if (res.TradeNo) {
           AppHelper.toast(
-            this.LangService.isCn ? "下单成功!" : "checkout success",
+            "下单成功!",
             1400,
             "top"
           );
@@ -795,11 +795,11 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
           } else {
             if (isSave) {
               await AppHelper.alert(
-                this.LangService.isCn ? "订单已保存!" : "Order saved"
+                "订单已保存!"
               );
             } else {
               await AppHelper.alert(
-                this.LangService.isCn ? "下单成功!" : "checkout success!"
+               "下单成功!"
               );
             }
           }

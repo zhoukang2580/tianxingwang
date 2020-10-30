@@ -737,7 +737,7 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(this.LangService.isCn ? "下单成功!" : "checkout success!", 1400, "top");
+          AppHelper.toast("checkout success!", 1400, "top");
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
           if (
@@ -766,9 +766,9 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(this.LangService.isCn ? "订单已保存!" : "Order saved");
+              await AppHelper.alert("Order saved");
             } else {
-              await AppHelper.alert(this.LangService.isCn ? "下单成功!" : "checkout success!");
+              await AppHelper.alert("checkout success!");
             }
           }
           const hasRight = await this.tmcService.checkHasHotelBookRight();

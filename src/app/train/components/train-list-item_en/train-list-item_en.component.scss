@@ -1,138 +1,146 @@
 .price {
-  margin-left: 1em;
-  color: var(--ion-color-danger);
-  align-self: flex-start;
+    margin-left: 1em;
+    color: var(--ion-color-danger);
+    align-self: flex-start;
 }
+
 .time,
 .station,
 .train-item,
 .seat,
 .seat-item,
 .stop-line-stop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
+
 .time {
-  .travel-time-name {
-    font-size: 0.7rem;
-  }
-  strong {
-    font-size: 1.1rem;
-  }
-  .has-add-day-tip {
-    position: relative;
-    margin-right: 1.5em;
-    &::after {
-      content: attr(adddaytip);
-      position: absolute;
-      right: -2.5em;
-      top: -0.5em;
-      font-size: 0.6rem;
+    .travel-time-name {
+        font-size: 0.7rem;
     }
-  }
+    strong {
+        font-size: 1.1rem;
+    }
+    .has-add-day-tip {
+        position: relative;
+        margin-right: 1.5em;
+        &::after {
+            content: attr(adddaytip);
+            position: absolute;
+            right: -2.5em;
+            top: -0.5em;
+            font-size: 0.6rem;
+        }
+    }
 }
+
 .right {
-  width: 26vw;
+    width: 26vw;
 }
-.station .from-station-name {
-  min-width: 4em;
-}
+
 img.access-by-IdCard {
-  width: 1.5em;
-  position: absolute;
-  left: -0.5em;
-  top: -1.6em;
+    width: 1.5em;
+    position: absolute;
+    left: -0.5em;
+    top: -1.6em;
 }
+
 .seat-count {
-  color: var(--ion-color-danger);
+    color: var(--ion-color-danger);
 }
+
 .info {
-  font-size: 0.9rem;
-  flex: 1;
-  * + * {
-    margin-top: 0.15em;
-  }
-}
-.seat {
-  margin-top: 0.5em;
-  justify-content: flex-start;
-  flex-flow: row wrap;
-  width: 100%;
-  .seat-item {
     font-size: 0.9rem;
-    width: 50%;
-    justify-content: flex-start;
-    ion-button {
-      padding-left: 0.25em;
+    flex: 1;
+    *+* {
+        margin-top: 0.15em;
     }
-  }
+}
+
+.seat {
+    margin-top: 0.5em;
+    justify-content: flex-start;
+    flex-flow: row wrap;
+    width: 100%;
+    .seat-item {
+        font-size: 0.9rem;
+        width: 50%;
+        justify-content: flex-start;
+        ion-button {
+            padding-left: 0.25em;
+        }
+    }
 }
 
 .seat-outline {
-  font-size: 0.7rem;
-  display: contents;
+    font-size: 0.7rem;
+    display: contents;
 }
+
 .seats {
-  font-size: 0.8rem;
-  ion-row {
-    border: 2px solid var(--ion-color-medium);
-    border-radius: 4px;
-    margin: 0.5em 0;
-    &[color="primary"] {
-      border-color: var(--ion-color-primary);
+    font-size: 0.8rem;
+    ion-row {
+        border: 2px solid var(--ion-color-medium);
+        border-radius: 4px;
+        margin: 0.5em 0;
+        &[color="primary"] {
+            border-color: var(--ion-color-primary);
+        }
+        &[color="danger"] {
+            border-color: rgba(var(--ion-color-danger-rgb), 0.6);
+            ion-button[color="danger"] {
+                opacity: 0.6;
+            }
+        }
+        &[color="secondary"] {
+            border-color: var(--ion-color-secondary);
+        }
+        &[color="success"] {
+            border-color: var(--ion-color-success);
+        }
+        &[color="warning"] {
+            border-color: var(--ion-color-warning);
+        }
     }
-    &[color="danger"] {
-      border-color: rgba(var(--ion-color-danger-rgb), 0.6);
-      ion-button[color="danger"] {
-        opacity: 0.6;
-      }
-    }
-    &[color="secondary"] {
-      border-color: var(--ion-color-secondary);
-    }
-    &[color="success"] {
-      border-color: var(--ion-color-success);
-    }
-    &[color="warning"] {
-      border-color: var(--ion-color-warning);
-    }
-  }
 }
+
 .stop-line-stop {
-  position: relative;
-  margin: 0 1em;
-  padding: 1em 0;
-  justify-content: center;
-  &::after {
-    content: attr(data);
-    top: 0%;
-    left: 50%;
-    position: absolute;
-    transform: translate(-50%, 0);
-  }
-  .line {
-    background-color: rgba(var(--ion-color-dark-rgb), 0.3);
-    height: 1px;
-    width: 5em;
     position: relative;
-    top: 0.5em;
+    margin: 0 1em;
+    padding: 1em 0;
+    justify-content: center;
     &::after {
-      content: "";
-      position: absolute;
-      right: 0em;
-      top: -0.2em;
-      display: block;
-      height: 1px;
-      width: 0.5em;
-      transform: rotate(45deg);
-      background-color: inherit;
+        content: attr(data);
+        top: 0%;
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, 0);
     }
-  }
+    .line {
+        background-color: rgba(var(--ion-color-dark-rgb), 0.3);
+        height: 1px;
+        width: 5em;
+        position: relative;
+        top: 0.5em;
+        &::after {
+            content: "";
+            position: absolute;
+            right: 0em;
+            top: -0.2em;
+            display: block;
+            height: 1px;
+            width: 0.5em;
+            transform: rotate(45deg);
+            background-color: inherit;
+        }
+    }
 }
+
 :host {
-  width: 100%;
+    width: 100%;
 }
+
 .disabled {
-  opacity: 0.6;
+    opacity: 0.6;
 }
