@@ -51,7 +51,7 @@ import { Subscription, Observable, fromEvent, merge } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { HotelDayPriceEntity } from "../models/HotelDayPriceEntity";
 import { finalize } from "rxjs/operators";
-import { TmcService } from "src/app/tmc/tmc.service";
+import { TmcEntity, TmcService } from "src/app/tmc/tmc.service";
 import {
   trigger,
   state,
@@ -61,6 +61,8 @@ import {
 } from "@angular/animations";
 
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { StaffService } from "src/app/hr/staff.service";
+import { IdentityService } from "src/app/services/identity/identity.service";
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -96,6 +98,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren(IonItem) hotelItemEl: QueryList<any>;
   @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
   isLeavePage = false;
+  isFreeBook = false;
   isLoadingHotels = false;
   searchHotelModel: SearchHotelModel;
   hotelQueryModel: HotelQueryEntity;
@@ -130,8 +133,10 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
+    private staffService: StaffService,
     private navCtrl: NavController,
     private configService: ConfigService,
+    private identityService: IdentityService,
     plt: Platform,
     private modalCtrl: ModalController
   ) {
@@ -217,6 +222,18 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   doRefresh(isKeepQueryCondition = false) {
     this.hideQueryPannel();
+    this.tmcService.getTmc().then(async (tmc) => {
+      try {
+        const isSelf = await this.staffService.isSelfBookType();
+        this.isFreeBook =
+          tmc &&
+          tmc.HotelSelfPayAmount == "1" &&
+          isSelf &&
+          !this.tmcService.isAgent;
+      } catch (e) {
+        console.error(e);
+      }
+    });
     if (!isKeepQueryCondition) {
       if (this.queryComp) {
         this.queryComp.onReset();
@@ -242,6 +259,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       });
     }
   }
+  onShowFreeBook() {}
   itemHeightFn(item: any, index: number) {
     // console.log(item);
     return 90;
