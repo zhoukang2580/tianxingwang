@@ -10,6 +10,13 @@ const routes: Routes = [
       )
   },
   {
+    path: "password-check_en",
+    loadChildren: () =>
+      import("./password-check_en/password-check_en.module").then(
+        m => m.PasswordCheckEnPageModule
+      )
+  },
+  {
     path: "password-valid",
     loadChildren: () =>
       import("./password-valid/password-valid.module").then(

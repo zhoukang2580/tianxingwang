@@ -108,7 +108,7 @@ export class HotelStarPriceEnComponent
       this.hotelQuery.starAndPrices = [];
       this.hotelQuery.starAndPrices.push({
         id: AppHelper.uuid(),
-        label: "星级(可多选)",
+        label: "Stars(Multiple choice)",
         tag: "stars",
         items: ["1 Star", "2 Stars", "3 Stars", "4 Stars", "5 Stars"].map((it, idx) => {
           return {
@@ -122,7 +122,7 @@ export class HotelStarPriceEnComponent
       this.hotelQuery.starAndPrices.push({
         id: AppHelper.uuid(),
         tag: "types",
-        label: "分类(可多选)",
+        label: "types(Multiple choice)",
         items: ["公寓", "客栈", "舒适", "高档", "豪华"].map((it, idx) => {
           return {
             label: `${it}`,
@@ -134,7 +134,7 @@ export class HotelStarPriceEnComponent
       });
       this.hotelQuery.starAndPrices.push({
         id: AppHelper.uuid(),
-        label: "价格",
+        label: "price",
         tag: "price",
         items: ["150 or less", "150-300", "300-450", "450-600", "600 or more"].map(
           (it, idx) => {
@@ -181,7 +181,7 @@ export class HotelStarPriceEnComponent
     if (item) {
       if (tab.items.filter(it => it.isSelected).length > 2) {
         item.isSelected = false;
-        AppHelper.toast(`${tab.label}不能超过3个`, Infinity, "middle");
+        AppHelper.toast(`${tab.label}No more than 3`, Infinity, "middle");
         return;
       }
       item.isSelected = !item.isSelected;

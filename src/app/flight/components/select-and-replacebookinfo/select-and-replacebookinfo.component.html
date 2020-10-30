@@ -22,7 +22,7 @@
             <strong>{{bookInfo.info?.bookInfo?.flightSegment?.TakeoffTime?.substr(0,"yyyy-MM-dd".length)}}</strong>
           </div>
           <app-fly-list-item [flightSegment]='bookInfo.info?.bookInfo?.flightSegment' [showDetails]='true'
-            [flightPolicy]='bookInfo.info?.bookInfo?.flightPolicy'>
+            [flightPolicy]='bookInfo.info?.bookInfo?.flightPolicy' [isAgreement]='bookInfo.info?.bookInfo?.flightPolicy?.Cabin?.FareType==FlightCabinFareType.Agreement'>
           </app-fly-list-item>
           <div>
             <ion-row>

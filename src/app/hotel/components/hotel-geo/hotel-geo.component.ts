@@ -28,8 +28,8 @@ import { HotelService } from "../../hotel.service";
 export class HotelGeoComponent implements OnInit, OnDestroy {
   @Input() langOpt = {
     determine: "确定",
-    Reset: "重置"
-  }
+    Reset: "重置",
+  };
   private conditionModel: HotelConditionModel;
   private subscription = Subscription.EMPTY;
   hotelQuery: HotelQueryEntity;

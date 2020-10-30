@@ -29,17 +29,17 @@
                         <ion-item>
                             <div class='date'>
                                 <strong>{{getDate(s?.flightSegment)}} <ion-text color='secondary'>
-                    {{s?.flightSegment?.FromCityName}}
-                    <ion-text color='dark' style="font-size: 0.7rem;">到</ion-text>
-                    {{s?.flightSegment?.ToCityName}}
-                    <span>【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
-                  </ion-text>
-                </strong>
+                                        {{s?.flightSegment?.FromCityName}}
+                                        <ion-text color='dark' style="font-size: 0.7rem;">到</ion-text>
+                                        {{s?.flightSegment?.ToCityName}}
+                                        <span>【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
+                                    </ion-text>
+                                </strong>
                             </div>
                         </ion-item>
                         <ion-item>
                             <div style='width: 100%'>
-                                <app-fly-list-item [flightSegment]='s.flightSegment' [showDetails]='true' [flightPolicy]='s.flightPolicy'>
+                                <app-fly-list-item [flightSegment]='s.flightSegment' [isAgreement]='s.flightPolicy?.Cabin?.FareType==FlightCabinFareType.Agreement' [showDetails]='true' [flightPolicy]='s.flightPolicy'>
                                 </app-fly-list-item>
                                 <div class='price'>
                                     <ion-label color='danger'>机票票价:￥{{s.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
@@ -61,7 +61,8 @@
                                 </ion-button>
                                 <div [@flyInOut] *ngIf='combindInfo?.showFriendlyReminder'>
                                     <ion-label color='success' class='small-font ion-text-wrap'>
-                                        温馨提醒: 国内廉价航司机票部分舱位不包含免费托运行李服务，免费托运行李相关事宜可以拨打我们客服电话咨询。（例如： 中联航: 每位旅客可携带1件免费随身行李，重量不能超过10千克且体积不超过20×30×40厘米。托运行李收费标准：X ≤ 5KG 柜台价格30元； 5KG &lt; X ≤ 10KG 柜台价格60元； 10KG &lt; X ≤ 15KG 柜台价格90元； 15KG &lt; X ≤ 20KG 柜台价格120元；等） </ion-label>
+                                        温馨提醒: 国内廉价航司机票部分舱位不包含免费托运行李服务，免费托运行李相关事宜可以拨打我们客服电话咨询。（例如： 中联航: 每位旅客可携带1件免费随身行李，重量不能超过10千克且体积不超过20×30×40厘米。托运行李收费标准：X ≤ 5KG 柜台价格30元； 5KG &lt; X ≤ 10KG 柜台价格60元；
+                                        10KG &lt; X ≤ 15KG 柜台价格90元； 15KG &lt; X ≤ 20KG 柜台价格120元；等） </ion-label>
                                 </div>
                                 <ion-label color='danger' class='small-font ion-text-wrap' *ngIf='s?.flightPolicy?.Rules?.length'>
                                     超标：{{s?.flightPolicy?.Rules?.join(",")}}
@@ -73,7 +74,8 @@
                                         <ion-icon name="caret-up-outline" *ngIf='!combindInfo?.openrules'></ion-icon>
                                     </ion-button>
                                 </div>
-                                <p class="small-font ion-text-justify" [innerHTML]='getExplain(s?.flightPolicy?.Cabin?.Explain)' (click)='onOpenrules(combindInfo)' [@flyInOut] *ngIf='combindInfo?.openrules'>
+                                <p class="small-font ion-text-justify" [innerHTML]='getExplain(s?.flightPolicy?.Cabin?.Explain)' (click)='onOpenrules(combindInfo)' [@flyInOut]
+                                    *ngIf='combindInfo?.openrules'>
                                 </p>
                             </div>
                         </ion-item>
@@ -81,18 +83,22 @@
                 </ion-item-group>
                 <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
                     <ion-item-divider color="primary">旅客信息:</ion-item-divider>
-                    <app-book-credential-comp [credential]='combindInfo.vmCredential' [isself]="isself" (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials' (modify)='onModify(combindInfo)' [attr.credentialcompid]='combindInfo.id'>
+                    <app-book-credential-comp [credential]='combindInfo.vmCredential' [isself]="isself" (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
+                        (modify)='onModify(combindInfo)' [attr.credentialcompid]='combindInfo.id'>
                     </app-book-credential-comp>
                     <ng-container *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
-                        <app-book-illegal-reason-comp [illegalReasons]='illegalReasons' [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason' (ionchange)='onIllegalReason($event,combindInfo)'>
+                        <app-book-illegal-reason-comp [illegalReasons]='illegalReasons' [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
+                            (ionchange)='onIllegalReason($event,combindInfo)'>
                         </app-book-illegal-reason-comp>
                     </ng-container>
                     <ng-container *ngIf='expenseTypes?.length'>
                         <app-book-expense-types-comp [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
                         </app-book-expense-types-comp>
                     </ng-container>
-                    <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter' [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode' [otherCostCenterName]='combindInfo.otherCostCenterName' (ionChange)='onCostCenterChange($event,combindInfo)'></app-book-costcenter-comp>
-                    <app-book-organization-comp (ionChange)='onOrganizationChange($event,combindInfo)' [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization' [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp>
+                    <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter' [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
+                        [otherCostCenterName]='combindInfo.otherCostCenterName' (ionChange)='onCostCenterChange($event,combindInfo)'></app-book-costcenter-comp>
+                    <app-book-organization-comp (ionChange)='onOrganizationChange($event,combindInfo)' [organization]='combindInfo?.organization'
+                        [isOtherOrganization]='combindInfo?.isOtherOrganization' [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp>
                     <ion-item-divider color="primary">
                         联系方式:
                     </ion-item-divider>
@@ -123,7 +129,8 @@
                         <ion-item-divider color="primary">
                             保险:
                         </ion-item-divider>
-                        <ion-radio-group mode="md" allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId' (ionChange)='calcTotalPrice()'>
+                        <ion-radio-group mode="md" allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId'
+                            (ionChange)='calcTotalPrice()'>
                             <div *ngFor='let insurance of combindInfo?.insuranceProducts' style="margin-top: 1em;background-color: var(--ion-color-primary);padding-right: 1em;">
                                 <ion-buttons>
                                     <ion-item style="--background:transparent;flex: 1;">
@@ -147,7 +154,8 @@
                                             </ion-label>
                                         </ion-col>
                                     </ion-row>
-                                    <ion-item style="--background: transparent;" *ngIf='insurance.insuranceResult?.DetailUrl' detail button (click)='onShowProductDetail(insurance.insuranceResult,$event)'>
+                                    <ion-item style="--background: transparent;" *ngIf='insurance.insuranceResult?.DetailUrl' detail button
+                                        (click)='onShowProductDetail(insurance.insuranceResult,$event)'>
                                         <ion-label color='secondary'>显示更多</ion-label>
                                     </ion-item>
                                 </div>
@@ -222,7 +230,8 @@
                         </ion-item>
                     </ion-item-group>
                     <ion-item-group *ngIf='combindInfo.isShowGroupedInfo'>
-                        <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true" (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+                        <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true"
+                            (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
                         </app-book-tmc-outnumber>
                     </ion-item-group>
                 </ng-container>

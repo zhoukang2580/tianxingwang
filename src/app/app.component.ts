@@ -261,7 +261,10 @@ export class AppComponent
         curUrl == "/tabs/tmc-home" ||
         curUrl == "/tabs/tmc-home_" + AppHelper.getStyle() ||
         curUrl == "/home_" + AppHelper.getStyle() ||
+        curUrl == "/home" ||
+        curUrl == "/tabs/my" ||
         curUrl == "/tabs/my_" + AppHelper.getStyle() ||
+        curUrl == "/tabs/trip" ||
         curUrl == "/tabs/trip_" + AppHelper.getStyle()
       ) {
         // console.log("is exit app", Date.now() - this.lastClickTime);

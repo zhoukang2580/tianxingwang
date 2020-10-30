@@ -12,7 +12,7 @@
       <strong>{{flightSegment?.FromCityName}} - {{flightSegment?.ToCityName}}</strong>
     </ion-label>
     <ion-item lines='none'>
-      <app-fly-list-item [flightSegment]='flightSegment' [showDetails]='true'></app-fly-list-item>
+      <app-fly-list-item [flightSegment]='flightSegment' [isAgreement]='false' [showDetails]='true'></app-fly-list-item>
     </ion-item>
   </ion-toolbar>
   <ion-toolbar style='font-size: .6rem;padding:0 1em;'>
@@ -40,7 +40,9 @@
               <ion-text color='dark'>{{cabin?.Cabin?.TypeName}}</ion-text>
               <ion-text color='dark'>{{cabin?.Cabin?.Discount|discount}} </ion-text>
               <ion-text color='secondary' *ngIf='cabin?.Cabin?.FareType==FlightFareType.Agreement'>
-                <strong><ion-text color='danger'>协</ion-text></strong>
+                <strong>
+                  <ion-text color='danger'>协</ion-text>
+                </strong>
               </ion-text>
               <ion-text color='secondary' *ngIf='cabin?.Cabin?.FlightPolicy&&isAgent'>
                 <strong>政</strong>
@@ -56,8 +58,7 @@
           <ion-label>
             <h3 class='book ion-text-end'>
               <ion-text color='danger'>￥{{cabin?.Cabin?.SalesPrice}}</ion-text>
-              <ion-button [color]='bookColor(cabin)' class='ion-margin-top' expand='block'
-                [class.disabled]='!cabin?.IsAllowBook' (click)='onBookTicket(cabin)'>
+              <ion-button [color]='bookColor(cabin)' class='ion-margin-top' expand='block' [class.disabled]='!cabin?.IsAllowBook' (click)='onBookTicket(cabin)'>
                 <ion-text color='light'>预订</ion-text>
               </ion-button>
             </h3>

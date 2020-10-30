@@ -39,7 +39,7 @@
                         </ion-item>
                         <ion-item>
                             <div style='width: 100%'>
-                                <app-fly-list-item [langOpt]='langOpt' [flightSegment]='s.flightSegment' [showDetails]='true' [flightPolicy]='s.flightPolicy'>
+                                <app-fly-list-item [langOpt]='langOpt' [isAgreement]='s.flightPolicy?.Cabin?.FareType==FlightCabinFareType.Agreement' [flightSegment]='s.flightSegment' [showDetails]='true' [flightPolicy]='s.flightPolicy'>
                                 </app-fly-list-item>
                                 <div class='price'>
                                     <ion-label color='danger'>￥{{s.flightPolicy?.Cabin?.SalesPrice}}</ion-label>

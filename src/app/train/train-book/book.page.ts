@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { SearchTrainModel } from "./../train.service";
 import { IBookOrderResult } from "./../../tmc/tmc.service";
@@ -122,7 +122,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private calendarService: CalendarService,
     private plt: Platform,
-    private LangService : LangService
+    private langService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -568,12 +568,12 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(
+          await AppHelper.alert(
             exchangeInfo && exchangeInfo.exchangeInfo
               ? exchangeTip
-              : this.LangService.isCn ? "下单成功!" : "Checkout success",
-            1400,
-            "top"
+              : this.langService.isEn
+              ? "Checkout success"
+              : "下单成功!"
           );
           this.isSubmitDisabled = true;
           const isSelf = await this.staffService.isSelfBookType();
@@ -605,12 +605,17 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(this.LangService.isCn ? "订单已保存!" : "Order saved", true);
+              await AppHelper.alert(
+                this.langService.isEn ? "Order saved" : "订单已保存!",
+                true
+              );
             } else {
               await AppHelper.alert(
                 exchangeInfo && exchangeInfo.exchangeInfo
                   ? res.Message || exchangeTip
-                  : this.LangService.isCn ? "下单成功!" : "Checkout success",
+                  : this.langService.isEn
+                  ? "Checkout success"
+                  : "下单成功!",
                 true
               );
             }
@@ -738,7 +743,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     // console.timeEnd("总计");
   }
   private goToMyOrders(tab: ProductItemType, isExchange = false) {
-    if(this.LangService.isCn){
+    if (this.langService.isCn) {
       this.router.navigate(["order-list"], {
         queryParams: { tabId: tab, doRefresh: isExchange },
       });
@@ -1011,22 +1016,31 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     this.generateAnimation(el);
   }
   private fillBookPassengers(bookDto: OrderBookDto) {
-    const showErrorMsg = (
+    const showErrorMsg = async (
       msg: string,
       item: ITrainPassengerBookInfo,
       ele: HTMLElement
     ) => {
-      AppHelper.toast(
-        `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-              item.bookInfo.credential.Givenname)
-        } 【${
-          item.bookInfo.credential && item.bookInfo.credential.Number
-        }】 ${msg} 信息不能为空`,
-        2000,
-        "bottom"
+      await AppHelper.alert(
+        this.langService.isCn
+          ? `${
+              (item.credentialStaff && item.credentialStaff.Name) ||
+              (item.bookInfo.credential &&
+                item.bookInfo.credential.Surname +
+                  item.bookInfo.credential.Givenname)
+            } 【${
+              item.bookInfo.credential && item.bookInfo.credential.Number
+            }】 ${msg} 信息不能为空`
+          : `${
+              (item.credentialStaff && item.credentialStaff.Name) ||
+              (item.bookInfo.credential &&
+                item.bookInfo.credential.Surname +
+                  item.bookInfo.credential.Givenname)
+            } 【${
+              item.bookInfo.credential && item.bookInfo.credential.Number
+            }】 ${msg} ${
+              this.langService.isEn ? "Information cannot be empty" : "信息不能为空"
+            }`
       );
       this.moveRequiredEleToViewPort(ele);
     };

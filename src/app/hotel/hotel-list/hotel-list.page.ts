@@ -460,6 +460,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.content) {
       this.content.scrollToTop(100);
     }
+    this.hotelService.setHotelQuerySource(this.hotelQueryModel);
   }
   onStarPriceChange() {
     const query = { ...this.hotelService.getHotelQueryModel() };

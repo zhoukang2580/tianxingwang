@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import { flyInOut } from "./../../animations/flyInOut";
 import { PriceDetailComponent } from "./../components/price-detail/price-detail.component";
 import { PayService } from "./../../services/pay/pay.service";
@@ -94,6 +94,7 @@ import {
   CandeactivateGuard,
   CanComponentDeactivate,
 } from "src/app/guards/candeactivate.guard";
+import { FlightCabinFareType } from '../models/flight/FlightCabinFareType';
 
 @Component({
   selector: "app-book",
@@ -108,6 +109,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
   errors: any;
+  FlightCabinFareType = FlightCabinFareType;
   OrderTravelType = OrderTravelType;
   orderTravelPayTypes: {
     label: string;
@@ -758,7 +760,11 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(this.LangService.isCn ? "下单成功!" : "checkout success", 1400, "top");
+          AppHelper.toast(
+            "下单成功!",
+            1400,
+            "top"
+          );
           this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
@@ -788,9 +794,13 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(this.LangService.isCn ? "订单已保存!" : "Order saved");
+              await AppHelper.alert(
+                "订单已保存!"
+              );
             } else {
-              await AppHelper.alert(this.LangService.isCn ? "下单成功!" : "checkout success!",);
+              await AppHelper.alert(
+               "下单成功!"
+              );
             }
           }
           const hasRight = await this.tmcService.checkHasHotelBookRight();
@@ -905,9 +915,13 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       ele: HTMLElement
     ) => {
       await AppHelper.alert(
-        `${item.credentialStaff && item.credentialStaff.Name} 【${
-          item.modal.credential && item.modal.credential.Number
-        }】 ${msg} 信息不能为空`
+        this.LangService.isCn
+          ? `${item.credentialStaff && item.credentialStaff.Name} 【${
+              item.modal.credential && item.modal.credential.Number
+            }】 ${msg} 信息不能为空`
+          : `${item.credentialStaff && item.credentialStaff.Name} 【${
+              item.modal.credential && item.modal.credential.Number
+            }】 ${msg} Information cannot be empty`
       );
       this.moveRequiredEleToViewPort(ele);
     };
@@ -1074,7 +1088,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumber", "outnumber");
-              showErrorMsg(it.label + "必填", combindInfo, el);
+              showErrorMsg(it.label + this.LangService.isCn ? "必填" : " Required ", combindInfo, el);
               return;
             }
             if (it.value) {

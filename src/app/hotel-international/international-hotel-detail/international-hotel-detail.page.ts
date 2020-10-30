@@ -750,7 +750,9 @@ export class InternationalHotelDetailPage
     }
   }
   public onShowBookInfos() {
-    this.router.navigate(["international-hotel-bookinfos"]);
+    this.langService.isCn ?
+    this.router.navigate(["international-hotel-bookinfos"]) :
+    this.router.navigate(["international-hotel-bookinfos_en"]);
   }
   private checkIfPassengerCanBookRoomPlan(
     policies: HotelPassengerModel[],

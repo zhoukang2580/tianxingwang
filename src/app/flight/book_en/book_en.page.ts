@@ -84,6 +84,7 @@ import {
   CanComponentDeactivate,
 } from "src/app/guards/candeactivate.guard";
 import { SearchApprovalEnComponent } from 'src/app/tmc/components/search-approval_en/search-approval_en.component';
+import { FlightCabinFareType } from '../models/flight/FlightCabinFareType';
 
 @Component({
   selector: "app-book-en",
@@ -105,6 +106,7 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
     lowestPriceRecommend: "LowestPriceRecommend"
   }
   private isShowInsuranceBack = false;
+  FlightCabinFareType=FlightCabinFareType;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
@@ -735,7 +737,7 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(this.LangService.isCn ? "下单成功!" : "checkout success!", 1400, "top");
+          AppHelper.toast("checkout success!", 1400, "top");
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
           if (
@@ -764,9 +766,9 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(this.LangService.isCn ? "订单已保存!" : "Order saved");
+              await AppHelper.alert("Order saved");
             } else {
-              await AppHelper.alert(this.LangService.isCn ? "下单成功!" : "checkout success!");
+              await AppHelper.alert("checkout success!");
             }
           }
           const hasRight = await this.tmcService.checkHasHotelBookRight();
@@ -881,9 +883,13 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
       ele: HTMLElement
     ) => {
       await AppHelper.alert(
+        this.LangService.isCn ?
         `${item.credentialStaff && item.credentialStaff.Name} 【${
           item.modal.credential && item.modal.credential.Number
-        }】 ${msg} 信息不能为空`
+        }】 ${msg} 信息不能为空`:
+        `${item.credentialStaff && item.credentialStaff.Name} 【${
+          item.modal.credential && item.modal.credential.Number
+        }】 ${msg} Information cannot be empty`
       );
       this.moveRequiredEleToViewPort(ele);
     };
@@ -1050,7 +1056,7 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumber", "outnumber");
-              showErrorMsg(it.label + "必填", combindInfo, el);
+              showErrorMsg(it.label + this.LangService.isCn ? "必填" : " Required ", combindInfo, el);
               return;
             }
             if (it.value) {

@@ -1,4 +1,4 @@
-import { LangService } from '../../../services/lang.service';
+import { LangService } from "../../../services/lang.service";
 import { Subscription } from "rxjs";
 import { StaffService } from "./../../../hr/staff.service";
 import { IonSelect } from "@ionic/angular";
@@ -14,7 +14,7 @@ import {
   AfterViewInit,
   OnDestroy,
   OnChanges,
-  SimpleChanges
+  SimpleChanges,
 } from "@angular/core";
 import { CredentialsEntity } from "../../models/CredentialsEntity";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
@@ -22,12 +22,11 @@ import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 @Component({
   selector: "app-book-credential-comp",
   templateUrl: "./book-credential-comp.component.html",
-  styleUrls: ["./book-credential-comp.component.scss"]
+  styleUrls: ["./book-credential-comp.component.scss"],
 })
 export class BookCredentialCompComponent
   implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
-  private langService: LangService;
   // @Input() isExchange: boolean;
   @Input() credential: CredentialsEntity;
   @Input() credentials: CredentialsEntity[];
@@ -40,12 +39,12 @@ export class BookCredentialCompComponent
   @Input() canEditSurname;
   @Input() canEditNumber = false;
   @Input() isNotWihte;
-  @Input() canEdit =true;
-  @Input() isself =true;
+  @Input() canEdit = true;
+  @Input() isself = true;
   isModified = false;
   CredentialsType = CredentialsType;
   @ViewChild(IonSelect) ionSelect: IonSelect;
-  constructor(public router: Router) {
+  constructor(public router: Router, private langService: LangService) {
     this.savecredential = new EventEmitter();
     this.modify = new EventEmitter();
     this.managementCredentials = new EventEmitter();
@@ -72,14 +71,13 @@ export class BookCredentialCompComponent
     if (!this.canEdit) {
       return;
     }
-    this.langService.isEn ?
-    this.router.navigate(["member-credential-management_en"], {
-      queryParams: { addNew: true },
-    })
-    :
-    this.router.navigate(["member-credential-management"], {
-      queryParams: { addNew: true },
-    });
+    this.langService.isEn
+      ? this.router.navigate(["member-credential-management_en"], {
+          queryParams: { addNew: true },
+        })
+      : this.router.navigate(["member-credential-management"], {
+          queryParams: { addNew: true },
+        });
   }
   onSave() {
     this.savecredential.emit(this.credential);
@@ -91,9 +89,9 @@ export class BookCredentialCompComponent
     // }
   }
   async ngOnInit() {
-    // console.log(this.isNotWihte,"this.isNotWihte");  
-    if(this.isNotWihte){
-      this.canEdit=false;
+    // console.log(this.isNotWihte,"this.isNotWihte");
+    if (this.isNotWihte) {
+      this.canEdit = false;
     }
   }
   ngOnDestroy() {
@@ -101,7 +99,7 @@ export class BookCredentialCompComponent
   }
   ngAfterViewInit() {
     if (this.ionSelect) {
-      this.subscription = this.ionSelect.ionChange.subscribe(_ => {
+      this.subscription = this.ionSelect.ionChange.subscribe((_) => {
         this.onSave();
       });
     }

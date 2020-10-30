@@ -10,21 +10,21 @@ import {
   ViewChildren,
   AfterViewInit,
   ViewChild,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import {
   InAppBrowserObject,
   InAppBrowser,
-  InAppBrowserOptions
+  InAppBrowserOptions,
 } from "@ionic-native/in-app-browser/ngx";
-import { AppHelper } from 'src/app/appHelper';
+import { AppHelper } from "src/app/appHelper";
 
 @Component({
   selector: "app-open-url",
   templateUrl: "./open-url.page.html",
   styleUrls: ["./open-url.page.scss"],
-  providers: [InAppBrowser]
+  providers: [InAppBrowser],
 })
 export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
   title: string;
@@ -50,7 +50,15 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router
   ) {
     this.url$ = new BehaviorSubject(null);
-    this.subscription = activatedRoute.queryParamMap.subscribe(p => {
+    this.subscription = activatedRoute.queryParamMap.subscribe((p) => {
+      let url = decodeURIComponent(p.get("url"));
+      if (url && this.plt.is("ios") && !url.includes("isIos")) {
+        if (url.includes("?")) {
+          url += `&isIos=${true}`;
+        } else {
+          url += "?isIos=true";
+        }
+      }
       this.goPath = p.get("goPath");
       this.goPathQueryParams = p.get("goPathQueryParams") || "";
 
@@ -59,16 +67,14 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       if (isIframe) {
         this.isIframeOpen = isIframe == "true";
       }
-      if (p.get("url")) {
-        this.url$.next(
-          this.domSanitizer.bypassSecurityTrustResourceUrl(p.get("url"))
-        );
+      if (url) {
+        this.url$.next(this.domSanitizer.bypassSecurityTrustResourceUrl(url));
       }
       if (p.get("isOpenInAppBrowser")) {
         this.isOpenInAppBrowser = p.get("isOpenInAppBrowser") == "true";
         if (this.isOpenInAppBrowser) {
           this.isIframeOpen = false;
-          this.openInAppBrowser(p.get("url"));
+          this.openInAppBrowser(url);
         }
       }
       if (p.get("title")) {
@@ -107,13 +113,13 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private onMessage(evt: MessageEvent) {
     if (evt.data && evt.data.message) {
-      if (evt.data.message == 'back') {
+      if (evt.data.message == "back") {
         if (this.goPath) {
           this.router.navigate([this.goPath], {
             queryParams: {
-              goPathQueryParams: this.goPathQueryParams
-            }
-          })
+              goPathQueryParams: this.goPathQueryParams,
+            },
+          });
         } else {
           if (!this.isback) {
             this.onBack();
@@ -126,7 +132,6 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     window.addEventListener("message", this.onMessage.bind(this));
     setTimeout(async () => {
-
       if (this.iframes) {
         const iframe = this.iframes.first;
         if (iframe) {
@@ -138,19 +143,19 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
             if (isDismiss) {
               return;
             }
-            isDismiss=true;
+            isDismiss = true;
             l.dismiss();
           };
           iframe.nativeElement.onerror = () => {
             if (isDismiss) {
               return;
             }
-            isDismiss=true;
+            isDismiss = true;
             l.dismiss();
-          }
+          };
           setTimeout(() => {
-            if(!isDismiss){
-              isDismiss=true;
+            if (!isDismiss) {
+              isDismiss = true;
               l.dismiss();
             }
           }, 2000);
@@ -164,9 +169,9 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       this.backButton.popToPrePage();
     }
   }
-  ngOnInit() { }
+  ngOnInit() {}
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    window.removeEventListener('message', this.onMessage.bind(this));
+    window.removeEventListener("message", this.onMessage.bind(this));
   }
 }
