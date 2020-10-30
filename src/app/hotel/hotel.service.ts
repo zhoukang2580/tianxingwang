@@ -263,9 +263,9 @@ export class HotelService {
     forceFetch =
       forceFetch ||
       city.Code !=
-      (this.conditionModel &&
-        this.conditionModel.city &&
-        this.conditionModel.city.Code);
+        (this.conditionModel &&
+          this.conditionModel.city &&
+          this.conditionModel.city.Code);
     if (
       forceFetch ||
       !this.conditionModel ||
@@ -347,8 +347,8 @@ export class HotelService {
         m.hotelType == "normal"
           ? ""
           : m.hotelType == "agreement"
-            ? "Agreement"
-            : "SpecialPrice";
+          ? "Agreement"
+          : "SpecialPrice";
       this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
@@ -592,7 +592,7 @@ export class HotelService {
       } else {
         console.log(
           `大约加载本地${Object.keys(this.testData).length * 20}条记录，返回第${
-          query.PageIndex + 1
+            query.PageIndex + 1
           }批数据,已经加载${20 * query.PageIndex || 20}条记录`
         );
         const test = this.testData[query.PageIndex];
@@ -618,7 +618,11 @@ export class HotelService {
       ...hotelquery,
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
       hotelType: this.getSearchHotelModel().hotelType,
+      Stars: null,
     };
+    if (query.Stars && query.Stars.length) {
+      req.Data.Categories = query.Stars;
+    }
     if (cond && cond.searchText) {
       req.Data["SearchKey"] = cond.searchText.Text;
       if (cond.searchText.Value) {
@@ -905,7 +909,7 @@ export class HotelService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch((_) => { });
+      await top.dismiss().catch((_) => {});
       top = await this.modalCtrl.getTop();
     }
   }
