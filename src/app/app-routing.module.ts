@@ -25,6 +25,7 @@ import { FlightInternationalModule } from "./flight-international/international-
 import { TravelApplicationModule } from "./travel-application/travel-application.module";
 import { LoginEnModule } from "./login_en/login_en.module";
 import { RegisterEnPageModule } from './register_en/register_en.page.module';
+import { RegisterEnModule } from './register_en/register_en.module';
 
 const routes: Routes = [
   {
@@ -122,7 +123,7 @@ const routes: Routes = [
   imports: [
     CarModule,
     RegisterModule,
-    RegisterEnPageModule,
+    RegisterEnModule,
     LoginModule,
     LoginEnModule,
     FlightModule,
