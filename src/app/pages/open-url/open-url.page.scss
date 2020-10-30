@@ -1,7 +1,8 @@
 .wrapper {
   height: 100%;
   width: 100%;
-  overflow: auto;
+  overflow: hidden;
+  max-height: 100vh;
   overflow-x: hidden;
   &::-webkit-scrollbar {
     display: none;
@@ -19,7 +20,7 @@
 }
 .detail {
   text-indent: 2em;
-  background-color:  var(--ion-color-light);;
+  background-color: var(--ion-color-light);
 }
 // ion-content {
 //   --background:  var(--ion-color-light);;
