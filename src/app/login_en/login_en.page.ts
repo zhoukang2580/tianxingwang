@@ -526,7 +526,7 @@ export class LoginEnPage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate([AppHelper.getRoutePath("password-check")]);
   }
   register() {
-    this.router.navigate([AppHelper.getRoutePath("register")]);
+    this.router.navigate([AppHelper.getRoutePath("register_en")]);
   }
   ngOnDestroy() {
     this.loginSubscription.unsubscribe();
