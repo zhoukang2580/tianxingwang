@@ -16,7 +16,7 @@
 ion-header {
   z-index: 100;
 }
-ion-toolbar {
+ion-toolbar, ion-toolbar.ios {
   --background: transparent;
   --border-width: 0;
 }
@@ -30,8 +30,8 @@ ion-card {
   position: absolute;
   top: 19%;
   left: 0.45em;
-  z-index: 101;
   right: 0.42em;
+  z-index: 101;
   display: flex;
   height: 3.5em;
   align-items: center;
@@ -64,6 +64,11 @@ ion-card {
     margin-left: -1.5em;
     top: 1.7em;
   }
+}
+.ios .search-img {
+  top: 22%;
+  left: 0.85em;
+  right: 0.82em;
 }
 .segments {
   background-color: #f6f6f6;

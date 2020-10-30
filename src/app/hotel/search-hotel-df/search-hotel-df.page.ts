@@ -143,8 +143,8 @@ export class SearchHotelDfPage implements OnInit, OnDestroy {
       })
     );
   }
-  onToggleDomestic() {
-    this.isDomestic = !this.isDomestic;
+  onToggleDomestic(isDomestic) {
+    this.isDomestic = isDomestic;
   }
   onSelectNationality() {
     this.router.navigate([AppHelper.getRoutePath('select-nationality')])

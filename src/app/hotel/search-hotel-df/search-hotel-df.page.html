@@ -32,11 +32,11 @@
 </div>
 <ion-content class="cnt">
   <div class="search-img">
-    <div class="left" (click)='onToggleDomestic()'>
+    <div class="left" (click)='onToggleDomestic(true)'>
       <img src="assets/images/hotel-rect.png" class="left" alt="" *ngIf='isDomestic'>
       <span class="text">国内</span>
     </div>
-    <div class="right" (click)='onToggleDomestic()'>
+    <div class="right" (click)='onToggleDomestic(false)'>
       <img src="assets/images/hotel-rect-r.png" class="right" *ngIf='!isDomestic' alt="">
       <span class="text">国际*港澳台</span>
     </div>
