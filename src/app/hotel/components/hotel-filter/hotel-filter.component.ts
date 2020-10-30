@@ -68,7 +68,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
       .getHotelQuerySource()
       .subscribe(q => {
         this.hotelQuery = q;
-        if (!this.hotelQuery || !this.hotelQuery.filters) {
+        if (!this.hotelQuery || !this.hotelQuery.filters||!this.hotelQuery.filters.length) {
           this.onReset();
         }
       });

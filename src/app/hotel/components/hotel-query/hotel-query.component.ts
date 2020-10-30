@@ -35,8 +35,8 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
   @Input() langOpt = {
     Recommended: "推荐",
     PriceStar: "星级/价格",
-    Filter: "位置区域",
-    Location: "筛选",
+    Filter: "筛选",
+    Location: "位置区域",
   };
   @Output() activeFilter: EventEmitter<IHotelQueryCompTab>;
   @Output() hotelQueryChange: EventEmitter<any>;

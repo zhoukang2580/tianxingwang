@@ -172,7 +172,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
     await this.orderService
       .refundFlightTicket(data)
       .then(() => {
-        AppHelper.toast("Refund application in progress", 2000, "middle");
+        AppHelper.alert("Refund application in progress");
         this.doRefresh();
         this.doRefreshTasks();
       })
