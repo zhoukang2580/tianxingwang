@@ -94,6 +94,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "hotel-detail_df",
+    loadChildren: () =>
+      import("./hotel-detail-df/hotel-detail-df.module").then(
+        m => m.HotelDetailDfPageModule
+      )
+  },
+  {
     path: "hotel-detail_en",
     loadChildren: () =>
       import("./hotel-detail_en/hotel-detail_en.module").then(
