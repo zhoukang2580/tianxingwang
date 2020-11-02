@@ -61,6 +61,7 @@ import {
 } from "@angular/animations";
 
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { StaffService } from 'src/app/hr/staff.service';
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -77,8 +78,7 @@ interface ISearchTextValue {
   styleUrls: ["./hotel-list-df.page.scss"],
   animations: [],
 })
-export class HotelListDfPage
-  implements OnInit, OnDestroy, AfterViewInit {
+export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
   private oldSearchText: ISearchTextValue;
   private oldDestinationCode: string;
@@ -97,6 +97,7 @@ export class HotelListDfPage
   @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
   isLeavePage = false;
   isLoadingHotels = false;
+  isFreeBook = false;
   searchHotelModel: SearchHotelModel;
   hotelQueryModel: HotelQueryEntity;
   hotelDayPrices: HotelDayPriceEntity[] = [];
@@ -130,7 +131,7 @@ export class HotelListDfPage
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
-    private navCtrl: NavController,
+    private staffService: StaffService,
     private configService: ConfigService,
     plt: Platform,
     private modalCtrl: ModalController
@@ -147,6 +148,7 @@ export class HotelListDfPage
     }
     this.hideQueryPannel();
   }
+  onShowFreeBook() {}
   onSegmentChanged(ev: CustomEvent) {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
@@ -216,6 +218,18 @@ export class HotelListDfPage
     this.doRefresh(this.checkDestinationChanged());
   }
   doRefresh(isKeepQueryCondition = false) {
+    this.tmcService.getTmc().then(async (tmc) => {
+      try {
+        const isSelf = await this.staffService.isSelfBookType();
+        this.isFreeBook =
+          tmc &&
+          tmc.HotelSelfPayAmount == "1" &&
+          isSelf &&
+          !this.tmcService.isAgent;
+      } catch (e) {
+        console.error(e);
+      }
+    });
     this.hideQueryPannel();
     if (!isKeepQueryCondition) {
       if (this.queryComp) {
@@ -255,7 +269,6 @@ export class HotelListDfPage
       .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
-
           setTimeout(() => {
             this.isLoadingHotels = false;
             if (this.scroller) {
@@ -267,7 +280,8 @@ export class HotelListDfPage
       .subscribe(
         (result) => {
           this.oldSearchText = this.searchHotelModel.searchText;
-          this.oldDestinationCode = this.searchHotelModel.destinationCity &&
+          this.oldDestinationCode =
+            this.searchHotelModel.destinationCity &&
             this.searchHotelModel.destinationCity.Code;
           if (this.refresher) {
             if (this.hotelQueryModel.PageIndex < 1) {
@@ -395,7 +409,11 @@ export class HotelListDfPage
       this.hideQueryPannel();
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
-      const isrefresh = this.checkSearchTextChanged() || this.checkDestinationChanged() || !this.hotelDayPrices || !this.hotelDayPrices.length;
+      const isrefresh =
+        this.checkSearchTextChanged() ||
+        this.checkDestinationChanged() ||
+        !this.hotelDayPrices ||
+        !this.hotelDayPrices.length;
       if (isrefresh) {
         this.doRefresh(true);
       }

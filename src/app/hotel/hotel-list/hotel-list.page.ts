@@ -98,7 +98,6 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren(IonItem) hotelItemEl: QueryList<any>;
   @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
   isLeavePage = false;
-  isFreeBook = false;
   isLoadingHotels = false;
   searchHotelModel: SearchHotelModel;
   hotelQueryModel: HotelQueryEntity;
@@ -222,18 +221,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   doRefresh(isKeepQueryCondition = false) {
     this.hideQueryPannel();
-    this.tmcService.getTmc().then(async (tmc) => {
-      try {
-        const isSelf = await this.staffService.isSelfBookType();
-        this.isFreeBook =
-          tmc &&
-          tmc.HotelSelfPayAmount == "1" &&
-          isSelf &&
-          !this.tmcService.isAgent;
-      } catch (e) {
-        console.error(e);
-      }
-    });
+    
     if (!isKeepQueryCondition) {
       if (this.queryComp) {
         this.queryComp.onReset();
@@ -259,7 +247,6 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       });
     }
   }
-  onShowFreeBook() {}
   itemHeightFn(item: any, index: number) {
     // console.log(item);
     return 90;

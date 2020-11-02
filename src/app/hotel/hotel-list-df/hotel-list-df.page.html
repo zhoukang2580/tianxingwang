@@ -22,6 +22,9 @@
   <app-refresher slot='fixed' (ionRefresh)='doRefresh(false)' [disabled]='filterTab&&filterTab.isActive'>
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
+  <div class="freebook" *ngIf='isFreeBook' (click)='onShowFreeBook()'>
+    <span>贵公司已开通超标随心住，自行支付超标部分即可享受心仪的房间</span><ion-text color='secondary'>了解随心住>></ion-text>
+  </div>
   <ion-list lines='none'>
     <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}" color="secondary">
       <ion-segment-button value="normal">
