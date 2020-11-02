@@ -49,7 +49,7 @@
             <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
             Add journey
         </ion-button>
-        <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType==TravelApprovalType.Free&&enable" [attr.accountId]='"accountId"'>
+        <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType==TravelApprovalType.Free||tmc?.TravelApprovalType==TravelApprovalType.Approver&&enable" [attr.accountId]='"accountId"'>
             <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">
                 Approved by:

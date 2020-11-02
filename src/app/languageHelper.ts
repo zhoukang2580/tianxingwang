@@ -526,6 +526,9 @@ export class LanguageHelper {
     return "请输入登入密码";
   }
   static getLoginMobileTip() {
+    if (LanguageHelper.lang == "en"){
+      return "Please enter your mobile phone";
+    }
     return "请输入手机号码";
   }
   static getMobileCodeTip() {
