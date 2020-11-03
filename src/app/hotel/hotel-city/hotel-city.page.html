@@ -32,7 +32,7 @@
     </ng-template>
   </ng-container>
   <ng-template #loadingTemp>
-    正在加载...
+    <!-- 正在加载... -->
   </ng-template>
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf='!isLoading'>
     <ion-fab-button color='danger' size='small' (click)='onShowHot()'>
@@ -41,6 +41,6 @@
     <ion-fab-button color='secondary' size='small' (click)='onShowHistory()'>历史</ion-fab-button>
   </ion-fab>
   <ion-infinite-scroll (ionInfinite)='loadMore()'>
-    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+    <ion-infinite-scroll-content><span *ngIf='isEn'>Loading More</span><span *ngIf='!isEn'>加载更多</span>...</ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>

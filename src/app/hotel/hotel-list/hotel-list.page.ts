@@ -346,7 +346,14 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearchByText() {
     this.isUseSearchText = true;
-    this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")]);
+    this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")], {
+      queryParams: {
+        kw:
+          (this.searchHotelModel.searchText &&
+            this.searchHotelModel.searchText.Text) ||
+          "",
+      },
+    });
   }
   private checkDestinationChanged() {
     if (this.searchHotelModel) {
