@@ -153,7 +153,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       hotelType: ev.detail.value,
     });
     this.hotelDayPrices = [];
-    this.doRefresh();
+    this.doRefresh(true);
   }
   ngAfterViewInit() {
     this.autofocusSearchBarInput();
