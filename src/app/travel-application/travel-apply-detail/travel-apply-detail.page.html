@@ -1,211 +1,163 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-buttons slot="start">
-            <app-back-button></app-back-button>
-        </ion-buttons>
-        <ion-title style="font: inherit; margin: auto">出差申请详情</ion-title>
-    </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button></app-back-button>
+    </ion-buttons>
+    <ion-title style="font: inherit; margin: auto">出差申请详情</ion-title>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <div class="container">
-        <section>
-            <div>
-                <p class="h_line h_line_mini"></p>
-                <img src="assets/images/pass.png" class="apply_info_status_pass" *ngIf="ApprovalStatusType?.Pass==detail?.StatusType" />
-                <img src="assets/images/deny.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Refuse==detail?.StatusType" />
-                <img src="assets/images/close.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Closed==detail?.StatusType" />
-                <img src="assets/images/close.png" class="apply_info_status_deny" *ngIf="detail?.TravelForm?.IsOverdue" />
-                <div class="apply_info" style="padding: 18px 23px">
-                    <p>
-                        <span class="apply_info_tit"><span>审批状态：</span
-              ><span class="apply_past">
-                <ng-container
-                  *ngIf="(ApprovalStatusType?.Pass==detail?.StatusType||ApprovalStatusType?.Refuse==detail?.StatusType||ApprovalStatusType?.Waiting==detail?.StatusType) else statusTpl"
-                >
-                  <ion-text
-                    style="color: #2596d9"
-                    color="secondary"
-                    *ngIf="ApprovalStatusType.Pass==detail?.StatusType"
-                    >{{detail?.TravelForm.StatusTypeName}}</ion-text
-                  >
-                  <ion-text
-                    style="color: red"
-                    color="danger"
-                    *ngIf="ApprovalStatusType.Refuse==detail?.StatusType"
-                    >{{detail?.TravelForm.StatusTypeName}}</ion-text
-                  >
-                  <ion-text
-                    style="color:#fec114"
-                    *ngIf="ApprovalStatusType?.Waiting==detail?.StatusType"
-                    >{{detail?.TravelForm.StatusTypeName}}</ion-text
-                  >
-                  <ion-text
-                    style="color: #a08f8f"
-                    *ngIf="ApprovalStatusType?.Closed==detail?.StatusType"
-                    >{{detail?.TravelForm.StatusTypeName}}</ion-text
-                  >
-                  
-                  <ion-text
-                    style="color: #2596d9"
-                    *ngIf="detail?.TravelForm?.IsOverdue"
-                    >已过期</ion-text
-                  >
+  <div class="container">
+    <section>
+      <div>
+        <p class="h_line h_line_mini"></p>
+        <img src="assets/images/pass.png" class="apply_info_status_pass" *ngIf="ApprovalStatusType?.Pass==detail?.StatusType" />
+        <img src="assets/images/deny.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Refuse==detail?.StatusType" />
+        <img src="assets/images/close.png" class="apply_info_status_deny" *ngIf="ApprovalStatusType?.Closed==detail?.StatusType" />
+        <img src="assets/images/close.png" class="apply_info_status_deny" *ngIf="detail?.TravelForm?.IsOverdue" />
+        <div class="apply_info" style="padding: 18px 23px">
+          <p>
+            <span class="apply_info_tit"><span>审批状态：</span><span class="apply_past">
+                <ng-container *ngIf="(ApprovalStatusType?.Pass==detail?.StatusType||ApprovalStatusType?.Refuse==detail?.StatusType||ApprovalStatusType?.Waiting==detail?.StatusType) else statusTpl">
+                  <ion-text style="color: #2596d9" color="secondary" *ngIf="ApprovalStatusType.Pass==detail?.StatusType">{{detail?.TravelForm.StatusTypeName}}</ion-text>
+                  <ion-text style="color: red" color="danger" *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">{{detail?.TravelForm.StatusTypeName}}</ion-text>
+                  <ion-text style="color:#fec114" *ngIf="ApprovalStatusType?.Waiting==detail?.StatusType">{{detail?.TravelForm.StatusTypeName}}</ion-text>
+                  <ion-text style="color: #a08f8f" *ngIf="ApprovalStatusType?.Closed==detail?.StatusType">{{detail?.TravelForm.StatusTypeName}}</ion-text>
+
+                  <ion-text style="color: #2596d9" *ngIf="detail?.TravelForm?.IsOverdue">已过期</ion-text>
                 </ng-container>
                 <ng-template #statusTpl>
-                  <ion-text style="color: #2596d9"
-                    >{{detail?.TravelForm.StatusTypeName}}</ion-text
-                  >
+                  <ion-text style="color: #2596d9">{{detail?.TravelForm.StatusTypeName}}</ion-text>
                 </ng-template>
               </span></span><span class="apply_info_time"></span>
-                    </p>
-                    <p>
-                        <span class="apply_info_tit"><span>申请人：</span><span>{{detail?.Staff.Name}}</span></span><span class="apply_info_time"></span>
-                    </p>
-                    <p>
-                        <span class="apply_info_tit">
+          </p>
+          <p>
+            <span class="apply_info_tit"><span>申请人：</span><span>{{detail?.Staff.Name}}</span></span><span class="apply_info_time"></span>
+          </p>
+          <p>
+            <span class="apply_info_tit">
               <span>申请时间：</span>
-                        <span>{{detail?.TravelForm.applyTimeDate}}{{detail?.TravelForm.applyTimeTime||''}}</span
-              >
+              <span>{{detail?.TravelForm.applyTimeDate}}{{detail?.TravelForm.applyTimeTime||''}}</span>
             </span>
-                        <span class="apply_info_time">{{detail?.TravelForm.approvalTimeDate?.startsWith("1800")||detail?.TravelForm.approvalTimeDate?.startsWith("0001")?"
+            <span class="apply_info_time">{{detail?.TravelForm.approvalTimeDate?.startsWith("1800")||detail?.TravelForm.approvalTimeDate?.startsWith("0001")?"
               ":detail?.TravelForm.approvalTimeDate}}
             </span>
-                    </p>
-                    <p>
-                        <span class="apply_info_tit"><span>出差天数：</span
-              ><span>{{detail?.TravelForm.DayCount}}天</span></span><span class="apply_info_time"></span>
-                    </p>
-                    <p>
-                        <span class="apply_info_tit"><span>单号：</span><span>{{detail?.TravelFormId}}</span></span><span class="apply_info_time"></span>
-                    </p>
-                </div>
-                <div class="border_top">
-                    <p>
-                        <span class="apply_info_tit"><span>所属部门：</span
-              ><span>{{detail?.Staff.Organization.Name}}</span></span><span class="apply_info_time"></span>
-                    </p>
-                    <p>
-                        <span class="apply_info_tit" style="display: flex"><span>出差事由：</span
-              ><span class="apply_info_reason"
-                >{{detail?.TravelForm.Subject}}</span
-              ></span
-            ><span class="apply_info_time"></span>
-                    </p>
-                    <p>
-                        <span class="apply_info_tit"><span>客户或公司：</span
-              ><span>{{detail?.TravelForm?.CustomerName}}</span></span><span class="apply_info_time"></span>
-                    </p>
-                    <p>
-                        <span class="apply_info_tit"><span>成本中心：</span
-              ><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
-                    </p>
-                    <p>
-                        <span class="apply_info_tit" style="display: flex"><span>备注：</span
-              ><span class="apply_info_reason"
-                >{{detail?.TravelForm.Detail}}</span
-              ></span
-            ><span class="apply_info_time"></span>
-                    </p>
-                </div>
-            </div>
-        </section>
-        <section>
-            <div>
-                <p class="h_line h_line_mini"></p>
-                <p class="travel_man">出行人：{{detail?.Staff.Name}}</p>
-                <div class="travel_step" *ngFor="let trip of detail?.TravelForm?.Trips;let idx=index;">
-                    <div class="travel_step_i">
-                        <p class="travel_step_i_tit">
-                            <i class="dot"></i><span>行程{{idx+1}}</span>
-                        </p>
-                        <div class="travel_step_detail" style="background: #f4f9fd">
-                            <p class="p">
-                                <span style="display: flex;">
-                                  <span style="min-width:70px">到达城市:</span>
-                                <span >{{trip.FromCityName}}~{{trip.ToCityName}}</span>
-                                </span>
-                            </p>
-                            <p class="p">
-                                <span style="display: flex;">
-                                <span style="min-width:70px">入住城市:</span>
-                                <span >{{trip.CheckInCityName}}</span>
-                                </span>
-                            </p>
-                            <p class="p">
-                                <span>出发时间：</span>
-                                <span>{{trip.StartDate}}~{{trip.EndDate}}</span
-                ><i
-                  class="toggle"
-                  [class.up]='trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType'
-                  [class.down]='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType'
-                  (click)="onToggle(trip)"
-                ></i>
+          </p>
+          <p>
+            <span class="apply_info_tit"><span>出差天数：</span><span>{{detail?.TravelForm.DayCount}}天</span></span><span class="apply_info_time"></span>
+          </p>
+          <p>
+            <span class="apply_info_tit"><span>单号：</span><span>{{detail?.TravelFormId}}</span></span><span class="apply_info_time"></span>
+          </p>
+        </div>
+        <div class="border_top">
+          <p>
+            <span class="apply_info_tit"><span>所属部门：</span><span>{{detail?.Staff.Organization.Name}}</span></span><span class="apply_info_time"></span>
+          </p>
+          <p>
+            <span class="apply_info_tit" style="display: flex"><span>出差事由：</span><span class="apply_info_reason">{{detail?.TravelForm.Subject}}</span></span><span class="apply_info_time"></span>
+          </p>
+          <p>
+            <span class="apply_info_tit"><span>客户或公司：</span><span>{{detail?.TravelForm?.CustomerName}}</span></span><span class="apply_info_time"></span>
+          </p>
+          <p>
+            <span class="apply_info_tit"><span>成本中心：</span><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
+          </p>
+          <p>
+            <span class="apply_info_tit" style="display: flex"><span>备注：</span><span class="apply_info_reason">{{detail?.TravelForm.Detail}}</span></span><span class="apply_info_time"></span>
+          </p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div>
+        <p class="h_line h_line_mini"></p>
+        <p class="travel_man">出行人：{{detail?.Staff.Name}}</p>
+        <div class="travel_step" *ngFor="let trip of detail?.TravelForm?.Trips;let idx=index;">
+          <div class="travel_step_i">
+            <p class="travel_step_i_tit">
+              <i class="dot"></i><span>行程{{idx+1}}</span>
+            </p>
+            <div class="travel_step_detail" style="background: #f4f9fd">
+              <p class="p">
+                <span style="display: flex;">
+                  <span style="min-width:70px">到达城市:</span>
+                  <span>{{trip.FromCityName}}~{{trip.ToCityName}}</span>
+                </span>
+              </p>
+              <p class="p">
+                <span style="display: flex;">
+                  <span style="min-width:70px">入住城市:</span>
+                  <span>{{trip.CheckInCityName}}</span>
+                </span>
+              </p>
+              <p class="p">
+                <span>出发时间：</span>
+                <span>{{trip.StartDate}}~{{trip.EndDate}}</span><i class="toggle" [class.up]='trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType'
+                  [class.down]='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType' (click)="onToggle(trip)"></i>
               </p>
               <p>
-                <span>天数：</span
-                ><span>{{detail?.TravelForm.DayCount}}天</span>
-                            </p>
+                <span>天数：</span><span>{{detail?.TravelForm.DayCount}}天</span>
+              </p>
 
-                            <p class="travel_step_btn" *ngIf='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType ' style="justify-content: space-evenly">
-                                <button *ngIf='trip["hasFlight"]' (click)='goToPage("flight")'>
+              <p class="travel_step_btn" *ngIf='!trip["isHideButtons"] && ApprovalStatusType?.Pass==detail?.StatusType ' style="justify-content: space-evenly">
+                <button *ngIf='trip["hasFlight"]' (click)='goToPage("flight")'>
                   预订国内机票
                 </button>
-                                <button *ngIf='trip["hasTrain"]' (click)='goToPage("train")'>
+                <button *ngIf='trip["hasTrain"]' (click)='goToPage("train")'>
                   预订火车票
                 </button>
-                                <button *ngIf='trip["hasHotel"]' (click)='goToPage("hotel")'>
+                <button *ngIf='trip["hasHotel"]' (click)='goToPage("hotel")'>
                   预订国内酒店
                 </button>
-                                <button *ngIf='trip["InternationalHotel"]' (click)='goToPage("international-hotel")'>
+                <button *ngIf='trip["InternationalHotel"]' (click)='goToPage("international-hotel")'>
                   预订国际酒店
                 </button>
-                            </p>
+              </p>
 
-                        </div>
-                    </div>
-                </div>
             </div>
-        </section>
-        <section>
-            <div>
-                <p class="h_line h_line_mini"></p>
-                <div class="apply_info">
-                    <p>
-                        <span class="apply_info_tit"><span>审批人：</span></span>
-                        <span style="width: 280px">
+          </div>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div>
+        <p class="h_line h_line_mini"></p>
+        <div class="apply_info">
+          <p>
+            <span class="apply_info_tit"><span>审批人：</span></span>
+            <span style="width: 280px">
               <div class="approver">
                 <div *ngFor="let h of detail?.Histories;let last=last;">
                   <span>{{h?.Name}}</span>
-                        <ion-text color="secondary" *ngIf="ApprovalStatusType.Pass==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
-                        <ion-text color="danger" *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
-                        <ion-text color="warning" *ngIf="ApprovalStatusType.WaiteSubmit==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
-                        <ng-container *ngIf="!last">→&nbsp;</ng-container>
+                  <ion-text color="secondary" *ngIf="ApprovalStatusType.Pass==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
+                  <ion-text color="danger" *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
+                  <ion-text color="warning" *ngIf="ApprovalStatusType.WaiteSubmit==detail?.StatusType">({{detail?.TravelForm.StatusTypeName}})</ion-text>
+                  <ng-container *ngIf="!last">→&nbsp;</ng-container>
                 </div>
-            </div>
+              </div>
             </span>
 
             <span class="apply_info_time"></span>
-            </p>
-            <!-- <p>
+          </p>
+          <!-- <p>
                 <span class="apply_info_tit Cost_center"><span>成本中心：</span
               ><span>{{detail?.TravelForm?.CostCenterName}}</span></span><span class="apply_info_time"></span>
             </p> -->
-            <div *ngFor="let item of detail?.OutNumbers">
-                <p *ngIf="item?.Code">
-                    <span class="apply_info_tit Cost_Id">
-                <span class="cen_frist">{{item?.Name}}：</span
-                ><span>{{item?.Code}}</span>
-                    </span>
-                    <span class="apply_info_time"></span>
-                </p>
-            </div>
-            <p *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">
-                <span class="apply_info_tit"><span>备注：</span
-              ><span class="apply_info_reason"></span>{{remark}}</span><span class="apply_info_time"></span>
+          <div *ngFor="let item of detail?.OutNumbers">
+            <p *ngIf="item?.Code">
+              <span class="apply_info_tit Cost_Id">
+                <span class="cen_frist">{{item?.Name}}：</span><span>{{item?.Code}}</span>
+              </span>
+              <span class="apply_info_time"></span>
             </p>
-    </div>
-    </div>
+          </div>
+          <p *ngIf="ApprovalStatusType.Refuse==detail?.StatusType">
+            <span class="apply_info_tit"><span>备注：</span><span class="apply_info_reason"></span>{{remark}}</span><span class="apply_info_time"></span>
+          </p>
+        </div>
+      </div>
     </section>
     <!-- <section>
             <div class="apply_button" style="background: #F5F7F9;">
@@ -213,5 +165,5 @@
                 <button class="apply_button_pass" (click)="onAdopt()">通过</button>
             </div>
         </section> -->
-    </div>
+  </div>
 </ion-content>
