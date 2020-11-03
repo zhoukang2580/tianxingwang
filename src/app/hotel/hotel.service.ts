@@ -479,7 +479,7 @@ export class HotelService {
     }
     return res;
   }
-  searchHotelCity(data: { Name: string; PageIndex: number }) {
+  searchHotelCity(data: { Name: string; PageIndex: number; IsHot: boolean }) {
     const req = new RequestEntity();
     req.Method = "TmcApiHotelUrl-City-Search";
     req.Data = {

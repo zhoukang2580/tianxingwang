@@ -15,6 +15,7 @@ import { NavController, IonInfiniteScroll, IonSearchbar } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
+import { LangService } from "src/app/services/lang.service";
 const HISTORY_HOTEL_CITIES = "history_hotel_cities";
 @Component({
   selector: "app-hotel-city",
@@ -31,18 +32,22 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   vmKeyword = "";
   isLoading = false;
   filteredTotalCount = 0;
+  isEn = false;
+  isHot = false;
   @ViewChild(IonSearchbar) searchbar: IonSearchbar;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
-  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   constructor(
     private hotelService: HotelService,
     private storage: Storage,
     route: ActivatedRoute,
     private ngZone: NgZone,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    langService: LangService
   ) {
     this.subscriptions.push(route.queryParamMap.subscribe((_) => {}));
+    this.isEn = langService.isEn;
   }
   back() {
     this.navCtrl.back();
@@ -63,7 +68,16 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     this.scroller.disabled = true;
   }
   onShowHot() {
-    this.vmCities = this.hotCities;
+    this.isHot = true;
+    this.isLoading = true;
+    this.historyCities = [];
+    this.hotCities = [];
+    this.vmCities = [];
+    this.pageIndex = 0;
+    if (this.scroller) {
+      this.scroller.disabled = true;
+    }
+    this.loadMore((this.vmKeyword || "").trim());
     this.scroller.disabled = true;
   }
   async onSelect(city: TrafficlineEntity) {
@@ -136,9 +150,6 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     });
     this.subscriptions.push(sub);
     this.doRefresh();
-    if (this.refresher) {
-      this.refresher.complete();
-    }
   }
   async ngAfterViewInit() {
     if (this.searchbar) {
@@ -149,9 +160,14 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async loadMore(kw: string = "") {
     this.hotelService
-      .searchHotelCity({ Name: kw, PageIndex: this.pageIndex })
+      .searchHotelCity({
+        Name: kw,
+        PageIndex: this.pageIndex,
+        IsHot: this.isHot,
+      })
       .pipe(
         finalize(() => {
+          this.scroller.complete();
           setTimeout(() => {
             this.isLoading = false;
           }, 200);
@@ -161,7 +177,26 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
         const arr = (r && r.Data) || [];
         if (arr.length) {
           this.pageIndex++;
-          this.vmCities = this.vmCities.concat(arr);
+          this.vmCities = this.vmCities.concat(
+            arr.map((it) => {
+              if (it.CityName) {
+                if (this.isEn) {
+                  it.EnglishName =
+                    it.Name == it.CityName
+                      ? it.Pinyin
+                      : `${it.Pinyin},${it.EnglishName}`;
+                }
+              }
+              if (it.Name) {
+                if (!this.isEn) {
+                  if (it.Name == it.CityName) {
+                    it.CityName = "";
+                  }
+                }
+              }
+              return it;
+            })
+          );
         }
         this.scroller.disabled = arr.length < 20;
       });
@@ -172,27 +207,15 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     this.hotCities = [];
     this.vmCities = [];
     this.pageIndex = 0;
+    this.isHot = false;
     if (this.scroller) {
       this.scroller.disabled = true;
     }
-    // if (!this.allCities || !this.allCities.length) {
-    //   await this.initCitites();
-    // }
-    // if (!this.historyCities || !this.historyCities.length) {
-    //   await this.initHotAndHistoryCities();
-    // }
     this.loadMore((this.vmKeyword || "").trim());
     if (this.refresher) {
       this.refresher.complete();
     }
   }
-  // private async initHotAndHistoryCities() {
-  //   if (this.allCities) {
-  //     this.hotCities = this.allCities.filter((it) => it.IsHot);
-  //     await this.initHistoryCity();
-  //   }
-  // }
-
   async doSearch() {
     const kw = (this.vmKeyword || "").trim();
     this.pageIndex = 0;
