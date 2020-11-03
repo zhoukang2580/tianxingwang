@@ -392,49 +392,49 @@ export class LanguageHelper {
     return "请选择返程日期";
   }
   static getSundayTip() {
-    if (LanguageHelper.lang== "en") {
+    if (this.lang == "en") {
       return "Sunday";
     }
     return "周日";
   }
   static getMondayTip() {
-    if (LanguageHelper.lang== "en") {
+    if (this.lang == "en") {
       return "Monday";
     }
     return "周一";
   }
   static getTuesdayTip() {
-    if (LanguageHelper.lang== "en") {
+    if (this.lang == "en") {
       return "Tuesday";
     }
     return "周二";
   }
   static getWednesdayTip() {
-    if (LanguageHelper.lang== "en") {
+    if (this.lang == "en") {
       return "Wednesday";
     }
     return "周三";
   }
   static getThursdayTip() {
-    if (LanguageHelper.lang== "en") {
+    if (this.lang == "en") {
       return "Thursday";
     }
     return "周四";
   }
   static getFridayTip() {
-    if (LanguageHelper.lang== "en") {
+    if (this.lang == "en") {
       return "Friday";
     }
     return "周五";
   }
   static getSaturdayTip() {
-    if (LanguageHelper.lang== "en") {
+    if (this.lang == "en") {
       return "Saturday";
     }
     return "周六";
   }
   static getTodayTip() {
-    if (LanguageHelper.lang== "en") {
+    if (this.lang == "en") {
       return "Today";
     }
     return "今天";
@@ -516,7 +516,7 @@ export class LanguageHelper {
     return "请输入验证码";
   }
   static getSlidvalidateInnerTip() {
-    if (LanguageHelper.lang == "en") {
+    if (this.lang == "en") {
       return "Slide right to fill puzzle";
     }
     return "向右滑动填充拼图";
@@ -534,13 +534,8 @@ export class LanguageHelper {
     return "请输入登入密码";
   }
   static getLoginMobileTip() {
-<<<<<<< HEAD
     if(LanguageHelper.lang == 'en'){
       return "Please enter phone no";
-=======
-    if (LanguageHelper.lang == "en"){
-      return "Please enter your mobile phone";
->>>>>>> a68dc74f6c421248cd1e76369409b0190da33586
     }
     return "请输入手机号码";
   }
@@ -582,14 +577,14 @@ export class LanguageHelper {
     return "邮箱绑定成功";
   }
   static getCancelTip() {
-    if (LanguageHelper.lang == "en") {
+    if (this.lang == "en") {
       return "Cancel";
     }
     return "取消";
   }
 
   static getConfirmTip() {
-    if (LanguageHelper.lang == "en") {
+    if (this.lang == "en") {
       return "Ok";
     }
     return "确定";
