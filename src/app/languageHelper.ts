@@ -1,3 +1,5 @@
+import { AppHelper } from './appHelper';
+
 export class LanguageHelper {
   static get lang() {
     const lang =
@@ -520,18 +522,33 @@ export class LanguageHelper {
     return "向右滑动填充拼图";
   }
   static getLoginNameTip() {
+    if(LanguageHelper.lang == 'en'){
+      return "Please enter login name";
+    }
     return "请输入登入名";
   }
   static getLoginPasswordTip() {
+    if(LanguageHelper.lang == 'en'){
+      return "Please enter login password";
+    }
     return "请输入登入密码";
   }
   static getLoginMobileTip() {
+    if(LanguageHelper.lang == 'en'){
+      return "Please enter phone no";
+    }
     return "请输入手机号码";
   }
   static getMobileCodeTip() {
+    if(LanguageHelper.lang == 'en'){
+      return "Please input the verification code received by the mobile phone";
+    }
     return "请输入手机收到的验证码";
   }
   static getEnterPasswordTip() {
+    if(LanguageHelper.lang == 'en'){
+      return "Please enter password";
+    }
     return "请输入密码";
   }
   static getApiExceptionTip() {
