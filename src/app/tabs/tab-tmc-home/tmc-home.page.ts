@@ -333,7 +333,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       route = "search-international-hotel";
       if (
         !tmcRegionTypeValues.find(
-          (it) => it.toLowerCase() == "internationalhot"
+          (it) => it.toLowerCase() == "internationalhotel"
         )
       ) {
         AppHelper.alert(msg);
