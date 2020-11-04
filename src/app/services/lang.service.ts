@@ -7,6 +7,7 @@ import { IdentityEntity } from "./identity/identity.entity";
 import { AppHelper } from "../appHelper";
 import { finalize } from "rxjs/operators";
 import { Router } from "@angular/router";
+import { CONFIG } from "../config";
 
 @Injectable({
   providedIn: "root",
@@ -15,11 +16,14 @@ export class LangService {
   private subscription = Subscription.EMPTY;
   private intervalId: any;
   private html: any;
+  private currentContent: string;
   private timer = 800;
   private len = 1500;
+  private retryCount = 3;
   private identity: IdentityEntity;
   private isTranslate = false;
   private langSource = new BehaviorSubject("cn");
+  private count = 1;
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
@@ -27,7 +31,9 @@ export class LangService {
   ) {
     identityService.getIdentitySource().subscribe((id) => {
       this.identity = id;
-      this.translate();
+      if (CONFIG.isEnableTranslate) {
+        this.translate();
+      }
     });
   }
   get isEn() {
@@ -39,10 +45,7 @@ export class LangService {
   translate() {
     try {
       if (this.identity && this.identity.Id != "0" && this.identity.Ticket) {
-        if (
-          AppHelper.getStyle() &&
-          AppHelper.getStyle().toLowerCase() != "cn"
-        ) {
+        if (this.isEn) {
           this.start();
         } else {
           this.stop();
@@ -135,35 +138,59 @@ export class LangService {
           console.error(e);
         }
       });
+      if (
+        contents.map((it) => it.txt).join(",") == this.currentContent &&
+        this.count > this.retryCount
+      ) {
+        return;
+      }
+      if (this.currentContent != contents.map((it) => it.txt).join(",")) {
+        this.count = 0;
+      }
+      this.currentContent = contents.map((it) => it.txt).join(",");
       this.subscription = this.getTranslateContent(contents.map((it) => it.txt))
         .pipe(
           finalize(() => {
             this.html = "";
           })
         )
-        .subscribe((r) => {
-          if (r && r.Data && r.Data.Content) {
-            if (r.Data.Content.length != contents.length) {
-              console.error("翻译失败");
-            } else {
-              for (let i = 0; i < contents.length; i++) {
-                const t = contents[i];
-                const phtag = this.getPlaceholderTag(t.tag as any);
-                if (phtag) {
-                  phtag.setAttribute("placeholder", r.Data.Content[i]);
-                } else {
-                  t.tag.textContent = t.tag.textContent.replace(
-                    t.txt,
-                    r.Data.Content[i]
-                  );
+        .subscribe(
+          (r) => {
+            if (r && r.Data && r.Data.Content) {
+              if (r.Data.Content.length != contents.length) {
+                this.checkStop(contents.map((it) => it.txt).join(","));
+                console.error("翻译失败");
+              } else {
+                for (let i = 0; i < contents.length; i++) {
+                  const t = contents[i];
+                  const phtag = this.getPlaceholderTag(t.tag as any);
+                  if (phtag) {
+                    phtag.setAttribute("placeholder", r.Data.Content[i]);
+                  } else {
+                    t.tag.textContent = t.tag.textContent.replace(
+                      t.txt,
+                      r.Data.Content[i]
+                    );
+                  }
                 }
+                this.isTranslate = true;
+                this.currentContent = "";
+                this.count = 0;
               }
-              this.isTranslate = true;
+            } else {
+              this.checkStop(contents.map((it) => it.txt).join(","));
+              this.subscription.unsubscribe();
             }
-          } else {
-            this.subscription.unsubscribe();
+          },
+          (e) => {
+            this.checkStop(contents.map((it) => it.txt).join(","));
           }
-        });
+        );
+    }
+  }
+  private checkStop(translateCnt: string) {
+    if (translateCnt == this.currentContent) {
+      this.count++;
     }
   }
   private isHanzi(txt: string) {
