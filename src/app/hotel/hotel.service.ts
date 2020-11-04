@@ -49,6 +49,7 @@ import { RoomPlanRuleType } from "./models/RoomPlanRuleType";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { ConfigEntity } from "../services/config/config.entity";
 import { AgentEntity } from "../tmc/models/AgentEntity";
+import { CityEntity } from "../tmc/models/CityEntity";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -477,6 +478,14 @@ export class HotelService {
       }
     }
     return res;
+  }
+  searchHotelCity(data: { Name: string; PageIndex: number; IsHot: boolean }) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHotelUrl-City-Search";
+    req.Data = {
+      ...data,
+    };
+    return this.apiService.getResponse<TrafficlineEntity[]>(req);
   }
   async getHotelCityAsync(forceRefresh = false) {
     if (

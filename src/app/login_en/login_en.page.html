@@ -56,7 +56,7 @@
                         </ion-label>
                         <ion-input clear-input='true' required='true' type='text' placeholder='Verification Code' [maxlength]='6' formControlName="MobileCode"></ion-input>
                         <ion-button slot='end' color='secondary' fill='outline' *ngIf='!countDown||countDown <= 0' (click)="showImageCode('sendmobilecode')">
-                            Send CAPTCHA</ion-button>
+                            Send Captcha</ion-button>
                         <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='countDown'>{{countDown}} Resend in seconds
                         </ion-button>
                     </ion-item>

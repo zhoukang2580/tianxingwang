@@ -883,10 +883,6 @@ export class BookEnPage implements OnInit, AfterViewInit, CanComponentDeactivate
       ele: HTMLElement
     ) => {
       await AppHelper.alert(
-        this.LangService.isCn ?
-        `${item.credentialStaff && item.credentialStaff.Name} 【${
-          item.modal.credential && item.modal.credential.Number
-        }】 ${msg} 信息不能为空`:
         `${item.credentialStaff && item.credentialStaff.Name} 【${
           item.modal.credential && item.modal.credential.Number
         }】 ${msg} Information cannot be empty`

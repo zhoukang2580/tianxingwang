@@ -86,7 +86,7 @@
         </ion-col>
       </ion-row>
     </ion-grid> -->
-        <ion-button class="register-btn" color='secondary' expand='block' strong='true' (click)='register()' [disabled]="!(isCodeOk || isGetWechatMiniMobile)">Register</ion-button>
+        <ion-button class="register-btn" color='secondary' expand='block' strong='true' (click)='register()' [disabled]="!(isCodeOk || isGetWechatMiniMobile)">Register now</ion-button>
         <ion-button class="register-btn" color='secondary' expand='block' strong='true' *ngIf='!isGetWechatMiniMobile && isWechatMini' (click)="getWechatMiniMobile()">Use wechat mobile phone number</ion-button>
     </form>
 </ion-content>

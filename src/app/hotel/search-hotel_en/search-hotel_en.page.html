@@ -90,7 +90,7 @@
                         </ng-container>
                         <ng-template #no>
                             <ion-label class="ion-text-wrap">
-                                <h4>{{searchHotelModel?.destinationCity?.Name}}</h4>
+                                <h4>{{ searchHotelModel?.destinationCity?.EnglishName||searchHotelModel?.destinationCity?.Name}}</h4>
                             </ion-label>
                         </ng-template>
                     </ion-label>

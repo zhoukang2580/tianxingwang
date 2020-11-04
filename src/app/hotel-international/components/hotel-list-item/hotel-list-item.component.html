@@ -3,18 +3,19 @@
   <img class="hotel-img" [lazyLoad]='hotel?.FileName' [loadingImage]='loadingImage' [recoverImage]='false'
     [defaultImage]='defaultImage' alt="酒店图片">
   <div class="right-side ion-padding-end">
-    <div class='name'>{{hotel?.Name}}</div>
-    <div class='sub-name' *ngIf='hotel?.enName as n'>{{n}}</div>
+    <div class='name' *ngIf='!hotel?.EnName'>{{hotel?.Name}}</div>
+    <div class='name' *ngIf='hotel?.EnName'>{{hotel?.EnName}}</div>
     <div class="grade-stars">
       <ng-container *ngFor='let i of hotel?.grades'>
         <ion-icon name='star' *ngIf='i>=1' color='danger'></ion-icon>
         <ion-icon name='star-half' *ngIf='i<1' color='danger'></ion-icon>
       </ng-container>
-      <ion-text class='ion-margin-start' color='secondary' *ngIf='hotel?.Grade as g'>{{g}}分</ion-text>
+      <ion-text class='ion-margin-start' color='secondary' *ngIf='hotel?.Grade'>{{hotel?.Grade}}分</ion-text>
     </div>
     <div class="location">
       <ion-icon name='location' color='secondary'> </ion-icon>
-      {{hotel?.Address}}
+      <ng-container *ngIf='!hotel?.EnAddress'>{{hotel?.Address}}</ng-container>
+      <ng-container *ngIf='hotel?.EnAddress'>{{hotel?.EnAddress}}</ng-container>
     </div>
     <div class="ion-text-end price">
       <small>￥</small>

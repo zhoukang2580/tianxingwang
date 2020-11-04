@@ -983,6 +983,7 @@ export class TravelFormEntity extends BaseVariablesEntity {
   ApplyTime: string;
   Applicant: string;
   ApprovalName: string;
+  ApprovalId: string;
   applyTimeDate: string;
   applyTimeTime: string;
   StatusTypeName: string;

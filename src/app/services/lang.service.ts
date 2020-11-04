@@ -34,7 +34,7 @@ export class LangService {
     return AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() == "en";
   }
   get isCn() {
-    return AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() == "cn";
+    return !AppHelper.getStyle() || AppHelper.getStyle().toLowerCase() == "cn";
   }
   translate() {
     try {

@@ -317,45 +317,53 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
     let route = "";
 
-    const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+    const tmcRegionTypeValues = tmc.RegionTypeValue.toLowerCase().split(",");
     if (name == "international-flight") {
       route = "search-international-flight";
-      if (tmcRegionTypeValue.search("internationalflight") < 0) {
+      if (
+        !tmcRegionTypeValues.find(
+          (it) => it.toLowerCase() == "internationalflight"
+        )
+      ) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "international-hotel") {
       route = "search-international-hotel";
-      if (tmcRegionTypeValue.search("internationalhot") < 0) {
+      if (
+        !tmcRegionTypeValues.find(
+          (it) => it.toLowerCase() == "internationalhotel"
+        )
+      ) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "hotel") {
       route = "search-hotel";
-      if (tmcRegionTypeValue.search("hotel") < 0) {
+      if (!tmcRegionTypeValues.find((it) => it.toLowerCase() == "hotel")) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "train") {
       route = "search-train";
-      if (tmcRegionTypeValue.search("train") < 0) {
+      if (!tmcRegionTypeValues.find((it) => it.toLowerCase() == "train")) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "flight") {
       route = "search-flight";
-      if (tmcRegionTypeValue.search("flight") < 0) {
+      if (!tmcRegionTypeValues.find((it) => it.toLowerCase() == "flight")) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "rentalCar") {
       route = "rental-car";
-      if (tmcRegionTypeValue.search("car") < 0) {
+      if (!tmcRegionTypeValues.find((it) => it.toLowerCase() == "car")) {
         AppHelper.alert(msg);
         return;
       }

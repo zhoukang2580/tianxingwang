@@ -48,7 +48,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() filteredCredentialsTypes: CredentialsType[];
   @Input() langOpt = {
     docType: "证件类型",
-    idsurname: "证件性",
+    idsurname: "证件姓",
     inputsur: "请保持和证件姓一致",
     inputenglishx: "请输入证件姓拼音/英文",
     inputenglishm: "请输入证件名拼音/英文",

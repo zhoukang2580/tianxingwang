@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { ActivatedRoute } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";
@@ -6,7 +6,7 @@ import {
   NavController,
   IonInfiniteScroll,
   IonRefresher,
-  IonSearchbar
+  IonSearchbar,
 } from "@ionic/angular";
 import {
   distinctUntilChanged,
@@ -15,7 +15,7 @@ import {
   finalize,
   tap,
   debounceTime,
-  map
+  map,
 } from "rxjs/operators";
 import { Subscription, of, Observable } from "rxjs";
 import {
@@ -23,7 +23,7 @@ import {
   OnInit,
   ViewChild,
   OnDestroy,
-  AfterViewInit
+  AfterViewInit,
 } from "@angular/core";
 import { HotelService } from "../hotel.service";
 interface ISearchTextValue {
@@ -40,7 +40,7 @@ interface ISearchTextValue {
   selector: "app-search-hotel-byText",
   templateUrl: "./combox-search-hotel.page.html",
   styleUrls: ["./combox-search-hotel.page.scss"],
-  animations: [flyInOut]
+  animations: [flyInOut],
 })
 export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(RefresherComponent) refresh: RefresherComponent;
@@ -50,20 +50,22 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscription2 = Subscription.EMPTY;
   searchText: string;
-  config: String;
+  placeholderSearchText: string;
+  config: any;
   searchResult: ISearchTextValue[];
   isLoading = false;
   constructor(
     private hotelService: HotelService,
     private navCtrl: NavController,
     private route: ActivatedRoute,
-    private LangService: LangService
+    private langService: LangService
   ) {}
   ngOnInit() {
-    this.subscription2 = this.route.queryParamMap.subscribe(() => {
+    this.subscription2 = this.route.queryParamMap.subscribe((q) => {
+      this.placeholderSearchText = q.get("kw");
       this.doRefresh();
     });
-    if (this.LangService.isCn){
+    if (this.langService.isCn) {
       this.config = "确定";
     } else {
       this.config = "OK";
@@ -84,10 +86,10 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap(name => this.load(name)),
-        catchError(_ => of({ Data: [] }))
+        switchMap((name) => this.load(name)),
+        catchError((_) => of({ Data: [] }))
       )
-      .subscribe(res => {
+      .subscribe((res) => {
         this.searchResult = res.Data;
         this.enableScroller(res.Data.length >= 20);
       });
@@ -108,15 +110,15 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
           this.isLoading = false;
         }, 200);
       }),
-      map(r => ({ Data: r })),
-      catchError(e => {
+      map((r) => ({ Data: r })),
+      catchError((e) => {
         console.error(e);
         return of({ Data: [] });
       })
     );
   }
   loadMore(name: string = "") {
-    this.subscription = this.load(name).subscribe(res => {
+    this.subscription = this.load(name).subscribe((res) => {
       const arr = (res && res.Data) || [];
       this.enableScroller(arr.length >= 20);
       if (arr.length) {
@@ -142,7 +144,7 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   onSelect(it?: ISearchTextValue) {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
-      searchText: it || { Text: this.searchText }
+      searchText: it || { Text: this.searchText },
     });
     setTimeout(() => {
       this.navCtrl.back();
