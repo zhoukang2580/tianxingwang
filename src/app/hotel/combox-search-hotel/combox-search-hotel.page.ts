@@ -50,7 +50,7 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscription2 = Subscription.EMPTY;
   searchText: string;
-  placeholderSearchText: string;
+  // placeholderSearchText: string;
   config: any;
   searchResult: ISearchTextValue[];
   isLoading = false;
@@ -62,7 +62,7 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   ) {}
   ngOnInit() {
     this.subscription2 = this.route.queryParamMap.subscribe((q) => {
-      this.placeholderSearchText = q.get("kw");
+      this.searchText = q.get("kw");
       this.doRefresh();
     });
     if (this.langService.isCn) {
