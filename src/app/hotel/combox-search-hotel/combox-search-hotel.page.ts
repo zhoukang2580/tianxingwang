@@ -50,7 +50,7 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscription2 = Subscription.EMPTY;
   searchText: string;
-  placeholderSearchText: string;
+  // placeholderSearchText: string;
   config: any;
   searchResult: ISearchTextValue[];
   isLoading = false;
@@ -62,8 +62,8 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   ) {}
   ngOnInit() {
     this.subscription2 = this.route.queryParamMap.subscribe((q) => {
-      this.placeholderSearchText = q.get("kw");
-      this.doRefresh();
+      this.searchText = q.get("kw");
+      this.doRefresh(true);
     });
     if (this.langService.isCn) {
       this.config = "确定";
@@ -132,8 +132,10 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
       this.scroller.disabled = !enable;
     }
   }
-  doRefresh() {
-    this.searchText = "";
+  doRefresh(keepSearchText = false) {
+    if (!keepSearchText) {
+      this.searchText = "";
+    }
     this.searchResult = [];
     this.pageIndex = 0;
     if (this.scroller) {

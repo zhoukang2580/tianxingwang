@@ -3,6 +3,7 @@ export const CONFIG = {
   mockProBuild: false,
   production: true,
   isShowVConsole: false,
+  isEnableTranslate: false,
   showNotUseWechatAccountTipTimeout: 5000,
   isForWechatMiniApproval: false, // 小程序审核期间，请设置为true，通过后，设置false
   appDomain: {

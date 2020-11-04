@@ -52,11 +52,20 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
     this.url$ = new BehaviorSubject(null);
     this.subscription = activatedRoute.queryParamMap.subscribe((p) => {
       let url = decodeURIComponent(p.get("url"));
-      if (url && this.plt.is("ios") && !url.includes("isIos")) {
-        if (url.includes("?")) {
-          url += `&isIos=${true}`;
-        } else {
-          url += "?isIos=true";
+      if (url) {
+        if (this.plt.is("ios") && !url.includes("isIos")) {
+          if (url.includes("?")) {
+            url += `&isIos=${true}`;
+          } else {
+            url += "?isIos=true";
+          }
+        }
+        if(!url.includes("lang")){
+          if (url.includes("?")) {
+            url += `&lang=${AppHelper.getLanguage()}`;
+          } else {
+            url += `?lang=${AppHelper.getLanguage()}`;
+          }
         }
       }
       this.goPath = p.get("goPath");
