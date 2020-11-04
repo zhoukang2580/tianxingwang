@@ -53,7 +53,7 @@
                                 </span><span>{{task?.CheckInCity}}</span></span><span class="apply_info_time"></span>
                         </p>
                         <p><span class="apply_info_tit"><span>Days：</span><span>{{task?.DayCount}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>Category：</span><span *ngIf="task?.Tag=='TravelForm'">Prior approval</span><span *ngIf="task?.Tag!='TravelForm'">订单预订</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>Category：</span><span *ngIf="task?.Tag=='TravelForm'">Prior approval</span><span *ngIf="task?.Tag!='TravelForm'">{{task.OrderTypeName}}</span></span><span class="apply_info_time"></span></p>
                         <p><span class="apply_info_tit"><span>Odd Numbers：</span><span>{{task?.ConsumerId}}</span></span><span class="apply_info_time"></span></p>
                     </div>
                 </section>
