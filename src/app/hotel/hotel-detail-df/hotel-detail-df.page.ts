@@ -232,7 +232,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-   ngOnInit() {
+  ngOnInit() {
     this.subscriptions.push(this.hotelDetailSub);
     AppHelper.isWechatMiniAsync().then((isMini) => {
       this.isShowTrafficInfo = !isMini;
@@ -257,9 +257,9 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       })
     );
-    this.configService.get().then(c=>{
+    this.configService.get().then((c) => {
       this.config = c;
-    })
+    });
     this.doRefresh();
   }
   private getHotelImageUrls() {
@@ -267,7 +267,9 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     urls =
       this.hotel &&
       this.hotel.HotelImages &&
-      this.hotel.HotelImages.map((it) => it.ImageUrl || it.FullFileName || it.FileName);
+      this.hotel.HotelImages.map(
+        (it) => it.ImageUrl || it.FullFileName || it.FileName
+      );
     if (!urls || urls.length == 0) {
       if (this.config && this.config.DefaultImageUrl) {
         urls = [this.config.DefaultImageUrl];
@@ -315,11 +317,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
           console.log(r);
         })
       )
-      .pipe(
-        finalize(() => {
-
-        })
-      )
+      .pipe(finalize(() => {}))
       .subscribe(
         async (hotel) => {
           if (hotel) {
@@ -350,7 +348,11 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   private checkIfBookedRoomPlan() {
-    if (this.bookedRoomPlan && this.bookedRoomPlan.roomPlan && this.hotel.Rooms) {
+    if (
+      this.bookedRoomPlan &&
+      this.bookedRoomPlan.roomPlan &&
+      this.hotel.Rooms
+    ) {
       for (let i = 0; i < this.hotel.Rooms.length; i++) {
         const r = this.hotel.Rooms[i];
         const rp = r.RoomPlans.find(
@@ -372,7 +374,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (room && images) {
       const roomImages = images
         .filter((it) => it.Room && it.Room.Id == room.Id)
-        .map((it) => it.ImageUrl || it.FullFileName && it.FullFileName);
+        .map((it) => it.ImageUrl || (it.FullFileName && it.FullFileName));
       return roomImages;
     }
   }
@@ -396,7 +398,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onSegmentChanged(evt: CustomEvent) {
     this.activeTab = evt.detail.value;
-    if(this.activeTab == 'trafficInfo'){
+    if (this.activeTab == "trafficInfo") {
       this.onOpenMap();
       return;
     }
@@ -457,6 +459,113 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     room["isShowRoomPlans"] = !room["isShowRoomPlans"];
+  }
+  async onFreeBookRoom(evt: {
+    roomPlan: RoomPlanEntity;
+    room: RoomEntity;
+    color: string;
+  }) {
+    if (!evt || !evt.room || !evt.roomPlan) {
+      return;
+    }
+    const color = evt.color || "success";
+    const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
+    const policies = this.hotelPolicy || (await this.getPolicy()) || [];
+    const policy =
+      policies &&
+      policies.find(
+        (it) =>
+          !!it.HotelPolicies.find(
+            (k) =>
+              k.UniqueIdId ==
+              this.hotelService.getRoomPlanUniqueId(evt.roomPlan)
+          )
+      );
+    const p =
+      policy &&
+      policy.HotelPolicies &&
+      policy.HotelPolicies.find(
+        (it) =>
+          it.UniqueIdId == this.hotelService.getRoomPlanUniqueId(evt.roomPlan)
+      );
+    console.log("onBookRoomPlan", evt.roomPlan, p);
+    if (color.includes("full")) {
+      AppHelper.alert("已满房，不可预订");
+      return;
+    }
+    const bookInfos = this.hotelService.getBookInfos();
+    const isSelf = await this.staffService.isSelfBookType();
+    if (bookInfos.length === 0) {
+      if (!isSelf) {
+        const a = await AppHelper.alert(
+          "请先添加房客",
+          true,
+          LanguageHelper.getConfirmTip()
+        );
+        if (a) {
+          this.bookedRoomPlan = evt;
+          this.onSelectPassenger();
+        }
+      }
+    } else {
+      const s = this.hotelService.getSearchHotelModel();
+      bookInfos.forEach((info) => {
+        let bookInfo: IHotelInfo;
+        bookInfo = {
+          hotelEntity: this.hotel,
+          hotelRoom: evt.room,
+          roomPlan: evt.roomPlan,
+          tripType: s.tripType || TripType.checkIn,
+          id: AppHelper.uuid(),
+        };
+        if (
+          !this.checkIfPassengerCanBookRoomPlan(
+            policies,
+            evt.roomPlan,
+            info.passenger.AccountId,
+            true
+          )
+        ) {
+          bookInfo = null;
+        }
+        if (info.bookInfo && !bookInfo) {
+          removedBookInfos.push(info);
+        }
+        if (bookInfo) {
+          const p2 = policies.find(
+            (it) => it.PassengerKey == info.passenger.AccountId
+          );
+          const policy2 =
+            p2 &&
+            p2.HotelPolicies.find(
+              (it) =>
+                it.UniqueIdId ==
+                this.hotelService.getRoomPlanUniqueId(bookInfo.roomPlan)
+            );
+          if (policy2 && policy2.Rules) {
+            const rules = {};
+            policy2.Rules.forEach((r) => {
+              rules[AppHelper.uuid()] = r;
+            });
+            bookInfo.roomPlan.Rules = bookInfo.roomPlan.Rules || rules;
+          }
+        }
+        info.bookInfo = bookInfo;
+      });
+      this.bookedRoomPlan = null;
+      const m = await this.modalCtrl.getTop();
+      if (m) {
+        m.dismiss();
+      }
+      if (removedBookInfos.length) {
+        AppHelper.alert(
+          `${removedBookInfos
+            .map((it) => it.credential.Name)
+            .join(",")}预订信息因差标变化已被删除`
+        );
+      }
+      await this.onShowBookInfos();
+    }
   }
   async onBookRoomPlan(evt: {
     roomPlan: RoomPlanEntity;
@@ -726,7 +835,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   onOpenMap() {
-    this.router.navigate(['hotel-map'])
+    this.router.navigate(["hotel-map"]);
   }
   async ngAfterViewInit() {
     setTimeout(() => {

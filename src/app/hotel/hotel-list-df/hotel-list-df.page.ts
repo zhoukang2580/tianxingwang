@@ -61,7 +61,7 @@ import {
 } from "@angular/animations";
 
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
-import { StaffService } from 'src/app/hr/staff.service';
+import { StaffService } from "src/app/hr/staff.service";
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -87,9 +87,6 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
-  @ViewChild("queryconditoneleContainer") queryconditoneleContainer: ElementRef<
-    HTMLElement
-  >;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
@@ -106,6 +103,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   conditionModel: HotelConditionModel;
   config: ConfigEntity;
   agent: AgentEntity;
+  isIos = false;
   hotelType = [
     {
       value: "normal",
@@ -140,6 +138,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       isActive: false,
       label: "",
     } as any;
+    this.isIos = plt.is("ios");
   }
   onBackdropClick(evt: CustomEvent) {
     if (evt) {
@@ -159,28 +158,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit() {
     this.autofocusSearchBarInput();
-    this.setQueryConditionEleTop();
-  }
-  private setQueryConditionEleTop() {
-    setTimeout(() => {
-      requestAnimationFrame(() => {
-        const h = this.headerEl && this.headerEl["el"];
-        let hi = h.offsetHeight;
-        if (hi) {
-          hi = h.offsetHeight;
-          if (hi) {
-            const eles = this.queryconditoneleContainer.nativeElement.querySelectorAll(
-              ".filter-condition"
-            );
-            if (eles) {
-              eles.forEach((el: HTMLElement) => {
-                el.style.top = `${hi}px`;
-              });
-            }
-          }
-        }
-      });
-    }, 1000);
+    // this.setQueryConditionEleTop();
   }
   private getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
@@ -469,6 +447,11 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     //     this.scroller.disabled = false;
     //   }
     // }
+    this.queryComp.queryTabComps.forEach((t) => {
+      if(t.isActive){
+        t.onReset();
+      }
+    });
     if (this.content) {
       this.content.scrollToTop(100);
     }
@@ -698,51 +681,6 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     const query = this.hotelService.getHotelQueryModel();
     console.log("onRank ", query);
     this.doRefresh(true);
-  }
-  private async checkAndOpenModal(tab: {
-    label: "位置区域" | "推荐排序" | "筛选" | "星级价格" | "none";
-    isActive: boolean;
-  }) {
-    if (tab.label == "位置区域") {
-      const m = await this.modalCtrl.create({
-        component: HotelGeoComponent,
-        backdropDismiss: false,
-        cssClass: "domestic-hotel-filter-condition",
-      });
-      m.present();
-      const result = await m.onDidDismiss();
-      this.onFilterGeo();
-    }
-    if (tab.label == "星级价格") {
-      const m = await this.modalCtrl.create({
-        component: HotelStarPriceComponent,
-        backdropDismiss: false,
-        cssClass: "domestic-hotel-filter-condition",
-      });
-      m.present();
-      await m.onDidDismiss();
-      this.onStarPriceChange();
-    }
-    if (tab.label == "筛选") {
-      const m = await this.modalCtrl.create({
-        component: HotelFilterComponent,
-        backdropDismiss: false,
-        cssClass: "domestic-hotel-filter-condition",
-      });
-      m.present();
-      await m.onDidDismiss();
-      this.onFilter();
-    }
-    if (tab.label == "推荐排序") {
-      const m = await this.modalCtrl.create({
-        component: RecommendRankComponent,
-        backdropDismiss: false,
-        cssClass: "domestic-hotel-filter-condition",
-      });
-      m.present();
-      await m.onDidDismiss();
-      this.onRank();
-    }
   }
   // 条件筛选 end
 }

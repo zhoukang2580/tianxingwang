@@ -25,10 +25,13 @@ ul {
   left: 0;
   right: 0;
   top: 5.5em;
+  &.ios {
+    top: 4.5em;
+  }
   background-color: var(--ion-color-light);
   will-change: transform opacity;
   transition: all ease-in-out 200ms;
-  transform: translate3d(0, -150%, 0);
+  transform: translate3d(0, 250%, 0);
   opacity: 0;
   &.show {
     z-index: 200;
@@ -38,6 +41,9 @@ ul {
 }
 
 .backdrop {
+  &.ios {
+    top: 4em;
+  }
   position: fixed;
   top: 6em;
   left: 0;
@@ -56,7 +62,7 @@ ul {
 .query {
   width: 100%;
 }
-.freebook{
+.freebook {
   font-size: 8px;
   padding: 0.2em 1em;
   background: rgba(80, 153, 254, 0.2);

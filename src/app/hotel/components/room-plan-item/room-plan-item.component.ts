@@ -103,21 +103,12 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
       // this.initFilterPolicy();
     }
     if (changes && changes.roomPlan && changes.roomPlan.currentValue) {
-      this.checkIsFreebook();
+      this.isFreebook = this.hotelService.checkRoomPlanIsFreeBook(
+        this.roomPlan
+      );
     }
   }
-  onFreeBook() {
-    this.freeBookRoom.emit({ roomPlan: this.roomPlan, room: this.room });
-  }
-  private checkIsFreebook() {
-    if (this.roomPlan) {
-      this.roomPlan.VariablesJsonObj =
-        this.roomPlan.VariablesJsonObj ||
-        (this.roomPlan.Variables && JSON.parse(this.roomPlan.Variables)) ||
-        {};
-      this.isFreebook =
-        this.roomPlan.VariablesJsonObj.IsSelfPayAmount &&
-        this.roomPlan.VariablesJsonObj.SelfPayAmount > 0;
-    }
+  onFreeBook(color: string) {
+    this.freeBookRoom.emit({ roomPlan: this.roomPlan, room: this.room, color });
   }
 }

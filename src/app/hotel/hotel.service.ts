@@ -150,6 +150,19 @@ export class HotelService {
   getRules(roomPlan: RoomPlanEntity) {
     return this.getRoomRateRule(roomPlan);
   }
+  checkRoomPlanIsFreeBook(roomPlan: RoomPlanEntity) {
+    if (roomPlan) {
+      roomPlan.VariablesJsonObj =
+        roomPlan.VariablesJsonObj ||
+        (roomPlan.Variables && JSON.parse(roomPlan.Variables)) ||
+        {};
+      return (
+        roomPlan.VariablesJsonObj.IsSelfPayAmount &&
+        roomPlan.VariablesJsonObj.SelfPayAmount > 0
+      );
+    }
+    return false;
+  }
   getRoomRateRuleMessage(roomPlan: RoomPlanEntity) {
     if (!roomPlan || !roomPlan.RoomPlanRules) {
       return "";
