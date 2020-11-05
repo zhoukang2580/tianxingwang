@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import { PopoverController } from "@ionic/angular";
 import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { HotelService } from "./../../hotel.service";
@@ -30,23 +30,28 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
     Exceeding: "超标",
     Book: "预订",
     NonBook: "不可预订",
+    freeBook: "随心订",
     NowPay: "现付",
     PayIn: "预付",
     MonthlyPay: "月结",
     SoldOut: "满房",
-    Ok: "及时确认"
+    Ok: "及时确认",
   };
   @Output() bookRoom: EventEmitter<any>;
+  @Output() freeBookRoom: EventEmitter<any>;
   HotelBookType = HotelBookType;
   HotelPaymentType = HotelPaymentType;
   @Input() colors: { [k: string]: string };
+  isFreebook = false;
   get isAgent() {
     return this.hotelService.isAgent;
   }
   constructor(
     private hotelService: HotelService,
-    private popoverCtrl: PopoverController  ) {
+    private popoverCtrl: PopoverController
+  ) {
     this.bookRoom = new EventEmitter();
+    this.freeBookRoom = new EventEmitter();
   }
   getRules(roomPlan: RoomPlanEntity) {
     return this.hotelService.getRules(roomPlan);
@@ -89,13 +94,30 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   getBreakfast(plan: RoomPlanEntity) {
     return this.hotelService.getBreakfast(plan);
   }
-  onBook(rp,color: string) {
+  onBook(rp, color: string) {
     this.bookRoom.emit({ roomPlan: this.roomPlan, room: this.room, color });
   }
   ngOnInit() {}
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.room && changes.room.firstChange) {
       // this.initFilterPolicy();
+    }
+    if (changes && changes.roomPlan && changes.roomPlan.currentValue) {
+      this.checkIsFreebook();
+    }
+  }
+  onFreeBook() {
+    this.freeBookRoom.emit({ roomPlan: this.roomPlan, room: this.room });
+  }
+  private checkIsFreebook() {
+    if (this.roomPlan) {
+      this.roomPlan.VariablesJsonObj =
+        this.roomPlan.VariablesJsonObj ||
+        (this.roomPlan.Variables && JSON.parse(this.roomPlan.Variables)) ||
+        {};
+      this.isFreebook =
+        this.roomPlan.VariablesJsonObj.IsSelfPayAmount &&
+        this.roomPlan.VariablesJsonObj.SelfPayAmount > 0;
     }
   }
 }

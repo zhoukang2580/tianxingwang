@@ -5,6 +5,10 @@
   font-weight: bold;
 }
 .room-plan-item {
+  display: flex;
+  .room-detail {
+    flex: 1;
+  }
   .room-detail-desc {
     line-height: 1.6;
     font-size: 0.8rem;
@@ -36,14 +40,12 @@
       }
     }
     .btn-book {
-      display: flex;
+      display: inline-flex;
       flex-flow: column nowrap;
-      max-width: 8em;
+      width: 5em;
       justify-content: center;
-      // align-items: center;
       text-align: center;
       border: 2px solid tomato;
-      float: right;
       border-radius: 5px;
       font-size: 0.8rem;
       ion-button {

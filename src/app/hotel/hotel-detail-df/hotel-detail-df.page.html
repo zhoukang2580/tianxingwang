@@ -175,16 +175,18 @@
                   <ion-text color='light'>已满房</ion-text>
                 </ion-button>
               </h4>
-              <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 2em;" (click)='onShowRoomPlans(room)'>
+              <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 2em;">
                 <ng-container *ngIf='!isFullOnly(room.RoomPlans)'>
                   <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
                     <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span style="font-size: 1rem">{{price}}</span>
                       <small style="font-size:.6rem;margin-left:.2em">起</small></strong>
                   </ion-text>
-                  <ion-icon class='arrow-icon' name='caret-down-outline' mode='ios' color='secondary' *ngIf='!room["isShowRoomPlans"]'></ion-icon>
-                  <ion-icon class='arrow-icon' name="caret-up-outline" mode='ios' color='secondary' *ngIf='room["isShowRoomPlans"]'></ion-icon>
                 </ng-container>
               </h3>
+              <div class="arrow-icon"  (click)='onShowRoomPlans(room)'>
+                <ion-icon name="chevron-down-circle-outline"  *ngIf='!room["isShowRoomPlans"]'></ion-icon>
+                <ion-icon name="chevron-up-circle-outline" *ngIf='room["isShowRoomPlans"]'></ion-icon>
+              </div>
             </ion-label>
           </div>
           <div class='room-plans' *ngIf='room["isShowRoomPlans"]' @flyInOut>
