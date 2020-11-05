@@ -1362,9 +1362,9 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
-          AppHelper.alert(
-            this.LangService.isCn ? "订单已保存!" : "Order saved"
-          );
+          // AppHelper.alert(
+          //   this.LangService.isCn ? "订单已保存!" : "Order saved"
+          // );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
           if (
