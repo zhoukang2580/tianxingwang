@@ -469,7 +469,6 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     const color = evt.color || "success";
-    const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
     const policies = this.hotelPolicy || (await this.getPolicy()) || [];
     const policy =
       policies &&
@@ -518,19 +517,6 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
           tripType: s.tripType || TripType.checkIn,
           id: AppHelper.uuid(),
         };
-        if (
-          !this.checkIfPassengerCanBookRoomPlan(
-            policies,
-            evt.roomPlan,
-            info.passenger.AccountId,
-            true
-          )
-        ) {
-          bookInfo = null;
-        }
-        if (info.bookInfo && !bookInfo) {
-          removedBookInfos.push(info);
-        }
         if (bookInfo) {
           const p2 = policies.find(
             (it) => it.PassengerKey == info.passenger.AccountId
@@ -556,13 +542,6 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       const m = await this.modalCtrl.getTop();
       if (m) {
         m.dismiss();
-      }
-      if (removedBookInfos.length) {
-        AppHelper.alert(
-          `${removedBookInfos
-            .map((it) => it.credential.Name)
-            .join(",")}预订信息因差标变化已被删除`
-        );
       }
       await this.onShowBookInfos();
     }

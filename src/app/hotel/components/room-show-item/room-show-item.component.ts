@@ -11,16 +11,16 @@ import {
   Output,
   EventEmitter,
   HostBinding,
-  HostListener
+  HostListener,
 } from "@angular/core";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import * as moment from "moment";
-import { HotelBookType } from '../../models/HotelBookType';
+import { HotelBookType } from "../../models/HotelBookType";
 
 @Component({
   selector: "app-room-show-item",
   templateUrl: "./room-show-item.component.html",
-  styleUrls: ["./room-show-item.component.scss"]
+  styleUrls: ["./room-show-item.component.scss"],
 })
 export class RoomShowItemComponent implements OnInit, OnChanges {
   @Output() showPriceDetailEvt: EventEmitter<any>;
@@ -43,6 +43,11 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     // "全部房间WiFi、有线宽带免费"
   ];
   HotelBookType = HotelBookType;
+  freebookObj: {
+    CompanyPayAmount: string;
+    IsSelfPayAmount: boolean;
+    SelfPayAmount: string;
+  };
   constructor(
     private hotelService: HotelService,
     private calendarService: CalendarService
@@ -62,7 +67,11 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     this.arrivalHotel.emit(this.arrivalHotelDateTime);
   }
   onBedChange() {
-    if (this.bookInfo && this.bookInfo.bookInfo && this.bookInfo.bookInfo.roomPlan) {
+    if (
+      this.bookInfo &&
+      this.bookInfo.bookInfo &&
+      this.bookInfo.bookInfo.roomPlan
+    ) {
       this.bedChange.emit(this.bookInfo.bookInfo.roomPlan.Remark);
     }
   }
@@ -74,7 +83,7 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
       plan &&
       plan.Rules &&
       Object.keys(plan.Rules)
-        .map(k => plan.Rules[k])
+        .map((k) => plan.Rules[k])
         .join(",")
     );
   }
@@ -194,5 +203,19 @@ export class RoomShowItemComponent implements OnInit, OnChanges {
     //   this.items.push(c.Description);
     // }
   }
-  ngOnInit() { }
+  ngOnInit() {
+    if (
+      this.hotelService.checkRoomPlanIsFreeBook(
+        this.bookInfo &&
+          this.bookInfo.bookInfo &&
+          this.bookInfo.bookInfo.roomPlan
+      )
+    ) {
+      this.freebookObj={
+        CompanyPayAmount : this.bookInfo.bookInfo.roomPlan.VariablesJsonObj.CompanyPayAmount,
+        IsSelfPayAmount : this.bookInfo.bookInfo.roomPlan.VariablesJsonObj.IsSelfPayAmount,
+        SelfPayAmount : this.bookInfo.bookInfo.roomPlan.VariablesJsonObj.SelfPayAmount
+      }
+    }
+  }
 }
