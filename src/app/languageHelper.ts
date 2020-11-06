@@ -279,9 +279,15 @@ export class LanguageHelper {
     return "请添加旅客";
   }
   static getRoundTripTotalDaysTip(num: number) {
+    if (LanguageHelper.isEn) {
+      return `Total ${num} days`;
+    }
     return `共${num}天`;
   }
   static getCheckInOutTotalDaysTip(num: number) {
+    if (LanguageHelper.isEn) {
+      return `Total ${num} nights`;
+    }
     return `共${num}晚`;
   }
   static getSelectFlyBackDate() {
