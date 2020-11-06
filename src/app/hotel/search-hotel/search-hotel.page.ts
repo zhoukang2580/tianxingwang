@@ -118,6 +118,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
           this.hotelService.setSearchHotelModel({
             ...this.searchHotelModel,
             destinationCity: toCity,
+            searchText:null,
             checkInDate: date,
           });
         }
