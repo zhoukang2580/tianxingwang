@@ -29,6 +29,7 @@ import {
   TmcApprovalType,
   IllegalReasonEntity,
   TravelUrlInfo,
+  IBookOrderResult,
 } from "src/app/tmc/tmc.service";
 import {
   NavController,
@@ -1357,7 +1358,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
       this.isSubmitDisabled = true;
       const res = await this.hotelService.onBook(bookDto).catch((e) => {
         AppHelper.alert(e);
-        return { TradeNo: "", HasTasks: true };
+        return { TradeNo: "", HasTasks: true } as IBookOrderResult;
       });
       this.isSubmitDisabled = false;
       if (res) {
@@ -1373,9 +1374,12 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
             (this.orderTravelPayType == OrderTravelPayType.Person ||
               this.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
-            this.isCheckingPay = true;
-            const canPay = await this.checkPay(res.TradeNo);
-            this.isCheckingPay = false;
+            let canPay = true;
+            if (res.IsCheckPay) {
+              this.isCheckingPay = true;
+              canPay = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            }
             if (canPay) {
               if (res.HasTasks) {
                 await AppHelper.alert(
