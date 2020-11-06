@@ -1393,7 +1393,6 @@ export class TmcEntity extends BaseEntity {
   WechatMiniSecret: string;
   RegionTypeValue: string;
   RegionTypeName: string;
-  HotelSelfPayAmount: string;
   IntFlightApprovalType: TmcApprovalType;
   // =============== 微信支付配置 end ======
 }

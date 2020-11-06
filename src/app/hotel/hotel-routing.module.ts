@@ -112,6 +112,10 @@ export const routes: Routes = [
     loadChildren: () => import("./book/book.module").then(m => m.BookPageModule)
   },
   {
+    path: "hotel-book_df",
+    loadChildren: () => import("./book-df/book-df.module").then(m => m.BookDfPageModule)
+  },
+  {
     path: "hotel-book_en",
     loadChildren: () => import("./book_en/book_en.module").then(m => m.BookEnPageModule)
   },
