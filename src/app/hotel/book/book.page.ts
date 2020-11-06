@@ -1239,6 +1239,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+  
   async onBook(isSave: boolean, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();

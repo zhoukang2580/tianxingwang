@@ -23,14 +23,15 @@
                 <span>{{combindInfo.bookInfo.bookInfo.roomPlan["breakfast"]}}</span>
                 <span>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
               </div>
-              <div class="date">
+              <div class="date font">
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.BeginDate?.substr(0,10)}}</span>
-                <span>共{{calcNights()}}晚</span>
+                <span class="ion-margin-horizontal">共{{calcNights()}}晚</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.EndDate?.substr(0,10)}}</span>
               </div>
               <div class="price">
-                <small>￥</small><span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.TotalAmount}}</span>
-                <ion-text color='secondary' class="sm-font" (click)='combindInfo["isShowRoomPlanRulesDesc"]=!combindInfo["isShowRoomPlanRulesDesc"]'>预订规则</ion-text>
+                <small>￥</small>
+                <ion-text color='danger'>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.TotalAmount}}</ion-text>
+                <ion-text color='secondary' class="sm-font ion-margin-start" (click)='combindInfo["isShowRoomPlanRulesDesc"]=!combindInfo["isShowRoomPlanRulesDesc"]'>预订规则</ion-text>
                 <div *ngIf='combindInfo["isShowRoomPlanRulesDesc"]' @flyInOut class="rules sm-font">
                   <ion-label class='ion-text-wrap' color='danger'>
                     {{getRoomPlanRulesDesc(combindInfo.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
@@ -51,25 +52,47 @@
             </ion-select>
           </ion-item>
           <ion-item>
-            <div class="info">
-              <div class="name">
+            <div class="info font">
+              <div class="name padding-v">
                 住客姓名:{{combindInfo?.vmCredential?.Name}}<span class="tmc-name">{{tmc?.Name}}</span>
                 <ion-icon name="caret-down-outline" (click)='onChangeCredential(credentialSelect)'></ion-icon>
               </div>
-              <div class="credentials">
-                <div class="label">
-                  证件号码：{{combindInfo?.vmCredential?.Number}}
+              <div class="credentials costcenter">
+                <div class="label padding-v">
+                  <span class="label">证件号码：</span>{{combindInfo?.vmCredential?.Number}}
                 </div>
-                <div class="label">
-                  联系电话：{{combindInfo?.bookInfo?.passenger?.Mobile}}
+                <div class="label padding-v">
+                  <span class="label">联系电话：</span>{{combindInfo?.bookInfo?.passenger?.Mobile}}
                 </div>
-                <div class="flex" (click)='searchCostCenter(combindInfo)'>
-                  部门：{{combindInfo?.costCenter?.name}}
+                <div class="flex padding-v" (click)='searchCostCenter(combindInfo)'>
+                  <span class="label">部门：</span>{{combindInfo?.costCenter?.name}}
                   <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                 </div>
-                <div class="flex" (click)='searchOrganization(combindInfo)'>
-                  成本中心：{{combindInfo?.organization?.Name}}
+                <div class="flex padding-v" (click)='searchOrganization(combindInfo)'>
+                  <span class="label">成本中心：</span>{{combindInfo?.organization?.Name}}
                   <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
+                </div>
+              </div>
+              <div class="otherinfo">
+                <div class=" padding-v">
+                  <span class="label">联系邮箱：</span>{{combindInfo}}
+                </div>
+                <div class="label padding-v">
+                  <span class="label">到店时间：</span>{{combindInfo?.bookInfo?.passenger?.Mobile}}
+                  <ion-icon name="caret-down-outline" (click)='onSelectDatetime(datetimeEl)'></ion-icon>
+                  <ion-select value="brown" #datetimeEl style="display: none;" okText="确定" [selectedText]='getHHmm(combindInfo.arrivalHotelTime)' cancelText="取消"
+                    [(ngModel)]='combindInfo.arrivalHotelTime'>
+                    <ion-select-option value="{{datetime}}" *ngFor='let datetime of arrivalDateTimes'>{{datetime}}
+                    </ion-select-option>
+                  </ion-select>
+                </div>
+                <div class="flex padding-v" (click)='searchCostCenter(combindInfo)'>
+                  <span class="label">其他电话：</span>{{combindInfo?.costCenter?.name}}
+                  <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='电话'></ion-input>
+                </div>
+                <div class="flex padding-v" (click)='searchOrganization(combindInfo)'>
+                  <span class="label">其他邮箱：</span>{{combindInfo?.organization?.Name}}
+                  <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='邮箱'></ion-input>
                 </div>
               </div>
             </div>

@@ -26,6 +26,7 @@ import {
   IonItemGroup,
   Platform,
   IonSelect,
+  IonDatetime,
 } from "@ionic/angular";
 import { NavController } from "@ionic/angular";
 import {
@@ -125,6 +126,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   checkPayCountIntervalTime = 5 * 1000;
   curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
   isSelfBookType = true;
+  arrivalDateTimes: string[];
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   dates: { date: string; price: string | number }[] = [];
   constructor(
@@ -172,6 +174,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       return Math.floor(ed.getTime() - st.getTime()) / 24 / 3600 / 1000;
     }
   }
+  getHHmm(datetime: string) {
+    if (datetime) {
+      return this.calendarService.getHHmm(datetime);
+    }
+  }
   private getBedType(room: RoomEntity) {
     const t = this.hotelService.getBedType(room);
     return t && t.Description;
@@ -191,6 +198,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (credentialSelect) {
       credentialSelect.open();
     }
+  }
+  onSelectDatetime(datetime: IonDatetime) {
+    datetime.open();
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
