@@ -234,6 +234,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     if (this.scroller) {
       this.scroller.disabled = true;
     }
+    this.searchModel.IsShowLoading = true;
     this.gettravel();
   }
   compareWithFn = (o1, o2) => {
