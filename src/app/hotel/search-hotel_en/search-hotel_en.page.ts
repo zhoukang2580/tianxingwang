@@ -102,12 +102,15 @@ export class SearchHotelEnPage implements OnInit, OnDestroy {
           }
           this.hotelService.setSearchHotelModel({
             ...this.searchHotelModel,
-            searchText:null,
             destinationCity: toCity,
             checkInDate: date,
           });
         }
       }
+      this.hotelService.setSearchHotelModel({
+        ...this.searchHotelModel,
+        searchText: null,
+      });
       this.fromRoute = q.get("fromRoute");
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());

@@ -118,11 +118,15 @@ export class SearchHotelPage implements OnInit, OnDestroy {
           this.hotelService.setSearchHotelModel({
             ...this.searchHotelModel,
             destinationCity: toCity,
-            searchText:null,
+            searchText: null,
             checkInDate: date,
           });
         }
       }
+      this.hotelService.setSearchHotelModel({
+        ...this.searchHotelModel,
+        searchText: null,
+      });
       this.fromRoute = q.get("fromRoute");
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
@@ -161,7 +165,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
-      mode:"md",
+      mode: "md",
       componentProps: {
         details: s.Policy.HotelDescription.split("。"),
       },
