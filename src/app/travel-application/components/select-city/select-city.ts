@@ -60,6 +60,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   isSearching = false;
   isLoading = false;
   isDomestic = false;
+  isEn = false;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
