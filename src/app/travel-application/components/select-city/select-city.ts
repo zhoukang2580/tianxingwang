@@ -32,8 +32,8 @@ import { finalize } from "rxjs/operators";
 import { AppHelper } from "src/app/appHelper";
 interface ICity {
   Id: string;
-  // tslint:disable-next-line: ban-types
-  Name: String;
+  Name: string;
+  EnglishName: string;
 }
 @Component({
   selector: "app-select-city",
@@ -110,7 +110,7 @@ export class SelectCity implements OnInit, OnDestroy, AfterViewInit {
   //   this.modalCtrl.getTop().then((t) => t.dismiss(city));
   // }
 
-  onCitySelected(city: { Id: string; Name: string }) {
+  onCitySelected(city: any) {
     if (this.isMulti) {
       this.modalCtrl.getTop().then((t) => t.dismiss(city));
     } else {

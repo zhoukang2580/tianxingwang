@@ -16,7 +16,7 @@
             <ion-label class="ion-text-wrap" color='secondary'>
                 <ion-chip *ngFor='let g of selectedCitys' class="icon-label">
                     <ion-label color='secondary'>
-                        <div style="padding-left: 4px;">{{g?.Name}}</div>
+                        <div style="padding-left: 4px;">{{g.EnglishName|| g?.Name}}</div>
                     </ion-label>
                     <ion-icon name="close-outline" (click)='onDeleteSelectedTag(g)' style="font-size: 14px;"></ion-icon>
                 </ion-chip>
