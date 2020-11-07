@@ -1,3 +1,4 @@
+import { CONFIG } from './../../config-yb';
 import { LangService } from "src/app/services/lang.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { BookTmcOutnumberComponent } from "../../tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
@@ -14,6 +15,7 @@ import {
   PassengerBookInfo,
   TravelFormEntity,
   IllegalReasonEntity,
+  IBookOrderResult,
 } from "../../tmc/tmc.service";
 import { TmcEntity } from "src/app/tmc/tmc.service";
 import { HotelService, IHotelInfo } from "../hotel.service";
@@ -47,6 +49,7 @@ import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
 import { Storage } from "@ionic/storage";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
+import * as moment from 'moment';
 import {
   StaffEntity,
   OrganizationEntity,
@@ -78,6 +81,9 @@ import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 import { WarrantyComponent } from "../components/warranty/warranty.component";
 import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
+import { MockInitBookInfo, Mock_Hotel_FreeBook } from 'src/app/data/mockdata';
+import { HotelBookType } from '../models/HotelBookType';
+import { SelectComponent } from 'src/app/components/select/select.component';
 @Component({
   selector: "app-book-df",
   templateUrl: "./book-df.page.html",
@@ -96,6 +102,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   HotelPaymentType = HotelPaymentType;
   CredentialsType = CredentialsType;
+  HotelBookType = HotelBookType;
   combindInfos: IPassengerHotelBookInfo[];
   OrderTravelPayType = OrderTravelPayType;
   orderTravelPayType: any;
@@ -156,20 +163,21 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       })
     );
   }
-  calcNights() {
-    this.curSelectedBookInfo = this.hotelService.getBookInfos()[0];
+  calcNights(item: IPassengerHotelBookInfo) {
+    const info = item;
     if (
-      this.curSelectedBookInfo &&
-      this.curSelectedBookInfo.bookInfo &&
-      this.curSelectedBookInfo.bookInfo.roomPlan &&
-      this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate &&
-      this.curSelectedBookInfo.bookInfo.roomPlan.EndDate
+      info &&
+      info &&
+      info.bookInfo &&
+      info.bookInfo.bookInfo.roomPlan &&
+      info.bookInfo.bookInfo.roomPlan.BeginDate &&
+      info.bookInfo.bookInfo.roomPlan.EndDate
     ) {
       const st = AppHelper.getDate(
-        this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate.substr(0, 10)
+        info.bookInfo.bookInfo.roomPlan.BeginDate.substr(0, 10)
       );
       const ed = AppHelper.getDate(
-        this.curSelectedBookInfo.bookInfo.roomPlan.EndDate.substr(0, 10)
+        info.bookInfo.bookInfo.roomPlan.EndDate.substr(0, 10)
       );
       return Math.floor(ed.getTime() - st.getTime()) / 24 / 3600 / 1000;
     }
@@ -194,12 +202,55 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private getBreakfast(plan: RoomPlanEntity) {
     return this.hotelService.getBreakfast(plan);
   }
-  onChangeCredential(credentialSelect: IonSelect) {
+  async onChangeCredential(credentialSelect: IonSelect, item: IPassengerHotelBookInfo) {
+    await this.onModify(item);
     if (credentialSelect) {
       credentialSelect.open();
     }
   }
-  onSelectDatetime(datetime: IonDatetime) {
+  expanseCompareFn(t1: string, t2: string) {
+    return t1 && t2 ? t1 === t2 : false;
+  }
+  async onSelectIllegalReason(item: IPassengerHotelBookInfo) {
+    if (item.isOtherIllegalReason) {
+      return;
+    }
+    const p = await this.popoverCtrl.create({
+      component: SelectComponent,
+      cssClass: "vw-70",
+      componentProps: {
+        label: "超标原因",
+        data: (this.illegalReasons || []).map((it) => {
+          return {
+            label: it.Name,
+            value: it.Name,
+          };
+        }),
+      },
+    });
+    p.present();
+    const data = await p.onDidDismiss();
+    if (data && data.data) {
+      item.illegalReason = data.data;
+    }
+  }
+  onSelectExpanse(select: IonSelect) {
+    if (select) {
+      select.open();
+    }
+  }
+  onChangeNotifyLang(select: IonSelect) {
+    if (select) {
+      select.open();
+    }
+  }
+  onBedChange(select: IonSelect) {
+    if (select) {
+      select.open();
+    }
+  }
+  onSelectDatetime(datetime: IonDatetime, item: IPassengerHotelBookInfo) {
+    this.initArrivalTimes(item)
     datetime.open();
   }
   ngOnDestroy() {
@@ -225,6 +276,30 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+  private initArrivalTimes(item: IPassengerHotelBookInfo) {
+    const bookInfo = item && item.bookInfo;
+    if (
+      bookInfo &&
+      bookInfo.bookInfo &&
+      bookInfo.bookInfo.roomPlan &&
+      bookInfo.bookInfo.roomPlan.BeginDate
+    ) {
+      this.arrivalDateTimes = [];
+      const dt = moment(bookInfo.bookInfo.roomPlan.BeginDate)
+        .startOf("date")
+        .add(12, "hours");
+      const edt = dt.clone().add(18, "hours");
+      const n = edt.diff(dt, "minutes") / 30;
+      for (let i = 0; i <= n; i++) {
+        this.arrivalDateTimes.push(
+          dt
+            .clone()
+            .add(i * 30, "minutes")
+            .format("YYYY-MM-DD HH:mm")
+        );
+      }
+    }
+  }
   onBedchange(bed: string, bookInfo: PassengerBookInfo<IHotelInfo>) {
     if (bookInfo && bookInfo.bookInfo && bookInfo.bookInfo.roomPlan) {
       bookInfo.bookInfo.roomPlan.Remark = bed;
@@ -242,7 +317,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.curSelectedBookInfo = evt.bookInfo;
     if (evt.isShow) {
       this.dates = [];
-      const n = this.calcNights();
+      const n = this.calcNights(null);
       if (
         this.curSelectedBookInfo &&
         this.curSelectedBookInfo.bookInfo &&
@@ -307,6 +382,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.tmc = this.initialBookDto.Tmc;
       await this.initializeViewModel();
+      if (CONFIG.mockProBuild) {
+        if (!this.initialBookDto || !this.combindInfos||!this.combindInfos.length) {
+          this.combindInfos = Mock_Hotel_FreeBook as any;
+          this.initialBookDto = MockInitBookInfo as any;
+        }
+      }
     } catch (e) {
       console.log(e);
       this.error = e;
@@ -418,7 +499,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     return false;
   }
   isAllowSelectApprove(info: IPassengerHotelBookInfo) {
-    const Tmc = this.initialBookDto.Tmc;
+    const Tmc = this.initialBookDto && this.initialBookDto.Tmc;
     const staff = info.credentialStaff;
     if (
       !Tmc ||
@@ -474,20 +555,16 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   ) {
     await AppHelper.alert(
       this.langService.isCn
-        ? `${
-            (item.credentialStaff && item.credentialStaff.Name) ||
-            (item.credential &&
-              item.credential.Surname + item.credential.Givenname)
-          } 【${
-            item.credential && item.credential.Number
-          }】 ${msg} 信息不能为空`
-        : `${
-            (item.credentialStaff && item.credentialStaff.Name) ||
-            (item.credential &&
-              item.credential.Surname + item.credential.Givenname)
-          } 【${
-            item.credential && item.credential.Number
-          }】 ${msg} Information cannot be empty`
+        ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.Surname + item.credential.Givenname)
+        } 【${item.credential && item.credential.Number
+        }】 ${msg} 信息不能为空`
+        : `${(item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.Surname + item.credential.Givenname)
+        } 【${item.credential && item.credential.Number
+        }】 ${msg} Information cannot be empty`
     );
     this.moveRequiredEleToViewPort(ele);
   }
@@ -590,9 +667,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private fillBookLinkmans(bookDto: OrderBookDto) {
     bookDto.Linkmans = [];
     const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) =>
-      `联系人${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Number)
+      `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
+      (item.credential && item.credential.Number)
       }信息${msg}不能为空`;
     for (let i = 0; i < this.combindInfos.length; i++) {
       const item = this.combindInfos[i];
@@ -695,17 +771,17 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.name
+          combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialNumber
+          combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialType
+          combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -790,11 +866,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
-            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-            : combindInfo.credentialStaffOtherMobile
-        }`;
+        p.Mobile = `${p.Mobile
+          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+          : combindInfo.credentialStaffOtherMobile
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -804,11 +879,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
-            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-            : combindInfo.credentialStaffOtherEmail
-        }`;
+        p.Email = `${p.Email
+          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+          : combindInfo.credentialStaffOtherEmail
+          }`;
       }
       p.IllegalReason =
         (this.tmc &&
@@ -1112,20 +1186,20 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1393,7 +1467,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
 
       const res = await this.hotelService.onBook(bookDto).catch((e) => {
         AppHelper.alert(e);
-        return { TradeNo: "", HasTasks: true };
+        return { TradeNo: "", HasTasks: true } as IBookOrderResult;
       });
       this.isSubmitDisabled = false;
       if (res) {
@@ -1411,9 +1485,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             (this.orderTravelPayType == OrderTravelPayType.Person ||
               this.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
-            this.isCheckingPay = true;
-            const canPay = await this.checkPay(res.TradeNo);
-            this.isCheckingPay = false;
+            let canPay = true;
+            if (res.IsCheckPay) {
+              this.isCheckingPay = true;
+              canPay = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            }
             if (canPay) {
               if (res.HasTasks) {
                 await AppHelper.alert(
