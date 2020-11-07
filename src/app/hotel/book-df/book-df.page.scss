@@ -103,6 +103,10 @@ ion-list .info {
   .label {
     width: 60px;
   }
+  ion-input {
+    --padding-top: 0;
+    --padding-bottom: 0;
+  }
 }
 .padding-v {
   padding: 0.8em 0;
