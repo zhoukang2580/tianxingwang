@@ -1,4 +1,4 @@
-import { filter } from 'rxjs/operators';
+import { filter } from "rxjs/operators";
 import {
   Component,
   OnInit,
@@ -24,7 +24,8 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService } from "src/app/hotel/hotel.service";
 import { TrainService } from "src/app/train/train.service";
 import { CalendarService } from "src/app/tmc/calendar.service";
-import { computeDecimalDigest } from '@angular/compiler/src/i18n/digest';
+import { computeDecimalDigest } from "@angular/compiler/src/i18n/digest";
+import { LangService } from "src/app/services/lang.service";
 interface IRegionType {
   label: string;
   value: string;
@@ -47,9 +48,9 @@ export class AddStrokeComponent implements OnInit, OnChanges {
   @Input() TravelApprovalContent: string;
   @Input() vmRegionTypes: { value: string; label: string }[];
   public form = [
-    { val: 'Pepperoni', isChecked: true },
-    { val: 'Sausage', isChecked: false },
-    { val: 'Mushroom', isChecked: false }
+    { val: "Pepperoni", isChecked: true },
+    { val: "Sausage", isChecked: false },
+    { val: "Mushroom", isChecked: false },
   ];
   isShowCheckInCity = false;
   // tslint:disable-next-line: no-bitwise
@@ -63,7 +64,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     private tmcService: TmcService,
     private trainService: TrainService,
     private calendarService: CalendarService,
-    public modalCtrl: ModalController
+    public modalCtrl: ModalController,
+    private langService: LangService
   ) {
     this.remove = new EventEmitter();
   }
@@ -86,7 +88,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       if (this.trip && this.regionTypes && this.trip.TravelTool) {
         console.log(this.regionTypes, "regionTypes");
         const arr = this.trip.TravelTool.split(",");
-        this.isShowCheckInCity = arr.some(it => it.includes("Hotel"));
+        this.isShowCheckInCity = arr.some((it) => it.includes("Hotel"));
         this.vmRegionTypes = this.vmRegionTypes || [];
         this.regionTypes.forEach((t) => {
           // console.log(arr.some(f=>f==t.value),"arr.some(f=>f==t.value)");
@@ -144,11 +146,10 @@ export class AddStrokeComponent implements OnInit, OnChanges {
 
   // }
   async onDelete() {
-    const ok =await AppHelper.alert("确定删除该行程吗?",true,"确定","取消");
-    if(ok == true){
+    const ok = await AppHelper.alert("确定删除该行程吗?", true, "确定", "取消");
+    if (ok == true) {
       this.remove.emit(this.trip);
     }
-    
   }
   onGetCities() {
     // return this.service.getCities();
@@ -174,6 +175,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     const m = await this.modalCtrl.create({
       component: SelectCity,
       componentProps: {
+        isEn: this.langService.isEn,
         tripType: this.trip.TripType,
       },
     });
@@ -197,12 +199,12 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       componentProps: {
         tripType: this.trip.TripType,
         isMulti,
-        selectedCitys: trip.ToCities?.map(it=>{
-          if(!it.Id){
-            it.Id=it.Code;
+        selectedCitys: trip.ToCities?.map((it) => {
+          if (!it.Id) {
+            it.Id = it.Code;
           }
           return it;
-        })
+        }),
       },
     });
 
@@ -212,14 +214,24 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     const citys = cities && cities.slice(0, 15);
     trip.ToCities = citys;
     if (trip) {
-      trip.ToCityCode = trip.ToCities && trip.ToCities.map(it => it.Code).join(",");
-      trip.ToCityName = trip.ToCities && trip.ToCities.map(it => it.Name).join(",");
+      trip.ToCityCode =
+        trip.ToCities && trip.ToCities.map((it) => it.Code).join(",");
+      trip.ToCityName =
+        trip.ToCities && trip.ToCities.map((it) => it.Name).join(",");
       // trip.ToCityCode = citys.toString();
-      trip.toCityNames = trip.ToCities && trip.ToCities.map(it => it.Name).filter(it => !!it && it.length > 0).join(" · ");
+      trip.toCityNames =
+        trip.ToCities &&
+        trip.ToCities.map((it) => it.Name)
+          .filter((it) => !!it && it.length > 0)
+          .join(" · ");
     }
   }
 
-  async onSelectCheckInCity(isFrom = true, isMulti, trip: TravelFormTripEntity) {
+  async onSelectCheckInCity(
+    isFrom = true,
+    isMulti,
+    trip: TravelFormTripEntity
+  ) {
     if (!this.enable) {
       return;
     }
@@ -228,12 +240,12 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       componentProps: {
         tripType: this.trip.TripType,
         isMulti,
-        selectedCitys: trip.ToCityArrive?.map(it=>{
-          if(!it.Id){
+        selectedCitys: trip.ToCityArrive?.map((it) => {
+          if (!it.Id) {
             it.Id = it.Code;
           }
           return it;
-        })
+        }),
       },
     });
 
@@ -244,10 +256,16 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     const citys = cities && cities.slice(0, 15);
     if (trip) {
       trip.ToCityArrive = citys;
-      trip.CheckInCityCode = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Code).join(',');
-      trip.CheckInCityName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).join(',');
+      trip.CheckInCityCode =
+        trip.ToCityArrive && trip.ToCityArrive.map((it) => it.Code).join(",");
+      trip.CheckInCityName =
+        trip.ToCityArrive && trip.ToCityArrive.map((it) => it.Name).join(",");
 
-      trip.toCityInName = trip.ToCityArrive && trip.ToCityArrive.map(it => it.Name).filter(it => !!it && it.length > 0).join(" · ");
+      trip.toCityInName =
+        trip.ToCityArrive &&
+        trip.ToCityArrive.map((it) => it.Name)
+          .filter((it) => !!it && it.length > 0)
+          .join(" · ");
     }
     // if (city && this.trip) {
     //   if (isFrom) {
@@ -278,7 +296,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       if (t == "Car") {
         this.router.navigate(["rental-car"]);
         // AppHelper.getRoutePath("")
-        return
+        return;
       }
       this.flightService.removeAllBookInfos();
       const a = await this.service.getReserve({
@@ -434,7 +452,7 @@ export class AddStrokeComponent implements OnInit, OnChanges {
     console.log(evt.detail);
     if (evt.detail && evt.detail.value) {
       const arr: string[] = evt.detail.value;
-      this.isShowCheckInCity = arr.some(it => it.includes("Hotel"));
+      this.isShowCheckInCity = arr.some((it) => it.includes("Hotel"));
     }
   }
   getRegionTypes(t) {
@@ -442,7 +460,9 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       this.TravelApprovalContent.split(","),
       "vmTravelApprovalContent"
     );
-    const approvals = (this.TravelApprovalContent && this.TravelApprovalContent.split(",")) || [];
+    const approvals =
+      (this.TravelApprovalContent && this.TravelApprovalContent.split(",")) ||
+      [];
     console.log(t, "Tttt");
     console.log(this.regionTypes, "this.regionTypes ");
     if (t == "Domestic") {

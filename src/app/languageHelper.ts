@@ -1,4 +1,7 @@
 export class LanguageHelper {
+  static get isEn() {
+    return LanguageHelper.lang == "en";
+  }
   static get lang() {
     const lang =
       window.localStorage.getItem("language") ||
@@ -276,21 +279,39 @@ export class LanguageHelper {
     return "请添加旅客";
   }
   static getRoundTripTotalDaysTip(num: number) {
+    if (LanguageHelper.isEn) {
+      return `Total ${num} days`;
+    }
     return `共${num}天`;
   }
   static getCheckInOutTotalDaysTip(num: number) {
+    if (LanguageHelper.isEn) {
+      return `Total ${num} nights`;
+    }
     return `共${num}晚`;
   }
   static getSelectFlyBackDate() {
+    if (LanguageHelper.isEn) {
+      return "Select return date";
+    }
     return "请选择返程日期";
   }
   static getSelectCheckInDate() {
+    if (LanguageHelper.isEn) {
+      return "Please select check in date";
+    }
     return "请选择入住日期";
   }
   static getSelectCheckOutDate() {
+    if (LanguageHelper.isEn) {
+      return "Please select departure date";
+    }
     return "请选择离店日期";
   }
   static getSelectOtherFlyDayTip() {
+    if (LanguageHelper.isEn) {
+      return "Please select other date";
+    }
     return "请选择其他日期";
   }
   static getModifyUnSavedTip() {

@@ -583,9 +583,12 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
             (this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
               this.viewModel.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
-            this.isCheckingPay = true;
-            const canPay = await this.checkPay(res.TradeNo);
-            this.isCheckingPay = false;
+            let canPay = true;
+            if (res.IsCheckPay) {
+              this.isCheckingPay = true;
+              canPay = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            }
             if (canPay) {
               if (res.HasTasks) {
                 await AppHelper.alert(
@@ -1039,7 +1042,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
             } 【${
               item.bookInfo.credential && item.bookInfo.credential.Number
             }】 ${msg} ${
-              this.langService.isEn ? "Information cannot be empty" : "信息不能为空"
+              this.langService.isEn
+                ? "Information cannot be empty"
+                : "信息不能为空"
             }`
       );
       this.moveRequiredEleToViewPort(ele);

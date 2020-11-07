@@ -838,6 +838,7 @@ export interface IBookOrderResult {
   TradeNo: string;
   HasTasks: boolean;
   Message: string;
+  IsCheckPay: boolean;
 }
 export class TravelFormEntity extends BaseVariablesEntity {
   Tmc: TmcEntity;

@@ -94,7 +94,7 @@ import {
   CandeactivateGuard,
   CanComponentDeactivate,
 } from "src/app/guards/candeactivate.guard";
-import { FlightCabinFareType } from '../models/flight/FlightCabinFareType';
+import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 
 @Component({
   selector: "app-book",
@@ -760,11 +760,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(
-            "下单成功!",
-            1400,
-            "top"
-          );
+          AppHelper.toast("下单成功!", 1400, "top");
           this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
@@ -774,9 +770,12 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
             (this.orderTravelPayType == OrderTravelPayType.Person ||
               this.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
-            this.isCheckingPay = true;
-            const canPay = await this.checkPay(res.TradeNo);
-            this.isCheckingPay = false;
+            let canPay = true;
+            if (res.IsCheckPay) {
+              this.isCheckingPay = true;
+              canPay = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            }
             if (canPay) {
               if (res.HasTasks) {
                 await AppHelper.alert(
@@ -794,13 +793,9 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(
-                "订单已保存!"
-              );
+              await AppHelper.alert("订单已保存!");
             } else {
-              await AppHelper.alert(
-               "下单成功!"
-              );
+              await AppHelper.alert("下单成功!");
             }
           }
           const hasRight = await this.tmcService.checkHasHotelBookRight();
@@ -916,7 +911,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     ) => {
       await AppHelper.alert(
         `${item.credentialStaff && item.credentialStaff.Name} 【${
-              item.modal.credential && item.modal.credential.Number
+          item.modal.credential && item.modal.credential.Number
         }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
@@ -1084,7 +1079,11 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumber", "outnumber");
-              showErrorMsg(it.label + this.LangService.isCn ? "必填" : " Required ", combindInfo, el);
+              showErrorMsg(
+                it.label + this.LangService.isCn ? "必填" : " Required ",
+                combindInfo,
+                el
+              );
               return;
             }
             if (it.value) {

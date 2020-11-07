@@ -1,23 +1,32 @@
-
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
 import {
-  Component, EventEmitter, OnDestroy, OnInit, ViewChild,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  ViewChild,
 } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
-import { SearchHotelPage } from '../search-hotel/search-hotel.page';
-import { FlightHotelTrainType, PassengerBookInfo } from 'src/app/tmc/tmc.service';
-import { ModalController, PopoverController } from '@ionic/angular';
-import { Subscription } from 'rxjs';
-import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
-import { IInterHotelSearchCondition, InternationalHotelService } from 'src/app/hotel-international/international-hotel.service';
-import { StaffService } from 'src/app/hr/staff.service';
-import { LanguageHelper } from 'src/app/languageHelper';
-import { CalendarService } from 'src/app/tmc/calendar.service';
-import { SelectedPassengersComponent } from 'src/app/tmc/components/selected-passengers/selected-passengers.component';
-import { ShowStandardDetailsComponent } from 'src/app/tmc/components/show-standard-details/show-standard-details.component';
-import { TripType } from 'src/app/tmc/models/TripType';
-import { OverHotelComponent } from '../components/over-hotel/over-hotel.component';
-import { SearchHotelModel, HotelService, IHotelInfo } from '../hotel.service';
+import { SearchHotelPage } from "../search-hotel/search-hotel.page";
+import {
+  FlightHotelTrainType,
+  PassengerBookInfo,
+} from "src/app/tmc/tmc.service";
+import { ModalController, PopoverController } from "@ionic/angular";
+import { Subscription } from "rxjs";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import {
+  IInterHotelSearchCondition,
+  InternationalHotelService,
+} from "src/app/hotel-international/international-hotel.service";
+import { StaffService } from "src/app/hr/staff.service";
+import { LanguageHelper } from "src/app/languageHelper";
+import { CalendarService } from "src/app/tmc/calendar.service";
+import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
+import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
+import { TripType } from "src/app/tmc/models/TripType";
+import { OverHotelComponent } from "../components/over-hotel/over-hotel.component";
+import { SearchHotelModel, HotelService, IHotelInfo } from "../hotel.service";
 @Component({
   selector: "app-search-hotel",
   templateUrl: "./search-hotel_en.page.html",
@@ -89,13 +98,13 @@ export class SearchHotelEnPage implements OnInit, OnDestroy {
     const sub = route.queryParamMap.subscribe(async (q) => {
       const fromCityCode = q.get("FromCityCode");
       const toCityCode = q.get("ToCityCode");
-      const startDate = q.get("StartDate");
+      const startDate = q.get("StartDate") || "";
+      let date = startDate.replace(/\./g, "-");
       if (fromCityCode && toCityCode && startDate) {
         const cities = await this.hotelService.getHotelCityAsync();
         const fromCity = cities.find((it) => it.Code == fromCityCode);
         const toCity = cities.find((it) => it.Code == toCityCode);
         if (fromCity && toCity) {
-          let date = startDate.replace(/\./g, "-");
           const flag = AppHelper.getDate(date).getTime() < Date.now();
           if (flag) {
             date = this.calendarService.getNowDate();
@@ -107,6 +116,10 @@ export class SearchHotelEnPage implements OnInit, OnDestroy {
           });
         }
       }
+      this.hotelService.setSearchHotelModel({
+        ...this.hotelService.getSearchHotelModel(),
+        searchText: null
+      });
       this.fromRoute = q.get("fromRoute");
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
@@ -145,7 +158,7 @@ export class SearchHotelEnPage implements OnInit, OnDestroy {
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
-      mode:"md",
+      mode: "md",
       componentProps: {
         details: s.Policy.HotelDescription.split("。"),
       },

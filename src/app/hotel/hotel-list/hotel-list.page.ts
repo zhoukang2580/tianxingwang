@@ -363,8 +363,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   private checkDestinationChanged() {
     if (this.searchHotelModel) {
       return (
-        (this.searchHotelModel.destinationCity &&
-          this.searchHotelModel.destinationCity.Code) != this.oldDestinationCode
+        !this.searchHotelModel.destinationCity ||
+        this.searchHotelModel.destinationCity.Code != this.oldDestinationCode
       );
     }
     return false;
@@ -407,6 +407,9 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     );
     const sub0 = this.route.queryParamMap.subscribe((_) => {
       this.hideQueryPannel();
+      if (this.checkDestinationChanged()) {
+        this.searchHotelModel.searchText = null;
+      }
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
       const isrefresh =
