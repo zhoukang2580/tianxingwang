@@ -234,14 +234,26 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.illegalReason = data.data;
     }
   }
-  onSelectExpanse(select: IonSelect) {
+  onOpenSelect(select: IonSelect) {
     if (select) {
       select.open();
     }
   }
-  onChangeNotifyLang(select: IonSelect) {
-    if (select) {
-      select.open();
+  getCredentialTypeName(item: IPassengerHotelBookInfo) {
+    switch (item && item.creditCardPersionInfo&&item.creditCardPersionInfo.credentialType) {
+      case `${CredentialsType.IdCard}`: return "身份证";
+      case `${CredentialsType.Passport}`: return "护照";
+      default: return "其他";
+    }
+  }
+  getCreditCardInfoName(item: IPassengerHotelBookInfo) {
+    switch (item && item.creditCardInfo&&item.creditCardInfo.creditCardType) {
+      case "VI": return "VISA";
+      case "AX": return "美国运通卡";
+      case "CA": return "万事达卡";
+      case "JC": return "JCB";
+      case "DC": return "大来卡";
+      default: return "";
     }
   }
   onBedChange(select: IonSelect) {
@@ -383,7 +395,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.tmc = this.initialBookDto.Tmc;
       await this.initializeViewModel();
       if (CONFIG.mockProBuild) {
-        if (!this.initialBookDto || !this.combindInfos||!this.combindInfos.length) {
+        if (!this.initialBookDto || !this.combindInfos || !this.combindInfos.length) {
           this.combindInfos = Mock_Hotel_FreeBook as any;
           this.initialBookDto = MockInitBookInfo as any;
         }

@@ -1,3 +1,4 @@
+import { HotelOutNumberComponent } from './hotel-outnumber/hotel-outnumber.component';
 import { AppComponentsModule } from "./../../components/appcomponents.module";
 import { AppDirectivesModule } from "./../../directives/directives.module";
 import { HotelListItemComponent } from "./hotel-list-item/hotel-list-item.component";
@@ -41,6 +42,7 @@ import { HotelStarPriceEnComponent } from './hotel-starprice_en/hotel-starprice_
     ChangeRoomplanDateComponent,
     ShowMsgComponent,
     WarrantyComponent,
+    HotelOutNumberComponent,
     OverHotelComponent
   ],
   imports: [
@@ -52,6 +54,7 @@ import { HotelStarPriceEnComponent } from './hotel-starprice_en/hotel-starprice_
     TmcComponentsModule
   ],
   exports: [
+    HotelOutNumberComponent,
     WarrantyComponent,
     HotelListItemComponent,
     DateCityComponent,
