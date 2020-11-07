@@ -190,7 +190,7 @@
           </ion-item>
           <div class="info">
             <div class="flex padding-v" >
-              <span class="label">通知语言：</span>{{combindInfo.notifyLanguage}}
+              <span class="label">通知语言：</span>{{combindInfo.notifyLanguage=='en'?"英文":(combindInfo.notifyLanguage=='cn'?"中文":"不发")}}
               <ion-icon name="caret-down-outline" class='down' ></ion-icon>
             </div>
           </div>
@@ -202,7 +202,7 @@
               </div>
            </div>
         </ion-list>
-        <ion-list class="section" *ngIf='true||combindInfo.creditCardInfo.isShowCreditCard' [attr.datacreditcardid]='combindInfo.id'>
+        <ion-list class="section" *ngIf='combindInfo.creditCardInfo.isShowCreditCard' [attr.datacreditcardid]='combindInfo.id'>
           <ion-item [attr.creditCardInfocreditCardType]='combindInfo.id' style="display: none;">
             <ion-label>信用卡:</ion-label>
             <ion-select [(ngModel)]="combindInfo.creditCardInfo.creditCardType" #creditCardTypeEle>
@@ -475,9 +475,11 @@
         </ion-list> -->
       </ng-container>
       <ion-list [attr.orderTravelPayTypeid]='"orderTravelPayType"' class='section'>
-        <ion-list-header>
-          <strong>支付方式</strong>
-        </ion-list-header>
+        <div class="info">
+          <div class="title">
+            支付方式
+          </div>
+        </div>
         <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='onOrderTravelPayTypeSelect()'>
           <!-- 酒店预付月结 -->
           <ng-container *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
