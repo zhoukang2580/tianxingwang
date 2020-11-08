@@ -40,7 +40,8 @@ export class LangService {
     return AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() == "en";
   }
   get isCn() {
-    return !AppHelper.getStyle() || AppHelper.getStyle().toLowerCase() == "cn";
+    const lang=AppHelper.getLanguage();
+    return !AppHelper.getStyle() || AppHelper.getStyle().toLowerCase() == "cn"||!lang||lang=='cn';
   }
   translate() {
     try {
