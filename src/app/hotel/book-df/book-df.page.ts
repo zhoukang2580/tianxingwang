@@ -314,7 +314,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   isRoomPlanFreeBook(item: IPassengerHotelBookInfo) {
     if (item && item.bookInfo && item.bookInfo.bookInfo && item.bookInfo.bookInfo.roomPlan) {
-      return this.hotelService.checkRoomPlanIsFreeBook( item.bookInfo.bookInfo.roomPlan);
+      return this.hotelService.checkRoomPlanIsFreeBook(item.bookInfo.bookInfo.roomPlan);
     }
   }
   onBedchange(bed: string, bookInfo: PassengerBookInfo<IHotelInfo>) {
@@ -480,6 +480,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.orderTravelPayTypes = this.orderTravelPayTypes.filter((t) =>
       this.checkOrderTravelPayType(`${t.value}`)
     );
+    if (this.isRoomPlanFreeBook(this.combindInfos[0])) {
+      this.orderTravelPayType = OrderTravelPayType.Company;
+    }
     this.serviceFee = this.getServiceFees();
     console.log(
       "initOrderTravelPayTypes",
@@ -914,14 +917,16 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combindInfo.bookInfo.bookInfo.roomPlan &&
         combindInfo.bookInfo.bookInfo.roomPlan.Rules
       ) {
-        // 只有白名单的才需要考虑差标
+        // 只有白名单的才需要考虑差标,随心住不考虑差标
         if (!p.IllegalReason) {
-          this.showErrorMsg(
-            LanguageHelper.Flight.getIllegalReasonTip(),
-            combindInfo,
-            this.getEleByAttr("illegalReasonsid", combindInfo.id)
-          );
-          return false;
+          if (!this.isRoomPlanFreeBook(combindInfo)) {
+            this.showErrorMsg(
+              LanguageHelper.Flight.getIllegalReasonTip(),
+              combindInfo,
+              this.getEleByAttr("illegalReasonsid", combindInfo.id)
+            );
+            return false;
+          }
         }
       }
       if (!p.Mobile) {
