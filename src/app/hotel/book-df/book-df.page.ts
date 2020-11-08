@@ -111,7 +111,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
+  @ViewChild(RefresherComponent, { static: true }) ionRefresher: RefresherComponent;
   @ViewChild(IonContent) ionContent: IonContent;
   error: any;
   identity: IdentityEntity;
@@ -240,14 +240,14 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   getCredentialTypeName(item: IPassengerHotelBookInfo) {
-    switch (item && item.creditCardPersionInfo&&item.creditCardPersionInfo.credentialType) {
+    switch (item && item.creditCardPersionInfo && item.creditCardPersionInfo.credentialType) {
       case `${CredentialsType.IdCard}`: return "身份证";
       case `${CredentialsType.Passport}`: return "护照";
       default: return "其他";
     }
   }
   getCreditCardInfoName(item: IPassengerHotelBookInfo) {
-    switch (item && item.creditCardInfo&&item.creditCardInfo.creditCardType) {
+    switch (item && item.creditCardInfo && item.creditCardInfo.creditCardType) {
       case "VI": return "VISA";
       case "AX": return "美国运通卡";
       case "CA": return "万事达卡";
@@ -310,6 +310,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .format("YYYY-MM-DD HH:mm")
         );
       }
+    }
+  }
+  isRoomPlanFreeBook(item: IPassengerHotelBookInfo) {
+    if (item && item.bookInfo && item.bookInfo.bookInfo && item.bookInfo.bookInfo.roomPlan) {
+      return this.hotelService.checkRoomPlanIsFreeBook( item.bookInfo.bookInfo.roomPlan);
     }
   }
   onBedchange(bed: string, bookInfo: PassengerBookInfo<IHotelInfo>) {

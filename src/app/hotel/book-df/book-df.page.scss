@@ -169,3 +169,20 @@ ion-list .info {
   margin: 0 -1.6em;
   padding: 0 0.5em 0 0;
 }
+.freebook-price {
+  padding: 0 1em;
+  .price {
+    font-size: 18px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #ff0000;
+  }
+  .detail {
+    display: flex;
+    align-items: center;
+    font-size: 8px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+  }
+}

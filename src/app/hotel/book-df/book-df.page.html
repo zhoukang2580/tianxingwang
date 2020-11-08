@@ -28,6 +28,12 @@
                 <span class="ion-margin-horizontal">共{{calcNights(combindInfo)}}晚</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.EndDate?.substr(0,10)}}</span>
               </div>
+              <div class="date font padding-v" *ngIf='isRoomPlanFreeBook(combindInfo)'>
+                <span>个人支付：</span>
+                <ion-text color='danger'>￥{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.VariablesJsonObj?.SelfPayAmount}}</ion-text>
+                <span  class='ion-margin-start'>公司支付：</span>
+                <ion-text color='danger'>￥{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.VariablesJsonObj?.CompanyPayAmount}}</ion-text>
+              </div>
               <div class="price padding-v">
                 <small>￥</small>
                 <ion-text color='danger'>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.TotalAmount}}</ion-text>
@@ -43,7 +49,7 @@
                 <ion-icon name="caret-down-outline" (click)='onSelectDatetime(datetimeEl,combindInfo)'></ion-icon>
               </div>
               <div *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong'  class="flex padding-v"  [attr.arrivalHoteltimeid]='combindInfo.id'>
-                <span class="label arrival-time">床型需求（尽量安排）：</span>{{combindInfo?.arrivalHotelTime}}
+                <span class="label arrival-time">床型需求（尽量安排）：</span>{{combindInfo.bookInfo?.bookInfo?.roomPlan.Remark}}
                 <ion-icon name="caret-down-outline" (click)='onBedChange(bedEle,combindInfo)'></ion-icon>
               </div>
             </div>
@@ -543,7 +549,7 @@
   </ng-template>
 </ion-content>
 <ion-footer>
-  <ion-toolbar (click)="onShowFeesDetails()">
+  <ion-toolbar (click)="onShowFeesDetails()" *ngIf='!isRoomPlanFreeBook(combindInfos&&combindInfos[0])'>
     <ion-buttons slot='start'>
       <ion-button color='secondary'>总计:
         <ion-text slot='end' color='danger'>￥{{totalPrice}}</ion-text>
@@ -558,17 +564,23 @@
       <ion-button color='secondary' (click)='onBook(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
     </ion-buttons> -->
   </ion-toolbar>
+  <ion-toolbar  *ngIf='isRoomPlanFreeBook(combindInfos&&combindInfos[0])' class='ion-padding-end'>
+    <div class="freebook-price">
+        <div class="price">
+          ￥{{totalPrice}}
+        </div>
+        <div class="detail">
+          <span>公司支付：</span>
+          <ion-text color='danger'>￥{{combindInfos[0]?.bookInfo?.bookInfo?.roomPlan?.VariablesJsonObj?.CompanyPayAmount}}</ion-text>
+          <span class='ion-margin-start'>个人支付：</span>
+          <ion-text color='danger'>￥{{combindInfos[0]?.bookInfo?.bookInfo?.roomPlan?.VariablesJsonObj?.SelfPayAmount}}</ion-text>
+        </div>
+    </div>
+    <ion-button slot='end' color='secondary' [disabled]='isSubmitDisabled' size='small' (click)='onBook(false,$event)'>
+      提交
+    </ion-button>
+  </ion-toolbar>
 </ion-footer>
-<!-- <div [class.show]='isShowPriceDetail' class="price-list">
-  <div>{{calcNights()}}晚,共<small>￥</small>{{curSelectedBookInfo?.bookInfo?.roomPlan?.TotalAmount}}
-  </div>
-  <ul>
-    <li *ngFor='let d of dates'>
-      <span>{{d.date}}</span>
-      <ion-label class='ion-margin-start'>1&times;<small>￥</small>{{d.price}}</ion-label>
-    </li>
-  </ul>
-</div> -->
 <div class="zz" *ngIf="isShowFee" (click)="onShowFeesDetails()"></div>
 <div [class.show]="isShowFee" class="transfrom">
   <div class="wrapper">
