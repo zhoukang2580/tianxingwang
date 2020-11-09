@@ -69,6 +69,7 @@ export class RecommendRankComponent implements OnInit {
     }
   }
   onSelect(r: IRankItem) {
+    this.hotelQuery = this.hotelService.getHotelQueryModel();
     this.selectedItem = r;
     this.hotelQuery.ranks = this.hotelQuery.ranks.map(it => {
       it.isSelected = it.id == r.id;
