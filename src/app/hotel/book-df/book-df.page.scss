@@ -175,7 +175,7 @@ ion-list .info {
     font-size: 18px;
     font-family: PingFang SC;
     font-weight: 500;
-    color: #ff0000;
+    color: var(--ion-color-danger);
   }
   .detail {
     display: flex;

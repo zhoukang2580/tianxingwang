@@ -23,6 +23,7 @@ import { OverHotelComponent } from './over-hotel/over-hotel.component';
 import { RoomShowItemEnComponent } from './room-show-item_en/room-show-item_en.component';
 import { RoomPlanItemEnComponent } from './room-plan-item_en/room-plan-item_en.component';
 import { HotelStarPriceEnComponent } from './hotel-starprice_en/hotel-starprice_en.component';
+import { HotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hotel-addcontacts-comp.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { HotelStarPriceEnComponent } from './hotel-starprice_en/hotel-starprice_
     HotelFilterComponent,
     HotelStarPriceComponent,
     HotelStarPriceEnComponent,
+    HotelAddcontactsCompComponent,
     HotelListItemComponent,
     RoomPlanItemComponent,
     RoomPlanItemEnComponent,
@@ -55,6 +57,7 @@ import { HotelStarPriceEnComponent } from './hotel-starprice_en/hotel-starprice_
   ],
   exports: [
     HotelOutNumberComponent,
+    HotelAddcontactsCompComponent,
     WarrantyComponent,
     HotelListItemComponent,
     DateCityComponent,

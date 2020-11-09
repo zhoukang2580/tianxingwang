@@ -636,6 +636,9 @@ export class HotelService {
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
     hotelquery.IsLoadDetail = true;
     hotelquery.Tag = this.getSearchHotelModel().tag;
+    if(hotelquery.HotelId){
+      hotelquery.SearchKey="";
+    }
     req.Data = {
       ...hotelquery,
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",

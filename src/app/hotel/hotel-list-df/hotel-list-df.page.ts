@@ -81,6 +81,7 @@ interface ISearchTextValue {
 export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
   private oldSearchText: ISearchTextValue;
+  private isUseSearchText = false;
   private oldDestinationCode: string;
   @ViewChild(IonHeader) headerEl: IonHeader;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
@@ -249,6 +250,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
         finalize(() => {
           setTimeout(() => {
             this.isLoadingHotels = false;
+            this.isUseSearchText = false;
             if (this.scroller) {
               this.scroller.complete();
             }
@@ -257,7 +259,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe(
         (result) => {
-          this.oldSearchText = this.searchHotelModel.searchText;
+          // this.oldSearchText = this.searchHotelModel.searchText;
           this.oldDestinationCode =
             this.searchHotelModel.destinationCity &&
             this.searchHotelModel.destinationCity.Code;
@@ -336,27 +338,35 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
   }
   onSearchByText() {
-    this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")]);
+    this.isUseSearchText = true;
+    this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")], {
+      queryParams: {
+        kw:
+          (this.searchHotelModel.searchText &&
+            this.searchHotelModel.searchText.Text) ||
+          "",
+      },
+    });
   }
   private checkDestinationChanged() {
     if (this.searchHotelModel) {
       return (
-        (this.searchHotelModel.destinationCity &&
-          this.searchHotelModel.destinationCity.Code) != this.oldDestinationCode
+        !this.searchHotelModel.destinationCity ||
+        this.searchHotelModel.destinationCity.Code != this.oldDestinationCode
       );
     }
     return false;
   }
   private checkSearchTextChanged() {
-    if (this.searchHotelModel) {
-      return (
-        this.searchHotelModel.searchText &&
-        this.oldSearchText &&
-        (this.searchHotelModel.searchText.Value != this.oldSearchText.Value ||
-          this.searchHotelModel.searchText.Text != this.oldSearchText.Text)
-      );
-    }
-    return false;
+    // if (this.searchHotelModel) {
+    //   return (
+    //     this.searchHotelModel.searchText &&
+    //     this.oldSearchText &&
+    //     (this.searchHotelModel.searchText.Value != this.oldSearchText.Value ||
+    //       this.searchHotelModel.searchText.Text != this.oldSearchText.Text)
+    //   );
+    // }
+    return this.isUseSearchText;
   }
   back() {
     this.hideQueryPannel();
@@ -385,6 +395,9 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     );
     const sub0 = this.route.queryParamMap.subscribe((_) => {
       this.hideQueryPannel();
+      if (this.checkDestinationChanged()) {
+        this.searchHotelModel.searchText = null;
+      }
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
       const isrefresh =
@@ -447,14 +460,10 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     //     this.scroller.disabled = false;
     //   }
     // }
-    this.queryComp.queryTabComps.forEach((t) => {
-      if(t.isActive){
-        t.onReset();
-      }
-    });
     if (this.content) {
       this.content.scrollToTop(100);
     }
+    this.hotelService.setHotelQuerySource(this.hotelQueryModel);
   }
   onStarPriceChange() {
     const query = { ...this.hotelService.getHotelQueryModel() };

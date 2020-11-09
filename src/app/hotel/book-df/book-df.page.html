@@ -18,9 +18,9 @@
               <div class="name padding-v">酒店名称：{{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
               <div class="room-info padding-v" *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]||
                 combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]||
-                combindInfo.bookInfo.bookInfo.roomPlan["breakfast"]'>
+                combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>
                 <span>{{combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]}}</span>
-                <span>{{combindInfo.bookInfo.bookInfo.roomPlan["breakfast"]}}</span>
+                <span>{{combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]}}</span>
                 <span>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
               </div>
               <div class="date font padding-v">
@@ -283,8 +283,8 @@
         </ion-list>
         <ion-list class='section'>
           <!-- <div class="title">授权账号查看订单</div> -->
-          <app-book-addcontacts-comp buttonText='授权账号查看订单' [attr.linkmanid]='combindInfo.id' [(contacts)]='combindInfo.addContacts'>
-          </app-book-addcontacts-comp>
+          <app-hotel-addcontacts-comp buttonText='授权账号查看订单' [attr.linkmanid]='combindInfo.id' [(contacts)]='combindInfo.addContacts'>
+          </app-hotel-addcontacts-comp>
         </ion-list>
        <!--  <ion-list lines='none'>
           <ion-item-divider>
