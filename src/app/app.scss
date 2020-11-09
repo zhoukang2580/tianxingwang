@@ -149,6 +149,10 @@ ion-action-sheet {
     --spinner-color: var(--ion-color-secondary);
   }
 }
+.alert-radio-label.sc-ion-alert-md,
+.alert-radio-label.sc-ion-alert-ios {
+  white-space: initial;
+}
 ion-checkbox {
   --ion-color-primary: var(--ion-color-secondary);
   --checkmark-color: var(--ion-color-light);
