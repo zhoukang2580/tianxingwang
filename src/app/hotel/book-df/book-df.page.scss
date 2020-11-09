@@ -147,6 +147,9 @@ ion-list .info {
     .item {
       display: flex;
       align-items: center;
+      span {
+        margin-left: 0.2em;
+      }
       ion-checkbox {
         width: 1.3em;
         height: 1.3em;
@@ -185,4 +188,7 @@ ion-list .info {
     font-weight: 500;
     color: #333333;
   }
+}
+.m-left {
+  margin-left: 8px;
 }
