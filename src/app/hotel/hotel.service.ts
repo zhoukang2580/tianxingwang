@@ -479,53 +479,56 @@ export class HotelService {
     }
     return res;
   }
-  searchHotelCity(data: { Name: string; PageIndex: number; IsHot: boolean }) {
-    const req = new RequestEntity();
-    req.Method = "TmcApiHotelUrl-City-Search";
-    req.Data = {
-      ...data,
-    };
-    return this.apiService.getResponse<TrafficlineEntity[]>(req);
-  }
+  // searchHotelCity(data: { Name: string; PageIndex: number; IsHot: boolean }) {
+  //   const req = new RequestEntity();
+  //   req.Method = "ApiHomeUrl-Resource-DomesticHotelCity";
+  //   req.Data = {
+  //     ...data,
+  //   };
+  //   return this.apiService.getResponse<TrafficlineEntity[]>(req);
+  // }
   async getHotelCityAsync(forceRefresh = false) {
-    if (
-      !this.localHotelCities ||
-      this.localHotelCities.length == 0 ||
-      !this.lastUpdateTime
-    ) {
-      const local = await this.getHotelCitiesFromLocalCache();
-      if (local) {
-        this.lastUpdateTime = local.LastUpdateTime;
-        this.localHotelCities = local.HotelCities || [];
-      }
-    }
-    if (
-      !forceRefresh &&
-      this.localHotelCities &&
-      this.localHotelCities.length
-    ) {
-      return this.localHotelCities;
-    }
-    this.localHotelCities = this.localHotelCities || [];
-    const cs = await this.loadHotelCitiesFromServer(
-      this.lastUpdateTime
-    ).catch((_) => ({ HotelCities: [] as TrafficlineEntity[] }));
-    if (cs && cs.HotelCities && cs.HotelCities.length) {
-      const arr = cs.HotelCities.map((item) => {
-        if (!item.Pinyin) {
-          item.FirstLetter = this.getFirstLetter(item.Name);
-        } else {
-          item.FirstLetter = item.Pinyin.substring(0, 1).toUpperCase();
+    try {
+      if (
+        !this.localHotelCities ||
+        this.localHotelCities.length == 0 ||
+        !this.lastUpdateTime
+      ) {
+        const local = await this.getHotelCitiesFromLocalCache();
+        if (local) {
+          this.lastUpdateTime = local.LastUpdateTime;
+          this.localHotelCities = local.HotelCities || [];
         }
-        return item;
-      });
-      this.localHotelCities = [
-        ...this.localHotelCities.filter(
-          (it) => !arr.some((c) => c.Code == it.Code)
-        ),
-        ...arr,
-      ];
-      await this.setLocalHotelCityCache(this.localHotelCities);
+      }
+      if (
+        !forceRefresh &&
+        this.localHotelCities &&
+        this.localHotelCities.length
+      ) {
+        return this.localHotelCities;
+      }
+      this.localHotelCities = this.localHotelCities || [];
+      const cs = await this.loadHotelCitiesFromServer(this.lastUpdateTime);
+      // .catch((_) => ({ HotelCities: [] as TrafficlineEntity[] }));
+      if (cs && cs.Trafficlines && cs.Trafficlines.length) {
+        const arr = cs.Trafficlines.map((item) => {
+          if (!item.Pinyin) {
+            item.FirstLetter = this.getFirstLetter(item.Name);
+          } else {
+            item.FirstLetter = item.Pinyin.substring(0, 1).toUpperCase();
+          }
+          return item;
+        });
+        this.localHotelCities = [
+          ...this.localHotelCities.filter(
+            (it) => !arr.some((c) => c.Code == it.Code)
+          ),
+          ...arr,
+        ];
+        await this.setLocalHotelCityCache(this.localHotelCities);
+      }
+    } catch (e) {
+      console.error(e);
     }
     return this.localHotelCities;
   }
@@ -568,10 +571,12 @@ export class HotelService {
     return pyFl && pyFl.toUpperCase();
   }
   private async setLocalHotelCityCache(cities: TrafficlineEntity[]) {
-    await this.storage.set(`LocalHotelCityCache`, {
-      LastUpdateTime: this.lastUpdateTime = Math.floor(Date.now() / 1000),
-      HotelCities: cities,
-    } as LocalHotelCityCache);
+    if (AppHelper.isApp()) {
+      await this.storage.set(`LocalHotelCityCache`, {
+        LastUpdateTime: this.lastUpdateTime = Math.floor(Date.now() / 1000),
+        HotelCities: cities,
+      } as LocalHotelCityCache);
+    }
   }
   private async getHotelCitiesFromLocalCache(): Promise<LocalHotelCityCache> {
     const local = await this.storage.get(`LocalHotelCityCache`);
@@ -589,7 +594,6 @@ export class HotelService {
     };
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-List`;
-
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
@@ -837,13 +841,13 @@ export class HotelService {
 
   private loadHotelCitiesFromServer(lastUpdateTime: number) {
     const req = new RequestEntity();
-    req.Method = `TmcApiHotelUrl-City-Gets`;
+    req.Method = `ApiHomeUrl-Resource-DomesticHotelCity`;
     req.Data = {
       LastUpdateTime: lastUpdateTime,
     };
     return this.apiService.getPromiseData<{
-      Trafficlines: any[];
-      HotelCities: TrafficlineEntity[];
+      Trafficlines: TrafficlineEntity[];
+      // HotelCities: TrafficlineEntity[];
     }>(req);
   }
   searchHotelByText(
