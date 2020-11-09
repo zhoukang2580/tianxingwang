@@ -568,13 +568,13 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (res) {
         if (res.TradeNo) {
-          await AppHelper.alert(
-            exchangeInfo && exchangeInfo.exchangeInfo
-              ? exchangeTip
-              : this.langService.isEn
-              ? "Checkout success"
-              : "下单成功!"
-          );
+          // await AppHelper.alert(
+          //   exchangeInfo && exchangeInfo.exchangeInfo
+          //     ? exchangeTip
+          //     : this.langService.isEn
+          //     ? "Checkout success"
+          //     : "下单成功!"
+          // );
           this.isSubmitDisabled = true;
           const isSelf = await this.staffService.isSelfBookType();
           if (
