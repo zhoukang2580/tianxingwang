@@ -888,7 +888,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
               this.bgEle.nativeElement &&
               this.bgEle.nativeElement.offsetHeight;
             const top = scroll.scrollTop;
-            this.observeScrollIsShowHoteldetails();
+            // this.observeScrollIsShowHoteldetails();
             if (scroll.scrollHeight < 1.31 * this.plt.height()) {
               this.isHeaderHide = true;
             }
