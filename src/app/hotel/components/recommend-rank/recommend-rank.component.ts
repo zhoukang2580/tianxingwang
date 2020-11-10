@@ -5,7 +5,7 @@ import { HotelQueryEntity, IRankItem } from "../../models/HotelQueryEntity";
 @Component({
   selector: "app-recommend-rank",
   templateUrl: "./recommend-rank.component.html",
-  styleUrls: ["./recommend-rank.component.scss"]
+  styleUrls: ["./recommend-rank.component.scss"],
 })
 export class RecommendRankComponent implements OnInit {
   @Output() rank: EventEmitter<any>;
@@ -25,36 +25,35 @@ export class RecommendRankComponent implements OnInit {
       id: 3,
       label: "价格【高-低↓】",
       value: "Price",
-      orderBy: "PriceDesc"
+      orderBy: "PriceDesc",
     });
     this.hotelQuery.ranks.push({
       id: 2,
       label: "价格【低-高↑】",
       value: "Price",
-      orderBy: "PriceAsc"
+      orderBy: "PriceAsc",
     });
     this.hotelQuery.ranks.push({
       id: 1,
       label: "星级【高-低↓】",
       value: "Category",
       orderBy: "CategoryDesc",
-      isSelected: false
+      isSelected: false,
     });
-    this.hotelQuery.ranks.push(
-      {
+    this.hotelQuery.ranks.push({
       id: 0,
       label: "星级【低-高↑】",
       value: "Category",
       orderBy: "CategoryAsc",
-      isSelected: true
+      isSelected: true,
     });
     let rank =
-      this.hotelQuery.ranks.find(it => it.isSelected) ||
+      this.hotelQuery.ranks.find((it) => it.isSelected) ||
       this.hotelQuery.ranks[0];
     if (this.hotelQuery) {
       rank =
         this.hotelQuery.ranks.find(
-          it => it.orderBy == this.hotelQuery.Orderby
+          (it) => it.orderBy == this.hotelQuery.Orderby
         ) || rank;
     }
     rank.isSelected = true;
@@ -71,14 +70,19 @@ export class RecommendRankComponent implements OnInit {
   onSelect(r: IRankItem) {
     this.hotelQuery = this.hotelService.getHotelQueryModel();
     this.selectedItem = r;
-    this.hotelQuery.ranks = this.hotelQuery.ranks.map(it => {
-      it.isSelected = it.id == r.id;
-      return it;
-    });
-    this.hotelQuery.Orderby = r.orderBy;
+    if (this.hotelQuery) {
+      if (!this.hotelQuery.ranks || this.hotelQuery.ranks.length == 0) {
+        this.onReset();
+      }
+      this.hotelQuery.ranks = this.hotelQuery.ranks.map((it) => {
+        it.isSelected = it.id == r.id;
+        return it;
+      });
+      this.hotelQuery.Orderby = r.orderBy;
+    }
     this.hotelService.setHotelQuerySource(this.hotelQuery);
     this.rank.emit();
-    this.modalCtrl.getTop().then(t => {
+    this.modalCtrl.getTop().then((t) => {
       if (t) {
         t.dismiss();
       }
