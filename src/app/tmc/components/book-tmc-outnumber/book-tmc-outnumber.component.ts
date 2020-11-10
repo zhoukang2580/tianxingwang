@@ -9,7 +9,12 @@ import {
   ViewChild,
 } from "@angular/core";
 import { TmcService } from "./../../tmc.service";
-import { PopoverController, IonInput, IonList } from "@ionic/angular";
+import {
+  PopoverController,
+  IonInput,
+  IonList,
+  IonSelect,
+} from "@ionic/angular";
 import { Component, OnInit, Input, Output } from "@angular/core";
 import { TravelUrlInfo } from "../../tmc.service";
 import { SelectTravelNumberComponent } from "../select-travel-number-popover/select-travel-number-popover.component";
@@ -103,6 +108,15 @@ export class BookTmcOutnumberComponent
           ? !this.travelNumbers.some((a) => a.label == it.label)
           : true
       );
+    }
+  }
+  onSelectChange(evt: CustomEvent, ele: IonSelect) {
+    if (evt && evt.detail && !evt.detail.value && ele) {
+      try{
+        ele["el"].shadowRoot.querySelector (".select-text").textContent = "";
+      }catch(e){
+
+      }
     }
   }
   async onSelectTravelNumber(arg: ITmcOutNumberInfo) {
