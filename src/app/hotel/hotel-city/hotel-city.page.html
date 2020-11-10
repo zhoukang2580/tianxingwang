@@ -1,9 +1,13 @@
 <ion-header>
-  <ion-buttons>
-    <app-back-button defaultHref="" [backFn]='back.bind(this)'></app-back-button>
-    <ion-searchbar debounce="300" style='padding:0' placeholder="输入关键字" (ionChange)='doSearch()' [(ngModel)]='vmKeyword' class="ion-margin-end">
-    </ion-searchbar>
-  </ion-buttons>
+  <ion-toolbar>
+    <ion-buttons>
+      <app-back-button defaultHref="" [backFn]='back.bind(this)'></app-back-button>
+      <form (ngSubmit)='doSearch()' action='javascript:void(0)'>
+        <ion-searchbar mode='ios' debounce="300" name='searchbar' style='padding:0' placeholder="输入关键字" (ionChange)='doSearch()' [(ngModel)]='vmKeyword' class="ion-margin-end">
+        </ion-searchbar>
+      </form>
+    </ion-buttons>
+  </ion-toolbar>
 </ion-header>
 <ion-content>
   <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
