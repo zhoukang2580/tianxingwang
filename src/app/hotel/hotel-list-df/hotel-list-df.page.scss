@@ -10,6 +10,9 @@ ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  li {
+    margin-bottom: 0.2em;
+  }
 }
 .hotel-query-wrapper {
   background-color: var(--ion-color-light);

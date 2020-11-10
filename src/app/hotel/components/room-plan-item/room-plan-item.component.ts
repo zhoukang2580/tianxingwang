@@ -16,6 +16,8 @@ import { HotelBookType } from "../../models/HotelBookType";
 import { HotelEntity } from "../../models/HotelEntity";
 import { HotelPaymentType } from "../../models/HotelPaymentType";
 import { ShowMsgComponent } from "../show-msg/show-msg.component";
+import { AppHelper } from "src/app/appHelper";
+import { ShowFreebookTipComponent } from "../show-freebook-tip/show-freebook-tip.component";
 
 @Component({
   selector: "app-room-plan-item",
@@ -43,6 +45,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   HotelPaymentType = HotelPaymentType;
   @Input() colors: { [k: string]: string };
   isFreebook = false;
+  isShowFreeBookTip = false;
   get isAgent() {
     return this.hotelService.isAgent;
   }
@@ -69,6 +72,16 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
         await m.present();
       }
     }
+  }
+  async onShowFreeBookTip(evt: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    this.isShowFreeBookTip = true;
+    const m = await AppHelper.modalController.create({
+      component: ShowFreebookTipComponent,
+    });
+    m.present();
   }
   getRoomPlanUniqueId(plan: RoomPlanEntity) {
     return this.hotelService.getRoomPlanUniqueId(plan);

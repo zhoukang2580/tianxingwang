@@ -8,7 +8,7 @@ import {
   AfterViewInit,
   ViewChild,
 } from "@angular/core";
-import { PopoverController, IonInput, IonList } from "@ionic/angular";
+import { PopoverController, IonInput, IonList, IonSelect } from "@ionic/angular";
 import { Component, OnInit, Input, Output } from "@angular/core";
 import { Subscription, fromEvent } from "rxjs";
 import { TmcService, TravelUrlInfo } from 'src/app/tmc/tmc.service';
@@ -61,6 +61,15 @@ export class HotelOutNumberComponent
           TravelNumber: one.value,
         } as any,
       });
+    }
+  }
+  onSelectChange(evt: CustomEvent, ele: IonSelect) {
+    if (evt && evt.detail && !evt.detail.value && ele) {
+      try{
+        ele["el"].shadowRoot.querySelector (".select-text").textContent = "";
+      }catch(e){
+
+      }
     }
   }
   onChange(arg: ITmcOutNumberInfo, evt: CustomEvent) {

@@ -1,4 +1,4 @@
-import { HotelOutNumberComponent } from './hotel-outnumber/hotel-outnumber.component';
+import { HotelOutNumberComponent } from "./hotel-outnumber/hotel-outnumber.component";
 import { AppComponentsModule } from "./../../components/appcomponents.module";
 import { AppDirectivesModule } from "./../../directives/directives.module";
 import { HotelListItemComponent } from "./hotel-list-item/hotel-list-item.component";
@@ -11,19 +11,20 @@ import { IonicModule } from "@ionic/angular";
 import { RoomPlanItemComponent } from "./room-plan-item/room-plan-item.component";
 import { RoomShowItemComponent } from "./room-show-item/room-show-item.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
-import { ChangeRoomplanDateComponent } from './change-roomplan-date/change-roomplan-date.component';
-import { ShowMsgComponent } from './show-msg/show-msg.component';
-import { HotelGeoComponent } from './hotel-geo/hotel-geo.component';
-import { QueryTabComponent } from './query-tab/query-tab.component';
-import { RecommendRankComponent } from './recommend-rank/recommend-rank.component';
-import { HotelFilterComponent } from './hotel-filter/hotel-filter.component';
-import { HotelStarPriceComponent } from './hotel-starprice/hotel-starprice.component';
-import { WarrantyComponent } from './warranty/warranty.component';
-import { OverHotelComponent } from './over-hotel/over-hotel.component';
-import { RoomShowItemEnComponent } from './room-show-item_en/room-show-item_en.component';
-import { RoomPlanItemEnComponent } from './room-plan-item_en/room-plan-item_en.component';
-import { HotelStarPriceEnComponent } from './hotel-starprice_en/hotel-starprice_en.component';
-import { HotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hotel-addcontacts-comp.component';
+import { ChangeRoomplanDateComponent } from "./change-roomplan-date/change-roomplan-date.component";
+import { ShowMsgComponent } from "./show-msg/show-msg.component";
+import { HotelGeoComponent } from "./hotel-geo/hotel-geo.component";
+import { QueryTabComponent } from "./query-tab/query-tab.component";
+import { RecommendRankComponent } from "./recommend-rank/recommend-rank.component";
+import { HotelFilterComponent } from "./hotel-filter/hotel-filter.component";
+import { HotelStarPriceComponent } from "./hotel-starprice/hotel-starprice.component";
+import { WarrantyComponent } from "./warranty/warranty.component";
+import { OverHotelComponent } from "./over-hotel/over-hotel.component";
+import { RoomShowItemEnComponent } from "./room-show-item_en/room-show-item_en.component";
+import { RoomPlanItemEnComponent } from "./room-plan-item_en/room-plan-item_en.component";
+import { HotelStarPriceEnComponent } from "./hotel-starprice_en/hotel-starprice_en.component";
+import { HotelAddcontactsCompComponent } from "./hotel-addcontacts-comp/hotel-addcontacts-comp.component";
+import { ShowFreebookTipComponent } from './show-freebook-tip/show-freebook-tip.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { HotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hotel-ad
     ShowMsgComponent,
     WarrantyComponent,
     HotelOutNumberComponent,
-    OverHotelComponent
+    OverHotelComponent,
+    ShowFreebookTipComponent,
   ],
   imports: [
     CommonModule,
@@ -53,7 +55,7 @@ import { HotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hotel-ad
     FormsModule,
     AppDirectivesModule,
     AppComponentsModule,
-    TmcComponentsModule
+    TmcComponentsModule,
   ],
   exports: [
     HotelOutNumberComponent,
@@ -74,8 +76,8 @@ import { HotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hotel-ad
     RoomShowItemEnComponent,
     TmcComponentsModule,
     ChangeRoomplanDateComponent,
-    OverHotelComponent
+    OverHotelComponent,
   ],
-  entryComponents: [ShowMsgComponent]
+  entryComponents: [ShowMsgComponent],
 })
 export class HotelComponentsModule {}
