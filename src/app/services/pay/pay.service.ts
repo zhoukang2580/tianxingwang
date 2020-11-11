@@ -309,7 +309,7 @@ export class PayService {
       "&openid=" +
       (WechatHelper.getOpenId() || "");
     for (const r in req) {
-      if (r.toLowerCase() == AppHelper.getTicketName()) {
+      if (r.toLowerCase() == AppHelper.getTicketName() || r.toLowerCase() == "path" || r.toLowerCase() == "openid")  {
         continue;
       }
       url +=

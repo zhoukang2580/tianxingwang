@@ -531,7 +531,7 @@ export class AppHelper {
     return false;
   }
   static getStyle() {
-    return AppHelper.getStorage("style") || this._queryParamers["style"] || "";
+    return this._queryParamers["style"] || AppHelper.getStorage("style") || "";
   }
   static setStyle(style: string) {
     this._queryParamers["style"] = style || "";
@@ -748,12 +748,7 @@ export class AppHelper {
     const query = AppHelper.getQueryParamers();
     const hrefPath = AppHelper.getNormalizedPath(window.location.href);
     if (query) {
-      if (
-        query.style != undefined &&
-        query.style != null &&
-        query.style.toLowerCase() != "undefined" &&
-        query.style.toLowerCase() != "null"
-      ) {
+      if (!AppHelper.isApp()) {
         this.setStyle(query.style || "");
       }
       if (hrefPath) {
