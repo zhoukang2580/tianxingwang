@@ -1,4 +1,5 @@
-﻿import { RequestEntity } from "src/app/services/api/Request.entity";
+﻿import { ApiService } from "./services/api/api.service";
+import { RequestEntity } from "src/app/services/api/Request.entity";
 import * as md5 from "md5";
 import Big from "big.js";
 import * as moment from "moment";
@@ -914,7 +915,12 @@ export class AppHelper {
     return `${d.getFullYear()}-${m}-${day}`;
   }
 
-  static jump(router: Router, url: string, queryParams: any) {
+  static async jump(
+    apiService: ApiService,
+    router: Router,
+    url: string,
+    queryParams: any
+  ) {
     if (!url) {
       return false;
     }
@@ -927,6 +933,21 @@ export class AppHelper {
         const wechatMiniAppId = jumpInfo.wechatMiniAppId;
         const wechatMiniPath = jumpInfo.wechatMiniPath;
         const title = jumpInfo.title;
+        if (jumpInfo.checkUrl) {
+          let req = new RequestEntity();
+          req.Url = jumpInfo.checkUrl;
+          req.Data = queryParams;
+          let checkResult = await apiService.getPromise(req).catch((s) => null);
+          if (checkResult == null || !checkResult.Status) {
+            this.alert(checkResult == null ? "请求异常" : checkResult.Message);
+            return;
+          }
+          if (checkResult.Data) {
+            for (let key in checkResult.Data) {
+              queryParams[key] = checkResult.Data[key];
+            }
+          }
+        }
         if (
           AppHelper.isWechatMini() &&
           jumpInfo.wechatMiniAppId &&
