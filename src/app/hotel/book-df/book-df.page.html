@@ -143,12 +143,13 @@
           </ion-item>
           <div class="info padding-v">
             <div class="title">出差信息</div>
-            <div class="illegal" [attr.illegalReasonsid]='combindInfo.id' *ngIf='combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist&&!isRoomPlanFreeBook(combindInfo)'>
+            <div class="illegal" [attr.illegalReasonsid]='combindInfo.id' *ngIf='combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist'>
               <div class="flex padding-v">
                 <span class="label">超标原因：</span>{{combindInfo?.illegalReason}}
-                <ion-icon name="caret-down-outline" class='down' (click)='onSelectIllegalReason(combindInfo)'></ion-icon>
+                <ion-icon *ngIf='!isRoomPlanFreeBook(combindInfo)' name="caret-down-outline" class='down' (click)='onSelectIllegalReason(combindInfo)'></ion-icon>
+                <ion-input [(ngModel)]='combindInfo.otherIllegalReason' *ngIf='isRoomPlanFreeBook(combindInfo)' placeholder='请输入原因'></ion-input>
               </div>
-              <div class="flex padding-v" *ngIf='tmc?.IsAllowCustomReason'>
+              <div class="flex padding-v" *ngIf='tmc?.IsAllowCustomReason&&!isRoomPlanFreeBook(combindInfo)' >
                 <span>其他原因：</span>
                 <ion-input [(ngModel)]='combindInfo.otherIllegalReason' placeholder='请输入其他原因'></ion-input>
               </div>
