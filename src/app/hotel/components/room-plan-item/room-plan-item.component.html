@@ -48,7 +48,7 @@
                 <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>{{langOpt.MonthlyPay}}</ion-text>
             </ng-container>
         </div>
-        <div class="freebook ion-text-end" *ngIf='true||isFreebook' >
+        <div class="freebook ion-text-end" *ngIf='isFreebook' >
             <ion-icon name="help-circle-outline" color='secondary' (click)='onShowFreeBookTip($event)'></ion-icon>
             <ion-button color='warning' (click)='onFreeBook(color)' [class.show-tip]='isShowFreeBookTip'>
                 <ion-text color='light'>随心订</ion-text>
