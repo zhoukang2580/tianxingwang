@@ -1,6 +1,4 @@
-﻿import { ApiService } from "./services/api/api.service";
-import { RequestEntity } from "src/app/services/api/Request.entity";
-import * as md5 from "md5";
+﻿import * as md5 from "md5";
 import Big from "big.js";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
@@ -435,18 +433,6 @@ export class AppHelper {
   }
   static isH5() {
     return !this.isApp();
-  }
-  static setRequestEntity(req: RequestEntity) {
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.TicketName = AppHelper.getTicketName();
-    req.Domain = AppHelper.getDomain();
-    const ticketName = AppHelper.getTicketName();
-    if (ticketName != "ticket") {
-      req[ticketName] = req.Ticket;
-      req.Ticket = "";
-    }
   }
   /**
    *  请注意，这个是异步方法，返回promise,是pda ，返回true，否则返回false，使用判断条件是，判断是否存在sim卡；
@@ -914,13 +900,61 @@ export class AppHelper {
     }
     return `${d.getFullYear()}-${m}-${day}`;
   }
-
-  static async jump(
-    apiService: ApiService,
-    router: Router,
-    url: string,
-    queryParams: any
-  ) {
+  private static async postData(url: string, req: any) {
+    const formObj = Object.keys(req)
+      .map((k) => `${k}=${req[k]}`)
+      .join("&");
+    return new Promise<any>((resolve, reject) => {
+      this.httpClient
+        .post(url, `${formObj}&x-requested-with=XMLHttpRequest`, {
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+          observe: "body",
+        })
+        .subscribe(
+          (r) => {
+            resolve(r);
+          },
+          (e) => {
+            reject(e);
+          }
+        );
+    });
+  }
+  private static getRequestEntity() {
+    const req: any = {};
+    req.Timestamp = Math.floor(Date.now() / 1000);
+    req.Language = AppHelper.getLanguage();
+    req.Ticket = AppHelper.getTicket();
+    req.TicketName = AppHelper.getTicketName();
+    req.Domain = AppHelper.getDomain();
+    const paramters = AppHelper.getQueryParamers();
+    const tags = [
+      "wechatcode",
+      "wechatminicode",
+      "dingtalkcode",
+      "ticket",
+      "ticketname",
+      "wechatopenid",
+      "dingtalkopenid",
+      "style",
+      "path",
+      AppHelper.getTicketName(),
+    ];
+    for (const p in paramters) {
+      if (tags.includes(p.toLowerCase())) {
+        continue;
+      }
+      req[p] = paramters[p];
+    }
+    if (req.TicketName != "ticket") {
+      req[req.TicketName] = req.Ticket;
+      req.Ticket = "";
+    } else {
+      req.TicketName = "";
+    }
+    return req;
+  }
+  static async jump(router: Router, url: string, queryParams: any) {
     if (!url) {
       return false;
     }
@@ -934,16 +968,18 @@ export class AppHelper {
         const wechatMiniPath = jumpInfo.wechatMiniPath;
         const title = jumpInfo.title;
         if (jumpInfo.checkUrl) {
-          let req = new RequestEntity();
+          const req = this.getRequestEntity();
           req.Url = jumpInfo.checkUrl;
           req.Data = queryParams;
-          let checkResult = await apiService.getPromise(req).catch((s) => null);
+          const checkResult = await this.postData(req.Url, req).catch(
+            () => null
+          );
           if (checkResult == null || !checkResult.Status) {
             this.alert(checkResult == null ? "请求异常" : checkResult.Message);
             return;
           }
           if (checkResult.Data) {
-            for (let key in checkResult.Data) {
+            for (const key in checkResult.Data) {
               queryParams[key] = checkResult.Data[key];
             }
           }
