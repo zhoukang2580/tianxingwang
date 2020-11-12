@@ -207,12 +207,9 @@ ion-title.has-add-passenger {
 .empty {
   min-height: 65vh;
 }
-
 .show-desc {
-  position: relative;
-  ion-button {
-    position: absolute;
-    right: 0;
-    top: 50%;
+  display:flex;
+  .full{
+    margin-left: auto;
   }
 }

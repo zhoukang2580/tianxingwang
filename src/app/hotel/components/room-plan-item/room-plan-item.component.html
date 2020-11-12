@@ -30,7 +30,7 @@
         [attr.color]='color.includes("danger")?"danger":color'>
         <ion-text color='danger' class='avg-price'>￥{{getAvgPrice(roomPlan)}}</ion-text>
         <div class="btn-book" (click)='onBook(roomPlan,color)'>
-            <ion-button slot='end' class='ion-no-margin' [class.disabled]='color.includes("danger")' expand='full'>
+            <ion-button class='ion-no-margin' [class.disabled]='color.includes("danger")' expand='full'>
                 <ion-text color='light'>{{color.includes('danger_full')?langOpt.SoldOut:color.includes("disabled")?langOpt.Exceeding:langOpt.Book}}
                 </ion-text>
             </ion-button>
@@ -47,8 +47,14 @@
                 <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>{{langOpt.PayIn}}</ion-text>
                 <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>{{langOpt.MonthlyPay}}</ion-text>
             </ng-container>
+            <ion-text *ngIf='color.includes("disabled")' color='danger'>{{langOpt.NonBook}}</ion-text>
+            <ng-container *ngIf='isAgent'>
+                <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>{{langOpt.NowPay}}</ion-text>
+                <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>{{langOpt.PayIn}}</ion-text>
+                <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>{{langOpt.MonthlyPay}}</ion-text>
+            </ng-container>
         </div>
-        <div class="freebook ion-text-end" *ngIf='isFreebook' >
+        <div class="freebook ion-text-end" *ngIf='isFreebook'>
             <ion-icon name="help-circle-outline" color='secondary' (click)='onShowFreeBookTip($event)'></ion-icon>
             <ion-button color='warning' (click)='onFreeBook(color)' [class.show-tip]='isShowFreeBookTip'>
                 <ion-text color='light'>随心订</ion-text>
