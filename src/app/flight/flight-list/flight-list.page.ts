@@ -124,11 +124,11 @@ export class FlightListPage
   isCanLeave = false;
   get filterConditionIsFiltered() {
     return (
-      this.filterCondition &&
-      this.filterCondition.userOps &&
-      Object.keys(this.filterCondition.userOps).some(
-        (k) => this.filterCondition.userOps[k]
-      )
+      (this.filterCondition && this.filterCondition.onlyDirect) ||
+      (this.filterCondition.userOps &&
+        Object.keys(this.filterCondition.userOps).some(
+          (k) => this.filterCondition.userOps[k]
+        ))
     );
   }
   constructor(
@@ -227,6 +227,18 @@ export class FlightListPage
         }
         if (bookInfos && bookInfos.length) {
           const r = await this.flightService.addOrReplaceSegmentInfo(cabin, s);
+          const a = bookInfos.find(
+            (it) => it.bookInfo && it.bookInfo.isDontAllowBook
+          );
+          if (a) {
+            AppHelper.alert(
+              `超标不可预订,${
+                a.bookInfo.flightPolicy &&
+                a.bookInfo.flightPolicy.Rules.join(",")
+              }`
+            );
+            return;
+          }
           if (r.isProcessOk) {
             this.onShowSelectedInfos();
           }
@@ -808,13 +820,13 @@ export class FlightListPage
     if (!this.filterCondition || !this.filterConditionIsFiltered) {
       return result;
     }
-    result = this.flightService.filterByFlightDirect(result);
     result = this.flightService.filterByFromAirports(result);
     result = this.flightService.filterByToAirports(result);
     result = this.flightService.filterByAirportCompanies(result);
     result = this.flightService.filterByAirTypes(result);
     result = this.flightService.filterByCabins(result);
     result = this.flightService.filterByTakeOffTimeSpan(result);
+    result = this.flightService.filterByFlightDirect(result);
     return result;
   }
   canDeactivate() {
