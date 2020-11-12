@@ -210,17 +210,6 @@
       </ion-grid>
     </ng-container>
   </ion-list>
-  <!-- <ion-list #trafficInfo class='traffic-info'>
-    <ion-item-divider (click)='onToggleOpenMap()'>交通信息
-      <ng-container *ngIf='hotel'>
-        <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["isShowMap"]'></ion-icon>
-        <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["isShowMap"]'></ion-icon>
-      </ng-container>
-    </ion-item-divider>
-    <div class="traffic-map" [style.display]='!hotel||!hotel["isShowMap"]?"none":"block"'>
-   
-    </div>
-  </ion-list> -->
   <div #divforscroll class='div-for-scroll'>
     <ion-item detail (click)='onOpenMap()' lines='none'>
       <ion-button fill='clear' color='secondary'>打开地图查看
