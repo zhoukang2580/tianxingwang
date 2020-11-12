@@ -47,12 +47,6 @@
                 <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>{{langOpt.PayIn}}</ion-text>
                 <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>{{langOpt.MonthlyPay}}</ion-text>
             </ng-container>
-            <ion-text *ngIf='color.includes("disabled")' color='danger'>{{langOpt.NonBook}}</ion-text>
-            <ng-container *ngIf='isAgent'>
-                <ion-text color='danger' *ngIf='roomPlan?.PaymentType==HotelPaymentType.SelfPay'>{{langOpt.NowPay}}</ion-text>
-                <ion-text color='secondary' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Prepay'>{{langOpt.PayIn}}</ion-text>
-                <ion-text color='dark' *ngIf='roomPlan?.PaymentType==HotelPaymentType.Settle'>{{langOpt.MonthlyPay}}</ion-text>
-            </ng-container>
         </div>
         <div class="freebook ion-text-end" *ngIf='isFreebook'>
             <ion-icon name="help-circle-outline" color='secondary' (click)='onShowFreeBookTip($event)'></ion-icon>

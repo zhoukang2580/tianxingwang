@@ -212,3 +212,9 @@ ion-header {
     justify-content: space-between;
   }
 }
+.show-desc {
+  display:flex;
+  .full{
+    margin-left: auto;
+  }
+}

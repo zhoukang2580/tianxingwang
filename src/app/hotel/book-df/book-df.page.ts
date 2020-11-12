@@ -954,14 +954,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
         if (!p.IllegalReason) {
-          if (!this.isRoomPlanFreeBook(combindInfo)) {
-            this.showErrorMsg(
-              LanguageHelper.Flight.getIllegalReasonTip(),
-              combindInfo,
-              this.getEleByAttr("illegalReasonsid", combindInfo.id)
-            );
-            return false;
-          }
+          this.showErrorMsg(
+            LanguageHelper.Flight.getIllegalReasonTip(),
+            combindInfo,
+            this.getEleByAttr("illegalReasonsid", combindInfo.id)
+          );
+          return false;
         }
       }
       if (!p.Mobile) {
