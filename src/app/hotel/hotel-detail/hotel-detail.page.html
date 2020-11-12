@@ -136,10 +136,9 @@
                     <div *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</div>
                     <div *ngIf='getBedType(room) as it'>{{it.Description}}</div>
                     <div *ngIf='getCapacity(room) as it'>可住{{it.Description}}人</div>
-                    <!-- <div *ngIf='getComments(room) as it' class='clip-text'>{{it.Description}}</div> -->
                   </div>
                 </ion-label>
-                <ion-button color='danger' [disabled]='true' *ngIf='isFullOnly(room.RoomPlans)'>
+                <ion-button color='danger' [disabled]='true' class='full' *ngIf='isFullOnly(room.RoomPlans)'>
                   <ion-text color='light'>已满房</ion-text>
                 </ion-button>
               </h4>
