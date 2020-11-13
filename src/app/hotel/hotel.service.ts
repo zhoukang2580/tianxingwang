@@ -81,6 +81,7 @@ export class HotelService {
   private isInitializingSelfBookInfos = false;
   private conditionModel: HotelConditionModel;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
+  private isLoadingCondition=false;
   private hotelQueryModel: HotelQueryEntity;
   private testData: {
     [pageIndex: number]: { HotelDayPrices: any[]; DataCount?: number };
@@ -533,7 +534,9 @@ export class HotelService {
     return this.localHotelCities;
   }
   private async getHotelConditions(cityCode: string) {
-    this.hotelConditionSubscription.unsubscribe();
+    if(this.isLoadingCondition){
+      this.hotelConditionSubscription.unsubscribe();
+    }
     return new Promise<HotelConditionModel>((resolve) => {
       const req = new RequestEntity();
       cityCode =
@@ -545,10 +548,12 @@ export class HotelService {
         cityCode,
       };
       req.IsShowLoading = true;
+      this.isLoadingCondition=true;
       this.hotelConditionSubscription = this.apiService
         .getResponse<HotelConditionModel>(req)
         .pipe(
           finalize(() => {
+            this.isLoadingCondition=false;
             this.apiService.hideLoadingView();
             setTimeout(() => {
               this.hotelConditionSubscription.unsubscribe();
@@ -621,7 +626,7 @@ export class HotelService {
     }
     const cond = this.getSearchHotelModel();
     const city = cond.destinationCity;
-    req.IsShowLoading = query.PageIndex <= 1;
+    req.IsShowLoading = query.PageIndex < 1;
     hotelquery.CityCode = city && city.Code;
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
@@ -651,7 +656,11 @@ export class HotelService {
           result.Data.HotelDayPrices = result.Data.HotelDayPrices.map((it) => {
             if (it.Hotel) {
               if (it.Hotel.Variables) {
-                it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+                try{
+                  it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+                }catch(e){
+                  console.error(e);
+                }
               }
             }
             return it;

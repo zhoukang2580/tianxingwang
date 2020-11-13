@@ -401,11 +401,11 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       })
     );
     const sub0 = this.route.queryParamMap.subscribe((_) => {
+      this.hotelService.curViewHotel = null;
       this.hideQueryPannel();
       if (this.checkDestinationChanged()) {
         this.searchHotelModel.searchText = null;
       }
-      this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
       const isrefresh =
         this.checkSearchTextChanged() ||
