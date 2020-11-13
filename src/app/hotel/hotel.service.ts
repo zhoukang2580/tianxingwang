@@ -80,8 +80,8 @@ export class HotelService {
   private lastUpdateTime = 0;
   private isInitializingSelfBookInfos = false;
   private conditionModel: HotelConditionModel;
+  private isLoadingCondition = false;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
-  private isLoadingCondition=false;
   private hotelQueryModel: HotelQueryEntity;
   private testData: {
     [pageIndex: number]: { HotelDayPrices: any[]; DataCount?: number };
@@ -275,7 +275,7 @@ export class HotelService {
       !this.conditionModel.Brands ||
       !this.conditionModel.Geos
     ) {
-      this.conditionModel = await this.getHotelConditions(
+      this.conditionModel = await this.getHotelConditionsAsync(
         city && city.Code
       ).catch((_) => null);
       // console.log(JSON.stringify(this.conditionModel));
@@ -533,44 +533,62 @@ export class HotelService {
     }
     return this.localHotelCities;
   }
-  private async getHotelConditions(cityCode: string) {
-    if(this.isLoadingCondition){
-      this.hotelConditionSubscription.unsubscribe();
+  private async getHotelConditionsAsync(cityCode: string) {
+    if (this.isLoadingCondition) {
+      return;
     }
-    return new Promise<HotelConditionModel>((resolve) => {
-      const req = new RequestEntity();
-      cityCode =
-        cityCode ||
-        (this.getSearchHotelModel().destinationCity &&
-          this.getSearchHotelModel().destinationCity.Code);
-      req.Method = `TmcApiHotelUrl-Condition-Gets`;
-      req.Data = {
-        cityCode,
-      };
-      req.IsShowLoading = true;
-      this.isLoadingCondition=true;
-      this.hotelConditionSubscription = this.apiService
-        .getResponse<HotelConditionModel>(req)
-        .pipe(
-          finalize(() => {
-            this.isLoadingCondition=false;
-            this.apiService.hideLoadingView();
-            setTimeout(() => {
-              this.hotelConditionSubscription.unsubscribe();
-            }, 200);
-          })
-        )
-        .subscribe(
-          (res) => {
-            const result = res && res.Data;
-            resolve(result);
-          },
-          () => {
-            resolve(null);
-          }
-        );
-    });
+    const req = new RequestEntity();
+    cityCode =
+      cityCode ||
+      (this.getSearchHotelModel().destinationCity &&
+        this.getSearchHotelModel().destinationCity.Code);
+    req.Method = `TmcApiHotelUrl-Condition-Gets`;
+    req.Data = {
+      cityCode,
+    };
+    req.IsShowLoading = true;
+    this.isLoadingCondition = true;
+    this.conditionModel = await this.apiService
+      .getPromiseData<HotelConditionModel>(req)
+      .finally(() => {
+        this.isLoadingCondition = false;
+      });
+    return this.conditionModel;
   }
+  // private async getHotelConditions(cityCode: string) {
+  //   return new Promise<HotelConditionModel>((resolve) => {
+  //     const req = new RequestEntity();
+  //     cityCode =
+  //       cityCode ||
+  //       (this.getSearchHotelModel().destinationCity &&
+  //         this.getSearchHotelModel().destinationCity.Code);
+  //     req.Method = `TmcApiHotelUrl-Condition-Gets`;
+  //     req.Data = {
+  //       cityCode,
+  //     };
+  //     req.IsShowLoading = true;
+  //     this.hotelConditionSubscription.unsubscribe();
+  //     this.hotelConditionSubscription = this.apiService
+  //       .getResponse<HotelConditionModel>(req)
+  //       .pipe(
+  //         finalize(() => {
+  //           this.apiService.hideLoadingView();
+  //           setTimeout(() => {
+  //             this.hotelConditionSubscription.unsubscribe();
+  //           }, 200);
+  //         })
+  //       )
+  //       .subscribe(
+  //         (res) => {
+  //           const result = res && res.Data;
+  //           resolve(result);
+  //         },
+  //         () => {
+  //           resolve(null);
+  //         }
+  //       );
+  //   });
+  // }
   private getFirstLetter(name: string) {
     const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);
     return pyFl && pyFl.toUpperCase();
@@ -656,9 +674,9 @@ export class HotelService {
           result.Data.HotelDayPrices = result.Data.HotelDayPrices.map((it) => {
             if (it.Hotel) {
               if (it.Hotel.Variables) {
-                try{
+                try {
                   it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
-                }catch(e){
+                } catch (e) {
                   console.error(e);
                 }
               }
