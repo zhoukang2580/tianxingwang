@@ -1394,6 +1394,7 @@ export class TmcEntity extends BaseEntity {
   RegionTypeValue: string;
   RegionTypeName: string;
   IntFlightApprovalType: TmcApprovalType;
+  RegionType: any;
   // =============== 微信支付配置 end ======
 }
 export interface PassengerBookInfo<T> {

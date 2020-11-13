@@ -44,6 +44,7 @@ import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-in
 import { LoginService } from "src/app/services/login/login.service";
 import { LangService } from "src/app/services/lang.service";
 import { CONFIG } from "src/app/config";
+import { AgentRegionType } from "src/app/tmc/models/AgentRegionType";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home.page.html",
@@ -307,9 +308,10 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       };
     });
   }
-
   async goToPage(name: string, params?: any) {
     const tmc = await this.tmcService.getTmc();
+    const Tmc = tmc;
+    const Agent = await this.tmcService.getAgent();
     const msg = "您没有预订权限";
     if (!tmc || !tmc.RegionTypeValue) {
       AppHelper.alert(msg);
@@ -331,10 +333,18 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (name == "international-hotel") {
       route = "search-international-hotel";
+      const pass =
+        Tmc &&
+        // tslint:disable-next-line: no-bitwise
+        (Tmc.RegionType & AgentRegionType.InternationalHotel) > 0 &&
+        Agent &&
+        // tslint:disable-next-line: no-bitwise
+        (Agent.RegionType & AgentRegionType.InternationalHotel) > 0;
       if (
         !tmcRegionTypeValues.find(
           (it) => it.toLowerCase() == "internationalhotel"
-        )
+        ) ||
+        !pass
       ) {
         AppHelper.alert(msg);
         return;
@@ -342,7 +352,17 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (name == "hotel") {
       route = "search-hotel";
-      if (!tmcRegionTypeValues.find((it) => it.toLowerCase() == "hotel")) {
+      const pass =
+        Tmc &&
+        // tslint:disable-next-line: no-bitwise
+        (Tmc.RegionType & AgentRegionType.Hotel) > 0 &&
+        Agent != null &&
+        // tslint:disable-next-line: no-bitwise
+        (Agent.RegionType & AgentRegionType.Hotel) > 0;
+      if (
+        !tmcRegionTypeValues.find((it) => it.toLowerCase() == "hotel") ||
+        !pass
+      ) {
         AppHelper.alert(msg);
         return;
       }
