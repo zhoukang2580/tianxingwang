@@ -127,3 +127,10 @@ cordova 官网 `https://cordova.apache.org/`
    2 配置 platform-tools 目录
 5. 安装 `npm i -g cordova-res` ;用于生成Android图标，启动图标
 6. 编译Android apk `ionic cordova build android --prod --release`
+
+如何生成不同公司的App
+1. 修改config.xml里面的包名和版本号
+2. 修改resources文件夹里面的icon和splash
+3. 生成启动图标和应用图标 ionic cordova resources -f 
+4. 修改config.ts里面的配置
+5. 生成apk，ionic cordova build android --prod --release
