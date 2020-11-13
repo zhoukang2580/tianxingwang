@@ -133,4 +133,5 @@ cordova 官网 `https://cordova.apache.org/`
 2. 修改resources文件夹里面的icon和splash
 3. 生成启动图标和应用图标 ionic cordova resources -f 
 4. 修改config.ts里面的配置
-5. 生成apk，ionic cordova build android --prod --release
+5. 删除旧的platform `ionic cordova platform remove android ` 添加新的platform `ionic cordova platform add android `
+6. 生成apk，ionic cordova build android --prod --release
