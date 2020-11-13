@@ -901,6 +901,9 @@ export class AppHelper {
     return `${d.getFullYear()}-${m}-${day}`;
   }
   private static async postData(url: string, req: any) {
+    if (req.Data && typeof req.Data != "string") {
+      req.Data = JSON.stringify(req.Data);
+    }
     const formObj = Object.keys(req)
       .map((k) => `${k}=${req[k]}`)
       .join("&");
@@ -952,6 +955,7 @@ export class AppHelper {
     } else {
       req.TicketName = "";
     }
+   
     return req;
   }
   static async jump(router: Router, url: string, queryParams: any) {
@@ -968,6 +972,7 @@ export class AppHelper {
         const wechatMiniPath = jumpInfo.wechatMiniPath;
         const title = jumpInfo.title;
         if (jumpInfo.checkUrl) {
+        
           const req = this.getRequestEntity();
           req.Url = jumpInfo.checkUrl;
           req.Data = queryParams;
@@ -996,6 +1001,7 @@ export class AppHelper {
             wechatMiniPath +
             "&title=" +
             title;
+           
           if (queryParams && Object.keys(queryParams).length) {
             url +=
               "&" +
@@ -1003,6 +1009,7 @@ export class AppHelper {
                 .map((k) => `${k}=${queryParams[k] || ""}`)
                 .join("&");
           }
+      
           const wx = window["wx"];
           wx.miniProgram.navigateTo({ url: url });
           return true;
