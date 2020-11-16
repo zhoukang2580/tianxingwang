@@ -62,6 +62,7 @@ import {
 
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { StaffService } from "src/app/hr/staff.service";
+import { ShowFreebookTipComponent } from '../components/show-freebook-tip/show-freebook-tip.component';
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -148,7 +149,15 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
     this.hideQueryPannel();
   }
-  onShowFreeBook() {}
+  async onShowFreeBookTip(evt?: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
+    const m = await AppHelper.modalController.create({
+      component: ShowFreebookTipComponent,
+    });
+    m.present();
+  }
   onSegmentChanged(ev: CustomEvent) {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
@@ -202,7 +211,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
         const isSelf = await this.staffService.isSelfBookType();
         this.isFreeBook =
           tmc &&
-          tmc.HotelSelfPayAmount == "1" &&
+          tmc['HotelSelfPayAmount'] == "1" &&
           isSelf &&
           !this.tmcService.isAgent;
       } catch (e) {

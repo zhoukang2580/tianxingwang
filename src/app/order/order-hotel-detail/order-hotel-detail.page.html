@@ -43,26 +43,9 @@
                 </div>
               </ion-col>
             </ion-row>
-            <!-- <ng-container>
-              <ng-container *ngIf='tmc?.IsShowServiceFee'>
-                <ion-row *ngFor='let orderHotel of orderDetail.Order.OrderHotels'>
-                  <ion-col size='3'>
-                    <ng-container *ngIf='orderDetail.Order.OrderHotels.length>1'>
-                      <strong *ngIf='orderHotel.HotelName as n'>
-                        {{n.length>10?n.substr(0,10)+"...":n}}
-                      </strong>
-                    </ng-container>
-                    服务费:
-                  </ion-col>
-                  <ion-col>{{getHotelServiceFee(orderHotel.Key)}}
-                  </ion-col>
-                </ion-row>
-              </ng-container>
-            </ng-container> -->
             <ion-row>
               <ion-col size='3'>已付金额:</ion-col>
               <ion-col>{{getOrderPayAmount()}}
-                <!-- <ion-text color="secondary" style="font-size: 0.7rem;">应付明细</ion-text> -->
               </ion-col>
             </ion-row>
             <ion-row *ngIf="orderDetail.Order.OrderHotels[0].PaymentType==1">

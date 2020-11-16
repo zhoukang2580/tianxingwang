@@ -876,6 +876,25 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.log(this.rects);
   }
+  async onCall() {
+    if (this.hotel && this.hotel.Phone) {
+      const phoneNumber = this.hotel.Phone;
+      const callNumber = window["call"];
+      // window.location.href=`tel:${phoneNumber}`;
+      if (callNumber) {
+        callNumber
+          .callNumber(phoneNumber, true)
+          .then((res) => console.log("Launched dialer!", res))
+          .catch((err) => console.log("Error launching dialer", err));
+      } else {
+        const a = document.createElement("a");
+        a.href = `tel:${phoneNumber}`;
+        a.click();
+      }
+    }else{
+      
+    }
+  }
   private checkScroll() {
     this.domCtrl.write(async (_) => {
       const scroll = await this.content.getScrollElement();

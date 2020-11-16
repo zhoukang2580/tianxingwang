@@ -278,7 +278,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       select.open();
     }
   }
-  onSelectDatetime(datetime: IonDatetime, item: IPassengerHotelBookInfo) {
+  onSelectDatetime(datetime: IonSelect, item: IPassengerHotelBookInfo) {
     this.initArrivalTimes(item);
     datetime.open();
   }

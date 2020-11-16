@@ -3,7 +3,7 @@
     <ion-buttons slot='start'>
       <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
-    <ion-title [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</ion-title>
+    <span [class.has-add-passenger]='(isShowAddPassenger$|async)'>{{hotel?.Name}}</span>
     <ion-buttons slot='end'>
       <ion-button style="font-size: 0.8rem;" fill='clear' color='secondary' (click)='onFilteredPassenger()' size='small'>
         <ion-text>过滤差标</ion-text>
@@ -60,11 +60,11 @@
         </ng-container>
      </div>
      <div class="loc-phone">
-       <div class="loc">
+       <div class="loc" (click)='onOpenMap()'>
         <ion-icon name="location" color='secondary'></ion-icon>
         <div>位置</div>
        </div>
-       <div class="phone">
+       <div class="phone" (click)='onCall()' *ngIf='hotel?.Phone'>
         <ion-icon name="call" color='secondary'></ion-icon>
         <div>电话</div>
        </div>
