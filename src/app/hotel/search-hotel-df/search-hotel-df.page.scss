@@ -30,17 +30,13 @@ ion-card {
 .search-img {
   position: absolute;
   top: 28%;
-  left: 0.9em;
-  right: 0.75em;
+  right: 0;
+  left: 0;
   z-index: 101;
   display: flex;
   height: 3.5em;
   align-items: center;
   justify-content: space-between;
-  &.ios {
-    left: 0.5em;
-    right: 6px;
-  }
   img {
     height: 100%;
   }
@@ -53,6 +49,20 @@ ion-card {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  .left {
+    left: 4px;
+  }
+  .right {
+    right: 3px;
+  }
+  &.ios {
+    .left {
+      left: 7px;
+    }
+    .right {
+      right: 6px;
+    }
   }
   .text {
     position: absolute;
@@ -69,11 +79,6 @@ ion-card {
     margin-left: -1.5em;
     top: 1.7em;
   }
-}
-.ios .search-img {
-  top: 22%;
-  left: 0.85em;
-  right: 0.82em;
 }
 .segments {
   background-color: #f6f6f6;
