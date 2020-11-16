@@ -33,6 +33,7 @@ import { BookCredentialCompEnComponent } from './book-credential-comp_en/book-cr
 import { AddcontactsModalEnComponent } from './addcontacts-modal_en/addcontacts-modal_en.component';
 import { BookAddcontactsCompEnComponent } from './book-addcontacts-comp_en/book-addcontacts-comp_en.component';
 import { SearchApprovalEnComponent } from './search-approval_en/search-approval_en.component';
+import { DaysCalendarDfComponent } from './days-calendar-df/days-calendar-df.component';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { SearchApprovalEnComponent } from './search-approval_en/search-approval_
     DateSelectWheelPopoverComponent,
     SearchDayComponent,
     DaysCalendarComponent,
+    DaysCalendarDfComponent,
     BookTmcOutnumberComponent,
     WaitingCheckPayComponent,
     ShowStandardDetailsComponent,
@@ -86,6 +88,7 @@ import { SearchApprovalEnComponent } from './search-approval_en/search-approval_
     SelectWheelComponent,
     SearchDayComponent,
     DaysCalendarComponent,
+    DaysCalendarDfComponent,
     WaitingCheckPayComponent,
     BookExpenseTypesCompComponent,
   ],

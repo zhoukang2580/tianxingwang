@@ -1,0 +1,152 @@
+<ion-header class='ion-text-center'>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref=''></app-back-button>
+    </ion-buttons>
+    <ion-title class='sm-font-size' [class.ion-text-start]='(isShowAddPassenger$|async)'
+      [class.ion-text-center]='!(isShowAddPassenger$|async)'>
+      <ion-text (click)='onSelectStation(true)' color='{{ !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked?"secondary":"medium"}}'
+        class='from-station'>
+        <span class="city-name">
+          {{vmFromCity?.Name}}
+        </span>
+        <!-- <ion-icon name='caret-down-outline' *ngIf=' !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked'></ion-icon> -->
+      </ion-text>
+      <ion-text color='{{!searchTrainModel?.isExchange&&!searchTrainModel?.isLocked?"secondary":"medium"}}'>
+        <i (click)='onSwapStation()'><img src="assets/images/3.png" alt=""></i>
+        <!-- <div (click)='onSwapStation()'> -->
+        <!-- </div> -->
+      </ion-text>
+      <ion-text (click)='onSelectStation(false)' class='to-station' color='{{searchTrainModel?.isExchange||!searchTrainModel?.isLocked?"secondary":"medium"}}'>
+        <span class="city-name">{{vmToCity?.Name}}</span>
+        <!-- <ion-icon name='caret-down-outline' *ngIf='searchTrainModel?.isExchange||!searchTrainModel?.isLocked'></ion-icon> -->
+      </ion-text>
+    </ion-title>
+    <ion-buttons slot='end'>
+      <ion-button fill='clear' color='secondary' (click)='filterPolicyTrains()' size='small'>
+        <ion-text class='sm-font-size'>过滤差标</ion-text>
+      </ion-button>
+      <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)&& !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked' color='secondary'
+        size='small' (click)='onSelectPassenger()'>
+        <ion-text class='sm-font-size'>添加旅客</ion-text>
+        <ion-badge color='danger' *ngIf='selectedPassengersNumbers$|async as n'>
+          <ion-text color='light' class='xs-font-size'>{{n}}</ion-text>
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content #cnt>
+  <ion-list>
+    <div class="content-header">
+      <!-- <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'"
+        (click)='showSelectedBookInfos()'>
+        <ion-row *ngIf='curFilteredBookInfo$|async as bookInfo' class='xs-font-size'>
+          <ion-col *ngIf='bookInfo.credential as credential'>
+            <ion-text color='secondary'>
+              当前已过滤【{{credential.Name}}】({{credential.Number}})差标
+            </ion-text>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-text color='secondary'>{{searchTrainModel?.Date}}共{{trainsCount}}趟火车</ion-text>
+            <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
+          </ion-col>
+        </ion-row>
+        <ng-container *ngIf='isShowRoundtripTip'>
+          <ion-row *ngIf='goRoundTripDateTime$|async as datetime'>
+            <ion-col *ngIf='datetime?.goArrivalDateTime'>
+              <ion-text color='secondary'>去程<ion-text color='danger'>(到达)</ion-text>:{{datetime?.goArrivalDateTime}}
+              </ion-text>
+            </ion-col>
+            <ion-col *ngIf='datetime?.backDateTime'>
+              <ion-text color='secondary'>返程:{{datetime?.backDateTime}}</ion-text>
+            </ion-col>
+          </ion-row>
+        </ng-container>
+      </ion-grid> -->
+      <ion-toolbar class="fly-days">
+        <app-days-calendar-df (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
+        </app-days-calendar-df>
+      </ion-toolbar>
+    </div>
+  </ion-list>
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)">
+    <ion-refresher-content>正在刷新...</ion-refresher-content>
+  </app-refresher>
+  <app-or-comp *ngIf='isLoading'>
+    {{progressName}}
+  </app-or-comp>
+  <app-or-comp *ngIf='!isLoading&&vmTrains?.length==0'>
+    暂无数据
+  </app-or-comp>
+  <ion-list>
+    <ul class='train'>
+      <li *ngFor='let item of vmTrains;trackBy:trackBy;let idx=index;' #li>
+        <!-- <ion-text color='danger'>{{idx}}</ion-text> -->
+        <app-train-list-item [train]='item' (bookTicket)='onBookTicket(item,$event)' (scheduleEmit)='schedules(item)'>
+        </app-train-list-item>
+      </li>
+    </ul>
+  </ion-list>
+  <ng-container #fakeList *ngIf='isLoading'>
+    <ion-list class='fakelist'>
+      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
+        <div style='width: 100%;'>
+          <ion-row>
+            <ion-col size='10'>
+              <ion-label>
+                <h2>
+                  <ion-skeleton-text animated style='width: 100%'></ion-skeleton-text>
+                </h2>
+                <h2>
+                  <ion-skeleton-text style='width: 100%'></ion-skeleton-text>
+                </h2>
+                <div style='display: flex;align-items: center;'>
+                  <ion-skeleton-text style='width: 100%'></ion-skeleton-text>
+                </div>
+              </ion-label>
+            </ion-col>
+            <ion-col size='2' style="align-self: center;display: flex;justify-content: center;align-items: center">
+              <ion-skeleton-text animated style='width: 50%'></ion-skeleton-text>
+            </ion-col>
+          </ion-row>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ng-container>
+  <ion-infinite-scroll (ionInfinite)='loadMore()' threshold='20%'>
+    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+  <!-- <ion-fab vertical="bottom" [class.show]='isShowFab' (click)='onScrollToTop()' horizontal="end" edge slot="fixed">
+    <ion-fab-button color='secondary'>
+      <ion-icon name="chevron-up-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab> -->
+  <ion-fab>
+    <app-pin-fab></app-pin-fab>
+  </ion-fab>
+</ion-content>
+<ion-footer color="primary">
+  <ion-toolbar>
+    <div class="tabs">
+      <div class="tab" [class.active]="activeTab === 'filter'" [class.filtered]='isFiltered' (click)="onFilter()">
+        <ion-icon name="funnel"></ion-icon>
+        <ion-note>筛选</ion-note>
+      </div>
+      <div class="tab" [class.active]="activeTab === 'time'" (click)="onTimeOrder()">
+        <ion-icon name="time"></ion-icon>
+        <ion-note *ngIf="activeTab !== 'time'">时间</ion-note>
+        <ion-note *ngIf="activeTab === 'time' && timeOrdM2N">从早到晚</ion-note>
+        <ion-note *ngIf="activeTab === 'time' && !timeOrdM2N">从晚到早</ion-note>
+      </div>
+      <div class="tab" [class.active]="activeTab === 'price'" (click)="onPriceOrder()">
+        <ion-icon name="logo-yen"></ion-icon>
+        <ion-note *ngIf="activeTab !== 'price'">价格</ion-note>
+        <ion-note *ngIf="activeTab === 'price' && priceOrderL2H">从低到高</ion-note>
+        <ion-note *ngIf="activeTab === 'price' && !priceOrderL2H">从高到低</ion-note>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-footer>
