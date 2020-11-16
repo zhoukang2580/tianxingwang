@@ -7,10 +7,7 @@ import { ImageRecoverService } from "../../services/imageRecover/imageRecover.se
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { CalendarService } from "src/app/tmc/calendar.service";
-import {
-  FlightHotelTrainType,
-  PassengerBookInfo,
-} from "../../tmc/tmc.service";
+import { FlightHotelTrainType, PassengerBookInfo } from "../../tmc/tmc.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService, IHotelInfo, SearchHotelModel } from "../hotel.service";
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
@@ -22,7 +19,7 @@ import {
   EventEmitter,
   ViewChild,
 } from "@angular/core";
-import { ModalController, PopoverController } from "@ionic/angular";
+import { ModalController, Platform, PopoverController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
 import { map } from "rxjs/operators";
@@ -48,6 +45,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy {
   canAddPassengers = false;
   isSelf = false;
   isDomestic = true;
+  isIos = false;
   searchHotelModel: SearchHotelModel;
   interHotelSearchCondition: IInterHotelSearchCondition;
   get changeDateTipMsg() {
@@ -98,6 +96,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy {
     private modalController: ModalController,
     private staffService: StaffService,
     private calendarService: CalendarService,
+    plt: Platform,
     private popoverCtrl: PopoverController,
     private internationalHotelService: InternationalHotelService
   ) {
@@ -126,6 +125,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy {
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
       this.isSelf = await this.staffService.isSelfBookType();
+      this.isIos = plt.is("ios");
     });
     this.subscriptions.push(sub);
   }
@@ -147,7 +147,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy {
     this.isDomestic = isDomestic;
   }
   onSelectNationality() {
-    this.router.navigate([AppHelper.getRoutePath('select-nationality')])
+    this.router.navigate([AppHelper.getRoutePath("select-nationality")]);
   }
   onAddAdultAndChildren() {
     this.router.navigate([AppHelper.getRoutePath("room-count-children")]);
@@ -166,7 +166,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy {
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
-      mode:"md",
+      mode: "md",
       componentProps: {
         details: s.Policy.HotelDescription.split("。"),
       },

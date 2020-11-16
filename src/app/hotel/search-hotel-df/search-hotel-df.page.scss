@@ -16,7 +16,8 @@
 ion-header {
   z-index: 100;
 }
-ion-toolbar, ion-toolbar.ios {
+ion-toolbar,
+ion-toolbar.ios {
   --background: transparent;
   --border-width: 0;
 }
@@ -28,14 +29,18 @@ ion-card {
 }
 .search-img {
   position: absolute;
-  top: 19%;
-  left: 0.5em;
-  right: 0.45em;
+  top: 28%;
+  left: 0.9em;
+  right: 0.75em;
   z-index: 101;
   display: flex;
   height: 3.5em;
   align-items: center;
   justify-content: space-between;
+  &.ios {
+    left: 0.5em;
+    right: 6px;
+  }
   img {
     height: 100%;
   }
