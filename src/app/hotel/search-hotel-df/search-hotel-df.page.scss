@@ -1,15 +1,15 @@
 .img {
   // width: 110%;
   position: absolute;
-  left    : -0.5em;
-  top     : 0;
-  right   : -0.6em;
-  height  : 260px;
-  z-index : 10;
+  left: -0.5em;
+  top: 0;
+  right: -0.6em;
+  height: 260px;
+  z-index: 10;
 
   img {
-    width     : 100%;
-    height    : 106%;
+    width: 100%;
+    height: 106%;
     object-fit: cover;
   }
 
@@ -22,26 +22,28 @@ ion-header {
 
 ion-toolbar,
 ion-toolbar.ios {
-  --background  : transparent;
+  --background: transparent;
   --border-width: 0;
 }
 
 ion-card {
-  z-index   : 100;
-  position  : relative;
-  top       : 17%;
+  z-index: 100;
+  position: relative;
+  top: 17%;
   box-shadow: 0px 8px 12px 0px #dcd4fcb0;
 }
-
+.cnt {
+  top: 0.5em;
+}
 .search-img {
-  position       : absolute;
-  top            : 25vh;
-  right          : 0.6em;
-  left           : 0.6em;
-  z-index        : 101;
-  display        : flex;
-  height         : 3.5em;
-  align-items    : center;
+  position: absolute;
+  top: 25%;
+  right: 0.6em;
+  left: 0.6em;
+  z-index: 101;
+  display: flex;
+  height: 3.5em;
+  align-items: center;
   justify-content: space-between;
 
   img {
@@ -50,18 +52,18 @@ ion-card {
 
   &.ios {
     right: 1em;
-    left : 1em;
-    top  : 24vh;
+    left: 1em;
+    // top: 24%;
   }
 
   .left,
   .right {
-    height         : 100%;
-    text-align     : center;
-    flex           : 1;
-    position       : relative;
-    display        : flex;
-    align-items    : center;
+    height: 100%;
+    text-align: center;
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
     justify-content: center;
   }
 
@@ -84,12 +86,12 @@ ion-card {
   }
 
   .text {
-    position   : absolute;
-    font-size  : 15px;
+    position: absolute;
+    font-size: 15px;
     font-family: PingFang SC;
     font-weight: bold;
-    color      : #333333;
-    top        : 1.7em;
+    color: #333333;
+    top: 1.7em;
   }
 
   .right .text {
@@ -98,19 +100,19 @@ ion-card {
 
   .left .text {
     margin-left: -1.5em;
-    top        : 1.7em;
+    top: 1.7em;
   }
 }
 
 .segments {
   background-color: #f6f6f6;
-  position        : relative;
-  height          : 2.8em;
+  position: relative;
+  height: 2.8em;
 }
 
 .date {
-  width          : 100%;
-  display        : flex;
-  align-items    : center;
+  width: 100%;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
 }
