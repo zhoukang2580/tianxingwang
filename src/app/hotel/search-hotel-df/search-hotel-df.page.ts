@@ -173,7 +173,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit() {
     // if (this.isIos) {
-    //   this.initEles();
+      this.initEles();
     // }
   }
   onToggleDomestic(isDomestic) {
