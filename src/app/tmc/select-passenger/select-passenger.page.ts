@@ -307,7 +307,7 @@ export class SelectPassengerPage
     const staff = await this.staffService.getStaff();
     const can =
       !!(identity && identity.Numbers && identity.Numbers.AgentId) ||
-      (staff && staff.BookType) == StaffBookType.All;
+      (await this.staffService.isAllBookType());
     console.log("can add not whitelist ", can);
     return can;
   }
@@ -660,7 +660,7 @@ export class SelectPassengerPage
       this.doRefresh("");
     }
   }
-  
+
   private async onAddPassengerBookInfo(
     passengerBookInfo: PassengerBookInfo<any>
   ) {

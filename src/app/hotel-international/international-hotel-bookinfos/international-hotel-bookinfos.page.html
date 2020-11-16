@@ -17,12 +17,10 @@
         <ion-icon name='trash' color='danger' (click)='onRemoveBookInfo(bookInfo)' slot='end' class='ion-margin-end'>
         </ion-icon>
       </ion-item-divider>
-      <app-inter-room-show-item-en [bookInfo]='bookInfo' (changeDate)='onChangeDate(bookInfo)'
-        (bedChange)='onbedChange($event,bookInfo)' (showRoomDetail)='onShowRoomDetail(bookInfo)'
-        (showPriceDetailEvt)='onShowPriceDetails($event)'>
-      </app-inter-room-show-item-en>
+      <app-inter-room-show-item [bookInfo]='bookInfo' (bedChange)='onbedChange($event,bookInfo)' (showRoomDetail)='onShowRoomDetail(bookInfo)' (showPriceDetailEvt)='onShowPriceDetails($event)'>
+      </app-inter-room-show-item>
     </ng-container>
-  </ion-item-group> 
+  </ion-item-group>
 </ion-content>
 <ion-footer *ngIf='!isShowChangeDateComp'>
   <ion-toolbar>
@@ -30,8 +28,7 @@
     </ion-button>
   </ion-toolbar>
 </ion-footer>
-<app-change-inter-roomplan-date (close)='isShowChangeDateComp=false' *ngIf='isShowChangeDateComp'
-  (confirm)='onConfirm($event)' (openCalendar)='onOpenCalendar($event)'>
+<app-change-inter-roomplan-date (close)='isShowChangeDateComp=false' *ngIf='isShowChangeDateComp' (confirm)='onConfirm($event)' (openCalendar)='onOpenCalendar($event)'>
 </app-change-inter-roomplan-date>
 <ion-backdrop *ngIf='isShowPriceDetail' (ionBackdropTap)='onShowPriceDetails({isShow:false})'></ion-backdrop>
 <div [class.show]='isShowPriceDetail' class="price-list">

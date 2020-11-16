@@ -48,7 +48,7 @@
             <ion-icon name='add-circle-outline' color='secondary'></ion-icon>
             添加行程
         </ion-button>
-        <ion-item detail (click)='openApproverModal()' *ngIf="tmc?.TravelApprovalType==TravelApprovalType.Free&&enable" [attr.accountId]='"accountId"'>
+        <ion-item [attr.detail]='tmc?.TravelApprovalType==TravelApprovalType.Free' (click)='openApproverModal()'  [attr.accountId]='"accountId"'>
             <span style="color: red;margin-top: 5px;margin-right: 2px;">*</span>
             <ion-text [color]="!enable?'dark':'dark'">
                 审批人:

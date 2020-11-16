@@ -9,50 +9,62 @@ import {
   ViewChild,
   AfterViewInit,
   OnDestroy,
-  NgZone
+  NgZone,
 } from "@angular/core";
-import {
-  NavController,
-  IonInfiniteScroll,
-  IonSearchbar
-} from "@ionic/angular";
+import { NavController, IonInfiniteScroll, IonSearchbar } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
+import { finalize } from "rxjs/operators";
+import { LangService } from "src/app/services/lang.service";
 const HISTORY_HOTEL_CITIES = "history_hotel_cities";
 @Component({
   selector: "app-hotel-city",
   templateUrl: "./hotel-city.page.html",
-  styleUrls: ["./hotel-city.page.scss"]
+  styleUrls: ["./hotel-city.page.scss"],
 })
 export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
-  private allCities: TrafficlineEntity[] = [];
   private selectedCity: TrafficlineEntity;
   private subscriptions: Subscription[] = [];
-  private pageSize = 30;
+  private pageIndex = 0;
+  private pageSize = 20;
+  private cities: TrafficlineEntity[];
+  private searchKeys = [
+    "Name",
+    "Nickname",
+    "Pinyin",
+    "Initial",
+    "FirstLetter",
+    "CityName",
+  ];
+
   hotCities: TrafficlineEntity[];
   historyCities: TrafficlineEntity[];
   vmCities: TrafficlineEntity[] = [];
   vmKeyword = "";
   isLoading = false;
   filteredTotalCount = 0;
+  isEn = false;
+  isHot = false;
   @ViewChild(IonSearchbar) searchbar: IonSearchbar;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
-  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   constructor(
     private hotelService: HotelService,
     private storage: Storage,
     route: ActivatedRoute,
     private ngZone: NgZone,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    langService: LangService
   ) {
-    this.subscriptions.push(route.queryParamMap.subscribe(_ => {}));
+    this.subscriptions.push(route.queryParamMap.subscribe((_) => {}));
+    this.isEn = langService.isEn;
   }
   back() {
     this.navCtrl.back();
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => {
+    this.subscriptions.forEach((sub) => {
       sub.unsubscribe();
     });
     this.subscriptions = null;
@@ -67,7 +79,16 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     this.scroller.disabled = true;
   }
   onShowHot() {
-    this.vmCities = this.hotCities;
+    this.isHot = true;
+    this.isLoading = true;
+    this.historyCities = [];
+    this.hotCities = [];
+    this.vmCities = [];
+    this.pageIndex = 0;
+    if (this.scroller) {
+      this.scroller.disabled = true;
+    }
+    this.loadMore((this.vmKeyword || "").trim());
     this.scroller.disabled = true;
   }
   async onSelect(city: TrafficlineEntity) {
@@ -75,17 +96,17 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     if (city) {
       this.selectedCity = city;
       if (this.vmCities) {
-        this.vmCities.forEach(s => {
+        this.vmCities.forEach((s) => {
           s.Selected = city.Code == s.Code;
         });
       }
       if (this.hotCities) {
-        this.hotCities.forEach(s => {
+        this.hotCities.forEach((s) => {
           s.Selected = city.Code == s.Code;
         });
       }
       if (this.historyCities) {
-        this.historyCities.forEach(s => {
+        this.historyCities.forEach((s) => {
           s.Selected = city.Code == s.Code;
         });
       }
@@ -96,7 +117,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       const query = this.hotelService.getHotelQueryModel();
       this.hotelService.setSearchHotelModel({
         ...old,
-        destinationCity: city
+        destinationCity: city,
       });
       query.locationAreas = null;
       this.hotelService.setHotelQuerySource(query);
@@ -111,24 +132,6 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
       this.back();
     }, 200);
   }
-  private filterCitities(kw: string = "") {
-    let result = this.allCities || [];
-    kw = (kw || "").toLowerCase();
-    if (!kw) {
-      return result;
-    } else {
-      result = this.allCities.filter(s => {
-        return (
-          kw == s.FirstLetter.toLowerCase() ||
-          (s.Name && s.Name.toLowerCase().includes(kw)) ||
-          (s.Nickname && s.Nickname.toLowerCase().includes(kw)) ||
-          (s.CityName && s.CityName.toLowerCase().includes(kw)) ||
-          (s.Pinyin && s.Pinyin.toLowerCase().includes(kw))
-        );
-      });
-    }
-    return result;
-  }
   private async cacheHistories(historyCities: TrafficlineEntity[]) {
     if (historyCities && historyCities.length) {
       historyCities = historyCities.slice(0, 20);
@@ -136,44 +139,29 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   ngOnInit() {
-    const sub = this.hotelService.getSearchHotelModelSource().subscribe(m => {
+    this.initHistoryCity();
+    const sub = this.hotelService.getSearchHotelModelSource().subscribe((m) => {
       if (m && m.destinationCity) {
         this.selectedCity = m.destinationCity;
         if (this.historyCities) {
-          this.historyCities.forEach(c => {
+          this.historyCities.forEach((c) => {
             c.Selected = c.Code == this.selectedCity.Code;
           });
         }
         if (this.hotCities) {
-          this.hotCities.forEach(c => {
+          this.hotCities.forEach((c) => {
             c.Selected = c.Code == this.selectedCity.Code;
           });
         }
         if (this.vmCities) {
-          this.vmCities.forEach(c => {
+          this.vmCities.forEach((c) => {
             c.Selected = c.Code == this.selectedCity.Code;
           });
         }
       }
     });
     this.subscriptions.push(sub);
-    this.initCitites().finally(() => {
-      this.isLoading = true;
-      this.doRefresh();
-    });
-  }
-  private async initCitites() {
-    try {
-      if (!this.allCities || !this.allCities.length) {
-        this.allCities = await this.hotelService.getHotelCityAsync();
-      }
-      this.allCities.sort((s1, s2) => s2.Sequence - s1.Sequence);
-      this.allCities = this.allCities
-        .filter(it => it.IsHot)
-        .concat(this.allCities.filter(it => !it.IsHot));
-    } catch (e) {
-      this.allCities = null;
-    }
+    this.doRefresh();
   }
   async ngAfterViewInit() {
     if (this.searchbar) {
@@ -183,62 +171,82 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async loadMore(kw: string = "") {
-    if (!this.allCities || !this.allCities.length) {
-      await this.initCitites();
+    this.isLoading = true;
+    let cities = this.cities || [];
+    if (this.isHot) {
+      cities = cities.filter((it) => it.IsHot);
     }
-    this.ngZone.runOutsideAngular(() => {
-      if (this.allCities) {
-        const arr = this.filterCitities(kw);
-        this.filteredTotalCount = arr.length;
-        const temp = arr.slice(
-          this.vmCities.length,
-          this.vmCities.length + this.pageSize
-        );
-        this.scroller.disabled = temp.length < this.pageSize;
-        this.scroller.complete();
-        if (!this.vmCities.length) {
-          this.refresher.complete();
-        }
-        if (temp.length) {
-          this.vmCities = this.vmCities.concat(temp);
-        }
-      }
-    });
+    cities = cities.filter((it) => it.matchStr.includes(kw));
+    const arr = cities.slice(this.pageIndex * this.pageSize, this.pageSize);
+    if (arr.length) {
+      this.pageIndex++;
+      this.vmCities = this.vmCities.concat(
+        arr.map((it) => {
+          if (it.CityName) {
+            if (this.isEn) {
+              it.EnglishName =
+                it.Name == it.CityName
+                  ? it.Pinyin
+                  : `${it.Pinyin},${it.EnglishName}`;
+            }
+          }
+          if (it.Name) {
+            if (!this.isEn) {
+              if (it.Name == it.CityName) {
+                it.CityName = "";
+              }
+            }
+          }
+          return it;
+        })
+      );
+    }
+    console.log("vmCities", this.vmCities);
+    this.isLoading = false;
+    this.scroller.disabled = arr.length < this.pageSize;
   }
   async doRefresh() {
+    try {
+      this.isLoading = true;
+      this.historyCities = [];
+      this.hotCities = [];
+      this.vmCities = [];
+      this.cities = await this.hotelService.getHotelCityAsync();
+      if (this.cities) {
+        this.cities = this.cities
+          .filter((it) => it.IsHot)
+          .concat(this.cities.filter((it) => !it.IsHot))
+          .sort((a, b) => b.Sequence - a.Sequence);
+        this.cities = this.cities.map((it) => {
+          it.matchStr = this.searchKeys
+            .filter((k) => !!it[k])
+            .map((k) => it[k])
+            .map((s: string) => s.toLowerCase())
+            .join(",");
+          return it;
+        });
+      }
+      this.pageIndex = 0;
+      this.isHot = false;
+      if (this.scroller) {
+        this.scroller.disabled = true;
+      }
+      this.loadMore((this.vmKeyword || "").trim());
+      if (this.refresher) {
+        this.refresher.complete();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async doSearch() {
+    const kw = (this.vmKeyword || "").trim();
+    this.pageIndex = 0;
     this.isLoading = true;
-    this.historyCities = [];
-    this.hotCities = [];
     this.vmCities = [];
     if (this.scroller) {
       this.scroller.disabled = true;
     }
-    if (!this.allCities || !this.allCities.length) {
-      await this.initCitites();
-    }
-    if (!this.historyCities || !this.historyCities.length) {
-      await this.initHotAndHistoryCities();
-    }
-    await this.loadMore((this.vmKeyword || "").trim());
-    this.isLoading = false;
-    this.vmKeyword = "";
-  }
-  private async initHotAndHistoryCities() {
-    if (this.allCities) {
-      this.hotCities = this.allCities.filter(it => it.IsHot);
-      await this.initHistoryCity();
-    }
-  }
-
-  async doSearch() {
-    const kw = (this.vmKeyword || "").trim();
-    if (!kw) {
-      this.vmCities = this.allCities.slice(0, this.pageSize);
-    } else {
-      this.isLoading = true;
-      this.vmCities = [];
-      this.loadMore(kw);
-      this.isLoading = false;
-    }
+    this.loadMore(kw);
   }
 }

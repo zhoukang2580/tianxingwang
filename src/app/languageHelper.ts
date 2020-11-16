@@ -1,6 +1,7 @@
-import { AppHelper } from './appHelper';
-
 export class LanguageHelper {
+  static get isEn() {
+    return LanguageHelper.lang == "en";
+  }
   static get lang() {
     const lang =
       window.localStorage.getItem("language") ||
@@ -278,21 +279,39 @@ export class LanguageHelper {
     return "请添加旅客";
   }
   static getRoundTripTotalDaysTip(num: number) {
+    if (LanguageHelper.isEn) {
+      return `Total ${num} days`;
+    }
     return `共${num}天`;
   }
   static getCheckInOutTotalDaysTip(num: number) {
+    if (LanguageHelper.isEn) {
+      return `Total ${num} nights`;
+    }
     return `共${num}晚`;
   }
   static getSelectFlyBackDate() {
+    if (LanguageHelper.isEn) {
+      return "Select return date";
+    }
     return "请选择返程日期";
   }
   static getSelectCheckInDate() {
+    if (LanguageHelper.isEn) {
+      return "Please select check in date";
+    }
     return "请选择入住日期";
   }
   static getSelectCheckOutDate() {
+    if (LanguageHelper.isEn) {
+      return "Please select departure date";
+    }
     return "请选择离店日期";
   }
   static getSelectOtherFlyDayTip() {
+    if (LanguageHelper.isEn) {
+      return "Please select other date";
+    }
     return "请选择其他日期";
   }
   static getModifyUnSavedTip() {
@@ -392,49 +411,49 @@ export class LanguageHelper {
     return "请选择返程日期";
   }
   static getSundayTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Sunday";
     }
     return "周日";
   }
   static getMondayTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Monday";
     }
     return "周一";
   }
   static getTuesdayTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Tuesday";
     }
     return "周二";
   }
   static getWednesdayTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Wednesday";
     }
     return "周三";
   }
   static getThursdayTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Thursday";
     }
     return "周四";
   }
   static getFridayTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Friday";
     }
     return "周五";
   }
   static getSaturdayTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Saturday";
     }
     return "周六";
   }
   static getTodayTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Today";
     }
     return "今天";
@@ -516,75 +535,84 @@ export class LanguageHelper {
     return "请输入验证码";
   }
   static getSlidvalidateInnerTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Slide right to fill puzzle";
     }
     return "向右滑动填充拼图";
   }
   static getLoginNameTip() {
-    if(LanguageHelper.lang == 'en'){
-      return "Please enter login name";
+    if (LanguageHelper.lang == "en") {
+      return "Please enter user name";
     }
     return "请输入登入名";
   }
   static getLoginPasswordTip() {
-    if(LanguageHelper.lang == 'en'){
-      return "Please enter login password";
+    if (LanguageHelper.lang == "en") {
+      return "Please enter Password";
     }
     return "请输入登入密码";
   }
   static getLoginMobileTip() {
-    if(LanguageHelper.lang == 'en'){
-      return "Please enter phone no";
+    if (LanguageHelper.lang == "en") {
+      return "Please enter your mobile phone";
     }
     return "请输入手机号码";
   }
   static getMobileCodeTip() {
-    if(LanguageHelper.lang == 'en'){
-      return "Please input the verification code received by the mobile phone";
-    }
     return "请输入手机收到的验证码";
   }
   static getEnterPasswordTip() {
-    if(LanguageHelper.lang == 'en'){
-      return "Please enter password";
-    }
     return "请输入密码";
   }
   static getApiExceptionTip() {
     // if(AppHelper.getLanguage())
+    if (LanguageHelper.lang == "en") {
+      return "Network error";
+    }
     return "接口调用异常";
   }
   static getApiMobileAppError() {
     return "应用内部错误";
   }
   static getApiTimeoutTip() {
+    if (LanguageHelper.lang == "en") {
+      return "Network error";
+    }
     return "请求超时";
   }
   static getMaintainCredentialsTip() {
     return "请先维护证件信息";
   }
   static getNetworkErrorTip() {
+    if (LanguageHelper.lang == "en") {
+      return "Network error";
+    }
     return "网络错误";
   }
   static getMsgTip() {
     return "提示";
   }
   static getBindMobileSuccess() {
+    if (LanguageHelper.lang == "en") {
+      return "Binded";
+    }
     return "完成手机绑定";
   }
   static getBindEmailSuccess() {
+    if (LanguageHelper.lang == "en") {
+      return "Binded";
+    }
     return "邮箱绑定成功";
   }
   static getCancelTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Cancel";
     }
     return "取消";
   }
 
   static getConfirmTip() {
-    if (this.lang == "en") {
+    if (LanguageHelper.lang == "en") {
       return "Ok";
     }
     return "确定";
@@ -593,10 +621,13 @@ export class LanguageHelper {
     return "确定删除";
   }
   static getHintTip(): string {
+    if (LanguageHelper.lang == "en") {
+      return "Tip";
+    }
     return "提示";
   }
   static getAppDoubleClickExit() {
-    if(LanguageHelper.lang=='en'){
+    if (LanguageHelper.lang == "en") {
       return "Press again to exit";
     }
     return "再按一次退出应用";
@@ -605,12 +636,21 @@ export class LanguageHelper {
     return "验证成功";
   }
   static OldPasswordNullTip() {
+    if (LanguageHelper.lang == "en") {
+      return "The original password cannot be empty";
+    }
     return "原密码不能为空";
   }
   static NewPasswordNullTip() {
+    if (LanguageHelper.lang == "en") {
+      return "Please enter a new password";
+    }
     return "请输入新密码";
   }
   static TwicePasswordNotEqualTip() {
+    if (LanguageHelper.lang == "en") {
+      return "passwords are not the same";
+    }
     return "两次输入的密码不一致";
   }
   static getNotifyLanguageTip(): string {

@@ -104,13 +104,13 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     const sub = route.queryParamMap.subscribe(async (q) => {
       const fromCityCode = q.get("FromCityCode");
       const toCityCode = q.get("ToCityCode");
-      const startDate = q.get("StartDate");
+      const startDate = q.get("StartDate") || "";
+      let date = startDate.replace(/\./g, "-");
       if (fromCityCode && toCityCode && startDate) {
         const cities = await this.hotelService.getHotelCityAsync();
         const fromCity = cities.find((it) => it.Code == fromCityCode);
         const toCity = cities.find((it) => it.Code == toCityCode);
         if (fromCity && toCity) {
-          let date = startDate.replace(/\./g, "-");
           const flag = AppHelper.getDate(date).getTime() < Date.now();
           if (flag) {
             date = this.calendarService.getNowDate();
@@ -118,10 +118,15 @@ export class SearchHotelPage implements OnInit, OnDestroy {
           this.hotelService.setSearchHotelModel({
             ...this.searchHotelModel,
             destinationCity: toCity,
+            searchText: null,
             checkInDate: date,
           });
         }
       }
+      this.hotelService.setSearchHotelModel({
+        ...this.hotelService.getSearchHotelModel(),
+        searchText: null
+      });
       this.fromRoute = q.get("fromRoute");
       this.isLeavePage = false;
       this.canAddPassengers = !(await this.staffService.isSelfBookType());
@@ -160,7 +165,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
-      mode:"md",
+      mode: "md",
       componentProps: {
         details: s.Policy.HotelDescription.split("。"),
       },

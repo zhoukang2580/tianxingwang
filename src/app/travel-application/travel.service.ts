@@ -23,7 +23,7 @@ export class TravelService {
   constructor(private apiService: ApiService) {}
   getlist(dto: SearchModel) {
     const req = new RequestEntity();
-    req.IsShowLoading = dto && dto.IsShowLoading;
+    req.IsShowLoading = dto && dto.PageIndex<1;
     req.Method = `TmcApiTravelUrl-Home-List`;
     req.Data = {
       ...dto,
@@ -31,14 +31,17 @@ export class TravelService {
     return this.apiService.getResponse<TravelFormEntity[]>(req);
   }
 
-  getStaff() {
+  getInitInfo() {
     const req = new RequestEntity();
     req.IsShowLoading = true;
-    req.Method = `TmcApiTravelUrl-Home-GetStaff`;
+    req.Method = `TmcApiTravelUrl-Home-GetInitInfo`;
     req.Data = {};
     return this.apiService.getPromiseData<{
-      staff: StaffEntity;
-      approvalStaff: StaffEntity;
+      CostCenters: CostCenterEntity;
+      Staff: StaffEntity;
+      ApprovalId: string;
+      ApprovalName: string;
+      TripTypes: { [key: string]: string };
     }>(req);
   }
 
@@ -111,7 +114,10 @@ export class TravelService {
     if (dto && dto.TravelForm) {
       if (dto.TravelForm.Trips) {
         dto.TravelForm.Trips.forEach((trip) => {
-          if (trip.TravelTool&&!trip.TravelTool.toLowerCase().includes("hotel")) {
+          if (
+            trip.TravelTool &&
+            !trip.TravelTool.toLowerCase().includes("hotel")
+          ) {
             trip.CheckInCityName = "";
             trip.CheckInCityCode = "";
           }

@@ -1,5 +1,4 @@
-﻿import { RequestEntity } from "src/app/services/api/Request.entity";
-import * as md5 from "md5";
+﻿import * as md5 from "md5";
 import Big from "big.js";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
@@ -435,18 +434,6 @@ export class AppHelper {
   static isH5() {
     return !this.isApp();
   }
-  static setRequestEntity(req: RequestEntity) {
-    req.Timestamp = Math.floor(Date.now() / 1000);
-    req.Language = AppHelper.getLanguage();
-    req.Ticket = AppHelper.getTicket();
-    req.TicketName = AppHelper.getTicketName();
-    req.Domain = AppHelper.getDomain();
-    const ticketName = AppHelper.getTicketName();
-    if (ticketName != "ticket") {
-      req[ticketName] = req.Ticket;
-      req.Ticket = "";
-    }
-  }
   /**
    *  请注意，这个是异步方法，返回promise,是pda ，返回true，否则返回false，使用判断条件是，判断是否存在sim卡；
    */
@@ -531,7 +518,7 @@ export class AppHelper {
     return false;
   }
   static getStyle() {
-    return AppHelper.getStorage("style") || this._queryParamers["style"] || "";
+    return this._queryParamers["style"] || AppHelper.getStorage("style") || "";
   }
   static setStyle(style: string) {
     this._queryParamers["style"] = style || "";
@@ -748,12 +735,7 @@ export class AppHelper {
     const query = AppHelper.getQueryParamers();
     const hrefPath = AppHelper.getNormalizedPath(window.location.href);
     if (query) {
-      if (
-        query.style != undefined &&
-        query.style != null &&
-        query.style.toLowerCase() != "undefined" &&
-        query.style.toLowerCase() != "null"
-      ) {
+      if (!AppHelper.isApp()) {
         this.setStyle(query.style || "");
       }
       if (hrefPath) {
@@ -918,8 +900,65 @@ export class AppHelper {
     }
     return `${d.getFullYear()}-${m}-${day}`;
   }
-
-  static jump(router: Router, url: string, queryParams: any) {
+  private static async postData(url: string, req: any) {
+    if (req.Data && typeof req.Data != "string") {
+      req.Data = JSON.stringify(req.Data);
+    }
+    const formObj = Object.keys(req)
+      .map((k) => `${k}=${req[k]}`)
+      .join("&");
+    return new Promise<any>((resolve, reject) => {
+      this.httpClient
+        .post(url, `${formObj}&x-requested-with=XMLHttpRequest`, {
+          headers: { "content-type": "application/x-www-form-urlencoded" },
+          observe: "body",
+        })
+        .subscribe(
+          (r) => {
+            resolve(r);
+          },
+          (e) => {
+            reject(e);
+          }
+        );
+    });
+  }
+  private static getRequestEntity() {
+    const req: any = {};
+    req.Timestamp = Math.floor(Date.now() / 1000);
+    req.Language = AppHelper.getLanguage();
+    req.Ticket = AppHelper.getTicket();
+    req.TicketName = AppHelper.getTicketName();
+    req.Domain = AppHelper.getDomain();
+    const paramters = AppHelper.getQueryParamers();
+    const tags = [
+      "wechatcode",
+      "wechatminicode",
+      "dingtalkcode",
+      "ticket",
+      "ticketname",
+      "wechatopenid",
+      "dingtalkopenid",
+      "style",
+      "path",
+      AppHelper.getTicketName(),
+    ];
+    for (const p in paramters) {
+      if (tags.includes(p.toLowerCase())) {
+        continue;
+      }
+      req[p] = paramters[p];
+    }
+    if (req.TicketName != "ticket") {
+      req[req.TicketName] = req.Ticket;
+      req.Ticket = "";
+    } else {
+      req.TicketName = "";
+    }
+   
+    return req;
+  }
+  static async jump(router: Router, url: string, queryParams: any) {
     if (!url) {
       return false;
     }
@@ -932,6 +971,24 @@ export class AppHelper {
         const wechatMiniAppId = jumpInfo.wechatMiniAppId;
         const wechatMiniPath = jumpInfo.wechatMiniPath;
         const title = jumpInfo.title;
+        if (jumpInfo.checkUrl) {
+        
+          const req = this.getRequestEntity();
+          req.Url = jumpInfo.checkUrl;
+          req.Data = queryParams;
+          const checkResult = await this.postData(req.Url, req).catch(
+            () => null
+          );
+          if (checkResult == null || !checkResult.Status) {
+            this.alert(checkResult == null ? "请求异常" : checkResult.Message);
+            return;
+          }
+          if (checkResult.Data) {
+            for (const key in checkResult.Data) {
+              queryParams[key] = checkResult.Data[key];
+            }
+          }
+        }
         if (
           AppHelper.isWechatMini() &&
           jumpInfo.wechatMiniAppId &&
@@ -944,6 +1001,7 @@ export class AppHelper {
             wechatMiniPath +
             "&title=" +
             title;
+           
           if (queryParams && Object.keys(queryParams).length) {
             url +=
               "&" +
@@ -951,6 +1009,7 @@ export class AppHelper {
                 .map((k) => `${k}=${queryParams[k] || ""}`)
                 .join("&");
           }
+      
           const wx = window["wx"];
           wx.miniProgram.navigateTo({ url: url });
           return true;

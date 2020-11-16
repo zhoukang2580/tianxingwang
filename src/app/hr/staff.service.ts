@@ -10,7 +10,7 @@ import { BaseSettingEntity } from "../models/BaseSettingEntity";
 import { AccountEntity } from "../account/models/AccountEntity";
 import { AppHelper } from "../appHelper";
 import { CountryEntity } from "../tmc/models/CountryEntity";
-import { BaseEntity } from '../models/BaseEntity';
+import { BaseEntity } from "../models/BaseEntity";
 export enum StaffBookType {
   /// <summary>
   /// 秘书
@@ -23,7 +23,7 @@ export enum StaffBookType {
   /// <summary>
   /// 全部
   /// </summary>
-  All = "All",// 特殊型
+  All = "All", // 特殊型
 }
 @Injectable({
   providedIn: "root",
@@ -67,7 +67,7 @@ export class StaffService {
   }
   async isAllBookType() {
     const t = await this.getBookType();
-    return t === StaffBookType.All;
+    return t === StaffBookType.All || !this.staff.BookType;
   }
   async isSecretaryBookType() {
     const t = await this.getBookType();
@@ -324,7 +324,7 @@ export class OrganizationEntity {
   ShortName: string;
   Children: OrganizationEntity[];
 }
-export class CostCenterEntity extends BaseEntity{
+export class CostCenterEntity extends BaseEntity {
   join(arg0: string): any {
     throw new Error("Method not implemented.");
   }
@@ -422,9 +422,9 @@ export class PolicyEntity extends BaseSettingEntity {
   TrainUpperSeatTypeName: string;
   TrainUpperSeatTypeArray: string[];
   //
-  InternationalHotelDescription:string;
+  InternationalHotelDescription: string;
   HotelIllegalTip: string;
-  InternationalFlightDescription:string
+  InternationalFlightDescription: string;
   HotelDescription: string;
   InternationalFlightIllegalTip: string;
 }

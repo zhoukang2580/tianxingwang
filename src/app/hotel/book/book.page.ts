@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { BookTmcOutnumberComponent } from "./../../tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
 import { PayService } from "src/app/services/pay/pay.service";
@@ -14,6 +14,7 @@ import {
   PassengerBookInfo,
   TravelFormEntity,
   IllegalReasonEntity,
+  IBookOrderResult,
 } from "./../../tmc/tmc.service";
 import { TmcEntity } from "src/app/tmc/tmc.service";
 import { HotelService, IHotelInfo } from "./../hotel.service";
@@ -440,16 +441,21 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     ele: HTMLElement
   ) {
     await AppHelper.alert(
-      this.LangService.isCn ?
-      `${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Surname + item.credential.Givenname)
-      } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空`
-      :
-      `${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Surname + item.credential.Givenname)
-      } 【${item.credential && item.credential.Number}】 ${msg} Information cannot be empty`
+      this.LangService.isCn
+        ? `${
+            (item.credentialStaff && item.credentialStaff.Name) ||
+            (item.credential &&
+              item.credential.Surname + item.credential.Givenname)
+          } 【${
+            item.credential && item.credential.Number
+          }】 ${msg} 信息不能为空`
+        : `${
+            (item.credentialStaff && item.credentialStaff.Name) ||
+            (item.credential &&
+              item.credential.Surname + item.credential.Givenname)
+          } 【${
+            item.credential && item.credential.Number
+          }】 ${msg} Information cannot be empty`
     );
     this.moveRequiredEleToViewPort(ele);
   }
@@ -1254,7 +1260,9 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
       const c = this.combindInfos.find((it) => !it.arrivalHotelTime);
       if (c) {
         this.showErrorMsg(
-          this.LangService.isCn ? "请选择到店信息" : "Please select store information",
+          this.LangService.isCn
+            ? "请选择到店信息"
+            : "Please select store information",
           c,
           this.getEleByAttr("arrivalHoteltimeid", c.id)
         );
@@ -1288,12 +1296,16 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
 
       const res = await this.hotelService.onBook(bookDto).catch((e) => {
         AppHelper.alert(e);
-        return { TradeNo: "", HasTasks: true };
+        return { TradeNo: "", HasTasks: true } as IBookOrderResult;
       });
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(this.LangService.isCn ? "下单成功!" : "Checkout success", 1400, "top");
+          AppHelper.toast(
+            this.LangService.isCn ? "下单成功!" : "Checkout success",
+            1400,
+            "top"
+          );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
           if (
@@ -1302,9 +1314,12 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
             (this.orderTravelPayType == OrderTravelPayType.Person ||
               this.orderTravelPayType == OrderTravelPayType.Credit)
           ) {
-            this.isCheckingPay = true;
-            const canPay = await this.checkPay(res.TradeNo);
-            this.isCheckingPay = false;
+            let canPay = true;
+            if (res.IsCheckPay) {
+              this.isCheckingPay = true;
+              canPay = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            }
             if (canPay) {
               if (res.HasTasks) {
                 await AppHelper.alert(
@@ -1328,7 +1343,9 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
                 LanguageHelper.getConfirmTip()
               );
             } else {
-              await AppHelper.alert(this.LangService.isCn ? "下单成功!" : "Checkout success");
+              await AppHelper.alert(
+                this.LangService.isCn ? "下单成功!" : "Checkout success"
+              );
             }
           }
           this.hotelService.removeAllBookInfos();
@@ -1340,7 +1357,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    if(this.LangService.isCn){
+    if (this.LangService.isCn) {
       this.router.navigate(["order-list"], {
         queryParams: { tabId: tab },
       });

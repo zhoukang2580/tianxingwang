@@ -153,7 +153,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       hotelType: ev.detail.value,
     });
     this.hotelDayPrices = [];
-    this.doRefresh();
+    this.doRefresh(true);
   }
   ngAfterViewInit() {
     this.autofocusSearchBarInput();
@@ -346,13 +346,20 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearchByText() {
     this.isUseSearchText = true;
-    this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")]);
+    this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")], {
+      queryParams: {
+        kw:
+          (this.searchHotelModel.searchText &&
+            this.searchHotelModel.searchText.Text) ||
+          "",
+      },
+    });
   }
   private checkDestinationChanged() {
     if (this.searchHotelModel) {
       return (
-        (this.searchHotelModel.destinationCity &&
-          this.searchHotelModel.destinationCity.Code) != this.oldDestinationCode
+        !this.searchHotelModel.destinationCity ||
+        this.searchHotelModel.destinationCity.Code != this.oldDestinationCode
       );
     }
     return false;
@@ -394,8 +401,11 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       })
     );
     const sub0 = this.route.queryParamMap.subscribe((_) => {
-      this.hideQueryPannel();
       this.hotelService.curViewHotel = null;
+      this.hideQueryPannel();
+      if (this.checkDestinationChanged()) {
+        this.searchHotelModel.searchText = null;
+      }
       this.isLeavePage = false;
       const isrefresh =
         this.checkSearchTextChanged() ||

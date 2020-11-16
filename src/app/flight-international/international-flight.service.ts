@@ -1057,7 +1057,7 @@ export class InternationalFlightService {
     } else {
       if (notWhitelist.length) {
         if (result) {
-          // 非白名单的人直接可以预定
+          // 非白名单的人直接可以预订
           if (result.FlightFares) {
             result.FlightFares.forEach((f) => {
               f.IsAllowOrder = true;

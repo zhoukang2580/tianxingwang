@@ -1,4 +1,4 @@
-import { SearchModel } from './../travel.service';
+import { SearchModel } from "./../travel.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
 import {
   Component,
@@ -137,32 +137,32 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }, 200);
   }
   getApprovalStaff() {
-    this.travelService.getStaff().then((s) => {
+    this.travelService.getInitInfo().then((s) => {
       if (s) {
         if (this.searchModel && this.searchModel.TravelForm) {
-          this.searchModel.Staff = s && s.staff;
+          this.searchModel.Staff = s && s.Staff;
           this.searchModel.TravelForm.CostCenterName =
             this.searchModel.TravelForm.CostCenterName ||
-            (s.staff && s.staff.CostCenter.Name);
+            (s.Staff && s.Staff.CostCenter.Name);
           this.searchModel.TravelForm.CostCenterCode =
             this.searchModel.TravelForm.CostCenterCode ||
-            (s.staff && s.staff.CostCenter.Code);
-          if (s.approvalStaff && s.approvalStaff.Name) {
-            this.searchModel.ApprovalName = s.approvalStaff.Name;
-            this.searchModel.ApprovalId = s.approvalStaff.Account.Id;
+            (s.Staff && s.Staff.CostCenter.Code);
+          if (s.ApprovalId && s.ApprovalName) {
+            this.searchModel.ApprovalName = s.ApprovalName;
+            this.searchModel.ApprovalId = s.ApprovalId;
           }
           if (!this.searchModel.TravelForm.Organization) {
             this.searchModel.TravelForm.Organization = {} as any;
           }
           this.searchModel.TravelForm.Organization.Code =
             this.searchModel.TravelForm.Organization.Code ||
-            (s.staff && s.staff.Organization && s.staff.Organization.Code);
+            (s.Staff && s.Staff.Organization && s.Staff.Organization.Code);
           this.searchModel.TravelForm.Organization.Name =
             this.searchModel.TravelForm.Organization.Name ||
-            (s.staff && s.staff.Organization && s.staff.Organization.Name);
+            (s.Staff && s.Staff.Organization && s.Staff.Organization.Name);
           this.searchModel.TravelForm.Organization.Id =
             this.searchModel.TravelForm.Organization.Id ||
-            (s.staff && s.staff.Organization && s.staff.Organization.Id);
+            (s.Staff && s.Staff.Organization && s.Staff.Organization.Id);
         }
       }
     });
@@ -195,15 +195,20 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       if (this.searchModel.StatusType == ApprovalStatusType.Pass) {
         this.pass = true;
       }
-      if (
-        this.searchModel.TravelForm &&
-        this.searchModel.TravelForm.Variables
-      ) {
-        this.searchModel.TravelForm.VariablesJsonObj = JSON.parse(
-          this.searchModel.TravelForm.Variables
-        );
-        this.searchModel.ApprovalName = this.searchModel.TravelForm.VariablesJsonObj.ApprovalName;
-        this.searchModel.ApprovalId = this.searchModel.TravelForm.VariablesJsonObj.ApprovalId;
+      if (this.searchModel.TravelForm) {
+        if (this.searchModel.TravelForm.Variables) {
+          this.searchModel.TravelForm.VariablesJsonObj = JSON.parse(
+            this.searchModel.TravelForm.Variables
+          );
+        } else {
+          this.searchModel.TravelForm.VariablesJsonObj = {};
+        }
+        this.searchModel.ApprovalName =
+          this.searchModel.TravelForm.VariablesJsonObj.ApprovalName ||
+          this.searchModel.TravelForm.ApprovalName;
+        this.searchModel.ApprovalId =
+          this.searchModel.TravelForm.VariablesJsonObj.ApprovalId ||
+          this.searchModel.TravelForm.ApprovalId;
       }
       if (this.searchModel.TravelForm && this.searchModel.TravelForm.Trips) {
         this.searchModel.TravelForm.Trips = this.searchModel.TravelForm.Trips.map(
@@ -380,6 +385,12 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     if (!this.enable) {
       return;
     }
+    if (this.tmc) {
+      // 固定审批人
+      if (this.tmc.TravelApprovalType == TmcTravelApprovalType.Approver) {
+        return;
+      }
+    }
     const modal = await this.modalCtrl.create({
       component: SearchApprovalComponent,
       componentProps: {
@@ -549,8 +560,7 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       }
 
       if (this.searchModel.TravelForm) {
-        this.searchModel.TravelForm.OrganizationId =
-          this.searchModel.OrganizationId =
+        this.searchModel.TravelForm.OrganizationId = this.searchModel.OrganizationId =
           this.searchModel.TravelForm.Organization &&
           this.searchModel.TravelForm.Organization.Id;
       }
@@ -634,7 +644,10 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
       }
       this.getAllTravelDays();
       this.processOutNumbers();
-      const r = await this.service.getTravelSave({...this.searchModel,...this.searchModel.TravelForm});
+      const r = await this.service.getTravelSave({
+        ...this.searchModel,
+        ...this.searchModel.TravelForm,
+      });
       this.router.navigate([AppHelper.getRoutePath("business-list")], {
         queryParams: { doRefresh: true },
       });
@@ -672,11 +685,9 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
   }
 
   onAddTrip() {
-    const item: TravelFormTripEntity = {
-      
-    } as any;
-    item.EndDate=moment().format("YYYY-MM-DD");
-    item.StartDate=moment().format("YYYY-MM-DD");
+    const item: TravelFormTripEntity = {} as any;
+    item.EndDate = moment().format("YYYY-MM-DD");
+    item.StartDate = moment().format("YYYY-MM-DD");
     // item.StartDate
     if (!this.searchModel.TravelForm.Trips) {
       this.searchModel.TravelForm.Trips = [];
@@ -700,5 +711,5 @@ export class AddApplyPage implements OnInit, OnDestroy, AfterViewInit, DoCheck {
     }
     return this.searchModel.TravelForm.DayCount;
   }
-  getCashSuccess() { }
+  getCashSuccess() {}
 }

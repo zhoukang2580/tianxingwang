@@ -44,6 +44,7 @@ import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-in
 import { LoginService } from "src/app/services/login/login.service";
 import { LangService } from "src/app/services/lang.service";
 import { CONFIG } from "src/app/config";
+import { AgentRegionType } from "src/app/tmc/models/AgentRegionType";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home.page.html",
@@ -307,9 +308,10 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
       };
     });
   }
-
   async goToPage(name: string, params?: any) {
     const tmc = await this.tmcService.getTmc();
+    const Tmc = tmc;
+    const Agent = await this.tmcService.getAgent();
     const msg = "您没有预订权限";
     if (!tmc || !tmc.RegionTypeValue) {
       AppHelper.alert(msg);
@@ -317,45 +319,71 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
     let route = "";
 
-    const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+    const tmcRegionTypeValues = tmc.RegionTypeValue.toLowerCase().split(",");
     if (name == "international-flight") {
       route = "search-international-flight";
-      if (tmcRegionTypeValue.search("internationalflight") < 0) {
+      if (
+        !tmcRegionTypeValues.find(
+          (it) => it.toLowerCase() == "internationalflight"
+        )
+      ) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "international-hotel") {
       route = "search-international-hotel";
-      if (tmcRegionTypeValue.search("internationalhot") < 0) {
+      const pass =true||
+        Tmc &&
+        // tslint:disable-next-line: no-bitwise
+        (Tmc.RegionType & AgentRegionType.InternationalHotel) > 0 &&
+        Agent &&
+        // tslint:disable-next-line: no-bitwise
+        (Agent.RegionType & AgentRegionType.InternationalHotel) > 0;
+      if (
+        !tmcRegionTypeValues.find(
+          (it) => it.toLowerCase() == "internationalhotel"
+        ) ||
+        !pass
+      ) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "hotel") {
       route = "search-hotel";
-      if (tmcRegionTypeValue.search("hotel") < 0) {
+      const pass =true||
+        Tmc &&
+        // tslint:disable-next-line: no-bitwise
+        (Tmc.RegionType & AgentRegionType.Hotel) > 0 &&
+        Agent != null &&
+        // tslint:disable-next-line: no-bitwise
+        (Agent.RegionType & AgentRegionType.Hotel) > 0;
+      if (
+        !tmcRegionTypeValues.find((it) => it.toLowerCase() == "hotel") ||
+        !pass
+      ) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "train") {
       route = "search-train";
-      if (tmcRegionTypeValue.search("train") < 0) {
+      if (!tmcRegionTypeValues.find((it) => it.toLowerCase() == "train")) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "flight") {
       route = "search-flight";
-      if (tmcRegionTypeValue.search("flight") < 0) {
+      if (!tmcRegionTypeValues.find((it) => it.toLowerCase() == "flight")) {
         AppHelper.alert(msg);
         return;
       }
     }
     if (name == "rentalCar") {
       route = "rental-car";
-      if (tmcRegionTypeValue.search("car") < 0) {
+      if (!tmcRegionTypeValues.find((it) => it.toLowerCase() == "car")) {
         AppHelper.alert(msg);
         return;
       }

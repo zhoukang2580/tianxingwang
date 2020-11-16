@@ -45,6 +45,7 @@ export class TaskEntity extends BaseVariablesEntity {
   /// 标签
   /// </summary>
   Tag: string;
+  OrderTypeName: string;
   /// <summary>
   /// 级别
   /// </summary>

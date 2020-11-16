@@ -4,6 +4,7 @@ export const CONFIG = {
   production: true,
   isShowVConsole:!!window['cordova'],
   isForWechatMiniApproval: false,
+  isEnableTranslate: true,
   showNotUseWechatAccountTipTimeout: 5000,
   appDomain: {
     production: "sky-trip.com",

@@ -28,7 +28,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   @Input() roomPlan: RoomPlanEntity;
   @Input() langOpt = {
     Exceeding: "超标",
-    Book: "预定",
+    Book: "预订",
     NonBook: "不可预订",
     NowPay: "现付",
     PayIn: "预付",

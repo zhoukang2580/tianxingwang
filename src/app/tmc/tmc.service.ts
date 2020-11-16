@@ -838,6 +838,7 @@ export interface IBookOrderResult {
   TradeNo: string;
   HasTasks: boolean;
   Message: string;
+  IsCheckPay: boolean;
 }
 export class TravelFormEntity extends BaseVariablesEntity {
   Tmc: TmcEntity;
@@ -983,6 +984,7 @@ export class TravelFormEntity extends BaseVariablesEntity {
   ApplyTime: string;
   Applicant: string;
   ApprovalName: string;
+  ApprovalId: string;
   applyTimeDate: string;
   applyTimeTime: string;
   StatusTypeName: string;
@@ -1392,6 +1394,7 @@ export class TmcEntity extends BaseEntity {
   RegionTypeValue: string;
   RegionTypeName: string;
   IntFlightApprovalType: TmcApprovalType;
+  RegionType: any;
   // =============== 微信支付配置 end ======
 }
 export interface PassengerBookInfo<T> {

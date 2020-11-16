@@ -49,6 +49,7 @@ import { RoomPlanRuleType } from "./models/RoomPlanRuleType";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { ConfigEntity } from "../services/config/config.entity";
 import { AgentEntity } from "../tmc/models/AgentEntity";
+import { CityEntity } from "../tmc/models/CityEntity";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -79,6 +80,7 @@ export class HotelService {
   private lastUpdateTime = 0;
   private isInitializingSelfBookInfos = false;
   private conditionModel: HotelConditionModel;
+  private isLoadingCondition = false;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
   private testData: {
@@ -273,7 +275,7 @@ export class HotelService {
       !this.conditionModel.Brands ||
       !this.conditionModel.Geos
     ) {
-      this.conditionModel = await this.getHotelConditions(
+      this.conditionModel = await this.getHotelConditionsAsync(
         city && city.Code
       ).catch((_) => null);
       // console.log(JSON.stringify(this.conditionModel));
@@ -478,91 +480,126 @@ export class HotelService {
     }
     return res;
   }
+  // searchHotelCity(data: { Name: string; PageIndex: number; IsHot: boolean }) {
+  //   const req = new RequestEntity();
+  //   req.Method = "ApiHomeUrl-Resource-DomesticHotelCity";
+  //   req.Data = {
+  //     ...data,
+  //   };
+  //   return this.apiService.getResponse<TrafficlineEntity[]>(req);
+  // }
   async getHotelCityAsync(forceRefresh = false) {
-    if (
-      !this.localHotelCities ||
-      this.localHotelCities.length == 0 ||
-      !this.lastUpdateTime
-    ) {
-      const local = await this.getHotelCitiesFromLocalCache();
-      if (local) {
-        this.lastUpdateTime = local.LastUpdateTime;
-        this.localHotelCities = local.HotelCities || [];
-      }
-    }
-    if (
-      !forceRefresh &&
-      this.localHotelCities &&
-      this.localHotelCities.length
-    ) {
-      return this.localHotelCities;
-    }
-    this.localHotelCities = this.localHotelCities || [];
-    const cs = await this.loadHotelCitiesFromServer(
-      this.lastUpdateTime
-    ).catch((_) => ({ HotelCities: [] as TrafficlineEntity[] }));
-    if (cs && cs.HotelCities && cs.HotelCities.length) {
-      const arr = cs.HotelCities.map((item) => {
-        if (!item.Pinyin) {
-          item.FirstLetter = this.getFirstLetter(item.Name);
-        } else {
-          item.FirstLetter = item.Pinyin.substring(0, 1).toUpperCase();
+    try {
+      if (
+        !this.localHotelCities ||
+        this.localHotelCities.length == 0 ||
+        !this.lastUpdateTime
+      ) {
+        const local = await this.getHotelCitiesFromLocalCache();
+        if (local) {
+          this.lastUpdateTime = local.LastUpdateTime;
+          this.localHotelCities = local.HotelCities || [];
         }
-        return item;
-      });
-      this.localHotelCities = [
-        ...this.localHotelCities.filter(
-          (it) => !arr.some((c) => c.Code == it.Code)
-        ),
-        ...arr,
-      ];
-      await this.setLocalHotelCityCache(this.localHotelCities);
+      }
+      if (
+        !forceRefresh &&
+        this.localHotelCities &&
+        this.localHotelCities.length
+      ) {
+        return this.localHotelCities;
+      }
+      this.localHotelCities = this.localHotelCities || [];
+      const cs = await this.loadHotelCitiesFromServer(this.lastUpdateTime);
+      // .catch((_) => ({ HotelCities: [] as TrafficlineEntity[] }));
+      if (cs && cs.Trafficlines && cs.Trafficlines.length) {
+        const arr = cs.Trafficlines.map((item) => {
+          if (!item.Pinyin) {
+            item.FirstLetter = this.getFirstLetter(item.Name);
+          } else {
+            item.FirstLetter = item.Pinyin.substring(0, 1).toUpperCase();
+          }
+          return item;
+        });
+        this.localHotelCities = [
+          ...this.localHotelCities.filter(
+            (it) => !arr.some((c) => c.Code == it.Code)
+          ),
+          ...arr,
+        ];
+        await this.setLocalHotelCityCache(this.localHotelCities);
+      }
+    } catch (e) {
+      console.error(e);
     }
     return this.localHotelCities;
   }
-  private async getHotelConditions(cityCode: string) {
-    this.hotelConditionSubscription.unsubscribe();
-    return new Promise<HotelConditionModel>((resolve) => {
-      const req = new RequestEntity();
-      cityCode =
-        cityCode ||
-        (this.getSearchHotelModel().destinationCity &&
-          this.getSearchHotelModel().destinationCity.Code);
-      req.Method = `TmcApiHotelUrl-Condition-Gets`;
-      req.Data = {
-        cityCode,
-      };
-      req.IsShowLoading = true;
-      this.hotelConditionSubscription = this.apiService
-        .getResponse<HotelConditionModel>(req)
-        .pipe(
-          finalize(() => {
-            this.apiService.hideLoadingView();
-            setTimeout(() => {
-              this.hotelConditionSubscription.unsubscribe();
-            }, 200);
-          })
-        )
-        .subscribe(
-          (res) => {
-            const result = res && res.Data;
-            resolve(result);
-          },
-          () => {
-            resolve(null);
-          }
-        );
-    });
+  private async getHotelConditionsAsync(cityCode: string) {
+    if (this.isLoadingCondition) {
+      return;
+    }
+    const req = new RequestEntity();
+    cityCode =
+      cityCode ||
+      (this.getSearchHotelModel().destinationCity &&
+        this.getSearchHotelModel().destinationCity.Code);
+    req.Method = `TmcApiHotelUrl-Condition-Gets`;
+    req.Data = {
+      cityCode,
+    };
+    req.IsShowLoading = true;
+    this.isLoadingCondition = true;
+    this.conditionModel = await this.apiService
+      .getPromiseData<HotelConditionModel>(req)
+      .finally(() => {
+        this.isLoadingCondition = false;
+      });
+    return this.conditionModel;
   }
+  // private async getHotelConditions(cityCode: string) {
+  //   return new Promise<HotelConditionModel>((resolve) => {
+  //     const req = new RequestEntity();
+  //     cityCode =
+  //       cityCode ||
+  //       (this.getSearchHotelModel().destinationCity &&
+  //         this.getSearchHotelModel().destinationCity.Code);
+  //     req.Method = `TmcApiHotelUrl-Condition-Gets`;
+  //     req.Data = {
+  //       cityCode,
+  //     };
+  //     req.IsShowLoading = true;
+  //     this.hotelConditionSubscription.unsubscribe();
+  //     this.hotelConditionSubscription = this.apiService
+  //       .getResponse<HotelConditionModel>(req)
+  //       .pipe(
+  //         finalize(() => {
+  //           this.apiService.hideLoadingView();
+  //           setTimeout(() => {
+  //             this.hotelConditionSubscription.unsubscribe();
+  //           }, 200);
+  //         })
+  //       )
+  //       .subscribe(
+  //         (res) => {
+  //           const result = res && res.Data;
+  //           resolve(result);
+  //         },
+  //         () => {
+  //           resolve(null);
+  //         }
+  //       );
+  //   });
+  // }
   private getFirstLetter(name: string) {
     const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);
     return pyFl && pyFl.toUpperCase();
   }
   private async setLocalHotelCityCache(cities: TrafficlineEntity[]) {
-    await this.storage.set(`LocalHotelCityCache`, {
-      LastUpdateTime: this.lastUpdateTime = Math.floor(Date.now() / 1000),
-      HotelCities: cities,
-    } as LocalHotelCityCache);
+    if (AppHelper.isApp()) {
+      await this.storage.set(`LocalHotelCityCache`, {
+        LastUpdateTime: this.lastUpdateTime = Math.floor(Date.now() / 1000),
+        HotelCities: cities,
+      } as LocalHotelCityCache);
+    }
   }
   private async getHotelCitiesFromLocalCache(): Promise<LocalHotelCityCache> {
     const local = await this.storage.get(`LocalHotelCityCache`);
@@ -580,7 +617,6 @@ export class HotelService {
     };
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-List`;
-
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
@@ -608,7 +644,7 @@ export class HotelService {
     }
     const cond = this.getSearchHotelModel();
     const city = cond.destinationCity;
-    req.IsShowLoading = query.PageIndex <= 1;
+    req.IsShowLoading = query.PageIndex < 1;
     hotelquery.CityCode = city && city.Code;
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
@@ -638,7 +674,11 @@ export class HotelService {
           result.Data.HotelDayPrices = result.Data.HotelDayPrices.map((it) => {
             if (it.Hotel) {
               if (it.Hotel.Variables) {
-                it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+                try {
+                  it.Hotel.VariablesJsonObj = JSON.parse(it.Hotel.Variables);
+                } catch (e) {
+                  console.error(e);
+                }
               }
             }
             return it;
@@ -828,13 +868,13 @@ export class HotelService {
 
   private loadHotelCitiesFromServer(lastUpdateTime: number) {
     const req = new RequestEntity();
-    req.Method = `TmcApiHotelUrl-City-Gets`;
+    req.Method = `ApiHomeUrl-Resource-DomesticHotelCity`;
     req.Data = {
       LastUpdateTime: lastUpdateTime,
     };
     return this.apiService.getPromiseData<{
-      Trafficlines: any[];
-      HotelCities: TrafficlineEntity[];
+      Trafficlines: TrafficlineEntity[];
+      // HotelCities: TrafficlineEntity[];
     }>(req);
   }
   searchHotelByText(

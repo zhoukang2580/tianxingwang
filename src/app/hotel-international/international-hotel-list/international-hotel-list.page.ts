@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import { fadeInOut } from "./../../animations/fadeInOut";
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
 import { AppHelper } from "./../../appHelper";
@@ -123,6 +123,7 @@ export class InternationalHotelListPage
   classMode: "ios" | "md";
   totalHotels = 0;
   config: ConfigEntity;
+  isEn = false;
   constructor(
     public hotelService: InternationalHotelService,
     private imageRecoverService: ImageRecoverService,
@@ -130,9 +131,10 @@ export class InternationalHotelListPage
     private route: ActivatedRoute,
     private configService: ConfigService,
     private plt: Platform,
-    private LangService: LangService
+    private langService: LangService
   ) {
     this.classMode = plt.is("ios") ? "ios" : "md";
+    this.isEn = this.langService.isEn;
   }
   back(evt?: CustomEvent) {
     this.hideQueryPannel();
@@ -243,11 +245,9 @@ export class InternationalHotelListPage
   }
   onViewHotel(hotel: HotelEntity) {
     this.hotelService.viewHotel = hotel;
-    this.LangService.isCn
-    ?
-    this.router.navigate(["international-hotel-detail"])
-    :
-    this.router.navigate(["international-hotel-detail_en"]);
+    this.langService.isCn
+      ? this.router.navigate(["international-hotel-detail"])
+      : this.router.navigate(["international-hotel-detail_en"]);
   }
   async onChangeDate() {
     await this.hotelService.openCalendar();
@@ -396,7 +396,29 @@ export class InternationalHotelListPage
           this.enableScroller(arr.length >= 20);
           if (arr.length) {
             this.pageIndex++;
-            this.hotels = this.hotels.concat(arr.map((it) => it.Hotel));
+            this.hotels = this.hotels.concat(
+              arr.map((it) => {
+                const sumary =
+                  it.Hotel.HotelSummaries &&
+                  it.Hotel.HotelSummaries.find(
+                    (o) =>
+                      (o.Tag || "").toLowerCase() == "name" && o.Lang == "en"
+                  );
+                const addrSumary =
+                  it.Hotel.HotelSummaries &&
+                  it.Hotel.HotelSummaries.find(
+                    (o) =>
+                      (o.Tag || "").toLowerCase() == "Address" && o.Lang == "en"
+                  );
+                if (it.Hotel && sumary && this.isEn) {
+                  it.Hotel.EnName = sumary.Content;
+                }
+                if (it.Hotel && addrSumary && this.isEn) {
+                  it.Hotel.EnAddress = addrSumary.Content;
+                }
+                return it.Hotel;
+              })
+            );
           }
         },
         (e) => {

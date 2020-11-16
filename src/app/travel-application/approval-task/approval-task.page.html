@@ -53,7 +53,7 @@
                                 </span><span>{{task?.CheckInCity}}</span></span><span class="apply_info_time"></span>
                         </p>
                         <p><span class="apply_info_tit"><span>出差总天数：</span><span>{{task?.DayCount}}</span></span><span class="apply_info_time"></span></p>
-                        <p><span class="apply_info_tit"><span>类别：</span><span *ngIf="task?.Tag=='TravelForm'">事前审批</span><span *ngIf="task?.Tag!='TravelForm'">订单预订</span></span><span class="apply_info_time"></span></p>
+                        <p><span class="apply_info_tit"><span>类别：</span><span *ngIf="task?.Tag=='TravelForm'">事前审批</span><span *ngIf="task?.Tag!='TravelForm'">{{task.OrderTypeName}}</span></span><span class="apply_info_time"></span></p>
                         <p><span class="apply_info_tit"><span>单号：</span><span>{{task?.ConsumerId}}</span></span><span class="apply_info_time"></span></p>
                     </div>
                 </section>
@@ -74,7 +74,7 @@
                             </span>
                             </span><span class="apply_info_time "></span>
                         </p>
-                        <p><span class="apply_info_tit "><span>类别：</span><span>订单预订</span></span><span class="apply_info_time "></span></p>
+                        <p><span class="apply_info_tit "><span>类别：</span><span>{{task?.OrderTypeName}}</span></span><span class="apply_info_time "></span></p>
                         <p><span class="apply_info_tit "><span>单号：</span><span>{{task?.OrderId}}</span></span><span class="apply_info_time "></span></p>
                     </div>
                 </section>

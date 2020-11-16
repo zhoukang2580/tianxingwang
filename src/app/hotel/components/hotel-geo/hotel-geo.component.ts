@@ -284,8 +284,8 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
         it.Tag != "RailwayStation" &&
         it.Tag != "CarStation" &&
         it.Tag != "Airport" &&
-        it.Tag != "Metro" &&
-        it.Tag != "Group" &&
+        it.Tag != "Metro" 
+        &&it.Tag != "Group" &&
         it.Tag != "Company"
     ).forEach((geo) => {
       this.switchCase(geo);
