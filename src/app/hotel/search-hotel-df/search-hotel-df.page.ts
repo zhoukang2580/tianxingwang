@@ -161,7 +161,11 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
           const cardRect = this.ionCard["el"].getBoundingClientRect();
           const rect = segments.getBoundingClientRect();
           const imgEleRect = this.imgEles.nativeElement.getBoundingClientRect();
-          top = cardRect.top - rect.height + imgEleRect.height / 2 - 5;
+          top =
+            cardRect.top -
+            rect.height +
+            imgEleRect.height / 2 -
+            (this.isIos ? 15 : 20);
           if (top && top > 0) {
             this.imgEles.nativeElement.style.top = `${top}px`;
           }
@@ -173,7 +177,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngAfterViewInit() {
     // if (this.isIos) {
-      this.initEles();
+    this.initEles();
     // }
   }
   onToggleDomestic(isDomestic) {
