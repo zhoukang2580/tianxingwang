@@ -60,11 +60,11 @@
         </ng-container>
      </div>
      <div class="loc-phone">
-       <div class="loc">
+       <div class="loc" (click)='onOpenMap()'>
         <ion-icon name="location" color='secondary'></ion-icon>
         <div>位置</div>
        </div>
-       <div class="phone">
+       <div class="phone" (click)='onCall()' *ngIf='hotel?.Phone'>
         <ion-icon name="call" color='secondary'></ion-icon>
         <div>电话</div>
        </div>
