@@ -149,7 +149,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
     this.hideQueryPannel();
   }
-  async onShowFreeBookTip(evt: CustomEvent) {
+  async onShowFreeBookTip(evt?: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
     }
