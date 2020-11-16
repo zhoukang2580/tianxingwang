@@ -1,93 +1,116 @@
 .img {
   // width: 110%;
   position: absolute;
-  left: -0.5em;
-  top: 0;
-  right: -0.6em;
-  height: 260px;
-  z-index: 10;
+  left    : -0.5em;
+  top     : 0;
+  right   : -0.6em;
+  height  : 260px;
+  z-index : 10;
+
   img {
-    width: 100%;
-    height: 106%;
+    width     : 100%;
+    height    : 106%;
     object-fit: cover;
   }
+
   z-index: 90;
 }
+
 ion-header {
   z-index: 100;
 }
+
 ion-toolbar,
 ion-toolbar.ios {
-  --background: transparent;
+  --background  : transparent;
   --border-width: 0;
 }
+
 ion-card {
-  z-index: 100;
-  position: relative;
-  top: 20%;
+  z-index   : 100;
+  position  : relative;
+  top       : 17vh;
   box-shadow: 0px 8px 12px 0px #dcd4fcb0;
 }
+
 .search-img {
-  position: absolute;
-  top: 28vh;
-  right: 0;
-  left: 0;
-  z-index: 101;
-  display: flex;
-  height: 3.5em;
-  align-items: center;
+  position       : absolute;
+  top            : 25vh;
+  right          : 0.6em;
+  left           : 0.6em;
+  z-index        : 101;
+  display        : flex;
+  height         : 3.5em;
+  align-items    : center;
   justify-content: space-between;
+
   img {
     height: 100%;
   }
+
+  &.ios {
+    right: 1em;
+    left : 1em;
+    top  : 24vh;
+  }
+
   .left,
   .right {
-    height: 100%;
-    text-align: center;
-    flex: 1;
-    position: relative;
-    display: flex;
-    align-items: center;
+    height         : 100%;
+    text-align     : center;
+    flex           : 1;
+    position       : relative;
+    display        : flex;
+    align-items    : center;
     justify-content: center;
   }
+
   .left {
-    left: 4px;
+    left: -1px;
   }
+
   .right {
-    right: 3px;
+    right: -1.5px;
   }
+
   &.ios {
     .left {
-      left: 7px;
+      left: -1px;
     }
+
     .right {
-      right: 6px;
+      right: -1.5px;
     }
   }
+
   .text {
-    position: absolute;
-    font-size: 15px;
+    position   : absolute;
+    font-size  : 15px;
     font-family: PingFang SC;
     font-weight: bold;
-    color: #333333;
-    top: 1.7em;
+    color      : #333333;
+    top        : 1.7em;
   }
+
   .right .text {
     margin-right: -0.5em;
   }
+
   .left .text {
     margin-left: -1.5em;
-    top: 1.7em;
+    top        : 1.7em;
   }
 }
+
 .segments {
   background-color: #f6f6f6;
-  position: relative;
-  height: 2.8em;
+  position        : relative;
+  height          : 2.8em;
 }
+
 .date {
-  width: 100%;
-  display: flex;
-  align-items: center;
+  width          : 100%;
+  display        : flex;
+  align-items    : center;
   justify-content: space-between;
 }
