@@ -18,8 +18,7 @@
             <div class='hint'>
               {{searchCondition?.searchText?.Text||"关键字/酒店名"}}
             </div>
-            <ion-icon name='close' style="font-size: 1rem;"
-              [style.visibility]='searchCondition?.searchText?.Text?"visible":"hidden"' (click)='onClearText($event)'>
+            <ion-icon name='close' class='close' [style.visibility]='searchCondition?.searchText?.Text?"visible":"hidden"' (click)='onClearText($event)'>
             </ion-icon>
           </div>
         </div>
@@ -75,8 +74,8 @@
     </ng-template>
     <ng-container *ngIf='hotels?.length else nodata'>
       <ion-list lines='full' *ngIf='hotels?.length else nodata'>
-        <app-hotel-list-item [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels'
-          (click)='onViewHotel(hotel)' [hotel]='hotel' [defaultImage]='config?.DefaultImageUrl'></app-hotel-list-item>
+        <app-hotel-list-item [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel' [defaultImage]='config?.DefaultImageUrl'>
+        </app-hotel-list-item>
       </ion-list>
     </ng-container>
   </ng-template>
@@ -95,11 +94,9 @@
   </ion-infinite-scroll>
 </ion-content>
 <div class='backdrop' [class.show]='isShowBackDrop'></div>
-<app-inter-recommend-rank class='query-condition'
-  [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="rank"' (rank)='onRank($event)'
+<app-inter-recommend-rank class='query-condition {{classMode}}' [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="rank"' (rank)='onRank($event)'
   (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'>
 </app-inter-recommend-rank>
-<app-inter-hotel-starprice class='query-condition' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"'
+<app-inter-hotel-starprice class='query-condition {{classMode}}' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()' [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"'
   (starPriceChange)='onStarPriceChange()'>
 </app-inter-hotel-starprice>

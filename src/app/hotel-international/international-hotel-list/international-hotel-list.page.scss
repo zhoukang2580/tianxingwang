@@ -26,21 +26,27 @@ ion-header {
         }
       }
       .search-box {
-        width: 100%;
-        max-width: calc(100% - 10em);
+        width: calc(100% - 9em);
         height: 80%;
         padding: 0.5em;
         display: flex;
         margin-left: 0.5em;
         align-items: center;
-        border: 1px solid rgba(var(--ion-color-dark-rgb), 0.35);
+        background-color: #f6f6f6;
         .hint {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          opacity: 0.4;
         }
-        ion-icon{
+        ion-icon {
+          opacity: 0.4;
           min-width: 1em;
+        }
+        .close {
+          margin-left: auto;
+          font-size: 1rem;
+          opacity: 1;
         }
       }
       min-width: 5em;
@@ -66,6 +72,9 @@ ion-header {
   background-color: white;
   opacity: 0;
   z-index: -1000;
+  &.md {
+    top: 6em;
+  }
 }
 .backdrop {
   position: fixed;
