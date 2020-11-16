@@ -12,9 +12,10 @@
     <ion-item-divider>每间人数</ion-item-divider>
     <ion-item>
       <ion-label class='ion-padding-vertical'>成人</ion-label>
-      <ion-label slot='end'>
+      <!-- <ion-label slot='end'>
         <app-add-number min="0" max='10' [(addNumber)]='searchCondition.adultCount'></app-add-number>
-      </ion-label>
+      </ion-label> -->
+      <ion-input slot='end' [(ngModel)]='searchCondition.adultCount' type='tel' placeholder='每间人数'></ion-input>
     </ion-item>
     <ion-item-sliding *ngFor='let c of searchCondition?.children;let idx=index;' @flyInOut>
       <ion-item detail (click)='onModifyChildAge(c)'>
@@ -23,9 +24,9 @@
         </ion-label>
         <ion-button slot='end' color='secondary' fill='clear'>{{c.age>0?c.age:"小于1"}}岁</ion-button>
       </ion-item>
-      <ion-item-options side="end" >
-        <ion-item-option color="danger" (click)='onRemove(c)' >
-          <ion-button  fill='clear' size='small'>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)='onRemove(c)'>
+          <ion-button fill='clear' size='small'>
             <ion-icon name='trash' color='light'></ion-icon>
           </ion-button>
         </ion-item-option>
