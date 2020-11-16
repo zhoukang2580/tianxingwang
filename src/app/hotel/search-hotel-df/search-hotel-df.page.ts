@@ -18,8 +18,15 @@ import {
   OnDestroy,
   EventEmitter,
   ViewChild,
+  ElementRef,
+  AfterViewInit,
 } from "@angular/core";
-import { ModalController, Platform, PopoverController } from "@ionic/angular";
+import {
+  IonCard,
+  ModalController,
+  Platform,
+  PopoverController,
+} from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { StaffService } from "src/app/hr/staff.service";
 import { map } from "rxjs/operators";
@@ -35,8 +42,10 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
   templateUrl: "./search-hotel-df.page.html",
   styleUrls: ["./search-hotel-df.page.scss"],
 })
-export class SearchHotelDfPage implements OnInit, OnDestroy {
+export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
+  @ViewChild("imgEles", { static: true }) imgEles: ElementRef<HTMLElement>;
+  @ViewChild("ionCardEle", { static: true }) ionCard: IonCard;
   private subscriptions: Subscription[] = [];
   private fromRoute: string;
   get isShowSelectedInfos() {
@@ -142,6 +151,28 @@ export class SearchHotelDfPage implements OnInit, OnDestroy {
         this.searchHotelModel = m;
       })
     );
+  }
+  private initEles() {
+    setTimeout(() => {
+      try {
+        if (this.ionCard && this.imgEles) {
+          let top = 0;
+          const segments = this.ionCard["el"].querySelector(".segments");
+          const cardRect = this.ionCard["el"].getBoundingClientRect();
+          const rect = segments.getBoundingClientRect();
+          const imgEleRect = this.imgEles.nativeElement.getBoundingClientRect();
+          top = cardRect.top - rect.height + imgEleRect.height / 2 - 5;
+          if (top && top > 0) {
+            this.imgEles.nativeElement.style.top = `${top}px`;
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }, 100);
+  }
+  ngAfterViewInit() {
+    this.initEles();
   }
   onToggleDomestic(isDomestic) {
     this.isDomestic = isDomestic;

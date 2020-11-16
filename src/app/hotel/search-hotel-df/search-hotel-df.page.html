@@ -28,7 +28,7 @@
   </ion-toolbar>
 </ion-header>
 
-<div class="search-img" [class.ios]='isIos'>
+<div class="search-img" [class.ios]='isIos' #imgEles>
   <div class="left" (click)='onToggleDomestic(true)'>
     <img src="assets/images/hotel-rect.png" class="left" alt="" *ngIf='isDomestic'>
     <span class="text">国内</span>
@@ -38,7 +38,7 @@
     <span class="text">国际*港澳台</span>
   </div>
 </div>
-<ion-card>
+<ion-card #ionCardEle>
   <div class="segments"></div>
   <ion-card-content *ngIf='isDomestic'>
     <div class='ion-padding-top'>
@@ -154,6 +154,6 @@
 </ion-card>
 <ion-content class="cnt">
 </ion-content>
-<div class="img">
+<div class="img" >
   <img src="assets/images/hotelbg.png" alt="">
 </div>
