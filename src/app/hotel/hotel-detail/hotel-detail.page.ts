@@ -337,6 +337,8 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
               }, 1000);
             }
             this.initHotelImages();
+          }else{
+            AppHelper.alert("当日凌晨房已售罄");
           }
         },
         (e) => {

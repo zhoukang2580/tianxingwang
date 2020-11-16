@@ -169,7 +169,7 @@ export class AgentEntity {
     /// <summary>
     /// 代理类型
     /// </summary>
-    RegionType: string;
+    RegionType: any;
 
     RegionTypeName: string;
 
