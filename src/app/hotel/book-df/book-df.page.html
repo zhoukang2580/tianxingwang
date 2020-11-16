@@ -50,7 +50,7 @@
               </div>
               <div *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex padding-v" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">床型需求（尽量安排）：</span>{{combindInfo.bookInfo?.bookInfo?.roomPlan.Remark}}
-                <ion-icon name="caret-down-outline" (click)='onBedChange(bedEle,combindInfo)'></ion-icon>
+                <ion-icon name="caret-down-outline" (click)='onBedChange(bedEle)'></ion-icon>
               </div>
             </div>
           </div>
@@ -611,7 +611,7 @@
         <ion-text style="font-weight: bold;" *ngIf="hotelPaymentType==HotelPaymentType.SelfPay">
           到店支付</ion-text>
         <ion-text style="font-weight: bold;" *ngIf="!(hotelPaymentType==HotelPaymentType.SelfPay)">房费明细</ion-text>
-        <ion-text>{{calcNights()}}晚,共
+        <ion-text>{{calcNights(infos)}}晚,共
           <ion-text style="font-weight: bold;" color="danger"><small>￥</small>
             {{infos.bookInfo?.bookInfo?.roomPlan?.TotalAmount}}
           </ion-text>
