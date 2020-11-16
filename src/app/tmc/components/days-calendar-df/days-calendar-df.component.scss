@@ -1,0 +1,59 @@
+:host {
+  display: flex;
+  padding: 0 0 1em 0.5em;
+}
+.days {
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  flex: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  // transition: all ease-in-out 100ms;
+  article {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    min-height: 2em;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.6rem;
+    transform: translateX(0);
+    transition: all 300ms ease-in-out;
+    &.active {
+      background-color: var(--ion-color-secondary);
+      .price {
+        color: var(--ion-color-primary);
+      }
+      color: var(--ion-color-light);
+      border-radius: 3px;
+    }
+  }
+}
+.calendar {
+  position: relative;
+  flex: 1;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-flow: column nowrap;
+  .icon-calendar {
+    font-size: 1.5rem;
+  }
+  ion-text {
+    font-size: 0.8rem;
+  }
+  &::before {
+    position: absolute;
+    content: "";
+    top: 25%;
+    bottom: 25%;
+    left: 0;
+    border: 0.6px solid rgba(var(--ion-color-dark-rgb), 0.6);
+  }
+}
+strong{
+  font-weight: inherit;
+}

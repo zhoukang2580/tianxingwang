@@ -1,0 +1,159 @@
+ion-content {
+  background-position: center;
+  background-attachment: scroll;
+  ion-segment {
+    --indicator-color: rgba(var(--ion-color-dark-rgb), 0.16);
+  }
+  ion-toolbar {
+    --background: transparent;
+  }
+
+  ion-buttons.small-font {
+    font-size: 0.6rem;
+  }
+
+  .flight-date {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .date-week {
+      display: flex;
+      align-items: flex-end;
+      margin: 0 0.5rem;
+      h2 {
+        font-size: 1.2rem;
+      }
+      h6 {
+        margin-left: 0.5rem;
+        font-size: 0.7rem;
+      }
+    }
+  }
+  .tabs {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+    ion-button {
+      --height: auto;
+      --padding-start: 0;
+      --padding-end: 0;
+      --border-radius: 0;
+      --opacity: 1;
+      ion-label {
+        margin: 0;
+        h6 {
+          font-size: 0.7rem;
+        }
+      }
+      &.button-ios {
+        ion-icon[name="airplane"] {
+          transform: rotateZ(-30deg);
+        }
+      }
+      &.button-md {
+        ion-icon[name="airplane"] {
+          transform: rotateZ(72deg);
+        }
+      }
+    }
+  }
+}
+.city-name {
+  flex-basis: 45%;
+  &.disabled {
+    color: var(--ion-color-medium);
+  }
+}
+.img_bg{
+  width: 109%;
+  position: absolute;
+  left: -10px;
+  top: -2px;
+  right: 0;
+  height: 260px;
+  z-index: 90;
+}
+ion-title{
+  color: #fff;
+  text-align: center;
+}
+
+ion-header{
+  z-index: 100;
+}
+ion-toolbar{
+  --background: transparent;
+}
+
+
+.search-img{
+  position: absolute;
+  top: 16.4%;
+  left: 0.65em;
+  right: 0.62em;
+  z-index: 101;
+  display: flex;
+  height: 3.1em;
+  align-items: center;
+  justify-content: space-between;
+  background: #f6f6f6;
+  border-radius: 10px;
+  img {
+    height: 100%;
+  }
+  .left,
+  .right {
+    height: 109.3%;
+    text-align: center;
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0px 0px 5px 5px;
+  }
+  .text{
+    position: absolute;
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    color: #333333;
+  }
+  .right .text {
+    margin-right: -0.5em;
+  }
+  .left .text {
+    margin-left: -1.5em;
+    top: 1.2em;
+  }
+}
+
+ion-card{
+  position: relative;
+  top: 9.4em;
+  z-index: 101;
+  box-shadow: none;
+}
+ion-content {
+  --background: #ffffff;
+}
+ion-card-content{
+  line-height: 5rem;
+}
+
+.ion-y{
+  font-size: 2.8em;
+}
+.ion-x{
+  margin-left: -30px;
+}
+
+.ion-margin-top{
+  --border-radius: 20px;
+  height: 3.1em;
+}
+
+.text_search{
+  font-size: 1.4em;
+}
