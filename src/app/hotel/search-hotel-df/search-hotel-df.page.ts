@@ -165,7 +165,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
             cardRect.top -
             rect.height +
             imgEleRect.height / 2 -
-            (this.isIos ? 15 : 0);
+            (this.isIos ? 15 : 30);
           if (top && top > 0) {
             this.imgEles.nativeElement.style.top = `${top}px`;
           }
