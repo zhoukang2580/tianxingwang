@@ -7,8 +7,8 @@
     <div class='name' *ngIf='hotel?.EnName'>{{hotel?.EnName}}</div>
     <div class="grade-stars">
       <ng-container *ngFor='let i of hotel?.grades'>
-        <ion-icon name='star' *ngIf='i>=1' color='danger'></ion-icon>
-        <ion-icon name='star-half' *ngIf='i<1' color='danger'></ion-icon>
+        <ion-icon name='star' *ngIf='i>=1' color='warning'></ion-icon>
+        <ion-icon name='star-half' *ngIf='i<1' color='warning'></ion-icon>
       </ng-container>
       <ion-text class='ion-margin-start' color='secondary' *ngIf='hotel?.Grade'>{{hotel?.Grade}}分</ion-text>
     </div>

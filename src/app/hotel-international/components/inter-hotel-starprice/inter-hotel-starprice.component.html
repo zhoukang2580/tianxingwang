@@ -5,28 +5,36 @@
         <span>￥{{value?.lower}}</span>
         <span>￥{{value?.upper>=1000?"1000+":value?.upper}}</span>
       </div>
-      <ion-button (click)='onResetCustomePrice()' size='small' fill='solid' color='secondary'>{{langOpt.any}}</ion-button>
+      <ion-button (click)='onResetCustomePrice()' size='small' fill='clear' color='secondary'>{{langOpt.any}}</ion-button>
     </ion-item-divider>
     <ion-item>
-      <ion-range (ionChange)='onPriceRangeChange($event)' min="0" pin="true" dualKnobs="true" max="1001" step="100"
-        snaps="" ticks="false" color="secondary">
+      <ion-range (ionChange)='onPriceRangeChange($event)' min="0" pin="true" dualKnobs="true" max="1001" step="100" snaps="" ticks="false" color="secondary">
       </ion-range>
     </ion-item>
   </ion-list>
   <ion-list *ngFor='let tab of hotelQuery?.starAndPrices'>
     <ng-container *ngIf='!tab.tag?.includes("custome")'>
-      <ion-item-divider>{{tab?.label}}
-        <ion-button slot='end' (click)='resetItems(tab)' color='secondary' size='small'>{{langOpt.any}}</ion-button>
+      <ion-item-divider class="title">{{tab?.label}}
+        <ion-button slot='end' (click)='resetItems(tab)' fill='clear' color='secondary' size='small'>{{langOpt.any}}</ion-button>
       </ion-item-divider>
-      <ion-item>
-        <div>
+      <ion-item lines='none'>
+        <div class="items">
+          <ul>
+            <li *ngFor='let item of tab.items' [class.active]='item.isSelected' class="item" (click)='onItemClick(item,tab)'>
+              <span class="text">
+                {{item.label}}
+              </span>
+            </li>
+          </ul>
+        </div>
+        <!-- <div>
           <ion-row>
             <ion-col size='4' *ngFor='let item of tab.items'>
               <ion-chip color='{{item.isSelected?"secondary":"dark"}}' (click)='onItemClick(item,tab)'>{{item.label}}
               </ion-chip>
             </ion-col>
           </ion-row>
-        </div>
+        </div> -->
       </ion-item>
     </ng-container>
   </ion-list>

@@ -9,11 +9,12 @@ body:not(.dark) {
   &.qr-scanning ion-content {
     --background: transparent;
   }
+  ion-searchbar,
+  form ion-searchbar {
+    --background: #f6f6f6;
+  }
   ion-content {
     --background: #f5f7f9;
-    ion-searchbar {
-      --background: #f5f7f9;
-    }
     ion-list ion-item:last-child {
       --inner-border-width: 0;
     }
