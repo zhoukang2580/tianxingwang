@@ -6,30 +6,25 @@ import { TrainService, SearchTrainModel } from "../train.service";
 import { TrafficlineEntity } from "../../tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
 import { ApiService } from "src/app/services/api/api.service";
-import { StaffEntity, StaffBookType } from "src/app/hr/staff.service";
+import { StaffEntity } from "src/app/hr/staff.service";
 import { StaffService } from "../../hr/staff.service";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
-import { Subscription, Observable, of, from } from "rxjs";
+import { Subscription, of } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
 import {
   ModalController,
-  NavController,
   PopoverController,
 } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
-import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { TripType } from "src/app/tmc/models/TripType";
-import { TrainEntity } from "../models/TrainEntity";
 import { CalendarService } from "src/app/tmc/calendar.service";
-import { PassengerBookInfo, TmcService } from "src/app/tmc/tmc.service";
 import { map } from "rxjs/operators";
-import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-segment-info/selected-train-segment-info.component";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
 import { LangService } from 'src/app/services/lang.service';
-import { SelectedTrainSegmentInfoEnComponent } from '../components/selected-train-segment-info_en/selected-train-segment-info_en.component';
+import { SelectedTrainSegmentInfoDfComponent } from '../components/selected-train-segment-info-df/selected-train-segment-info-df.component';
 @Component({
   selector: "app-search-train-df",
   templateUrl: "./search-train_df.page.html",
@@ -57,18 +52,12 @@ export class SearchTrainDfPage
     private storage: Storage,
     private staffService: StaffService,
     private identityService: IdentityService,
-    private apiService: ApiService,
     private trainService: TrainService,
     private calendarService: CalendarService,
     private modalCtrl: ModalController,
-    private popoverCtrl: PopoverController,
-    private langService:LangService
-  ) {}
+    private popoverCtrl: PopoverController  ) {}
   async onShowSelectedBookInfos() {
-    let c = SelectedTrainSegmentInfoComponent;
-    if (this.langService.isEn) {
-      c = SelectedTrainSegmentInfoEnComponent;
-    }
+    let c = SelectedTrainSegmentInfoDfComponent;
     const m = await this.modalCtrl.create({
       component: c,
     });
@@ -276,7 +265,7 @@ export class SearchTrainDfPage
   getDayDesc(d: DayModel) {
     return this.calendarService.getDescOfDay(d);
   }
-  async onSelecDate(isGo: boolean, isBack: boolean) {
+  async onSelecDate(isGo: boolean) {
     const days = await this.trainService.openCalendar(false);
     // console.log("train openCalendar", days);
     if (days && days.length) {

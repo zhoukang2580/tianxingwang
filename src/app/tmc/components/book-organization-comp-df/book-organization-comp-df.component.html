@@ -1,0 +1,14 @@
+<ion-item detail lines='none' [disabled]='isOtherOrganization' (click)='searchOrganization()'>
+  <ion-label>
+    <strong style="font: inherit;color: #666666;">{{langOpt.department}}:</strong>
+  </ion-label>
+  <ion-label class='ion-text-end' >{{organization?.Name}}</ion-label>
+</ion-item>
+<!-- <ion-item lines='none'>
+  <ion-checkbox color="secondary" class="ion-margin-end" [(ngModel)]="isOtherOrganization"
+    (ionChange)='onValueChange()'></ion-checkbox>
+  <ion-label style='margin-right: 0.5em' color='{{isOtherOrganization?"":"medium"}}'>{{langOpt.other}}</ion-label>
+  <ion-input [disabled]='false&&!isOtherOrganization' *ngIf="isOtherOrganization" (ionChange)='onValueChange()'
+    [(ngModel)]='otherOrganizationName' placeholder='名称'>
+  </ion-input>
+</ion-item> -->
