@@ -47,6 +47,7 @@ import { map, tap, switchMap } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
 import { trigger, transition, style, animate } from "@angular/animations";
 import { SelectedTrainSegmentInfoEnComponent } from "../components/selected-train-segment-info_en/selected-train-segment-info_en.component";
+import { SelectedTrainSegmentInfoDfComponent } from '../components/selected-train-segment-info-df/selected-train-segment-info-df.component';
 @Component({
   selector: "app-train-list-df",
   templateUrl: "./train-list_df.page.html",
@@ -354,10 +355,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     console.timeEnd("price");
   }
   async showSelectedBookInfos() {
-    let c = SelectedTrainSegmentInfoComponent;
-    if (this.langService.isEn) {
-      c = SelectedTrainSegmentInfoEnComponent;
-    }
+    let c = SelectedTrainSegmentInfoDfComponent;
     const modal = await this.modalCtrl.create({
       component: c,
     });
@@ -453,10 +451,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private async showSelectedInfos() {
-    let c = SelectedTrainSegmentInfoComponent;
-    if (this.langService.isEn) {
-      c = SelectedTrainSegmentInfoEnComponent;
-    }
+    let c = SelectedTrainSegmentInfoDfComponent;
     const m = await this.modalCtrl.create({
       component: c,
     });

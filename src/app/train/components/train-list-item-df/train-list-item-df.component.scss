@@ -18,7 +18,7 @@
     font-size: 0.7rem;
   }
   strong {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
   }
   .has-add-day-tip {
     position: relative;
@@ -42,7 +42,7 @@ img.access-by-IdCard {
   width: 1.5em;
   position: absolute;
   left: 3.9em;
-  top: 0.4em;
+  top: 1em;
   filter: grayscale(100%);
 }
 // .seat-count {
@@ -51,6 +51,7 @@ img.access-by-IdCard {
 .info {
   font-size: 0.9rem;
   flex: 1;
+  line-height: 36px;
   * + * {
     margin-top: 0.15em;
   }
@@ -75,12 +76,18 @@ img.access-by-IdCard {
 }
 .seats {
   font-size: 0.9rem;
+  ion-row :nth-last-child(1){
+    border-bottom: 0;
+  }
+  
   ion-row {
-    border: 2px solid var(--ion-color-medium);
-    border-radius: 4px;
+    // border: 2px solid var(--ion-color-medium);
+    border-bottom: 0.1px solid #c3c3c3;
+    // border-radius: 4px;
+    border-color: transparent;
     margin: 0.5em 0;
     &[color="primary"] {
-      border-color: var(--ion-color-primary);
+      border-color: transparent;
     }
     &[color="danger"] {
       border-color: rgba(var(--ion-color-danger-rgb), 0.6);
@@ -92,7 +99,7 @@ img.access-by-IdCard {
       border-color: var(--ion-color-secondary);
     }
     &[color="success"] {
-      border-color: var(--ion-color-success);
+      border-bottom: 0.1px solid #c3c3c3;
     }
     &[color="warning"] {
       border-color: var(--ion-color-warning);
@@ -102,7 +109,7 @@ img.access-by-IdCard {
 .stop-line-stop {
   position: relative;
   margin: 0 1em;
-  padding: 1em 0;
+  padding: 1em 0 20px;
   justify-content: center;
   &::after {
     content: attr(data);
