@@ -11,6 +11,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: "international-hotel-list_df",
+    loadChildren: () =>
+      import("./international-hotel-list_df/international-hotel-list-df.module").then(
+        (m) => m.InternationalHotelListDfPageModule
+      ),
+  },
+  {
     path: "international-hotel-list_en",
     loadChildren: () =>
       import(

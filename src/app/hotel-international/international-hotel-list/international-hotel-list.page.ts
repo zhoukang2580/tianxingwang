@@ -110,7 +110,7 @@ export class InternationalHotelListPage
   @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
   @ViewChild(RefresherComponent) private refresher: RefresherComponent;
   @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
-  private oldSearchText: ISearchTextValue;
+  private isSearchByText = false;
   private oldDestinationCode: string;
   isShowBackDrop = false;
   filterTab: IInterHotelQueryTab;
@@ -288,6 +288,7 @@ export class InternationalHotelListPage
     this.observeSearchCondition();
   }
   onSearchText() {
+    this.isSearchByText = true;
     this.router.navigate(["combo-search-inter-hotel"]);
   }
   private checkDestinationChanged() {
@@ -300,15 +301,15 @@ export class InternationalHotelListPage
     return false;
   }
   private checkSearchTextChanged() {
-    if (this.searchCondition) {
-      return (
-        !this.searchCondition.searchText ||
-        !this.oldSearchText ||
-        this.searchCondition.searchText.Value != this.oldSearchText.Value ||
-        this.searchCondition.searchText.Text != this.oldSearchText.Text
-      );
-    }
-    return false;
+    // if (this.searchCondition) {
+    //   return (
+    //     !this.searchCondition.searchText ||
+    //     !this.oldSearchText ||
+    //     this.searchCondition.searchText.Value != this.oldSearchText.Value ||
+    //     this.searchCondition.searchText.Text != this.oldSearchText.Text
+    //   );
+    // }
+    return this.isSearchByText;
   }
   onChangeCity() {
     this.router.navigate(["select-inter-city"]);
@@ -382,12 +383,12 @@ export class InternationalHotelListPage
       .pipe(
         finalize(() => {
           this.isLoading = false;
+          this.isSearchByText = false;
           this.completeScroller();
         })
       )
       .subscribe(
         (r) => {
-          this.oldSearchText = this.searchCondition.searchText;
           this.oldDestinationCode =
             this.searchCondition.destinationCity &&
             this.searchCondition.destinationCity.Code;
