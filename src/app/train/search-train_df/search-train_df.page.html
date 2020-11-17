@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar style="--border-width: 0;">
     <ion-buttons slot='start'>
       <app-back-button color='light' defaultHref=''></app-back-button>
     </ion-buttons>
@@ -19,20 +19,20 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<div class="img_bg">
-  <img src="assets/images/hotelbg.png" alt="">
+
+<div class="search-img">
+  <div class="left" (click)='onToggleDomestic(true)'>
+    <img src="assets/images/hotel-rect.png" class="left" alt="" *ngIf='isDomestic'>
+    <span class="text">单程</span>
+  </div>
+  <div class="right" (click)='onToggleDomestic(false)'>
+    <img src="assets/images/hotel-rect-r.png" class="right" *ngIf='!isDomestic' alt="">
+    <span class="text">往返</span>
+  </div>
+</div>
+<div class="segments">
 </div>
 <ion-content style="--background:#fff">
-  <div class="search-img">
-    <div class="left" (click)='onToggleDomestic(true)' style="margin-left:-5px">
-      <img src="assets/images/hotel-rect.png" class="left" alt="" *ngIf='isDomestic'>
-      <span class="text">单程</span>
-    </div>
-    <div class="right" (click)='onToggleDomestic(false)'>
-      <img src="assets/images/hotel-rect-r.png" class="right" *ngIf='!isDomestic' alt="">
-      <span class="text">往返</span>
-    </div>
-  </div>
   <ion-card class='ion-padding'>
     <ion-card-content>
       <!-- <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" [value]="isSingle?'single':'roundtrip'" color='secondary' *ngIf='!showReturnTrip' [disabled]='searchTrainModel?.isExchange'>
@@ -75,3 +75,6 @@
     </ion-card-content>
   </ion-card>
 </ion-content>
+<div class="img_bg">
+  <img src="assets/images/hotelbg.png" alt="">
+</div>

@@ -16,11 +16,13 @@ import { TrainRefundComponent } from './train-refund/train-refund.component';
 import { TrainTicketComponent } from './train-ticket/train-ticket.component';
 import { TrainListItemEnComponent } from './train-list-item_en/train-list-item_en.component';
 import { SelectedTrainSegmentInfoEnComponent } from './selected-train-segment-info_en/selected-train-segment-info_en.component';
+import { TrainListItemDfComponent } from './train-list-item-df/train-list-item-df.component';
 
 @NgModule({
   declarations: [
     TrainListItemComponent,
     TrainListItemEnComponent,
+    TrainListItemDfComponent,
     SelectedTrainSegmentInfoComponent,
     SelectedTrainSegmentInfoEnComponent,
     TrainscheduleComponent,
@@ -43,6 +45,7 @@ import { SelectedTrainSegmentInfoEnComponent } from './selected-train-segment-in
   exports: [
     TrainListItemComponent,
     TrainListItemEnComponent,
+    TrainListItemDfComponent,
     TrainscheduleComponent,
     TimeSpanComponent,
     TrainFilterComponent,
