@@ -39,6 +39,13 @@ export const routes: Routes = [
       ).then(m => m.InternationalHotelDetailPageModule)
   },
   {
+    path: "international-hotel-detail_df",
+    loadChildren: () =>
+      import(
+        "./international-hotel-detail_df/international-hotel-detail-df.module"
+      ).then(m => m.InternationalHotelDetailDfPageModule)
+  },
+  {
     path: "international-hotel-detail_en",
     loadChildren: () =>
       import(
