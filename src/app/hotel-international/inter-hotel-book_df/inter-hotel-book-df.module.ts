@@ -9,6 +9,7 @@ import { InterHotelBookDfPageRoutingModule } from './inter-hotel-book-df-routing
 
 import { InterHotelBookDfPage } from './inter-hotel-book-df.page';
 import { HotelInternationalComponentsModule } from '../components/components.module';
+import { MemberPipesModule } from 'src/app/member/pipe/pipe.module';
 
 @NgModule({
   imports: [
@@ -17,7 +18,8 @@ import { HotelInternationalComponentsModule } from '../components/components.mod
     IonicModule,
     InterHotelBookDfPageRoutingModule,
     TmcComponentsModule,
-    HotelInternationalComponentsModule
+    HotelInternationalComponentsModule,
+    MemberPipesModule
   ],
   declarations: [InterHotelBookDfPage]
 })

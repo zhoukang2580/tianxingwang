@@ -278,7 +278,10 @@ export class InternationalHotelDetailDfPage
   }
   private async filterPassengerPolicy(passengerId: string = "") {
     try {
-      const hotelPolicy = this.hotelPolicy || (await this.getPolicy());
+      let hotelPolicy = this.hotelPolicy;
+      if (!hotelPolicy || !hotelPolicy.length) {
+        hotelPolicy = await this.getPolicy();
+      }
       // console.log("hotelPolicyAsync", hotelPolicy);
       this.colors = {};
       if (hotelPolicy) {
@@ -529,8 +532,7 @@ export class InternationalHotelDetailDfPage
         a.href = `tel:${phoneNumber}`;
         a.click();
       }
-    }else{
-      
+    } else {
     }
   }
   ngAfterViewInit() {

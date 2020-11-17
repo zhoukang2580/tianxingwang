@@ -38,6 +38,7 @@ import {
   IonRefresher,
   IonContent,
   Platform,
+  IonSelect,
 } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import {
@@ -83,6 +84,10 @@ import { RefresherComponent } from "src/app/components/refresher";
 import { WarrantyComponent } from "src/app/hotel/components/warranty/warranty.component";
 import { InterHotelWarrantyComponent } from "../components/inter-hotel-warranty/inter-hotel-warranty.component";
 import { CHINESE_REG } from "src/app/member/member.service";
+import { SelectComponent } from "src/app/components/select/select.component";
+import { HotelBookType } from "src/app/hotel/models/HotelBookType";
+import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
+import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 
 @Component({
   selector: "app-inter-hotel-book-df",
@@ -93,6 +98,7 @@ import { CHINESE_REG } from "src/app/member/member.service";
 export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initialBookDto: InitialBookDtoModel;
   // private isManagentCredentails = false;
+  HotelBookType = HotelBookType;
   private subscriptions: Subscription[] = [];
   checkInPersionCount = 1;
   HotelPaymentType = HotelPaymentType;
@@ -122,10 +128,12 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
   isSubmitDisabled = false;
   isPlaceOrderOk = false;
   isShowFee = false;
+  isSelfBookType = true;
   serviceFee: number;
   checkPayCountIntervalId: any;
   checkPayCount = 3;
   checkPayCountIntervalTime = 5 * 1000;
+  arrivalDateTimes: string[];
   curSelectedBookInfo: PassengerBookInfo<IInterHotelInfo>;
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   dates: { date: string; price: string }[] = [];
@@ -144,7 +152,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private payService: PayService,
     private plt: Platform,
-    private LangService: LangService
+    private langService: LangService
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(() => {
@@ -197,10 +205,24 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-  onBedchange(bed: string, bookInfo: PassengerBookInfo<IInterHotelInfo>) {
-    if (bookInfo && bookInfo.bookInfo && bookInfo.bookInfo.roomPlan) {
-      bookInfo.bookInfo.roomPlan.Remark = bed;
+  onBedChange(bedEle: IonSelect) {
+    if (bedEle) {
+      bedEle.open();
     }
+  }
+  async onChangeCredential(
+    credentialSelect: IonSelect,
+    item: IPassengerHotelBookInfo
+  ) {
+    await this.onModify(item);
+    if (credentialSelect) {
+      credentialSelect.open();
+    }
+  }
+  credentialCompareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
+    return (
+      (t1 && t2 && t1 == t2) || (t1.Type == t2.Type && t1.Number == t2.Number)
+    );
   }
   onShowPriceDetails(evt: {
     isShow: boolean;
@@ -246,6 +268,9 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
 
   async doRefresh(byUser: boolean) {
     try {
+      this.staffService.isSelfBookType().then((s) => {
+        this.isSelfBookType = s;
+      });
       if (this.ionRefresher) {
         this.ionRefresher.complete();
         this.ionRefresher.disabled = true;
@@ -469,15 +494,21 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     ele: HTMLElement
   ) {
     await AppHelper.alert(
-      this.LangService.isCn ?
-      `${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Surname + item.credential.Givenname)
-      } 【${item.credential && item.credential.Number}】 ${msg} 信息不能为空` :
-      `${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Surname + item.credential.Givenname)
-      } 【${item.credential && item.credential.Number}】 ${msg} Information cannot be empty`
+      this.langService.isCn
+        ? `${
+            (item.credentialStaff && item.credentialStaff.Name) ||
+            (item.credential &&
+              item.credential.Surname + item.credential.Givenname)
+          } 【${
+            item.credential && item.credential.Number
+          }】 ${msg} 信息不能为空`
+        : `${
+            (item.credentialStaff && item.credentialStaff.Name) ||
+            (item.credential &&
+              item.credential.Surname + item.credential.Givenname)
+          } 【${
+            item.credential && item.credential.Number
+          }】 ${msg} Information cannot be empty`
     );
     this.moveRequiredEleToViewPort(ele);
   }
@@ -851,7 +882,11 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumberid", combindInfo.id);
-              this.showErrorMsg(it.label + this.LangService.isCn ? "必填" : " Required ", combindInfo, el);
+              this.showErrorMsg(
+                it.label + this.langService.isCn ? "必填" : " Required ",
+                combindInfo,
+                el
+              );
               return;
             }
             if (it.value) {
@@ -1273,6 +1308,44 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
     return this.tmc.HotelOrderPayType.includes(payType);
   }
+  async searchOrganization(combindInfo: IPassengerHotelBookInfo) {
+    if (combindInfo.isOtherOrganization) {
+      return;
+    }
+    const modal = await this.modalCtrl.create({
+      component: OrganizationComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    console.log("organization", result.data);
+    if (result && result.data) {
+      const res = result.data as OrganizationEntity;
+      combindInfo.organization = {
+        ...combindInfo.organization,
+        Code: res.Code,
+        Name: res.Name,
+      };
+    }
+  }
+  async searchCostCenter(combindInfo: IPassengerHotelBookInfo) {
+    if (combindInfo.isOtherCostCenter) {
+      return;
+    }
+    const modal = await this.modalCtrl.create({
+      component: SearchCostcenterComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    if (result && result.data) {
+      const res = result.data as { Text: string; Value: string };
+      combindInfo.costCenter = {
+        code: res.Value,
+        name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1),
+      };
+    }
+  }
   private moveRequiredEleToViewPort(ele: any) {
     const el: HTMLElement = (ele && ele.nativeElement) || ele;
     if (!el) {
@@ -1398,13 +1471,13 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
           } else {
             if (isSave) {
               await AppHelper.alert(
-                this.LangService.isCn ? "订单已保存!" : "Order saved",
+                this.langService.isCn ? "订单已保存!" : "Order saved",
                 true,
                 LanguageHelper.getConfirmTip()
               );
             } else {
               await AppHelper.alert(
-                this.LangService.isCn ? "下单成功!" : "Checkout success"
+                this.langService.isCn ? "下单成功!" : "Checkout success"
               );
             }
           }
@@ -1417,7 +1490,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    if (this.LangService.isCn) {
+    if (this.langService.isCn) {
       this.router.navigate(["order-list"], {
         queryParams: { tabId: tab },
       });
@@ -1578,6 +1651,10 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
       );
     }
   }
+  onSelectDatetime(datetime: IonSelect, item: IPassengerHotelBookInfo) {
+    this.initArrivalTimes(item);
+    datetime.open();
+  }
   onIllegalReason(
     reason: {
       isOtherIllegalReason: boolean;
@@ -1681,6 +1758,96 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     if (info && credential) {
       info.vmCredential = credential;
+    }
+  }
+  onOpenSelect(select: IonSelect) {
+    if (select) {
+      select.open();
+    }
+  }
+  expanseCompareFn(t1: string, t2: string) {
+    return t1 && t2 ? t1 === t2 : false;
+  }
+  getCredentialTypeName(item: IPassengerHotelBookInfo) {
+    switch (
+      item &&
+      item.creditCardPersionInfo &&
+      item.creditCardPersionInfo.credentialType
+    ) {
+      case `${CredentialsType.IdCard}`:
+        return "身份证";
+      case `${CredentialsType.Passport}`:
+        return "护照";
+      default:
+        return "其他";
+    }
+  }
+  getHHmm(datetime: string) {
+    if (datetime) {
+      return this.calendarService.getHHmm(datetime);
+    }
+  }
+  private initArrivalTimes(item: IPassengerHotelBookInfo) {
+    const bookInfo = item && item.bookInfo;
+    if (
+      bookInfo &&
+      bookInfo.bookInfo &&
+      bookInfo.bookInfo.roomPlan &&
+      bookInfo.bookInfo.roomPlan.BeginDate
+    ) {
+      this.arrivalDateTimes = [];
+      const dt = moment(bookInfo.bookInfo.roomPlan.BeginDate)
+        .startOf("date")
+        .add(12, "hours");
+      const edt = dt.clone().add(18, "hours");
+      const n = edt.diff(dt, "minutes") / 30;
+      for (let i = 0; i <= n; i++) {
+        this.arrivalDateTimes.push(
+          dt
+            .clone()
+            .add(i * 30, "minutes")
+            .format("YYYY-MM-DD HH:mm")
+        );
+      }
+    }
+  }
+  async onSelectIllegalReason(item: IPassengerHotelBookInfo) {
+    if (item.isOtherIllegalReason) {
+      return;
+    }
+    const p = await this.popoverCtrl.create({
+      component: SelectComponent,
+      cssClass: "vw-70",
+      componentProps: {
+        label: "超标原因",
+        data: (this.illegalReasons || []).map((it) => {
+          return {
+            label: it.Name,
+            value: it.Name,
+          };
+        }),
+      },
+    });
+    p.present();
+    const data = await p.onDidDismiss();
+    if (data && data.data) {
+      item.illegalReason = data.data;
+    }
+  }
+  getCreditCardInfoName(item: IPassengerHotelBookInfo) {
+    switch (item && item.creditCardInfo && item.creditCardInfo.creditCardType) {
+      case "VI":
+        return "VISA";
+      case "AX":
+        return "美国运通卡";
+      case "CA":
+        return "万事达卡";
+      case "JC":
+        return "JCB";
+      case "DC":
+        return "大来卡";
+      default:
+        return "";
     }
   }
   getRuleMessage(roomPlan: RoomPlanEntity) {

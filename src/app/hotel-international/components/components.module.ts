@@ -19,6 +19,8 @@ import { InterHotelQueryEnComponent } from './inter-hotel-query_en/inter-hotel-q
 import { InterRoomShowItemEnComponent } from './inter-room-show-item_en/inter-room-show-item_en.component';
 import { InterRoomPlanItemEnComponent } from './inter-room-plan-item_en/inter-room-plan-item_en.component';
 import { InterHotelStarPriceEnComponent } from './inter-hotel-starprice_en/inter-hotel-starprice_en.component';
+import { InterHotelOutNumberComponent } from './hotel-outnumber/hotel-outnumber.component';
+import { InterHotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hotel-addcontacts-comp.component';
 
 @NgModule({
   declarations: [
@@ -30,11 +32,13 @@ import { InterHotelStarPriceEnComponent } from './inter-hotel-starprice_en/inter
     InterRoomShowItemComponent,
     InterRoomShowItemEnComponent,
     ChangeInterRoomPlanDateComponent,
+    InterHotelAddcontactsCompComponent,
     InterHotelQueryComponent,
     InterHotelQueryEnComponent,
     InterHotelStarPriceComponent,
     InterHotelStarPriceEnComponent,
     InterRecommendRankComponent,
+    InterHotelOutNumberComponent,
     AmapComponent,
     OverHotelComponent
   ],
@@ -48,10 +52,12 @@ import { InterHotelStarPriceEnComponent } from './inter-hotel-starprice_en/inter
   exports: [
     AmapComponent,
     InterHotelWarrantyComponent,
+    InterHotelAddcontactsCompComponent,
     InterHotelQueryComponent,
     InterHotelQueryEnComponent,
     HotelListItemComponent,
     AppComponentsModule,
+    InterHotelOutNumberComponent,
     InterRoomPlanItemComponent,
     InterRoomPlanItemEnComponent,
     InterRoomShowItemComponent,
