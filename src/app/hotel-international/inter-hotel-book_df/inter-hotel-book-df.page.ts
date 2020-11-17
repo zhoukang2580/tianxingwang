@@ -169,18 +169,20 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
       })
     );
   }
-  calcNights() {
-    this.curSelectedBookInfo = this.hotelService.getBookInfos()[0];
+  calcNights(curSelectedBookInfo: IPassengerHotelBookInfo) {
+    // this.curSelectedBookInfo = this.hotelService.getBookInfos()[0];
+
     if (
-      this.curSelectedBookInfo &&
-      this.curSelectedBookInfo.bookInfo &&
-      this.curSelectedBookInfo.bookInfo.roomPlan &&
-      this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate &&
-      this.curSelectedBookInfo.bookInfo.roomPlan.EndDate
+      curSelectedBookInfo &&
+      curSelectedBookInfo.bookInfo &&
+      curSelectedBookInfo.bookInfo.bookInfo &&
+      curSelectedBookInfo.bookInfo.bookInfo.roomPlan &&
+      curSelectedBookInfo.bookInfo.bookInfo.roomPlan.BeginDate &&
+      curSelectedBookInfo.bookInfo.bookInfo.roomPlan.EndDate
     ) {
       return this.calendarService.diff(
-        this.curSelectedBookInfo.bookInfo.roomPlan.EndDate,
-        this.curSelectedBookInfo.bookInfo.roomPlan.BeginDate,
+        curSelectedBookInfo.bookInfo.bookInfo.roomPlan.EndDate,
+        curSelectedBookInfo.bookInfo.bookInfo.roomPlan.BeginDate,
         "days"
       );
     }
@@ -231,7 +233,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.curSelectedBookInfo = evt.bookInfo;
     if (evt.isShow) {
       this.dates = [];
-      const n = this.calcNights();
+      const n = this.calcNights(this.combindInfos && this.combindInfos[0]);
       if (
         this.curSelectedBookInfo &&
         this.curSelectedBookInfo.bookInfo &&
@@ -1234,7 +1236,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     const bookInfos = this.hotelService.getBookInfoSource();
     this.curSelectedBookInfo = bookInfos[0];
     this.dates = [];
-    const n = this.calcNights();
+    const n = this.calcNights(this.combindInfos && this.combindInfos[0]);
     // debugger
     for (let i = 0; i < n; i++) {
       this.dates.push({

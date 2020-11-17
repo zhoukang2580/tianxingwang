@@ -78,6 +78,7 @@ export class InternationalHotelDetailDfPage
   private curSlideIndx = 0;
   hotelName: string;
   canAddPassengers = false;
+  isLoading = false;
   selectedPassengers: PassengerBookInfo<IInterHotelInfo>[];
   hotel: HotelEntity;
   config: ConfigEntity;
@@ -481,16 +482,20 @@ export class InternationalHotelDetailDfPage
     this.initConfig();
     this.hotel = this.hotelService.viewHotel;
     if (this.hotel) {
+      if (this.isLoading) {
+        return;
+      }
       this.subscription.unsubscribe();
       this.subscription = this.hotelService
         .getHotelDetail(this.hotel.Id)
-        // .pipe(
-        //   finalize(() => {
-        //     if (this.refresher) {
-        //       this.refresher.complete();
-        //     }
-        //   })
-        // )
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+            if (this.refresher) {
+              this.refresher.complete();
+            }
+          })
+        )
         .subscribe((res) => {
           console.log("getHotelDetail", res);
           if (res) {
