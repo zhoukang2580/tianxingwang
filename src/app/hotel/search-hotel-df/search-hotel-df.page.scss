@@ -28,23 +28,26 @@ ion-toolbar.ios {
 
 ion-card {
   z-index: 100;
-  position: relative;
-  top: 17%;
   box-shadow: 0px 8px 12px 0px #dcd4fcb0;
 }
 .cnt {
-  top: 0.5em;
+  top: 20vh;
+  --background: transparent;
+  z-index: 1000;
+  .wrapper {
+    position: relative;
+  }
 }
 .search-img {
+  margin-top: -1em;
   position: absolute;
-  top: 25%;
   right: 0.6em;
   left: 0.6em;
   z-index: 101;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 3.5em;
+  height: 4em;
 
   &.ios {
     right: 1em;
@@ -90,7 +93,7 @@ ion-card {
     font-family: PingFang SC;
     font-weight: bold;
     color: #333333;
-    top: 1.3em;
+    top: 50%;
   }
 
   .right .text {
@@ -105,7 +108,7 @@ ion-card {
 .segments {
   background-color: #f6f6f6;
   position: relative;
-  height: 2.5em;
+  height: 3em;
 }
 
 .date {

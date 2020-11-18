@@ -336,8 +336,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.bookInfo.bookInfo &&
       item.bookInfo.bookInfo.roomPlan
     ) {
-      return this.hotelService.checkRoomPlanIsFreeBook(
-        item.bookInfo.bookInfo.roomPlan
+      return (
+        this.hotelService.checkRoomPlanIsFreeBook(
+          item.bookInfo.bookInfo.roomPlan
+        ) && item.bookInfo.bookInfo.roomPlan.isFreeBookRoom
       );
     }
   }

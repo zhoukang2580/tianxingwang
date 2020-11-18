@@ -126,4 +126,5 @@ export class RoomPlanEntity extends BaseVariablesEntity {
 
   Langs: RoomPlanItemLangEntity[];
   isFull: boolean; // 是否满房
+  isFreeBookRoom: boolean; // 是否满房
 }
