@@ -468,6 +468,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
+    evt.roomPlan.isFreeBookRoom=true;
     const color = evt.color || "success";
     const policies = this.hotelPolicy || (await this.getPolicy()) || [];
     const policy =
@@ -555,6 +556,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
+    evt.roomPlan.isFreeBookRoom=false;
     const color = evt.color || "";
     const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
     const policies = this.hotelPolicy || (await this.getPolicy()) || [];
