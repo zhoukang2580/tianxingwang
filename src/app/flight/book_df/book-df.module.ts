@@ -7,20 +7,20 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { BookPage } from "./book.page";
+import { BookDfPage } from "./book-df.page";
 import { FlightPipesModule } from "../pipes/Pipes.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
-import { StylePageGuard } from 'src/app/guards/style-page.guard';
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
-    component: BookPage,
+    component: BookDfPage,
     canActivate: [StylePageGuard, ConfirmCredentialInfoGuard],
-    canDeactivate:[CandeactivateGuard]
+    canDeactivate: [CandeactivateGuard],
   },
 ];
 
@@ -36,6 +36,6 @@ const routes: Routes = [
     TmcComponentsModule,
     AppComponentsModule,
   ],
-  declarations: [BookPage],
+  declarations: [BookDfPage],
 })
-export class FlightBookPageModule {}
+export class FlightBookDfPageModule {}
