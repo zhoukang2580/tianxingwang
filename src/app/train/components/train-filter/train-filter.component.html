@@ -1,40 +1,58 @@
 <ion-header>
-
+  <ion-title>筛选</ion-title>
 </ion-header>
-<ion-content>
-    <ion-list lines='none'>
-        <ion-list-header>车次类型</ion-list-header>
-        <ion-row>
-            <ion-col size='5' *ngFor='let type of trainTypes' (click)='toggleCheck(type)'>
-                <ion-chip [color]='type.isChecked?"secondary":""'>
-                    {{type.label}}</ion-chip>
-            </ion-col>
-        </ion-row>
-    </ion-list>
-    <ion-list lines='none' *ngIf=''>
-        <ion-list-header>出发车站</ion-list-header>
-        <ion-row>
-            <ion-col size='4' *ngFor='let type of depatureStations' (click)='toggleCheck(type)'>
-                <ion-chip [color]='type.isChecked?"secondary":""'>
-                    {{type.label}}</ion-chip>
-            </ion-col>
-        </ion-row>
-    </ion-list>
-    <ion-list lines='none' *ngIf=''>
-        <ion-list-header>到达车站</ion-list-header>
-        <ion-row>
-            <ion-col size='4' *ngFor='let type of arrivalStations' (click)='toggleCheck(type)'>
-                <ion-chip [color]='type.isChecked?"secondary":""'>
-                    {{type.label}}</ion-chip>
-            </ion-col>
-        </ion-row>
-    </ion-list>
-    <ion-list>
-        <ion-list-header>出发时间</ion-list-header>
-        <app-time-span style="text-transform: capitalize;" (sCond)='onTimeSpan($event)'></app-time-span>
-    </ion-list>
+<ion-content style="--background: #fff">
+  <ion-list lines="none">
+    <ion-list-header>车次类型</ion-list-header>
+    <ion-row>
+      <ion-col
+        size="4"
+        *ngFor="let type of trainTypes"
+        (click)="toggleCheck(type)"
+      >
+        <ion-chip [color]="type.isChecked ? 'secondary' : ''">
+          {{ type.label }}</ion-chip
+        >
+      </ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-list lines="none" *ngIf="">
+    <ion-list-header>出发车站</ion-list-header>
+    <ion-row>
+      <ion-col
+        size="4"
+        *ngFor="let type of depatureStations"
+        (click)="toggleCheck(type)"
+      >
+        <ion-chip [color]="type.isChecked ? 'secondary' : ''">
+          {{ type.label }}</ion-chip
+        >
+      </ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-list lines="none" *ngIf="">
+    <ion-list-header>到达车站</ion-list-header>
+    <ion-row>
+      <ion-col
+        size="4"
+        *ngFor="let type of arrivalStations"
+        (click)="toggleCheck(type)"
+      >
+        <ion-chip [color]="type.isChecked ? 'secondary' : ''">
+          {{ type.label }}</ion-chip
+        >
+      </ion-col>
+    </ion-row>
+  </ion-list>
+  <ion-list>
+    <ion-list-header>出发时间</ion-list-header>
+    <app-time-span
+      style="text-transform: capitalize"
+      (sCond)="onTimeSpan($event)"
+    ></app-time-span>
+  </ion-list>
 </ion-content>
-<ion-footer>
+<!-- <ion-footer>
     <ion-toolbar>
         <ion-buttons slot='start'>
             <ion-button color='medium' fill='clear' (click)='reset()'>重置</ion-button>
@@ -43,4 +61,26 @@
             <ion-button style="text-transform: capitalize;" color='secondary' fill='clear' (click)='done()'>确定</ion-button>
         </ion-buttons>
     </ion-toolbar>
+</ion-footer> -->
+<ion-footer class="ion-padding-horizontal">
+  <ion-buttons>
+    <ion-button
+      style="flex: 1; height: 40px"
+      fill="outline"
+      expand="block"
+      color="dark"
+      (click)="reset()"
+    >
+      重置
+    </ion-button>
+    <ion-button
+      style="flex: 2; height: 40px"
+      fill="solid"
+      expand="block"
+      color="secondary"
+      (click)="done()"
+    >
+      确定
+    </ion-button>
+  </ion-buttons>
 </ion-footer>
