@@ -35,6 +35,7 @@ import {
 import { RefundFlightTicketTipComponent } from "../refund-flight-ticket-tip/refund-flight-ticket-tip.component";
 import { OrderService } from "../../order.service";
 import { LanguageHelper } from "src/app/languageHelper";
+import { TrainSeatEntity } from 'src/app/train/models/TrainSeatEntity';
 @Component({
   selector: "app-order-item-df",
   templateUrl: "./order-item-df.component.html",

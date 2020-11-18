@@ -80,6 +80,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   trainsCount = 0;
   vmTrains: TrainEntity[] = [];
   isLoading = false;
+  isOpenFilter = false;
   get isFiltered() {
     return (
       this.filterCondition &&
@@ -317,6 +318,14 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       },
     });
   }
+  onCloseFilter() {
+    this.isOpenFilter = false;
+    this.modalCtrl.getTop().then((t) => {
+      if (t) {
+        t.dismiss();
+      }
+    });
+  }
   async onFilter() {
     this.activeTab = "filter";
     const m = await this.modalCtrl.create({
@@ -324,6 +333,14 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       componentProps: {
         trains: JSON.parse(JSON.stringify(this.trains)),
       },
+      cssClass: "offset-top-40 top-radius-8",
+      showBackdrop: false,
+      swipeToClose: true,
+    });
+    m.present();
+    this.isOpenFilter = true;
+    m.onWillDismiss().then(() => {
+      this.isOpenFilter = false;
     });
     if (m) {
       m.present();

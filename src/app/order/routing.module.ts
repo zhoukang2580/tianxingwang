@@ -85,6 +85,13 @@ export const routes: Routes = [
        import('./order-train-detail_en/order-train-detail_en.module').then(
          m => m.OrderTrainDetailEnPageModule
        )
+   },
+  {
+     path: "order-train-detail_df",
+     loadChildren: () =>
+       import('./order-train-detail_df/order-train-detail_df.module').then(
+         m => m.OrderTrainDetailDfPageModule
+       )
    }
 
 ];

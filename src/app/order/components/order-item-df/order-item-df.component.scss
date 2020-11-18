@@ -8,6 +8,7 @@
   padding: 0.2em 0;
   display: flex;
   align-items: flex-start;
+  font-size: 12px;
   & > *:first-child {
     min-width: 2.25rem;
     margin-right: 0.5em;
@@ -21,6 +22,11 @@
 .select-text {
   user-select: text;
 }
+
+.select-text strong{
+  user-select:text;
+  font:inherit
+}
 .order-flight-ticket ~ .order-flight-ticket {
   border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
 }
@@ -28,9 +34,53 @@
   margin-top: -8px;
   margin-bottom: -8px;
 }
+
+.train_ion_id{
+  font-size: 12px;
+}
 .stop-line .line{
   background-color: rgba(var(--ion-color-dark-rgb), 0.3);
-  width: 6.1em;
+  height: 1px;
+  width: 4.6em;
   position: relative;
-  top: -1.3em;
+}
+.station{
+  display: flex;
+  align-items: center;
+  min-width: 10em;
+  font-size: 1em;
+}
+img{
+  width: 1.1em;
+  margin-left: 14px;
+}
+
+.line{
+  position: relative;
+  height: 1px;
+  width: 1.8em;
+  background: #0033fe;
+  display: flex;
+  justify-content: flex-end;
+}
+.xian{
+  height: 1px;
+  background: #0033fe;
+  width: 0.5em;
+  transform: rotate(45deg);
+  transform-origin: right top; 
+}
+.train_ion_money{
+  display: grid;
+  justify-content: flex-end;
+}
+
+.ion-padding-end{
+  font-size: 12px;
+  margin-left: 12px;
+}
+
+.train_ion{
+  font-size: 0.8em;
+  margin-left: 4.2em;
 }
