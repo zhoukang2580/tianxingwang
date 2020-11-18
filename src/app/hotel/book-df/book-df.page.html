@@ -28,7 +28,7 @@
                 <span class="ion-margin-horizontal">共{{calcNights(combindInfo)}}晚</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.EndDate?.substr(0,10)}}</span>
               </div>
-              <div class="date font padding-v" *ngIf='isRoomPlanFreeBook(combindInfo)&&combindInfo?.bookInfo?.bookInfo?.roomPlan?.isFreeBookRoom'>
+              <div class="date font padding-v" *ngIf='isRoomPlanFreeBook(combindInfo)'>
                 <span>个人支付：</span>
                 <ion-text color='danger'>￥{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.VariablesJsonObj?.SelfPayAmount}}</ion-text>
                 <span class='ion-margin-start'>公司支付：</span>
