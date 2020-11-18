@@ -31,10 +31,10 @@ ion-card {
   box-shadow: 0px 8px 12px 0px #dcd4fcb0;
 }
 .cnt {
-  top: 0.5em;
+  top: 20vh;
+  --background: transparent;
   .wrapper {
     position: relative;
-    top: 17vh;
   }
 }
 .search-img {
