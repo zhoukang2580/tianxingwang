@@ -1,8 +1,6 @@
-<ion-list>
-  <ion-radio-group [value]='selectedItem'>
-    <ion-item *ngFor='let r of hotelQuery?.ranks' (click)='onSelect(r)'>
-      <ion-label color='{{r.isSelected?"secondary":"dark"}}'>{{r.label}}</ion-label>
-      <ion-radio [value]='r'></ion-radio>
-    </ion-item>
-  </ion-radio-group>
+<ion-list lines='none'>
+  <ion-item *ngFor='let r of hotelQuery?.ranks' (click)='onSelect(r)'>
+    <ion-label class='label' color='{{r.isSelected?"secondary":"dark"}}'>{{r.label}}</ion-label>
+    <ion-icon name='checkmark' color='secondary' *ngIf='r.isSelected' slot='end'></ion-icon>
+  </ion-item>
 </ion-list>

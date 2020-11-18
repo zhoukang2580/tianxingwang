@@ -14,7 +14,7 @@
             <ul class='third-list' *ngIf='thirdItems?.length'>
                 <li *ngFor='let item of thirdItems' (click)='onItemClick(item,thirdItems)' [attr.dataid]='item.id'>
                     <ion-text color='{{item.isSelected?"secondary":"dark"}}'>{{item.label}}</ion-text>
-                    <ion-icon name="checkmark" *ngIf='item.isSelected' color='secondary'></ion-icon>
+                    <!-- <ion-icon name="checkmark" *ngIf='item.isSelected' color='secondary'></ion-icon> -->
                 </li>
             </ul>
         </ng-container>
@@ -22,7 +22,7 @@
             <ul class='normal-list' *ngIf='normalItems?.length'>
                 <li *ngFor='let item of normalItems' (click)='onItemClick(item,normalItems)' [attr.dataid]='item.id'>
                     <ion-text color='{{item.isSelected?"secondary":"dark"}}'>{{item.label}}</ion-text>
-                    <ion-icon name="checkmark" *ngIf='item.isSelected' color='secondary'></ion-icon>
+                    <!-- <ion-icon name="checkmark" *ngIf='item.isSelected' color='secondary'></ion-icon> -->
                 </li>
             </ul>
         </ng-template>
