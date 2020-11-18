@@ -33,6 +33,7 @@ ion-card {
 .cnt {
   top: 20vh;
   --background: transparent;
+  z-index: 1000;
   .wrapper {
     position: relative;
   }
