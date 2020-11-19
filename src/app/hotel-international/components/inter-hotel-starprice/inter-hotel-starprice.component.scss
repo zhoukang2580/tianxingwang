@@ -6,25 +6,38 @@
   flex: 1;
   color: var(--ion-color-danger);
 }
+
 ion-chip {
   width: 100%;
   justify-content: center;
+  text-transform: capitalize;
 }
-.wrapper {
-  // height: 60vh;
-  overflow: auto;
-}
-ion-range {
-  --knob-size: 1.5em;
-}
-:host {
-  display: block;
+ion-item-divider {
+  --background: initial;
 }
 .title {
   font-size: 13px;
   font-family: PingFang SC;
   font-weight: bold;
   color: #333333;
+  --background: initial;
+}
+ion-item-divider {
+  text-transform: capitalize;
+}
+
+.wrapper {
+  -webkit-overflow-scrolling: touch;
+  height: 60vh;
+  overflow: auto;
+}
+
+ion-range {
+  --knob-size: 1.5em;
+}
+
+:host {
+  display: block;
 }
 .items {
   width: 100%;

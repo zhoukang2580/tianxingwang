@@ -319,8 +319,8 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.internationalHotelService.setSearchConditionSource({
           ...this.internationalHotelService.getSearchCondition(),
-          checkinDate: checkInDate.date,
-          checkoutDate: checkOutDate.date,
+          checkInDate: checkInDate.date,
+          checkOutDate: checkOutDate.date,
         });
       }
     }

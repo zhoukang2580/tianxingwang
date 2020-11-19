@@ -65,13 +65,14 @@ ion-header {
 }
 .query-condition {
   position: fixed;
-  top: 7em;
+  // top: 7em;
   left: 0;
   right: 0;
   margin-top: -0.25em;
   background-color: white;
   opacity: 0;
   z-index: -1000;
+  top: 6em;
   &.md {
     top: 6em;
   }

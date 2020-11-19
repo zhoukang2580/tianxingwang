@@ -40,13 +40,13 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
   get totalFlyDays() {
     if (
       this.searchCondition &&
-      this.searchCondition.checkinDate &&
-      this.searchCondition.checkoutDate
+      this.searchCondition.checkInDate &&
+      this.searchCondition.checkOutDate
     ) {
       const nums = Math.abs(
         this.calendarService.diff(
-          this.searchCondition.checkoutDate,
-          this.searchCondition.checkinDate,
+          this.searchCondition.checkOutDate,
+          this.searchCondition.checkInDate,
           "days"
         )
       );
@@ -170,8 +170,8 @@ async onSearchHotel() {
       const checkOutDate = days[1];
       this.hotelService.setSearchConditionSource({
         ...this.hotelService.getSearchCondition(),
-        checkinDate: checkInDate.date,
-        checkoutDate: checkOutDate.date
+        checkInDate: checkInDate.date,
+        checkOutDate: checkOutDate.date
       });
     }
   }

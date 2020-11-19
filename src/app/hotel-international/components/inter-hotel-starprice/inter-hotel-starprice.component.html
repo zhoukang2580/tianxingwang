@@ -1,6 +1,6 @@
 <div class='wrapper'>
-  <ion-list color='light'>
-    <ion-item-divider>{{langOpt.customprice}}
+  <ion-list color='light' lines='none'>
+    <ion-item-divider class='title'>{{langOpt.customprice}}
       <div class='custome-price'>
         <span>￥{{value?.lower}}</span>
         <span>￥{{value?.upper>=1000?"1000+":value?.upper}}</span>
@@ -27,14 +27,6 @@
             </li>
           </ul>
         </div>
-        <!-- <div>
-          <ion-row>
-            <ion-col size='4' *ngFor='let item of tab.items'>
-              <ion-chip color='{{item.isSelected?"secondary":"dark"}}' (click)='onItemClick(item,tab)'>{{item.label}}
-              </ion-chip>
-            </ion-col>
-          </ion-row>
-        </div> -->
       </ion-item>
     </ng-container>
   </ion-list>
