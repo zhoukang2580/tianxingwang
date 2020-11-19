@@ -312,7 +312,7 @@
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item>
                 <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'> </ion-radio>
+                <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value' mode='md'> </ion-radio>
               </ion-item>
               <div class="line"></div>
             </ng-container>
@@ -323,7 +323,7 @@
               <ng-container *ngIf='!serviceFee else zfTpl'>
                 <ion-item>
                   <ion-label>前台现付</ion-label>
-                  <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
+                  <ion-radio [value]="OrderTravelPayType.Company" mode='md'></ion-radio>
                 </ion-item>
                 <div class="line"></div>
               </ng-container>
@@ -339,7 +339,7 @@
                   <ng-container *ngIf='tmc.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc.HotelPayType else configPayTpl'>
                     <ion-item>
                       <ion-label>前台现付</ion-label>
-                      <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
+                      <ion-radio mode='md' [value]="OrderTravelPayType.Company"></ion-radio>
                     </ion-item>
                     <div class="line"></div>
                   </ng-container>
@@ -354,7 +354,7 @@
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item>
                 <ion-label>前台现付（服务费:{{pt.label}}）</ion-label>
-                <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value'> </ion-radio>
+                <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value' mode='md'> </ion-radio>
               </ion-item>
               <div class="line"></div>
             </ng-container>
@@ -370,12 +370,12 @@
         <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='onOrderTravelPayTypeSelect()'>
           <ion-item>
             <ion-label>公付</ion-label>
-            <ion-radio [value]="OrderTravelPayType.Company"> </ion-radio>
+            <ion-radio [value]="OrderTravelPayType.Company" mode='md'> </ion-radio>
           </ion-item>
           <div class="line"></div>
           <ion-item>
             <ion-label>实时扣款</ion-label>
-            <ion-radio [value]="OrderTravelPayType.Credit"> </ion-radio>
+            <ion-radio [value]="OrderTravelPayType.Credit" mode='md'> </ion-radio>
           </ion-item>
         </ion-radio-group>
       </ion-list>
