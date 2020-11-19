@@ -23,7 +23,7 @@
         <ion-item-group>
           <!-- <ion-item-divider>车票预订信息:</ion-item-divider> -->
           <ion-item class="ion-inbook">
-            <div style='width: 100%;padding: 1em 0.25em '>
+            <div style='width: 100%;padding: 1.6em 0.25em;'>
               <div>
                 <span class="name">{{combindInfo?.vmCredential?.Name}}</span>&nbsp;&nbsp;
                 <span class="idcode">身份证号: {{combindInfo?.vmCredential?.Number}}</span>
@@ -190,13 +190,7 @@
         </ion-item-group>
         <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item-group>
-            <!-- <ion-list-header color='primary' class='sticky'>
-              <ion-label class='ion-text-wrap' *ngIf='getGroupedTitle(combindInfo) as title'>
-                {{title}}
-                【{{tmc?.Name}}】
-              </ion-label>
-            </ion-list-header> -->
-            <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
+            <ion-item class="ion-no-margin language" [attr.notifyLanguageid]='combindInfo.id'>
               <ion-label>通知语言:</ion-label>
               <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
                 <ion-select-option value=''>不发</ion-select-option>
@@ -204,7 +198,7 @@
                 <ion-select-option value='en'>英文</ion-select-option>
               </ion-select>
             </ion-item>
-            <ion-item class="ion-no-margin" *ngIf='viewModel?.isCanSkipApproval$|async'>
+            <!-- <ion-item class="ion-no-margin" *ngIf='viewModel?.isCanSkipApproval$|async'>
               <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
               <ion-checkbox class='ion-margin-end' color="secondary" [(ngModel)]='combindInfo.isSkipApprove'>
               </ion-checkbox>
@@ -222,8 +216,8 @@
                   </ion-text>
                 </ion-label>
               </ion-item>
-            </ng-container>
-            <ng-template #exApproval>
+            </ng-container> -->
+            <!-- <ng-template #exApproval>
               <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' disabled
                 [attr.approvalid]='combindInfo.id'>
                 <ion-label>
@@ -232,7 +226,7 @@
                   </ion-text>
                 </ion-label>
               </ion-item>
-            </ng-template>
+            </ng-template> -->
           </ion-item-group>
           <ion-item-group>
             <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
@@ -242,22 +236,24 @@
           </ion-item-group>
         </ng-container>
       </ion-list>
-      <ion-list>
+      <ion-list class="list">
         <ion-item-group *ngIf='!searchTrainModel?.isExchange'>
-          <ion-item-divider>
+          <!-- <ion-item-divider>
             授权账号查看订单：
-          </ion-item-divider>
-          <ion-item>
+          </ion-item-divider> -->
+          <ion-item class="item_acc">
             <app-book-addcontacts-comp  buttonText='授权账号查看订单' [(contacts)]='addContacts'>
             </app-book-addcontacts-comp>
           </ion-item>
         </ion-item-group>
         <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
-          <ion-item-divider>
-            支付方式：
-          </ion-item-divider>
-          <ion-item [disabled]='searchTrainModel?.isExchange'>
-            <div style='width: 100%'>
+          <ion-item class="ion-one">
+            <div class="payment_method">
+              支付方式
+            </div>
+          </ion-item>
+          <ion-item class="ion-two" [disabled]='searchTrainModel?.isExchange'>
+            <div class="pay-met">
               <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'
                 (ionChange)="calcTotalPrice()">
                 <ion-item *ngFor='let pt of orderTravelPayTypes'>
@@ -281,19 +277,25 @@
       </ion-col>
     </ion-row>
   </ng-template>
+  <div class="center">
+    <span>
+      自2019年08月18日到2020年11月20日期间入住，离到店日不足6小时取消将收取罚金全额房费的100%，到店日不足0小时之后无法取消。2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
+    </span>
+  </div>
 </ion-content>
 <ion-footer>
-  <ion-toolbar (click)="isShowFee=!isShowFee">
-    <ion-buttons slot='start'>
+  <ion-toolbar class="toolbar" (click)="isShowFee=!isShowFee">
+    <ion-buttons slot='start' class="buttons">
       <!-- <ion-button color='secondary'>总计:
         <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
       </ion-button> -->
-      <ion-text color="secondary">总计:</ion-text>
-      <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
-      <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
-      <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
+      <ion-text class="sum" color="danger">总计:&nbsp;</ion-text>
+      <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}&nbsp;</ion-text>
+      <ion-text color="dark" style="font-size: 8px;">明细</ion-text>
+      <ion-icon name="caret-down-outline" color="dark" *ngIf="!isShowFee"></ion-icon>
+      <ion-icon name="caret-up-outline" color="dark" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
-    <ion-button slot='end' size='small' color='secondary' (click)='bookTrain(false,$event)' [disabled]='isSubmitDisabled'> 提交
+    <ion-button class="submit" slot='end' size='small' color='secondary' (click)='bookTrain(false,$event)' [disabled]='isSubmitDisabled'>提交订单
     </ion-button>
     <!-- <ion-button slot='end' size='small' *ngIf='(isCanSave$|async)&&!(searchTrainModel?.isExchange)' color='secondary'
       (click)='bookTrain(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button> -->
