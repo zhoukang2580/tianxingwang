@@ -738,7 +738,8 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     //   component: HotelRoomBookedinfosComponent
     // });
     // await m.present();
-    this.router.navigate(["hotel-room-bookedinfos"]);
+    // this.router.navigate(["hotel-room-bookedinfos"]);
+    this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
   }
   getRoomLowestAvgPrice(room: RoomEntity) {
     let result = 0;

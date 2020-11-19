@@ -24,9 +24,9 @@
   </app-refresher>
   <div class="segments-wrapper">
     <div class="segments">
-      <div class="segment" (click)='onSegmentChanged({detail:{value:"normal"}})' [class.active]='searchHotelModel?.hotelType=="normal"'>非协议酒店</div>
-      <div class="segment" (click)='onSegmentChanged({detail:{value:"agreement"}})' [class.active]='searchHotelModel?.hotelType=="agreement"'>协议酒店</div>
-      <div class="segment" (click)='onSegmentChanged({detail:{value:"specialprice"}})' [class.active]='searchHotelModel?.hotelType=="specialprice"'>特价酒店</div>
+      <div class="segment" (click)='onSegmentChanged("normal")' [class.active]='searchHotelModel?.hotelType=="normal"'>非协议酒店</div>
+      <div class="segment" (click)='onSegmentChanged("agreement")' [class.active]='searchHotelModel?.hotelType=="agreement"'>协议酒店</div>
+      <div class="segment" (click)='onSegmentChanged("specialprice")' [class.active]='searchHotelModel?.hotelType=="specialprice"'>特价酒店</div>
     </div>
   </div>
   <div class="freebook" *ngIf='isFreeBook' (click)='onShowFreeBookTip()'>
