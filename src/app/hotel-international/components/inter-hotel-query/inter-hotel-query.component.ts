@@ -71,6 +71,7 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
   }
   onTabClick(tab: IInterHotelQueryTab) {
     const active = tab.active;
+    this.tab = tab;
     this.tabs = this.tabs.map(it => {
       it.active = false;
       return it;
@@ -79,7 +80,6 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
       this.tab.active = !active;
     } else {
       tab.active = true;
-      this.tab = tab;
     }
     // this.tab.active = !this.tab.active;
     this.onShowPanel();

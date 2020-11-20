@@ -1,5 +1,5 @@
 .date-city {
-  font-size: 0.7rem;
+  font-size: 10px;
   flex-flow: column nowrap;
   align-items: flex-start;
   min-width: 4em;
@@ -9,11 +9,11 @@
   max-width: 5em;
   overflow: hidden;
   white-space: nowrap;
-  font-size: 0.6rem;
+  font-size: 10px;
   margin-left: 0.5em;
 }
 .nights {
-  font-size: 0.6rem;
+  font-size: 10px;
 }
 .left {
   white-space: nowrap;
@@ -22,6 +22,7 @@
 .left,
 .right,
 .search-bar {
+  font-size: 10px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -32,7 +33,6 @@
   margin: 0 0.5em;
 }
 .right {
-  font-size: 0.8rem;
   flex: 1;
 }
 input {
@@ -42,13 +42,11 @@ input {
   background: transparent;
 }
 .search-bar {
+  height: 30px;
+  background: #F6F6F6;
+  border-radius: 5px;
   margin-left: 0.5em;
   flex: 1;
-  border-radius: 0.3em;
-  margin-right: 1em;
-  height: 1.88rem;
-  background: #f6f6f6;
-  border-radius: 0.2rem;
   color: #9a9a9a;
   text-align: center;
   justify-content: center;

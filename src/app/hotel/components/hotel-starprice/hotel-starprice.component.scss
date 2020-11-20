@@ -12,11 +12,15 @@ ion-chip {
   justify-content: center;
   text-transform: capitalize;
 }
+ion-item-divider {
+  --background: initial;
+}
 .title {
   font-size: 13px;
   font-family: PingFang SC;
   font-weight: bold;
   color: #333333;
+  --background: initial;
 }
 ion-item-divider {
   text-transform: capitalize;

@@ -281,8 +281,8 @@ export class SearchHotelPage implements OnInit, OnDestroy {
       } else {
         this.internationalHotelService.setSearchConditionSource({
           ...this.internationalHotelService.getSearchCondition(),
-          checkinDate: checkInDate.date,
-          checkoutDate: checkOutDate.date,
+          checkInDate: checkInDate.date,
+          checkOutDate: checkOutDate.date,
         });
       }
     }

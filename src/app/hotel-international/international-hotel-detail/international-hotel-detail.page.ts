@@ -7,8 +7,8 @@ import { AppHelper } from "./../../appHelper";
 import { SlidesComponent } from "./../../components/slides/slides.component";
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { ConfigService } from "./../../services/config/config.service";
-import { finalize, debounceTime } from "rxjs/operators";
-import { Subscription, fromEvent } from "rxjs";
+import { finalize, debounceTime, map } from "rxjs/operators";
+import { Subscription, fromEvent, of, from } from "rxjs";
 import {
   InternationalHotelService,
   IInterHotelSearchCondition,
@@ -78,6 +78,8 @@ export class InternationalHotelDetailPage
   private curSlideIndx = 0;
   hotelName: string;
   canAddPassengers = false;
+  isShowAddPassenger$ = of(false);
+  selectedPassengersNumbers$ = of(0);
   selectedPassengers: PassengerBookInfo<IInterHotelInfo>[];
   hotel: HotelEntity;
   config: ConfigEntity;
@@ -118,10 +120,35 @@ export class InternationalHotelDetailPage
           this.hotel.HotelImages[0].FullFileName))
     );
   }
+  async onCall() {
+    if (this.hotel && this.hotel.Phone) {
+      const phoneNumber = this.hotel.Phone;
+      const callNumber = window["call"];
+      // window.location.href=`tel:${phoneNumber}`;
+      if (callNumber) {
+        callNumber
+          .callNumber(phoneNumber, true)
+          .then((res) => console.log("Launched dialer!", res))
+          .catch((err) => console.log("Error launching dialer", err));
+      } else {
+        const a = document.createElement("a");
+        a.href = `tel:${phoneNumber}`;
+        a.click();
+      }
+    }else{
+      
+    }
+  }
   ngOnInit() {
     this.colors = {};
     this.hotel = this.hotelService.viewHotel;
     this.initQueryModel();
+    this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
+      map((isSelf) => !isSelf)
+    );
+    this.selectedPassengersNumbers$ = this.hotelService
+      .getBookInfoSource()
+      .pipe(map((infos) => infos.length));
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(() => {
         this.staffService.isSelfBookType().then((self) => {
@@ -800,13 +827,13 @@ export class InternationalHotelDetailPage
     });
   }
   async onOpenCalendar() {
-    const checkindate = this.queryModel && this.queryModel.checkinDate;
-    const checkoutDate = this.queryModel && this.queryModel.checkoutDate;
+    const checkindate = this.queryModel && this.queryModel.checkInDate;
+    const checkoutDate = this.queryModel && this.queryModel.checkOutDate;
     await this.hotelService.openCalendar(checkindate);
     if (this.queryModel) {
       if (
-        this.queryModel.checkinDate != checkindate ||
-        this.queryModel.checkoutDate != checkoutDate
+        this.queryModel.checkInDate != checkindate ||
+        this.queryModel.checkOutDate != checkoutDate
       ) {
         this.onSearch();
       }
@@ -848,11 +875,11 @@ export class InternationalHotelDetailPage
   private calcTotalNights() {
     if (
       this.queryModel &&
-      this.queryModel.checkoutDate &&
-      this.queryModel.checkinDate
+      this.queryModel.checkOutDate &&
+      this.queryModel.checkInDate
     ) {
-      const end = AppHelper.getDate(this.queryModel.checkoutDate).getTime();
-      const start = AppHelper.getDate(this.queryModel.checkinDate).getTime();
+      const end = AppHelper.getDate(this.queryModel.checkOutDate).getTime();
+      const start = AppHelper.getDate(this.queryModel.checkInDate).getTime();
       this.totalNights = Math.ceil((end - start) / 1000 / 3600 / 24);
     }
   }

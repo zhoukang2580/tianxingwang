@@ -67,13 +67,20 @@ ion-header {
   }
 }
 .grade-stars {
+  padding: 0.5em 0;
   font-size: 15px;
   display: flex;
   align-items: center;
   .grade {
     margin-right: 1em;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
   }
   .stars {
+    display: flex;
+    align-items: center;
+    font-size: 10px;
   }
 }
 .loc-phone {
@@ -87,14 +94,20 @@ ion-header {
   }
   .loc {
     text-align: center;
-    margin-right: 26px;
+    margin-right: 33px;
+    img {
+      width: 14px;
+    }
   }
   .phone {
     text-align: center;
+    img {
+      width: 14px;
+    }
   }
 }
 .date {
-  margin-top: 1em;
+  margin-top: 0.5rem;
   padding: 1em;
   background-color: var(--ion-color-light);
   font-size: 16px;
@@ -118,13 +131,17 @@ ion-header {
   }
 }
 .rules {
-  margin-top: 1em;
+  margin-top: 0.5rem;
   font-size: 15px;
   background-color: var(--ion-color-light);
-  padding: 1em;
+  padding: 1em 1em 0;
+  font-size: 9px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  line-height: 20px;
 }
 .room-list {
-  margin-top: 1em;
+  // margin-top: 1em;
   .room-info-title {
     padding: 1em;
     font-size: 15px;
@@ -213,8 +230,50 @@ ion-header {
   }
 }
 .show-desc {
-  display:flex;
-  .full{
+  display: flex;
+  .full {
     margin-left: auto;
+  }
+}
+.hotel-info {
+  margin-top: 0.5rem;
+}
+ion-item-divider {
+  --background: initial;
+  font-size: 15px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
+}
+.desc-name {
+  font-size: 13px;
+  font-family: PingFang SC;
+  font-weight: bold;
+  color: #333333;
+}
+.desc-detail {
+  font-size: 10px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #666666;
+  padding-left: 1em;
+  // line-height: 17px;
+}
+ion-row {
+  padding: 0.5em;
+}
+.other-templ {
+  .desc-name {
+    padding-bottom: 0.5em;
+  }
+}
+.tmpl {
+  display: flex;
+  align-items: center;
+  .desc-name {
+    align-self: flex-start;
+  }
+  .desc-detail{
+    flex: 1;
   }
 }

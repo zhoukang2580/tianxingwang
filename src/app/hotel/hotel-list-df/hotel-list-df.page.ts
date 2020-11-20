@@ -158,10 +158,10 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
     m.present();
   }
-  onSegmentChanged(ev: CustomEvent) {
+  onSegmentChanged(ev: any) {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
-      hotelType: ev.detail.value,
+      hotelType: ev,
     });
     this.hotelDayPrices = [];
     this.doRefresh();

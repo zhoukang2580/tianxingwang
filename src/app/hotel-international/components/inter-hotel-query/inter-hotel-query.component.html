@@ -1,4 +1,4 @@
-<ion-buttons>
+<!-- <ion-buttons>
   <ion-button  *ngFor='let t of tabs' color='{{t.active?"secondary":"dark"}}' (click)='onTabClick(t)'>
     <span style="font-size: 12px;" [class.has-selected-item]="checkHasItemSelected(t)">
       {{t.name}}
@@ -6,4 +6,13 @@
     <ion-icon name='chevron-up-outline' *ngIf='t.active'></ion-icon>
     <ion-icon name='chevron-down-outline' *ngIf='!t.active'></ion-icon>
   </ion-button>
-</ion-buttons>
+</ion-buttons> -->
+<div class="name">
+  <div size='small' [class.active]='t.active' *ngFor='let t of tabs' (click)='onTabClick(t)'>
+    <ion-text color='{{t.active?"secondary":"dark"}}' [class.has-selected-item]="checkHasItemSelected(t)">
+      {{t?.name}}
+    </ion-text>
+    <ion-icon name="caret-up-outline" mode='ios' *ngIf='t.active' color='{{t.active?"secondary":"dark"}}'></ion-icon>
+    <ion-icon name="caret-down-outline" *ngIf='!t.active' color='dark' mode='ios'></ion-icon>
+  </div>
+</div>

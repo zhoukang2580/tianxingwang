@@ -201,9 +201,10 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
   }
   private async resetTabs() {
     this.conditionModel = await this.hotelService.getConditions();
-    if (!this.hotelQuery) {
+    if (!this.hotelQuery || !this.conditionModel) {
       return;
     }
+    console.log("resetTabs");
     this.hotelQuery.locationAreas = [];
     this.initMetros();
     this.initOtherTabs();
@@ -284,8 +285,8 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
         it.Tag != "RailwayStation" &&
         it.Tag != "CarStation" &&
         it.Tag != "Airport" &&
-        it.Tag != "Metro" 
-        &&it.Tag != "Group" &&
+        it.Tag != "Metro" &&
+        it.Tag != "Group" &&
         it.Tag != "Company"
     ).forEach((geo) => {
       this.switchCase(geo);

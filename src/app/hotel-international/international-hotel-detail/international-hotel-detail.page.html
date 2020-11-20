@@ -75,11 +75,11 @@
       </ion-card-subtitle>
       <ion-card-content>
         <div class='date' (click)="onOpenCalendar()">
-          <div class='checkinoutdate'>{{queryModel?.checkinDate}} <span
-              class='weekName'>{{getWeekName(queryModel?.checkinDate)}}</span></div>
+          <div class='checkinoutdate'>{{queryModel?.checkInDate}} <span
+              class='weekName'>{{getWeekName(queryModel?.checkInDate)}}</span></div>
           <div *ngIf='totalNights as n'>共{{n}}晚</div>
-          <div class='checkinoutdate'>{{queryModel?.checkoutDate}} <span
-              class='weekName'>{{getWeekName(queryModel?.checkoutDate)}}</span></div>
+          <div class='checkinoutdate'>{{queryModel?.checkOutDate}} <span
+              class='weekName'>{{getWeekName(queryModel?.checkOutDate)}}</span></div>
         </div>
         <ion-button (click)='onSearch()' color='secondary' expand='block'>搜索</ion-button>
       </ion-card-content>
