@@ -35,9 +35,11 @@
 .right {
   width: 20vw;
 }
-.station .from-station-name {
-  min-width: 4em;
+
+.station ion-icon{
+  margin: -1px;
 }
+
 img.access-by-IdCard {
   width: 1.5em;
   position: absolute;
@@ -111,6 +113,7 @@ img.access-by-IdCard {
   margin: 0 1em;
   padding: 1em 0 20px;
   justify-content: center;
+  font-size: 12px;
   &::after {
     content: attr(data);
     top: 0%;
@@ -124,7 +127,8 @@ img.access-by-IdCard {
     height: 1px;
     width: 6.1em;
     position: relative;
-    top: -1.3em;
+    top: -1.1em;
+    margin-left: -8px;
     &::after {
       content: "";
       position: absolute;

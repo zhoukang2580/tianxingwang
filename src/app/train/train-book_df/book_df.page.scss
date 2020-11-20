@@ -37,56 +37,98 @@ ion-content {
   ion-item-group {
     margin: 0.5em;
   }
-  ion-item .ion-inbook{
-    --border-radius: 20px;
+  .ion-inbook {
+    height: 236px;
+    background: #ffffff;
+    border-radius: 10px;
   }
-  .list{
+  .list {
     background: #f5f7f9;
   }
-  .name{
-    font-size: 1.2em;
+  .name {
+    width: 43px;
+    height: 14px;
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: bold;
   }
-  .idcode{
-    font-size: 0.6em;
+  .idcode {
+    width: 139px;
+    height: 10px;
+    font-size: 10px;
+    font-family: PingFang SC;
+    font-weight: 500;
   }
 
-  .passenger{
-    font-size: 1.2em;
+  .add{
+    width: 23px;
+    height: 12px;
+    font-size: 12px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    color: #5099FE;
+    margin-left:14px;
+    img{
+      width: 11px;
+    }
+  }
+
+  .passenger {
+    font-size: 18px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    color: #333333;
+    margin-left: 15px;
+  }
+  .con-div{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .ion-mobile,.ion-email{
+    margin-left: 20px;
+    max-width: 7em;
+    font-size: 12px;
+  }
+  .ion-phone,.ion-ema{
+    font-size: 12px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
   }
 }
 .spacebetween {
-  display        : flex;
+  display: flex;
   justify-content: space-between;
-  font-size      : 0.8em;
-  color: var(--ion-color-dark)
+  font-size: 0.8em;
+  color: var(--ion-color-dark);
 }
 
 .fee {
   background-color: var(--ion-color-primary);
   border-top-right-radius: 10px;
-  border-top-left-radius : 10px;
-  font-size              : 0.9rem;
-  box-shadow             : 0.1em 0.2em 0.6em rgba(0, 0, 0, .1);
+  border-top-left-radius: 10px;
+  font-size: 0.9rem;
+  box-shadow: 0.1em 0.2em 0.6em rgba(0, 0, 0, 0.1);
 }
 
 .transfrom {
-  transform : translate(0, 100%);
-  position  : fixed;
+  transform: translate(0, 100%);
+  position: fixed;
   transition: all ease-in-out 200ms;
-  bottom    : 0;
-  left      : 0;
-  right     : 0;
-  z-index   : -1;
-  opacity   : 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  opacity: 0;
   max-width: 100%;
   width: 100%;
   &.show {
-    z-index  : 1;
-    opacity  : 1;
+    z-index: 1;
+    opacity: 1;
     transform: translate(0, -44px);
   }
-  .wrapper{
-    
+  .wrapper {
     display: flex;
     width: 100%;
     // max-width: 100%;
@@ -102,5 +144,72 @@ ion-content {
   width: 100%;
   z-index: 1;
   opacity: 0.5;
-  background-color: var(--ion-color-dark);;
+  background-color: var(--ion-color-dark);
 }
+
+.list {
+  --background: #f6f6f6;
+  .item_acc {
+    --background: #f6f6f6;
+  }
+  .payment_method {
+    font-size: 18px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    color: #333333;
+    --inner-border-width: 0;
+  }
+  .pay-met {
+    width: 100%;
+    margin: 0px -16px;
+  }
+  .ion-one {
+    --inner-border-width: 0;
+    border-radius: 10px 10px 0 0;
+  }
+  .ion-two {
+    border-radius: 0 0 10px 10px;
+  }
+}
+
+ion-footer .toolbar {
+  line-height: 49px;    
+  --border-width: 0;
+  .buttons{
+    margin-left:10px;
+  }
+  .sum {
+    font-size: 12px;
+  }
+  .submit {
+    width: 150px;
+    height: 32px;
+    background: #5099fe;
+    border-radius: 5px;
+  }
+}
+
+.center{
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  span{
+    width: 345px;
+    height: 33px;
+    font-size: 8px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+    line-height: 12px;
+  }
+}
+
+.language{
+  display: flex;
+  align-items: center;
+  height: 49px;
+  background: #FFFFFF;
+  border-radius: 10px;
+}
+
+

@@ -283,6 +283,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     await this.initOrderTravelPayTypes();
     console.log("viewModel", this.viewModel);
   }
+  onManagementCredentials() {
+    this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
+  }
   onShowInsuranceDetail(insurance: { showDetail: boolean }, evt: CustomEvent) {
     if (evt) {
       evt.stopImmediatePropagation();
