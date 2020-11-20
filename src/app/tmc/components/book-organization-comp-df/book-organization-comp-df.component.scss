@@ -4,6 +4,19 @@
 
 .ion-text-end{
   text-align: left;
-}  
+  font-size: 12px;
+}
+
+.department{
+  min-width:5.2rem;
+  margin-left:5px;
+   .strong{
+    font: inherit;
+    color: #666666;
+    font-size: 12px;
+  }
+}
+
+
 
   

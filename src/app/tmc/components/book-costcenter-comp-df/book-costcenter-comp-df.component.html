@@ -1,5 +1,7 @@
 <ion-item detail lines='none' (click)='searchCostCenter()' [disabled]='isOtherCostCenter'>
-  <ion-label><strong style="font: inherit;color: #666666;">{{langOpt.CostCenter}}:</strong></ion-label>
+  <ion-label class="costcenter">
+    <strong class="strong">{{langOpt.CostCenter}}:</strong>
+  </ion-label>
   <ion-label class='ion-text-end'>{{costCenter?.name}}</ion-label>
 </ion-item>
 <!-- <ion-item lines='none'>

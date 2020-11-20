@@ -38,7 +38,6 @@ ion-content {
     margin: 0.5em;
   }
   .ion-inbook {
-    width: 355px;
     height: 236px;
     background: #ffffff;
     border-radius: 10px;
@@ -61,14 +60,41 @@ ion-content {
     font-weight: 500;
   }
 
+  .add{
+    width: 23px;
+    height: 12px;
+    font-size: 12px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    color: #5099FE;
+    margin-left:14px;
+    img{
+      width: 11px;
+    }
+  }
+
   .passenger {
-    width: 75px;
-    height: 17px;
     font-size: 18px;
     font-family: PingFang SC;
     font-weight: bold;
     color: #333333;
     margin-left: 15px;
+  }
+  .con-div{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .ion-mobile,.ion-email{
+    margin-left: 20px;
+    max-width: 7em;
+    font-size: 12px;
+  }
+  .ion-phone,.ion-ema{
+    font-size: 12px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
   }
 }
 .spacebetween {
@@ -181,7 +207,6 @@ ion-footer .toolbar {
 .language{
   display: flex;
   align-items: center;
-  width: 355px;
   height: 49px;
   background: #FFFFFF;
   border-radius: 10px;
