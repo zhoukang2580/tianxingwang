@@ -288,10 +288,9 @@
               </ng-container>
             </ion-thumbnail>
             <ion-label class='item'>
-              <h3 style="display: inline-flex;">
-                <ion-label class='ion-margin-end ion-text-wrap'>{{room.Name}} <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
-                </ion-label>
-
+              <h3 style="display: inline-flex;flex-flow: row wrap;">
+                <span>{{room.Name}}</span>
+                <ion-text style="margin-left: 0.5em;" class='ion-text-nowrap' color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
               </h3>
               <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='onShowRoomPlans(room)'>
                 <ion-label class='ion-text-wrap'>
