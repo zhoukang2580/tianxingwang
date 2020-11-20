@@ -7,20 +7,20 @@ import {
   EventEmitter,
   HostBinding,
   Output,
-  ViewChild
+  ViewChild,
 } from "@angular/core";
 import {
   trigger,
   state,
   style,
   transition,
-  animate
+  animate,
 } from "@angular/animations";
 import { AppHelper } from "src/app/appHelper";
 import { IonRange } from "@ionic/angular";
 import {
   HotelQueryEntity,
-  IRankItem
+  IRankItem,
 } from "src/app/hotel/models/HotelQueryEntity";
 import { InterHotelStarPriceComponent } from "../inter-hotel-starprice/inter-hotel-starprice.component";
 export interface IInterHotelQueryTab {
@@ -63,16 +63,16 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
     this.onResetRanks();
   }
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   private onShowPanel() {
-    this.isShowPanel = this.tabs.some(it => it.active);
+    this.isShowPanel = this.tabs.some((it) => it.active);
     this.showPanel.emit(this.tab);
   }
   onTabClick(tab: IInterHotelQueryTab) {
     const active = tab.active;
     this.tab = tab;
-    this.tabs = this.tabs.map(it => {
+    this.tabs = this.tabs.map((it) => {
       it.active = false;
       return it;
     });
@@ -90,7 +90,14 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
         return !!(
           this.hotelQuery &&
           this.hotelQuery.starAndPrices &&
-          this.hotelQuery.starAndPrices.some(it => it.hasItemSelected)
+          this.hotelQuery.starAndPrices.some((it) => it.hasItemSelected)
+        );
+      }
+      if (tab.label == "rank") {
+        return !!(
+          this.hotelQuery &&
+          this.hotelQuery.ranks &&
+          this.hotelQuery.ranks.some((it) => it.isSelected)
         );
       }
     }
@@ -100,14 +107,14 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
     this.tabs = [];
     this.tabs.push({ name: "推荐排序", label: "rank", id: "1" });
     this.tabs.push({ name: "房价/星级", label: "starsAndPrice", id: "2" });
-    this.tabs = this.tabs.map(it => {
+    this.tabs = this.tabs.map((it) => {
       it.active = false;
       return it;
     });
   }
   private observeHotelQuery() {
     this.subscriptions.push(
-      this.hotelService.getHotelQuerySource().subscribe(query => {
+      this.hotelService.getHotelQuerySource().subscribe((query) => {
         this.hotelQuery = query;
       })
     );
@@ -119,31 +126,31 @@ export class InterHotelQueryComponent implements OnInit, OnDestroy {
       label: "星级【低-高↑】",
       value: "Category",
       orderBy: "CategoryAsc",
-      isSelected: true
+      isSelected: true,
     });
     this.ranks.push({
       id: 1,
       label: "星级【高-低↓】",
       value: "Category",
       orderBy: "CategoryDesc",
-      isSelected: false
+      isSelected: false,
     });
     this.ranks.push({
       id: 2,
       label: "价格【低-高↑】",
       value: "Price",
-      orderBy: "PriceAsc"
+      orderBy: "PriceAsc",
     });
     this.ranks.push({
       id: 3,
       label: "价格【高-低↓】",
       value: "Price",
-      orderBy: "PriceDesc"
+      orderBy: "PriceDesc",
     });
-    let rank = this.ranks.find(it => it.isSelected) || this.ranks[0];
+    let rank = this.ranks.find((it) => it.isSelected) || this.ranks[0];
     if (this.hotelQuery) {
       rank =
-        this.ranks.find(it => it.orderBy == this.hotelQuery.Orderby) || rank;
+        this.ranks.find((it) => it.orderBy == this.hotelQuery.Orderby) || rank;
     }
     rank.isSelected = true;
   }

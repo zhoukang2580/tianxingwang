@@ -26,6 +26,7 @@ export class InterRecommendRankComponent implements OnInit {
       id: 2,
       label: "低价优先",
       value: "Price",
+      isSelected: true,
       orderBy: "PriceAsc",
     });
     this.hotelQuery.ranks.push({
@@ -39,7 +40,6 @@ export class InterRecommendRankComponent implements OnInit {
       label: "星级升序",
       value: "Category",
       orderBy: "CategoryAsc",
-      isSelected: true,
     });
     this.hotelQuery.ranks.push({
       id: 1,
