@@ -5,6 +5,9 @@
   ul {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    &::-webkit-scrollbar{
+      display: none;
+    }
     margin: 0;
     padding: 0;
     list-style: none;
