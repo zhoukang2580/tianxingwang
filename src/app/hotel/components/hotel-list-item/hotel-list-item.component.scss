@@ -14,9 +14,9 @@
     font-weight: 500;
     color: #333333;
     flex: 1;
-    .name {
-      font-size: 14px;
-    }
+    // .name {
+    //   font-size: 14px;
+    // }
     .grade-stars {
       font-size: inherit;
       margin: 0;
@@ -24,7 +24,7 @@
       display: flex;
       align-items: center;
       .grade {
-        font-size: 9px;
+        font-size: 10px;
         margin-right: 4px;
       }
       .stars {
@@ -50,5 +50,5 @@
   display: flex;
   align-items: center;
   flex-flow: row wrap;
-  font-size: 10px;
+  font-size: 12px;
 }
