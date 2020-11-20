@@ -152,7 +152,7 @@ ion-list .info {
   align-items: center;
   justify-content: space-between;
 }
-ion-icon[name='caret-down-outline']{
+ion-icon[name="caret-down-outline"] {
   font-size: 0.9rem;
 }
 .passenger-info {
@@ -245,6 +245,10 @@ ion-content.ion-padding {
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
+}
+.addcontacts.md {
+  padding-bottom: 0;
+  padding-top: 0;
 }
 ion-footer {
   height: 49px;

@@ -116,8 +116,8 @@
             </ion-thumbnail>
             <ion-label class='item'>
               <h3 style="display: inline-flex;">
-                <ion-label class='ion-margin-end'>{{room.Name}}</ion-label>
-                <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
+                <ion-label class='ion-margin-end ion-text-wrap'>{{room.Name}}<ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text></ion-label>
+                
               </h3>
               <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='onShowRoomPlans(room)'>
                 <ion-label class='ion-text-wrap'>
