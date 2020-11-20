@@ -24,13 +24,13 @@
               </ion-select>
             </ion-item>
             <div class="flex padding-v">
-              <span class="label cname">
+              <span class="label cname ">
                 {{combindInfo?.vmCredential?.Name}}
               </span>
-              <span class="ctype">{{combindInfo?.vmCredential?.TypeName}}：</span>
-              <span class="cnumber">{{combindInfo?.vmCredential?.Number}}</span>
+              <span class="ctype ion-text-nowrap">{{combindInfo?.vmCredential?.TypeName}}：</span>
+              <span class="cnumber ion-text-nowrap">{{combindInfo?.vmCredential?.Number}}</span>
               <img class="editicon" src="assets/images/editicon.png" alt="" (click)='onChangeCredential(credentialSelect,combindInfo)'>
-              <ion-text *ngIf='isSelfBookType' class='ion-margin-start' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
+              <ion-text *ngIf='isSelfBookType' class='ion-margin-start ion-text-nowrap' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
             </div>
             <div class="hotel">
               <div class="name padding-v">酒店名称：{{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
@@ -140,7 +140,7 @@
           </ion-item>
           <div class="info padding-v">
             <div class="title ion-padding-vertical">出差信息</div>
-            <div class="line"></div>
+            <div class="line" *ngIf='combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist'></div>
             <div class="illegal" [attr.illegalReasonsid]='combindInfo.id' *ngIf='combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist'>
               <div class="flex padding-v">
                 <span class="label">超标原因：</span>{{combindInfo?.illegalReason}}
