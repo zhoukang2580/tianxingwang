@@ -408,14 +408,14 @@
                 </ion-select-option>
               </ion-select>
             </ion-item>
-            <div class="flex padding-v">
+            <div class="flex padding-v cinfos">
               <span class="label cname">
                 {{combindInfo?.vmCredential?.Name}}
               </span>
               <span class="ctype ion-text-nowrap">{{combindInfo?.vmCredential?.TypeName}}：</span>
               <span class="cnumber ion-text-nowrap">{{combindInfo?.vmCredential?.Number}}</span>
               <img class="editicon" src="assets/images/editicon.png" alt="" (click)='onChangeCredential(credentialSelect,combindInfo)'>
-              <ion-text *ngIf='isSelfBookType' class='ion-margin-start ion-text-nowrap' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
+              <ion-text *ngIf='isSelfBookType' class=' ion-text-nowrap' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
             </div>
             <div class="hotel">
               <div class="name padding-v">酒店名称：{{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
