@@ -23,14 +23,14 @@
                 </ion-select-option>
               </ion-select>
             </ion-item>
-            <div class="flex padding-v">
+            <div class="flex padding-v cinfos">
               <span class="label cname ">
                 {{combindInfo?.vmCredential?.Name}}
               </span>
               <span class="ctype ion-text-nowrap">{{combindInfo?.vmCredential?.TypeName}}：</span>
               <span class="cnumber ion-text-nowrap">{{combindInfo?.vmCredential?.Number}}</span>
               <img class="editicon" src="assets/images/editicon.png" alt="" (click)='onChangeCredential(credentialSelect,combindInfo)'>
-              <ion-text *ngIf='isSelfBookType' class='ion-margin-start ion-text-nowrap' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
+              <ion-text *ngIf='isSelfBookType' class='ion-text-nowrap' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
             </div>
             <div class="hotel">
               <div class="name padding-v">酒店名称：{{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
@@ -39,7 +39,7 @@
                 <span class="ion-margin-horizontal totals">共{{calcNights(combindInfo)}}晚</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.EndDate?.substr(0,10)}}</span>
               </div>
-              <div class="room-info ion-padding-vertical" *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]||
+              <div class="room-info padding-v" *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]||
                 combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]||
                 combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>
                 <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]}}</span>

@@ -168,6 +168,12 @@ ion-icon[name="caret-down-outline"] {
   .flex.emails.multi .label {
     align-self: flex-start;
   }
+  .cinfos {
+    flex-flow: row wrap;
+    .editicon {
+      margin: 0 0.7em;
+    }
+  }
   .flex.emails,
   .flex.mobiles {
     .item {
