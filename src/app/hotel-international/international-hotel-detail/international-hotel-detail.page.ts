@@ -777,9 +777,10 @@ export class InternationalHotelDetailPage
     }
   }
   public onShowBookInfos() {
-    this.langService.isCn ?
-    this.router.navigate(["international-hotel-bookinfos"]) :
-    this.router.navigate(["international-hotel-bookinfos_en"]);
+    // this.langService.isCn ?
+    // this.router.navigate(["international-hotel-bookinfos"]) :
+    // this.router.navigate(["international-hotel-bookinfos_en"]);
+    this.router.navigate(["international-hotel-book"]) ;
   }
   private checkIfPassengerCanBookRoomPlan(
     policies: HotelPassengerModel[],
