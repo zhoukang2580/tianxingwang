@@ -90,7 +90,7 @@
 }
 .editicon {
   width: 14px;
-  margin-left: 1em;
+  margin: 0 0.3em;
 }
 .cname {
   font-size: 14px;
@@ -98,6 +98,7 @@
   font-weight: bold;
   color: #333333;
   align-self: flex-start;
+  white-space: nowrap;
 }
 .flex .label.cname {
   width: initial;
@@ -113,7 +114,7 @@
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
-  font-size: 12px;
+  font-size: 14px;
 }
 ion-list .info {
   width: 100%;
@@ -155,6 +156,9 @@ ion-list .info {
 ion-icon[name="caret-down-outline"] {
   font-size: 0.9rem;
 }
+.padding-vertical {
+  padding: 1em 0;
+}
 .passenger-info {
   margin-top: 1em;
   .costcenter {
@@ -174,9 +178,7 @@ ion-icon[name="caret-down-outline"] {
       margin: 0 0.7em;
     }
   }
-  .padding-vertical{
-    padding: 1em 0;
-  }
+
   .flex.emails,
   .flex.mobiles {
     .item {
