@@ -39,7 +39,7 @@
                 <span class="ion-margin-horizontal totals">共{{calcNights(combindInfo)}}晚</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.EndDate?.substr(0,10)}}</span>
               </div>
-              <div class="room-info padding-v" *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]||
+              <div class="room-info padding-vertical" *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]||
                 combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]||
                 combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>
                 <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]}}</span>
