@@ -89,8 +89,8 @@ ion-content {
     justify-content: space-between;
   }
   .ion-mobile,.ion-email{
-    margin-left: 20px;
-    max-width: 7em;
+    margin-left: 26px;
+    max-width: 6.7em;
     font-size: 14px;
   }
   .ion-phone,.ion-ema{
@@ -142,6 +142,11 @@ ion-content {
   }
 }
 
+.other_equipment{
+  --border-radius:0 0 10px 10px;
+  
+}
+
 .otherinfo{
   font-size: 14px;    
   margin-left: 1.7em;
@@ -153,7 +158,6 @@ ion-content {
       color:#666666;
     }
   }
-
 }
 
 .zz {
@@ -169,9 +173,6 @@ ion-content {
 
 .list {
   --background: #f6f6f6;
-  .item_acc {
-    // --background: #f6f6f6;
-  }
   .payment_method {
     font-size: 18px;
     font-family: PingFang SC;
@@ -186,9 +187,6 @@ ion-content {
   .ion-one {
     --inner-border-width: 0;
     border-radius: 10px 10px 0 0;
-  }
-  .ion-two {
-    border-radius: 0 0 10px 10px;
   }
 }
 

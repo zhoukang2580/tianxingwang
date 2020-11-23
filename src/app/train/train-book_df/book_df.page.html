@@ -53,12 +53,12 @@
           </ion-item>
           <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'
               [disabled]='searchTrainModel?.isExchange'>
-              <ion-label color="medium" class="ion-mobile">联系电话</ion-label>
+              <ion-label color="medium" class="ion-mobile">联系电话:</ion-label>
               <ion-label class="ion-phone">{{mobile.mobile}}</ion-label>
             </ion-item>
           <ion-item *ngFor='let email of combindInfo?.credentialStaffEmails'
               [disabled]='searchTrainModel?.isExchange'>
-              <ion-label class="ion-email" color="medium">联系邮箱</ion-label>
+              <ion-label class="ion-email" color="medium">联系邮箱:</ion-label>
               <ion-label class="ion-ema">{{email.email}}</ion-label>
             </ion-item>
           <!-- <ion-item-divider>旅客信息：</ion-item-divider> -->
@@ -108,7 +108,7 @@
               (ionChange)='onCostCenterChange($event,combindInfo)'>
             </app-book-costcenter-comp-df>
           </ion-item>
-          <ion-item *ngIf='combindInfo["isShowOtherInfo"]'>
+          <ion-item class="other_equipment" *ngIf='combindInfo["isShowOtherInfo"]'>
             <div class="otherinfo">
               <div class="line"></div>
               <div class="other">

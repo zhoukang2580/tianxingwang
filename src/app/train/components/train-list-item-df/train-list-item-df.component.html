@@ -70,7 +70,7 @@
     </div>
     <div class='station'>
       <div class='from-station-name'>{{train?.FromStationName}}</div>
-      <div class='stop-line-stop' style="margin-left: 15px;" [attr.data]='train?.TrainCode'>
+      <div class='stop-line-stop' [attr.data]='train?.TrainCode'>
         <div class="line">
           <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='train?.IsAccessByIdCard' alt="">
         </div>
