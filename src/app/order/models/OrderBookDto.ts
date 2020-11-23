@@ -103,4 +103,5 @@ export class OrderBookDto {
 
   Errors: ErrorInfo[];
   IsSaveSuccess: boolean;
+  SelfPayAmount: string;
 }
