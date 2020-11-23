@@ -46,14 +46,15 @@ ion-item{
 
 .ion-margin-top{
   --border-radius: 20px;
+  width: 90%;
 }
 
 .toolbar{
-  --border-width:0;
   --background:#f5f7f9;
 }
 
 .btn_container{
   display: flex;
   align-items: center;
+  justify-content: center;
 }
