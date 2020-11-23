@@ -38,7 +38,6 @@ ion-content {
     margin: 0.5em;
   }
   .ion-inbook {
-    height: 236px;
     background: #ffffff;
     border-radius: 10px;
   }
@@ -73,6 +72,10 @@ ion-content {
     }
   }
 
+  .pass-information{
+    --border-radius: 10px 10px 0 0;
+  }
+
   .passenger {
     font-size: 18px;
     font-family: PingFang SC;
@@ -88,13 +91,16 @@ ion-content {
   .ion-mobile,.ion-email{
     margin-left: 20px;
     max-width: 7em;
-    font-size: 12px;
+    font-size: 14px;
   }
   .ion-phone,.ion-ema{
-    font-size: 12px;
+    font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
+  }
+  .cost-center{
+    --border-radius: 0 0 10px 10px;
   }
 }
 .spacebetween {
@@ -136,6 +142,20 @@ ion-content {
   }
 }
 
+.otherinfo{
+  font-size: 14px;    
+  margin-left: 1.7em;
+  .other{
+    display: flex;
+    align-items: center;
+    .label{
+      min-width: 7.5em;
+      color:#666666;
+    }
+  }
+
+}
+
 .zz {
   position: absolute;
   left: 0;
@@ -150,7 +170,7 @@ ion-content {
 .list {
   --background: #f6f6f6;
   .item_acc {
-    --background: #f6f6f6;
+    // --background: #f6f6f6;
   }
   .payment_method {
     font-size: 18px;

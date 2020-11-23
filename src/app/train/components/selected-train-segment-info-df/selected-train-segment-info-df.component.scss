@@ -1,9 +1,17 @@
+ion-item{
+  margin: 10px;
+  border-radius: 10px;
+}
 .detail {
   width: 100%;
+  padding-top: 15px;
 }
 .date {
   margin-top: 0.5em;
   margin-bottom: -1em;
+}
+strong{
+  font: inherit;
 }
 .date,
 .info {
@@ -34,4 +42,18 @@ ion-item-divider {
 
 ion-item{
   --background: #f5f7f9;
+}
+
+.ion-margin-top{
+  --border-radius: 20px;
+}
+
+.toolbar{
+  --border-width:0;
+  --background:#f5f7f9;
+}
+
+.btn_container{
+  display: flex;
+  align-items: center;
 }

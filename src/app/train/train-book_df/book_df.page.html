@@ -27,7 +27,7 @@
               <div>
                 <span class="name">{{combindInfo?.vmCredential?.Name}}</span>&nbsp;&nbsp;
                 <span class="idcode">身份证号: {{combindInfo?.vmCredential?.Number}}</span>
-                <span class="add"><img src="assets/images/update.png" alt="" (click)='onManagementCredentials(combindInfo)'>&nbsp;新增</span>
+                <span class="add" (click)='onManagementCredentials(combindInfo)'><img src="assets/images/update.png" alt="">&nbsp;&nbsp;新增</span>
               </div>
               <strong>
                 <ion-label style="padding: 0.5em 0">
@@ -42,10 +42,13 @@
           </ion-item>
         </ion-item-group>
         <ion-item-group>
-          <ion-item>
+          <ion-item class="pass-information">
             <div class="con-div">
               <div class="passenger">旅客信息</div>
-              <div class="ion-up"><ion-icon name="caret-down-outline"></ion-icon></div>
+              <div class="ion-up">
+                <ion-icon name="caret-down-outline" *ngIf='!combindInfo["isShowOtherInfo"]' (click)='combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]'></ion-icon>
+                <ion-icon name="caret-up-outline" *ngIf='combindInfo["isShowOtherInfo"]' (click)='combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]'></ion-icon>
+              </div>
             </div>
           </ion-item>
           <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'
@@ -98,12 +101,26 @@
               [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
               [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp-df>
           </ion-item>
-          <ion-item>
+          <ion-item class="cost-center">
             <app-book-costcenter-comp-df style="display: flex;" [isOtherCostCenter]='combindInfo.isOtherCostCenter'
               [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
               [otherCostCenterName]='combindInfo.otherCostCenterName'
               (ionChange)='onCostCenterChange($event,combindInfo)'>
             </app-book-costcenter-comp-df>
+          </ion-item>
+          <ion-item *ngIf='combindInfo["isShowOtherInfo"]'>
+            <div class="otherinfo">
+              <div class="line"></div>
+              <div class="other">
+                <span class="label">其他电话：</span>
+                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='电话'></ion-input>
+              </div>
+              <div class="line"></div>
+              <div class="other">
+                <span class="label">其他邮箱：</span>
+                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='邮箱'></ion-input>
+              </div>
+            </div>
           </ion-item>
         </ion-item-group>
         <!-- <ion-item-group>
@@ -250,15 +267,14 @@
           </ion-item-group>
         </ng-container>
       </ion-list>
+      
       <ion-list class="list">
         <ion-item-group *ngIf='!searchTrainModel?.isExchange'>
           <!-- <ion-item-divider>
             授权账号查看订单：
           </ion-item-divider> -->
-          <ion-item class="item_acc">
-            <app-book-addcontacts-comp  buttonText='授权账号查看订单' [(contacts)]='addContacts'>
-            </app-book-addcontacts-comp>
-          </ion-item>
+            <app-book-addcontacts-comp-df  buttonText='授权账号查看订单' [(contacts)]='addContacts'>
+            </app-book-addcontacts-comp-df>
         </ion-item-group>
         <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
           <ion-item class="ion-one">
