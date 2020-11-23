@@ -118,7 +118,7 @@ ion-header {
   align-items: center;
   justify-content: space-between;
   .desc {
-    font-size: 10px;
+    font-size: 12px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #999999;
@@ -220,7 +220,7 @@ ion-header {
 
   .room-detail-desc span {
     margin-right: 1em;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
 
   .name {
@@ -246,13 +246,13 @@ ion-item-divider {
   color: #333333;
 }
 .desc-name {
-  font-size: 13px;
+  font-size: 14px;
   font-family: PingFang SC;
   font-weight: bold;
   color: #333333;
 }
 .desc-detail {
-  font-size: 10px;
+  font-size: 14px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #666666;

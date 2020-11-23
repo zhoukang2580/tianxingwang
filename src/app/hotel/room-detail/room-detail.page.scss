@@ -31,13 +31,13 @@ ion-item-divider {
   display: flex;
   align-items: center;
   line-height: 2;
+  font-size: 14px;
   .name {
     align-self: flex-start;
     margin-right: 0.5em;
   }
   .desc {
     flex: 1;
-    font-size: 10px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #666666;

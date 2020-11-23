@@ -10,13 +10,14 @@
 <ion-content>
   <ion-list class='ion-margin-vertical' lines='full'>
     <ion-item-divider>每间人数</ion-item-divider>
-    <ion-item>
-      <ion-label class='ion-padding-vertical'>成人</ion-label>
-      <!-- <ion-label slot='end'>
+    <div class="itm">
+      <div class="label">
+        成人
+      </div>
+      <div class="label">
         <app-add-number min="0" max='10' [(addNumber)]='searchCondition.adultCount'></app-add-number>
-      </ion-label> -->
-      <ion-input slot='end' [(ngModel)]='searchCondition.adultCount' type='tel' placeholder='每间人数'></ion-input>
-    </ion-item>
+      </div>
+    </div>
     <ion-item-sliding *ngFor='let c of searchCondition?.children;let idx=index;' @flyInOut>
       <ion-item detail (click)='onModifyChildAge(c)'>
         <ion-label>

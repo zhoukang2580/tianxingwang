@@ -7,7 +7,7 @@
     <ion-title>信息确认</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class='ion-padding'>
+<ion-content class='cnt-padding'>
   <ng-container *ngIf='!error else retryTempl'>
     <app-refresher slot='fixed' (ionRefresh)='doRefresh(true)'></app-refresher>
     <ng-container *ngIf='combindInfos?.length'>
@@ -49,15 +49,15 @@
                   <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
                 </ng-container>
               </div>
-              <div class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
+              <div (click)='onSelectDatetime(datetimeEl,combindInfo)' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">
                   <ion-icon name="star" color='danger' style="font-size: 0.5rem;margin-right: 5px;"></ion-icon>到店时间：
                 </span>{{combindInfo?.arrivalHotelTime}}
-                <ion-icon name="caret-down-outline" (click)='onSelectDatetime(datetimeEl,combindInfo)'></ion-icon>
+                <ion-icon name="caret-down-outline" ></ion-icon>
               </div>
-              <div *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
+              <div (click)='onBedChange(bedEle)' *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">床型需求（尽量安排）：</span>{{combindInfo.bookInfo?.bookInfo?.roomPlan.Remark}}
-                <ion-icon name="caret-down-outline" (click)='onBedChange(bedEle)'></ion-icon>
+                <ion-icon name="caret-down-outline" ></ion-icon>
               </div>
             </div>
           </div>
