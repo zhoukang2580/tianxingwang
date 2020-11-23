@@ -226,7 +226,7 @@
           暂无评分
         </ng-template>
       </div>
-      <div class="stars" *ngIf='getStars(hotel) as stars'>
+      <div class="stars" *ngIf='hotel?.stars as stars'>
         <ng-container *ngFor='let s of stars'>
           <ion-icon name="star" color='warning' *ngIf='s>=1'></ion-icon>
           <ion-icon name='star-half' color='warning' *ngIf='s<1'></ion-icon>
