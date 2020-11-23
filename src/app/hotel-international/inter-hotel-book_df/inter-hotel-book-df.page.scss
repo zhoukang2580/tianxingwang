@@ -9,7 +9,7 @@
   background-color: var(--ion-color-primary);
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
-  font-size: 0.9rem;
+  font-size: 12px;
   box-shadow: 0.1em 0.2em 0.6em rgba(0, 0, 0, 0.1);
 }
 
@@ -78,7 +78,7 @@
     display: flex;
     align-items: center;
     .totals {
-      font-size: 9px;
+      font-size: 10px;
       color: #ea394b;
     }
   }
@@ -90,7 +90,7 @@
 }
 .editicon {
   width: 14px;
-  margin-left: 1em;
+  margin: 0 0.3em;
 }
 .cname {
   font-size: 15px;
@@ -104,7 +104,7 @@
   margin-right: 0.78125em;
 }
 .cnumber {
-  font-size: 10px;
+  font-size: 12px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
@@ -113,7 +113,7 @@
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
-  font-size: 12px;
+  font-size: 14px;
 }
 ion-list .info {
   width: 100%;
@@ -127,7 +127,7 @@ ion-list .info {
   display: flex;
   align-items: center;
   .label {
-    width: 70px;
+    width: 80px;
   }
   ion-input {
     --padding-top: 0;
@@ -141,7 +141,7 @@ ion-list .info {
   justify-content: space-between;
 }
 .sm-font {
-  font-size: 10px;
+  font-size: 12px;
 }
 .title {
   font-size: 18px;
@@ -152,7 +152,7 @@ ion-list .info {
   align-items: center;
   justify-content: space-between;
 }
-ion-icon[name='caret-down-outline']{
+ion-icon[name="caret-down-outline"] {
   font-size: 0.9rem;
 }
 .passenger-info {
@@ -184,7 +184,7 @@ ion-icon[name='caret-down-outline']{
     }
   }
   .tmc-name {
-    font-size: 8px;
+    font-size: 10px;
   }
   .name {
     display: flex;
@@ -219,7 +219,7 @@ ion-icon[name='caret-down-outline']{
   margin-left: 8px;
 }
 .rules {
-  font-size: 8px;
+  font-size: 12px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
@@ -240,8 +240,11 @@ ion-list {
 ion-content.ion-padding {
   padding: 0.8rem;
 }
+.addcontacts {
+  padding: 0;
+}
 .orderpaytypes ion-item ion-label {
-  font-size: 12px;
+  font-size: 14px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
@@ -288,4 +291,7 @@ ion-footer {
     padding: 0.5em;
     margin-top: -1.2em;
   }
+}
+.flex-row-wrap {
+  flex-flow: row wrap;
 }
