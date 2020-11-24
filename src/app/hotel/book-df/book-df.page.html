@@ -156,11 +156,11 @@
               </div>
             </div>
             <div class="line" *ngIf='expenseTypes?.length'></div>
-            <div class="expanse" *ngIf='expenseTypes?.length'>
+            <div class="expanse" *ngIf='expenseTypes?.length'  (click)='onOpenSelect(expenseTypeSelect)'>
               <div class="flex padding-v" *ngIf='tmc?.IsAllowCustomReason'>
                 <span>费用类别：</span>
                 {{combindInfo.expenseType}}
-                <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(expenseTypeSelect)'></ion-icon>
+                <ion-icon name="caret-down-outline" class='down'></ion-icon>
               </div>
             </div>
             <div class="line" *ngIf='isAllowSelectApprove(combindInfo)'></div>

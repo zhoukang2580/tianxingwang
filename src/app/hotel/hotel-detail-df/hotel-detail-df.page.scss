@@ -217,12 +217,25 @@ ion-header {
     width: 100%;
     margin: 0 0 0 0.5em;
   }
-
-  .room-detail-desc span {
-    margin-right: 1em;
-    font-size: 0.9rem;
+  .room-detail-desc {
+    display: flex;
+    align-items: center;
+    flex-flow: row wrap;
+    font-size: 12px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #999999;
+    span {
+      margin: 0 0.25em;
+    }
   }
-
+  .room-name {
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+    margin-right: 0.5em;
+  }
   .name {
     display: flex;
     align-items: center;
@@ -273,7 +286,7 @@ ion-row {
   .desc-name {
     align-self: flex-start;
   }
-  .desc-detail{
+  .desc-detail {
     flex: 1;
   }
 }

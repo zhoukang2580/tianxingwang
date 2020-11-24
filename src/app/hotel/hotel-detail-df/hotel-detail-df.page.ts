@@ -396,6 +396,9 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   getBedType(room: RoomEntity) {
     return this.hotelService.getBedType(room);
   }
+  getRoomDescriptions(room: RoomEntity) {
+    return this.hotelService.getRoomPlanDescriptions(room);
+  }
   onSegmentChanged(evt: CustomEvent) {
     this.activeTab = evt.detail.value;
     if (this.activeTab == "trafficInfo") {
@@ -468,7 +471,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
-    evt.roomPlan.isFreeBookRoom=true;
+    evt.roomPlan.isFreeBookRoom = true;
     const color = evt.color || "success";
     const policies = this.hotelPolicy || (await this.getPolicy()) || [];
     const policy =
@@ -556,7 +559,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
-    evt.roomPlan.isFreeBookRoom=false;
+    evt.roomPlan.isFreeBookRoom = false;
     const color = evt.color || "";
     const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
     const policies = this.hotelPolicy || (await this.getPolicy()) || [];
@@ -894,8 +897,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
         a.href = `tel:${phoneNumber}`;
         a.click();
       }
-    }else{
-      
+    } else {
     }
   }
   private checkScroll() {
