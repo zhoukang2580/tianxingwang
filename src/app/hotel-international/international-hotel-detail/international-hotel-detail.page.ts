@@ -51,7 +51,7 @@ import { RoomEntity } from "src/app/hotel/models/RoomEntity";
 import { LanguageHelper } from "src/app/languageHelper";
 import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
 import { LangService } from "src/app/services/lang.service";
-import { SelectPassengerEnPage } from 'src/app/tmc/select-passenger_en/select-passenger_en.page';
+import { SelectPassengerEnPage } from "src/app/tmc/select-passenger_en/select-passenger_en.page";
 
 @Component({
   selector: "app-international-hotel-detail",
@@ -76,6 +76,7 @@ export class InternationalHotelDetailPage
   private isAutoOpenHotelInfoDetails = true;
   private isAutoOpenHotelInfoTrafficInfo = true;
   private curSlideIndx = 0;
+  private isLoading = false;
   hotelName: string;
   canAddPassengers = false;
   isShowAddPassenger$ = of(false);
@@ -135,8 +136,7 @@ export class InternationalHotelDetailPage
         a.href = `tel:${phoneNumber}`;
         a.click();
       }
-    }else{
-      
+    } else {
     }
   }
   ngOnInit() {
@@ -176,6 +176,9 @@ export class InternationalHotelDetailPage
       })
     );
     this.doRefresh();
+  }
+  getRoomDescriptions(room: RoomEntity) {
+    return this.hotelService.getRoomPlanDescriptions(room);
   }
   async onOpenSelectedPassengers() {
     const removeitem = new EventEmitter();
@@ -504,17 +507,22 @@ export class InternationalHotelDetailPage
   doRefresh() {
     this.initConfig();
     this.hotel = this.hotelService.viewHotel;
+    if (this.refresher) {
+      this.refresher.complete();
+    }
     if (this.hotel) {
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
       this.subscription.unsubscribe();
       this.subscription = this.hotelService
         .getHotelDetail(this.hotel.Id)
-        // .pipe(
-        //   finalize(() => {
-        //     if (this.refresher) {
-        //       this.refresher.complete();
-        //     }
-        //   })
-        // )
+        .pipe(
+          finalize(() => {
+            this.isLoading = false;
+          })
+        )
         .subscribe((res) => {
           console.log("getHotelDetail", res);
           if (res) {
@@ -536,9 +544,6 @@ export class InternationalHotelDetailPage
             this.initHotelDetails();
           }
         });
-    }
-    if (this.refresher) {
-      this.refresher.complete();
     }
   }
   ngAfterViewInit() {
@@ -778,9 +783,9 @@ export class InternationalHotelDetailPage
     }
   }
   public onShowBookInfos() {
-    this.langService.isCn ?
-    this.router.navigate(["international-hotel-bookinfos"]) :
-    this.router.navigate(["international-hotel-bookinfos_en"]);
+    this.langService.isCn
+      ? this.router.navigate(["international-hotel-bookinfos"])
+      : this.router.navigate(["international-hotel-bookinfos_en"]);
   }
   private checkIfPassengerCanBookRoomPlan(
     policies: HotelPassengerModel[],

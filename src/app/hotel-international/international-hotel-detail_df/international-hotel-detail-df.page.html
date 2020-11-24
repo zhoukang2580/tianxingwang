@@ -300,6 +300,11 @@
                     <div *ngIf='getCapacity(room) as it'>可住{{it.Description}}人</div>
                   </div>
                 </ion-label>
+                <!-- <ion-label class='ion-text-wrap'>
+                  <div class="room-detail-desc">
+                    <span *ngFor='let d of getRoomDescriptions(room)'>{{d}}</span>
+                  </div>
+                </ion-label> -->
                 <ion-button color='danger' class='full' [disabled]='true' *ngIf='isFullOnly(room.RoomPlans)'>
                   <ion-text color='light'>已满房</ion-text>
                 </ion-button>
@@ -327,13 +332,13 @@
     </ng-container>
   </ion-list>
   <ion-list #hotelInfo class='hotel-info'>
-    <ion-item-divider (click)='hotel["ishoteldetails"]=!hotel["ishoteldetails"]'>
+    <div class="room-info-title" (click)='hotel["ishoteldetails"]=!hotel["ishoteldetails"]'>
       酒店信息
       <ng-container *ngIf='hotel'>
         <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["ishoteldetails"]'></ion-icon>
         <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
       </ng-container>
-    </ion-item-divider>
+    </div>
     <ng-container *ngIf='hotel?.HotelDetails' @flyInOut>
       <ion-grid *ngIf='hotel["ishoteldetails"]'>
         <ng-container *ngFor='let detail of hotel?.HotelDetails'>
@@ -386,7 +391,7 @@
       </ion-grid>
     </ng-container>
   </ion-list>
-  <div #divforscroll class='div-for-scroll' >
+  <div #divforscroll class='div-for-scroll'>
     <ion-item detail lines='none' *ngIf=''>
       <ion-button fill='clear' color='secondary'>打开地图查看
       </ion-button>

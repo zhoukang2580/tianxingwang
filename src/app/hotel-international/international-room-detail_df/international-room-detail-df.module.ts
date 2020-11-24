@@ -4,11 +4,11 @@ import { CommonModule } from "@angular/common";
 import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
-import { InternationalRoomDetailPage } from "./international-room-detail.page";
-import { StylePageGuard } from 'src/app/guards/style-page.guard';
+import { InternationalRoomDetailDfPage } from "./international-room-detail-df.page";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 @NgModule({
-  declarations: [InternationalRoomDetailPage],
+  declarations: [InternationalRoomDetailDfPage],
   imports: [
     IonicModule,
     CommonModule,
@@ -17,10 +17,10 @@ import { StylePageGuard } from 'src/app/guards/style-page.guard';
     RouterModule.forChild([
       {
         path: "",
+        component: InternationalRoomDetailDfPage,
         canActivate: [StylePageGuard],
-        component: InternationalRoomDetailPage
-      }
-    ])
-  ]
+      },
+    ]),
+  ],
 })
-export class InternationalRoomDetailPageModule {}
+export class InternationalRoomDetailDfPageModule {}
