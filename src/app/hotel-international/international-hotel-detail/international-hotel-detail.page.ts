@@ -533,6 +533,7 @@ export class InternationalHotelDetailPage
             this.initHotelDetailInfos();
             this.initHotelImages();
             this.initFilterPolicy();
+            this.initHotelDetails();
           }
         });
     }
@@ -856,6 +857,17 @@ export class InternationalHotelDetailPage
   }
   getWeekName(date: string) {
     return;
+  }
+  private initHotelDetails() {
+    if (this.hotel && this.hotel.HotelDetails) {
+      this.hotel.HotelDetails.forEach((it) => {
+        it["isHtmlDescription"] = this.checkHtml(it.Description);
+      });
+    }
+  }
+  private checkHtml(htmlStr) {
+    const reg = /<[^>]+>/g;
+    return reg.test(htmlStr);
   }
   getStars(grade: string) {
     const res = [];
