@@ -30,7 +30,7 @@
               <span class="ctype">{{combindInfo?.vmCredential?.TypeName}}：</span>
               <span class="cnumber">{{combindInfo?.vmCredential?.Number}}</span>
               <img class="editicon" src="assets/images/editicon.png" alt="" (click)='onChangeCredential(credentialSelect,combindInfo)'>
-              <ion-text *ngIf='isSelfBookType'  color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
+              <ion-text *ngIf='isSelfBookType' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
             </div>
             <div class="hotel">
               <div class="name padding-v">酒店名称：{{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
@@ -53,11 +53,12 @@
                 <span class="label arrival-time">
                   <ion-icon name="star" color='danger' style="font-size: 0.5rem;margin-right: 5px;"></ion-icon>到店时间：
                 </span>{{combindInfo?.arrivalHotelTime}}
-                <ion-icon name="caret-down-outline" ></ion-icon>
+                <ion-icon name="caret-down-outline"></ion-icon>
               </div>
-              <div (click)='onBedChange(bedEle)' *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
+              <div (click)='onBedChange(bedEle)' *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top"
+                [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">床型需求（尽量安排）：</span>{{combindInfo.bookInfo?.bookInfo?.roomPlan.Remark}}
-                <ion-icon name="caret-down-outline" ></ion-icon>
+                <ion-icon name="caret-down-outline"></ion-icon>
               </div>
             </div>
           </div>
@@ -156,9 +157,9 @@
               </div>
             </div>
             <div class="line" *ngIf='expenseTypes?.length'></div>
-            <div class="expanse" *ngIf='expenseTypes?.length'  (click)='onOpenSelect(expenseTypeSelect)'>
+            <div class="expanse" *ngIf='expenseTypes?.length' (click)='onOpenSelect(expenseTypeSelect)'>
               <div class="flex padding-v" *ngIf='tmc?.IsAllowCustomReason'>
-                <span>费用类别：</span>
+                <span class='label'>费用类别：</span>
                 {{combindInfo.expenseType}}
                 <ion-icon name="caret-down-outline" class='down'></ion-icon>
               </div>
