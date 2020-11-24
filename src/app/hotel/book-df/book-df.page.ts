@@ -111,8 +111,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  @ViewChild(RefresherComponent, { static: true })
-  ionRefresher: RefresherComponent;
+  @ViewChild(RefresherComponent)  refresher: RefresherComponent;
   @ViewChild(IonContent) ionContent: IonContent;
   error: any;
   identity: IdentityEntity;
@@ -394,11 +393,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh(byUser: boolean) {
     try {
-      if (this.ionRefresher) {
-        this.ionRefresher.complete();
-        this.ionRefresher.disabled = true;
+      if (this.refresher) {
+        this.refresher.complete();
+        this.refresher.disabled = true;
         setTimeout(() => {
-          this.ionRefresher.disabled = false;
+          this.refresher.disabled = false;
         }, 300);
       }
       if (byUser) {

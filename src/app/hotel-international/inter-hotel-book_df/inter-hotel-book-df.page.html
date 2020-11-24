@@ -392,7 +392,7 @@
     <ion-title>信息确认</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class='ion-padding'>
+<ion-content class='cnt'>
   <ng-container *ngIf='!error else retryTempl'>
     <app-refresher slot='fixed' (ionRefresh)='doRefresh(true)'></app-refresher>
     <ng-container *ngIf='combindInfos?.length'>
