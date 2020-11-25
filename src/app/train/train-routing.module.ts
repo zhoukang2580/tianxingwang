@@ -16,12 +16,6 @@ export const routes: Routes = [
       import("./train-list_en/train-list_en.module").then(m => m.TrainListEnPageModule)
   },
   {
-    path: "train-list_df",
-    canActivate: [ConfirmCredentialInfoGuard],
-    loadChildren: () =>
-      import("./train-list_df/train-list_df.module").then(m => m.TrainListDfPageModule)
-  },
-  {
     path: "search-train",
     canActivate: [ConfirmCredentialInfoGuard],
     loadChildren: () =>
@@ -35,14 +29,6 @@ export const routes: Routes = [
     loadChildren: () =>
       import("./search-train_en/search-train_en.module").then(
         m => m.SearchTrainEnPageModule
-      )
-  },
-  {
-    path: "search-train_df",
-    canActivate: [ConfirmCredentialInfoGuard],
-    loadChildren: () =>
-      import("./search-train_df/search-train_df.module").then(
-        m => m.SearchTrainDfPageModule
       )
   },
   {
@@ -63,12 +49,6 @@ export const routes: Routes = [
     canActivate: [ConfirmCredentialInfoGuard],
     loadChildren: () =>
       import("./train-book_en/book.module_en").then(m => m.TrainBookEnPageModule)
-  },
-  {
-    path: "train-book_df",
-    canActivate: [ConfirmCredentialInfoGuard],
-    loadChildren: () =>
-      import("./train-book_df/book_df.module").then(m => m.TrainBookDfPageModule)
   }
 ];
 @NgModule({

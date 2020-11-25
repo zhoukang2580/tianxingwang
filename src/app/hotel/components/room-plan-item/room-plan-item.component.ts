@@ -37,7 +37,7 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
     PayIn: "预付",
     MonthlyPay: "月结",
     SoldOut: "满房",
-    Ok: "及时确认",
+    Ok: "即时确认",
   };
   @Output() bookRoom: EventEmitter<any>;
   @Output() freeBookRoom: EventEmitter<any>;
