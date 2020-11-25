@@ -93,7 +93,7 @@ export class FlightService {
   ) {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;
-    this.searchFlightModelSource = new BehaviorSubject(null);
+    this.searchFlightModelSource = new BehaviorSubject(this.searchFlightModel);
     this.passengerBookInfos = [];
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
     this.filterConditionSources = new BehaviorSubject(
