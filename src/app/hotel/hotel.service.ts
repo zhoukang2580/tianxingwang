@@ -235,14 +235,14 @@ export class HotelService {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Area")
+      room.RoomDetails.find((it) => it.Tag == "Area" || it.Name == "面积")
     );
   }
   getFloor(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Floor")
+      room.RoomDetails.find((it) => it.Tag == "Floor" || it.Name == "楼层")
     );
   }
   getRenovationDate(room: RoomEntity) {
@@ -263,15 +263,30 @@ export class HotelService {
     const one =
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Capacity");
+      room.RoomDetails.find(
+        (it) =>
+          it.Tag == "Capacity" || (it.Name && it.Name.includes("入住人数"))
+      );
     return one && one.Description && one;
   }
   getBedType(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "BedType")
+      room.RoomDetails.find(
+        (it) => it.Tag == "BedType" || (it.Name && it.Name.includes("床型"))
+      )
     );
+  }
+  getRoomPlanDescriptions(room: RoomEntity) {
+    const itm =
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find((it) => it.Name == "描述");
+    if (!itm || !itm.Description) {
+      return [];
+    }
+    return itm.Description.split("、");
   }
   async getConditions(forceFetch = false) {
     const city = this.getSearchHotelModel().destinationCity;
@@ -609,7 +624,7 @@ export class HotelService {
   private async setLocalHotelCityCache(cities: TrafficlineEntity[]) {
     if (AppHelper.isApp()) {
       await this.storage.set(`LocalHotelCityCache`, {
-        LastUpdateTime: this.lastUpdateTime = Math.floor(Date.now() / 1000),
+        LastUpdateTime: (this.lastUpdateTime = Math.floor(Date.now() / 1000)),
         HotelCities: cities,
       } as LocalHotelCityCache);
     }
@@ -663,8 +678,8 @@ export class HotelService {
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
     hotelquery.IsLoadDetail = true;
     hotelquery.Tag = this.getSearchHotelModel().tag;
-    if(hotelquery.HotelId){
-      hotelquery.SearchKey="";
+    if (hotelquery.HotelId) {
+      hotelquery.SearchKey = "";
     }
     req.Data = {
       ...hotelquery,
@@ -699,6 +714,17 @@ export class HotelService {
             }
             return it;
           });
+          // if (this.testData) {
+          //   this.testData[query.PageIndex] = {
+          //     HotelDayPrices: result.Data.HotelDayPrices,
+          //     DataCount: result.Data.DataCount,
+          //   };
+          //   if (!environment.production) {
+          //     this.storage.set("test_big_hote_list", this.testData);
+          //   }
+          // } else {
+          //   this.testData = {} as any;
+          // }
         }
         return result;
       })

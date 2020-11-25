@@ -7,7 +7,7 @@
     <ion-title>信息确认</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class='ion-padding'>
+<ion-content class='cnt'>
   <ng-container *ngIf='!error else retryTempl'>
     <app-refresher slot='fixed' (ionRefresh)='doRefresh(true)'></app-refresher>
     <ng-container *ngIf='combindInfos?.length'>
@@ -23,14 +23,14 @@
                 </ion-select-option>
               </ion-select>
             </ion-item>
-            <div class="flex padding-v">
+            <div class="flex padding-v flex-row-wrap">
               <span class="label cname">
                 {{combindInfo?.vmCredential?.Name}}
               </span>
               <span class="ctype">{{combindInfo?.vmCredential?.TypeName}}：</span>
               <span class="cnumber">{{combindInfo?.vmCredential?.Number}}</span>
               <img class="editicon" src="assets/images/editicon.png" alt="" (click)='onChangeCredential(credentialSelect,combindInfo)'>
-              <ion-text *ngIf='isSelfBookType' class='ion-margin-start' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
+              <ion-text *ngIf='isSelfBookType' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
             </div>
             <div class="hotel">
               <div class="name padding-v">酒店名称：{{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
@@ -39,23 +39,26 @@
                 <span class="ion-margin-horizontal totals">共{{calcNights(combindInfo)}}晚</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.EndDate?.substr(0,10)}}</span>
               </div>
-              <div class="room-info ion-padding-vertical" *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]||
+              <div class="room-info ion-padding-vertical">
+                <span>{{combindInfo.bookInfo?.bookInfo?.hotelRoom?.Name}}</span>
+                <ng-container *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]||
                 combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]||
                 combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>
-                <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]}}</span>
-                <span *ngIf='combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>{{combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]}}</span>
-                <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
+                  <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]}}</span>
+                  <span *ngIf='combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>{{combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]}}</span>
+                  <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
+                </ng-container>
               </div>
-              <div class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
+              <div (click)='onSelectDatetime(datetimeEl,combindInfo)' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">
                   <ion-icon name="star" color='danger' style="font-size: 0.5rem;margin-right: 5px;"></ion-icon>到店时间：
                 </span>{{combindInfo?.arrivalHotelTime}}
-                <ion-icon name="caret-down-outline" (click)='onSelectDatetime(datetimeEl,combindInfo)'></ion-icon>
+                <ion-icon name="caret-down-outline"></ion-icon>
               </div>
-              <div *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top"
+              <div (click)='onBedChange(bedEle)' *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top"
                 [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">床型需求（尽量安排）：</span>{{combindInfo.bookInfo?.bookInfo?.roomPlan.Remark}}
-                <ion-icon name="caret-down-outline" (click)='onBedChange(bedEle)'></ion-icon>
+                <ion-icon name="caret-down-outline"></ion-icon>
               </div>
             </div>
           </div>
@@ -140,8 +143,8 @@
           </ion-item>
           <div class="info padding-v">
             <div class="title ion-padding-vertical">出差信息</div>
-            <div class="line"></div>
             <div class="illegal" [attr.illegalReasonsid]='combindInfo.id' *ngIf='combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist'>
+              <div class="line"></div>
               <div class="flex padding-v">
                 <span class="label">超标原因：</span>{{combindInfo?.illegalReason}}
                 <ion-icon *ngIf='!isRoomPlanFreeBook(combindInfo)' name="caret-down-outline" class='down' (click)='onSelectIllegalReason(combindInfo)'></ion-icon>
@@ -149,16 +152,16 @@
               </div>
               <div class="line" *ngIf='tmc?.IsAllowCustomReason&&!isRoomPlanFreeBook(combindInfo)'></div>
               <div class="flex padding-v" *ngIf='tmc?.IsAllowCustomReason&&!isRoomPlanFreeBook(combindInfo)'>
-                <span>其他原因：</span>
+                <span class='label'>其他原因：</span>
                 <ion-input [(ngModel)]='combindInfo.otherIllegalReason' placeholder='请输入其他原因'></ion-input>
               </div>
             </div>
             <div class="line" *ngIf='expenseTypes?.length'></div>
-            <div class="expanse" *ngIf='expenseTypes?.length'>
+            <div class="expanse" *ngIf='expenseTypes?.length' (click)='onOpenSelect(expenseTypeSelect)'>
               <div class="flex padding-v" *ngIf='tmc?.IsAllowCustomReason'>
-                <span>费用类别：</span>
+                <span class='label'>费用类别：</span>
                 {{combindInfo.expenseType}}
-                <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(expenseTypeSelect)'></ion-icon>
+                <ion-icon name="caret-down-outline" class='down'></ion-icon>
               </div>
             </div>
             <div class="line" *ngIf='isAllowSelectApprove(combindInfo)'></div>
@@ -295,7 +298,7 @@
             </div>
           </div>
         </ion-list>
-        <ion-list class='section'>
+        <ion-list class='section addcontacts'>
           <app-hotel-addcontacts-comp buttonText='授权账号查看订单' [attr.linkmanid]='combindInfo.id' [(contacts)]='combindInfo.addContacts'>
           </app-hotel-addcontacts-comp>
         </ion-list>
@@ -389,8 +392,8 @@
       </ion-col>
     </ion-row>
   </ng-template>
-  <div class="rules">
-    {{getRoomPlanRulesDesc(combindInfos&&combindInfos[0]?.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
+  <div class="rules" *ngIf='combindInfos?.length'>
+    {{getRoomPlanRulesDesc(combindInfos[0]?.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
   </div>
 </ion-content>
 <ion-footer [class.freebook]='isRoomPlanFreeBook(combindInfos&&combindInfos[0])'>

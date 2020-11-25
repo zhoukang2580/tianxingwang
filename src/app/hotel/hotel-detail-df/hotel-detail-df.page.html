@@ -116,15 +116,13 @@
             </ion-thumbnail>
             <ion-label class='item'>
               <h3 style="display: inline-flex;">
-                <ion-label class='ion-margin-end'>{{room.Name}}</ion-label>
+                <ion-label class='room-name'>{{room.Name}}</ion-label>
                 <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
               </h3>
               <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='onShowRoomPlans(room)'>
                 <ion-label class='ion-text-wrap'>
                   <div class="room-detail-desc">
-                    <div *ngIf='getRoomArea(room) as it'>{{it.Description}}m²</div>
-                    <div *ngIf='getBedType(room) as it'>{{it.Description}}</div>
-                    <div *ngIf='getCapacity(room) as it'>可住{{it.Description}}人</div>
+                    <span *ngFor='let d of getRoomDescriptions(room)'>{{d}}</span>
                   </div>
                 </ion-label>
                 <ion-button color='danger' class='full' [disabled]='true' *ngIf='isFullOnly(room.RoomPlans)'>
@@ -155,20 +153,20 @@
     </ng-container>
   </ion-list>
   <ion-list #hotelInfo class='hotel-info'>
-    <ion-item-divider (click)='hotel["ishoteldetails"]=!hotel["ishoteldetails"]'>
+    <div class="room-info-title" (click)='hotel["ishoteldetails"]=!hotel["ishoteldetails"]'>
       酒店信息
       <ng-container *ngIf='hotel'>
         <ion-icon name='caret-down-outline' color='secondary' *ngIf='!hotel["ishoteldetails"]'></ion-icon>
         <ion-icon name='caret-up-outline' color='secondary' *ngIf='hotel["ishoteldetails"]'></ion-icon>
       </ng-container>
-    </ion-item-divider>
+    </div>
     <ng-container *ngIf='hotel?.HotelDetails' @flyInOut>
       <ion-grid *ngIf='hotel["ishoteldetails"]'>
         <ng-container *ngFor='let detail of hotel?.HotelDetails'>
           <ion-row *ngIf='detail.Description'>
             <ng-container *ngIf='!(detail.Tag=="IntroEditor"||detail.Tag=="Traffic" || (detail.Tag=="Description" && detail.Description?.length>=16)) else
               otherTempl'>
-              <div class="tmpl">
+              <div class="tmpl inner-html">
                 <div class="desc-name">
                   {{detail.Name}}
                 </div>
@@ -176,7 +174,10 @@
                   <ion-text color='medium'>
                     <span *ngIf='detail.Tag=="ArrivalTime"'>{{detail.Description}}点之后</span>
                     <span *ngIf='detail.Tag=="DepartureTime"'>{{detail.Description}}点之前</span>
-                    <span *ngIf='detail.Tag!="DepartureTime"&&detail.Tag!="ArrivalTime"'>{{detail.Description}}</span>
+                    <ng-container *ngIf='detail.Tag!="DepartureTime"&&detail.Tag!="ArrivalTime"'>
+                      <span *ngIf='detail["isHtmlDescription"]' [innerHTML]='detail.Description'></span>
+                      <span *ngIf='!detail["isHtmlDescription"]'>{{detail.Description}}</span>
+                    </ng-container>
                   </ion-text>
                 </div>
               </div>
@@ -188,11 +189,15 @@
                     {{detail.Name}}
                   </ion-text>
                 </div>
-                <div class="desc-detail" (click)='detail["isShowMore"]=!detail["isShowMore"]'>
+                <div class="desc-detail inner-html" (click)='detail["isShowMore"]=!detail["isShowMore"]'>
                   <div class="text">
-                    <ion-text color='medium' *ngIf='!detail["isShowMore"]'>
-                      {{detail.Description}}
-                    </ion-text>
+                    <ng-container *ngIf='!detail["isShowMore"]'>
+                      <ion-text *ngIf='detail["isHtmlDescription"]' color='medium' [innerHTML]='detail.Description'>
+                      </ion-text>
+                      <ion-text *ngIf='!detail["isHtmlDescription"]' color='medium'>
+                        {{detail.Description}}
+                      </ion-text>
+                    </ng-container>
                   </div>
                   <ion-text *ngIf='detail["isShowMore"]' color='medium'>
                     {{detail.Description}}

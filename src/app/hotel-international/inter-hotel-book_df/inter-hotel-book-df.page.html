@@ -392,7 +392,7 @@
     <ion-title>信息确认</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class='ion-padding'>
+<ion-content class='cnt'>
   <ng-container *ngIf='!error else retryTempl'>
     <app-refresher slot='fixed' (ionRefresh)='doRefresh(true)'></app-refresher>
     <ng-container *ngIf='combindInfos?.length'>
@@ -408,7 +408,7 @@
                 </ion-select-option>
               </ion-select>
             </ion-item>
-            <div class="flex padding-v">
+            <div class="flex padding-v flex-row-wrap ">
               <span class="label cname">
                 {{combindInfo?.vmCredential?.Name}}
               </span>
@@ -424,12 +424,15 @@
                 <span class="ion-margin-horizontal totals">共{{calcNights(combindInfo)}}晚</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.EndDate?.substr(0,10)}}</span>
               </div>
-              <div class="room-info ion-padding-vertical" *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]||
+              <div class="room-info ion-padding-vertical">
+                <span>{{combindInfo.bookInfo?.bookInfo?.hotelRoom?.Name}}</span>
+                <ng-container *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]||
                 combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]||
                 combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>
-                <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]}}</span>
-                <span *ngIf='combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>{{combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]}}</span>
-                <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
+                  <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]}}</span>
+                  <span *ngIf='combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>{{combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]}}</span>
+                  <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
+                </ng-container>
               </div>
               <div class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">
@@ -696,7 +699,7 @@
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item>
                 <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)'  [class.radio-checked]='orderTravelPayType==pt.value' mode='md'> </ion-radio>
+                <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)' [class.radio-checked]='orderTravelPayType==pt.value' mode='md'> </ion-radio>
               </ion-item>
               <div class="line"></div>
             </ng-container>
@@ -760,7 +763,7 @@
   </div>
 </ion-content>
 <ion-footer>
-  <div class="price-detail" (click)="onShowFeesDetails()" >
+  <div class="price-detail" (click)="onShowFeesDetails()">
     <div class="total">
       <span>总计：</span>
       <span class="price">￥{{totalPrice}}</span>

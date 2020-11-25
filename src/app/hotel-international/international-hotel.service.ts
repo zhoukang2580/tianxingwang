@@ -804,18 +804,28 @@ export class InternationalHotelService {
     const res = this.getFullHouseOrCanBook(p);
     return res && res.toLowerCase().includes("full");
   }
+  getRoomPlanDescriptions(room: RoomEntity) {
+    const itm =
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find((it) => it.Name == "描述");
+    if (!itm || !itm.Description) {
+      return [];
+    }
+    return itm.Description.split("、");
+  }
   getRoomArea(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Area")
+      room.RoomDetails.find((it) => it.Tag == "Area" || it.Name == "面积")
     );
   }
   getFloor(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Floor")
+      room.RoomDetails.find((it) => it.Tag == "Floor" || it.Name == "楼层")
     );
   }
   getRenovationDate(room: RoomEntity) {
@@ -833,17 +843,22 @@ export class InternationalHotelService {
     );
   }
   getCapacity(room: RoomEntity) {
-    return (
+    const one =
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Capacity")
-    );
+      room.RoomDetails.find(
+        (it) =>
+          it.Tag == "Capacity" || (it.Name && it.Name.includes("入住人数"))
+      );
+    return one && one.Description && one;
   }
   getBedType(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "BedType")
+      room.RoomDetails.find(
+        (it) => it.Tag == "BedType" || (it.Name && it.Name.includes("床型"))
+      )
     );
   }
   getRoomPlanUniqueId(p: RoomPlanEntity) {

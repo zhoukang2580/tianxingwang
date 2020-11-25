@@ -111,8 +111,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  @ViewChild(RefresherComponent, { static: true })
-  ionRefresher: RefresherComponent;
+  @ViewChild(RefresherComponent)  refresher: RefresherComponent;
   @ViewChild(IonContent) ionContent: IonContent;
   error: any;
   identity: IdentityEntity;
@@ -394,11 +393,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh(byUser: boolean) {
     try {
-      if (this.ionRefresher) {
-        this.ionRefresher.complete();
-        this.ionRefresher.disabled = true;
+      if (this.refresher) {
+        this.refresher.complete();
+        this.refresher.disabled = true;
         setTimeout(() => {
-          this.ionRefresher.disabled = false;
+          this.refresher.disabled = false;
         }, 300);
       }
       if (byUser) {
@@ -1476,10 +1475,20 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   async onBook(isSave: boolean, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
-    if (this.isSubmitDisabled) {
+    if (
+      this.isSubmitDisabled ||
+      !this.combindInfos ||
+      !this.combindInfos.length ||
+      !this.combindInfos[0].bookInfo
+    ) {
       return;
     }
     const bookDto: OrderBookDto = new OrderBookDto();
+    const roomPlan =
+      this.combindInfos && this.combindInfos[0].bookInfo.bookInfo.roomPlan;
+    if (this.hotelService.checkRoomPlanIsFreeBook(roomPlan)) {
+      bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
+    }
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
@@ -1529,19 +1538,14 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(
-            this.langService.isCn ? "下单成功!" : "Checkout success",
-            1400,
-            "top"
-          );
+          // AppHelper.toast(
+          //   this.langService.isCn ? "下单成功!" : "Checkout success",
+          //   1400,
+          //   "top"
+          // );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
-          if (
-            !isSave &&
-            isSelf &&
-            (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
+          if (!isSave && isSelf) {
             let canPay = true;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;
