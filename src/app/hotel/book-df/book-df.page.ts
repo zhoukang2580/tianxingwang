@@ -29,6 +29,7 @@ import {
   Platform,
   IonSelect,
   IonDatetime,
+  IonFooter,
 } from "@ionic/angular";
 import { NavController } from "@ionic/angular";
 import {
@@ -111,8 +112,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  @ViewChild(RefresherComponent)  refresher: RefresherComponent;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild(IonFooter) ionFooter: IonFooter;
+  @ViewChild("transfromEle") transfromEle: ElementRef<HTMLDivElement>;
   error: any;
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
@@ -1403,6 +1406,21 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.isShowFee = !this.isShowFee;
     this.detailServiceFee = this.getServiceFees();
     this.initDayPrice();
+    this.showTransform(this.isShowFee)
+  }
+  private showTransform(show: boolean) {
+    try {
+      const el = this.ionFooter['el']
+      const transfromEle=this.transfromEle.nativeElement;
+      const rect = el.getBoundingClientRect();
+      if (show) {
+        transfromEle.style.transform = `translate(0,-${rect.height}px)`;
+      } else {
+        transfromEle.style.transform = `translate(0,100%)`;
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
   private initDayPrice() {
     const bookInfos = this.hotelService.getBookInfos();

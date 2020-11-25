@@ -255,13 +255,13 @@ ion-footer {
   width: 375px;
   height: 49px;
   &.freebook {
-    height: 60px;
+    height: 70px;
   }
   background: #ffffff;
   .price-detail {
     display: flex;
     align-items: center;
-    padding: 0.5em;
+    padding: 0.8em;
     .submit-btn {
       width: 150px;
       height: 32px;
@@ -290,7 +290,7 @@ ion-footer {
     }
   }
   &.freebook .freebook-price {
-    padding: 0.5em;
+    padding: 0.5em 0.8em;
     margin-top: -1.2em;
   }
 }

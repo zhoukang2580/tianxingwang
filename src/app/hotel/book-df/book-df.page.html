@@ -428,7 +428,7 @@
   </div>
 </ion-footer>
 <div class="zz" *ngIf="isShowFee" (click)="onShowFeesDetails()"></div>
-<div [class.show]="isShowFee" class="transfrom">
+<div [class.show]="isShowFee" class="transfrom" #transfromEle>
   <div class="wrapper">
     <div *ngFor="let infos of combindInfos" class="ion-padding fee" [style.min-width]="combindInfos.length>1?'90%':'100%'">
       <div class="spacebetween">
