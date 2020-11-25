@@ -9,18 +9,34 @@
           <ion-text color='light'>{{selectedBookInfosNumber}}</ion-text>
         </ion-badge>
       </ion-button>
-      <ion-button fill='clear' color='light' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&!selectedPassengers'>
-        <ion-icon name="person-add-outline"></ion-icon>
-        <ion-badge color='danger'>
-          <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
-        </ion-badge>
-      </ion-button>
-      <ion-button fill='clear' color='light' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&selectedPassengers'>
-        <ion-icon name="person-add-outline"></ion-icon>
-        <ion-badge color='danger'>
-          <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
-        </ion-badge>
-      </ion-button>
+      <ng-container *ngIf='isDomestic'>
+        <ion-button fill='clear' color='light' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&!selectedPassengers'>
+          <ion-icon name="person-add-outline"></ion-icon>
+          <ion-badge color='danger'>
+            <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
+          </ion-badge>
+        </ion-button>
+        <ion-button fill='clear' color='light' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&selectedPassengers'>
+          <ion-icon name="person-add-outline"></ion-icon>
+          <ion-badge color='danger'>
+            <ion-text color='light' class="danger">{{selectedPassengers}}</ion-text>
+          </ion-badge>
+        </ion-button>
+      </ng-container>
+      <ng-container *ngIf='!isDomestic'>
+        <ion-button fill='clear' color='light' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&!interSelectedPassengers'>
+          <ion-icon name="person-add-outline"></ion-icon>
+          <ion-badge color='danger'>
+            <ion-text color='light' class="danger">{{interSelectedPassengers}}</ion-text>
+          </ion-badge>
+        </ion-button>
+        <ion-button fill='clear' color='light' size='small' (click)='onOpenSelectedPassengers()' *ngIf='canAddPassengers&&interSelectedPassengers'>
+          <ion-icon name="person-add-outline"></ion-icon>
+          <ion-badge color='danger'>
+            <ion-text color='light' class="danger">{{interSelectedPassengers}}</ion-text>
+          </ion-badge>
+        </ion-button>
+      </ng-container>
       <ion-button fill='clear' color='light' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>
         差旅标准
       </ion-button>
@@ -144,10 +160,10 @@
             </ion-label>
           </ion-item>
         </div>
-        <ion-button *ngIf='!((canAddPassengers) && selectedPassengers==0)' class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" color="secondary" expand="block">
+        <ion-button *ngIf='!((canAddPassengers) && interSelectedPassengers==0)' class='ion-margin-top' style='width: 100%' (click)="onSearchHotel()" color="secondary" expand="block">
           <ion-text>查询酒店</ion-text>
         </ion-button>
-        <ion-button *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
+        <ion-button *ngIf='(canAddPassengers) && interSelectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
           <ion-text>请添加乘客
           </ion-text>
         </ion-button>

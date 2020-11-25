@@ -1,6 +1,7 @@
 import {
   InternationalHotelService,
   IInterHotelSearchCondition,
+  IInterHotelInfo,
 } from "../../hotel-international/international-hotel.service";
 import { LanguageHelper } from "../../languageHelper";
 import { ImageRecoverService } from "../../services/imageRecover/imageRecover.service";
@@ -78,6 +79,9 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   get selectedPassengers() {
     return this.hotelService.getBookInfos().length;
+  }
+  get interSelectedPassengers() {
+    return this.internationalHotelService.getBookInfos().length;
   }
   get totalFlyDays() {
     if (
@@ -280,6 +284,37 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   async onOpenSelectedPassengers() {
+    if (this.isDomestic) {
+      this.onOpenDomesticSelectedPassenger();
+    } else {
+      this.onOpenInterSelectedPassenger();
+    }
+  }
+  private async onOpenInterSelectedPassenger() {
+    const removeitem = new EventEmitter();
+    removeitem.subscribe(async (info: PassengerBookInfo<IInterHotelInfo>) => {
+      const ok = await AppHelper.alert(
+        LanguageHelper.getConfirmDeleteTip(),
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
+      if (ok) {
+        this.internationalHotelService.removeBookInfo(info, true);
+      }
+    });
+    const m = await this.modalController.create({
+      component: SelectedPassengersComponent,
+      componentProps: {
+        bookInfos$: this.internationalHotelService.getBookInfoSource(),
+        removeitem,
+      },
+    });
+    await m.present();
+    await m.onDidDismiss();
+    removeitem.unsubscribe();
+  }
+  private async onOpenDomesticSelectedPassenger() {
     const removeitem = new EventEmitter();
     removeitem.subscribe(async (info: PassengerBookInfo<IHotelInfo>) => {
       const ok = await AppHelper.alert(
