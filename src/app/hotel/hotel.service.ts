@@ -699,17 +699,6 @@ export class HotelService {
             }
             return it;
           });
-          // if (this.testData) {
-          //   this.testData[query.PageIndex] = {
-          //     HotelDayPrices: result.Data.HotelDayPrices,
-          //     DataCount: result.Data.DataCount,
-          //   };
-          //   if (!environment.production) {
-          //     this.storage.set("test_big_hote_list", this.testData);
-          //   }
-          // } else {
-          //   this.testData = {} as any;
-          // }
         }
         return result;
       })

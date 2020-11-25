@@ -404,9 +404,9 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     );
     const sub0 = this.route.queryParamMap.subscribe((_) => {
       this.hideQueryPannel();
-      if (this.checkDestinationChanged()) {
-        this.searchHotelModel.searchText = null;
-      }
+      // if (this.checkDestinationChanged()) {
+      //   this.searchHotelModel.searchText = null;
+      // }
       this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
       const isrefresh =

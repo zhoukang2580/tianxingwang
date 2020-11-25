@@ -8,7 +8,8 @@ ion-input.TravelNumber {
 ion-content {
   ion-list + ion-list {
     padding: 0.3em 0;
-    margin: 1em 0;
+    margin: 10px;
+    border-radius: 10px;
   }
   ion-col {
     align-self: center;
@@ -71,11 +72,6 @@ ion-content {
       width: 11px;
     }
   }
-
-  .pass-information{
-    --border-radius: 10px 10px 0 0;
-  }
-
   .passenger {
     font-size: 18px;
     font-family: PingFang SC;
@@ -98,9 +94,6 @@ ion-content {
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
-  }
-  .cost-center{
-    --border-radius: 0 0 10px 10px;
   }
 }
 .spacebetween {
@@ -228,6 +221,35 @@ ion-footer .toolbar {
   height: 49px;
   background: #FFFFFF;
   border-radius: 10px;
+}
+.info {
+  width: 100%;
+  padding: 0.5em 1em;
+}
+.section {
+  margin-top: 1em;
+}
+
+.padding-v{
+  margin-left: 25px;
+  font-size: 14px;
+  display: flex;
+  .label{
+    color: #666666;
+    min-width: 6.5rem;
+  }
+  ion-icon{
+    margin-top: 3px;
+  }
+}
+
+.ion-no-margin{
+  font-size: 14px;
+  .serFee{
+    color: #666666;
+    margin-left: 25px;
+    max-width: 6.7em;
+  }
 }
 
 

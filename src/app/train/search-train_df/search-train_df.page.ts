@@ -168,7 +168,7 @@ export class SearchTrainDfPage
   }
 
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger-df")], {
       queryParams: { forType: FlightHotelTrainType.Train },
     });
   }

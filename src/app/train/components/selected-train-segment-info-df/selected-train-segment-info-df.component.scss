@@ -18,6 +18,7 @@ strong{
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size:0.9rem;
 }
 .rules {
   font-size: 0.8rem;
@@ -47,6 +48,7 @@ ion-item{
 .ion-margin-top{
   --border-radius: 20px;
   width: 90%;
+  height: 2.5rem;
 }
 
 .toolbar{
