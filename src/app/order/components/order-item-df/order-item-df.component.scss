@@ -48,7 +48,7 @@
   display: flex;
   align-items: center;
   min-width: 10em;
-  font-size: 1em;
+  font-size: 18px;
 }
 img{
   width: 1.1em;
@@ -59,13 +59,13 @@ img{
   position: relative;
   height: 1px;
   width: 1.8em;
-  background: #0033fe;
+  background: #5099FE;
   display: flex;
   justify-content: flex-end;
 }
 .xian{
   height: 1px;
-  background: #0033fe;
+  background: #5099FE;
   width: 0.5em;
   transform: rotate(45deg);
   transform-origin: right top; 
@@ -81,6 +81,6 @@ img{
 }
 
 .train_ion{
-  font-size: 0.8em;
-  margin-left: 4.2em;
+  font-size: 0.71em;
+  margin-left: 4.6em;
 }

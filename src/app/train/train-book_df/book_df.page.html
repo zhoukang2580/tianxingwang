@@ -317,6 +317,7 @@
           <ion-item class="ion-two" [disabled]="searchTrainModel?.isExchange">
             <div class="pay-met">
               <ion-radio-group
+                mode='md'
                 [(ngModel)]="viewModel.orderTravelPayType"
                 name="travelPayType"
                 (ionChange)="calcTotalPrice()"

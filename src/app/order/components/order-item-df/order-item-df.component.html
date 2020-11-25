@@ -128,18 +128,18 @@
             <ion-text color='medium' class="ion-padding-end">{{orderTrainTicket.StatusName}}</ion-text>
           </ion-col>
         </ion-row>
-          <ion-row class="train_ion" [class.btn-show-margin]="order.VariablesJsonObj.isPay">
-            <ion-col size='3.5'>
+          <ion-row class="train_ion" [class.btn-show-margin]="order.VariablesJsonObj.isPay" style="margin-top: -20px;">
+            <ion-col size='2.5'>
               <ion-text color="medium"> 旅客姓名</ion-text>
             </ion-col>
             <ion-col >
               <ion-text color='medium' *ngIf='orderTrainTicket.Passenger as p'>
-                <ion-text>￥{{p.Name}}</ion-text>
+                <ion-text>{{p.Name}}</ion-text>
               </ion-text>
             </ion-col>
           </ion-row>
           <ion-row class="train_ion">
-            <ion-col size='3.5'>
+            <ion-col size='2.5'>
               <ion-text color="medium">发车时间</ion-text>
             </ion-col>
             <ion-col >
@@ -149,7 +149,7 @@
             </ion-col>
           </ion-row>
           <ion-row class="train_ion" [class.btn-show-margin]="order.VariablesJsonObj.isPay">
-            <ion-col size='3.5'>
+            <ion-col size='2.5'>
               <ion-text color="medium">支付方式</ion-text>
             </ion-col>
             <ion-col style="display: flex;align-items: center;">
@@ -190,13 +190,13 @@
                 </ion-col>
               </ion-row> -->
               <ion-row class="train_ion">
-                <ion-col size='3'>
+                <ion-col size='2.5'>
                   <ion-text color="medium">乘坐车次</ion-text>
                 </ion-col>
                 <ion-col>
                   <div>
                     <div *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
-                      <ion-text color="medium" class="ion-padding-start">{{orderTrainTrip.TrainCode}}</ion-text>
+                      <ion-text color="medium">{{orderTrainTrip.TrainCode}}</ion-text>
                       <span>{{orderTrainTrip.TrainNo}}</span>
                     </div>
                   </div>

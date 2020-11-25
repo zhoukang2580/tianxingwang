@@ -28,7 +28,7 @@ export class TrainListItemDfComponent implements OnInit {
     Left: "余票",
     agreement: "协",
     agreementDesc: "协议价",
-    reserve: "立刻预订",
+    reserve: "预订",
   };
   @Output() scheduleEmit: EventEmitter<any>;
   @Output() bookTicket: EventEmitter<TrainSeatEntity>;
