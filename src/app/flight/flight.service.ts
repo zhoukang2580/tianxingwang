@@ -42,7 +42,8 @@ import {
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DayModel } from "../tmc/models/DayModel";
 import { FlightFareEntity } from "./models/FlightFareEntity";
-import { FlightResultEntity } from './models/FlightResultEntity';
+import { FlightResultEntity } from "./models/FlightResultEntity";
+import { FlightRouteEntity } from "./models/flight/FlightRouteEntity";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -1104,16 +1105,30 @@ export class FlightService {
   }
   async initFlightSegmentCabins(s: FlightSegmentEntity) {
     const detail = await this.getFlightSegmentDetail(s);
-    if (detail&&detail.FlightSegments) {
-     const seg= detail.FlightSegments.find(it=>it.Id==s.Id);
-     s.Cabins=seg.Cabins;
+    if (detail && detail.FlightSegments) {
+      const seg = detail.FlightSegments.find((it) => it.Number == s.Number);
+      s.Cabins = detail.FlightFares as any;
+    }
+    if (s.Cabins && s.Cabins.length) {
+      await this.initFlightSegmentCabinsPolicy(s);
     }
   }
-  async initFlightSegmentCabinsPolicy(s: FlightSegmentEntity) {}
+  async initFlightSegmentCabinsPolicy(s: FlightSegmentEntity) {
+    const flights: FlightJourneyEntity[] = [];
+    const f = new FlightJourneyEntity();
+    f.FlightRoutes = [];
+    const r: FlightRouteEntity = {} as any;
+    r.FlightSegments = [s];
+    f.FlightRoutes.push(r);
+    flights.push(f);
+    await this.loadPolicyedFlightsAsync(flights);
+  }
   private async getFlightSegmentDetail(s: FlightSegmentEntity) {
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Detail`;
     req.Version = "2.0";
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在获取详情";
     const search = this.searchFlightModel;
     req.Data = {
       Date: search.Date,

@@ -197,6 +197,7 @@ export class FlightListPage
         !this.vmFlights.length ||
         isFetch
       ) {
+        this.lastFetchTime=Date.now();
         this.doRefresh(true, false);
       }
       const filteredBookInfo = this.flightService
