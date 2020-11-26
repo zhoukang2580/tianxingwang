@@ -1,7 +1,7 @@
 .spacebetween {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8em;
+  // font-size: 0.8em;
   color: var(--ion-color-dark);
 }
 ion-content.cnt {
@@ -231,7 +231,7 @@ ion-icon[name="caret-down-outline"] {
   border-top: 1px solid #5d5d5d2e;
 }
 .line {
-  width: 340px;
+  width: 100%;
   height: 1px;
   background: #eee;
 }

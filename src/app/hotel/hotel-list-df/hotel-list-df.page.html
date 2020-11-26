@@ -74,13 +74,14 @@
   </ion-infinite-scroll>
 </ion-content>
 <div class="backdrop " [ngClass]='{ios:isIos,show:filterTab?.isActive}' (click)='onBackdropClick($event)'></div>
-<div>
-  <app-recommend-rank class="filter-condition {{isIos?'ios':''}}" (rank)='onRank()' [class.show]='filterTab?.id=="Recommended"&&filterTab.isActive'>
+<div #filterCondition>
+  <app-recommend-rank  id='Recommended' class="filter-condition {{isIos?'ios':''}}"   (rank)='onRank()'
+    [class.show]='filterTab?.id=="Recommended"&&filterTab.isActive'>
   </app-recommend-rank>
-  <app-hotel-starprice class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="PriceStar"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
+  <app-hotel-starprice  class="filter-condition   {{isIos?'ios':''}}" id="PriceStar" [class.show]='filterTab?.id=="PriceStar"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
   </app-hotel-starprice>
-  <app-hotel-filter class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Filter"&&filterTab.isActive' (filter)='onFilter()'>
+  <app-hotel-filter   id="Filter" class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Filter"&&filterTab.isActive' (filter)='onFilter()'>
   </app-hotel-filter>
-  <app-hotel-geo class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Location"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
+  <app-hotel-geo   id="Location" class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Location"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
   </app-hotel-geo>
 </div>
