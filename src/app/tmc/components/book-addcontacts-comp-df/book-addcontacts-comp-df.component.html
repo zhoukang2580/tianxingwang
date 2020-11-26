@@ -1,6 +1,9 @@
 <div class="linkmans" *ngIf='contacts?.length'>
   <div class="linkman" *ngFor='let man of contacts'>
     <div class="flex padding-v">
+      <div class="title">授权查看账号信息：</div>
+    </div>
+    <div class="flex padding-v">
       <div class="label">旅客名称：</div>
       <ion-input name='name' notranslate placeholder='请输入' (ionChange)='onChange()' [(ngModel)]='man.name'></ion-input>
       <ion-icon name='trash' class='trash' mode='ios' color='danger' (click)='remove(man)'></ion-icon>

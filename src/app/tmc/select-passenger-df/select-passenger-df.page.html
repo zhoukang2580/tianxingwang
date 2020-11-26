@@ -1,10 +1,15 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar style="--border-width:0">
     <ion-buttons slot='start'>
 
       <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
-    <ion-title >{{title}}</ion-title>
+    <ion-toolbar #toolbar class="search">
+      <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" style='padding:0;' animated
+        placeholder="请输入员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
+      </ion-searchbar>
+    </ion-toolbar>
+    <!-- <ion-title >{{title}}</ion-title>
     <ion-buttons slot='end' *ngIf='bookInfos$'>
       <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
         已选旅客
@@ -12,7 +17,7 @@
           <ion-text color='light'>{{(bookInfos$|async).length}}</ion-text>
         </ion-badge>
       </ion-button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-toolbar>
 </ion-header>
 
@@ -21,11 +26,11 @@
     <ion-refresher-content refreshingText="正在加载...">
     </ion-refresher-content>
   </app-refresher>
-  <ion-toolbar #toolbar class="search">
+  <!-- <ion-toolbar #toolbar class="search">
     <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" style='padding:0' animated
       placeholder="员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
     </ion-searchbar>
-  </ion-toolbar>
+  </ion-toolbar> -->
   <ng-container *ngIf='vmStaffs else addTempl'>
     <ion-list *ngIf='!loading;else loadingTemp' class="list">
       <ng-container *ngIf='vmStaffs?.length;else nodata'>

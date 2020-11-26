@@ -312,7 +312,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.lastSelectedPassengerIds = this.trainService
       .getBookInfos()
       .map((it) => it.passenger && it.passenger.AccountId);
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger-df")], {
       queryParams: {
         forType: FlightHotelTrainType.Train,
       },

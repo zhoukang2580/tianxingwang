@@ -37,8 +37,8 @@
           {{searchTrainModel?.toCity?.Nickname}}</ion-text>
       </ion-buttons>
       <section class="flight-date">
-        <app-search-day-comp [day]='goDate' (click)="onSelecDate(true)" [disabled]='searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'>
-        </app-search-day-comp>
+        <app-search-day-comp-df [day]='goDate' (click)="onSelecDate(true)" [disabled]='searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'>
+        </app-search-day-comp-df>
       </section>
       <ion-button class='ion-margin-top' style='width: 100%;' (click)="searchTrain()" *ngIf='!(canAddPassengers&& selectedPassengers==0)' color="secondary" expand="block">
         <ion-text class="text_search">查   询</ion-text>

@@ -64,7 +64,7 @@ ion-item-group ion-item-divider:first-of-type {
   width: 100%;
 }
 ion-toolbar.ios.search {
-  padding: 0.5em 0 0 0;
+  --border-width: 0;
 }
 
 .list {
@@ -87,6 +87,10 @@ ion-toolbar.ios.search {
   width: 90%;
   height: 2.5rem;
 }
+
+// .ion-no-padding{
+//   margin-top: -10px;
+// }
 
 .con-list {
   margin: 10px;
