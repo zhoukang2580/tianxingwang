@@ -197,7 +197,7 @@ export class FlightListPage
         !this.vmFlights.length ||
         isFetch
       ) {
-        this.lastFetchTime=Date.now();
+        this.lastFetchTime = Date.now();
         this.doRefresh(true, false);
       }
       const filteredBookInfo = this.flightService
@@ -217,6 +217,7 @@ export class FlightListPage
       evt.preventDefault();
     }
     if (s) {
+      await this.checkCabinsAndPolicy(s);
       const cabins =
         s.Cabins && s.Cabins.filter((it) => it.SalesPrice == s.LowestFare);
       const cabin =
@@ -509,19 +510,30 @@ export class FlightListPage
       this.doRefresh(true, false);
     }
   }
-
-  async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
+  private async checkCabinsAndPolicy(fs: FlightSegmentEntity) {
     try {
       if (!fs.Cabins || !fs.Cabins.length) {
-       await this.flightService.initFlightSegmentCabins(fs);
+        await this.flightService.initFlightSegmentCabins(fs);
       }
-      this.isCanLeave = true;
-      await this.flightService.addOneBookInfoToSelfBookType();
-      this.flightService.currentViewtFlightSegment = fs;
-      this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
+      if (fs.Cabins && fs.Cabins.length) {
+        await this.flightService.initFlightSegmentCabinsPolicy(fs);
+        return true;
+      }
     } catch (e) {
       AppHelper.alert(e);
     }
+    return false;
+  }
+  async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
+    const ok = await this.checkCabinsAndPolicy(fs);
+    if(!ok){
+      // AppHelper.alert("请重新请求")
+      return;
+    }
+    this.isCanLeave = true;
+    await this.flightService.addOneBookInfoToSelfBookType();
+    this.flightService.currentViewtFlightSegment = fs;
+    this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
   }
   onShowSelectedInfos() {
     this.isCanLeave = true;

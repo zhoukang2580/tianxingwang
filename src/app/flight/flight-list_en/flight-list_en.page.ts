@@ -231,6 +231,7 @@ export class FlightListEnPage
       evt.preventDefault();
     }
     if (s) {
+      await this.checkCabinsAndPolicy(s);
       const cabins =
         s.Cabins && s.Cabins.filter((it) => it.SalesPrice == s.LowestFare);
       const cabin =
@@ -242,6 +243,18 @@ export class FlightListEnPage
         }
         if (bookInfos && bookInfos.length) {
           const r = await this.flightService.addOrReplaceSegmentInfo(cabin, s);
+          const a = bookInfos.find(
+            (it) => it.bookInfo && it.bookInfo.isDontAllowBook
+          );
+          if (a) {
+            AppHelper.alert(
+              `超标不可预订,${
+                a.bookInfo.flightPolicy &&
+                a.bookInfo.flightPolicy.Rules.join(",")
+              }`
+            );
+            return;
+          }
           if (r.isProcessOk) {
             this.onShowSelectedInfos();
           }
@@ -435,15 +448,15 @@ export class FlightListEnPage
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
         loadDataFromServer
       );
-      if (loadDataFromServer) {
-        let segments = this.flightService.getTotalFlySegments();
-        if (isSelf) {
-          segments = this.filterSegmentsByGoArrivalTime(segments);
-        }
-        this.vmFlights = await this.translateLang(segments);
-        this.currentProcessStatus = "正在计算差标";
-        await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
-      }
+      // if (loadDataFromServer) {
+      //   let segments = this.flightService.getTotalFlySegments();
+      //   if (isSelf) {
+      //     segments = this.filterSegmentsByGoArrivalTime(segments);
+      //   }
+      //   this.vmFlights = await this.translateLang(segments);
+      //   this.currentProcessStatus = "正在计算差标";
+      //   await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
+      // }
       this.hasDataSource.next(false);
       let segments = this.filterFlightSegments(
         this.flightService.getTotalFlySegments()
@@ -547,8 +560,20 @@ export class FlightListEnPage
       this.doRefresh(true, false);
     }
   }
-
+  private async checkCabinsAndPolicy(fs: FlightSegmentEntity) {
+    try {
+      if (!fs.Cabins || !fs.Cabins.length) {
+        await this.flightService.initFlightSegmentCabins(fs);
+      }
+      if (fs.Cabins && fs.Cabins.length) {
+        await this.flightService.initFlightSegmentCabinsPolicy(fs);
+      }
+    } catch (e) {
+      AppHelper.alert(e);
+    }
+  }
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
+    await this.checkCabinsAndPolicy(fs);
     this.isCanLeave = true;
     await this.flightService.addOneBookInfoToSelfBookType();
     this.flightService.currentViewtFlightSegment = fs;
@@ -835,11 +860,8 @@ export class FlightListEnPage
         : totalFlySegments.filter((it) => it.isLowestPrice);
     return this.lowestPriceSegments;
   }
-  private async renderFlightList(fs: FlightSegmentEntity[] = []) {
-    const segments = this.calcLowestPrice(fs).filter(
-      (it) => it.Cabins && it.Cabins.length
-    );
-    this.vmFlights = await this.translateLang(segments);
+  private renderFlightList(fs: FlightSegmentEntity[] = []) {
+    this.vmFlights = this.calcLowestPrice(fs);
     return;
   }
   private filterFlightSegments(segs: FlightSegmentEntity[]) {

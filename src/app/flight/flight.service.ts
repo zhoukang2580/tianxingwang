@@ -1106,11 +1106,23 @@ export class FlightService {
   async initFlightSegmentCabins(s: FlightSegmentEntity) {
     const detail = await this.getFlightSegmentDetail(s);
     if (detail && detail.FlightSegments) {
-      const seg = detail.FlightSegments.find((it) => it.Number == s.Number);
+      // const seg = detail.FlightSegments.find((it) => it.Number == s.Number);
       s.Cabins = detail.FlightFares as any;
-    }
-    if (s.Cabins && s.Cabins.length) {
-      await this.initFlightSegmentCabinsPolicy(s);
+      if (this.flightJourneyList) {
+        this.flightJourneyList.forEach((it) => {
+          if (it.FlightRoutes) {
+            it.FlightRoutes.forEach((r) => {
+              if (r.FlightSegments) {
+                for (const seg of r.FlightSegments) {
+                  if (seg.Number == s.Number) {
+                    seg.Cabins = s.Cabins;
+                  }
+                }
+              }
+            });
+          }
+        });
+      }
     }
   }
   async initFlightSegmentCabinsPolicy(s: FlightSegmentEntity) {
@@ -1143,7 +1155,7 @@ export class FlightService {
     }
     return this.apiService.getPromiseData<FlightResultEntity>(req);
   }
-  async getPolicyflightsAsync(
+  private async getPolicyflightsAsync(
     Flights: FlightJourneyEntity[],
     Passengers: string[]
   ): Promise<PassengerPolicyFlights[]> {
@@ -1156,6 +1168,8 @@ export class FlightService {
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Policy`;
     req.Version = "2.0";
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在计算差标信息";
     let flights: FlightJourneyEntity[] = JSON.parse(JSON.stringify(Flights));
     flights = flights.map((fj) => {
       if (fj.FlightRoutes) {
