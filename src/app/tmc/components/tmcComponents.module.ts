@@ -37,6 +37,7 @@ import { BookOrganizationDfCompComponent } from './book-organization-comp-df/boo
 import { BookCostcenterCompDfComponent } from './book-costcenter-comp-df/book-costcenter-comp-df.component';
 import { BookAddcontactsCompDfComponent } from './book-addcontacts-comp-df/book-addcontacts-comp-df.component';
 import { SearchDayDfComponent } from './search-day-df/search-day-df.component';
+import { AddcontactsModalDfComponent } from './addcontacts-modal-df/addcontacts-modal-df.component';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { SearchDayDfComponent } from './search-day-df/search-day-df.component';
     SelectTravelNumberComponent,
     AddcontactsModalComponent,
     AddcontactsModalEnComponent,
+    AddcontactsModalDfComponent,
     BookIllegalReasonCompComponent,
     BookCredentialCompComponent,
     BookCredentialCompEnComponent,
@@ -92,6 +94,7 @@ import { SearchDayDfComponent } from './search-day-df/search-day-df.component';
     BookOrganizationDfCompComponent,
     BookAddcontactsCompComponent,
     BookAddcontactsCompEnComponent,
+    BookAddcontactsCompDfComponent,
     BookAddcontactsCompDfComponent,
     BookTmcOutnumberComponent,
     DayComponent,

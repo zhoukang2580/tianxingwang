@@ -12,6 +12,7 @@ import {
 } from "@angular/core";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { AddcontactsModalComponent } from "src/app/tmc/components/addcontacts-modal/addcontacts-modal.component";
+import { AddcontactsModalDfComponent } from '../addcontacts-modal-df/addcontacts-modal-df.component';
 
 @Component({
   selector: "app-book-addcontacts-comp-df",
@@ -54,7 +55,7 @@ export class BookAddcontactsCompDfComponent implements OnInit {
       this.contacts = [];
     }
     const m = await this.modalCtrl.create({
-      component: AddcontactsModalComponent,
+      component: AddcontactsModalDfComponent,
       componentProps: {
         title: this.buttonText,
       },

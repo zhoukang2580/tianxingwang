@@ -968,6 +968,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     return fee || 0;
   }
   isAllowSelectApprove(info: ITrainPassengerBookInfo) {
+    
     const Tmc = this.initialBookDto.Tmc;
     const staff = info.credentialStaff;
     if (
