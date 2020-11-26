@@ -396,15 +396,15 @@ export class FlightListPage
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
         loadDataFromServer
       );
-      if (loadDataFromServer) {
-        let segments = this.flightService.getTotalFlySegments();
-        if (isSelf) {
-          segments = this.filterSegmentsByGoArrivalTime(segments);
-        }
-        this.vmFlights = segments;
-        this.currentProcessStatus = "正在计算差标";
-        await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
-      }
+      // if (loadDataFromServer) {
+      //   let segments = this.flightService.getTotalFlySegments();
+      //   if (isSelf) {
+      //     segments = this.filterSegmentsByGoArrivalTime(segments);
+      //   }
+      //   this.vmFlights = segments;
+      //   this.currentProcessStatus = "正在计算差标";
+      //   await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
+      // }
       this.hasDataSource.next(false);
       let segments = this.filterFlightSegments(
         this.flightService.getTotalFlySegments()
@@ -510,10 +510,17 @@ export class FlightListPage
   }
 
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
-    this.isCanLeave = true;
-    await this.flightService.addOneBookInfoToSelfBookType();
-    this.flightService.currentViewtFlightSegment = fs;
-    this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
+    try {
+      if (!fs.Cabins || !fs.Cabins.length) {
+       await this.flightService.initFlightSegmentCabins(fs);
+      }
+      this.isCanLeave = true;
+      await this.flightService.addOneBookInfoToSelfBookType();
+      this.flightService.currentViewtFlightSegment = fs;
+      this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
+    } catch (e) {
+      AppHelper.alert(e);
+    }
   }
   onShowSelectedInfos() {
     this.isCanLeave = true;
@@ -794,9 +801,7 @@ export class FlightListPage
     return this.lowestPriceSegments;
   }
   private renderFlightList(fs: FlightSegmentEntity[] = []) {
-    this.vmFlights = this.calcLowestPrice(fs).filter(
-      (it) => it.Cabins && it.Cabins.length
-    );
+    this.vmFlights = this.calcLowestPrice(fs);
     return;
   }
   private filterFlightSegments(segs: FlightSegmentEntity[]) {

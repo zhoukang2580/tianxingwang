@@ -42,6 +42,7 @@ import {
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DayModel } from "../tmc/models/DayModel";
 import { FlightFareEntity } from "./models/FlightFareEntity";
+import { FlightResultEntity } from './models/FlightResultEntity';
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -1101,7 +1102,32 @@ export class FlightService {
   async getInternationalAirports(forceFetch: boolean = false) {
     return this.tmcService.getInternationalAirports(forceFetch);
   }
-
+  async initFlightSegmentCabins(s: FlightSegmentEntity) {
+    const detail = await this.getFlightSegmentDetail(s);
+    if (detail&&detail.FlightSegments) {
+     const seg= detail.FlightSegments.find(it=>it.Id==s.Id);
+     s.Cabins=seg.Cabins;
+    }
+  }
+  async initFlightSegmentCabinsPolicy(s: FlightSegmentEntity) {}
+  private async getFlightSegmentDetail(s: FlightSegmentEntity) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiFlightUrl-Home-Detail`;
+    req.Version = "2.0";
+    const search = this.searchFlightModel;
+    req.Data = {
+      Date: search.Date,
+      FromCode: search.FromCode,
+      ToCode: search.ToCode,
+      FlightNumber: s.Number,
+      FromAsAirport: search.FromAsAirport,
+      ToAsAirport: search.ToAsAirport,
+    };
+    if (req.Language) {
+      req.Data.Lang = req.Language;
+    }
+    return this.apiService.getPromiseData<FlightResultEntity>(req);
+  }
   async getPolicyflightsAsync(
     Flights: FlightJourneyEntity[],
     Passengers: string[]
@@ -1384,7 +1410,7 @@ export class FlightService {
     await this.checkOrAddSelfBookTypeBookInfo();
     await this.setDefaultFilterInfo();
     const req = new RequestEntity();
-    req.Method = "TmcApiFlightUrl-Home-Detail ";
+    req.Method = "TmcApiFlightUrl-Home-Index";
     const data = this.getSearchFlightModel();
     req.Data = {
       Date: data.Date, //  Yes 航班日期（yyyy-MM-dd）
