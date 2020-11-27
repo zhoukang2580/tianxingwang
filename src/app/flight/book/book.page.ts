@@ -1078,7 +1078,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
           p.OutNumbers = {};
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
-              const el = this.getEleByAttr("outnumber", "outnumber");
+              const el = this.getEleByAttr("outnumber", combindInfo.id);
               showErrorMsg(
                 it.label + this.LangService.isCn ? "必填" : " Required ",
                 combindInfo,
