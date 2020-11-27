@@ -240,7 +240,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearchCity() {
     if (this.isDomestic) {
-      this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+      this.router.navigate([AppHelper.getRoutePath("hotel-city-df")]);
     } else {
       this.router.navigate([AppHelper.getRoutePath("select-inter-city")]);
     }

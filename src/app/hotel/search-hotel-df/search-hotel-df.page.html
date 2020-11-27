@@ -60,7 +60,7 @@
       <div class="segments"></div>
       <ion-card-content *ngIf='isDomestic'>
         <div class='ion-padding-top'>
-          <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}" color="secondary">
+          <ion-segment mode='md' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}" color="secondary">
             <ion-segment-button value="normal">
               <ion-label>非协议酒店</ion-label>
             </ion-segment-button>
@@ -172,5 +172,5 @@
   </div>
 </ion-content>
 <div class="img">
-  <img src="assets/images/hotelbg.png" alt="">
+  <img src="assets/images/beijing.png" alt="">
 </div>

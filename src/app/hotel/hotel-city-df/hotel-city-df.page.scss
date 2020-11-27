@@ -1,0 +1,33 @@
+form{
+    width: 100%;
+    padding-right: 1em;
+}
+
+.ion-text{
+    display: flex;
+}
+.container{
+    display: flex;
+    background: #fff;
+    align-items: center;
+    flex: 0.2;
+}
+.hot,.his{
+    background: #fff;
+    line-height: 4;
+    padding-left: 15px;
+    flex: 1;
+}
+
+.list{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.btn-city{
+    width: 80px;
+    height: 30px;
+    background: #F6F6F6;
+    border-radius: 5px;
+    margin-left: 20px;
+}
