@@ -129,15 +129,15 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
       // .getResponse(req, true, "image/jpeg", this.fileName)
       .getResponse(req)
       .subscribe(
-        (uploadRes) => {
+       async (uploadRes) => {
           this.showCropBox = false;
           this.uploaded = uploadRes.Status;
           if (uploadRes.Status) {
             AppHelper.setRouteData(true);
-            this.goBack();
           } else if (uploadRes.Message) {
-            AppHelper.alert(uploadRes.Message);
+           await AppHelper.alert(uploadRes.Message);
           }
+          this.goBack();
         },
         (e) => {
           this.uploaded = false;
