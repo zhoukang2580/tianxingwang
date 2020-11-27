@@ -90,6 +90,10 @@ export class FlightListPage
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private lastFetchTime = 0;
+  private oldSearchCities: {
+    fromCityCode: string;
+    toCityCode: string;
+  } = {} as any;
   lowestPriceSegments: FlightSegmentEntity[];
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
@@ -190,7 +194,7 @@ export class FlightListPage
       this.showAddPassenger = await this.canShowAddPassenger();
       const delta = Math.floor((Date.now() - this.lastFetchTime) / 1000);
       console.log("this.route.queryParamMap deltaTime=", delta);
-      const isFetch = delta >= 60;
+      const isFetch = delta >= 60 || this.checkIfCityChanged();
       if (
         (d && d.get("doRefresh") == "true") ||
         !this.vmFlights ||
@@ -210,6 +214,18 @@ export class FlightListPage
   }
   trackById(item: FlightSegmentEntity) {
     return item.Id;
+  }
+  private checkIfCityChanged() {
+    try {
+      return (
+        this.searchFlightModel.fromCity.Code !=
+          this.oldSearchCities.fromCityCode ||
+        this.searchFlightModel.toCity.Code != this.oldSearchCities.toCityCode
+      );
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
   }
   async onBookLowestSegment(evt: CustomEvent, s: FlightSegmentEntity) {
     if (evt) {
@@ -395,6 +411,8 @@ export class FlightListPage
       this.isLoading = true;
       this.currentProcessStatus = "正在获取航班列表";
       this.apiService.showLoadingView({ msg: this.currentProcessStatus });
+      this.oldSearchCities.fromCityCode = this.searchFlightModel.fromCity.Code;
+      this.oldSearchCities.toCityCode = this.searchFlightModel.toCity.Code;
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
         loadDataFromServer
       );
