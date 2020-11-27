@@ -1,6 +1,6 @@
 import { AppHelper } from "./../../appHelper";
 import { BackButtonComponent } from "./../../components/back-button/back-button.component";
-import { ActionSheetController, NavController } from "@ionic/angular";
+import { ActionSheetController, IonInput, NavController } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import {
   InternationalHotelService,
@@ -50,6 +50,14 @@ export class RoomCountChildrenPage implements OnInit {
       }
       this.searchCondition.children.push({ age: 1 });
     }
+  }
+  onBlur(el: IonInput) {
+    el.getInputElement().then((ele) => {
+      if (+ele.value > 10) {
+        AppHelper.alert("最多添加10人");
+        ele.value = "10";
+      }
+    });
   }
   onAdd(n: number) {
     if (this.searchCondition) {
