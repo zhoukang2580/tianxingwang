@@ -333,7 +333,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (name == "international-hotel") {
       route = "search-international-hotel";
-      const pass =true||
+      const pass =
         Tmc &&
         // tslint:disable-next-line: no-bitwise
         (Tmc.RegionType & AgentRegionType.InternationalHotel) > 0 &&
@@ -352,7 +352,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (name == "hotel") {
       route = "search-hotel";
-      const pass =true||
+      const pass =
         Tmc &&
         // tslint:disable-next-line: no-bitwise
         (Tmc.RegionType & AgentRegionType.Hotel) > 0 &&
