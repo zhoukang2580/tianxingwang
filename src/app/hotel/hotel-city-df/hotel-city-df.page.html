@@ -16,8 +16,8 @@
   <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
   </app-refresher>
   <ng-container *ngIf='!isLoading else loadingTemp'>
-    <ng-container *ngIf='vmCities?.length else nomatchdata'>
-      <div>
+    <ng-container *ngIf='historyCities?.length else nomatchdata'>
+      <div *ngIf="ishistory">
         <ion-text class="ion-text">
           <div class="his">历史城市</div>
           <div class="container">
@@ -25,10 +25,10 @@
           </div>
         </ion-text>
         <ion-list class="list">
-            <ion-label class="ion-text-wrap" *ngFor='let s of vmCities' (click)='onSelect(s)'> 
+            <ion-label class="ion-text-wrap" *ngFor='let s of historyCities' (click)='onSelect(s)'> 
               <ion-text style="position: relative;padding-left: 1em;">
                <ion-button class="btn-city">
-                  {{s?.Name}}<ion-button [color]="s?.Selected?'secondary':'light'" *ngIf='s.CityName'>{{s.CityName}}</ion-button>
+                  {{s.Name}}<ion-button [color]="s?.Selected?'secondary':'light'" *ngIf='s.CityName'>{{s.CityName}}</ion-button>
                 </ion-button>
               </ion-text>
             </ion-label>

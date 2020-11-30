@@ -43,6 +43,8 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   vmCities: TrafficlineEntity[] = [];
   vmKeyword = "";
   isLoading = false;
+  history: any;
+  ishistory: boolean;
   filteredTotalCount = 0;
   isEn = false;
   isHot = false;
@@ -76,7 +78,9 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   onShowHistory() {
-    this.vmCities = this.historyCities;
+    let his = this.historyCities;
+    his = Array.from(new Set(his));
+    this.vmCities = his;
     console.log(this.historyCities);
     this.scroller.disabled = true;
   }
@@ -141,6 +145,7 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   ngOnInit() {
+    this.ishistory = true;
     this.initHistoryCity();
     const sub = this.hotelService.getSearchHotelModelSource().subscribe((m) => {
       if (m && m.destinationCity) {
@@ -255,7 +260,10 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   async onDetete() {
     const ok = await AppHelper.alert("确定清除历史记录吗?", true, "确定", "取消");
     if (ok == true) {
+      console.log(this.historyCities);
+      this.ishistory = false;
       this.historyCities = [];
+      this.doRefresh();
     }
   }
 

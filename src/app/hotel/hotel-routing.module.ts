@@ -29,11 +29,11 @@ export const routes: Routes = [
     loadChildren: () =>
       import("./hotel-city/hotel-city.module").then(m => m.HotelCityPageModule)
   },
-  {
-    path: "hotel-city-df",
-    loadChildren: () =>
-      import("./hotel-city-df/hotel-city-df.module").then(m => m.HotelCityDfPageModule)
-  },
+  // {
+  //   path: "hotel-city-df",
+  //   loadChildren: () =>
+  //     import("./hotel-city-df/hotel-city-df.module").then(m => m.HotelCityDfPageModule)
+  // },
   {
     path: "combox-search-hotel",
     loadChildren: () =>
