@@ -434,13 +434,13 @@
                   <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
                 </ng-container>
               </div>
-              <div class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
+              <!-- <div class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">
                   <ion-icon name="star" color='danger' style="font-size: 0.5rem;margin-right: 5px;"></ion-icon>到店时间：
                 </span>{{combindInfo?.arrivalHotelTime}}
                 <ion-icon name="caret-down-outline" (click)='onSelectDatetime(datetimeEl,combindInfo)'></ion-icon>
-              </div>
-              <!-- <div *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
+              </div> 
+              <div *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">床型需求（尽量安排）：</span>{{combindInfo.bookInfo?.bookInfo?.roomPlan.Remark}}
                 <ion-icon name="caret-down-outline" (click)='onBedChange(bedEle)'></ion-icon>
               </div> -->
