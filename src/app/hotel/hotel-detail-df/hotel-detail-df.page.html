@@ -122,7 +122,7 @@
               <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='onShowRoomPlans(room)'>
                 <ion-label class='ion-text-wrap'>
                   <div class="room-detail-desc">
-                    <span *ngFor='let d of getRoomDescriptions(room)'>{{d}}</span>
+                    <span *ngFor='let d of getRoomDescriptions(room)' class='ion-text-nowrap'>{{d}}</span>
                   </div>
                 </ion-label>
                 <ion-button color='danger' class='full' [disabled]='true' *ngIf='isFullOnly(room.RoomPlans)'>
