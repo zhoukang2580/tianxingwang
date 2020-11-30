@@ -201,6 +201,16 @@ export class HotelService {
       return plan.VariablesJsonObj["RoomRateRule"];
     }
   }
+  getInstantConfirmation(plan: RoomPlanEntity) {
+    // 限时取消 不可取消 规则
+    if (plan && plan.VariablesJsonObj) {
+      return plan.VariablesJsonObj["InstantConfirmation"] == true;
+    }
+    if (plan && plan.Variables) {
+      plan.VariablesJsonObj = JSON.parse(plan.Variables);
+      return plan.VariablesJsonObj["InstantConfirmation"] == true;
+    }
+  }
   getBreakfast(plan: RoomPlanEntity) {
     if (plan && plan.VariablesJsonObj) {
       return plan.VariablesJsonObj["Breakfast"];

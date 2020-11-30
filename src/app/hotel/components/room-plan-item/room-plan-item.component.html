@@ -9,7 +9,9 @@
         <div class="room-detail-desc">
             <ion-text color='secondary' class='desc' (click)='showRoomRateRuleMessage(roomPlan)'>{{getRules(roomPlan)}}
             </ion-text>
-            {{langOpt.Ok}}
+            <span *ngIf='getInstantConfirmation(roomPlan)'>
+                {{langOpt.Ok}}
+            </span>
         </div>
         <div class="room-detail-desc">
             <span *ngIf='getBreakfast(roomPlan) as it'>

@@ -59,6 +59,9 @@ export class RoomPlanItemComponent implements OnInit, OnChanges {
   getRules(roomPlan: RoomPlanEntity) {
     return this.hotelService.getRules(roomPlan);
   }
+  getInstantConfirmation(roomPlan: RoomPlanEntity) {
+    return this.hotelService.getInstantConfirmation(roomPlan);
+  }
   async showRoomRateRuleMessage(roomPlan: RoomPlanEntity) {
     const msg = this.hotelService.getRoomRateRuleMessage(roomPlan);
     if (msg) {
