@@ -15,15 +15,15 @@
             <span *ngIf='getBreakfast(roomPlan) as it'>
                 <ion-text color='success'>{{it}}</ion-text>
             </span>
-            <ng-container *ngIf='getBedType(room) as it'>
+            <!-- <ng-container *ngIf='getBedType(room) as it'>
                 <span *ngIf='it.Description'>{{it.Description}}</span>
-            </ng-container>
+            </ng-container> -->
             <ng-container *ngIf='getCapacity(room) as it'>
                 <span *ngIf='it.Description'>可住{{it.Description}}人</span>
             </ng-container>
-            <ng-container *ngIf='getRoomArea(room) as it'>
+            <!-- <ng-container *ngIf='getRoomArea(room) as it'>
                 <span *ngIf='it.Description'>{{it.Description}}m²</span>
-            </ng-container>
+            </ng-container> -->
         </div>
     </div>
     <div class="price" *ngIf='colors[getRoomPlanUniqueId(roomPlan)] as color' [class.can-not-be-book]='color.includes("danger")||color.includes("medium")'

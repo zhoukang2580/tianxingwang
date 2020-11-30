@@ -758,8 +758,8 @@
       </ion-col>
     </ion-row>
   </ng-template>
-  <div class="rules">
-    {{getRoomPlanRulesDesc(combindInfos&&combindInfos[0]?.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
+  <div class="rules" *ngIf='combindInfos?.length'>
+    {{getRoomPlanRulesDesc(combindInfos[0]?.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
   </div>
 </ion-content>
 <ion-footer>
