@@ -413,6 +413,9 @@
     <div class="total">
       <span>总计：</span>
       <span class="price">￥{{totalPrice}}</span>
+      <span class="detail">明细</span>
+      <ion-icon name="chevron-up-outline" color="dark" *ngIf="!isShowFee"></ion-icon>
+      <ion-icon name="chevron-down-outline" color="dark" *ngIf="isShowFee"></ion-icon>
     </div>
     <div class="submit-btn" (click)='onBook(false,$event)'>
       提交
@@ -420,6 +423,7 @@
   </div>
   <div class="freebook-price" *ngIf='isRoomPlanFreeBook(combindInfos&&combindInfos[0])'>
     <div class="detail">
+      <span>房费：</span>
       <span>公司支付</span>
       <ion-text color='danger'>￥{{combindInfos[0]?.bookInfo?.bookInfo?.roomPlan?.VariablesJsonObj?.CompanyPayAmount}}</ion-text>
       <span style="margin-left: 5px;">个人支付</span>
