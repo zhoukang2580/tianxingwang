@@ -1,11 +1,27 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons>
-      <app-back-button defaultHref="" [backFn]='back.bind(this)'></app-back-button>
-      <form (ngSubmit)='doSearch()' action='javascript:void(0)' style="display: flex; align-items: center;">
-        <ion-searchbar mode='ios' debounce="300" name='searchbar' style='padding:0' placeholder="输入关键字" (ionChange)='doSearch()' [(ngModel)]='vmKeyword' class="ion-margin-end">
+      <app-back-button
+        defaultHref=""
+        [backFn]="back.bind(this)"
+      ></app-back-button>
+      <form
+        (ngSubmit)="doSearch()"
+        action="javascript:void(0)"
+        style="display: flex; align-items: center"
+      >
+        <ion-searchbar
+          mode="ios"
+          debounce="300"
+          name="searchbar"
+          style="padding: 0"
+          placeholder="输入关键字"
+          (ionChange)="doSearch()"
+          [(ngModel)]="vmKeyword"
+          class="ion-margin-end"
+        >
         </ion-searchbar>
-        <div style="min-width: 2em;">
+        <div style="min-width: 2em">
           <ion-text color="secondary" (click)="onCancle()">取消</ion-text>
         </div>
       </form>
@@ -13,45 +29,64 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
-  </app-refresher>
-  <ng-container *ngIf='!isLoading else loadingTemp'>
-    <ng-container *ngIf='historyCities?.length else nomatchdata'>
-      <div *ngIf="ishistory">
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh()"> </app-refresher>
+  <ng-container *ngIf="!isLoading else loadingTemp">
+    <ng-container *ngIf="cities.length else nomatchdata">
+     <div *ngIf="isSelect">
+      <div *ngIf="historyCities?.length">
         <ion-text class="ion-text">
           <div class="his">历史城市</div>
           <div class="container">
-            <div class="ion" (click)='onDetete()'><ion-icon name="trash-outline"></ion-icon></div>
+            <div class="ion" (click)="onDetete()">
+              <ion-icon name="trash-outline"></ion-icon>
+            </div>
           </div>
         </ion-text>
         <ion-list class="list">
-            <ion-label class="ion-text-wrap" *ngFor='let s of historyCities' (click)='onSelect(s)'> 
-              <ion-text style="position: relative;padding-left: 1em;">
-               <ion-button class="btn-city">
-                  {{s.Name}}<ion-button [color]="s?.Selected?'secondary':'light'" *ngIf='s.CityName'>{{s.CityName}}</ion-button>
-                </ion-button>
-              </ion-text>
-            </ion-label>
+          <ion-label
+            class="ion-text-wrap"
+            *ngFor="let s of historyCities"
+            (click)="onSelect(s)"
+          >
+            <ion-text style="position: relative; padding-left: 1em">
+              <ion-button class="btn-city">
+                {{s.Name}}<ion-button
+                  [color]="s?.Selected?'secondary':'light'"
+                  *ngIf="s.CityName"
+                  >{{s.CityName}}</ion-button
+                >
+              </ion-button>
+            </ion-text>
+          </ion-label>
         </ion-list>
       </div>
       <ion-text>
         <div class="hot">热门城市</div>
       </ion-text>
       <ion-list class="list">
-          <ion-label class="ion-text-wrap" *ngFor='let s of vmCities' (click)='onSelect(s)'> 
-            <ion-text style="position: relative;padding-left: 1em;" [color]="s?.Selected?'secondary':'dark'">
-              <!-- <ion-icon *ngIf='s.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon> -->
-              <ion-button class="btn-city">
-                {{s?.Name}}<ion-button *ngIf='s.CityName'>{{s.CityName}}</ion-button>
-              </ion-button>
-            </ion-text>
-          </ion-label>
+        <ion-label
+          class="ion-text-wrap"
+          *ngFor="let s of hotCities"
+          (click)="onSelect(s)"
+        >
+          <ion-text
+            style="position: relative; padding-left: 1em"
+            [color]="s?.Selected?'secondary':'dark'"
+          >
+            <!-- <ion-icon *ngIf='s.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon> -->
+            <ion-button class="btn-city">
+              {{s?.Name}}<ion-button *ngIf="s.CityName"
+                >{{s.CityName}}</ion-button
+              >
+            </ion-button>
+          </ion-text>
+        </ion-label>
       </ion-list>
-      <ion-list>
+      
+      <!-- <ion-list>
         <ion-item *ngFor='let s of vmCities' (click)='onSelect(s)'>
           <ion-label class="ion-text-wrap">
             <ion-text style="position: relative;padding-left: 1em;" [color]="s?.Selected?'secondary':'dark'">
-              <ion-icon *ngIf='s.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon>
               <ng-container *ngIf='!isEn'>
                 {{s?.Name}}<ng-container *ngIf='s.CityName'>{{s.CityName}}</ng-container>
               </ng-container>
@@ -62,22 +97,69 @@
             <ion-text *ngIf='s.Pinyin&&!isEn' color='medium'>({{s.Pinyin}})</ion-text>
           </ion-label>
         </ion-item>
+      </ion-list> -->
+      
+      <ion-list *ngFor="let item of letters" >
+        <div>
+          <ion-item-divider #letter [attr.letter]='item'><div class="letter">{{item}}</div></ion-item-divider>
+          <ion-item *ngFor="let c of letterCitiesMap[item]">
+            <ion-label class="ion-text-wrap">
+              <ion-list>
+                <ion-item  (click)="onSelect(c)">
+                  <ion-text>{{c.Name}}</ion-text>
+                </ion-item>
+              </ion-list>
+            </ion-label>
+          </ion-item>
+        </div>
       </ion-list>
+    </div> 
+    <div *ngIf="!isSelect">
+      <ng-container *ngIf='vmCities?.length else nomatchdata'>
+        <ion-list>
+          <ion-item *ngFor='let s of vmCities' (click)='onSelect(s)'>
+            <ion-label class="ion-text-wrap">
+              <ion-text style="position: relative;padding-left: 1em;" [color]="s?.Selected?'secondary':'dark'">
+                <!-- <ion-icon *ngIf='s.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon> -->
+                <ng-container *ngIf='!isEn'>
+                  {{s?.Name}}<ng-container *ngIf='s.CityName'>,{{s.CityName}}</ng-container>
+                </ng-container>
+                <ng-container *ngIf='isEn'>
+                  {{s.EnglishName}}
+                </ng-container>
+              </ion-text>
+              <ion-text *ngIf='s.Pinyin&&!isEn' color='medium'>({{s.Pinyin}})</ion-text>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ng-container>
+    </div>
     </ng-container>
+
     <ng-template #nomatchdata>
       <app-or-comp>没有符合条件的数据</app-or-comp>
     </ng-template>
   </ng-container>
-  <ng-template #loadingTemp>
-    <!-- 正在加载... -->
-  </ng-template>
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf='!isLoading'>
-    <ion-fab-button color='danger' size='small' (click)='onShowHot()'>
-      <ion-text color='light'>热门</ion-text>
+  <ng-template #loadingTemp> 正在加载... </ng-template>
+  <!-- <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!isLoading">
+    <ion-fab-button color="danger" size="small" (click)="onShowHot()">
+      <ion-text color="light">热门</ion-text>
     </ion-fab-button>
-    <ion-fab-button color='secondary' size='small' (click)='onShowHistory()'>历史</ion-fab-button>
+    <ion-fab-button color="secondary" size="small" (click)="onShowHistory()"
+      >历史</ion-fab-button
+    >
+  </ion-fab> -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="isSelect">
+    <div class="suspension" *ngFor="let item of letters">
+      <div (click)="onletter(item)">
+        {{item}}
+      </div>
+    </div>
   </ion-fab>
-  <ion-infinite-scroll (ionInfinite)='loadMore()'>
-    <ion-infinite-scroll-content><span *ngIf='isEn'>Loading More</span><span *ngIf='!isEn'>加载更多</span>...</ion-infinite-scroll-content>
+  <ion-infinite-scroll (ionInfinite)="loadMore()">
+    <ion-infinite-scroll-content
+      ><span *ngIf="isEn">Loading More</span
+      ><span *ngIf="!isEn">加载更多</span>...</ion-infinite-scroll-content
+    >
   </ion-infinite-scroll>
 </ion-content>

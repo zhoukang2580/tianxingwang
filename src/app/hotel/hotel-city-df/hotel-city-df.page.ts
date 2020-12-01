@@ -10,8 +10,11 @@ import {
   AfterViewInit,
   OnDestroy,
   NgZone,
+  ViewChildren,
+  QueryList,
+  ElementRef,
 } from "@angular/core";
-import { NavController, IonInfiniteScroll, IonSearchbar } from "@ionic/angular";
+import { NavController, IonInfiniteScroll, IonSearchbar, IonList, IonItemDivider, IonHeader, IonContent } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
@@ -28,7 +31,6 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   private subscriptions: Subscription[] = [];
   private pageIndex = 0;
   private pageSize = 20;
-  private cities: TrafficlineEntity[];
   private searchKeys = [
     "Name",
     "Nickname",
@@ -37,14 +39,20 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     "FirstLetter",
     "CityName",
   ];
-
+  cities: TrafficlineEntity[];
   hotCities: TrafficlineEntity[];
   historyCities: TrafficlineEntity[];
   vmCities: TrafficlineEntity[] = [];
+  letters: any[];
+  cityName: any[];
+  letterCitiesMap: { [key: string]: TrafficlineEntity[] };
   vmKeyword = "";
   isLoading = false;
+  isSelect = true;
   history: any;
   ishistory: boolean;
+  touch: {};
+  firstTouch: any;
   filteredTotalCount = 0;
   isEn = false;
   isHot = false;
@@ -52,6 +60,9 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
+  @ViewChild(IonContent, { static: true }) ionContent: IonContent;
+  @ViewChild(IonHeader) headerEle: IonHeader;
+  @ViewChildren("letter") letterEles: QueryList<IonItemDivider>;
   constructor(
     private hotelService: HotelService,
     private storage: Storage,
@@ -77,6 +88,44 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.historyCities = await this.storage.get(HISTORY_HOTEL_CITIES);
     }
   }
+
+  private initLetterCitiesMap() {
+    this.letterCitiesMap = {};
+    if (this.cities && this.cities.length) {
+      this.cities.forEach(c => {
+        if (this.letterCitiesMap[c.FirstLetter]) {
+          this.letterCitiesMap[c.FirstLetter].push(c);
+        } else {
+          this.letterCitiesMap[c.FirstLetter] = [c];
+        }
+      });
+    }
+    this.letters = Object.keys(this.letterCitiesMap).sort();
+    console.log('letter', this.letterCitiesMap, this.letters, this.cityName);
+  }
+  // onletter(item) {
+  //   try {
+  //     const arr = this.letterEles.toArray();
+  //     const ele = arr.find(it => it['el'].getAttribute("letter") == item);
+  //     const rect = ele['el'].getBoundingClientRect();
+  //     const headerEle = this.headerEle['el'].clientHeight;
+  //     console.log(item , rect, rect.top, rect.height, headerEle);
+  //     let y = 0;
+  //     y = rect.top - headerEle;
+  //     this.ionContent.scrollByPoint(0, y, 200);
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
+
+  onletter(item) {
+    const arr = this.letterEles.toArray();
+    const ele = arr.find(it => it['el'].getAttribute('letter') == item);
+    const rect = ele['el'].getBoundingClientRect().top;
+    const header = this.headerEle['el'].clientHeight;
+    this.ionContent.scrollByPoint(0, rect - header, 200);
+  }
+
   onShowHistory() {
     let his = this.historyCities;
     his = Array.from(new Set(his));
@@ -87,7 +136,7 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   onShowHot() {
     this.isHot = true;
     this.isLoading = true;
-    this.historyCities = [];
+    // this.historyCities = [];
     this.hotCities = [];
     this.vmCities = [];
     this.pageIndex = 0;
@@ -113,6 +162,11 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (this.historyCities) {
         this.historyCities.forEach((s) => {
+          s.Selected = city.Code == s.Code;
+        });
+      }
+      if (this.cities) {
+        this.cities.forEach((s) => {
           s.Selected = city.Code == s.Code;
         });
       }
@@ -145,7 +199,7 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   ngOnInit() {
-    this.ishistory = true;
+    this.isSelect = true;
     this.initHistoryCity();
     const sub = this.hotelService.getSearchHotelModelSource().subscribe((m) => {
       if (m && m.destinationCity) {
@@ -162,6 +216,11 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
         if (this.vmCities) {
           this.vmCities.forEach((c) => {
+            c.Selected = c.Code == this.selectedCity.Code;
+          });
+        }
+        if (this.cities) {
+          this.cities.forEach((c) => {
             c.Selected = c.Code == this.selectedCity.Code;
           });
         }
@@ -214,16 +273,20 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh() {
     try {
+      this.isSelect = true;
       this.isLoading = true;
-      this.historyCities = [];
+      // this.historyCities = [];
       this.hotCities = [];
       this.vmCities = [];
+      this.cities = [];
       this.cities = await this.hotelService.getHotelCityAsync();
       if (this.cities) {
         this.cities = this.cities
           .filter((it) => it.IsHot)
           .concat(this.cities.filter((it) => !it.IsHot))
           .sort((a, b) => b.Sequence - a.Sequence);
+        this.hotCities = this.cities
+          .filter((it) => it.IsHot);
         this.cities = this.cities.map((it) => {
           it.matchStr = this.searchKeys
             .filter((k) => !!it[k])
@@ -232,6 +295,7 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",");
           return it;
         });
+        this.initLetterCitiesMap();
       }
       this.pageIndex = 0;
       this.isHot = false;
@@ -250,9 +314,13 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     const kw = (this.vmKeyword || "").trim();
     this.pageIndex = 0;
     this.isLoading = true;
+    this.isSelect = false;
     this.vmCities = [];
     if (this.scroller) {
       this.scroller.disabled = true;
+    }
+    if (kw == '') {
+      this.isSelect = true;
     }
     this.loadMore(kw);
   }
