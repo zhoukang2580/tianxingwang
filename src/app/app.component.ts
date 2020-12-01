@@ -34,7 +34,7 @@ import { ConfigService } from "./services/config/config.service";
 import { HttpClient } from "@angular/common/http";
 import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
-import { Observable } from "rxjs";
+import { combineLatest, Observable } from "rxjs";
 import { ApiService } from "./services/api/api.service";
 import {
   trigger,
@@ -46,7 +46,7 @@ import {
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
 import { ThemeService } from "./services/theme/theme.service";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
-import { filter } from "rxjs/operators";
+import { combineAll, filter, map, mergeMap } from "rxjs/operators";
 export interface App {
   loadUrl: (
     url: string,
@@ -108,7 +108,25 @@ export class AppComponent
   ) {
     window["isAndroid"] = this.platform.is("android");
     this.message$ = messageService.getMessage();
-    this.loading$ = apiService.getLoading();
+    this.loading$ = apiService.getLoading().pipe(
+      mergeMap((l) =>
+        AppHelper.loadingSubject.pipe(
+          map((l2) => {
+            if (l) {
+              if (l.isLoading) {
+                return l;
+              }
+            }
+            if (l2) {
+              if (l2.isLoading) {
+                return l2;
+              }
+            }
+            return l;
+          })
+        )
+      )
+    );
     if (AppHelper.isApp()) {
       this.router.events
         .pipe(filter((evt) => evt instanceof NavigationStart))
@@ -163,7 +181,9 @@ export class AppComponent
     if (hash && !path) {
       path = hash.replace("#", "");
     }
-
+    if (!path) {
+      path = "/tabs/home";
+    }
     return path;
   }
   initializeApp() {
