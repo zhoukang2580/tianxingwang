@@ -69,6 +69,10 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild(IonContent) cnt: IonContent;
+  private oldSearchCities: {
+    fromCityCode: string;
+    toCityCode: string;
+  } = {} as any;
   private pageSize = 15;
   private lastSelectedPassengerIds: string[];
   private currentSelectedPassengerIds: string[];
@@ -135,7 +139,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.route.queryParamMap.subscribe(async (_) => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
-      let isDoRefresh = false;
+      let isDoRefresh = this.checkIfCityChanged();
       this.currentSelectedPassengerIds = this.trainService
         .getBookInfos()
         .map((it) => it.passenger && it.passenger.AccountId);
@@ -204,6 +208,20 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       .getBookInfoSource()
       .pipe(map((infos) => infos.length));
     this.doRefresh(true, false);
+  }
+  private checkIfCityChanged() {
+    try {
+      if (this.searchTrainModel) {
+        return (
+          this.searchTrainModel.fromCity.Code !=
+            this.oldSearchCities.fromCityCode ||
+          this.searchTrainModel.toCity.Code != this.oldSearchCities.toCityCode
+        );
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
   }
   async schedules(train: TrainEntity) {
     if (!train.Schedules) {
@@ -400,6 +418,8 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.isLoading = true;
       let data: TrainEntity[] = JSON.parse(JSON.stringify(this.trains));
+      this.oldSearchCities.fromCityCode = this.searchTrainModel.fromCity.Code;
+      this.oldSearchCities.toCityCode = this.searchTrainModel.toCity.Code;
       if (loadDataFromServer) {
         this.progressName = "正在获取火车票列表";
         // 强制从服务器端返回新数据

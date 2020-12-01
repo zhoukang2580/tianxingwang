@@ -18,10 +18,11 @@ import {
   LoadingController,
 } from "@ionic/angular";
 import { LanguageHelper } from "./languageHelper";
-import { TimeoutError } from "rxjs";
+import { BehaviorSubject, TimeoutError } from "rxjs";
 import * as uuidJs from "uuid-js";
 import { FileHelperService } from "./services/file-helper.service";
 import { CONFIG } from "src/app/config";
+import { finalize } from "rxjs/operators";
 export class AppHelper {
   static httpClient: HttpClient;
   private static _deviceName: "ios" | "android";
@@ -32,6 +33,11 @@ export class AppHelper {
   static alertController: AlertController;
   static modalController: ModalController;
   static fileService: FileHelperService;
+  static loadingSubject = new BehaviorSubject({
+    isLoading: false,
+    msg: "",
+    method: "",
+  });
   static _appDomain = !environment.mockProBuild
     ? CONFIG.appDomain.production
     : CONFIG.appDomain.debug;
@@ -907,12 +913,26 @@ export class AppHelper {
     const formObj = Object.keys(req)
       .map((k) => `${k}=${req[k]}`)
       .join("&");
+    this.loadingSubject.next({
+      isLoading: true,
+      msg: "",
+      method: "apphelper requesting",
+    });
     return new Promise<any>((resolve, reject) => {
       this.httpClient
         .post(url, `${formObj}&x-requested-with=XMLHttpRequest`, {
           headers: { "content-type": "application/x-www-form-urlencoded" },
           observe: "body",
         })
+        .pipe(
+          finalize(() => {
+            this.loadingSubject.next({
+              isLoading: false,
+              msg: "",
+              method: "apphelper requesting",
+            });
+          })
+        )
         .subscribe(
           (r) => {
             resolve(r);
@@ -921,6 +941,12 @@ export class AppHelper {
             reject(e);
           }
         );
+    }).finally(() => {
+      this.loadingSubject.next({
+        isLoading: false,
+        msg: "",
+        method: "apphelper requesting",
+      });
     });
   }
   private static getRequestEntity() {
@@ -955,7 +981,7 @@ export class AppHelper {
     } else {
       req.TicketName = "";
     }
-   
+
     return req;
   }
   static async jump(router: Router, url: string, queryParams: any) {
@@ -972,7 +998,6 @@ export class AppHelper {
         const wechatMiniPath = jumpInfo.wechatMiniPath;
         const title = jumpInfo.title;
         if (jumpInfo.checkUrl) {
-        
           const req = this.getRequestEntity();
           req.Url = jumpInfo.checkUrl;
           req.Data = queryParams;
@@ -1001,7 +1026,7 @@ export class AppHelper {
             wechatMiniPath +
             "&title=" +
             title;
-           
+
           if (queryParams && Object.keys(queryParams).length) {
             url +=
               "&" +
@@ -1009,7 +1034,7 @@ export class AppHelper {
                 .map((k) => `${k}=${queryParams[k] || ""}`)
                 .join("&");
           }
-      
+
           const wx = window["wx"];
           wx.miniProgram.navigateTo({ url: url });
           return true;

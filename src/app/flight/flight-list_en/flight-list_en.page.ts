@@ -92,6 +92,10 @@ export class FlightListEnPage
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private lastFetchTime = 0;
+  private oldSearchCities: {
+    fromCityCode: string;
+    toCityCode: string;
+  } = {} as any;
   langOpt = {
     meal: "Meal",
     isStop: "Stop over",
@@ -432,6 +436,8 @@ export class FlightListEnPage
       this.isLoading = true;
       this.currentProcessStatus = "正在获取航班列表";
       this.apiService.showLoadingView({ msg: this.currentProcessStatus });
+      this.oldSearchCities.fromCityCode = this.searchFlightModel.fromCity.Code;
+      this.oldSearchCities.toCityCode = this.searchFlightModel.toCity.Code;
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
         loadDataFromServer
       );
@@ -440,7 +446,7 @@ export class FlightListEnPage
         if (isSelf) {
           segments = this.filterSegmentsByGoArrivalTime(segments);
         }
-        this.vmFlights = await this.translateLang(segments);
+        this.vmFlights = segments;
         this.currentProcessStatus = "正在计算差标";
         await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
       }
@@ -452,12 +458,12 @@ export class FlightListEnPage
         segments = this.filterSegmentsByGoArrivalTime(segments);
       }
       this.st = Date.now();
-      await this.renderFlightList(segments);
+      this.renderFlightList(segments);
       this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
       this.apiService.hideLoadingView();
       this.isLoading = false;
       if (this.activeTab != "none" && this.activeTab != "filter") {
-        await this.sortFlights(this.activeTab);
+        this.sortFlights(this.activeTab);
       }
       if (loadDataFromServer || !keepSearchCondition) {
         this.initFilterConditionInfo();
@@ -484,6 +490,18 @@ export class FlightListEnPage
       );
     }
     return result;
+  }
+  private checkIfCityChanged() {
+    try {
+      return (
+        this.searchFlightModel.fromCity.Code !=
+          this.oldSearchCities.fromCityCode ||
+        this.searchFlightModel.toCity.Code != this.oldSearchCities.toCityCode
+      );
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
   }
   private scrollToTop() {
     setTimeout(() => {

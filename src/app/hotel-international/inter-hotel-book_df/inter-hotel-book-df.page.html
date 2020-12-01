@@ -434,16 +434,16 @@
                   <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
                 </ng-container>
               </div>
-              <div class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
+              <!-- <div class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">
                   <ion-icon name="star" color='danger' style="font-size: 0.5rem;margin-right: 5px;"></ion-icon>到店时间：
                 </span>{{combindInfo?.arrivalHotelTime}}
                 <ion-icon name="caret-down-outline" (click)='onSelectDatetime(datetimeEl,combindInfo)'></ion-icon>
-              </div>
+              </div> 
               <div *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">床型需求（尽量安排）：</span>{{combindInfo.bookInfo?.bookInfo?.roomPlan.Remark}}
                 <ion-icon name="caret-down-outline" (click)='onBedChange(bedEle)'></ion-icon>
-              </div>
+              </div> -->
             </div>
           </div>
           <ion-item style="display: none;" lines='none'>
@@ -758,8 +758,8 @@
       </ion-col>
     </ion-row>
   </ng-template>
-  <div class="rules">
-    {{getRoomPlanRulesDesc(combindInfos&&combindInfos[0]?.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
+  <div class="rules" *ngIf='combindInfos?.length'>
+    {{getRoomPlanRulesDesc(combindInfos[0]?.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
   </div>
 </ion-content>
 <ion-footer>

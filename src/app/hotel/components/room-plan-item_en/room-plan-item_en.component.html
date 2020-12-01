@@ -25,7 +25,9 @@
             <!-- *ngIf='roomPlan?.BookType == HotelBookType.Elong || roomPlan?.BookType == HotelBookType.Inventory' -->
             <ion-text color='secondary' class='desc' (click)='showRoomRateRuleMessage(roomPlan)'>{{getRules(roomPlan).replace('不可取消','Non-refundable')}}
             </ion-text>
-            {{langOpt.Ok}}
+            <span *ngIf='getInstantConfirmation(roomPlan)'>
+                {{langOpt.Ok}}
+            </span>
         </div>
         <!-- <div>{{colors|json}} {{getRoomPlanUniqueId(roomPlan)}}</div> -->
         <div class="price" *ngIf='colors[getRoomPlanUniqueId(roomPlan)] as color' [class.can-not-be-book]='color.includes("danger")||color.includes("medium")' [attr.color]='color.includes("danger")?"danger":color'>
