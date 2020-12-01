@@ -534,7 +534,7 @@ export class FlightListPage
         await this.flightService.initFlightSegmentCabins(fs);
       }
       if (fs.Cabins && fs.Cabins.length) {
-        await this.flightService.initFlightSegmentCabinsPolicy(fs);
+        await this.flightService.initFlightSegmentCabinsPolicy();
         return true;
       }
     } catch (e) {

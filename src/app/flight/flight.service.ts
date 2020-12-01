@@ -1125,12 +1125,12 @@ export class FlightService {
       }
     }
   }
-  async initFlightSegmentCabinsPolicy(s: FlightSegmentEntity) {
+  async initFlightSegmentCabinsPolicy() {
     const flights: FlightJourneyEntity[] = [];
     const f = new FlightJourneyEntity();
     f.FlightRoutes = [];
     const r: FlightRouteEntity = {} as any;
-    r.FlightSegments = [s];
+    r.FlightSegments = this.getFlightSegments(this.flightJourneyList);
     f.FlightRoutes.push(r);
     flights.push(f);
     await this.loadPolicyedFlightsAsync(flights);

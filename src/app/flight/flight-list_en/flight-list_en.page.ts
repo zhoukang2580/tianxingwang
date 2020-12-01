@@ -566,7 +566,7 @@ export class FlightListEnPage
         await this.flightService.initFlightSegmentCabins(fs);
       }
       if (fs.Cabins && fs.Cabins.length) {
-        await this.flightService.initFlightSegmentCabinsPolicy(fs);
+        await this.flightService.initFlightSegmentCabinsPolicy();
       }
     } catch (e) {
       AppHelper.alert(e);
