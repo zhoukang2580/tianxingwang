@@ -96,6 +96,8 @@ export class InternationalHotelDetailPage
   }[];
   colors: {};
   isIos = false;
+  RoomDefaultImg: string;
+  HotelDefaultImg: string;
   constructor(
     public hotelService: InternationalHotelService,
     private route: ActivatedRoute,
@@ -520,6 +522,8 @@ export class InternationalHotelDetailPage
         .getHotelDetail(this.hotel.Id)
         .pipe(
           finalize(() => {
+            this.RoomDefaultImg = this.hotelService.RoomDefaultImg;
+            this.HotelDefaultImg = this.hotelService.HotelDefaultImg;
             this.isLoading = false;
           })
         )
@@ -964,16 +968,22 @@ export class InternationalHotelDetailPage
     });
   }
   private initHotelImages() {
-    this.hotelImages = this.getHotelImages().map((it) => {
+    let hotelImages = this.getHotelImages().map((it) => {
       return { imageUrl: it };
     });
+    if (!hotelImages.length) {
+      if (this.hotelService.HotelDefaultImg) {
+        hotelImages = [{ imageUrl: this.hotelService.HotelDefaultImg }];
+      }
+    }
+    this.hotelImages = hotelImages;
   }
   private getHotelImages() {
     return (
       (this.hotel &&
         this.hotel.HotelImages &&
         this.hotel.HotelImages.map((it) => {
-          return it.FullFileName;
+          return it.FullFileName || it.FileName;
         })) ||
       []
     );

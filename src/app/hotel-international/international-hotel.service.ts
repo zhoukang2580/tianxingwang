@@ -78,6 +78,8 @@ export class InternationalHotelService {
   get isAgent() {
     return this.tmcService.isAgent;
   }
+  RoomDefaultImg: string;
+  HotelDefaultImg: string;
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -391,6 +393,10 @@ export class InternationalHotelService {
     }
     return this.apiService.getResponse<IInterHotelSearchResult>(req).pipe(
       map((res) => {
+        if (res && res.Data) {
+          this.RoomDefaultImg = res.Data.RoomDefaultImg;
+          this.HotelDefaultImg = res.Data.HotelDefaltImg;
+        }
         if (res && res.Data && res.Data.HotelDayPrices) {
           res.Data.HotelDayPrices = res.Data.HotelDayPrices.map((it) => {
             if (it.Hotel) {
@@ -897,6 +903,8 @@ export interface ISearchInterHotelResult {
   Value?: string; // Code
 }
 export interface IInterHotelSearchResult {
+  RoomDefaultImg: string;
+  HotelDefaltImg: string;
   CityCode: string;
   Hotel: HotelEntity;
   HotelQuery: any;

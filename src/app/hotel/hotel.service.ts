@@ -81,6 +81,8 @@ export class HotelService {
   private isInitializingSelfBookInfos = false;
   private conditionModel: HotelConditionModel;
   private isLoadingCondition = false;
+  HotelDefaltImg: string;
+  RoomDefaultImg: string;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
   private testData: {
@@ -658,28 +660,28 @@ export class HotelService {
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
-    if (!environment.production && false) {
-      if (!this.testData) {
-        this.storage.get("test_big_hote_list").then((res) => {
-          this.testData = res;
-        });
-      } else {
-        console.log(
-          `大约加载本地${Object.keys(this.testData).length * 20}条记录，返回第${
-            query.PageIndex + 1
-          }批数据,已经加载${20 * query.PageIndex || 20}条记录`
-        );
-        const test = this.testData[query.PageIndex];
-        if (test) {
-          return of({
-            Data: {
-              HotelDayPrices: test.HotelDayPrices,
-              DataCount: test.DataCount,
-            },
-          }).pipe(delay(0));
-        }
-      }
-    }
+    // if (!environment.production && false) {
+    //   if (!this.testData) {
+    //     this.storage.get("test_big_hote_list").then((res) => {
+    //       this.testData = res;
+    //     });
+    //   } else {
+    //     console.log(
+    //       `大约加载本地${Object.keys(this.testData).length * 20}条记录，返回第${
+    //         query.PageIndex + 1
+    //       }批数据,已经加载${20 * query.PageIndex || 20}条记录`
+    //     );
+    //     const test = this.testData[query.PageIndex];
+    //     if (test) {
+    //       return of({
+    //         Data: {
+    //           HotelDayPrices: test.HotelDayPrices,
+    //           DataCount: test.DataCount,
+    //         },
+    //       }).pipe(delay(0));
+    //     }
+    //   }
+    // }
     const cond = this.getSearchHotelModel();
     const city = cond.destinationCity;
     req.IsShowLoading = query.PageIndex < 1;
@@ -712,6 +714,8 @@ export class HotelService {
     return this.apiService.getResponse<HotelResultEntity>(req).pipe(
       map((result) => {
         if (result && result.Data && result.Data.HotelDayPrices) {
+          this.RoomDefaultImg = result.Data.RoomDefaultImg;
+          this.HotelDefaltImg = result.Data.HotelDefaltImg;
           result.Data.HotelDayPrices = result.Data.HotelDayPrices.map((it) => {
             if (it.Hotel) {
               if (it.Hotel.Variables) {
