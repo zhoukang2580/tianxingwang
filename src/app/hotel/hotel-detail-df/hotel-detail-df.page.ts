@@ -97,6 +97,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
   bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity; color: string };
   hotelImages: { imageUrl: string }[];
+  roomDefaultImg: string;
   get totalNights() {
     return this.hotelService.calcTotalNights(
       this.queryModel.checkOutDate,
@@ -234,6 +235,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnInit() {
     this.subscriptions.push(this.hotelDetailSub);
+    this.roomDefaultImg = this.hotelService.RoomDefaultImg;
     AppHelper.isWechatMiniAsync().then((isMini) => {
       this.isShowTrafficInfo = !isMini;
     });
@@ -271,7 +273,9 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
         (it) => it.ImageUrl || it.FullFileName || it.FileName
       );
     if (!urls || urls.length == 0) {
-      if (this.config && this.config.DefaultImageUrl) {
+      if (this.hotelService.HotelDefaltImg) {
+        urls = [this.hotelService.HotelDefaltImg];
+      } else if (this.config && this.config.DefaultImageUrl) {
         urls = [this.config.DefaultImageUrl];
       }
     }

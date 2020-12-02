@@ -109,6 +109,8 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   agent: AgentEntity;
   isIos = false;
   isInitTop = false;
+  RoomDefaultImg: string;
+  HotelDefaltImg: string;
   hotelType = [
     {
       value: "normal",
@@ -268,6 +270,8 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
+          this.RoomDefaultImg = this.hotelService.RoomDefaultImg;
+          this.HotelDefaltImg = this.hotelService.HotelDefaltImg;
           setTimeout(() => {
             this.isLoadingHotels = false;
             this.isUseSearchText = false;
