@@ -121,7 +121,7 @@
   <ng-template #loadingTemp> 正在加载... </ng-template>
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="isSelect">
     <div class="suspension" *ngFor="let item of letters">
-      <div (click)="onletter(item)">
+      <div (click)="onletter(item,$event)">
         {{item}}
       </div>
     </div>

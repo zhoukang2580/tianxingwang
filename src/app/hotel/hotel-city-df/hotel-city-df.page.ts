@@ -95,7 +95,6 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.cities && this.cities.length) {
       this.cities.forEach(c => {
         const citieLetter =  this.letterCitiesMap[c.FirstLetter];
-        console.log(citieLetter);
         if (citieLetter) {
           const city = citieLetter.find(it => it.Code == c.Code);
           if (!city) {
@@ -110,7 +109,10 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     console.log('letter', this.letterCitiesMap, this.letters, this.cityName);
   }
 
-  onletter(item) {
+  onletter(item, evt?: CustomEvent) {
+    if (evt) {
+      evt.stopPropagation();
+    }
     try {
       const arr = this.letterEles.toArray();
       const ele = arr.find(it => it['el'].getAttribute("letter") == item);
