@@ -12,6 +12,7 @@
       >
         <ion-text (click)="doSearch()" style="width: 100%;">
           <ion-searchbar
+          [disabled]='true'
             mode="ios"
             debounce="300"
             name="searchbar"

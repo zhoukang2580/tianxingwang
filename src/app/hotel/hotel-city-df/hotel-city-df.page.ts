@@ -94,8 +94,13 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.letterCitiesMap = {};
     if (this.cities && this.cities.length) {
       this.cities.forEach(c => {
-        if (this.letterCitiesMap[c.FirstLetter]) {
-          this.letterCitiesMap[c.FirstLetter].push(c);
+        const citieLetter =  this.letterCitiesMap[c.FirstLetter];
+        console.log(citieLetter);
+        if (citieLetter) {
+          const city = citieLetter.find(it => it.Code == c.Code);
+          if (!city) {
+            citieLetter.push(c);
+          }
         } else {
           this.letterCitiesMap[c.FirstLetter] = [c];
         }
