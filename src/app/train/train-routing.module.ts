@@ -53,6 +53,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "select-station_df",
+    loadChildren: () =>
+      import("./select-station_df/select-station_df.module").then(
+        m => m.SelectStationDfPageModule
+      )
+  },
+  {
     path: "train-book",
     canActivate: [ConfirmCredentialInfoGuard],
     loadChildren: () =>

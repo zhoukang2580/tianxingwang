@@ -1,0 +1,27 @@
+form {
+  padding: 0;
+  ion-searchbar{
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.ion-container{
+  display: flex;
+  .ion-search{
+    padding: 0;
+    flex: 1;
+    margin-right: 15px;
+  }
+  .cancel{
+    flex: 0.2;
+  }
+}
+
+.ion-titel{
+
+}
+
+.ion-his{
+  margin-left: 20px;
+}
