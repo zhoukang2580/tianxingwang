@@ -22,11 +22,11 @@ import { LangService } from "src/app/services/lang.service";
 import { AppHelper } from 'src/app/appHelper';
 const HISTORY_HOTEL_CITIES = "history_hotel_cities";
 @Component({
-  selector: "app-hotel-city-df",
-  templateUrl: "./hotel-city-df.page.html",
-  styleUrls: ["./hotel-city-df.page.scss"],
+  selector: "app-search-city-df",
+  templateUrl: "./hotel-search-df.page.html",
+  styleUrls: ["./hotel-search-df.page.scss"],
 })
-export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
+export class HotelSearchDfPage implements OnInit, AfterViewInit, OnDestroy {
   private selectedCity: TrafficlineEntity;
   private subscriptions: Subscription[] = [];
   private pageIndex = 0;
@@ -87,36 +87,6 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   private async initHistoryCity() {
     if (!this.historyCities || !this.historyCities.length) {
       this.historyCities = await this.storage.get(HISTORY_HOTEL_CITIES);
-    }
-  }
-
-  private initLetterCitiesMap() {
-    this.letterCitiesMap = {};
-    if (this.cities && this.cities.length) {
-      this.cities.forEach(c => {
-        if (this.letterCitiesMap[c.FirstLetter]) {
-          this.letterCitiesMap[c.FirstLetter].push(c);
-        } else {
-          this.letterCitiesMap[c.FirstLetter] = [c];
-        }
-      });
-    }
-    this.letters = Object.keys(this.letterCitiesMap).sort();
-    console.log('letter', this.letterCitiesMap, this.letters, this.cityName);
-  }
-
-  onletter(item) {
-    try {
-      const arr = this.letterEles.toArray();
-      const ele = arr.find(it => it['el'].getAttribute("letter") == item);
-      const rect = ele['el'].getBoundingClientRect();
-      const headerEle = this.headerEle['el'].clientHeight;
-      console.log(item, rect, rect.top, rect.height, headerEle);
-      let y = 0;
-      y = rect.top - headerEle;
-      this.ionContent.scrollByPoint(0, y, 200);
-    } catch (e) {
-      console.error(e);
     }
   }
 
@@ -184,25 +154,14 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     setTimeout(() => {
-      this.back();
+      // this.back();
+    this.router.navigate([AppHelper.getRoutePath("search-hotel_df")]);
     }, 200);
   }
   private async cacheHistories(historyCities: TrafficlineEntity[]) {
-    console.log(historyCities, '前');
-    // historyCities = Array.from(new Set(historyCities));
-    let array = [];
-    const obj = {};
-    // tslint:disable-next-line: prefer-for-of
-    for (let i = 0; i < historyCities.length; i++) {
-      if (!obj[historyCities[i].Code]) {
-        array.push(historyCities[i]);
-        obj[historyCities[i].Code] = true;
-      }
-    }
-    console.log(array, '后');
-    if (array && array.length) {
-      array = array.slice(0, 20);
-      await this.storage.set(HISTORY_HOTEL_CITIES, array);
+    if (historyCities && historyCities.length) {
+      historyCities = historyCities.slice(0, 20);
+      await this.storage.set(HISTORY_HOTEL_CITIES, historyCities);
     }
   }
   ngOnInit() {
@@ -302,7 +261,6 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",");
           return it;
         });
-        this.initLetterCitiesMap();
       }
       this.pageIndex = 0;
       this.isHot = false;
@@ -318,33 +276,22 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async doSearch() {
-    // const kw = (this.vmKeyword || "").trim();
-    // this.pageIndex = 0;
-    // this.isLoading = true;
-    // this.isSelect = false;
-    // this.vmCities = [];
-    // if (this.scroller) {
-    //   this.scroller.disabled = true;
-    // }
-    // if (kw == '') {
-    //   this.isSelect = true;
-    // }
-    // this.loadMore(kw);
-    this.router.navigate([AppHelper.getRoutePath("hotel-search-df")]);
-  }
-
-  async onDetete() {
-    const ok = await AppHelper.alert("确定清除历史记录吗?", true, "确定", "取消");
-    if (ok == true) {
-      console.log(this.historyCities);
-      this.ishistory = false;
-      this.historyCities = [];
-      this.doRefresh();
+    const kw = (this.vmKeyword || "").trim();
+    this.pageIndex = 0;
+    this.isLoading = true;
+    this.isSelect = false;
+    this.vmCities = [];
+    if (this.scroller) {
+      this.scroller.disabled = true;
     }
+    // if (kw == '') {
+    //   this.back();
+    // }
+    this.loadMore(kw);
   }
 
   onCancle() {
-    console.log('取消')
+    console.log('取消');
     this.back();
   }
 }

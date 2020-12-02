@@ -35,6 +35,11 @@ export const routes: Routes = [
       import("./hotel-city-df/hotel-city-df.module").then(m => m.HotelCityDfPageModule)
   },
   {
+    path: "hotel-search-df",
+    loadChildren: () =>
+      import("./hotel-search-df/hotel-search-df.module").then(m => m.HotelSearchDfPageModule)
+  },
+  {
     path: "combox-search-hotel",
     loadChildren: () =>
       import("./combox-search-hotel/combox-search-hotel.module").then(
