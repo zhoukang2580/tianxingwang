@@ -2,7 +2,7 @@ export const CONFIG = {
   // 该变量用于 启用 --prod 编译，若为true，访问的是测试库的地址，否则访问生产地址
   mockProBuild: false,
   production: true,
-  isShowVConsole: false,
+  isShowVConsole: false,  
   isEnableTranslate: false,
   showNotUseWechatAccountTipTimeout: 5000,
   isForWechatMiniApproval: false, // 小程序审核期间，请设置为true，通过后，设置false
@@ -11,7 +11,7 @@ export const CONFIG = {
     debug: "okoktrip.com",
   },
   appTitle: "毅博商旅",
-  AppleStoreAppId: "",
+  AppleStoreAppId: "1541318591",
   wechat: {
     appId: "wxb617241a0e6aac3e",
     universalLinks: `https://app.okoktrip.com/ybslapp/`,

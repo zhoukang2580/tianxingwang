@@ -232,7 +232,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-   ngOnInit() {
+  ngOnInit() {
     this.subscriptions.push(this.hotelDetailSub);
     AppHelper.isWechatMiniAsync().then((isMini) => {
       this.isShowTrafficInfo = !isMini;
@@ -257,9 +257,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
         }
       })
     );
-    this.configService.get().then(c=>{
+    this.configService.get().then((c) => {
       this.config = c;
-    })
+    });
     this.doRefresh();
   }
   private getHotelImageUrls() {
@@ -267,7 +267,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     urls =
       this.hotel &&
       this.hotel.HotelImages &&
-      this.hotel.HotelImages.map((it) => it.ImageUrl || it.FullFileName || it.FileName);
+      this.hotel.HotelImages.map(
+        (it) => it.ImageUrl || it.FullFileName || it.FileName
+      );
     if (!urls || urls.length == 0) {
       if (this.config && this.config.DefaultImageUrl) {
         urls = [this.config.DefaultImageUrl];
@@ -315,11 +317,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
           console.log(r);
         })
       )
-      .pipe(
-        finalize(() => {
-
-        })
-      )
+      .pipe(finalize(() => {}))
       .subscribe(
         async (hotel) => {
           if (hotel) {
@@ -337,7 +335,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
               }, 1000);
             }
             this.initHotelImages();
-          }else{
+          } else {
             AppHelper.alert("当日凌晨房已售罄");
           }
         },
@@ -352,7 +350,11 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   private checkIfBookedRoomPlan() {
-    if (this.bookedRoomPlan && this.bookedRoomPlan.roomPlan && this.hotel.Rooms) {
+    if (
+      this.bookedRoomPlan &&
+      this.bookedRoomPlan.roomPlan &&
+      this.hotel.Rooms
+    ) {
       for (let i = 0; i < this.hotel.Rooms.length; i++) {
         const r = this.hotel.Rooms[i];
         const rp = r.RoomPlans.find(
@@ -374,7 +376,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     if (room && images) {
       const roomImages = images
         .filter((it) => it.Room && it.Room.Id == room.Id)
-        .map((it) => it.ImageUrl || it.FullFileName && it.FullFileName);
+        .map((it) => it.ImageUrl || (it.FullFileName && it.FullFileName));
       return roomImages;
     }
   }
@@ -398,7 +400,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   }
   onSegmentChanged(evt: CustomEvent) {
     this.activeTab = evt.detail.value;
-    if(this.activeTab == 'trafficInfo'){
+    if (this.activeTab == "trafficInfo") {
       this.onOpenMap();
       return;
     }
@@ -728,7 +730,17 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   onOpenMap() {
-    this.router.navigate(['hotel-map'])
+    // 小程序中显示地图
+    const lat = this.hotel.Lat;
+    const lng = this.hotel.Lng;
+    const { longitude, latitude } = this.mapService.bMapTransqqMap(lng, lat);
+    if (AppHelper.isWechatMini()) {
+      window["wx"].miniProgram.navigateTo({
+        url: `/pages/map/map?lat=${latitude}&lng=${longitude}&hotelName=${this.hotel.Name}`,
+      });
+      return;
+    }
+    this.router.navigate(["hotel-map"]);
   }
   async ngAfterViewInit() {
     setTimeout(() => {

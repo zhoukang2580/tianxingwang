@@ -10,7 +10,7 @@ import { AppHelper } from "src/app/appHelper";
 @Component({
   selector: "app-password-valid",
   templateUrl: "./password-valid.page.html",
-  styleUrls: ["./password-valid.page.scss"]
+  styleUrls: ["./password-valid.page.scss"],
 })
 export class PasswordValidPage implements OnInit {
   model: any;
@@ -28,14 +28,17 @@ export class PasswordValidPage implements OnInit {
   constructor(
     private apiService: ApiService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
-  ) { }
+    private activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    this.activatedRoute.queryParamMap.subscribe(p => {
+    this.activatedRoute.queryParamMap.subscribe((p) => {
       this.message = "";
       this.items = p.get("ValidTypes") && JSON.parse(p.get("ValidTypes"));
       this.name = p.get("Name");
+      if (this.items && this.items.length) {
+        this.model = this.items[0].Type;
+      }
     });
   }
   check() {
@@ -45,16 +48,15 @@ export class PasswordValidPage implements OnInit {
       Name: this.name,
       ValidateType: this.model,
       ValidateValue: this.code,
-      Action: "Valid"
+      Action: "Valid",
     });
     const des = this.apiService
       .getResponse<{
         ValidTypes: []; // "";
         AccountId: string; // ;
-
       }>(req)
       .pipe(
-        switchMap(r => {
+        switchMap((r) => {
           if (!r.Status) {
             this.message = r.Message;
             return of(r.Data);
@@ -62,15 +64,15 @@ export class PasswordValidPage implements OnInit {
           if (r.Data) {
             this.router.navigate([
               AppHelper.getRoutePath("password-reset"),
-              { Name: this.name }
+              { Name: this.name },
             ]);
           }
           return of(r.Data);
         })
       )
       .subscribe(
-        r => { },
-        e => { },
+        (r) => {},
+        (e) => {},
         () => {
           des.unsubscribe();
         }
@@ -106,10 +108,10 @@ export class PasswordValidPage implements OnInit {
         ExpiredInterval: number;
       }>(req)
       .subscribe(
-        res => {
+        (res) => {
           if (res.Data) this.startCountDonw(res.Data.SendInterval || 0);
         },
-        e => {
+        (e) => {
           AppHelper.alert(e);
         },
         () => {

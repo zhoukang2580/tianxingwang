@@ -16,7 +16,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 @Component({
   selector: "app-scan-result",
   templateUrl: "./scan-result.page.html",
-  styleUrls: ["./scan-result.page.scss"]
+  styleUrls: ["./scan-result.page.scss"],
 })
 export class ScanResultPage implements OnInit, OnDestroy {
   confirmText: string = LanguageHelper.getConfirmTip();
@@ -49,7 +49,8 @@ export class ScanResultPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private apiService: ApiService
   ) {
-    this.subscription = activatedRoute.paramMap.subscribe(p => {
+    this.subscription = activatedRoute.queryParamMap.subscribe((p) => {
+      console.log("scanResult", p.get("scanResult"));
       this.scan(p.get("scanResult"));
     });
   }
@@ -63,7 +64,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.identitySubscription = this.identityService
       .getIdentitySource()
-      .subscribe(r => {
+      .subscribe((r) => {
         this.identity = r;
       });
   }
@@ -121,7 +122,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
         Mobile: string;
         HeadUrl: string;
       }>(req)
-      .catch(_ => null);
+      .catch((_) => null);
   }
   private checkUrl() {
     return (
@@ -143,9 +144,11 @@ export class ScanResultPage implements OnInit, OnDestroy {
         const subscribtion = this.http
           .get(
             this.result +
-            "&" + AppHelper.getTicketName() + "=" +
-            this.identity.Ticket +
-            "&datatype=json&x-requested-with=XMLHttpRequest"
+              "&" +
+              AppHelper.getTicketName() +
+              "=" +
+              this.identity.Ticket +
+              "&datatype=json&x-requested-with=XMLHttpRequest"
           )
           .pipe(
             finalize(() => {
@@ -158,10 +161,12 @@ export class ScanResultPage implements OnInit, OnDestroy {
             async (s: any) => {
               this.identity.WebTicket = s.TicketId;
               this.identityService.setIdentity(this.identity);
-              await AppHelper.toast(`登录成功!`, 1400, "middle").catch(_ => 0);
+              await AppHelper.toast(`登录成功!`, 1400, "middle").catch(
+                (_) => 0
+              );
               this.close();
             },
-            e => {
+            (e) => {
               AppHelper.alert(e || "登陆失败");
             },
             () => {
