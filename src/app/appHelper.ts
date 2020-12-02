@@ -211,6 +211,9 @@ export class AppHelper {
       }
     });
   }
+  static getFailoverDefaultUrl() {
+    return "assets/failoverDefaultUrl.jpg";
+  }
   static getDefaultAvatar() {
     return "assets/images/defaultavatar.jpg";
   }
