@@ -33,8 +33,9 @@
               <ion-text *ngIf='isSelfBookType' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
             </div>
             <div class="hotel">
-              <div class="name padding-v">酒店名称：{{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
+              <div class="name padding-v"><img alt="" style="width: 40px;" src="assets/svgs/product-hotel1.svg"> {{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
               <div class="date font padding-v">
+                <span>入离日期:</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.BeginDate?.substr(0,10)}}</span>
                 <span class="ion-margin-horizontal totals">共{{calcNights(combindInfo)}}晚</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.EndDate?.substr(0,10)}}</span>
@@ -46,8 +47,21 @@
                 combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>
                   <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["bedType"]}}</span>
                   <span *ngIf='combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]'>{{combindInfo.bookInfo.bookInfo.roomPlan["getBreakfast"]}}</span>
-                  <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span>
+                  <!-- <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span> -->
+                  <span>
+                    <div class="selfpay">
+                        <ion-text *ngIf='hotelPaymentType==HotelPaymentType.SelfPay'>现付</ion-text>                  
+                        <ion-text *ngIf='hotelPaymentType==HotelPaymentType.Prepay'>预付</ion-text>             
+                        <ion-text *ngIf='hotelPaymentType==HotelPaymentType.Settle'>月付</ion-text>
+                    </div>
+                  </span>
                 </ng-container>
+              </div>
+              <div lines='none' class="exceeding" *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
+                <ion-label *ngIf='combindInfo["isExceeding"]' class='ion-text-wrap' color='danger'>超标:{{msg}}
+                  <!-- 违反提前3天以上预定航班的政策 -->
+                </ion-label>
+                <ion-text color="secondary" (click)='combindInfo["isExceeding"]=!combindInfo["isExceeding"]'>预付规则</ion-text>
               </div>
               <div (click)='onSelectDatetime(datetimeEl,combindInfo)' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">
@@ -72,6 +86,7 @@
               <ion-select-option value="双床">双床 </ion-select-option>
             </ion-select>
           </ion-item>
+         
           <ion-item style="display: none;">
             <ion-label>
               到店时间

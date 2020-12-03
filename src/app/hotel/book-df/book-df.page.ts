@@ -119,6 +119,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   error: any;
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
+  isExceeding = false;
   tmc: TmcEntity;
   serviceFee: number;
   detailServiceFee: number;
@@ -240,6 +241,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.illegalReason = data.data;
     }
   }
+
+  onPay(){
+    // this.combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]
+    // this.isExceeding[] = true;
+  }
+
   onOpenSelect(select: IonSelect) {
     if (select) {
       select.open();

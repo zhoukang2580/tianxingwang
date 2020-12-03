@@ -50,12 +50,42 @@ ion-content.cnt {
   opacity: 0.5;
   background-color: var(--ion-color-dark);
 }
+
+.exceeding{
+  display: flex;
+  padding-bottom: 15px;
+  ion-label{
+    flex:3;
+    font-size: 12px;
+  }
+  ion-text{
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.selfpay{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 31px;
+  height: 16px;
+  background: #EECF9A;
+  border-radius: 2px;
+  color:#fff;
+}
+
+
+
 .hotel {
   .padding-v {
     padding: 0.25em 0;
   }
   width: 100%;
   .name {
+    display: flex;
+    align-items: center;
     font-size: 15px;
     font-family: PingFang SC;
     font-weight: bold;
@@ -67,6 +97,7 @@ ion-content.cnt {
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
+    display: flex;
 
     span {
       margin-right: 0.5em;
@@ -95,11 +126,13 @@ ion-content.cnt {
   margin: 0 0.3em;
 }
 .cname {
-  font-size: 15px;
+  min-width: 100%;
+  font-size: 16px;
   font-family: PingFang SC;
   font-weight: bold;
   color: #333333;
   align-self: flex-start;
+  margin-bottom: 10px;
 }
 .flex .label.cname {
   width: initial;
@@ -110,6 +143,7 @@ ion-content.cnt {
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
+  margin-right: 16px;
 }
 .font {
   font-family: PingFang SC;
