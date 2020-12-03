@@ -72,8 +72,8 @@
       <div *ngIf='isShowWechatMiniTip' class="ion-text-center">
         <ion-text color='danger'>Do not use the user name or password of wechat users!</ion-text>
       </div>
-      <ion-button class="register-btn" color='secondary'  expand='block' strong='true' *ngIf='!isGetWechatMiniMobile && isWechatMini'
-      (click)="getWechatMiniMobile()">Use wechat mobile phone number</ion-button>
+      <!-- <ion-button class="register-btn" color='secondary'  expand='block' strong='true' *ngIf='!isGetWechatMiniMobile && isWechatMini'
+      (click)="getWechatMiniMobile()">Use wechat mobile phone number</ion-button> -->
       <ion-button color='secondary' class='login-btn' expand='block' strong='true' (click)="onLoginButton('login')">
         <span *ngIf="!isLogining">Login</span>
         <span *ngIf="isLogining">Landing...</span>
