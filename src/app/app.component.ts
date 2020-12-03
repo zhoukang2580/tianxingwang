@@ -181,9 +181,6 @@ export class AppComponent
     if (hash && !path) {
       path = hash.replace("#", "");
     }
-    if (!path) {
-      path = "/tabs/home";
-    }
     return path;
   }
   initializeApp() {
