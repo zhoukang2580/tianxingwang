@@ -215,32 +215,32 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.isSelect = true;
     this.initHistoryCity();
-    const sub = this.hotelService.getSearchHotelModelSource().subscribe((m) => {
-      if (m && m.destinationCity) {
-        this.selectedCity = m.destinationCity;
-        if (this.historyCities) {
-          this.historyCities.forEach((c) => {
-            c.Selected = c.Code == this.selectedCity.Code;
-          });
-        }
-        if (this.hotCities) {
-          this.hotCities.forEach((c) => {
-            c.Selected = c.Code == this.selectedCity.Code;
-          });
-        }
-        if (this.vmCities) {
-          this.vmCities.forEach((c) => {
-            c.Selected = c.Code == this.selectedCity.Code;
-          });
-        }
-        if (this.cities) {
-          this.cities.forEach((c) => {
-            c.Selected = c.Code == this.selectedCity.Code;
-          });
-        }
-      }
-    });
-    this.subscriptions.push(sub);
+    // const sub = this.hotelService.getSearchHotelModelSource().subscribe((m) => {
+    //   if (m && m.destinationCity) {
+    //     this.selectedCity = m.destinationCity;
+    //     if (this.historyCities) {
+    //       this.historyCities.forEach((c) => {
+    //         c.Selected = c.Code == this.selectedCity.Code;
+    //       });
+    //     }
+    //     if (this.hotCities) {
+    //       this.hotCities.forEach((c) => {
+    //         c.Selected = c.Code == this.selectedCity.Code;
+    //       });
+    //     }
+    //     if (this.vmCities) {
+    //       this.vmCities.forEach((c) => {
+    //         c.Selected = c.Code == this.selectedCity.Code;
+    //       });
+    //     }
+    //     if (this.cities) {
+    //       this.cities.forEach((c) => {
+    //         c.Selected = c.Code == this.selectedCity.Code;
+    //       });
+    //     }
+    //   }
+    // });
+    // this.subscriptions.push(sub);
     this.doRefresh();
   }
   async ngAfterViewInit() {
@@ -313,10 +313,11 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       this.pageIndex = 0;
       this.isHot = false;
+      this.isLoading = false;
       if (this.scroller) {
         this.scroller.disabled = true;
       }
-      this.loadMore((this.vmKeyword || "").trim());
+      // this.loadMore((this.vmKeyword || "").trim());
       if (this.refresher) {
         this.refresher.complete();
       }

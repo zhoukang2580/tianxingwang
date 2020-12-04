@@ -58,10 +58,10 @@
                 </ng-container>
               </div>
               <div lines='none' class="exceeding" *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
-                <ion-label *ngIf='combindInfo["isExceeding"]' class='ion-text-wrap' color='danger'>超标:{{msg}}
+                <ion-label class='ion-text-wrap' color='danger'>超标:{{msg}}
                   <!-- 违反提前3天以上预定航班的政策 -->
                 </ion-label>
-                <ion-text color="secondary" (click)='combindInfo["isExceeding"]=!combindInfo["isExceeding"]'>预付规则</ion-text>
+                <!-- <ion-text color="secondary" (click)='combindInfo["isExceeding"]=!combindInfo["isExceeding"]'>预付规则</ion-text> -->
               </div>
               <div (click)='onSelectDatetime(datetimeEl,combindInfo)' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">

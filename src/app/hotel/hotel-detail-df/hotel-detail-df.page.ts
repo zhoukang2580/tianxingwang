@@ -791,7 +791,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       config: this.config,
       agent: this.agent,
     };
-    this.router.navigate(["hotel-room-detail"]);
+    this.router.navigate(["hotel-room-detail-df"]);
     // const m = await this.modalCtrl.create({
     //   component: RoomDetailComponent,
     //   componentProps: {

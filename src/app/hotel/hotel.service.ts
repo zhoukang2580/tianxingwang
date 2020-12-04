@@ -546,17 +546,23 @@ export class HotelService {
         this.localHotelCities &&
         this.localHotelCities.length
       ) {
+        console.log("locals", this.localHotelCities);
+        console.log("locals 广元", this.localHotelCities.find(it=>it.Name=='广元'));
         return this.localHotelCities;
       }
       this.localHotelCities = this.localHotelCities || [];
       const cs = await this.loadHotelCitiesFromServer(this.lastUpdateTime);
       // .catch((_) => ({ HotelCities: [] as TrafficlineEntity[] }));
       if (cs && cs.Trafficlines && cs.Trafficlines.length) {
+        // console.log("cs.Trafficlines", cs.Trafficlines);
+        // console.log("cs.Trafficlines 广元", cs.Trafficlines.find(it=>it.Name=='广元'));
         const arr = cs.Trafficlines.map((item) => {
-          if (!item.Pinyin) {
-            item.FirstLetter = this.getFirstLetter(item.Name);
-          } else {
-            item.FirstLetter = item.Pinyin.substring(0, 1).toUpperCase();
+          if(!item.FirstLetter){
+            if (!item.Pinyin) {
+              item.FirstLetter = this.getFirstLetter(item.Name);
+            } else {
+              item.FirstLetter = item.Pinyin.substring(0, 1).toUpperCase();
+            }
           }
           return item;
         });

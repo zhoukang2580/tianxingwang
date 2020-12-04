@@ -124,7 +124,8 @@ ion-header {
     color: #999999;
   }
   .num {
-    align-self: flex-end;
+    // align-self: flex-end;
+    font-size: 12px;
   }
   .weekName {
     text-align: center;
@@ -220,7 +221,8 @@ ion-header {
     display: flex;
     align-items: center;
     flex-flow: row wrap;
-    font-size: 12px;
+    max-width: 70%;
+    font-size: 9px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #999999;

@@ -77,14 +77,14 @@
   </div>
   <div class='date' (click)="onOpenCalendar()">
     <div class="checkin">
-      <div class='weekName desc'>{{getWeekName(queryModel?.checkInDate)}}</div>
-      <div class='checkinoutdate item left'>{{queryModel?.checkInDate}} </div>
+      <div class='weekName desc'>{{getWeekName(queryModel?.checkInDate)}}入住</div>
+      <div class='checkinoutdate item left'>{{queryModel?.checkInDate}}</div>
     </div>
     <div class="num">
       <div class="item num">共{{totalNights}}晚</div>
     </div>
     <div class="checkout">
-      <div class='weekName desc'>{{getWeekName(queryModel?.checkOutDate)}}</div>
+      <div class='weekName desc'>{{getWeekName(queryModel?.checkOutDate)}}离店</div>
       <div class='checkinoutdate item right'>{{queryModel?.checkOutDate}} </div>
     </div>
   </div>
@@ -122,14 +122,14 @@
               <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='onShowRoomPlans(room)'>
                 <ion-label class='ion-text-wrap'>
                   <div class="room-detail-desc">
-                    <span *ngFor='let d of getRoomDescriptions(room)'>{{d}}</span>
+                    <span *ngFor='let d of getRoomDescriptions(room)'>{{d}} </span>
                   </div>
                 </ion-label>
                 <ion-button color='danger' class='full' [disabled]='true' *ngIf='isFullOnly(room.RoomPlans)'>
                   <ion-text color='light'>已满房</ion-text>
                 </ion-button>
               </h4>
-              <h3 class='ion-text-end' style="padding-bottom: 0.5em;margin-top: 2em;">
+              <h3 class='ion-text-end' style="padding-bottom: 0.5em;">
                 <ng-container *ngIf='!isFullOnly(room.RoomPlans)'>
                   <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
                     <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span style="font-size: 1rem">{{price}}</span>
@@ -144,9 +144,9 @@
             </ion-label>
           </div>
           <div class='room-plans' *ngIf='room["isShowRoomPlans"]' @flyInOut>
-            <app-room-plan-item *ngFor='let plan of room.RoomPlans' [colors]='colors' [room]='room' [roomPlan]='plan' [hotel]='hotel' (freeBookRoom)='onFreeBookRoom($event)'
+            <app-room-plan-item-df *ngFor='let plan of room.RoomPlans' [colors]='colors' [room]='room' [roomPlan]='plan' [hotel]='hotel' (freeBookRoom)='onFreeBookRoom($event)'
               (bookRoom)='onBookRoomPlan($event)'>
-            </app-room-plan-item>
+            </app-room-plan-item-df>
           </div>
         </div>
       </ion-item>

@@ -25,6 +25,7 @@ import { RoomPlanItemEnComponent } from "./room-plan-item_en/room-plan-item_en.c
 import { HotelStarPriceEnComponent } from "./hotel-starprice_en/hotel-starprice_en.component";
 import { HotelAddcontactsCompComponent } from "./hotel-addcontacts-comp/hotel-addcontacts-comp.component";
 import { ShowFreebookTipComponent } from './show-freebook-tip/show-freebook-tip.component';
+import { RoomPlanItemDfComponent } from './room-plan-item-df/room-plan-item-df.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { ShowFreebookTipComponent } from './show-freebook-tip/show-freebook-tip.
     HotelListItemComponent,
     RoomPlanItemComponent,
     RoomPlanItemEnComponent,
+    RoomPlanItemDfComponent,
     RoomShowItemComponent,
     RoomShowItemEnComponent,
     ChangeRoomplanDateComponent,
@@ -72,6 +74,7 @@ import { ShowFreebookTipComponent } from './show-freebook-tip/show-freebook-tip.
     HotelStarPriceEnComponent,
     RoomPlanItemComponent,
     RoomPlanItemEnComponent,
+    RoomPlanItemDfComponent,
     RoomShowItemComponent,
     RoomShowItemEnComponent,
     TmcComponentsModule,
