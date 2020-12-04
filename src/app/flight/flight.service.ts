@@ -1116,6 +1116,15 @@ export class FlightService {
                 for (const seg of r.FlightSegments) {
                   if (seg.Number == s.Number) {
                     seg.Cabins = s.Cabins;
+                    if (detail.FlightSegments) {
+                      const detailSeg = detail.FlightSegments.find(
+                        (itm) => itm.Number == seg.Number
+                      );
+                      if (detailSeg) {
+                        console.log("加载差标前，替换更低加");
+                        seg.LowestFare = detailSeg.LowestFare;
+                      }
+                    }
                   }
                 }
               }
@@ -1134,8 +1143,9 @@ export class FlightService {
     f.FlightRoutes.push(r);
     flights.push(f);
     await this.loadPolicyedFlightsAsync(flights);
+    return this.policyFlights;
   }
-  private async getFlightSegmentDetail(s: FlightSegmentEntity) {
+  async getFlightSegmentDetail(s: FlightSegmentEntity) {
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Detail`;
     req.Version = "2.0";
@@ -1144,8 +1154,8 @@ export class FlightService {
     const search = this.searchFlightModel;
     req.Data = {
       Date: search.Date,
-      FromCode: search.FromCode,
-      ToCode: search.ToCode,
+      FromCode: s.FromAirport,
+      ToCode: s.ToAirport,
       FlightNumber: s.Number,
       FromAsAirport: search.FromAsAirport,
       ToAsAirport: search.ToAsAirport,
@@ -1290,6 +1300,9 @@ export class FlightService {
               ).getTime();
               seg.TakeoffShortTime = this.getHHmm(seg.TakeoffTime);
               seg.ArrivalShortTime = this.getHHmm(seg.ArrivalTime);
+              if (seg.AirlineSrc) {
+                seg.AirlineSrc = seg.AirlineSrc.toLowerCase();
+              }
               seg.AddOneDayTip = this.addoneday(seg);
               const fromCity =
                 this.allLocalAirports &&
@@ -1361,36 +1374,36 @@ export class FlightService {
     ) {
       return result;
     }
-    let lowestCabin = onePolicyFlights.FlightPolicies.find(
-      (c) => c.Id == data.flightPolicy.LowerSegment.LowestCabinId
-    );
-    if (!lowestCabin) {
-      return result;
-    }
-    if (!lowestCabin.Rules || !lowestCabin.Rules.length) {
-      lowestCabin.color = "success";
-    } else {
-      lowestCabin.color = "warning";
-    }
-    if (!lowestCabin.IsAllowBook) {
-      lowestCabin.color = "danger";
-    }
-    lowestCabin = { ...lowestCabin };
-    lowestCabin.Cabin = flights
-      .reduce(
-        (acc, f) => (acc = [...acc, ...f.Cabins]),
-        [] as FlightCabinEntity[]
-      )
-      .find(
-        (c) => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
-      );
-    lowestCabin.LowerSegment = null;
-    // 违反出发时间前后60分钟内最低价航班的政策
-    lowestCabin.Rules =
-      lowestCabin.Rules &&
-      lowestCabin.Rules.filter((it) => !/前后\d+分钟/.test(it));
+    // let lowestCabin = onePolicyFlights.FlightPolicies.find(
+    //   (c) => c.Id == data.flightPolicy.LowerSegment.LowestCabinId
+    // );
+    // if (!lowestCabin) {
+    //   return result;
+    // }
+    // if (!lowestCabin.Rules || !lowestCabin.Rules.length) {
+    //   lowestCabin.color = "success";
+    // } else {
+    //   lowestCabin.color = "warning";
+    // }
+    // if (!lowestCabin.IsAllowBook) {
+    //   lowestCabin.color = "danger";
+    // }
+    // lowestCabin = { ...lowestCabin };
+    // lowestCabin.Cabin = flights
+    //   .reduce(
+    //     (acc, f) => (acc = [...acc, ...f.Cabins]),
+    //     [] as FlightCabinEntity[]
+    //   )
+    //   .find(
+    //     (c) => c.FlightNumber == lowestCabin.FlightNo && c.Id == lowestCabin.Id
+    //   );
+    // lowestCabin.LowerSegment = null;
+    // // 违反出发时间前后60分钟内最低价航班的政策
+    // lowestCabin.Rules =
+    //   lowestCabin.Rules &&
+    //   lowestCabin.Rules.filter((it) => !/前后\d+分钟/.test(it));
     result = {
-      lowestCabin: { ...lowestCabin },
+      lowestCabin: null,
       lowestFlightSegment: { ...lowestFlightSegment },
       tripType: TripType.departureTrip,
       originalLowerSegment: info.bookInfo.flightPolicy.LowerSegment,

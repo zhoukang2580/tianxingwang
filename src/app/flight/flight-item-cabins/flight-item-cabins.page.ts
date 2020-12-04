@@ -170,14 +170,14 @@ export class FlightItemCabinsPage implements OnInit {
           await this.flightService.loadPolicyedFlightsAsync(
             this.flightService.flightJourneyList
           );
-          if (
-            !this.flightService.policyFlights ||
-            !this.flightService.policyFlights.length
-          ) {
-            AppHelper.alert("差标获取失败");
-            if (!this.flightService.isAgent) {
-              return;
-            }
+        }
+        if (
+          !this.flightService.policyFlights ||
+          !this.flightService.policyFlights.length
+        ) {
+          AppHelper.alert("差标获取失败");
+          if (!this.flightService.isAgent) {
+            return;
           }
         }
         const isSelf = await this.staffService.isSelfBookType();

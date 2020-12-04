@@ -34,8 +34,8 @@
               </ion-button>
             </div>
           </div>
-          <app-fly-list-item [flightSegment]='bookInfo.bookInfo?.flightSegment' [showDetails]='true'
-            [flightPolicy]='bookInfo.bookInfo?.flightPolicy' [isAgreement]='bookInfo.bookInfo?.flightPolicy?.Cabin?.FareType==FlightCabinFareType.Agreement' >
+          <app-fly-list-item [flightSegment]='bookInfo.bookInfo?.flightSegment' [showDetails]='true' [flightPolicy]='bookInfo.bookInfo?.flightPolicy'
+            [isAgreement]='bookInfo.bookInfo?.flightPolicy?.Cabin?.FareType==FlightCabinFareType.Agreement'>
           </app-fly-list-item>
           <div>
             <ion-row>
@@ -56,10 +56,9 @@
           </ion-label>
           <ion-label *ngIf='getFlightlegalTip(bookInfo) as tip' color='danger' class='rules ion-text-wrap'>提示：({{tip}})
           </ion-label>
-          <ion-label class='rules ion-text-wrap' color='dark' (click)='onSelectLowestSegment(bookInfo)'
-            *ngIf='canShowLowerSegment(bookInfo)'>
+          <ion-label class='rules ion-text-wrap' color='dark' (click)='onSelectLowestSegment(bookInfo)' *ngIf='canShowLowerSegment(bookInfo)'>
             当前航班前后60分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
-            {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}},价格:￥{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowestFare}}
+            {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}}
             <ion-button color='secondary' size='small'>选择更低价</ion-button>
           </ion-label>
         </div>
@@ -74,11 +73,9 @@
 </ion-content>
 <ion-footer>
   <ion-toolbar>
-    <ion-button *ngIf='!searchModel?.isExchange' slot='end' (click)='nextStep()' color='secondary'
-      [disabled]='bookInfos?.length <= 0'>下一步
+    <ion-button *ngIf='!searchModel?.isExchange' slot='end' (click)='nextStep()' color='secondary' [disabled]='bookInfos?.length <= 0'>下一步
     </ion-button>
-    <ion-button *ngIf='searchModel?.isExchange' slot='end' (click)='onExchange()' color='secondary'
-      [disabled]='bookInfos?.length <= 0'>确认改签
+    <ion-button *ngIf='searchModel?.isExchange' slot='end' (click)='onExchange()' color='secondary' [disabled]='bookInfos?.length <= 0'>确认改签
     </ion-button>
   </ion-toolbar>
 </ion-footer>

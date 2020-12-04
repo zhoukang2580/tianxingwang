@@ -194,7 +194,7 @@ export class FlightListPage
       this.showAddPassenger = await this.canShowAddPassenger();
       const delta = Math.floor((Date.now() - this.lastFetchTime) / 1000);
       console.log("this.route.queryParamMap deltaTime=", delta);
-      const isFetch = delta >= 60 || this.checkIfCityChanged();
+      const isFetch = delta >= 60 * 2 || this.checkIfCityChanged();
       if (
         (d && d.get("doRefresh") == "true") ||
         !this.vmFlights ||
@@ -233,7 +233,13 @@ export class FlightListPage
       evt.preventDefault();
     }
     if (s) {
-      await this.checkCabinsAndPolicy(s);
+      const ok = await this.checkCabinsAndPolicy(s);
+      if (!ok) {
+        if (!this.tmcService.isAgent) {
+          AppHelper.alert("加载差标信息失败");
+          return;
+        }
+      }
       const cabins =
         s.Cabins && s.Cabins.filter((it) => it.SalesPrice == s.LowestFare);
       const cabin =
@@ -534,8 +540,8 @@ export class FlightListPage
         await this.flightService.initFlightSegmentCabins(fs);
       }
       if (fs.Cabins && fs.Cabins.length) {
-        await this.flightService.initFlightSegmentCabinsPolicy();
-        return true;
+        const p = await this.flightService.initFlightSegmentCabinsPolicy();
+        return p && p.length > 0;
       }
     } catch (e) {
       AppHelper.alert(e);
@@ -544,9 +550,11 @@ export class FlightListPage
   }
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
     const ok = await this.checkCabinsAndPolicy(fs);
-    if(!ok){
-      // AppHelper.alert("请重新请求")
-      return;
+    if (!ok) {
+      if (!this.tmcService.isAgent) {
+        AppHelper.alert("加载差标信息失败");
+        return;
+      }
     }
     this.isCanLeave = true;
     await this.flightService.addOneBookInfoToSelfBookType();
@@ -654,17 +662,21 @@ export class FlightListPage
       this.flightJourneyList.forEach((f) => {
         f.FlightRoutes.forEach((r) => {
           r.FlightSegments.forEach((s) => {
-            s.Cabins.forEach((c) => {
-              if (
-                !this.filterCondition.cabins.find((a) => a.label == c.TypeName)
-              ) {
-                this.filterCondition.cabins.push({
-                  id: c.Type,
-                  label: c.TypeName,
-                  isChecked: false,
-                });
-              }
-            });
+            if (s.Cabins) {
+              s.Cabins.forEach((c) => {
+                if (
+                  !this.filterCondition.cabins.find(
+                    (a) => a.label == c.TypeName
+                  )
+                ) {
+                  this.filterCondition.cabins.push({
+                    id: c.Type,
+                    label: c.TypeName,
+                    isChecked: false,
+                  });
+                }
+              });
+            }
             if (
               !this.filterCondition.airTypes.find((a) => a.id === s.PlaneType)
             ) {
