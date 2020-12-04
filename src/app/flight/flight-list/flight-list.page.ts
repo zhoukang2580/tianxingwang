@@ -104,8 +104,8 @@ export class FlightListPage
   @ViewChildren("fli") public liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmFlightJourneyList: FlightJourneyEntity[];
-  get flightJourneyList() {
-    return this.flightService.flightJourneyList;
+  get flightResult() {
+    return this.flightService.flightResult;
   }
   totalFilteredSegments: FlightSegmentEntity[];
   priceOrderL2H: boolean; // 价格从低到高
@@ -549,17 +549,21 @@ export class FlightListPage
     return false;
   }
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
-    const ok = await this.checkCabinsAndPolicy(fs);
-    if (!ok) {
-      if (!this.tmcService.isAgent) {
-        AppHelper.alert("加载差标信息失败");
-        return;
+    try {
+      const ok = await this.checkCabinsAndPolicy(fs);
+      if (!ok) {
+        if (!this.tmcService.isAgent) {
+          AppHelper.alert("加载差标信息失败");
+          return;
+        }
       }
+      this.isCanLeave = true;
+      await this.flightService.addOneBookInfoToSelfBookType();
+      this.flightService.currentViewtFlightSegment = fs;
+      this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
+    } catch (e) {
+      console.error(e);
     }
-    this.isCanLeave = true;
-    await this.flightService.addOneBookInfoToSelfBookType();
-    this.flightService.currentViewtFlightSegment = fs;
-    this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
   }
   onShowSelectedInfos() {
     this.isCanLeave = true;
@@ -653,71 +657,61 @@ export class FlightListPage
     }
     this.filterCondition.fromCity = this.searchFlightModel.fromCity;
     this.filterCondition.toCity = this.searchFlightModel.toCity;
-    if (this.flightJourneyList) {
+    if (this.flightResult) {
       this.filterCondition.airCompanies = [];
       this.filterCondition.fromAirports = [];
       this.filterCondition.toAirports = [];
       this.filterCondition.airTypes = [];
       this.filterCondition.cabins = [];
-      this.flightJourneyList.forEach((f) => {
-        f.FlightRoutes.forEach((r) => {
-          r.FlightSegments.forEach((s) => {
-            if (s.Cabins) {
-              s.Cabins.forEach((c) => {
-                if (
-                  !this.filterCondition.cabins.find(
-                    (a) => a.label == c.TypeName
-                  )
-                ) {
-                  this.filterCondition.cabins.push({
-                    id: c.Type,
-                    label: c.TypeName,
-                    isChecked: false,
-                  });
-                }
-              });
-            }
+      this.flightResult.FlightSegments.forEach((s) => {
+        if (s.Cabins) {
+          s.Cabins.forEach((c) => {
             if (
-              !this.filterCondition.airTypes.find((a) => a.id === s.PlaneType)
+              !this.filterCondition.cabins.find((a) => a.label == c.TypeName)
             ) {
-              this.filterCondition.airTypes.push({
-                id: s.PlaneType,
-                label: s.PlaneTypeDescribe,
-                isChecked: false,
-              });
-            }
-            if (
-              !this.filterCondition.airCompanies.find((c) => c.id === s.Airline)
-            ) {
-              this.filterCondition.airCompanies.push({
-                id: s.Airline,
-                label: s.AirlineName,
-                isChecked: false,
-                icon: s.AirlineSrc,
-              });
-            }
-            if (
-              !this.filterCondition.fromAirports.find(
-                (a) => a.id === s.FromAirport
-              )
-            ) {
-              this.filterCondition.fromAirports.push({
-                label: s.FromAirportName,
-                id: s.FromAirport,
-                isChecked: false,
-              });
-            }
-            if (
-              !this.filterCondition.toAirports.find((a) => a.id === s.ToAirport)
-            ) {
-              this.filterCondition.toAirports.push({
-                label: s.ToAirportName,
-                id: s.ToAirport,
+              this.filterCondition.cabins.push({
+                id: c.Type,
+                label: c.TypeName,
                 isChecked: false,
               });
             }
           });
-        });
+        }
+        if (!this.filterCondition.airTypes.find((a) => a.id === s.PlaneType)) {
+          this.filterCondition.airTypes.push({
+            id: s.PlaneType,
+            label: s.PlaneTypeDescribe,
+            isChecked: false,
+          });
+        }
+        if (
+          !this.filterCondition.airCompanies.find((c) => c.id === s.Airline)
+        ) {
+          this.filterCondition.airCompanies.push({
+            id: s.Airline,
+            label: s.AirlineName,
+            isChecked: false,
+            icon: s.AirlineSrc,
+          });
+        }
+        if (
+          !this.filterCondition.fromAirports.find((a) => a.id === s.FromAirport)
+        ) {
+          this.filterCondition.fromAirports.push({
+            label: s.FromAirportName,
+            id: s.FromAirport,
+            isChecked: false,
+          });
+        }
+        if (
+          !this.filterCondition.toAirports.find((a) => a.id === s.ToAirport)
+        ) {
+          this.filterCondition.toAirports.push({
+            label: s.ToAirportName,
+            id: s.ToAirport,
+            isChecked: false,
+          });
+        }
       });
       this.filterCondition.cabins = this.filterCondition.cabins.filter((c) =>
         [

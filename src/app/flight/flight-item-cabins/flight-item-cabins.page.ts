@@ -168,7 +168,7 @@ export class FlightItemCabinsPage implements OnInit {
           !this.flightService.policyFlights.length
         ) {
           await this.flightService.loadPolicyedFlightsAsync(
-            this.flightService.flightJourneyList
+            this.flightService.flightResult
           );
         }
         if (
