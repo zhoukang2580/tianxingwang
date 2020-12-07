@@ -31,6 +31,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "order-list_df",
+    loadChildren: () =>
+      import("./order-list_df/order-list_df.module").then(
+        m => m.OrderListDfPageModule
+      )
+  },
+  {
     path: "order-car-detail",
     loadChildren: () =>
       import("./order-car-detail/order-car-detail.module").then(
@@ -63,6 +70,13 @@ export const routes: Routes = [
     loadChildren: () =>
       import("./order-hotel-detail_en/order-hotel-detail_en.module").then(
         m => m.OrderHotelDetailEnPageModule
+      )
+  }
+  ,{
+    path: "order-hotel-detail_df",
+    loadChildren: () =>
+      import("./order-hotel-detail_df/order-hotel-detail_df.module").then(
+        m => m.OrderHotelDetailDfPageModule
       )
   },
  {

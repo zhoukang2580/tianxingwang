@@ -32,11 +32,13 @@ import { FlightOrderDetailEnComponent } from './flight-order-detail_en/flight-or
 import { OrderItemPricePopoverEnComponent } from './order-item-price-popover_en/order-item-price-popover_en.component';
 import { SearchTicketModalEnComponent } from './search-ticket-modal_en/search-ticket-modal_en.component';
 import { CarItemEnComponent } from './car-item-en/car-item-en.component';
+import { OrderItemDfComponent } from './order-item-df/order-item-df.component';
 
 @NgModule({
   declarations: [
     OrderItemComponent,
     OrderItemEnComponent,
+    OrderItemDfComponent,
     CarItemComponent,
     OrderItemPricePopoverComponent,
     OrderItemPricePopoverEnComponent,
@@ -75,6 +77,7 @@ import { CarItemEnComponent } from './car-item-en/car-item-en.component';
     OrderItemComponent,
     CarItemEnComponent,
     OrderItemEnComponent,
+    OrderItemDfComponent,
     UploadFileComponent,
     CarItemComponent,
     TrainOrderDetailComponent,
