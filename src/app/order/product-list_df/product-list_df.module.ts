@@ -6,14 +6,14 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ProductListPage } from './product-list.page';
+import { ProductListDfPage } from './product-list_df.page';
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: ProductListPage,
-    canActivate:[StylePageGuard]
+    component: ProductListDfPage,
+    canActivate: [StylePageGuard]
   }
 ];
 
@@ -25,6 +25,6 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     AppComponentsModule
   ],
-  declarations: [ProductListPage]
+  declarations: [ProductListDfPage]
 })
-export class ProductListPageModule {}
+export class ProductListDfPageModule { }

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 import { OrderHotelDetailPage } from './order-hotel-detail.page';
 
@@ -7,7 +8,8 @@ import { OrderHotelDetailPage } from './order-hotel-detail.page';
 const routes: Routes = [
   {
     path: '',
-    component: OrderHotelDetailPage
+    component: OrderHotelDetailPage,
+    canActivate: [StylePageGuard]
   }
 ];
 
@@ -15,4 +17,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class HotelOrderDetailPageRoutingModule {}
+export class HotelOrderDetailPageRoutingModule { }

@@ -53,6 +53,7 @@ import { OrderHotelType, OrderHotelEntity } from "../models/OrderHotelEntity";
 import { MOCK_TMC_DATA } from "../mock-data";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
 import { HotelOrderPricePopoverComponent } from '../components/hotel-order-price-popover/hotel-order-price-popover.component';
+import { SearchHotelModel } from 'src/app/hotel/hotel.service';
 
 export interface TabItem {
   label: string;
@@ -73,6 +74,7 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
   items: { label: string; value: string }[] = [];
   tabs: TabItem[] = [];
   orderDetail: OrderDetailModel;
+  searchHotelModel: SearchHotelModel;
   isLoading = false;
   showTiket = false;
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
@@ -100,7 +102,8 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
     private popoverCtrl: PopoverController,
     private domCtrl: DomController,
     private orderService: OrderService,
-    private identityService: IdentityService
+    private identityService: IdentityService,
+    private calendarService: CalendarService,
   ) {}
   scrollTop: number;
 
@@ -197,6 +200,24 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
     return amount;
+  }
+  get totalFlyDays() {
+    if (
+      this.searchHotelModel &&
+      this.searchHotelModel.checkInDate &&
+      this.searchHotelModel.checkOutDate
+    ) {
+      const nums = Math.abs(
+        this.calendarService.diff(
+          this.searchHotelModel.checkOutDate,
+          this.searchHotelModel.checkInDate,
+          "days"
+        )
+      );
+
+      return nums <= 0 ? 1 : nums;
+    }
+    return 0;
   }
   private initTicketsTripsInsurance() {
     if (

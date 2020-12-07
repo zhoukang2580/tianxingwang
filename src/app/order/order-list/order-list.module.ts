@@ -9,11 +9,13 @@ import { IonicModule } from "@ionic/angular";
 import { OrderListPage } from "./order-list.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: OrderListPage,
+    canActivate:[StylePageGuard]
   },
 ];
 

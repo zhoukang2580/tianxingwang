@@ -50,7 +50,7 @@
     <ng-container *ngIf='!isLoading else fakeList'>
       <ng-container *ngIf='!isShowMyTrips'>
         <ion-list lines='none' *ngIf='orderModel?.Orders?.length else nomoredate'>
-          <ion-item *ngFor='let order of orderModel.Orders' (click)='goToDetailPage(order.Id,orderModel.Type)'>
+          <ion-item class="item" *ngFor='let order of orderModel.Orders' (click)='goToDetailPage(order.Id,orderModel.Type)'>
             <app-order-item-df [order]='order' [tmc]='tmc' (payaction)='onPay(order)' (refundTrainTicket)='doRefresh();' (abolishOrder)='onAbolishOrder($event)'
               (exchangeFlightTicket)='onExchangeFlightTicket($event)' (refundFlightTicket)='onRefundFlightTicket($event)'>
             </app-order-item-df>

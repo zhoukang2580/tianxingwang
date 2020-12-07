@@ -189,40 +189,38 @@
   <ng-container *ngIf='order.OrderHotels?.length'>
     <ng-container *ngFor='let  orderHotel of order.OrderHotels'>
       <ion-grid class="hotel">
-        <ion-row>
-          <ion-col size='2'>
-            <ion-text color="medium"> 编号</ion-text>
+        <ion-row class="frist-ion">
+          <ion-col size='2.5'>
+            <ion-text color="medium">订单编号</ion-text>
           </ion-col>
           <ion-col class='select-text' class='dark'>
-            <strong>{{order.Id}}</strong>
-          </ion-col>
-          <ion-col>
-            <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime}}</span>
+            <strong class="strong">{{order.Id}}</strong>
           </ion-col>
         </ion-row>
-        <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center">
+        <ion-row class="ion-img">
           <ion-col size='2'>
-            <ion-text color="medium"> 应付</ion-text>
+            <ion-text color="medium"><img src="assets/images/hotel_1.png" alt=""></ion-text>
+          </ion-col>
+          <ion-col class='select-text' class='dark'>
+            <strong>
+              {{orderHotel.HotelName}}
+            </strong>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size='2.5'>
+            <ion-text color="medium">入住时间</ion-text>
           </ion-col>
           <ion-col>
-            <div style="align-items: center;display: flex;">
-              <ion-text color='danger'>
-                <ion-text>￥{{order.TotalAmount}}</ion-text>
-              </ion-text>
-              <ion-text color='medium'>
-                {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
-              </ion-text>
-              <ion-text color='medium'>
-                （{{order.StatusName == "等待处理" ? "等待审批" : order.StatusName}}）
-              </ion-text>
-              <ion-button *ngIf='order["checkPay"]' (click)='onPay($event)' size='small' color='secondary'>去支付
-              </ion-button>
+            <div style="display:flex">
+              <div>{{orderHotel.BeginDate}}至{{orderHotel.EndDate.substring(0,10)}}</div>
+              &nbsp;{{orderHotel.countDay}}晚
             </div>
           </ion-col>
         </ion-row>
         <ion-row *ngIf='order?.OrderPassengers?.length'>
-          <ion-col size='2'>
-            <ion-text color="medium"> 旅客</ion-text>
+          <ion-col size='2.5'>
+            <ion-text color="medium">旅客姓名</ion-text>
           </ion-col>
           <ion-col>
             <ng-container *ngIf='orderHotel.Passenger as p'>
@@ -230,25 +228,38 @@
                 <span>
                   {{p.Name}}
                 </span>
-                <ion-text color="medium">
-                  （{{orderHotel.StatusName}}）
-                </ion-text>
               </div>
             </ng-container>
           </ion-col>
         </ion-row>
-        <ion-row>
-          <ion-col size='2'>
-            <ion-text color="medium"> 行程</ion-text>
+        <!-- <ion-row>
+          <ion-col size='2.5'>
+            <ion-text color="medium">地址</ion-text>
           </ion-col>
           <ion-col>
-            <div>
-              {{orderHotel.HotelName}}
-              <br />
-              {{orderHotel.BeginDate}}&nbsp;{{orderHotel.countDay}}晚
+              <ion-text>
+                {{orderHotel.HotelAddress}}
+              </ion-text>
+          </ion-col>
+        </ion-row> -->
+        <ion-row [class.btn-show-margin]="order['checkPay']" style="align-items: center">
+          <ion-col size='2.5'>
+            <ion-text color="medium"> 应付金额</ion-text>
+          </ion-col>
+          <ion-col>
+            <div class="payin">
+              <ion-text color='danger'>
+                <ion-text>￥{{order.TotalAmount}}</ion-text>
+              </ion-text>
+              <!-- <ion-text color='medium'>
+                {{orderHotel.PaymentType==2?"(现付)":orderHotel.PaymentType==1?"(预付)":""}}
+              </ion-text> -->
+              <ion-button *ngIf='order["checkPay"]' (click)='onPay($event)' size='small' color='secondary'>去支付
+              </ion-button>
             </div>
           </ion-col>
         </ion-row>
+        
         <ion-row *ngIf='orderHotel.ConfirmNumber as cnumber'>
           <ion-col size='3'>
             酒店确认号

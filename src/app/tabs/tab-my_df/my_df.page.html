@@ -1,0 +1,114 @@
+<ion-content>
+    <ion-list lines='none' class='top-panal'>
+        <ion-item detail (click)='goToMyDetail()' class="head_detail">
+            <ion-thumbnail slot='start' class="top-center">
+                <img class="img" alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'>
+            </ion-thumbnail>
+            <ion-label class='ion-padding-start'>
+                <h3 style="color: #e8e1e1;font-size: 1.1rem;" notranslate>{{Model?.RealName}}
+                    <ion-note class='account-type'></ion-note>
+                </h3>
+                <h4>
+                    <ion-note style="color: #e8e1e1;font-size: 12px;" notranslate>账号: {{Model?.Name || Model?.Mobile}}</ion-note>
+                </h4>
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-card mode='ios' color='primary' *ngIf='isShowMyOrderTabs'>
+        <ion-card-content>
+            <ion-row>
+                <ion-col *ngFor='let item of items;let last = last;'>
+                    <div class='produc-item' (click)='onProductClick(item)'>
+                        <!-- <ion-avatar size='small'> -->
+                        <img [src]="item.imageSrc" alt="" style="width: 40px;">
+                        <!-- </ion-avatar> -->
+                        <ion-label class='ion-text-center ion-text-nowrap notranslate'>{{item.label}}</ion-label>
+                    </div>
+                </ion-col>
+            </ion-row>
+        </ion-card-content>
+    </ion-card>
+    <ion-list>
+        <ion-item detail (click)='credentialManagement()'>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [lazyLoad]="'assets/images/5.png'" alt="" > 证件管理
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-item detail (click)='PendingTasks()'>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [lazyLoad]="'assets/images/6.png'" alt="" > 审批任务
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-item detail (click)='contactUs()'>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [lazyLoad]="'assets/images/7.png'" alt="" > 联系我们
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf='isShowWorkflow&&isAgent'>
+        <ion-item (click)="goToWorkflow()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [lazyLoad]="'assets/svgs/my-task.svg'" alt="" > 我的待办
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf='!isAgent&&staff?.StaffNumber'>
+        <ion-item (click)="goBusiness()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl' [lazyLoad]="'assets/images/8.png'" alt="" > 出差申请
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list appAuthority='PresentationHrWebsiteUrl.Invitation.List.App_HrInvitation'>
+        <ion-item (click)="goInvitation()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl' [lazyLoad]="'assets/svgs/my-task.svg'" alt="" > 我的邀请
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf='isAgent'>
+        <ion-item (click)="goTomessageList()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [lazyLoad]="'assets/svgs/message.svg'" [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl' alt="" > 消息
+            </ion-label>
+            <ion-badge color="danger" *ngIf='msgCount$|async as count'>
+                <ion-text color='light'>{{count}}</ion-text>
+            </ion-badge>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-item (click)='goToPage("bulletin","notice")' detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [lazyLoad]="'assets/images/9.png'" [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl' alt="通知" > 公司通知
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list>
+        <ion-item (click)="onSettings()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [lazyLoad]="'assets/images/10.png'" [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl' alt="" > 设置
+            </ion-label>
+        </ion-item>
+    </ion-list>
+    <ion-list *ngIf='isShowDeveloperOption'>
+        <ion-item (click)="onDeveloper()" detail>
+            <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
+            <ion-label class="has-left-icon" notranslate>
+                <img [lazyLoad]="'assets/svgs/developeropt.svg'" [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl' alt="" > 开发者选项
+            </ion-label>
+        </ion-item>
+    </ion-list>
+</ion-content>

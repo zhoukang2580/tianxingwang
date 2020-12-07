@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 import { OrderHotelDetailDfPage } from './order-hotel-detail_df.page';
 
@@ -7,7 +8,8 @@ import { OrderHotelDetailDfPage } from './order-hotel-detail_df.page';
 const routes: Routes = [
   {
     path: '',
-    component: OrderHotelDetailDfPage
+    component: OrderHotelDetailDfPage,
+    canActivate: [StylePageGuard]
   }
 ];
 
@@ -15,4 +17,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class HotelOrderDetailDfPageRoutingModule {}
+export class HotelOrderDetailDfPageRoutingModule { }

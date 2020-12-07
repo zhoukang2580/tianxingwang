@@ -1,7 +1,8 @@
 :host {
   width: 100%;
-  ion-row{
+  ion-row {
     align-items: start;
+    font-size: 12px;
   }
 }
 .item {
@@ -24,7 +25,36 @@
 .order-flight-ticket ~ .order-flight-ticket {
   border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
 }
-.btn-show-margin{
+.btn-show-margin {
   margin-top: -8px;
   margin-bottom: -8px;
+}
+
+.hotel {
+  .frist-ion {
+    font-size: 10px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #666666;
+    border-bottom: 1px solid #eadcdc;
+    line-height: 22px;
+    .strong{
+      font: inherit;
+    }
+  }
+
+  .ion-img{
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    img{
+      width: 22px;
+    }
+  }
+
+  .payin{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
