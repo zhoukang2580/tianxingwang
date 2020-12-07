@@ -286,7 +286,7 @@ export class FlightService {
       !flightResult.FlightSegments ||
       !flightResult.FlightSegments.length
     ) {
-      return [];
+      return this.policyFlights;
     }
     const passengers = this.getPassengerBookInfos().map(
       (info) => info.passenger
@@ -330,7 +330,7 @@ export class FlightService {
       this.policyFlights = [];
       return [];
     }
-    return flightResult;
+    return this.policyFlights;
   }
   private getNotWhitelistCabins(
     passengerKey: string,
@@ -710,21 +710,60 @@ export class FlightService {
         }
         result.isProcessOk = true;
       } else {
-        const ok = await AppHelper.alert(
-          "是否替换旅客的航班信息？",
-          true,
-          LanguageHelper.getConfirmTip(),
-          LanguageHelper.getCancelTip()
-        );
-        if (ok) {
-          const res = await this.selectAndReplaceBookInfos(
-            flightCabin,
-            flightSegment,
-            bookInfos
+        if (bookInfos.length > 1) {
+          const ok = await AppHelper.alert(
+            "是否替换旅客的航班信息？",
+            true,
+            LanguageHelper.getConfirmTip(),
+            LanguageHelper.getCancelTip()
           );
-          bookInfos = res.bookInfos;
-          result.isProcessOk = res.isRePlace;
-          result.isReplace = res.isRePlace;
+          if (ok) {
+            const res = await this.selectAndReplaceBookInfos(
+              flightCabin,
+              flightSegment,
+              bookInfos
+            );
+            bookInfos = res.bookInfos;
+            result.isProcessOk = res.isRePlace;
+            result.isReplace = res.isRePlace;
+          }
+        } else {
+          const data: PassengerBookInfo<IFlightSegmentInfo>[] = bookInfos;
+          if (data && data.length) {
+            result.isProcessOk = true;
+            result.isReplace = true;
+            const cannotArr: string[] = [];
+            for (let i = 0; i < data.length; i++) {
+              const item = data[i];
+              const info = this.getPolicyCabinBookInfo(
+                item,
+                flightCabin,
+                flightSegment
+              );
+              if (info && info.isDontAllowBook) {
+                let name: string;
+                if (item.credential) {
+                  name = `${item.credential.Surname}${
+                    item.credential.Givenname
+                  }(${(item.credential.Number || "").substr(0, 6)}...)`;
+                }
+                cannotArr.push(name);
+                item.bookInfo = null;
+              } else {
+                item.bookInfo = info;
+              }
+            }
+            if (cannotArr.length) {
+              AppHelper.alert(`${cannotArr.join(",")}，超标不可替换`);
+            }
+          }
+          bookInfos = bookInfos.map((it) => {
+            const item = data.find((d) => d.id == it.id);
+            if (item) {
+              it.bookInfo = item.bookInfo;
+            }
+            return it;
+          });
         }
       }
     }
@@ -784,6 +823,9 @@ export class FlightService {
     if (data && data.length) {
       processResult.isRePlace = true;
       const cannotArr: string[] = [];
+      this.policyFlights = await this.loadPolicyedFlightsAsync(
+        this.flightResult
+      );
       for (let i = 0; i < data.length; i++) {
         const item = data[i];
         const info = this.getPolicyCabinBookInfo(
@@ -1157,7 +1199,17 @@ export class FlightService {
     if (req.Language) {
       req.Data.Lang = req.Language;
     }
-    return this.apiService.getPromiseData<FlightResultEntity>(req);
+    const result = await this.apiService.getPromiseData<FlightResultEntity>(
+      req
+    );
+    if (result && result.FlightSegments) {
+      // 替换最低价
+      const seg = result.FlightSegments.find((it) => it.Number == s.Number);
+      if (seg) {
+        s.LowestFare = seg.LowestFare;
+      }
+    }
+    return result;
   }
   private async getPolicyflightsAsync(
     flightResult: FlightResultEntity,
@@ -1214,6 +1266,7 @@ export class FlightService {
       }
       return s;
     });
+    rs.push(r);
     flights.push({
       FlightRoutes: rs,
     } as FlightJourneyEntity);
