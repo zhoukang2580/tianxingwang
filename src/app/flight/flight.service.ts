@@ -679,8 +679,8 @@ export class FlightService {
       const unselectBookInfos = this.getPassengerBookInfos().filter(
         (it) => !it.bookInfo || !it.bookInfo.flightPolicy
       );
-      const cannotArr: string[] = [];
       if (unselectBookInfos.length) {
+        const cannotArr: string[] = [];
         bookInfos = bookInfos.map((item) => {
           if (unselectBookInfos.find((it) => it.id == item.id)) {
             const info = this.getPolicyCabinBookInfo(
@@ -696,7 +696,7 @@ export class FlightService {
                 }(${(item.credential.Number || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
-              item.bookInfo = null;
+              // item.bookInfo = null;
             } else {
               item.bookInfo = info;
             }
@@ -708,7 +708,7 @@ export class FlightService {
             AppHelper.alert(`${cannotArr.join(",")}，超标不可预订`);
           }
         }
-        result.isProcessOk = true;
+        result.isProcessOk = cannotArr.length < unselectBookInfos.length;
       } else {
         if (bookInfos.length > 1) {
           const ok = await AppHelper.alert(
@@ -730,8 +730,6 @@ export class FlightService {
         } else {
           const data: PassengerBookInfo<IFlightSegmentInfo>[] = bookInfos;
           if (data && data.length) {
-            result.isProcessOk = true;
-            result.isReplace = true;
             const cannotArr: string[] = [];
             for (let i = 0; i < data.length; i++) {
               const item = data[i];
@@ -756,6 +754,8 @@ export class FlightService {
             if (cannotArr.length) {
               AppHelper.alert(`${cannotArr.join(",")}，超标不可替换`);
             }
+            result.isProcessOk = cannotArr.length < data.length;
+            result.isReplace = cannotArr.length < data.length;
           }
           bookInfos = bookInfos.map((it) => {
             const item = data.find((d) => d.id == it.id);
@@ -886,9 +886,9 @@ export class FlightService {
       (itm) => itm.PassengerKey == bookInfo.passenger.AccountId
     );
     if (passengerPolicies && passengerPolicies.FlightPolicies) {
-      const flihgtPolicyCabin = passengerPolicies.FlightPolicies.find(
-        (item) => item.Id == flightCabin.Id
-      );
+      const flihgtPolicyCabin = passengerPolicies.FlightPolicies.filter(
+        (item) => flightCabin.FlightNumber == item.FlightNo
+      ).find((item) => item.Id == flightCabin.Id);
       if (flihgtPolicyCabin) {
         if (flightSegment.Cabins) {
           const c = flightSegment.Cabins.find(
@@ -1207,6 +1207,7 @@ export class FlightService {
       const seg = result.FlightSegments.find((it) => it.Number == s.Number);
       if (seg) {
         s.LowestFare = seg.LowestFare;
+        s.Cabins = result.FlightFares as any;
       }
     }
     return result;
@@ -1222,14 +1223,13 @@ export class FlightService {
     //   }
     // }
     const req = new RequestEntity();
-    req.Method = `TmcApiFlightUrl-Home-Policy`;
+    req.Method = `TmcApiFlightUrl-Home-NewPolicy`;
     req.Version = "2.0";
     req.IsShowLoading = true;
     req.LoadingMsg = "正在计算差标信息";
-    const flights: FlightJourneyEntity[] = [];
-    const rs: FlightRouteEntity[] = [];
-    const r = new FlightRouteEntity();
-    r.FlightSegments = flightResult.FlightSegments.map((seg) => {
+    const data: FlightResultEntity = {} as any;
+    data.FlightFares = [];
+    data.FlightSegments = flightResult.FlightSegments.map((seg) => {
       const s = new FlightSegmentEntity();
       s.TakeoffTime = seg.TakeoffTime;
       s.LowestFare = seg.LowestFare;
@@ -1239,8 +1239,9 @@ export class FlightService {
       s.LowerFlightNumber = seg.LowerFlightNumber;
       s.LowestCabinId = seg.LowestCabinId;
       if (seg.Cabins) {
-        s.Cabins = seg.Cabins.map((fare) => {
-          const c = new FlightCabinEntity();
+        // s.Cabins = seg.Cabins;
+        seg.Cabins.forEach((fare) => {
+          const c = new FlightFareEntity();
           c.Discount = fare.Discount;
           c.Id = fare.Id;
           c.SalesPrice = fare.SalesPrice || "0";
@@ -1261,15 +1262,12 @@ export class FlightService {
             c.LowerSegment.TakeoffTime =
               fare.LowerSegment && fare.LowerSegment.TakeoffTime;
           }
-          return c;
+          data.FlightFares.push(c);
         });
       }
       return s;
     });
-    rs.push(r);
-    flights.push({
-      FlightRoutes: rs,
-    } as FlightJourneyEntity);
+    data.FlightRoutes = flightResult.FlightRoutes;
     const accountIds = [];
     Passengers.forEach((id) => {
       if (!accountIds.find((it) => it == id)) {
@@ -1277,7 +1275,7 @@ export class FlightService {
       }
     });
     req.Data = {
-      Flights: JSON.stringify(flights),
+      Flights: JSON.stringify(data),
       Passengers: accountIds.join(","),
     };
     req.IsShowLoading = true;

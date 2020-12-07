@@ -240,10 +240,13 @@ export class FlightListPage
           return;
         }
       }
-      const cabins =
-        s.Cabins && s.Cabins.filter((it) => it.SalesPrice == s.LowestFare);
+      if (!s.Cabins || !s.Cabins.length) {
+        return;
+      }
+      const cabins = s.Cabins.sort((c1, c2) => +c1.SalesPrice - +c2.SalesPrice);
       const cabin =
-        cabins && cabins.find((it) => it.SalesPrice == s.LowestFare);
+        (cabins && cabins.find((it) => it.SalesPrice == s.LowestFare)) ||
+        cabins[0];
       if (cabin) {
         const bookInfos = this.flightService.getPassengerBookInfos();
         if (!bookInfos.length) {
@@ -544,9 +547,10 @@ export class FlightListPage
         return p && p.length > 0;
       }
     } catch (e) {
+      console.error(e);
       AppHelper.alert(e);
     }
-    return false;
+    return fs && fs.Cabins && fs.Cabins.length > 0;
   }
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
     try {

@@ -28,7 +28,7 @@ import {
 } from "../models/PassengerFlightInfo";
 import { of, Observable, Subscription } from "rxjs";
 import { map, tap, filter } from "rxjs/operators";
-import { PassengerBookInfo } from "src/app/tmc/tmc.service";
+import { PassengerBookInfo, TmcService } from "src/app/tmc/tmc.service";
 import { AppHelper } from "src/app/appHelper";
 import { FlightFareType } from "../models/flight/FlightFareType";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -72,39 +72,52 @@ export class FlightItemCabinsPage implements OnInit {
     private router: Router,
     private popoverController: PopoverController,
     private orderService: OrderService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private tmcService: TmcService
   ) {
     activatedRoute.queryParamMap.subscribe(async (p) => {
-      this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
-      if (
-        this.vmFlightSegment &&
-        this.vmFlightSegment.Cabins &&
-        this.vmFlightSegment.Cabins.some(
-          (it) => it.FareType == FlightCabinFareType.Agreement
-        )
-      ) {
-        this.isAgreement = true;
-      }
-      this.isSelf = await this.staffService.isSelfBookType();
-      this.cabinTypes = this.getCabinTypes();
-      const identity = await this.identityService
-        .getIdentityAsync()
-        .catch((_) => null);
-      this.identity = identity;
-      this.staff = await this.staffService.getStaff();
-      if (
-        this.staff &&
-        this.staff.BookType == StaffBookType.Self &&
-        !this.staff.Name
-      ) {
-        this.staff.Name = identity && identity.Name;
+      try {
+        this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
+        if (
+          this.vmFlightSegment &&
+          this.vmFlightSegment.Cabins &&
+          this.vmFlightSegment.Cabins.some(
+            (it) => it.FareType == FlightCabinFareType.Agreement
+          )
+        ) {
+          this.isAgreement = true;
+        }
+        this.isSelf = await this.staffService.isSelfBookType();
+        this.cabinTypes = this.getCabinTypes();
+        const identity = await this.identityService
+          .getIdentityAsync()
+          .catch((_) => null);
+        this.identity = identity;
+        this.staff = await this.staffService.getStaff();
+        if (
+          this.staff &&
+          this.staff.BookType == StaffBookType.Self &&
+          !this.staff.Name
+        ) {
+          this.staff.Name = identity && identity.Name;
+        }
+        this.setDefaultFilteredInfo();
+        const arr = this.flightService.getPassengerBookInfos();
+        if (
+          !arr.some((it) => it.isFilterPolicy) &&
+          arr.length > 1 &&
+          !this.isSelf
+        ) {
+          this.cabins = this.getPolicyCabins();
+          this.initVmCabins(this.cabins);
+        }
+      } catch (e) {
+        console.error(e);
       }
     });
   }
   get isAgent() {
-    return (
-      this.identity && this.identity.Numbers && this.identity.Numbers["AgentId"]
-    );
+    return this.tmcService.isAgent;
   }
   back() {
     this.router.navigate([AppHelper.getRoutePath("flight-list")]);
@@ -154,6 +167,14 @@ export class FlightItemCabinsPage implements OnInit {
       info.passenger.Policy &&
       info.passenger.Policy.FlightLegalTip
     );
+  }
+  private setDefaultFilteredInfo() {
+    let bookInfos = this.flightService.getPassengerBookInfos();
+    bookInfos=this.flightService.getPassengerBookInfos().map((it) => {
+      it.isFilterPolicy = this.isSelf || !it.bookInfo || bookInfos.length == 1;
+      return it;
+    });
+    this.flightService.setPassengerBookInfosSource(bookInfos);
   }
   async onBookTicket(flightCabin: FlightCabinEntity) {
     const bookInfos = this.flightService.getPassengerBookInfos();
@@ -420,6 +441,7 @@ export class FlightItemCabinsPage implements OnInit {
           this.selectedCabinType = +cabin.id;
         }
       });
+    this.setDefaultFilteredInfo();
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map((infos) => infos.find((it) => it.isFilterPolicy)));

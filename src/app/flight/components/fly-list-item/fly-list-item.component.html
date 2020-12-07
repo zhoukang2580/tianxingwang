@@ -3,7 +3,7 @@
     <h3 class='time'>
       <strong>{{flightSegment?.TakeoffShortTime}}</strong>
       <ion-icon name='airplane' class='non-stop' mode='ios' content='直飞' color='secondary' *ngIf='!flightSegment?.IsStop'></ion-icon>
-      <ion-text color='secondary' *ngIf='flightSegment?.IsStop' style='font-size: 0.7rem;'>Stop over</ion-text>
+      <ion-text color='secondary' *ngIf='flightSegment?.IsStop' style='font-size: 0.7rem;'>{{langOpt?.isStop}}</ion-text>
       <strong class='end-time' [attr.addoneday]='addoneday()'>{{flightSegment?.ArrivalShortTime}}</strong>
     </h3>
     <h3 class='airports'>
