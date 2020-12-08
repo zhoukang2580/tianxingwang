@@ -59,6 +59,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "order-flight-detail_df",
+    loadChildren: () =>
+      import("./order-flight-detail_df/order-flight-detail_df.module").then(
+        m => m.OrderFlightDetailDfPageModule
+      )
+  },
+  {
     path: "order-hotel-detail",
     loadChildren: () =>
       import("./order-hotel-detail/order-hotel-detail.module").then(
@@ -91,6 +98,13 @@ export const routes: Routes = [
      loadChildren: () =>
        import('./order-train-detail_en/order-train-detail_en.module').then(
          m => m.OrderTrainDetailEnPageModule
+       )
+   },
+  {
+     path: "order-train-detail_df",
+     loadChildren: () =>
+       import('./order-train-detail_df/order-train-detail_df.module').then(
+         m => m.OrderTrainDetailDfPageModule
        )
    }
 

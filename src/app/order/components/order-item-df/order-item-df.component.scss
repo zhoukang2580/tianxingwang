@@ -5,10 +5,14 @@
     font-size: 12px;
   }
 }
+.order-item{
+  margin: 5px;
+}
 .item {
-  padding: 0.2em 0;
+  padding: 0.5em 0;
   display: flex;
   align-items: flex-start;
+  font-size: 12px;
   & > *:first-child {
     min-width: 2.25rem;
     margin-right: 0.5em;
@@ -16,6 +20,22 @@
   }
   span {
     margin-right: 0.5em;
+  }
+  .item-con{
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333333;
+    img{
+      width: 27.5px;
+    }
+  }
+  .item-tail{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
   }
 }
 
@@ -25,12 +45,17 @@
 .order-flight-ticket ~ .order-flight-ticket {
   border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
 }
+.order-flight-ticket{
+  border-top: 1px solid #dad1d1;
+}
 .btn-show-margin {
   margin-top: -8px;
   margin-bottom: -8px;
 }
 
-.hotel {
+
+
+.hotel,.train {
   .frist-ion {
     font-size: 10px;
     font-family: PingFang SC;
@@ -43,14 +68,18 @@
     }
   }
 
-  .ion-img{
+  .ion-img,
+  .ion-train{
     display: flex;
     align-items: center;
     font-size: 16px;
     img{
       width: 22px;
+      margin-top: 5px;
     }
   }
+
+  
 
   .payin{
     display: flex;
@@ -58,3 +87,4 @@
     justify-content: space-between;
   }
 }
+
