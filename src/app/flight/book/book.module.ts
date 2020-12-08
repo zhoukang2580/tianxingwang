@@ -13,12 +13,13 @@ import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module
 import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: BookPage,
-    canActivate: [ConfirmCredentialInfoGuard],
+    canActivate: [StylePageGuard, ConfirmCredentialInfoGuard],
     canDeactivate:[CandeactivateGuard]
   },
 ];

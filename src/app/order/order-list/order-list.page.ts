@@ -363,39 +363,26 @@ export class OrderListPage implements OnInit, OnDestroy {
         TicketId: data.ticketId,
         ExchangeDate: date,
       });
-      if (
-        !res ||
-        !res.trip ||
-        !res.order ||
-        !res.order.OrderPassengers ||
-        !res.order.OrderPassengers[0]
-      ) {
+      if (!res || !res.trip || !res.order) {
         AppHelper.alert("改签失败，请重试");
         return;
       }
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
-      let passenger: StaffEntity = {
-        Account: {
-          Id: res.order.OrderPassengers[0].Id,
-        },
-        AccountId: res.order.OrderPassengers[0].Id,
-        Name: res.order.OrderPassengers[0].Name,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-        // isNotWhiteList: !res.staff,
-      } as StaffEntity;
+      await this.flightService.initSelfBookTypeBookInfos();
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      if (!bookInfos.length) {
+        AppHelper.alert("改签失败，请重试");
+        return;
+      }
+      let passenger: StaffEntity = bookInfos[0].passenger;
       if (res.staff) {
         passenger = {
           ...passenger,
           ...res.staff,
         };
       }
-      const credential: CredentialsEntity = {
-        Name: res.order.OrderPassengers[0].Name,
-        Type: res.order.OrderPassengers[0].CredentialsType,
-        TypeName: res.order.OrderPassengers[0].PassengerTypeName,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-      } as CredentialsEntity;
+      const credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
         credential,
@@ -403,7 +390,6 @@ export class OrderListPage implements OnInit, OnDestroy {
         // isNotWhitelist: !res.staff,
       };
       this.flightService.addPassengerBookInfo(info);
-      const bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
         AppHelper.alert("改签失败，请重试");
         return;

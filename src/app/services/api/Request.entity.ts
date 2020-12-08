@@ -33,6 +33,7 @@ export class RequestEntity {
       "wechatcode",
       "wechatminicode",
       "dingtalkcode",
+      "language",
       "ticket",
       "ticketname",
       "wechatopenid",

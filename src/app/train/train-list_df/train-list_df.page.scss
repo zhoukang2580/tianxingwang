@@ -1,0 +1,123 @@
+ul.train {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  li {
+    margin: 0.45em 0.5em;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    background: #fff;
+  }
+}
+ion-text {
+  &.from-station,
+  &.to-station {
+    display: inline-flex;
+    flex-flow: column nowrap;
+    align-items: center;
+  }
+}
+ion-fab {
+  ion-fab-button {
+    width: 3em;
+    height: 3em;
+    margin-bottom: 2em;
+  }
+  transform: scale(0);
+  opacity: 0;
+  &.show {
+    transform: scale(1);
+    opacity: 1;
+  }
+  transition: all ease-in-out 200ms;
+}
+ion-content {
+  .content-header {
+    // position: sticky;
+    // top: 0;
+    text-align: center;
+  }
+}
+
+ion-toolbar{
+  margin-top: -8px;
+}
+
+ion-title {
+  font-size: 0.9rem;
+  &.text-start {
+    text-align: start;
+  }
+  &.text-center {
+    text-align: center;
+  }
+}
+.xs-font-size {
+  font-size: 0.6rem;
+}
+.sm-font-size {
+  font-size: 0.8rem;
+}
+.tabs {
+  display: flex;
+  align-items: center;
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding: 0.5rem;
+    ion-icon {
+      font-size: 1.3rem;
+      --opacity: 0.6;
+      color: var(--ion-color-medium);
+    }
+    ion-note {
+      font-size: 0.7rem;
+    }
+    &.active {
+      --opacity: 1;
+      ion-icon {
+        color: var(--ion-color-secondary);
+      }
+      ion-note {
+        color: var(--ion-color-secondary);
+      }
+    }
+    &.filtered {
+      position: relative;
+      &::after {
+        position: absolute;
+        content: "";
+        height: 0.5em;
+        width: 0.5em;
+        background-color: var(--ion-color-danger);
+        display: block;
+        left: calc(50% + 0.9em);
+        transform: translateX(-50%);
+        border-radius: 50%;
+      }
+    }
+  }
+}
+ion-list.fakelist {
+  margin-top: 0;
+}
+ion-list{
+  background: #f6f6f6;
+  margin-bottom: -15px;
+}
+.icon-search-train {
+  margin: 0 1em;
+}
+
+img{
+  width: 18px;
+  margin: 0px 20px -4px;
+}
+
+.city-name{
+  font-size: 1.3em;
+  color: #000;
+}
+

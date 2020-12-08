@@ -5,7 +5,10 @@ import { Subscription, Observable } from "rxjs";
 
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 
-import { IFlightSegmentInfo } from "../models/PassengerFlightInfo";
+import {
+  FlightPolicy,
+  IFlightSegmentInfo,
+} from "../models/PassengerFlightInfo";
 
 import { SearchFlightModel, FlightService } from "../flight.service";
 
@@ -231,8 +234,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     let show = !!(
       pfs &&
       pfs.lowerSegmentInfo &&
-      pfs.lowerSegmentInfo.lowestFlightSegment &&
-      pfs.lowerSegmentInfo.lowestCabin
+      pfs.lowerSegmentInfo.lowestFlightSegment
     );
     if (
       this.isSelf &&
@@ -289,10 +291,59 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     }
     return false;
   }
+  private async loadLowestCabin(info: PassengerBookInfo<IFlightSegmentInfo>) {
+    try {
+      if (info && info.bookInfo && info.bookInfo.lowerSegmentInfo) {
+        const segs = this.flightService.getTotalFlySegments();
+        const seg = segs.find(
+          (it) =>
+            it.Number ==
+            info.bookInfo.lowerSegmentInfo.lowestFlightSegment.Number
+        );
+        if (!seg.Cabins) {
+          const r = await this.flightService.getFlightSegmentDetail(seg);
+          seg.Cabins = r.FlightFares as any;
+          const ss = r.FlightSegments.find((it) => it.Number == seg.Number);
+          if (ss) {
+            seg.LowestFare = ss.LowestFare;
+          }
+        }
+        if (seg.Cabins) {
+          seg.Cabins.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
+          info.bookInfo.lowerSegmentInfo.lowestCabin = {
+            Cabin: seg.Cabins[0],
+            CabinCode: seg.Cabins[0].Code,
+            Rules: [],
+            IsAllowBook: true,
+            FlightNo: seg.Number,
+          } as FlightPolicy;
+          info.bookInfo.lowerSegmentInfo.lowestFlightSegment = {
+            ...seg,
+          };
+          info.bookInfo.flightSegment = {
+            ...seg,
+          };
+          return info.bookInfo.lowerSegmentInfo.lowestCabin;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
+  }
   async onSelectLowestSegment(info: PassengerBookInfo<IFlightSegmentInfo>) {
-    const { lowestCabin, lowestFlightSegment } =
+    let { lowestCabin, lowestFlightSegment } =
       info.bookInfo && info.bookInfo.lowerSegmentInfo;
-    if (!lowestCabin || !lowestFlightSegment) {
+    if (!lowestFlightSegment) {
+      await AppHelper.alert(
+        LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
+      );
+      return "";
+    }
+    if (!lowestCabin) {
+      lowestCabin = await this.loadLowestCabin(info);
+    }
+    if (!lowestCabin) {
       await AppHelper.alert(
         LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
       );

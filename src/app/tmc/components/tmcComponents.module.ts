@@ -10,7 +10,6 @@ import { OrganizationComponent } from "./organization/organization.component";
 import { SelectTravelNumberComponent } from "./select-travel-number-popover/select-travel-number-popover.component";
 import { AddcontactsModalComponent } from "src/app/tmc/components/addcontacts-modal/addcontacts-modal.component";
 import { FilterPassengersPolicyComponent } from "./filter-passengers-popover/filter-passengers-policy-popover.component";
-import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { BookCredentialCompComponent } from "./book-credential-comp/book-credential-comp.component";
 import { BookIllegalReasonCompComponent } from "./book-illegal-reason-comp/book-illegal-reason-comp.component";
@@ -33,6 +32,9 @@ import { BookCredentialCompEnComponent } from './book-credential-comp_en/book-cr
 import { AddcontactsModalEnComponent } from './addcontacts-modal_en/addcontacts-modal_en.component';
 import { BookAddcontactsCompEnComponent } from './book-addcontacts-comp_en/book-addcontacts-comp_en.component';
 import { SearchApprovalEnComponent } from './search-approval_en/search-approval_en.component';
+import { DaysCalendarDfComponent } from './days-calendar-df/days-calendar-df.component';
+import { BookOrganizationDfCompComponent } from './book-organization-comp-df/book-organization-comp-df.component';
+import { BookCostcenterCompDfComponent } from './book-costcenter-comp-df/book-costcenter-comp-df.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +51,9 @@ import { SearchApprovalEnComponent } from './search-approval_en/search-approval_
     BookCredentialCompComponent,
     BookCredentialCompEnComponent,
     BookCostcenterCompComponent,
+    BookCostcenterCompDfComponent,
     BookOrganizationCompComponent,
+    BookOrganizationDfCompComponent,
     BookAddcontactsCompComponent,
     BookAddcontactsCompEnComponent,
     DayComponent,
@@ -59,6 +63,7 @@ import { SearchApprovalEnComponent } from './search-approval_en/search-approval_
     DateSelectWheelPopoverComponent,
     SearchDayComponent,
     DaysCalendarComponent,
+    DaysCalendarDfComponent,
     BookTmcOutnumberComponent,
     WaitingCheckPayComponent,
     ShowStandardDetailsComponent,
@@ -77,8 +82,10 @@ import { SearchApprovalEnComponent } from './search-approval_en/search-approval_
     BookCredentialCompComponent,
     BookIllegalReasonCompComponent,
     BookCostcenterCompComponent,
+    BookCostcenterCompDfComponent,
     BookCredentialCompEnComponent,
     BookOrganizationCompComponent,
+    BookOrganizationDfCompComponent,
     BookAddcontactsCompComponent,
     BookAddcontactsCompEnComponent,
     BookTmcOutnumberComponent,
@@ -86,6 +93,7 @@ import { SearchApprovalEnComponent } from './search-approval_en/search-approval_
     SelectWheelComponent,
     SearchDayComponent,
     DaysCalendarComponent,
+    DaysCalendarDfComponent,
     WaitingCheckPayComponent,
     BookExpenseTypesCompComponent,
   ],
