@@ -822,7 +822,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   }
   private goToMyOrders(tab: ProductItemType) {
     this.router.navigate(["order-list"], {
-      queryParams: { tabId: tab, fromRoute: "bookflight" },
+      queryParams: { tabId: tab, fromRoute: "bookflight",isBackHome:true },
     });
   }
   private async checkPay(tradeNo: string) {

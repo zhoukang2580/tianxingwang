@@ -137,6 +137,7 @@ export class FlightService {
   }
   async initSelfBookTypeBookInfos(isShowLoading = true) {
     await this.checkOrAddSelfBookTypeBookInfo(isShowLoading);
+    await this.loadPolicyedFlightsAsync(this.flightResult);
   }
   private disposal() {
     this.setSearchFlightModelSource(new SearchFlightModel());
@@ -575,88 +576,89 @@ export class FlightService {
     };
     const s = this.getSearchFlightModel();
     let bookInfos = this.getPassengerBookInfos();
+    if (!bookInfos.length) {
+      await this.addOneBookInfoToSelfBookType();
+      await this.loadPolicyedFlightsAsync(this.flightResult);
+    }
+    bookInfos = this.getPassengerBookInfos();
+    if (!bookInfos.length) {
+      AppHelper.alert("信息加载失败，请重试");
+      return;
+    }
     if (s.isRoundTrip) {
-      if (!bookInfos.length) {
-        await this.addOneBookInfoToSelfBookType();
+      const go = bookInfos.find(
+        (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
+      );
+      const info = this.getPolicyCabinBookInfo(
+        bookInfos[0],
+        flightCabin,
+        flightSegment
+      );
+      if (!info) {
+        return result;
       }
-      bookInfos = this.getPassengerBookInfos();
-      if (bookInfos.length) {
-        const go = bookInfos.find(
-          (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
-        );
-        const info = this.getPolicyCabinBookInfo(
-          bookInfos[0],
-          flightCabin,
-          flightSegment
-        );
-        if (!info) {
+      if (info.isDontAllowBook) {
+        if (!this.tmcService.isAgent) {
+          AppHelper.alert("超标不可预订");
           return result;
         }
-        if (info.isDontAllowBook) {
-          if (!this.tmcService.isAgent) {
-            AppHelper.alert("超标不可预订");
-            return result;
-          }
-        }
-        info.tripType = s.tripType;
-        if (info.lowerSegmentInfo) {
-          info.lowerSegmentInfo.tripType = s.tripType;
-        }
-        if (go) {
-          if (s.tripType == TripType.departureTrip) {
-            bookInfos = [
-              { ...go, bookInfo: info },
-              { ...go, bookInfo: null, id: AppHelper.uuid() },
-            ];
-          } else {
-            // 判断机场
-            const showTip =
-              flightSegment.FromAirport != go.bookInfo.flightSegment.ToAirport;
-            if (showTip) {
-              const isOk = await AppHelper.alert(
-                `回程航班出发机场与去程航班抵达机场不同`,
-                true,
-                "继续",
-                "重选"
-              );
-              if (!isOk) {
-                result.isReselect = true;
-                return result;
-              }
-            }
-            bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
-          }
-        } else {
-          info.tripType = TripType.departureTrip;
+      }
+      info.tripType = s.tripType;
+      if (info.lowerSegmentInfo) {
+        info.lowerSegmentInfo.tripType = s.tripType;
+      }
+      if (go) {
+        if (s.tripType == TripType.departureTrip) {
           bookInfos = [
-            { ...bookInfos[0], bookInfo: info },
-            { ...bookInfos[0], bookInfo: null, id: AppHelper.uuid() },
+            { ...go, bookInfo: info },
+            { ...go, bookInfo: null, id: AppHelper.uuid() },
           ];
-        }
-        this.setPassengerBookInfosSource(bookInfos);
-        result.isProcessOk = true;
-      }
-    } else {
-      if (!bookInfos.length) {
-        await this.addOneBookInfoToSelfBookType();
-      }
-      bookInfos = this.getPassengerBookInfos();
-      if (bookInfos.length) {
-        bookInfos = [bookInfos[0]];
-        bookInfos = bookInfos.map((it) => {
-          it.bookInfo = this.getPolicyCabinBookInfo(
-            it,
-            flightCabin,
-            flightSegment
-          );
-          if (it.bookInfo && it.bookInfo.lowerSegmentInfo) {
-            it.bookInfo.lowerSegmentInfo.tripType = TripType.departureTrip;
+        } else {
+          // 判断机场
+          const showTip =
+            flightSegment.FromAirport != go.bookInfo.flightSegment.ToAirport;
+          if (showTip) {
+            const isOk = await AppHelper.alert(
+              `回程航班出发机场与去程航班抵达机场不同`,
+              true,
+              "继续",
+              "重选"
+            );
+            if (!isOk) {
+              result.isReselect = true;
+              return result;
+            }
           }
-          return it;
-        });
-        this.setPassengerBookInfosSource(bookInfos);
-        result.isProcessOk = true;
+          bookInfos = [go, { ...go, bookInfo: info, id: AppHelper.uuid() }];
+        }
+      } else {
+        info.tripType = TripType.departureTrip;
+        bookInfos = [
+          { ...bookInfos[0], bookInfo: info },
+          { ...bookInfos[0], bookInfo: null, id: AppHelper.uuid() },
+        ];
       }
+      this.setPassengerBookInfosSource(bookInfos);
+      result.isProcessOk = true;
+    } else {
+      bookInfos = [bookInfos[0]];
+      const info = this.getPolicyCabinBookInfo(
+        bookInfos[0],
+        flightCabin,
+        flightSegment
+      );
+      if (!info) {
+        return result;
+      }
+      if (info.isDontAllowBook) {
+        if (!this.tmcService.isAgent) {
+          AppHelper.alert("超标不可预订");
+          return result;
+        }
+      }
+      bookInfos[0].bookInfo = info;
+      this.setPassengerBookInfosSource(bookInfos);
+      result.isProcessOk = true;
     }
     return result;
   }
@@ -1208,6 +1210,7 @@ export class FlightService {
       if (seg) {
         s.LowestFare = seg.LowestFare;
         s.Cabins = result.FlightFares as any;
+        s.Tax = seg.Tax;
       }
     }
     return result;

@@ -20,7 +20,7 @@ const routes: Routes = [
     path: "",
     component: BookPage,
     canActivate: [StylePageGuard, ConfirmCredentialInfoGuard],
-    canDeactivate:[CandeactivateGuard]
+    canDeactivate:[CandeactivateGuard],
   },
 ];
 

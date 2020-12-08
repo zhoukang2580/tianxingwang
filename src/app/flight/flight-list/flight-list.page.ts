@@ -227,6 +227,11 @@ export class FlightListPage
     }
     return false;
   }
+  private async checkHasLowerSegment() {
+    return {
+      ok: true,
+    };
+  }
   async onBookLowestSegment(evt: CustomEvent, s: FlightSegmentEntity) {
     if (evt) {
       evt.stopPropagation();
@@ -264,6 +269,8 @@ export class FlightListPage
                 a.bookInfo.flightPolicy.Rules.join(",")
               }`
             );
+            const result = await this.checkHasLowerSegment();
+
             return;
           }
           if (r.isProcessOk) {

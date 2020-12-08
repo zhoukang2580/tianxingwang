@@ -10,13 +10,19 @@ import {
   TmcService,
   PassengerBookInfo,
 } from "../../tmc/tmc.service";
-import { ActivatedRoute, Router } from "@angular/router";
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  Router,
+  RouterStateSnapshot,
+} from "@angular/router";
 import {
   ModalController,
   IonInfiniteScroll,
   IonContent,
   IonDatetime,
   PickerController,
+  NavController,
 } from "@ionic/angular";
 import {
   Component,
@@ -47,18 +53,21 @@ import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-order-list",
   templateUrl: "./order-list.page.html",
   styleUrls: ["./order-list.page.scss"],
 })
-export class OrderListPage implements OnInit, OnDestroy {
+export class OrderListPage
+  implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
   public loadDataSub = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private selectDateChange = new EventEmitter();
   private selectDateSubscription = Subscription.EMPTY;
+  private isBackHome = false;
   productItemType = ProductItemType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
@@ -89,9 +98,19 @@ export class OrderListPage implements OnInit, OnDestroy {
     private flightService: FlightService,
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
-    private LangService: LangService
+    private langService: LangService,
+    private natCtrl: NavController
   ) {}
-
+  canDeactivate() {
+    console.log("canDeactivate isbackhome=", this.isBackHome);
+    if (this.isBackHome) {
+      // this.natCtrl.navigateRoot("", { animated: true });
+      this.router.navigate([""]);
+      this.isBackHome = false;
+      return false;
+    }
+    return true;
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -809,6 +828,7 @@ export class OrderListPage implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
+        this.isBackHome = d.get("isBackHome") == "true";
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );
@@ -836,7 +856,7 @@ export class OrderListPage implements OnInit, OnDestroy {
         .filter((t) => t.value != ProductItemType.more && t.isDisplay)
         .map((t) => {
           const it = { ...t };
-          if (this.LangService.isEn) {
+          if (this.langService.isEn) {
             it.label = t.labelEn;
           } else {
             it["isActive"] = t.value == this.activeTab.value;
