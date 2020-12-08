@@ -1328,33 +1328,19 @@ export class FlightService {
   private getFlightSegments(r: FlightResultEntity) {
     console.log("getTotalFlySegments flyJourneys", r);
     const result: FlightSegmentEntity[] = [];
-    r.FlightSegments.forEach((seg) => {
-      seg.TakeoffTimeStamp = AppHelper.getDate(seg.TakeoffTime).getTime();
-      seg.ArrivalTimeStamp = AppHelper.getDate(seg.ArrivalTime).getTime();
-      seg.TakeoffShortTime = this.getHHmm(seg.TakeoffTime);
-      seg.ArrivalShortTime = this.getHHmm(seg.ArrivalTime);
-      if (seg.AirlineSrc) {
-        seg.AirlineSrc = seg.AirlineSrc.toLowerCase();
+    if (r.FlightSegments) {
+      for (const seg of r.FlightSegments) {
+        seg.TakeoffTimeStamp = AppHelper.getDate(seg.TakeoffTime).getTime();
+        seg.ArrivalTimeStamp = AppHelper.getDate(seg.ArrivalTime).getTime();
+        seg.TakeoffShortTime = this.getHHmm(seg.TakeoffTime);
+        seg.ArrivalShortTime = this.getHHmm(seg.ArrivalTime);
+        if (seg.AirlineSrc) {
+          seg.AirlineSrc = seg.AirlineSrc.toLowerCase();
+        }
+        seg.AddOneDayTip = this.addoneday(seg);
+        result.push({ ...seg });
       }
-      seg.AddOneDayTip = this.addoneday(seg);
-      // const fromCity =
-      //   this.allLocalAirports &&
-      //   this.allLocalAirports.length &&
-      //   this.allLocalAirports.find((c) => c.Code == fj.FromCity);
-      // if (fromCity) {
-      //   seg.FromCity = fromCity;
-      //   seg.FromCityName = fromCity.CityName;
-      // }
-      // const toCity =
-      //   this.allLocalAirports &&
-      //   this.allLocalAirports.length &&
-      //   this.allLocalAirports.find((c) => c.Code == fj.ToCity);
-      // if (toCity) {
-      //   seg.ToCity = toCity;
-      //   seg.FromCityName = fromCity.CityName;
-      // }
-      result.push({ ...seg });
-    });
+    }
     console.log("getTotalFlySegments", result);
     return result;
   }
