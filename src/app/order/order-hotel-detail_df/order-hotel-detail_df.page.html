@@ -52,8 +52,8 @@
                   {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}
                   &nbsp;至&nbsp;
                   {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
+                  &nbsp;{{orderHotel.countDay}}晚
                 </ion-text>
-                <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
               </ion-col>
             </ion-row>
             <ion-row>
@@ -64,7 +64,7 @@
                 {{orderHotel.CheckinTime?.replace("T"," ")?.substring(0,10)}}
                 &nbsp;至&nbsp;
                 {{orderHotel.CheckoutTime?.replace("T"," ")?.substring(0,10)}}
-                <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
+                &nbsp;{{orderHotel.countDay}}晚
               </ion-col>
             </ion-row>
             <ion-row>

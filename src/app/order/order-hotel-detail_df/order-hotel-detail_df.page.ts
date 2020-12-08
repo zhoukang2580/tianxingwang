@@ -201,24 +201,7 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
     }
     return amount;
   }
-  get totalFlyDays() {
-    if (
-      this.searchHotelModel &&
-      this.searchHotelModel.checkInDate &&
-      this.searchHotelModel.checkOutDate
-    ) {
-      const nums = Math.abs(
-        this.calendarService.diff(
-          this.searchHotelModel.checkOutDate,
-          this.searchHotelModel.checkInDate,
-          "days"
-        )
-      );
-
-      return nums <= 0 ? 1 : nums;
-    }
-    return 0;
-  }
+  
   private initTicketsTripsInsurance() {
     if (
       !this.orderDetail ||
