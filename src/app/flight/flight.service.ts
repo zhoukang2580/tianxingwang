@@ -1151,30 +1151,8 @@ export class FlightService {
   }
   async initFlightSegmentCabins(s: FlightSegmentEntity) {
     try {
-      const detail = await this.getFlightSegmentDetail(s);
-      if (detail && detail.FlightSegments) {
-        // const seg = detail.FlightSegments.find((it) => it.Number == s.Number);
-        s.Cabins = detail.FlightFares as any;
-        if (this.flightResult) {
-          const r = this.flightResult;
-          if (r.FlightSegments) {
-            for (const seg of r.FlightSegments) {
-              if (seg.Number == s.Number) {
-                seg.Cabins = s.Cabins;
-                if (detail.FlightSegments) {
-                  const detailSeg = detail.FlightSegments.find(
-                    (itm) => itm.Number == seg.Number
-                  );
-                  if (detailSeg) {
-                    console.log("加载差标前，替换更低加");
-                    seg.LowestFare = detailSeg.LowestFare;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      const result = await this.getFlightSegmentDetail(s);
+      this.replaceOldFlightSegmentInfo(result, s);
     } catch (e) {
       console.error(e);
     }
@@ -1183,7 +1161,7 @@ export class FlightService {
     await this.loadPolicyedFlightsAsync(this.flightResult);
     return this.policyFlights;
   }
-  async getFlightSegmentDetail(s: FlightSegmentEntity) {
+  private async getFlightSegmentDetail(s: FlightSegmentEntity) {
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Detail`;
     req.Version = "2.0";
@@ -1201,19 +1179,38 @@ export class FlightService {
     if (req.Language) {
       req.Data.Lang = req.Language;
     }
-    const result = await this.apiService.getPromiseData<FlightResultEntity>(
-      req
-    );
+    return this.apiService.getPromiseData<FlightResultEntity>(req);
+  }
+  private replaceOldFlightSegmentInfo(
+    result: FlightResultEntity,
+    curSelectedSeg: FlightSegmentEntity
+  ) {
+    const oldSeg = curSelectedSeg;
     if (result && result.FlightSegments) {
+    }
+    if (
+      this.flightResult &&
+      this.flightResult.FlightSegments &&
+      result &&
+      result.FlightSegments
+    ) {
+      const one = this.flightResult.FlightSegments.find(
+        (it) => it.Number == oldSeg.Number
+      );
       // 替换最低价
-      const seg = result.FlightSegments.find((it) => it.Number == s.Number);
-      if (seg) {
-        s.LowestFare = seg.LowestFare;
-        s.Cabins = result.FlightFares as any;
-        s.Tax = seg.Tax;
+      const newSeg = result.FlightSegments.find((it) => it.Number == oldSeg.Number);
+      if (newSeg) {
+        oldSeg.LowestFare = newSeg.LowestFare;
+        oldSeg.Cabins = result.FlightFares as any;
+        oldSeg.Tax = newSeg.Tax;
+      }
+      if (one) {
+        console.log("替换信息");
+        one.Cabins = oldSeg.Cabins;
+        one.Tax = oldSeg.Tax;
+        one.LowestFare = oldSeg.LowestFare;
       }
     }
-    return result;
   }
   private async getPolicyflightsAsync(
     flightResult: FlightResultEntity,
