@@ -546,7 +546,7 @@ export class HotelService {
         this.localHotelCities &&
         this.localHotelCities.length
       ) {
-        console.log("locals", this.localHotelCities);
+        // console.log("locals", this.localHotelCities);
         console.log("locals 广元", this.localHotelCities.find(it=>it.Name=='广元'));
         return this.localHotelCities;
       }
@@ -923,6 +923,7 @@ export class HotelService {
     req.Data = {
       LastUpdateTime: lastUpdateTime,
     };
+    req.IsShowLoading=true;
     return this.apiService.getPromiseData<{
       Trafficlines: TrafficlineEntity[];
       // HotelCities: TrafficlineEntity[];
