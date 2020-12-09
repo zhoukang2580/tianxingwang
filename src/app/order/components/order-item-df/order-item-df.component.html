@@ -21,7 +21,7 @@
                       {{trip.FlightNumber}}
                     </span>
                     <div>
-                      {{trip.FromCityName}}——{{trip.ToCityName}}
+                      {{trip.FromCityName}}—{{trip.ToCityName}}
                     </div>
                   </div>
               </div>
@@ -44,7 +44,7 @@
         </ng-container>
       </ng-container>
       <div class="item" style="display: flex; align-items: center;">
-        <div [style.align-self]='order["checkPay"]?"center":""'>应付</div>
+        <div [style.align-self]='order["checkPay"]?"center":""'>应付金额</div>
         <div class="item-tail">
           <ion-text color='danger' class="ion-text-nowrap">
             <ion-text>￥{{order.TotalAmount}}</ion-text>
