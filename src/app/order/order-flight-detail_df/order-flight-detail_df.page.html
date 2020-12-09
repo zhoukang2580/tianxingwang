@@ -5,9 +5,9 @@
     </ion-buttons>
     <ion-title></ion-title>
   </ion-toolbar>
-  <div class="conter" *ngFor="let ticket of orderDetail?.Order?.OrderTrainTickets">
+  <div class="conter" *ngFor="let flightTicket of orderDetail?.Order?.OrderFlightTickets">
     <div><img src="assets/images/success.png" alt=""></div>
-    <div class="status">{{ticket?.StatusName}}</div>
+    <div class="status">{{flightTicket?.StatusName}}</div>
   </div>
 </ion-header>
 <ion-content>
@@ -103,73 +103,6 @@
                       (click)='isShowDetail(flightTicket,$event)' [class.show]='flightTicket["isShowExplain"]'>
                       {{flightTicket.Explain?.split("\\n").join("")}}</p>
                   </ion-col>
-                </ion-row>
-              </ng-container>
-              <!-- 旅客信息 -->
-              <ng-container *ngIf='getTicketPassenger(flightTicket) as p'>
-                <ion-item-divider class="title-divider">
-                    旅客信息
-                </ion-item-divider>
-                <ion-row>
-                  <ion-col size='3'>旅客姓名</ion-col>
-                  <ion-col>
-                    {{p.Name}}
-                    <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span>
-                  </ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size='3'>证件号码</ion-col>
-                  <ion-col>{{p.CredentialsNumber}} {{p.CredentialsTypeName}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size='3'>联系电话</ion-col>
-                  <ion-col>{{p.Mobile}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size='3'>联系邮箱</ion-col>
-                  <ion-col>{{p.Email}}</ion-col>
-                </ion-row>
-                <ng-container *ngIf='getPassengerCostOrgInfo(flightTicket) as info'>
-                  <ion-row>
-                    <ion-col size='3'>成本中心</ion-col>
-                    <ion-col>
-                      {{info.CostCenterCode}}-{{info.CostCenterName}}
-                    </ion-col>
-                  </ion-row>
-                  <ion-row>
-                    <ion-col size='3'>组织架构</ion-col>
-                    <ion-col>{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col>
-                  </ion-row>
-                  <ion-row>
-                    <ion-col size='3'>费用类别</ion-col>
-                    <ion-col>{{flightTicket.VariablesJsonObj?.ExpenseType}}</ion-col>
-                  </ion-row>
-                  <ion-row>
-                    <ion-col size='3'>违规内容</ion-col>
-                    <ion-col *ngIf="info.IllegalPolicy">{{info.IllegalPolicy}}</ion-col>
-                  </ion-row>
-                  <ion-row>
-                    <ion-col size='3'>违规原因</ion-col>
-                    <ion-col *ngIf="info.IllegalReason">{{info.IllegalReason}}</ion-col>
-                  </ion-row>
-                </ng-container>
-              </ng-container>
-              <!-- 联系信息 -->
-              <ion-item-divider *ngIf="orderDetail?.Order?.OrderLinkmans" class="title-divider">
-                联系人信息
-              </ion-item-divider>
-              <ng-container *ngFor="let man of orderDetail?.Order?.OrderLinkmans">
-                <ion-row>
-                  <ion-col size='3'>姓名</ion-col>
-                  <ion-col>{{man.Name}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size='3'>邮箱</ion-col>
-                  <ion-col>{{man.Email}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size='3'>电话</ion-col>
-                  <ion-col>{{man.Mobile}}</ion-col>
                 </ion-row>
               </ng-container>
               <div class="getHeight">
@@ -286,6 +219,74 @@
                   </ion-col>
                 </ion-row>
               </div>
+              <!-- 旅客信息 -->
+              <ng-container *ngIf='getTicketPassenger(flightTicket) as p'>
+                <ion-item-divider class="title-divider">
+                    旅客信息
+                </ion-item-divider>
+                <ion-row>
+                  <ion-col size='3'>旅客姓名</ion-col>
+                  <ion-col>
+                    {{p.Name}}
+                    <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>证件号码</ion-col>
+                  <ion-col>{{p.CredentialsNumber}} {{p.CredentialsTypeName}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>联系电话</ion-col>
+                  <ion-col>{{p.Mobile}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>联系邮箱</ion-col>
+                  <ion-col>{{p.Email}}</ion-col>
+                </ion-row>
+                <ng-container *ngIf='getPassengerCostOrgInfo(flightTicket) as info'>
+                  <ion-row>
+                    <ion-col size='3'>成本中心</ion-col>
+                    <ion-col>
+                      {{info.CostCenterCode}}-{{info.CostCenterName}}
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>组织架构</ion-col>
+                    <ion-col>{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>费用类别</ion-col>
+                    <ion-col>{{flightTicket.VariablesJsonObj?.ExpenseType}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>违规内容</ion-col>
+                    <ion-col *ngIf="info.IllegalPolicy">{{info.IllegalPolicy}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>违规原因</ion-col>
+                    <ion-col *ngIf="info.IllegalReason">{{info.IllegalReason}}</ion-col>
+                  </ion-row>
+                </ng-container>
+              </ng-container>
+              <!-- 联系信息 -->
+              <ion-item-divider *ngIf="orderDetail?.Order?.OrderLinkmans" class="title-divider">
+                联系人信息
+              </ion-item-divider>
+              <ng-container *ngFor="let man of orderDetail?.Order?.OrderLinkmans">
+                <ion-row>
+                  <ion-col size='3'>姓名</ion-col>
+                  <ion-col>{{man.Name}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>邮箱</ion-col>
+                  <ion-col>{{man.Email}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size='3'>电话</ion-col>
+                  <ion-col>{{man.Mobile}}</ion-col>
+                </ion-row>
+              </ng-container>
+              
               <div class="getHeight ion-padding-bottom" *ngFor="let ticket of tikectId2OriginalTickets[flightTicket.Id]">
                 <ng-container *ngIf="ticket.isShowOriginalTicket" @flyInOut>
                   <ion-row>
@@ -508,104 +509,105 @@
                   </ion-row>
                 </ng-container>
               </div>
-            </div>
-          </div>
-        </ng-container>
-        <div>
-          <div class="ion-item-divider">
-            订单信息
-          </div>
-          <div>
-            <ion-row>
-              <ion-col size='3'>订单编号</ion-col>
-              <ion-col>{{orderDetail.Order.Id}}</ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col size='3'>订单状态</ion-col>
-              <ion-col>{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" : orderDetail.Order.StatusName}}
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col size='3'>付款方式</ion-col>
-              <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col size='3'>完成时间</ion-col>
-              <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
-            </ion-row>
-            <ion-row (click)='showPricePopover()' *ngIf='orderDetail.Order?.Type=="Flight"'>
-              <ion-col size='3'>应付金额</ion-col>
-              <ion-col>
+              <div>
+                <div class="ion-item-divider">
+                  订单信息
+                </div>
                 <div>
-                  <ion-text color="danger">￥{{orderDetail.Order.TotalAmount}}
-                  </ion-text>
-                  <ion-text *ngIf='orderDetail.insuranceAmount' color="danger">(含保险{{orderDetail.insuranceAmount}})</ion-text>
-                  <ion-text color="secondary" style="font-size: 0.7rem;">应付明细</ion-text>
-                </div>
-              </ion-col>
-              <!-- <ion-col size='2'>
-                <ion-icon name="chevron-forward-outline" mode='ios'>
-                </ion-icon>
-              </ion-col> -->
-            </ion-row>
-            <ng-container>
-              <ng-container *ngIf='tmc?.IsShowServiceFee'>
-                <ion-row *ngFor='let orderHotel of orderDetail.Order.OrderHotels'>
-                  <ion-col size='3'>
-                    <ng-container *ngIf='orderDetail.Order.OrderHotels.length>1'>
-                      <strong *ngIf='orderHotel.HotelName as n'>
-                        {{n.length>10?n.substr(0,10)+"...":n}}
-                      </strong>
+                  <ion-row>
+                    <ion-col size='3'>订单编号</ion-col>
+                    <ion-col>{{orderDetail.Order.Id}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>订单状态</ion-col>
+                    <ion-col>{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" : orderDetail.Order.StatusName}}
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>付款方式</ion-col>
+                    <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3'>完成时间</ion-col>
+                    <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
+                  </ion-row>
+                  <ion-row (click)='showPricePopover()' *ngIf='orderDetail.Order?.Type=="Flight"'>
+                    <ion-col size='3'>应付金额</ion-col>
+                    <ion-col>
+                      <div>
+                        <ion-text color="danger">￥{{orderDetail.Order.TotalAmount}}
+                        </ion-text>
+                        <ion-text *ngIf='orderDetail.insuranceAmount' color="danger">(含保险{{orderDetail.insuranceAmount}})</ion-text>
+                        <ion-text color="secondary" style="font-size: 0.7rem;">应付明细</ion-text>
+                      </div>
+                    </ion-col>
+                    <!-- <ion-col size='2'>
+                      <ion-icon name="chevron-forward-outline" mode='ios'>
+                      </ion-icon>
+                    </ion-col> -->
+                  </ion-row>
+                  <ng-container>
+                    <ng-container *ngIf='tmc?.IsShowServiceFee'>
+                      <ion-row *ngFor='let orderHotel of orderDetail.Order.OrderHotels'>
+                        <ion-col size='3'>
+                          <ng-container *ngIf='orderDetail.Order.OrderHotels.length>1'>
+                            <strong *ngIf='orderHotel.HotelName as n'>
+                              {{n.length>10?n.substr(0,10)+"...":n}}
+                            </strong>
+                          </ng-container>
+                          服务费:
+                        </ion-col>
+                        <ion-col>{{getHotelServiceFee(orderHotel.Key)}}
+                        </ion-col>
+                      </ion-row>
                     </ng-container>
-                    服务费:
-                  </ion-col>
-                  <ion-col>{{getHotelServiceFee(orderHotel.Key)}}
-                  </ion-col>
-                </ion-row>
-              </ng-container>
-            </ng-container>
-            <ion-row>
-              <ion-col size='3'>已付金额</ion-col>
-              <ion-col>{{orderDetail.Order.PayAmount}}</ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col size='3' *ngIf="orderDetail?.Order?.OrderNumbers">外部编号</ion-col>
-              <ion-col>
-                <div *ngFor='let n of orderDetail?.Order?.OrderNumbers'>
-                  <span *ngIf='n.Tag=="TmcOutNumber"'>{{n.Name}}:{{n.Number}}</span>
+                  </ng-container>
+                  <ion-row>
+                    <ion-col size='3'>已付金额</ion-col>
+                    <ion-col>{{orderDetail.Order.PayAmount}}</ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size='3' *ngIf="orderDetail?.Order?.OrderNumbers">外部编号</ion-col>
+                    <ion-col>
+                      <div *ngFor='let n of orderDetail?.Order?.OrderNumbers'>
+                        <span *ngIf='n.Tag=="TmcOutNumber"'>{{n.Name}}:{{n.Number}}</span>
+                      </div>
+                    </ion-col>
+                  </ion-row>
                 </div>
-              </ion-col>
-            </ion-row>
-          </div>
-          <div>
-            <ion-item-divider *ngIf="orderDetail.Histories?.length>0" class="title-divider">审批记录</ion-item-divider>
-          </div>
-          <div>
-            <div *ngFor='let history of orderDetail.Histories'>
-              <div class='approval-info'>
-                <ion-row>
-                  <ion-col size='4'>审批人:</ion-col>
-                  <ion-col>{{history.Account?.RealName}} <span
-                      *ngIf='history.StatusName'>({{history.StatusName}})</span></ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size='4'>发起审批时间:</ion-col>
-                  <ion-col>{{history?.InsertDateTime}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size='4'>审批截止时间:</ion-col>
-                  <ion-col>{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col>
-                </ion-row>
-                <ion-row *ngIf="history.Status==TaskStatusType.Passed||history.Status==TaskStatusType.Rejected">
-                  <ion-col size='4'>审批时间:</ion-col>
-                  <ion-col>
-                    {{history?.UpdateTime?.startsWith("0001")?"":history?.UpdateTime.replace("T"," ")?.substring(0,16)}}
-                  </ion-col>
-                </ion-row>
+                <div>
+                  <ion-item-divider *ngIf="orderDetail.Histories?.length>0" class="title-divider">审批记录</ion-item-divider>
+                </div>
+                <div>
+                  <div *ngFor='let history of orderDetail.Histories'>
+                    <div class='approval-info'>
+                      <ion-row>
+                        <ion-col size='4'>审批人:</ion-col>
+                        <ion-col>{{history.Account?.RealName}} <span
+                            *ngIf='history.StatusName'>({{history.StatusName}})</span></ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size='4'>发起审批时间:</ion-col>
+                        <ion-col>{{history?.InsertDateTime}}</ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size='4'>审批截止时间:</ion-col>
+                        <ion-col>{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col>
+                      </ion-row>
+                      <ion-row *ngIf="history.Status==TaskStatusType.Passed||history.Status==TaskStatusType.Rejected">
+                        <ion-col size='4'>审批时间:</ion-col>
+                        <ion-col>
+                          {{history?.UpdateTime?.startsWith("0001")?"":history?.UpdateTime.replace("T"," ")?.substring(0,16)}}
+                        </ion-col>
+                      </ion-row>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </ng-container>
+        
       </div>
     <!-- </app-swiper-slide-content> -->
   </ng-container>
