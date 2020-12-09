@@ -1,8 +1,3 @@
-import { BackButtonComponent } from "./../../components/back-button/back-button.component";
-import { RefresherComponent } from "src/app/components/refresher";
-import { ActivatedRoute, Router } from "@angular/router";
-import { HotelService } from "./../hotel.service";
-import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
 import {
   Component,
   OnInit,
@@ -14,19 +9,33 @@ import {
   QueryList,
   ElementRef,
 } from "@angular/core";
-import { NavController, IonInfiniteScroll, IonSearchbar, IonList, IonItemDivider, IonHeader, IonContent } from "@ionic/angular";
+import {
+  NavController,
+  IonInfiniteScroll,
+  IonSearchbar,
+  IonList,
+  IonItemDivider,
+  IonHeader,
+  IonContent,
+} from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
-import { AppHelper } from 'src/app/appHelper';
+import { AppHelper } from "src/app/appHelper";
+import { Router, ActivatedRoute } from "@angular/router";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { RefresherComponent } from "src/app/components/refresher";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
+import { HotelService } from "../../hotel.service";
 const HISTORY_HOTEL_CITIES = "history_hotel_cities";
 @Component({
   selector: "app-search-city-df",
-  templateUrl: "./hotel-search-df.page.html",
-  styleUrls: ["./hotel-search-df.page.scss"],
+  templateUrl: "./hotel-search-df.component.html",
+  styleUrls: ["./hotel-search-df.component.scss"],
 })
-export class HotelSearchDfPage implements OnInit, AfterViewInit, OnDestroy {
+export class HotelSearchDfComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   private selectedCity: TrafficlineEntity;
   private subscriptions: Subscription[] = [];
   private pageIndex = 0;
@@ -68,15 +77,17 @@ export class HotelSearchDfPage implements OnInit, AfterViewInit, OnDestroy {
     private hotelService: HotelService,
     private storage: Storage,
     route: ActivatedRoute,
-    private ngZone: NgZone,
-    private navCtrl: NavController,
     langService: LangService
   ) {
-    this.subscriptions.push(route.queryParamMap.subscribe((_) => { }));
+    this.subscriptions.push(route.queryParamMap.subscribe((_) => {}));
     this.isEn = langService.isEn;
   }
   back() {
-    this.navCtrl.back();
+    return AppHelper.modalController.getTop().then((t) => {
+      if (t) {
+        t.dismiss(this.selectedCity);
+      }
+    });
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => {
@@ -89,7 +100,6 @@ export class HotelSearchDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.historyCities = await this.storage.get(HISTORY_HOTEL_CITIES);
     }
   }
-
 
   onShowHistory() {
     let his = this.historyCities;
@@ -153,10 +163,10 @@ export class HotelSearchDfPage implements OnInit, AfterViewInit, OnDestroy {
         await this.hotelService.getConditions(true);
       }
     }
-    setTimeout(() => {
-      // this.back();
-    this.router.navigate([AppHelper.getRoutePath("search-hotel_df")]);
-    }, 200);
+    await this.back();
+    // this.router.navigate([AppHelper.getRoutePath("search-hotel")]);
+    // setTimeout(() => {
+    // }, 200);
   }
   private async cacheHistories(historyCities: TrafficlineEntity[]) {
     if (historyCities && historyCities.length) {
@@ -251,8 +261,7 @@ export class HotelSearchDfPage implements OnInit, AfterViewInit, OnDestroy {
           .filter((it) => it.IsHot)
           .concat(this.cities.filter((it) => !it.IsHot))
           .sort((a, b) => b.Sequence - a.Sequence);
-        this.hotCities = this.cities
-          .filter((it) => it.IsHot);
+        this.hotCities = this.cities.filter((it) => it.IsHot);
         this.cities = this.cities.map((it) => {
           it.matchStr = this.searchKeys
             .filter((k) => !!it[k])
@@ -291,7 +300,8 @@ export class HotelSearchDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onCancle() {
-    console.log('取消');
+    this.selectedCity = null;
+    console.log("取消");
     this.back();
   }
 }

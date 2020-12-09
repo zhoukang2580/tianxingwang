@@ -14,12 +14,21 @@ import {
   QueryList,
   ElementRef,
 } from "@angular/core";
-import { NavController, IonInfiniteScroll, IonSearchbar, IonList, IonItemDivider, IonHeader, IonContent } from "@ionic/angular";
+import {
+  NavController,
+  IonInfiniteScroll,
+  IonSearchbar,
+  IonList,
+  IonItemDivider,
+  IonHeader,
+  IonContent,
+} from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
-import { AppHelper } from 'src/app/appHelper';
+import { AppHelper } from "src/app/appHelper";
+import { HotelSearchDfComponent } from "../components/hotel-search-df/hotel-search-df.component";
 const HISTORY_HOTEL_CITIES = "history_hotel_cities";
 @Component({
   selector: "app-hotel-city-df",
@@ -56,11 +65,13 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   filteredTotalCount = 0;
   isEn = false;
   isHot = false;
+  isSearch = false;
   @ViewChild(IonSearchbar) searchbar: IonSearchbar;
-  @ViewChild(RefresherComponent) refresher: RefresherComponent;
+  // @ViewChild("refresher1") refresher1: RefresherComponent;
+  @ViewChild("refresher2") searchRefresher: RefresherComponent;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
-  @ViewChild(IonContent, { static: true }) ionContent: IonContent;
+  @ViewChild("maincnt", { static: true }) ionContent: IonContent;
   @ViewChild(IonHeader) headerEle: IonHeader;
   @ViewChildren("letter") letterEles: QueryList<IonItemDivider>;
   constructor(
@@ -72,11 +83,14 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     private navCtrl: NavController,
     langService: LangService
   ) {
-    this.subscriptions.push(route.queryParamMap.subscribe((_) => { }));
+    this.subscriptions.push(route.queryParamMap.subscribe((_) => {}));
     this.isEn = langService.isEn;
   }
   back() {
     this.navCtrl.back();
+  }
+  onSearchPageBack() {
+    this.isSearch = false;
   }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => {
@@ -93,10 +107,10 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   private initLetterCitiesMap() {
     this.letterCitiesMap = {};
     if (this.cities && this.cities.length) {
-      this.cities.forEach(c => {
-        const citieLetter =  this.letterCitiesMap[c.FirstLetter];
+      this.cities.forEach((c) => {
+        const citieLetter = this.letterCitiesMap[c.FirstLetter];
         if (citieLetter) {
-          const city = citieLetter.find(it => it.Code == c.Code);
+          const city = citieLetter.find((it) => it.Code == c.Code);
           if (!city) {
             citieLetter.push(c);
           }
@@ -106,7 +120,7 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     this.letters = Object.keys(this.letterCitiesMap).sort();
-    console.log('letter', this.letterCitiesMap, this.letters, this.cityName);
+    console.log("letter", this.letterCitiesMap, this.letters, this.cityName);
   }
 
   onletter(item, evt?: CustomEvent) {
@@ -115,9 +129,9 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     try {
       const arr = this.letterEles.toArray();
-      const ele = arr.find(it => it['el'].getAttribute("letter") == item);
-      const rect = ele['el'].getBoundingClientRect();
-      const headerEle = this.headerEle['el'].clientHeight;
+      const ele = arr.find((it) => it["el"].getAttribute("letter") == item);
+      const rect = ele["el"].getBoundingClientRect();
+      const headerEle = this.headerEle["el"].clientHeight;
       console.log(item, rect, rect.top, rect.height, headerEle);
       let y = 0;
       y = rect.top - headerEle;
@@ -126,7 +140,6 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
       console.error(e);
     }
   }
-
 
   onShowHistory() {
     let his = this.historyCities;
@@ -195,7 +208,7 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
     }, 200);
   }
   private async cacheHistories(historyCities: TrafficlineEntity[]) {
-    console.log(historyCities, '前');
+    console.log(historyCities, "前");
     // historyCities = Array.from(new Set(historyCities));
     let array = [];
     const obj = {};
@@ -206,7 +219,7 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
         obj[historyCities[i].Code] = true;
       }
     }
-    console.log(array, '后');
+    console.log(array, "后");
     if (array && array.length) {
       array = array.slice(0, 20);
       await this.storage.set(HISTORY_HOTEL_CITIES, array);
@@ -299,8 +312,7 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
           .filter((it) => it.IsHot)
           .concat(this.cities.filter((it) => !it.IsHot))
           .sort((a, b) => b.Sequence - a.Sequence);
-        this.hotCities = this.cities
-          .filter((it) => it.IsHot);
+        this.hotCities = this.cities.filter((it) => it.IsHot);
         this.cities = this.cities.map((it) => {
           it.matchStr = this.searchKeys
             .filter((k) => !!it[k])
@@ -318,31 +330,114 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
         this.scroller.disabled = true;
       }
       // this.loadMore((this.vmKeyword || "").trim());
-      if (this.refresher) {
-        this.refresher.complete();
+      // if (this.refresher1) {
+      //   this.refresher1.complete();
+      // }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async onSearchPageLoadMore(kw: string = "") {
+    this.isLoading = true;
+    let cities = this.cities || [];
+    if (this.isHot) {
+      cities = cities.filter((it) => it.IsHot);
+    }
+    cities = cities.filter((it) => it.matchStr.includes(kw));
+    const arr = cities.slice(this.pageIndex * this.pageSize, this.pageSize);
+    if (arr.length) {
+      this.pageIndex++;
+      this.vmCities = this.vmCities.concat(
+        arr.map((it) => {
+          if (it.CityName) {
+            if (this.isEn) {
+              it.EnglishName =
+                it.Name == it.CityName
+                  ? it.Pinyin
+                  : `${it.Pinyin},${it.EnglishName}`;
+            }
+          }
+          if (it.Name) {
+            if (!this.isEn) {
+              if (it.Name == it.CityName) {
+                it.CityName = "";
+              }
+            }
+          }
+          return it;
+        })
+      );
+    }
+    console.log("vmCities", this.vmCities);
+    this.isLoading = false;
+    this.scroller.disabled = arr.length < this.pageSize;
+  }
+  async onSearchPageDoRefresh() {
+    try {
+      this.isSelect = true;
+      this.isLoading = true;
+      // this.historyCities = [];
+      this.hotCities = [];
+      this.vmCities = [];
+      this.cities = [];
+      this.cities = await this.hotelService.getHotelCityAsync();
+      if (this.cities) {
+        this.cities = this.cities
+          .filter((it) => it.IsHot)
+          .concat(this.cities.filter((it) => !it.IsHot))
+          .sort((a, b) => b.Sequence - a.Sequence);
+        this.hotCities = this.cities.filter((it) => it.IsHot);
+        this.cities = this.cities.map((it) => {
+          it.matchStr = this.searchKeys
+            .filter((k) => !!it[k])
+            .map((k) => it[k])
+            .map((s: string) => s.toLowerCase())
+            .join(",");
+          return it;
+        });
+      }
+      this.pageIndex = 0;
+      this.isHot = false;
+      if (this.scroller) {
+        this.scroller.disabled = true;
+      }
+      this.onSearchPageLoadMore((this.vmKeyword || "").trim());
+      if (this.searchRefresher) {
+        this.searchRefresher.complete();
       }
     } catch (e) {
       console.error(e);
     }
   }
   async doSearch() {
-    // const kw = (this.vmKeyword || "").trim();
-    // this.pageIndex = 0;
-    // this.isLoading = true;
-    // this.isSelect = false;
-    // this.vmCities = [];
-    // if (this.scroller) {
-    //   this.scroller.disabled = true;
-    // }
+    const kw = (this.vmKeyword || "").trim();
+    this.pageIndex = 0;
+    this.isLoading = true;
+    this.isSelect = false;
+    this.vmCities = [];
+    if (this.scroller) {
+      this.scroller.disabled = true;
+    }
     // if (kw == '') {
-    //   this.isSelect = true;
+    //   this.back();
     // }
-    // this.loadMore(kw);
-    this.router.navigate([AppHelper.getRoutePath("hotel-search-df")]);
+    this.onSearchPageLoadMore(kw);
   }
-
+  onToggleSearchPanel() {
+    this.isSearch = !this.isSearch;
+    if (this.isSearch) {
+      if (!this.vmCities || !this.vmCities.length) {
+        this.onSearchPageDoRefresh();
+      }
+    }
+  }
   async onDetete() {
-    const ok = await AppHelper.alert("确定清除历史记录吗?", true, "确定", "取消");
+    const ok = await AppHelper.alert(
+      "确定清除历史记录吗?",
+      true,
+      "确定",
+      "取消"
+    );
     if (ok == true) {
       console.log(this.historyCities);
       this.ishistory = false;
@@ -352,7 +447,8 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onCancle() {
-    console.log('取消')
-    this.back();
+    this.isSearch = false;
+    // console.log("取消");
+    // this.back();
   }
 }
