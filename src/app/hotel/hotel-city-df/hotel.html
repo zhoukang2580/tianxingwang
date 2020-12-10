@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
     <style>
         body {
             margin: 0;
@@ -21,8 +24,10 @@
             border: none;
             border-radius: 5px;
             position: fixed;
-            left: 0;
-            top: 0;
+            right: 0;
+            bottom: 6vh;
+            z-index: 99;
+
         }
     </style>
 </head>
@@ -34,11 +39,13 @@
         isShow = false;
         let allItems = [];
         let page;
+        const cities = window.cities;
+        let histories = [];
+        onToggle();
         function onToggle() {
             isShow = !isShow;
             openPage(isShow)
         }
-        const cities = window.cities;
         function openPage(open) {
             page = document.body.querySelector(".hotel-city-page-container");
             if (!page) {
@@ -50,21 +57,188 @@
                 page.classList.remove("show")
             }
         }
-        function initHistories(){
-            
-        }
-        function initHot(){
+        function getHistoryHtml(cities) {
+            const rowNums = 3;
+            const wrapper = document.createElement("div");
+            try {
+                wrapper.classList.add("hot-cities-wrapper");
+                wrapper.classList.add("history-cities-wrapper");
+                if (!cities || !cities.length) { return wrapper };
+                const header = document.createElement("div");
+                header.classList.add("header");
+                const label = document.createElement("label");
+                label.textContent = '历史记录';
+                header.append(label);
+                const rmicon = document.createElement("ion-icon");
+                rmicon.classList.add("icon");
+                rmicon.setAttribute("name", 'trash-outline');
+                rmicon.onclick = () => {
+                    onClearHistories();
+                }
+                header.append(rmicon);
+                wrapper.append(header);
+                const list = document.createElement("div");
+                const listWrapper = document.createElement("div");
+                listWrapper.classList.add("list-wrapper");
+                listWrapper.append(list);
+                list.classList.add("list");
+                wrapper.append(listWrapper)
+                cities.slice(0, 20).forEach(c => {
+                    const item = getHistoryOrHotItem(c, true);
+                    const label = document.createElement("label");
+                    label.textContent = c.Name;
+                    item.onclick = () => {
+                        onSelectCity(c);
+                    }
+                    list.append(item);
+                })
+                if (cities.length % rowNums != 0) {
+                    const len = cities.length % rowNums;
+                    const item = document.createElement('div');
+                    item.classList.add("empty-item");
+                    item.classList.add("b-item");
+                    item.style.visibility = 'collapse'
+                    for (let i = 0; i < len; i++) {
+                        list.append(item);
+                    }
+                }
+            } catch (e) {
+                console.error(e)
+            }
+            return wrapper;
 
+        }
+        function getHistoryOrHotItem(c, isHistory) {
+            const item = document.createElement("div");
+            item.classList.add("b-item");
+            item.textContent = c.Name;
+            item.setAttribute("CityCode", c.CityCode);
+            item.onclick = () => {
+                if (!isHistory) {
+                    onSelectCity(c);
+                }
+            }
+            return item;
+        }
+        function getHotHtml(cities) {
+            const rowNums = 3;
+            const wrapper = document.createElement("div");
+            try {
+                wrapper.classList.add("hot-cities-wrapper");
+                const header = document.createElement("div");
+                header.classList.add("header");
+                const label = document.createElement("label");
+                label.textContent = '热门城市';
+                header.append(label);
+                wrapper.append(header);
+                const list = document.createElement("div");
+                const listWrapper = document.createElement("div");
+                listWrapper.classList.add("list-wrapper");
+                listWrapper.append(list);
+                list.classList.add("list");
+                wrapper.append(listWrapper)
+                cities.forEach(c => {
+                    const item = getHistoryOrHotItem(c);
+                    const label = document.createElement("label");
+                    label.textContent = c.Name;
+                    item.onclick = () => {
+                        onSelectCity(c);
+                    }
+                    list.append(item);
+                })
+                if (cities.length % rowNums != 0) {
+                    const len = cities.length % rowNums;
+                    const item = document.createElement('div');
+                    item.classList.add("empty-item");
+                    item.classList.add("b-item");
+                    item.style.visibility = 'collapse'
+                    for (let i = 0; i < len; i++) {
+                        list.append(item);
+                    }
+                }
+            } catch (e) {
+                console.error(e)
+            }
+            return wrapper;
+        }
+        function onShowInHistory(c) {
+            try {
+                if (page) {
+                    let wrapper = getHistoryWrapperEl();
+                    if (!wrapper) {
+                        wrapper = getHistoryHtml();
+                        page.insertBefore(wrapper, page.querySelector(".hot-cities-wrapper"))
+                    }
+                    const items = wrapper.querySelectorAll(".b-item");
+                    const list = wrapper.querySelector(".list");
+                    if (!histories || !histories.length) {
+                        histories = [c];
+                    }
+                    if (histories.length >= 12) {
+                        histories.pop();
+                    } else if (!histories.find(it => it.Code == c.Code)) {
+                        histories.unshift(c);
+                    }
+                    const item = getHistoryOrHotItem(c);
+                    item.setAttribute("history", 'isHistory');
+                    if (wrapper) {
+                        if (items.length) {
+                            for (let i = 0; i < items.length; i++) {
+                                const one = items.item(i);
+                                if (one.getAttribute("CityCode") == c.CityCode) {
+                                    list.insertBefore(one, list.firstChild);
+                                    return;
+                                }
+                            }
+                            if (items && items.length >= 12) {
+                                if (list) {
+                                    list.removeChild(items.item(items.length - 1))
+                                }
+                            }
+                            list.insertBefore(item, list.firstChild);
+                        } else {
+                            page.removeChild(wrapper);
+                            wrapper = getHistoryHtml(histories);
+                            page.insertBefore(wrapper, page.querySelector(".hot-cities-wrapper"))
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error(e)
+            }
+        }
+        function getHistoryWrapperEl() {
+            return page && page.querySelector(".history-cities-wrapper");
+        }
+        function onSelectCity(c) {
+            onShowInHistory(c);
+            console.log(c);
+        }
+        function onClearHistories() {
+            if (page) {
+                const history = getHistoryWrapperEl();
+                histories = [];
+                if (history) {
+                    if (history.firstChild) {
+                        history.removeChild(history.firstChild);
+                    }
+                    page.removeChild(history)
+                }
+            }
         }
         function getHtml() {
             const cmap = getLeter2Cities(cities);
-            const list = getList(cmap);
             const page = document.createElement("div");
-            page.classList.add("hotel-city-page-container")
-            page.append(list);
-            document.body.append(page);
+            page.classList.add("hotel-city-page-container");
+            const hotHtml = getHotHtml(cities.filter(it => it.IsHot));
+            const historyHtml = getHistoryHtml();
+            page.append(historyHtml);
+            page.append(hotHtml);
             const letterNavs = getLetterNavs(cmap);
             page.append(letterNavs)
+            const list = getList(cmap);
+            page.append(list);
+            document.body.append(page);
             return page;
         }
         function getLetterNavs(cmap) {
@@ -90,8 +264,8 @@
                         const headerEle = 0
                         let y = 0;
                         y = rect.top - headerEle;
-                        const ul=page.querySelector(".list");
-                        ul.scrollBy(0,y)
+                        const ul = page;
+                        ul.scrollBy(0, y)
                     } catch (e) {
                         console.error(e);
                     }
@@ -103,6 +277,7 @@
             const item = document.createElement("li");
             item.classList.add("item");
             item.onclick = (evt) => {
+                onSelectCity(c)
                 if (allItems) {
                     for (let i = 0; i < allItems.length; i++) {
                         const it = allItems[i];
