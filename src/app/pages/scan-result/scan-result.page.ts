@@ -12,13 +12,15 @@ import { AppHelper } from "src/app/appHelper";
 import { HttpClient } from "@angular/common/http";
 import { map, switchMap, finalize } from "rxjs/operators";
 import { RequestEntity } from "src/app/services/api/Request.entity";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 
 @Component({
   selector: "app-scan-result",
   templateUrl: "./scan-result.page.html",
   styleUrls: ["./scan-result.page.scss"],
 })
-export class ScanResultPage implements OnInit, OnDestroy {
+export class ScanResultPage
+  implements OnInit, OnDestroy, CanComponentDeactivate {
   confirmText: string = LanguageHelper.getConfirmTip();
   cancelText: string = LanguageHelper.getCancelTip();
   description: string;
@@ -40,6 +42,10 @@ export class ScanResultPage implements OnInit, OnDestroy {
   get iframeSrc() {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
   }
+  canDeactivate() {
+    this.back();
+    return false;
+  }
   constructor(
     private sanitizer: DomSanitizer,
     private router: Router,
@@ -59,7 +65,7 @@ export class ScanResultPage implements OnInit, OnDestroy {
     this.identitySubscription.unsubscribe();
   }
   back() {
-    this.navCtrl.pop();
+    this.navCtrl.navigateRoot("");
   }
   ngOnInit() {
     this.identitySubscription = this.identityService

@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <app-back-button >
+      <app-back-button [backFn]='back.bind(this)'>
       </app-back-button>
     </ion-buttons>
     <ion-title>扫码结果</ion-title>
@@ -23,6 +23,6 @@
     <iframe [src]="iframeSrc" frameborder="0"></iframe>
   </div>
   <ion-item lines='none' class='ion-padding' *ngIf='isShowText'>
-    <ion-textarea color='dark'  readonly value="{{result}}"></ion-textarea>
+    <ion-textarea color='dark' rows='20'  readonly value="{{result}}"></ion-textarea>
   </ion-item>
 </ion-content>
