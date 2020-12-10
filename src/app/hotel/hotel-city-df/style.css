@@ -1,0 +1,60 @@
+.hotel-city-page-container {
+  transform: translate3d(100%, 0, 0);
+  transition: all ease-in-out 200ms;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
+  width: 100%;
+}
+.hotel-city-page-container.show {
+  transform: translate3d(0, 0, 0);
+}
+.hotel-city-page-container .list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  overflow-x: hidden;
+}
+.hotel-city-page-container .item {
+  margin: 0;
+  padding: 0.5em 1em;
+}
+.hotel-city-page-container .list .item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+.hotel-city-page-container .list .item.selected {
+  color: royalblue;
+}
+.hotel-city-page-container .list .item label {
+  font-size: 14px;
+}
+.hotel-city-page-container .list .letter-header {
+  font-weight: bolder;
+  background-color: #e6e6e6;
+  height: 20px;
+  padding: 0 0.6em;
+}
+.hotel-city-page-container .letters-wrapper {
+  position: absolute;
+  right: 0;
+  top: -2em;
+  width: 2em;
+}
+.hotel-city-page-container .letter-navs {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  background: transparent;
+  position: absolute;
+  right: 0.5em;
+  bottom: 10vh;
+  z-index: 99;
+  top: 10vh;
+}
+.hotel-city-page-container .letter-navs .nav-letter {
+  padding: 0.15em 0.5em;
+}

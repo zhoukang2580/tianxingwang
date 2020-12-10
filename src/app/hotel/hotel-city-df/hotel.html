@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        button {
+            padding: .5em 1em;
+            color: white;
+            background-color: tomato;
+            border: none;
+            border-radius: 5px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <button onclick="onToggle()">显示/隐藏</button>
+    <script src="mockcities.js"></script>
+    <script>
+        isShow = false;
+        let allItems = [];
+        let page;
+        function onToggle() {
+            isShow = !isShow;
+            openPage(isShow)
+        }
+        const cities = window.cities;
+        function openPage(open) {
+            page = document.body.querySelector(".hotel-city-page-container");
+            if (!page) {
+                page = getHtml();
+            }
+            if (open) {
+                page.classList.add("show")
+            } else {
+                page.classList.remove("show")
+            }
+        }
+        function initHistories(){
+            
+        }
+        function initHot(){
+
+        }
+        function getHtml() {
+            const cmap = getLeter2Cities(cities);
+            const list = getList(cmap);
+            const page = document.createElement("div");
+            page.classList.add("hotel-city-page-container")
+            page.append(list);
+            document.body.append(page);
+            const letterNavs = getLetterNavs(cmap);
+            page.append(letterNavs)
+            return page;
+        }
+        function getLetterNavs(cmap) {
+            const letters = Object.keys(cmap);
+            letters.sort();
+            const letterDiv = document.createElement("div");
+            const divwrapper = document.createElement("div");
+            divwrapper.classList.add("letters-wrapper")
+            letterDiv.classList.add("letter-navs");
+            divwrapper.append(letterDiv);
+            letters.forEach(l => {
+                const li = document.createElement("div");
+                li.classList.add("nav-letter")
+                li.textContent = l;
+                letterDiv.append(li);
+                li.onclick = (evt) => {
+                    if (evt) {
+                        evt.stopPropagation();
+                    }
+                    try {
+                        const el = page.querySelector(`[letter='${l}']`);
+                        const rect = el.getBoundingClientRect();
+                        const headerEle = 0
+                        let y = 0;
+                        y = rect.top - headerEle;
+                        const ul=page.querySelector(".list");
+                        ul.scrollBy(0,y)
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            })
+            return divwrapper;
+        }
+        function getItem(c) {
+            const item = document.createElement("li");
+            item.classList.add("item");
+            item.onclick = (evt) => {
+                if (allItems) {
+                    for (let i = 0; i < allItems.length; i++) {
+                        const it = allItems[i];
+                        it.setAttribute("selected", "false");
+                        it.classList.remove("selected");
+                    }
+                }
+                const selected = item.getAttribute('selected') == 'true';
+                if (selected) {
+                    item.setAttribute("selected", "false")
+                    item.classList.remove("selected");
+                } else {
+                    item.setAttribute("selected", 'true')
+                    item.classList.add("selected");
+                }
+            }
+            const label = document.createElement("label");
+            label.textContent = c.Name;
+            item.append(label);
+            if (!allItems.find(it => it == item)) {
+                allItems.push(item)
+            }
+            return item;
+        }
+        function getLeter2Cities(cities) {
+            const cmap = {};
+            if (cities) {
+                cities.forEach(c => {
+                    const arr = cmap[c.FirstLetter];
+                    if (arr) {
+                        if (!arr.find(it => it.Code == c.Code)) { arr.push(c) }
+                    } else {
+                        cmap[c.FirstLetter] = [c];
+                    }
+                })
+            }
+            return cmap;
+        }
+        function getLetterHeader(l) {
+            const li = document.createElement("li");
+            li.classList.add('letter-header');
+            li.setAttribute("letter", l);
+            const label = document.createElement("label");
+            label.textContent = l;
+            li.append(label);
+            return li;
+        }
+        function getList(cmap) {
+            const list = document.createElement("ul");
+            list.classList.add("list")
+            if (cmap) {
+                const letters = Object.keys(cmap);
+                letters.sort();
+                if (letters && letters.length) {
+                    letters.forEach(l => {
+                        const letterHeader = getLetterHeader(l);
+                        list.append(letterHeader);
+                        const arr = cmap[l];
+                        if (arr) {
+                            arr.forEach(c => {
+                                const item = getItem(c);
+                                list.append(item);
+                            })
+                        }
+                    })
+                }
+            }
+            return list;
+        }
+    </script>
+</body>
+
+</html>

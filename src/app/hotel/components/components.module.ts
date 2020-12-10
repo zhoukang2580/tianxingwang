@@ -1,4 +1,3 @@
-import { HotelOutNumberComponent } from "./hotel-outnumber/hotel-outnumber.component";
 import { AppComponentsModule } from "./../../components/appcomponents.module";
 import { AppDirectivesModule } from "./../../directives/directives.module";
 import { HotelListItemComponent } from "./hotel-list-item/hotel-list-item.component";
@@ -23,9 +22,11 @@ import { OverHotelComponent } from "./over-hotel/over-hotel.component";
 import { RoomShowItemEnComponent } from "./room-show-item_en/room-show-item_en.component";
 import { RoomPlanItemEnComponent } from "./room-plan-item_en/room-plan-item_en.component";
 import { HotelStarPriceEnComponent } from "./hotel-starprice_en/hotel-starprice_en.component";
-import { HotelAddcontactsCompComponent } from "./hotel-addcontacts-comp/hotel-addcontacts-comp.component";
-import { ShowFreebookTipComponent } from './show-freebook-tip/show-freebook-tip.component';
 import { RoomPlanItemDfComponent } from './room-plan-item-df/room-plan-item-df.component';
+import { HotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hotel-addcontacts-comp.component';
+import { ShowFreebookTipComponent } from './show-freebook-tip/show-freebook-tip.component';
+import { HotelSearchDfComponent } from './hotel-search-df/hotel-search-df.component';
+import { HotelOutNumberComponent } from './hotel-outnumber/hotel-outnumber.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { RoomPlanItemDfComponent } from './room-plan-item-df/room-plan-item-df.c
     QueryTabComponent,
     RecommendRankComponent,
     HotelFilterComponent,
+    HotelSearchDfComponent,
     HotelStarPriceComponent,
     HotelStarPriceEnComponent,
     HotelAddcontactsCompComponent,
@@ -55,7 +57,6 @@ import { RoomPlanItemDfComponent } from './room-plan-item-df/room-plan-item-df.c
     CommonModule,
     IonicModule,
     FormsModule,
-    AppDirectivesModule,
     AppComponentsModule,
     TmcComponentsModule,
   ],

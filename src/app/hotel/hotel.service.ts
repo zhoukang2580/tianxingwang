@@ -546,8 +546,11 @@ export class HotelService {
         this.localHotelCities &&
         this.localHotelCities.length
       ) {
-        console.log("locals", this.localHotelCities);
-        console.log("locals 广元", this.localHotelCities.find(it=>it.Name=='广元'));
+        // console.log("locals", this.localHotelCities);
+        console.log(
+          "locals 广元",
+          this.localHotelCities.find((it) => it.Name == "广元")
+        );
         return this.localHotelCities;
       }
       this.localHotelCities = this.localHotelCities || [];
@@ -557,7 +560,7 @@ export class HotelService {
         // console.log("cs.Trafficlines", cs.Trafficlines);
         // console.log("cs.Trafficlines 广元", cs.Trafficlines.find(it=>it.Name=='广元'));
         const arr = cs.Trafficlines.map((item) => {
-          if(!item.FirstLetter){
+          if (!item.FirstLetter) {
             if (!item.Pinyin) {
               item.FirstLetter = this.getFirstLetter(item.Name);
             } else {
@@ -916,13 +919,54 @@ export class HotelService {
       .catch((_) => []);
     return whitelistPolicies.concat(notWhitelistPolicies);
   }
-
+  async openHotelCityPage(isShow = true) {
+    let page = document.body.querySelector(".domestic-hotel-city-page");
+    if (!page) {
+      page = await this.getHotelCitiesHtml();
+    }
+    if (isShow) {
+      page.classList.add("show");
+    } else {
+      page.classList.remove("show");
+    }
+  }
+  private async getHotelCitiesHtml() {
+    const cities = await this.getHotelCityAsync();
+    const letter2Citites = this.getLetter2Cities(cities);
+    const letters = Object.keys(letter2Citites);
+    const page = document.createElement("div");
+    page.classList.add("domestic-hotel-city-page");
+    const list=document.createElement("div");
+    
+    page.append(list);
+    document.body.append(page);
+    return page;
+  }
+  private getLetter2Cities(arr: TrafficlineEntity[]) {
+    const letter2Citites: { [letter: string]: TrafficlineEntity[] } = {};
+    if (arr) {
+      if (arr) {
+        arr.forEach((c) => {
+          const tmp = letter2Citites[c.FirstLetter];
+          if (tmp) {
+            if (!tmp.find((it) => it.Code == c.Code)) {
+              tmp.push(c);
+            }
+          } else {
+            letter2Citites[c.FirstLetter] = [c];
+          }
+        });
+      }
+    }
+    return letter2Citites;
+  }
   private loadHotelCitiesFromServer(lastUpdateTime: number) {
     const req = new RequestEntity();
     req.Method = `ApiHomeUrl-Resource-DomesticHotelCity`;
     req.Data = {
       LastUpdateTime: lastUpdateTime,
     };
+    req.IsShowLoading = true;
     return this.apiService.getPromiseData<{
       Trafficlines: TrafficlineEntity[];
       // HotelCities: TrafficlineEntity[];
