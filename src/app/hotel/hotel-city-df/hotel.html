@@ -46,6 +46,33 @@
             isShow = !isShow;
             openPage(isShow)
         }
+        function getHeaderHtml() {
+            const header = document.createElement("div");
+            header.classList.add("header");
+            const backIcon = document.createElement("ion-icon");
+            backIcon.setAttribute("name", "chevron-back-outline");
+            backIcon.setAttribute("slot", "start");
+            const cancelBtn = document.createElement("ion-button");
+            cancelBtn.setAttribute("color", "secondary");
+            cancelBtn.setAttribute("fill", "clear");
+            cancelBtn.setAttribute("size", "small");
+            cancelBtn.classList.add("cancel")
+            const label = document.createElement("ion-label");
+            label.textContent = '取消';
+            cancelBtn.append(label);
+            cancelBtn.onclick = () => {
+                this.openPage(false);
+            };
+            backIcon.onclick = () => {
+                this.openPage(false);
+            };
+            const searchbar = document.createElement("ion-searchbar");
+            searchbar.setAttribute("disabled", "true");
+            header.append(backIcon);
+            header.append(searchbar);
+            header.append(cancelBtn);
+            return header;
+        }
         function openPage(open) {
             page = document.body.querySelector(".hotel-city-page-container");
             if (!page) {
@@ -232,6 +259,8 @@
             page.classList.add("hotel-city-page-container");
             const hotHtml = getHotHtml(cities.filter(it => it.IsHot));
             const historyHtml = getHistoryHtml();
+            const header = getHeaderHtml();
+            page.append(header);
             page.append(historyHtml);
             page.append(hotHtml);
             const letterNavs = getLetterNavs(cmap);

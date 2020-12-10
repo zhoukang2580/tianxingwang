@@ -38,6 +38,7 @@ import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standa
 import { OverHotelComponent } from "../components/over-hotel/over-hotel.component";
 import { environment } from "src/environments/environment";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { HotelCityService } from "../hotel-city.service";
 @Component({
   selector: "app-search-hotel-df",
   templateUrl: "./search-hotel-df.page.html",
@@ -106,6 +107,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     public router: Router,
     private hotelService: HotelService,
     route: ActivatedRoute,
+    private hotelCityService: HotelCityService,
     private modalController: ModalController,
     private staffService: StaffService,
     private calendarService: CalendarService,
@@ -238,9 +240,17 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.observeSearchCondition();
     this.onPosition();
   }
-  onSearchCity() {
+  async onSearchCity() {
     if (this.isDomestic) {
-      this.router.navigate([AppHelper.getRoutePath("hotel-city-df")]);
+      // this.router.navigate([AppHelper.getRoutePath("hotel-city-df")]);
+      const city = await this.hotelCityService.onSelectCity(true);
+      if (city) {
+        this.hotelService.setSearchHotelModel({
+          ...this.searchHotelModel,
+          destinationCity: city,
+        });
+        this.hotelCityService.onSelectCity(false);
+      }
     } else {
       this.router.navigate([AppHelper.getRoutePath("select-inter-city")]);
     }
