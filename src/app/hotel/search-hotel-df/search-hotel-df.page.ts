@@ -272,7 +272,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.isPositioning = false;
   }
   onShowSelectedBookInfos() {
-    this.router.navigate([AppHelper.getRoutePath("hotel-room-bookedinfos")]);
+    this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
   }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
