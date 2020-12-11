@@ -403,7 +403,7 @@ export class SearchHotelDfPage
       });
       this.hotelService.getConditions();
       this.isLeavePage = true;
-      this.isOpenSelectCityPage  = true;
+      this.isOpenSelectCityPage  = false;
       this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
     } else {
       this.router.navigate([

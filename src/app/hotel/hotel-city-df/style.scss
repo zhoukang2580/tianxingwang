@@ -8,7 +8,7 @@
   width: 100%;
   background-color: white;
   // z-index: 1000;
-  &.show{
+  &.show {
     transform: translate3d(0, 0, 0);
   }
 }
@@ -143,9 +143,12 @@
     align-items: center;
     padding-top: 0.5em;
     ion-icon {
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       opacity: 0.8;
       margin: 0 0.2em;
+    }
+    .back-icon {
+      font-size: 1.5rem;
     }
     ion-searchbar {
       --border-radius: 5px;

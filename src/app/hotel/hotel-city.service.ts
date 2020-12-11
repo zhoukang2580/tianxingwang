@@ -44,6 +44,9 @@ export class HotelCityService {
     if (this.page) {
       if (isOpen) {
         this.page.classList.add("show");
+        if (this.page.scrollTop > 0.6 * window.innerHeight) {
+          fabbtn.classList.add("show");
+        }
       } else {
         fabbtn.classList.remove("show");
         this.page.classList.remove("show");
@@ -273,6 +276,7 @@ export class HotelCityService {
     const header = document.createElement("div");
     header.classList.add("header");
     const backIcon = document.createElement("ion-icon");
+    backIcon.classList.add("back-icon");
     backIcon.setAttribute("name", "chevron-back-outline");
     backIcon.setAttribute("slot", "start");
     const cancelBtn = document.createElement("ion-button");
