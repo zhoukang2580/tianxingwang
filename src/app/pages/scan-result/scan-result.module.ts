@@ -8,11 +8,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { ScanResultPage } from './scan-result.page';
+import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: ScanResultPage
+    component: ScanResultPage,
+    canDeactivate:[CandeactivateGuard]
   }
 ];
 
