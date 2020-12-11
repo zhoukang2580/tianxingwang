@@ -12,13 +12,17 @@ import { AppHelper } from "src/app/appHelper";
 import { HttpClient } from "@angular/common/http";
 import { map, switchMap, finalize } from "rxjs/operators";
 import { RequestEntity } from "src/app/services/api/Request.entity";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 
 @Component({
   selector: "app-scan-result",
   templateUrl: "./scan-result.page.html",
   styleUrls: ["./scan-result.page.scss"],
 })
-export class ScanResultPage implements OnInit, OnDestroy {
+export class ScanResultPage
+  implements OnInit, OnDestroy, CanComponentDeactivate {
+  private _iframeSrc: any;
+  private isBack = false;
   confirmText: string = LanguageHelper.getConfirmTip();
   cancelText: string = LanguageHelper.getCancelTip();
   description: string;
@@ -27,7 +31,6 @@ export class ScanResultPage implements OnInit, OnDestroy {
   isShowIframe = false; // 是否用iframe打开
   isShowText = false; // 是否显示扫码文本
   identity: IdentityEntity;
-  private _iframeSrc: any;
   subscription = Subscription.EMPTY;
   identitySubscription = Subscription.EMPTY;
   defaultImage = AppHelper.getDefaultAvatar();
@@ -39,6 +42,13 @@ export class ScanResultPage implements OnInit, OnDestroy {
   };
   get iframeSrc() {
     return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
+  }
+  canDeactivate() {
+    if (this.isBack) {
+      return true;
+    }
+    this.back();
+    return false;
   }
   constructor(
     private sanitizer: DomSanitizer,
@@ -59,7 +69,8 @@ export class ScanResultPage implements OnInit, OnDestroy {
     this.identitySubscription.unsubscribe();
   }
   back() {
-    this.navCtrl.pop();
+    this.isBack = true;
+    this.navCtrl.navigateRoot("");
   }
   ngOnInit() {
     this.identitySubscription = this.identityService
