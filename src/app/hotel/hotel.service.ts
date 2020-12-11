@@ -559,7 +559,17 @@ export class HotelService {
       if (cs && cs.Trafficlines && cs.Trafficlines.length) {
         // console.log("cs.Trafficlines", cs.Trafficlines);
         // console.log("cs.Trafficlines 广元", cs.Trafficlines.find(it=>it.Name=='广元'));
+        // let tmpArr = [];
         const arr = cs.Trafficlines.map((item) => {
+          const fl = this.getFirstLetter(item.Name);
+          // if (
+          //   !item ||
+          //   !item.Pinyin ||
+          //   !fl ||
+          //   fl.toLowerCase() != item.Pinyin.substr(0, 1).toLowerCase()
+          // ) {
+          //   tmpArr.push(item);
+          // }
           if (!item.FirstLetter) {
             if (!item.Pinyin) {
               item.FirstLetter = this.getFirstLetter(item.Name);
@@ -569,6 +579,7 @@ export class HotelService {
           }
           return item;
         });
+        // console.log("tmpArr",tmpArr);
         this.localHotelCities = [
           ...this.localHotelCities.filter(
             (it) => !arr.some((c) => c.Code == it.Code)
@@ -936,8 +947,8 @@ export class HotelService {
     const letters = Object.keys(letter2Citites);
     const page = document.createElement("div");
     page.classList.add("domestic-hotel-city-page");
-    const list=document.createElement("div");
-    
+    const list = document.createElement("div");
+
     page.append(list);
     document.body.append(page);
     return page;
