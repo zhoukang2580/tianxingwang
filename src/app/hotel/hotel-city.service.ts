@@ -22,12 +22,15 @@ export class HotelCityService {
   }
   private async openPage(isOpen = false) {
     this.page = document.body.querySelector(".hotel-city-page-container");
-    const fabbtn = document.body.querySelector(
+    let fabbtn = document.body.querySelector(
       ".fab-btn.hotel-city-page-container"
     );
     if (!this.page) {
       const cities = await this.hotelService.getHotelCityAsync();
       this.page = this.getHtml(cities);
+      fabbtn = document.body.querySelector(
+        ".fab-btn.hotel-city-page-container"
+      );
       this.page.onscroll = () => {
         if (fabbtn) {
           if (this.page.scrollTop > 0.6 * window.innerHeight) {
@@ -41,7 +44,6 @@ export class HotelCityService {
     if (this.page) {
       if (isOpen) {
         this.page.classList.add("show");
-        fabbtn.classList.add("show");
       } else {
         fabbtn.classList.remove("show");
         this.page.classList.remove("show");
