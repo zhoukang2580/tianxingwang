@@ -39,17 +39,20 @@ import { OverHotelComponent } from "../components/over-hotel/over-hotel.componen
 import { environment } from "src/environments/environment";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { HotelCityService } from "../hotel-city.service";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-search-hotel-df",
   templateUrl: "./search-hotel-df.page.html",
   styleUrls: ["./search-hotel-df.page.scss"],
 })
-export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
+export class SearchHotelDfPage
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   @ViewChild("imgEles", { static: true }) imgEles: ElementRef<HTMLElement>;
   @ViewChild("ionCardEle", { static: true }) ionCard: IonCard;
   private subscriptions: Subscription[] = [];
   private fromRoute: string;
+  private isOpenSelectCityPage = false;
   get isShowSelectedInfos() {
     return this.hotelService.getBookInfos().some((it) => !!it.bookInfo);
   }
@@ -143,6 +146,14 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.isIos = plt.is("ios");
     });
     this.subscriptions.push(sub);
+  }
+  canDeactivate() {
+    if (this.isOpenSelectCityPage) {
+      this.hotelCityService.onSelectCity(false);
+      this.isOpenSelectCityPage = false;
+      return false;
+    }
+    return true;
   }
   private observeSearchCondition() {
     this.subscriptions.push(
