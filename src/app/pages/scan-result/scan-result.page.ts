@@ -21,6 +21,8 @@ import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 })
 export class ScanResultPage
   implements OnInit, OnDestroy, CanComponentDeactivate {
+  private _iframeSrc: any;
+  private isBack = false;
   confirmText: string = LanguageHelper.getConfirmTip();
   cancelText: string = LanguageHelper.getCancelTip();
   description: string;
@@ -29,7 +31,6 @@ export class ScanResultPage
   isShowIframe = false; // 是否用iframe打开
   isShowText = false; // 是否显示扫码文本
   identity: IdentityEntity;
-  private _iframeSrc: any;
   subscription = Subscription.EMPTY;
   identitySubscription = Subscription.EMPTY;
   defaultImage = AppHelper.getDefaultAvatar();
@@ -43,6 +44,9 @@ export class ScanResultPage
     return this.sanitizer.bypassSecurityTrustResourceUrl(this._iframeSrc);
   }
   canDeactivate() {
+    if (this.isBack) {
+      return true;
+    }
     this.back();
     return false;
   }
@@ -65,6 +69,7 @@ export class ScanResultPage
     this.identitySubscription.unsubscribe();
   }
   back() {
+    this.isBack = true;
     this.navCtrl.navigateRoot("");
   }
   ngOnInit() {
