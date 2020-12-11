@@ -44,7 +44,7 @@ export class ScanResultPage
   }
   canDeactivate() {
     this.back();
-    return false;
+    return true;
   }
   constructor(
     private sanitizer: DomSanitizer,
