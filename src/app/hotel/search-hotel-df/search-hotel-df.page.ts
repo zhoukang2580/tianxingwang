@@ -255,6 +255,7 @@ export class SearchHotelDfPage
     if (this.isDomestic) {
       // this.router.navigate([AppHelper.getRoutePath("hotel-city-df")]);
       const city = await this.hotelCityService.onSelectCity(true);
+      this.isOpenSelectCityPage = true;
       if (city) {
         this.hotelService.setSearchHotelModel({
           ...this.searchHotelModel,
