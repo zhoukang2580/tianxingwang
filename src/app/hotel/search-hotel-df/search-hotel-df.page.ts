@@ -148,6 +148,7 @@ export class SearchHotelDfPage
     this.subscriptions.push(sub);
   }
   canDeactivate() {
+    console.log("isOpenSelectCityPage", this.isOpenSelectCityPage);
     if (this.isOpenSelectCityPage) {
       this.hotelCityService.onSelectCity(false);
       this.isOpenSelectCityPage = false;
@@ -254,8 +255,8 @@ export class SearchHotelDfPage
   async onSearchCity() {
     if (this.isDomestic) {
       // this.router.navigate([AppHelper.getRoutePath("hotel-city-df")]);
-      const city = await this.hotelCityService.onSelectCity(true);
       this.isOpenSelectCityPage = true;
+      const city = await this.hotelCityService.onSelectCity(true);
       if (city) {
         this.hotelService.setSearchHotelModel({
           ...this.searchHotelModel,
