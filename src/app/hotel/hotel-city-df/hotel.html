@@ -284,7 +284,6 @@
             const hotHtml = getHotHtml(cities.filter(it => it.IsHot));
             const historyHtml = getHistoryHtml();
             const header = getHeaderHtml();
-            document.body.append(getScrollToTopFab());
             page.append(header);
             page.append(historyHtml);
             page.append(hotHtml);
@@ -293,6 +292,7 @@
             const list = getList(cmap);
             page.append(list);
             document.body.append(page);
+            document.body.append(getScrollToTopFab());
             return page;
         }
         function getLetterNavs(cmap) {

@@ -8,7 +8,6 @@
   width: 100%;
   background-color: white;
 }
-
 .hotel-city-page-container.show {
   transform: translate3d(0, 0, 0);
 }
@@ -162,7 +161,7 @@
   padding-top: 0.5em;
 }
 .hotel-city-page-container .header ion-icon {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   opacity: 0.8;
   margin: 0 0.2em;
 }
