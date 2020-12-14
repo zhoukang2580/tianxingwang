@@ -422,6 +422,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
             lastName: combindInfo.credential.Surname,
           },
         ];
+        combindInfo.checkInPersonInfos.push({} as any);
       } else {
         if (combindInfo.checkInPersonInfos.length < this.checkInPersionCount) {
           combindInfo.checkInPersonInfos.push({} as any);
