@@ -23,7 +23,6 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
   @HostBinding("class.backdrop") uploaded = false;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   resultImageUrl: string;
-  isH5 = true || AppHelper.isH5();
   fileReader: FileReader;
   avatar: string;
   croppedImage: HTMLImageElement;
@@ -43,12 +42,12 @@ export class CropAvatarPage implements OnInit, AfterViewInit {
   }
   ngAfterViewInit() {
     this.croppedImage = document.getElementById("image") as HTMLImageElement;
-    this.activatedRoute.paramMap.subscribe((d) => {
+    this.activatedRoute.queryParamMap.subscribe((d) => {
       if (d && d.get("cropAvatar")) {
         this.method = d.get("method");
         this.fileName = d.get("fileName");
         const fileObj = AppHelper.getRouteData();
-        // console.log("objectUrl=", fileObj);
+        console.log("objectUrl=", fileObj);
         this.croppedImage.src = fileObj;
         // this.croppedImage.onload = _ => {
         //   window.URL=window.URL||window['webkitURL'];
