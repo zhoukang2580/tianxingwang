@@ -59,13 +59,13 @@
             </div>
             <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;margin-bottom: 1em;" class="ion-margin-top">
                 <section class="flight-date">
-                    <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkinDate' [isCheckIn]='true' [langOpt]='{
+                    <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkInDate:interHotelSearchCondition?.checkInDate' [isCheckIn]='true' [langOpt]='{
             checkin: "Check in",
             checkout: "Check out",
             night: "Night"
           }' (click)="onSelecDate(true)" [disabled]='false'>
                     </app-search-day-comp>
-                    <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkOutDate:interHotelSearchCondition?.checkoutDate' [isCheckOut]='true' [langOpt]='{
+                    <app-search-day-comp [day]='isDomestic?searchHotelModel?.checkOutDate:interHotelSearchCondition?.checkOutDate' [isCheckOut]='true' [langOpt]='{
             checkin: "Check in",
             checkout: "Check out",
             night: "Night"
