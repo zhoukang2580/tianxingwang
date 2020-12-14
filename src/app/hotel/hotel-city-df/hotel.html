@@ -77,11 +77,23 @@
             page = document.body.querySelector(".hotel-city-page-container");
             if (!page) {
                 page = getHtml();
+                const fabbtn = document.body.querySelector(".fab-btn.hotel-city-page-container");
+                page.onscroll = () => {
+                    if (fabbtn) {
+                        if (page.scrollTop > 0.6 * window.innerHeight) {
+                            fabbtn.classList.add("show");
+                        } else {
+                            fabbtn.classList.remove("show");
+                        }
+                    }
+                }
             }
-            if (open) {
-                page.classList.add("show")
-            } else {
-                page.classList.remove("show")
+            if (page) {
+                if (open) {
+                    page.classList.add("show")
+                } else {
+                    page.classList.remove("show")
+                }
             }
         }
         function getHistoryHtml(cities) {
@@ -146,6 +158,18 @@
                 }
             }
             return item;
+        }
+        function getScrollToTopFab() {
+            const fab = document.createElement("div");
+            fab.classList.add("fab-btn");
+            fab.classList.add("hotel-city-page-container");
+            const icon = document.createElement("ion-icon");
+            icon.setAttribute("name", 'chevron-up-outline');
+            fab.append(icon);
+            fab.onclick = () => {
+                page.scrollTop = 0;
+            }
+            return fab;
         }
         function getHotHtml(cities) {
             const rowNums = 3;
@@ -268,6 +292,7 @@
             const list = getList(cmap);
             page.append(list);
             document.body.append(page);
+            document.body.append(getScrollToTopFab());
             return page;
         }
         function getLetterNavs(cmap) {

@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
+import { Platform } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { BehaviorSubject } from "rxjs";
 import { finalize } from "rxjs/operators";
@@ -12,20 +13,57 @@ export class HotelCityService {
   private histories: TrafficlineEntity[];
   private allCityListEleItems: any[] = [];
   private citySource = new EventEmitter<TrafficlineEntity>();
-  constructor(private hotelService: HotelService, private storage: Storage) {
+  constructor(
+    private hotelService: HotelService,
+    private storage: Storage,
+    private plt: Platform
+  ) {
     hotelService = this.hotelService;
   }
   private async openPage(isOpen = false) {
     this.page = document.body.querySelector(".hotel-city-page-container");
+    let fabbtn = document.body.querySelector(
+      ".fab-btn.hotel-city-page-container"
+    );
     if (!this.page) {
       const cities = await this.hotelService.getHotelCityAsync();
       this.page = this.getHtml(cities);
+      fabbtn = document.body.querySelector(
+        ".fab-btn.hotel-city-page-container"
+      );
+      this.page.onscroll = () => {
+        if (fabbtn) {
+          if (this.page.scrollTop > 0.6 * window.innerHeight) {
+            fabbtn.classList.add("show");
+          } else {
+            fabbtn.classList.remove("show");
+          }
+        }
+      };
     }
-    if (isOpen) {
-      this.page.classList.add("show");
-    } else {
-      this.page.classList.remove("show");
+    if (this.page) {
+      if (isOpen) {
+        this.page.classList.add("show");
+        if (this.page.scrollTop > 0.6 * window.innerHeight) {
+          fabbtn.classList.add("show");
+        }
+      } else {
+        fabbtn.classList.remove("show");
+        this.page.classList.remove("show");
+      }
     }
+  }
+  private getScrollToTopFab() {
+    const fab = document.createElement("div");
+    fab.classList.add("fab-btn");
+    fab.classList.add("hotel-city-page-container");
+    const icon = document.createElement("ion-icon");
+    icon.setAttribute("name", "chevron-up-outline");
+    fab.append(icon);
+    fab.onclick = () => {
+      this.page.scrollTop = 0;
+    };
+    return fab;
   }
   async onSelectCity(isOpen = false) {
     await this.openPage(isOpen);
@@ -37,7 +75,7 @@ export class HotelCityService {
         .pipe(
           finalize(() => {
             setTimeout(() => {
-              console.log("sjkdlfjsdl");
+              // console.log("onSelectCity");
             }, 200);
           })
         )
@@ -238,33 +276,39 @@ export class HotelCityService {
     const header = document.createElement("div");
     header.classList.add("header");
     const backIcon = document.createElement("ion-icon");
+    backIcon.classList.add("back-icon");
     backIcon.setAttribute("name", "chevron-back-outline");
     backIcon.setAttribute("slot", "start");
     const cancelBtn = document.createElement("ion-button");
     cancelBtn.setAttribute("color", "secondary");
     cancelBtn.setAttribute("fill", "clear");
     cancelBtn.setAttribute("size", "small");
-    cancelBtn.classList.add("cancel")
+    cancelBtn.classList.add("cancel");
     const label = document.createElement("ion-label");
-    label.textContent = '取消';
+    label.textContent = "取消";
     cancelBtn.append(label);
     cancelBtn.onclick = () => {
-        this.openPage(false);
+      this.openPage(false);
     };
     backIcon.onclick = () => {
-        this.openPage(false);
+      this.openPage(false);
     };
     const searchbar = document.createElement("ion-searchbar");
     searchbar.setAttribute("disabled", "true");
+    searchbar.setAttribute("mode", "ios");
     header.append(backIcon);
     header.append(searchbar);
     header.append(cancelBtn);
     return header;
-}
+  }
+  private getLocalHistories() {
+    return this.storage.get("_key_");
+  }
   private getHtml(cities: TrafficlineEntity[]) {
     const cmap = this.getLeter2Cities(cities);
     const page = document.createElement("div");
     page.classList.add("hotel-city-page-container");
+    page.classList.add(`${this.plt.is("ios") ? "ios" : "md"}`);
     const header = this.getHeaderHtml();
     page.append(header);
     const hotHtml = this.getHotHtml(cities.filter((it) => it.IsHot));
@@ -276,6 +320,8 @@ export class HotelCityService {
     const list = this.getList(cmap);
     page.append(list);
     document.body.append(page);
+    // 如果class 有一样的，需要注意一下顺序
+    document.body.append(this.getScrollToTopFab());
     return page;
   }
   private getLetterNavs(cmap) {
@@ -297,6 +343,9 @@ export class HotelCityService {
         }
         try {
           const el = this.page.querySelector(`[letter='${l}']`);
+          if (!el) {
+            return;
+          }
           const rect = el.getBoundingClientRect();
           const headerEle = 0;
           let y = 0;

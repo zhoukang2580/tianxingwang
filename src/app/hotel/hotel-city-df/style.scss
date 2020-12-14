@@ -8,9 +8,9 @@
   width: 100%;
   background-color: white;
   // z-index: 1000;
-}
-.hotel-city-page-container.show {
-  transform: translate3d(0, 0, 0);
+  &.show {
+    transform: translate3d(0, 0, 0);
+  }
 }
 .hotel-city-page-container .list {
   list-style: none;
@@ -90,6 +90,32 @@
   width: 100%;
   padding: 0 1.5em 0.5em 1.5em;
 }
+.hotel-city-page-container.md .hot-cities-wrapper .list-wrapper {
+  padding: 0 0.5em 0 0.5em;
+}
+.hotel-city-page-container.fab-btn {
+  color: white;
+  background-color: rgba(var(--ion-color-secondary-rgb), 0.6);
+  border-radius: 50%;
+  position: fixed;
+  right: 10vw;
+  width: 2em;
+  height: 2em;
+  bottom: 5vh;
+  z-index: -10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  ion-icon {
+    font-size: 1.1rem;
+  }
+  transition: all ease-in-out 200ms;
+  transform: translate3d(1000%, 0, 0);
+  &.show {
+    z-index: 99;
+    transform: translate3d(0, 0, 0);
+  }
+}
 .hotel-city-page-container .hot-cities-wrapper .b-item {
   background: #f6f6f6;
   border-radius: 5px;
@@ -117,9 +143,12 @@
     align-items: center;
     padding-top: 0.5em;
     ion-icon {
-      font-size: 1.8rem;
+      font-size: 1.2rem;
       opacity: 0.8;
       margin: 0 0.2em;
+    }
+    .back-icon {
+      font-size: 1.5rem;
     }
     ion-searchbar {
       --border-radius: 5px;
