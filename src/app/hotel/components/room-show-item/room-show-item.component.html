@@ -23,7 +23,7 @@
             </ion-text>
           </ion-label>
         </div>
-        <div class="free-book" *ngIf='freebookObj'>
+        <div class="free-book" *ngIf='freebookObj&&bookInfo?.bookInfo?.roomPlan?.isFreeBookRoom'>
           公司支付￥{{freebookObj.CompanyPayAmount}}，个人支付￥{{freebookObj?.SelfPayAmount}}
         </div>
       </div>

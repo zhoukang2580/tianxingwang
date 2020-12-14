@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons>
+      <app-back-button
+        defaultHref=""
+        [backFn]="back.bind(this)"
+      ></app-back-button>
+      <form
+        (ngSubmit)="doSearch()"
+        action="javascript:void(0)"
+        style="display: flex; align-items: center"
+      >
+        <ion-searchbar
+          mode="ios"
+          debounce="300"
+          name="searchbar"
+          style="padding: 0"
+          placeholder="输入关键字"
+          (ionChange)="doSearch()"
+          [(ngModel)]="vmKeyword"
+          class="ion-margin-end"
+        >
+        </ion-searchbar>
+        <div style="min-width: 2em">
+          <ion-text color="secondary" (click)="onCancle()">取消</ion-text>
+        </div>
+      </form>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh()"> </app-refresher>
+  <ng-container *ngIf="!isLoading else loadingTemp">
+    <ng-container *ngIf="cities.length else nomatchdata">
+    <div>
+      <ng-container *ngIf='vmCities?.length else nomatchdata'>
+        <ion-list>
+          <ion-item *ngFor='let s of vmCities' (click)='onSelect(s)'>
+            <ion-label class="ion-text-wrap">
+              <ion-text style="position: relative;padding-left: 1em;" [color]="s?.Selected?'secondary':'dark'">
+                 <ng-container *ngIf='!isEn'>
+                  {{s?.Name}}<ng-container *ngIf='s.CityName'>,{{s.CityName}}</ng-container>
+                </ng-container>
+                <ng-container *ngIf='isEn'>
+                  {{s.EnglishName}}
+                </ng-container>
+              </ion-text>
+              <ion-text *ngIf='s.Pinyin&&!isEn' color='medium'>({{s.Pinyin}})</ion-text>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ng-container>
+    </div>
+    </ng-container>
+
+    <ng-template #nomatchdata>
+      <app-or-comp>没有符合条件的数据</app-or-comp>
+    </ng-template>
+  </ng-container>
+  <ng-template #loadingTemp> 正在加载... </ng-template>
+ 
+  <ion-infinite-scroll (ionInfinite)="loadMore()">
+    <ion-infinite-scroll-content
+      ><span *ngIf="isEn">Loading More</span
+      ><span *ngIf="!isEn">加载更多</span>...</ion-infinite-scroll-content
+    >
+  </ion-infinite-scroll>
+</ion-content>

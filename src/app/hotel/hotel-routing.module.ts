@@ -58,6 +58,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "hotel-room-detail-df",
+    loadChildren: () =>
+      import("./room-detail_df/room-detail_df.module").then(
+        m => m.RoomDetailDfPageModule
+      )
+  },
+  {
     path: "hotel-room-bookedinfos",
     loadChildren: () =>
       import("./hotel-room-bookedinfos/hotel-room-bookedinfos.module").then(

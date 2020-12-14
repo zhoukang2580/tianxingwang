@@ -62,7 +62,7 @@ import {
 
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { StaffService } from "src/app/hr/staff.service";
-import { ShowFreebookTipComponent } from '../components/show-freebook-tip/show-freebook-tip.component';
+import { ShowFreebookTipComponent } from "../components/show-freebook-tip/show-freebook-tip.component";
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -89,9 +89,11 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
+  @ViewChild(IonHeader) headerEle: IonHeader;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
+  @ViewChild("filterCondition") filterCondition: ElementRef<HTMLElement>;
   @ViewChildren(IonItem) hotelItemEl: QueryList<any>;
   @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
   isLeavePage = false;
@@ -106,6 +108,9 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   config: ConfigEntity;
   agent: AgentEntity;
   isIos = false;
+  isInitTop = false;
+  RoomDefaultImg: string;
+  HotelDefaltImg: string;
   hotelType = [
     {
       value: "normal",
@@ -158,10 +163,10 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
     m.present();
   }
-  onSegmentChanged(ev: CustomEvent) {
+  onSegmentChanged(ev: any) {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
-      hotelType: ev.detail.value,
+      hotelType: ev,
     });
     this.hotelDayPrices = [];
     this.doRefresh();
@@ -169,7 +174,15 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.autofocusSearchBarInput();
     // this.setQueryConditionEleTop();
+    // setTimeout(() => {
+    //   try {
+    //     this.initTop();
+    //   } catch (e) {
+    //     console.error(e);
+    //   }
+    // }, 1000);
   }
+
   private getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
       hotel.Category = `${hotel.Category}`;
@@ -211,7 +224,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
         const isSelf = await this.staffService.isSelfBookType();
         this.isFreeBook =
           tmc &&
-          tmc['HotelSelfPayAmount'] == "1" &&
+          tmc["HotelSelfPayAmount"] == "1" &&
           isSelf &&
           !this.tmcService.isAgent;
       } catch (e) {
@@ -257,6 +270,8 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
+          this.RoomDefaultImg = this.hotelService.RoomDefaultImg;
+          this.HotelDefaltImg = this.hotelService.HotelDefaltImg;
           setTimeout(() => {
             this.isLoadingHotels = false;
             this.isUseSearchText = false;
@@ -469,10 +484,29 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     //     this.scroller.disabled = false;
     //   }
     // }
+    this.initTop();
     if (this.content) {
       this.content.scrollToTop(100);
     }
     this.hotelService.setHotelQuerySource(this.hotelQueryModel);
+  }
+  private initTop() {
+    try {
+      const arr = this.filterCondition.nativeElement.querySelectorAll(
+        ".filter-condition"
+      );
+      const h = this.headerEle["el"].getBoundingClientRect().height;
+      if (!h || h < 4.5 * 16 || this.isInitTop) {
+        return;
+      }
+      this.isInitTop = true;
+      for (let i = 0; i < arr.length; i++) {
+        const el: HTMLElement = arr[i] as any;
+        el.style.top = `${h}px`;
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
   onStarPriceChange() {
     const query = { ...this.hotelService.getHotelQueryModel() };

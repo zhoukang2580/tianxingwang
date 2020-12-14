@@ -1233,7 +1233,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.initDayPrice();
   }
   private initDayPrice() {
-    const bookInfos = this.hotelService.getBookInfoSource();
+    const bookInfos = this.hotelService.getBookInfos();
     this.curSelectedBookInfo = bookInfos[0];
     this.dates = [];
     const n = this.calcNights(this.combindInfos && this.combindInfos[0]);

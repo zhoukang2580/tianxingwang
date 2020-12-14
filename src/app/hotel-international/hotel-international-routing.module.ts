@@ -74,6 +74,13 @@ export const routes: Routes = [
       ).then((m) => m.InternationalRoomDetailPageModule),
   },
   {
+    path: "international-room-detail_df",
+    loadChildren: () =>
+      import(
+        "./international-room-detail_df/international-room-detail-df.module"
+      ).then((m) => m.InternationalRoomDetailDfPageModule),
+  },
+  {
     path: "international-room-detail_en",
     loadChildren: () =>
       import(

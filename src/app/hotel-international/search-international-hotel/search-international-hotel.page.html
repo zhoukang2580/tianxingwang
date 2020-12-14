@@ -44,11 +44,11 @@
       </div>
       <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;" >
         <section class="flight-date">
-          <app-search-day-comp [day]='searchCondition?.checkinDate' [isCheckIn]='true' (click)="onSelecDate(true)"
+          <app-search-day-comp [day]='searchCondition?.checkInDate' [isCheckIn]='true' (click)="onSelecDate(true)"
             [disabled]='false'>
           </app-search-day-comp>
           <div *ngIf='totalFlyDays'>共{{ totalFlyDays}}晚</div>
-          <app-search-day-comp [day]='searchCondition?.checkoutDate' [isCheckOut]='true' (click)="onSelecDate(false)"
+          <app-search-day-comp [day]='searchCondition?.checkOutDate' [isCheckOut]='true' (click)="onSelecDate(false)"
             [disabled]='false'>
           </app-search-day-comp>
         </section>

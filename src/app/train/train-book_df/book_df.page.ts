@@ -38,6 +38,9 @@ import {
   QueryList,
   AfterViewInit,
   OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
 } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
@@ -49,6 +52,7 @@ import {
   ModalController,
   PopoverController,
   Platform,
+  IonSelect,
 } from "@ionic/angular";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import {
@@ -75,6 +79,8 @@ import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/boo
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { SearchCostcenterComponent } from 'src/app/tmc/components/search-costcenter/search-costcenter.component';
+import { OrganizationComponent } from 'src/app/tmc/components/organization/organization.component';
 
 @Component({
   selector: "app-train-book-df",
@@ -89,6 +95,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
+  @Input() isOtherCostCenter: boolean;
+  @Input() otherCostCenterCode: string;
+  @Input() otherCostCenterName: string;
+  @Input() costCenter: {
+    code: string;
+    name: string;
+  };
+  @Output() ionChange: EventEmitter<any>;
+  @Input() isOtherOrganization: boolean;
+  @Input() organization: OrganizationEntity;
+  @Input() otherOrganizationName: string;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -125,6 +142,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private langService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
+    this.ionChange = new EventEmitter();
   }
   back() {
     this.navCtrl.pop();
@@ -282,6 +300,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.initTmcOutNumberInfos();
     await this.initOrderTravelPayTypes();
     console.log("viewModel", this.viewModel);
+  }
+  onManagementCredentials() {
+    this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
   }
   onShowInsuranceDetail(insurance: { showDetail: boolean }, evt: CustomEvent) {
     if (evt) {
@@ -514,6 +535,69 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+
+  async searchCostCenter() {
+    if (this.isOtherCostCenter) {
+      return;
+    }
+    const modal = await this.modalCtrl.create({
+      component: SearchCostcenterComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    if (result && result.data) {
+      const res = result.data as { Text: string; Value: string };
+      this.costCenter = {
+        code: res.Value,
+        name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1),
+      };
+      this.onValueChange();
+    }
+  }
+
+  onValueChange() {
+    this.ionChange.emit({
+      isOtherCostCenter: this.isOtherCostCenter,
+      otherCostCenterCode: this.otherCostCenterCode,
+      otherCostCenterName: this.otherCostCenterName,
+      costCenter: this.costCenter,
+    });
+  }
+  onOpenSelect(select: IonSelect) {
+    if (select) {
+      select.open();
+    }
+  }
+  async searchOrganization() {
+    if (this.isOtherOrganization) {
+      return;
+    }
+    const modal = await this.modalCtrl.create({
+      component: OrganizationComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    console.log("organization", result.data);
+    if (result && result.data) {
+      const res = result.data as OrganizationEntity;
+      this.organization = {
+        ...this.organization,
+        Code: res.Code,
+        Name: res.Name,
+      };
+      this.onValueChanges();
+    }
+  }
+  onValueChanges() {
+    this.ionChange.emit({
+      isOtherOrganization: this.isOtherOrganization,
+      organization: this.organization,
+      otherOrganizationName: this.otherOrganizationName,
+    });
+  }
+
   async bookTrain(isSave: boolean = false, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();

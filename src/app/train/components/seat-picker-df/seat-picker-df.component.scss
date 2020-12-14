@@ -5,11 +5,12 @@
 }
 .selectSeatLocation {
   border: 1px;
-  width: 20px;
+  width: 35px;
   text-align: center;
   cursor: pointer;
   // background: #fff;
-  margin-left: 0.5em;
+  margin-left: 0.5em;    
+  margin-top: 4px;
 }
 .selectSeatLocationBlank {
   border: none;
@@ -31,12 +32,13 @@
   color: tomato;
 }
 .window{
-  background: #c3c3c3;
-  width: 1.7em;
-  height: 2em;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 22px;
+  height: 35px;
+  background: #D2D2D2;
+  border-radius: 3px;
 }
 
 .font{

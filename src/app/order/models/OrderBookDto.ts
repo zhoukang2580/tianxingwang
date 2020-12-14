@@ -16,6 +16,7 @@ export class OrderBookDto {
   /// <summary>
   /// 订单来源Identity
   /// </summary>
+  SelfPayAmount: string;
   Channel: string;
   TravelFormId: string;
   /// <summary>

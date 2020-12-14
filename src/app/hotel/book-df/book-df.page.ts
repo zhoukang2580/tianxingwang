@@ -29,6 +29,7 @@ import {
   Platform,
   IonSelect,
   IonDatetime,
+  IonFooter,
 } from "@ionic/angular";
 import { NavController } from "@ionic/angular";
 import {
@@ -111,12 +112,14 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  @ViewChild(RefresherComponent, { static: true })
-  ionRefresher: RefresherComponent;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild(IonFooter) ionFooter: IonFooter;
+  @ViewChild("transfromEle") transfromEle: ElementRef<HTMLDivElement>;
   error: any;
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
+  isExceeding = false;
   tmc: TmcEntity;
   serviceFee: number;
   detailServiceFee: number;
@@ -238,6 +241,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.illegalReason = data.data;
     }
   }
+
+  onPay(){
+    // this.combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]
+    // this.isExceeding[] = true;
+  }
+
   onOpenSelect(select: IonSelect) {
     if (select) {
       select.open();
@@ -336,8 +345,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.bookInfo.bookInfo &&
       item.bookInfo.bookInfo.roomPlan
     ) {
-      return this.hotelService.checkRoomPlanIsFreeBook(
-        item.bookInfo.bookInfo.roomPlan
+      return (
+        this.hotelService.checkRoomPlanIsFreeBook(
+          item.bookInfo.bookInfo.roomPlan
+        ) && item.bookInfo.bookInfo.roomPlan.isFreeBookRoom
       );
     }
   }
@@ -392,11 +403,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh(byUser: boolean) {
     try {
-      if (this.ionRefresher) {
-        this.ionRefresher.complete();
-        this.ionRefresher.disabled = true;
+      if (this.refresher) {
+        this.refresher.complete();
+        this.refresher.disabled = true;
         setTimeout(() => {
-          this.ionRefresher.disabled = false;
+          this.refresher.disabled = false;
         }, 300);
       }
       if (byUser) {
@@ -1402,6 +1413,21 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.isShowFee = !this.isShowFee;
     this.detailServiceFee = this.getServiceFees();
     this.initDayPrice();
+    this.showTransform(this.isShowFee)
+  }
+  private showTransform(show: boolean) {
+    try {
+      const el = this.ionFooter['el']
+      const transfromEle=this.transfromEle.nativeElement;
+      const rect = el.getBoundingClientRect();
+      if (show) {
+        transfromEle.style.transform = `translate(0,-${rect.height}px)`;
+      } else {
+        transfromEle.style.transform = `translate(0,100%)`;
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
   private initDayPrice() {
     const bookInfos = this.hotelService.getBookInfos();
@@ -1474,10 +1500,20 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   async onBook(isSave: boolean, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
-    if (this.isSubmitDisabled) {
+    if (
+      this.isSubmitDisabled ||
+      !this.combindInfos ||
+      !this.combindInfos.length ||
+      !this.combindInfos[0].bookInfo
+    ) {
       return;
     }
     const bookDto: OrderBookDto = new OrderBookDto();
+    const roomPlan =
+      this.combindInfos && this.combindInfos[0].bookInfo.bookInfo.roomPlan;
+    if (this.hotelService.checkRoomPlanIsFreeBook(roomPlan)) {
+      bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
+    }
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
@@ -1527,19 +1563,14 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(
-            this.langService.isCn ? "下单成功!" : "Checkout success",
-            1400,
-            "top"
-          );
+          // AppHelper.toast(
+          //   this.langService.isCn ? "下单成功!" : "Checkout success",
+          //   1400,
+          //   "top"
+          // );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
-          if (
-            !isSave &&
-            isSelf &&
-            (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
+          if (!isSave && isSelf) {
             let canPay = true;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;

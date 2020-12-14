@@ -81,6 +81,8 @@ export class HotelService {
   private isInitializingSelfBookInfos = false;
   private conditionModel: HotelConditionModel;
   private isLoadingCondition = false;
+  HotelDefaltImg: string;
+  RoomDefaultImg: string;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
   private testData: {
@@ -245,14 +247,14 @@ export class HotelService {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Area")
+      room.RoomDetails.find((it) => it.Tag == "Area" || it.Name == "面积")
     );
   }
   getFloor(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Floor")
+      room.RoomDetails.find((it) => it.Tag == "Floor" || it.Name == "楼层")
     );
   }
   getRenovationDate(room: RoomEntity) {
@@ -273,15 +275,30 @@ export class HotelService {
     const one =
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Capacity");
+      room.RoomDetails.find(
+        (it) =>
+          it.Tag == "Capacity" || (it.Name && it.Name.includes("入住人数"))
+      );
     return one && one.Description && one;
   }
   getBedType(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "BedType")
+      room.RoomDetails.find(
+        (it) => it.Tag == "BedType" || (it.Name && it.Name.includes("床型"))
+      )
     );
+  }
+  getRoomPlanDescriptions(room: RoomEntity) {
+    const itm =
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find((it) => it.Name == "描述");
+    if (!itm || !itm.Description) {
+      return [];
+    }
+    return itm.Description.split("、");
   }
   async getConditions(forceFetch = false) {
     const city = this.getSearchHotelModel().destinationCity;
@@ -529,20 +546,40 @@ export class HotelService {
         this.localHotelCities &&
         this.localHotelCities.length
       ) {
+        // console.log("locals", this.localHotelCities);
+        console.log(
+          "locals 广元",
+          this.localHotelCities.find((it) => it.Name == "广元")
+        );
         return this.localHotelCities;
       }
       this.localHotelCities = this.localHotelCities || [];
       const cs = await this.loadHotelCitiesFromServer(this.lastUpdateTime);
       // .catch((_) => ({ HotelCities: [] as TrafficlineEntity[] }));
       if (cs && cs.Trafficlines && cs.Trafficlines.length) {
+        // console.log("cs.Trafficlines", cs.Trafficlines);
+        // console.log("cs.Trafficlines 广元", cs.Trafficlines.find(it=>it.Name=='广元'));
+        // let tmpArr = [];
         const arr = cs.Trafficlines.map((item) => {
-          if (!item.Pinyin) {
-            item.FirstLetter = this.getFirstLetter(item.Name);
-          } else {
-            item.FirstLetter = item.Pinyin.substring(0, 1).toUpperCase();
+          const fl = this.getFirstLetter(item.Name);
+          // if (
+          //   !item ||
+          //   !item.Pinyin ||
+          //   !fl ||
+          //   fl.toLowerCase() != item.Pinyin.substr(0, 1).toLowerCase()
+          // ) {
+          //   tmpArr.push(item);
+          // }
+          if (!item.FirstLetter) {
+            if (!item.Pinyin) {
+              item.FirstLetter = this.getFirstLetter(item.Name);
+            } else {
+              item.FirstLetter = item.Pinyin.substring(0, 1).toUpperCase();
+            }
           }
           return item;
         });
+        // console.log("tmpArr",tmpArr);
         this.localHotelCities = [
           ...this.localHotelCities.filter(
             (it) => !arr.some((c) => c.Code == it.Code)
@@ -643,28 +680,28 @@ export class HotelService {
     if (query.searchGeoId) {
       req["searchGeoId"] = query.searchGeoId;
     }
-    if (!environment.production && false) {
-      if (!this.testData) {
-        this.storage.get("test_big_hote_list").then((res) => {
-          this.testData = res;
-        });
-      } else {
-        console.log(
-          `大约加载本地${Object.keys(this.testData).length * 20}条记录，返回第${
-            query.PageIndex + 1
-          }批数据,已经加载${20 * query.PageIndex || 20}条记录`
-        );
-        const test = this.testData[query.PageIndex];
-        if (test) {
-          return of({
-            Data: {
-              HotelDayPrices: test.HotelDayPrices,
-              DataCount: test.DataCount,
-            },
-          }).pipe(delay(0));
-        }
-      }
-    }
+    // if (!environment.production && false) {
+    //   if (!this.testData) {
+    //     this.storage.get("test_big_hote_list").then((res) => {
+    //       this.testData = res;
+    //     });
+    //   } else {
+    //     console.log(
+    //       `大约加载本地${Object.keys(this.testData).length * 20}条记录，返回第${
+    //         query.PageIndex + 1
+    //       }批数据,已经加载${20 * query.PageIndex || 20}条记录`
+    //     );
+    //     const test = this.testData[query.PageIndex];
+    //     if (test) {
+    //       return of({
+    //         Data: {
+    //           HotelDayPrices: test.HotelDayPrices,
+    //           DataCount: test.DataCount,
+    //         },
+    //       }).pipe(delay(0));
+    //     }
+    //   }
+    // }
     const cond = this.getSearchHotelModel();
     const city = cond.destinationCity;
     req.IsShowLoading = query.PageIndex < 1;
@@ -673,8 +710,8 @@ export class HotelService {
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
     hotelquery.IsLoadDetail = true;
     hotelquery.Tag = this.getSearchHotelModel().tag;
-    if(hotelquery.HotelId){
-      hotelquery.SearchKey="";
+    if (hotelquery.HotelId) {
+      hotelquery.SearchKey = "";
     }
     req.Data = {
       ...hotelquery,
@@ -697,6 +734,8 @@ export class HotelService {
     return this.apiService.getResponse<HotelResultEntity>(req).pipe(
       map((result) => {
         if (result && result.Data && result.Data.HotelDayPrices) {
+          this.RoomDefaultImg = result.Data.RoomDefaultImg;
+          this.HotelDefaltImg = result.Data.HotelDefaltImg;
           result.Data.HotelDayPrices = result.Data.HotelDayPrices.map((it) => {
             if (it.Hotel) {
               if (it.Hotel.Variables) {
@@ -891,13 +930,54 @@ export class HotelService {
       .catch((_) => []);
     return whitelistPolicies.concat(notWhitelistPolicies);
   }
+  async openHotelCityPage(isShow = true) {
+    let page = document.body.querySelector(".domestic-hotel-city-page");
+    if (!page) {
+      page = await this.getHotelCitiesHtml();
+    }
+    if (isShow) {
+      page.classList.add("show");
+    } else {
+      page.classList.remove("show");
+    }
+  }
+  private async getHotelCitiesHtml() {
+    const cities = await this.getHotelCityAsync();
+    const letter2Citites = this.getLetter2Cities(cities);
+    const letters = Object.keys(letter2Citites);
+    const page = document.createElement("div");
+    page.classList.add("domestic-hotel-city-page");
+    const list = document.createElement("div");
 
+    page.append(list);
+    document.body.append(page);
+    return page;
+  }
+  private getLetter2Cities(arr: TrafficlineEntity[]) {
+    const letter2Citites: { [letter: string]: TrafficlineEntity[] } = {};
+    if (arr) {
+      if (arr) {
+        arr.forEach((c) => {
+          const tmp = letter2Citites[c.FirstLetter];
+          if (tmp) {
+            if (!tmp.find((it) => it.Code == c.Code)) {
+              tmp.push(c);
+            }
+          } else {
+            letter2Citites[c.FirstLetter] = [c];
+          }
+        });
+      }
+    }
+    return letter2Citites;
+  }
   private loadHotelCitiesFromServer(lastUpdateTime: number) {
     const req = new RequestEntity();
     req.Method = `ApiHomeUrl-Resource-DomesticHotelCity`;
     req.Data = {
       LastUpdateTime: lastUpdateTime,
     };
+    req.IsShowLoading = true;
     return this.apiService.getPromiseData<{
       Trafficlines: TrafficlineEntity[];
       // HotelCities: TrafficlineEntity[];

@@ -97,6 +97,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   rects: { [key in IHotelDetailTab]: ClientRect | DOMRect };
   bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity; color: string };
   hotelImages: { imageUrl: string }[];
+  roomDefaultImg: string;
   get totalNights() {
     return this.hotelService.calcTotalNights(
       this.queryModel.checkOutDate,
@@ -234,6 +235,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   ngOnInit() {
     this.subscriptions.push(this.hotelDetailSub);
+    this.roomDefaultImg = this.hotelService.RoomDefaultImg;
     AppHelper.isWechatMiniAsync().then((isMini) => {
       this.isShowTrafficInfo = !isMini;
     });
@@ -271,7 +273,9 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
         (it) => it.ImageUrl || it.FullFileName || it.FileName
       );
     if (!urls || urls.length == 0) {
-      if (this.config && this.config.DefaultImageUrl) {
+      if (this.hotelService.HotelDefaltImg) {
+        urls = [this.hotelService.HotelDefaltImg];
+      } else if (this.config && this.config.DefaultImageUrl) {
         urls = [this.config.DefaultImageUrl];
       }
     }
@@ -330,6 +334,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
               this.content.scrollToTop();
               this.initFilterPolicy();
               this.checkIfBookedRoomPlan();
+              this.initHotelDetails();
               setTimeout(() => {
                 this.initRects();
               }, 1000);
@@ -341,6 +346,17 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
           AppHelper.alert(e.Message || e);
         }
       );
+  }
+  private initHotelDetails() {
+    if (this.hotel && this.hotel.HotelDetails) {
+      this.hotel.HotelDetails.forEach((it) => {
+        it["isHtmlDescription"] = this.checkHtml(it.Description);
+      });
+    }
+  }
+  private checkHtml(htmlStr) {
+    const reg = /<[^>]+>/g;
+    return reg.test(htmlStr);
   }
   private initHotelImages() {
     this.hotelImages = this.getHotelImageUrls().map((it) => {
@@ -395,6 +411,9 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   getBedType(room: RoomEntity) {
     return this.hotelService.getBedType(room);
+  }
+  getRoomDescriptions(room: RoomEntity) {
+    return this.hotelService.getRoomPlanDescriptions(room);
   }
   onSegmentChanged(evt: CustomEvent) {
     this.activeTab = evt.detail.value;
@@ -468,6 +487,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
+    evt.roomPlan.isFreeBookRoom = true;
     const color = evt.color || "success";
     const policies = this.hotelPolicy || (await this.getPolicy()) || [];
     const policy =
@@ -555,6 +575,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
+    evt.roomPlan.isFreeBookRoom = false;
     const color = evt.color || "";
     const removedBookInfos: PassengerBookInfo<IHotelInfo>[] = [];
     const policies = this.hotelPolicy || (await this.getPolicy()) || [];
@@ -736,7 +757,8 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     //   component: HotelRoomBookedinfosComponent
     // });
     // await m.present();
-    this.router.navigate(["hotel-room-bookedinfos"]);
+    // this.router.navigate(["hotel-room-bookedinfos"]);
+    this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
   }
   getRoomLowestAvgPrice(room: RoomEntity) {
     let result = 0;
@@ -769,7 +791,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       config: this.config,
       agent: this.agent,
     };
-    this.router.navigate(["hotel-room-detail"]);
+    this.router.navigate(["hotel-room-detail-df"]);
     // const m = await this.modalCtrl.create({
     //   component: RoomDetailComponent,
     //   componentProps: {
@@ -891,8 +913,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
         a.href = `tel:${phoneNumber}`;
         a.click();
       }
-    }else{
-      
+    } else {
     }
   }
   private checkScroll() {

@@ -19,6 +19,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: "search-flight_df",
+    loadChildren: () =>
+      import("./search-flight_df/search-flight-df.module").then(
+        (m) => m.SearchFlightDfPageModule
+      ),
+  },
+  {
     path: "selected-flight-bookinfos",
     loadChildren: () =>
       import(

@@ -1,569 +1,596 @@
 <ion-header>
-    <ion-toolbar>
-        <ion-buttons slot='start'>
-            <app-back-button defaultHref=""></app-back-button>
-        </ion-buttons>
-        <ion-title>火车票订单详情</ion-title>
-    </ion-toolbar>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
+    <ion-title>火车票订单详情</ion-title>
+  </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
-        <app-swiper-slide-content [tabs]="tabs">
-            <div class="swiper-slide" #slide>
-                <!-- 订单信息 -->
-                <div>
-                    <ion-item-divider>
-                        订单信息
-                    </ion-item-divider>
-                    <div>
-                        <ion-row>
-                            <ion-col size='3'>订单编号:</ion-col>
-                            <ion-col>{{orderDetail.Order.Id}}</ion-col>
-                        </ion-row>
-                        <ion-row>
-                            <ion-col size='3'>订单状态:</ion-col>
-                            <ion-col>{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" : orderDetail.Order.StatusName}}
-                            </ion-col>
-                        </ion-row>
-                        <ion-row>
-                            <ion-col size='3'>付款方式:</ion-col>
-                            <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col>
-                        </ion-row>
-                        <ion-row>
-                            <ion-col size='3'>完成时间:</ion-col>
-                            <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
-                        </ion-row>
-                        <ion-row (click)='showPricePopover()'>
-                            <ion-col size='3'>应付金额:</ion-col>
-                            <ion-col>
-                                <div>
-                                    <ion-text color="danger">￥{{orderDetail.Order.TotalAmount}}
-                                    </ion-text>
-                                    <span *ngIf='getInsuranceAmount() as insuranceAmount'>(含保险{{insuranceAmount}})</span>
-                                    <ion-text color="secondary" style="font-size: 0.7rem;">应付明细</ion-text>
-                                </div>
-                            </ion-col>
-                        </ion-row>
-                        <ng-container>
-                            <ng-container *ngIf='tmc?.IsShowServiceFee'>
-                                <ion-row *ngFor='let orderHotel of orderDetail.Order.OrderHotels'>
-                                    <ion-col size='3'>
-                                        <ng-container *ngIf='orderDetail.Order.OrderHotels.length>1'>
-                                            <strong *ngIf='orderHotel.HotelName as n'>
-                        {{n.length>10?n.substr(0,10)+"...":n}}
-                      </strong>
-                                        </ng-container>
-                                        服务费:
-                                    </ion-col>
-                                    <ion-col>{{getHotelServiceFee(orderHotel.Key)}}
-                                    </ion-col>
-                                </ion-row>
-                            </ng-container>
-                        </ng-container>
-                        <ion-row>
-                            <ion-col size='3'>已付金额:</ion-col>
-                            <ion-col>{{getOrderPayAmount()}}</ion-col>
-                        </ion-row>
-                        <ion-row>
-                            <ion-col size='3' *ngIf="orderDetail?.Order?.OrderNumbers">外部编号</ion-col>
-                            <ion-col>
-                                <div *ngFor='let n of orderDetail?.Order?.OrderNumbers'>
-                                    <span *ngIf='n.Tag=="TmcOutNumber"'>{{n.Name}}:{{n.Number}}</span>
-                                </div>
-                            </ion-col>
-                        </ion-row>
-                    </div>
-                    <ng-container *ngIf="orderDetail.Histories.length">
-                        <div>
-                            <ion-item-divider>审批记录</ion-item-divider>
-                        </div>
-                        <div>
-                            <div *ngFor='let history of orderDetail.Histories'>
-                                <div class='approval-info'>
-                                    <!-- <ion-row class="ion-padding-top">
-                    <ion-col size='4'>审批类型:</ion-col>
-                    <ion-col>{{getVariableObj(history,"TypeName")}}</ion-col>
-                  </ion-row> -->
-                                    <ion-row>
-                                        <ion-col size='4'>审批人:</ion-col>
-                                        <ion-col>{{history.Account?.RealName}} <span *ngIf='history.StatusName'>({{history.StatusName}})</span></ion-col>
-                                    </ion-row>
-                                    <ion-row>
-                                        <ion-col size='4'>发起审批时间:</ion-col>
-                                        <ion-col>{{history?.InsertDateTime}}</ion-col>
-                                    </ion-row>
-                                    <ion-row>
-                                        <ion-col size='4'>审批截止时间:</ion-col>
-                                        <ion-col>{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col>
-                                    </ion-row>
-                                    <!-- <ion-row *ngIf="history.Status==TaskStatusType.Passed||history.Status==TaskStatusType.Rejected">
-                    <ion-col size='4'>审批时间:</ion-col>
-                    <ion-col>
-                      {{history?.UpdateTime?.startsWith("0001")?"":history?.UpdateTime.replace("T"," ")?.substring(0,16)}}
-                    </ion-col>
-                  </ion-row> -->
-                                </div>
-                            </div>
-                        </div>
-                    </ng-container>
-                </div>
-            </div>
-            <ng-container *ngFor="let ticket of orderDetail?.Order?.OrderTrainTickets;let i=index">
-                <div class="swiper-slide" #slide *ngIf="ticket.VariablesJsonObj.isShow">
-                    <div>
-                        <!-- 旅客信息 -->
-                        <ng-container *ngIf='getTicketPassenger(ticket) as p'>
-                            <ion-item-divider>
-                                旅客信息
-                            </ion-item-divider>
-                            <ion-row>
-                                <ion-col size='3'>姓名</ion-col>
-                                <ion-col>
-                                    {{p.Name}}
-                                    <span *ngIf='p.PassengerTypeName'>({{p.PassengerTypeName}})</span>
-                                </ion-col>
-                            </ion-row>
-                            <ion-row>
-                                <ion-col size='3'>证件号码</ion-col>
-                                <ion-col>{{p.CredentialsNumber}}</ion-col>
-                            </ion-row>
-                            <ion-row>
-                                <ion-col size='3'>费用类别</ion-col>
-                                <ion-col>{{getExpenseType(ticket)}}</ion-col>
-                            </ion-row>
-                            <ion-row>
-                                <ion-col size='3'>联系电话</ion-col>
-                                <ion-col>{{p.Mobile}}</ion-col>
-                            </ion-row>
-                            <ion-row>
-                                <ion-col size='3'>邮箱</ion-col>
-                                <ion-col>{{p.Email}}</ion-col>
-                            </ion-row>
-                            <ng-container *ngIf='getPassengerCostOrgInfo(ticket) as info'>
-                                <ion-row>
-                                    <ion-col size='3'>成本中心</ion-col>
-                                    <ion-col>
-                                        {{info.CostCenterCode}}-{{info.CostCenterName}}
-                                    </ion-col>
-                                </ion-row>
-                                <ion-row>
-                                    <ion-col size='3'>组织架构</ion-col>
-                                    <ion-col>{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col>
-                                </ion-row>
-                                <ion-row>
-                                    <ion-col size='3'>违规</ion-col>
-                                    <ion-col *ngIf="info.IllegalPolicy">{{info.IllegalPolicy}}</ion-col>
-                                </ion-row>
-                                <ion-row>
-                                    <ion-col size='3'>违规原因</ion-col>
-                                    <ion-col *ngIf="info.IllegalReason">{{info.IllegalReason}}</ion-col>
-                                </ion-row>
-                            </ng-container>
-                        </ng-container>
-                        <!-- 联系信息 -->
-                        <ion-item-divider *ngIf="orderDetail?.Order?.OrderLinkmans">
-                            联系人信息
-                        </ion-item-divider>
-                        <ng-container *ngFor="let man of orderDetail?.Order?.OrderLinkmans">
-                            <ion-row>
-                                <ion-col size='3'>姓名</ion-col>
-                                <ion-col>{{man.Name}}</ion-col>
-                            </ion-row>
-                            <ion-row>
-                                <ion-col size='3'>邮箱</ion-col>
-                                <ion-col>{{man.Email}}</ion-col>
-                            </ion-row>
-                            <ion-row>
-                                <ion-col size='3'>电话</ion-col>
-                                <ion-col>{{man.Mobile}}</ion-col>
-                            </ion-row>
-                        </ng-container>
-                        <!-- <ng-container> -->
-                        <div class="getHeight">
-                            <ng-container>
-                                <ion-item-divider>
-                                    车次信息
-                                </ion-item-divider>
-                                <ion-row>
-                                    <ion-col size='3'>
-                                        车票状态
-                                    </ion-col>
-                                    <ion-col>
-                                        {{ticket?.StatusName}}
-                                        <ion-text color="danger" *ngIf="tikect2Insurance[ticket.Key]?.length>0">(含保险)</ion-text>
-                                    </ion-col>
-                                </ion-row>
-                                <ng-container *ngFor="let trip of ticket.OrderTrainTrips;">
-                                    <ion-row>
-                                        <ion-col size='3'>
-                                            列车号
-                                        </ion-col>
-                                        <ion-col>
-                                            {{trip.TrainCode}}
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf="ticket.Detail">
-                                        <ion-col size='3'>
-                                            座位信息
-                                        </ion-col>
-                                        <ion-col style="display: flex;align-items: center;">
-                                            {{ticket.Detail}}
-                                            <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='ticket?.VariablesJsonObj.IsAccessByIdCard' alt="" style="width: 1.5em;margin-left: 0.5em;">
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf="ticket.VariablesJsonObj.TicketEntrance">
-                                        <ion-col size='3'>
-                                            检票口
-                                        </ion-col>
-                                        <ion-col style="display: flex;align-items: center;">
-                                            {{ticket.VariablesJsonObj.TicketEntrance}}
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row>
-                                        <ion-col size='3'>出发站</ion-col>
-                                        <ion-col>
-                                            {{trip.FromStationName}}
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row>
-                                        <ion-col size='3'>目的地</ion-col>
-                                        <ion-col>
-                                            {{trip?.ToStationName}}
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row>
-                                        <ion-col size='3'>发车时间</ion-col>
-                                        <ion-col>
-                                            <div>
-                                                <div>
-                                                    {{trip?.StartTime?.replace("T"," ")?.substring(0,19)}}
-                                                </div>
-                                            </div>
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row>
-                                        <ion-col size='3'>到达时间</ion-col>
-                                        <ion-col>
-                                            <div>{{trip?.ArrivalTime?.replace("T"," ")?.substring(0,19)}}</div>
-                                        </ion-col>
-                                    </ion-row>
-                                </ng-container>
-                                <ion-row>
-                                    <ion-col *ngIf="ticket.Explain">
-                                        退改签政策
-                                    </ion-col>
-                                </ion-row>
-                                <ion-row>
-                                    <ion-col>
-                                        <p style="margin-top: 0px">{{ticket.Explain?.split("\\n").join("")}}</p>
-                                    </ion-col>
-                                </ion-row>
-                            </ng-container>
-                            <ng-container *ngIf='tikect2Insurance[ticket.Key] as orderInsurances'>
-                                <ion-grid *ngFor='let orderInsurance of orderInsurances'>
-                                    <ion-item-divider *ngIf="orderInsurance.StatusName">
-                                        保险信息
-                                    </ion-item-divider>
-                                    <ion-row>
-                                        <ion-col size='3'>
-                                            行程
-                                        </ion-col>
-                                        <ion-col>
-                                            {{orderInsurance?.VariablesJsonObj?.trip?.TakeoffTime?.substr(0,10)}} {{orderInsurance?.VariablesJsonObj?.trip?.FromCityName}} --- {{orderInsurance?.VariablesJsonObj?.trip?.ToCityName}}
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row>
-                                        <ion-col size='3'>
-                                            保单号
-                                        </ion-col>
-                                        <ion-col *ngIf="orderInsurance.Id">
-                                            {{orderInsurance.Id}}
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf="orderInsurance.StatusName">
-                                        <ion-col size='3'>
-                                            保单状态
-                                        </ion-col>
-                                        <ion-col>
-                                            {{orderInsurance.StatusName}}
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.BookTime?.replace("T"," ")?.substring(0,19) as time'>
-                                        <ion-col size='3'>
-                                            预订时间
-                                        </ion-col>
-                                        <ion-col>
-                                            {{time}}
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.EffectiveDate?.startsWith("1800") ? "" :
-                    orderInsurance.EffectiveDate?.replace("T"," ") as time'>
-                                        <ion-col size='3'>保单生效时间</ion-col>
-                                        <ion-col> {{time}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.ExpireDate?.startsWith("1800") ? "" : orderInsurance.ExpireDate?.replace("T"," ") as time'>
-                                        <ion-col size='3'>保单失效时间</ion-col>
-                                        <ion-col> {{time}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf="orderInsurance.Name">
-                                        <ion-col size='3'>保险类型</ion-col>
-                                        <ion-col> {{orderInsurance?.Name}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.PolicyNo as n'>
-                                        <ion-col size='3'>保单号</ion-col>
-                                        <ion-col> {{n}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.Number as s'>
-                                        <ion-col size='3'>供应商订单号</ion-col>
-                                        <ion-col> {{s}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='false && orderInsurance.Name as n'>
-                                        <ion-col size='3'>保险名称</ion-col>
-                                        <ion-col> {{n}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='false && orderInsurance.Supplier as s'>
-                                        <ion-col size='3'>供应商</ion-col>
-                                        <ion-col> {{s}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.Count as c'>
-                                        <ion-col size='3'>数量</ion-col>
-                                        <ion-col> {{c}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.Premium as p'>
-                                        <ion-col size='3'>保费</ion-col>
-                                        <ion-col> {{p}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.InsuredAmount as a'>
-                                        <ion-col size='3'>最大保额</ion-col>
-                                        <ion-col> {{a}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='false && orderInsurance.BookCode as c'>
-                                        <ion-col size='3'>预订代码</ion-col>
-                                        <ion-col> {{c}} </ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.Detail as detail'>
-                                        <ion-col size='3'>投保须知</ion-col>
-                                    </ion-row>
-                                    <ion-row *ngIf='orderInsurance.Detail as detail'>
-                                        <ion-col>
-                                            <p class='clip-text ion-no-margin' (click)='orderInsurance["isShowDetail"]=!orderInsurance["isShowDetail"]' [class.show]='orderInsurance["isShowDetail"]'>
-                                                {{detail}}
-                                            </p>
-                                        </ion-col>
-                                    </ion-row>
-                                </ion-grid>
-                            </ng-container>
-                            <ion-row style="padding-left:0" *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[ticket.Id]?.length>0">
-                                <ion-col class="ion-text-justify" color="secondary">
-                                    <ion-button color='secondary' expand='full' (click)="onShowTicket(ticket,ticket?.VariablesJsonObj?.OriginalTicketId,$event)">
-                                        原始车票信息{{ticket?.VariablesJsonObj?.OriginalTicketId}}
-                                        <ion-icon name="chevron-down-outline" *ngIf="ticket.VariablesJsonObj.isToggleIcon"></ion-icon>
-                                        <ion-icon name="chevron-up-outline" *ngIf="!ticket.VariablesJsonObj.isToggleIcon"></ion-icon>
-                                    </ion-button>
-                                </ion-col>
-                            </ion-row>
-                        </div>
-                        <ng-container @flyInOut *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[ticket?.Id]?.length">
-                            <div class="getHeight" *ngFor="let ticket of tikectId2OriginalTickets[ticket.Id]">
-                                <ng-container *ngIf="ticket.isShowOriginalTicket">
-                                    <ion-row>
-                                        <ion-col size='3'>
-                                            车票状态
-                                        </ion-col>
-                                        <ion-col>
-                                            {{ticket?.StatusName}}
-                                            <ion-text color="danger" *ngIf="tikect2Insurance[ticket.Key]?.length>0">(含保险)</ion-text>
-                                        </ion-col>
-                                    </ion-row>
-                                    <ng-container *ngFor="let trip of ticket.OrderTrainTrips;">
-                                        <ion-row>
-                                            <ion-col size='3'>
-                                                列车号
-                                            </ion-col>
-                                            <ion-col>
-                                                {{trip.TrainCode}}
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row *ngIf="ticket.Detail">
-                                            <ion-col size='3'>
-                                                座位信息
-                                            </ion-col>
-                                            <ion-col style="display: flex;align-items: center;">
-                                                {{ticket.Detail}}
-                                                <ng-container *ngIf='ticket.VariablesJsonObj?.SeatLocation'>
-                                                    {{ticket.VariablesJsonObj.SeatLocation}} </ng-container>
-                                                <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='ticket?.VariablesJsonObj.IsAccessByIdCard' alt="" style="width: 1.5em;margin-left: 0.5em;">
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row *ngIf="ticket.VariablesJsonObj.TicketEntrance">
-                                            <ion-col size='3'>
-                                                检票口
-                                            </ion-col>
-                                            <ion-col style="display: flex;align-items: center;">
-                                                {{ticket.VariablesJsonObj.TicketEntrance}}
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col size='3'>出发站</ion-col>
-                                            <ion-col>
-                                                {{trip.FromStationName}}
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col size='3'>目的地</ion-col>
-                                            <ion-col>
-                                                {{trip?.ToStationName}}
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col size='3'>发车时间</ion-col>
-                                            <ion-col>
-                                                <div>
-                                                    <div>
-                                                        {{trip?.StartTime?.replace("T"," ")?.substring(0,19)}}
-                                                    </div>
-                                                    <div>
-                                                        {{trip?.FromStationName}}{{trip?.ToStationCode}}
-                                                    </div>
-                                                </div>
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col size='3'>到达时间</ion-col>
-                                            <ion-col>
-                                                <div>{{trip?.ArrivalTime?.replace("T"," ")?.substring(0,19)}}</div>
-                                                <div>
-                                                    {{trip?.ToStationName}}({{trip?.ToStationCode}})
-                                                </div>
-                                            </ion-col>
-                                        </ion-row>
-                                    </ng-container>
-                                    <ng-container *ngIf="ticket.Explain">
-                                        <ion-row>
-                                            <ion-col>
-                                                退改签政策
-                                            </ion-col>
-                                        </ion-row>
-                                        <ion-row>
-                                            <ion-col>
-                                                <p style="margin-top: 0px">{{ticket.Explain?.split("\\n").join("")}}</p>
-                                            </ion-col>
-                                        </ion-row>
-                                    </ng-container>
-                                    <ng-container *ngIf='tikect2Insurance[ticket.Key] as orderInsurances'>
-                                        <ion-grid *ngFor='let orderInsurance of orderInsurances'>
-                                            <ion-item-divider *ngIf="orderInsurance.StatusName">
-                                                保险信息
-                                            </ion-item-divider>
-                                            <ion-row>
-                                                <ion-col size='3'>
-                                                    行程
-                                                </ion-col>
-                                                <ion-col *ngIf="getInsuranceTravel(ticket) as insurance">
-                                                </ion-col>
-                                            </ion-row>
-                                            <ion-row>
-                                                <ion-col size='3'>
-                                                    保单号
-                                                </ion-col>
-                                                <ion-col *ngIf="orderInsurance.Id">
-                                                    {{orderInsurance.Id}}
-                                                </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf="orderInsurance.StatusName">
-                                                <ion-col size='3'>
-                                                    保单状态
-                                                </ion-col>
-                                                <ion-col>
-                                                    {{orderInsurance.StatusName}}
-                                                </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.BookTime?.replace("T"," ")?.substring(0,19) as time'>
-                                                <ion-col size='3'>
-                                                    预订时间
-                                                </ion-col>
-                                                <ion-col>
-                                                    {{time}}
-                                                </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.EffectiveDate?.startsWith("1800") ? "" :
-                          orderInsurance.EffectiveDate?.replace("T"," ") as time'>
-                                                <ion-col size='3'>保单生效时间</ion-col>
-                                                <ion-col> {{time}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.ExpireDate?.startsWith("1800") ? "" : orderInsurance.ExpireDate?.replace("T"," ") as time'>
-                                                <ion-col size='3'>保单失效时间</ion-col>
-                                                <ion-col> {{time}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf="orderInsurance.Name">
-                                                <ion-col size='3'>保险类型</ion-col>
-                                                <ion-col> {{orderInsurance?.Name}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.PolicyNo as n'>
-                                                <ion-col size='3'>保单号</ion-col>
-                                                <ion-col> {{n}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.Number as s'>
-                                                <ion-col size='3'>供应商订单号</ion-col>
-                                                <ion-col> {{s}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='false && orderInsurance.Name as n'>
-                                                <ion-col size='3'>保险名称</ion-col>
-                                                <ion-col> {{n}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='false && orderInsurance.Supplier as s'>
-                                                <ion-col size='3'>供应商</ion-col>
-                                                <ion-col> {{s}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.Count as c'>
-                                                <ion-col size='3'>数量</ion-col>
-                                                <ion-col> {{c}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.Premium as p'>
-                                                <ion-col size='3'>保费</ion-col>
-                                                <ion-col> {{p}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.InsuredAmount as a'>
-                                                <ion-col size='3'>最大保额</ion-col>
-                                                <ion-col> {{a}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='false && orderInsurance.BookCode as c'>
-                                                <ion-col size='3'>预订代码</ion-col>
-                                                <ion-col> {{c}} </ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.Detail as detail'>
-                                                <ion-col size='3'>投保须知</ion-col>
-                                            </ion-row>
-                                            <ion-row *ngIf='orderInsurance.Detail as detail'>
-                                                <ion-col>
-                                                    <p class='clip-text ion-no-margin' (click)='orderInsurance["isShowDetail"]=!orderInsurance["isShowDetail"]' [class.show]='orderInsurance["isShowDetail"]'>
-                                                        {{detail}}
-                                                    </p>
-                                                </ion-col>
-                                            </ion-row>
-                                        </ion-grid>
-                                    </ng-container>
-                                    <ion-row style="padding-left:0em;" *ngIf="tikectId2OriginalTickets[ticket?.VariablesJsonObj?.OriginalTicketId]?.length">
-                                        <ion-col class="ion-text-justify" color="secondary">
-                                            <ion-button color='secondary' expand='full' (click)="onShowTicket(ticket,ticket?.VariablesJsonObj?.OriginalTicketId,$event)">
-                                                原始车票信息 {{ticket?.VariablesJsonObj?.OriginalTicketId}}
-                                                <ion-icon name="chevron-down-outline" *ngIf="ticket.isShowOriginalTicket"></ion-icon>
-                                                <ion-icon name="chevron-up-outline" *ngIf="!ticket.isShowOriginalTicket"></ion-icon>
-                                            </ion-button>
-                                        </ion-col>
-                                    </ion-row>
-                                </ng-container>
-                            </div>
-                        </ng-container>
-                    </div>
-                </div>
+  <ng-container *ngIf="orderDetail&&orderDetail.Order else nomoredata">
+    <!-- <app-swiper-slide-content [tabs]="tabs"> -->
+    <div class="swiper-slide" #slide>
+      <!-- 订单信息 -->
+      <div class="container">
+        <div class="ion-item-divider"> 订单信息 </div>
+        <div class="container-div">
+          <ion-row>
+            <ion-col size="3">订单编号:</ion-col>
+            <ion-col>{{orderDetail.Order.Id}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="3">订单状态:</ion-col>
+            <ion-col
+              >{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" :
+              orderDetail.Order.StatusName}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="3">付款方式:</ion-col>
+            <ion-col
+              >{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col
+            >
+          </ion-row>
+          <ion-row>
+            <ion-col size="3">完成时间:</ion-col>
+            <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
+          </ion-row>
+          <ion-row (click)="showPricePopover()">
+            <ion-col size="3">应付金额:</ion-col>
+            <ion-col>
+              <div>
+                <ion-text color="danger"
+                  >￥{{orderDetail.Order.TotalAmount}}
+                </ion-text>
+                <span *ngIf="getInsuranceAmount() as insuranceAmount"
+                  >(含保险{{insuranceAmount}})</span
+                >
+                <ion-text color="secondary" style="font-size: 0.7rem"
+                  >应付明细</ion-text
+                >
+              </div>
+            </ion-col>
+          </ion-row>
+          <ng-container>
+            <ng-container *ngIf="tmc?.IsShowServiceFee">
+              <ion-row *ngFor="let orderHotel of orderDetail.Order.OrderHotels">
+                <ion-col size="3">
+                  <ng-container *ngIf="orderDetail.Order.OrderHotels.length>1">
+                    <strong *ngIf="orderHotel.HotelName as n">
+                      {{n.length>10?n.substr(0,10)+"...":n}}
+                    </strong>
+                  </ng-container>
+                  服务费:
+                </ion-col>
+                <ion-col>{{getHotelServiceFee(orderHotel.Key)}} </ion-col>
+              </ion-row>
             </ng-container>
-        </app-swiper-slide-content>
-    </ng-container>
-    <ng-template #nomoredata>
-        <span *ngIf='isLoading'>
-      正在获取订单详情...
-    </span>
-        <app-or-comp *ngIf='!isLoading'>暂无数据</app-or-comp>
-    </ng-template>
+          </ng-container>
+          <ion-row>
+            <ion-col size="3">已付金额:</ion-col>
+            <ion-col>{{getOrderPayAmount()}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="3" *ngIf="orderDetail?.Order?.OrderNumbers"
+              >外部编号</ion-col
+            >
+            <ion-col>
+              <div *ngFor="let n of orderDetail?.Order?.OrderNumbers">
+                <span *ngIf='n.Tag=="TmcOutNumber"'
+                  >{{n.Name}}:{{n.Number}}</span
+                >
+              </div>
+            </ion-col>
+          </ion-row>
+        </div>
+        <div *ngFor="let ticket of orderDetail?.Order?.OrderTrainTickets;let i=index"
+        >
+          <div
+            class="swiper-slide"
+            #slide
+            *ngIf="ticket.VariablesJsonObj.isShow"
+          >
+            <div class="container-div">
+              <!-- 旅客信息 -->
+              <ng-container *ngIf="getTicketPassenger(ticket) as p">
+                <div class="ion-item-divider"> 旅客信息 </div>
+                <ion-row>
+                  <ion-col size="3">姓名</ion-col>
+                  <ion-col>
+                    {{p.Name}}
+                    <span *ngIf="p.PassengerTypeName"
+                      >({{p.PassengerTypeName}})</span
+                    >
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">证件号码</ion-col>
+                  <ion-col>{{p.CredentialsNumber}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">费用类别</ion-col>
+                  <ion-col>{{getExpenseType(ticket)}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">联系电话</ion-col>
+                  <ion-col>{{p.Mobile}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">邮箱</ion-col>
+                  <ion-col>{{p.Email}}</ion-col>
+                </ion-row>
+                <ng-container *ngIf="getPassengerCostOrgInfo(ticket) as info">
+                  <ion-row>
+                    <ion-col size="3">成本中心</ion-col>
+                    <ion-col>
+                      {{info.CostCenterCode}}-{{info.CostCenterName}}
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size="3">组织架构</ion-col>
+                    <ion-col
+                      >{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col
+                    >
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size="3">违规内容</ion-col>
+                    <ion-col *ngIf="info.IllegalPolicy"
+                      >{{info.IllegalPolicy}}</ion-col
+                    >
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size="3">违规原因</ion-col>
+                    <ion-col *ngIf="info.IllegalReason"
+                      >{{info.IllegalReason}}</ion-col
+                    >
+                  </ion-row>
+                </ng-container>
+              </ng-container>
+              <!-- 联系信息 -->
+              <ion-item-divider *ngIf="orderDetail?.Order?.OrderLinkmans">
+                联系人信息
+              </ion-item-divider>
+              <ng-container
+                *ngFor="let man of orderDetail?.Order?.OrderLinkmans"
+              >
+                <ion-row>
+                  <ion-col size="3">姓名</ion-col>
+                  <ion-col>{{man.Name}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">邮箱</ion-col>
+                  <ion-col>{{man.Email}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">电话</ion-col>
+                  <ion-col>{{man.Mobile}}</ion-col>
+                </ion-row>
+              </ng-container>
+              <!-- <ng-container> -->
+              <div class="getHeight">
+                <ng-container>
+                  <div class="ion-item-divider"> 车次信息 </div>
+                  <ion-row>
+                    <ion-col size="3"> 车票状态 </ion-col>
+                    <ion-col>
+                      {{ticket?.StatusName}}
+                      <ion-text
+                        color="danger"
+                        *ngIf="tikect2Insurance[ticket.Key]?.length>0"
+                        >(含保险)</ion-text
+                      >
+                    </ion-col>
+                  </ion-row>
+                  <ng-container *ngFor="let trip of ticket.OrderTrainTrips;">
+                    <ion-row>
+                      <ion-col size="3"> 列车号 </ion-col>
+                      <ion-col> {{trip.TrainCode}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="ticket.Detail">
+                      <ion-col size="3"> 座位信息 </ion-col>
+                      <ion-col style="display: flex; align-items: center">
+                        {{ticket.Detail}}
+                        <img
+                          src="assets/images/idcard.png"
+                          class="access-by-IdCard"
+                          *ngIf="ticket?.VariablesJsonObj.IsAccessByIdCard"
+                          alt=""
+                          style="width: 1.5em; margin-left: 0.5em"
+                        />
+                      </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="ticket.VariablesJsonObj.TicketEntrance">
+                      <ion-col size="3"> 检票口 </ion-col>
+                      <ion-col style="display: flex; align-items: center">
+                        {{ticket.VariablesJsonObj.TicketEntrance}}
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="3">出发站</ion-col>
+                      <ion-col> {{trip.FromStationName}} </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="3">目的地</ion-col>
+                      <ion-col> {{trip?.ToStationName}} </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="3">发车时间</ion-col>
+                      <ion-col>
+                        <div>
+                          <div>
+                            {{trip?.StartTime?.replace("T","
+                            ")?.substring(0,19)}}
+                          </div>
+                        </div>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="3">到达时间</ion-col>
+                      <ion-col>
+                        <div>
+                          {{trip?.ArrivalTime?.replace("T","
+                          ")?.substring(0,19)}}
+                        </div>
+                      </ion-col>
+                    </ion-row>
+                  </ng-container>
+                  <ion-row>
+                    <ion-col *ngIf="ticket.Explain"> 退改签政策 </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col>
+                      <p style="margin-top: 0px">
+                        {{ticket.Explain?.split("\\n").join("")}}
+                      </p>
+                    </ion-col>
+                  </ion-row>
+                </ng-container>
+                <ng-container
+                  *ngIf="tikect2Insurance[ticket.Key] as orderInsurances"
+                >
+                  <ion-grid *ngFor="let orderInsurance of orderInsurances">
+                    <ion-item-divider *ngIf="orderInsurance.StatusName">
+                      保险信息
+                    </ion-item-divider>
+                    <ion-row>
+                      <ion-col size="3"> 行程 </ion-col>
+                      <ion-col>
+                        {{orderInsurance?.VariablesJsonObj?.trip?.TakeoffTime?.substr(0,10)}}
+                        {{orderInsurance?.VariablesJsonObj?.trip?.FromCityName}}
+                        ---
+                        {{orderInsurance?.VariablesJsonObj?.trip?.ToCityName}}
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="3"> 保单号 </ion-col>
+                      <ion-col *ngIf="orderInsurance.Id">
+                        {{orderInsurance.Id}}
+                      </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="orderInsurance.StatusName">
+                      <ion-col size="3"> 保单状态 </ion-col>
+                      <ion-col> {{orderInsurance.StatusName}} </ion-col>
+                    </ion-row>
+                    <ion-row
+                      *ngIf='orderInsurance.BookTime?.replace("T"," ")?.substring(0,19) as time'
+                    >
+                      <ion-col size="3"> 预订时间 </ion-col>
+                      <ion-col> {{time}} </ion-col>
+                    </ion-row>
+                    <ion-row
+                      *ngIf='orderInsurance.EffectiveDate?.startsWith("1800") ? "" :
+                            orderInsurance.EffectiveDate?.replace("T"," ") as time'
+                    >
+                      <ion-col size="3">保单生效时间</ion-col>
+                      <ion-col> {{time}} </ion-col>
+                    </ion-row>
+                    <ion-row
+                      *ngIf='orderInsurance.ExpireDate?.startsWith("1800") ? "" : orderInsurance.ExpireDate?.replace("T"," ") as time'
+                    >
+                      <ion-col size="3">保单失效时间</ion-col>
+                      <ion-col> {{time}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="orderInsurance.Name">
+                      <ion-col size="3">保险类型</ion-col>
+                      <ion-col> {{orderInsurance?.Name}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="orderInsurance.PolicyNo as n">
+                      <ion-col size="3">保单号</ion-col>
+                      <ion-col> {{n}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="orderInsurance.Number as s">
+                      <ion-col size="3">供应商订单号</ion-col>
+                      <ion-col> {{s}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="false && orderInsurance.Name as n">
+                      <ion-col size="3">保险名称</ion-col>
+                      <ion-col> {{n}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="false && orderInsurance.Supplier as s">
+                      <ion-col size="3">供应商</ion-col>
+                      <ion-col> {{s}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="orderInsurance.Count as c">
+                      <ion-col size="3">数量</ion-col>
+                      <ion-col> {{c}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="orderInsurance.Premium as p">
+                      <ion-col size="3">保费</ion-col>
+                      <ion-col> {{p}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="orderInsurance.InsuredAmount as a">
+                      <ion-col size="3">最大保额</ion-col>
+                      <ion-col> {{a}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="false && orderInsurance.BookCode as c">
+                      <ion-col size="3">预订代码</ion-col>
+                      <ion-col> {{c}} </ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="orderInsurance.Detail as detail">
+                      <ion-col size="3">投保须知</ion-col>
+                    </ion-row>
+                    <ion-row *ngIf="orderInsurance.Detail as detail">
+                      <ion-col>
+                        <p
+                          class="clip-text ion-no-margin"
+                          (click)='orderInsurance["isShowDetail"]=!orderInsurance["isShowDetail"]'
+                          [class.show]='orderInsurance["isShowDetail"]'
+                        >
+                          {{detail}}
+                        </p>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ng-container>
+                <ion-row
+                  style="padding-left: 0"
+                  *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[ticket.Id]?.length>0"
+                >
+                  <ion-col class="ion-text-justify" color="secondary">
+                    <ion-button
+                      color="secondary"
+                      expand="full"
+                      (click)="onShowTicket(ticket,ticket?.VariablesJsonObj?.OriginalTicketId,$event)"
+                    >
+                      原始车票信息{{ticket?.VariablesJsonObj?.OriginalTicketId}}
+                      <ion-icon
+                        name="chevron-down-outline"
+                        *ngIf="ticket.VariablesJsonObj.isToggleIcon"
+                      ></ion-icon>
+                      <ion-icon
+                        name="chevron-up-outline"
+                        *ngIf="!ticket.VariablesJsonObj.isToggleIcon"
+                      ></ion-icon>
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              </div>
+              <ng-container
+                @flyInOut
+                *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[ticket?.Id]?.length"
+              >
+                <div
+                  class="getHeight"
+                  *ngFor="let ticket of tikectId2OriginalTickets[ticket.Id]"
+                >
+                  <ng-container *ngIf="ticket.isShowOriginalTicket">
+                    <ion-row>
+                      <ion-col size="3"> 车票状态 </ion-col>
+                      <ion-col>
+                        {{ticket?.StatusName}}
+                        <ion-text
+                          color="danger"
+                          *ngIf="tikect2Insurance[ticket.Key]?.length>0"
+                          >(含保险)</ion-text
+                        >
+                      </ion-col>
+                    </ion-row>
+                    <ng-container *ngFor="let trip of ticket.OrderTrainTrips;">
+                      <ion-row>
+                        <ion-col size="3"> 列车号 </ion-col>
+                        <ion-col> {{trip.TrainCode}} </ion-col>
+                      </ion-row>
+                      <ion-row *ngIf="ticket.Detail">
+                        <ion-col size="3"> 座位信息 </ion-col>
+                        <ion-col style="display: flex; align-items: center">
+                          {{ticket.Detail}}
+                          <ng-container
+                            *ngIf="ticket.VariablesJsonObj?.SeatLocation"
+                          >
+                            {{ticket.VariablesJsonObj.SeatLocation}}
+                          </ng-container>
+                          <img
+                            src="assets/images/idcard.png"
+                            class="access-by-IdCard"
+                            *ngIf="ticket?.VariablesJsonObj.IsAccessByIdCard"
+                            alt=""
+                            style="width: 1.5em; margin-left: 0.5em"
+                          />
+                        </ion-col>
+                      </ion-row>
+                      <ion-row *ngIf="ticket.VariablesJsonObj.TicketEntrance">
+                        <ion-col size="3"> 检票口 </ion-col>
+                        <ion-col style="display: flex; align-items: center">
+                          {{ticket.VariablesJsonObj.TicketEntrance}}
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="3">出发站</ion-col>
+                        <ion-col> {{trip.FromStationName}} </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="3">目的地</ion-col>
+                        <ion-col> {{trip?.ToStationName}} </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="3">发车时间</ion-col>
+                        <ion-col>
+                          <div>
+                            <div>
+                              {{trip?.StartTime?.replace("T","
+                              ")?.substring(0,19)}}
+                            </div>
+                            <div>
+                              {{trip?.FromStationName}}{{trip?.ToStationCode}}
+                            </div>
+                          </div>
+                        </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col size="3">到达时间</ion-col>
+                        <ion-col>
+                          <div>
+                            {{trip?.ArrivalTime?.replace("T","
+                            ")?.substring(0,19)}}
+                          </div>
+                          <div>
+                            {{trip?.ToStationName}}({{trip?.ToStationCode}})
+                          </div>
+                        </ion-col>
+                      </ion-row>
+                    </ng-container>
+                    <ng-container *ngIf="ticket.Explain">
+                      <ion-row>
+                        <ion-col> 退改签政策 </ion-col>
+                      </ion-row>
+                      <ion-row>
+                        <ion-col>
+                          <p style="margin-top: 0px">
+                            {{ticket.Explain?.split("\\n").join("")}}
+                          </p>
+                        </ion-col>
+                      </ion-row>
+                    </ng-container>
+                    <ng-container
+                      *ngIf="tikect2Insurance[ticket.Key] as orderInsurances"
+                    >
+                      <ion-grid *ngFor="let orderInsurance of orderInsurances">
+                        <ion-item-divider *ngIf="orderInsurance.StatusName">
+                          保险信息
+                        </ion-item-divider>
+                        <ion-row>
+                          <ion-col size="3"> 行程 </ion-col>
+                          <ion-col
+                            *ngIf="getInsuranceTravel(ticket) as insurance"
+                          >
+                          </ion-col>
+                        </ion-row>
+                        <ion-row>
+                          <ion-col size="3"> 保单号 </ion-col>
+                          <ion-col *ngIf="orderInsurance.Id">
+                            {{orderInsurance.Id}}
+                          </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderInsurance.StatusName">
+                          <ion-col size="3"> 保单状态 </ion-col>
+                          <ion-col> {{orderInsurance.StatusName}} </ion-col>
+                        </ion-row>
+                        <ion-row
+                          *ngIf='orderInsurance.BookTime?.replace("T"," ")?.substring(0,19) as time'
+                        >
+                          <ion-col size="3"> 预订时间 </ion-col>
+                          <ion-col> {{time}} </ion-col>
+                        </ion-row>
+                        <ion-row
+                          *ngIf='orderInsurance.EffectiveDate?.startsWith("1800") ? "" :
+                                  orderInsurance.EffectiveDate?.replace("T"," ") as time'
+                        >
+                          <ion-col size="3">保单生效时间</ion-col>
+                          <ion-col> {{time}} </ion-col>
+                        </ion-row>
+                        <ion-row
+                          *ngIf='orderInsurance.ExpireDate?.startsWith("1800") ? "" : orderInsurance.ExpireDate?.replace("T"," ") as time'
+                        >
+                          <ion-col size="3">保单失效时间</ion-col>
+                          <ion-col> {{time}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderInsurance.Name">
+                          <ion-col size="3">保险类型</ion-col>
+                          <ion-col> {{orderInsurance?.Name}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderInsurance.PolicyNo as n">
+                          <ion-col size="3">保单号</ion-col>
+                          <ion-col> {{n}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderInsurance.Number as s">
+                          <ion-col size="3">供应商订单号</ion-col>
+                          <ion-col> {{s}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="false && orderInsurance.Name as n">
+                          <ion-col size="3">保险名称</ion-col>
+                          <ion-col> {{n}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="false && orderInsurance.Supplier as s">
+                          <ion-col size="3">供应商</ion-col>
+                          <ion-col> {{s}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderInsurance.Count as c">
+                          <ion-col size="3">数量</ion-col>
+                          <ion-col> {{c}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderInsurance.Premium as p">
+                          <ion-col size="3">保费</ion-col>
+                          <ion-col> {{p}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderInsurance.InsuredAmount as a">
+                          <ion-col size="3">最大保额</ion-col>
+                          <ion-col> {{a}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="false && orderInsurance.BookCode as c">
+                          <ion-col size="3">预订代码</ion-col>
+                          <ion-col> {{c}} </ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderInsurance.Detail as detail">
+                          <ion-col size="3">投保须知</ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderInsurance.Detail as detail">
+                          <ion-col>
+                            <p
+                              class="clip-text ion-no-margin"
+                              (click)='orderInsurance["isShowDetail"]=!orderInsurance["isShowDetail"]'
+                              [class.show]='orderInsurance["isShowDetail"]'
+                            >
+                              {{detail}}
+                            </p>
+                          </ion-col>
+                        </ion-row>
+                      </ion-grid>
+                    </ng-container>
+                    <ion-row
+                      style="padding-left: 0em"
+                      *ngIf="tikectId2OriginalTickets[ticket?.VariablesJsonObj?.OriginalTicketId]?.length"
+                    >
+                      <ion-col class="ion-text-justify" color="secondary">
+                        <ion-button
+                          color="secondary"
+                          expand="full"
+                          (click)="onShowTicket(ticket,ticket?.VariablesJsonObj?.OriginalTicketId,$event)"
+                        >
+                          原始车票信息
+                          {{ticket?.VariablesJsonObj?.OriginalTicketId}}
+                          <ion-icon
+                            name="chevron-down-outline"
+                            *ngIf="ticket.isShowOriginalTicket"
+                          ></ion-icon>
+                          <ion-icon
+                            name="chevron-up-outline"
+                            *ngIf="!ticket.isShowOriginalTicket"
+                          ></ion-icon>
+                        </ion-button>
+                      </ion-col>
+                    </ion-row>
+                  </ng-container>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- </app-swiper-slide-content> -->
+  </ng-container>
+  <ng-template #nomoredata>
+    <span *ngIf="isLoading"> 正在获取订单详情... </span>
+    <app-or-comp *ngIf="!isLoading">暂无数据</app-or-comp>
+  </ng-template>
 </ion-content>
