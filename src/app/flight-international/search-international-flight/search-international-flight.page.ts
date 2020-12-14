@@ -142,7 +142,7 @@ export class SearchInternationalFlightPage
       queryParams: { forType: FlightHotelTrainType.InternationalFlight },
     });
   }
-  async onSelecFlyDate(isFrom: boolean, trip: ITripInfo) {
+  async onSelectFlyDate(isFrom: boolean, trip: ITripInfo) {
     if (this.disabled) {
       return;
     }

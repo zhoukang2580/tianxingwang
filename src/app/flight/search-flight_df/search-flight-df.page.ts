@@ -28,6 +28,12 @@ import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
+import {
+  FlightVoyageType,
+  IInternationalFlightSearchModel,
+  InternationalFlightService,
+  ITripInfo,
+} from "src/app/flight-international/international-flight.service";
 @Component({
   selector: "app-search-flight-df",
   templateUrl: "./search-flight-df.page.html",
@@ -41,6 +47,7 @@ export class SearchFlightDfPage
   backDate: DayModel;
   searchConditionSubscription = Subscription.EMPTY;
   searchFlightModel: SearchFlightModel;
+  searchInterFlightModel: IInternationalFlightSearchModel;
   isMoving: boolean;
   showReturnTrip: boolean;
   disabled = false;
@@ -49,6 +56,9 @@ export class SearchFlightDfPage
   isShowBookInfos$ = of(0);
   isCanleave = true;
   isleave = true;
+  seg = "single";
+  selectedInterPassengers: any[];
+  FlightVoyageType = FlightVoyageType;
   private subscriptions: Subscription[] = [];
   get selectedPassengers() {
     return this.flightService.getPassengerBookInfos().length;
@@ -63,6 +73,7 @@ export class SearchFlightDfPage
     private calendarService: CalendarService,
     private navCtrl: NavController,
     private flightService: FlightService,
+    private internationalFlightService: InternationalFlightService,
     private storage: Storage,
     private staffService: StaffService,
     private apiService: ApiService,
@@ -82,6 +93,65 @@ export class SearchFlightDfPage
       this.initTravelCondition(q);
     });
     this.subscriptions.push(sub);
+  }
+  compareWithFn = (o1, o2) => {
+    return o1 && o2 ? o1 === o2 : false;
+  };
+  onCabinChange() {
+    // this.loadLoadingLevelPolicies();
+  }
+  onSelectInterCity(isFrom: boolean, trip: ITripInfo) {
+    if (this.disabled) {
+      return;
+    }
+    this.internationalFlightService.beforeSelectCity(isFrom, trip);
+  }
+  async onSelectInterFlyDate(isFrom: boolean, trip: ITripInfo) {
+    if (this.disabled) {
+      return;
+    }
+    this.internationalFlightService.onSelecFlyDate(isFrom, trip);
+  }
+  onSwapInterCity(trip: {
+    fromCity: TrafficlineEntity;
+    toCity: TrafficlineEntity;
+  }) {
+    if (!trip || !trip.fromCity || !trip.toCity) {
+      return;
+    }
+    const t = trip.fromCity;
+    trip.fromCity = trip.toCity;
+    trip.toCity = t;
+    if (this.searchFlightModel) {
+      this.internationalFlightService.setSearchModelSource(
+        this.searchInterFlightModel
+      );
+    }
+  }
+  onAddMoreTrip() {
+    this.internationalFlightService.addMoreTrip();
+  }
+  onRemoveTrip(trip: ITripInfo) {
+    if (this.searchInterFlightModel && trip) {
+      this.searchInterFlightModel.trips = this.searchInterFlightModel.trips.filter(
+        (it) => it.id != trip.id
+      );
+      this.internationalFlightService.setSearchModelSource(
+        this.searchInterFlightModel
+      );
+    }
+  }
+  onTripsSegmentChanged(evt: CustomEvent) {
+    const voyageType: FlightVoyageType = evt.detail.value;
+    if (voyageType == FlightVoyageType.OneWay) {
+      this.internationalFlightService.initOneWaySearModel();
+    }
+    if (voyageType == FlightVoyageType.GoBack) {
+      this.internationalFlightService.initGoBackSearchModel();
+    }
+    if (voyageType == FlightVoyageType.MultiCity) {
+      this.internationalFlightService.initMultiTripSearchModel();
+    }
   }
   onToggleDomestic() {
     this.isDomestic = !this.isDomestic;
@@ -200,6 +270,7 @@ export class SearchFlightDfPage
     console.log("ngAfterViewInit");
   }
   segmentChanged(value?: any) {
+    this.seg = value;
     // console.log("evt.detail.value", evt.detail.value);
     this.onRoundTrip(value == "single");
   }
@@ -207,6 +278,16 @@ export class SearchFlightDfPage
     return this.staffService.isSelfBookType();
   }
   async ngOnInit() {
+    this.subscriptions.push(
+      this.internationalFlightService.getBookInfoSource().subscribe((infos) => {
+        this.selectedInterPassengers = infos;
+      })
+    );
+    this.subscriptions.push(
+      this.internationalFlightService.getSearchModelSource().subscribe((m) => {
+        this.searchInterFlightModel = m;
+      })
+    );
     this.searchConditionSubscription = this.flightService
       .getSearchFlightModelSource()
       .subscribe(async (s) => {
@@ -233,12 +314,37 @@ export class SearchFlightDfPage
       .isSelfBookType()
       .catch((_) => false);
   }
-  onSelectPassenger() {
+  onSelectPassenger(isDomestic = true) {
     this.isCanleave = true;
     this.isleave = true;
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
-      queryParams: { forType: FlightHotelTrainType.Flight },
+      queryParams: {
+        forType: isDomestic
+          ? FlightHotelTrainType.Flight
+          : FlightHotelTrainType.InternationalFlight,
+      },
     });
+  }
+  private searchInterFlight() {
+    const m = this.searchInterFlightModel;
+    if (m) {
+      if (
+        m.voyageType == FlightVoyageType.GoBack ||
+        m.voyageType == FlightVoyageType.OneWay
+      ) {
+        if (m.trips[0] && m.trips[0].fromCity && m.trips[0].toCity) {
+          if (
+            (m.trips[0].fromCity.CountryCode || "").toLowerCase() == "cn" &&
+            (m.trips[0].toCity.CountryCode || "").toLowerCase() == "cn"
+          ) {
+            AppHelper.toast("出发地和目的地不可全为大陆地区", 1500, "middle");
+            return;
+          }
+        }
+      }
+    }
+    this.router.navigate([AppHelper.getRoutePath("international-flight-list")]);
+    this.internationalFlightService.flightListResult = null;
   }
   onShowSelectedInfosPage() {
     this.flightService.showSelectedBookInfosPage();
@@ -310,7 +416,11 @@ export class SearchFlightDfPage
       toCity: lastToCity,
     });
   }
-  async searchFlight() {
+  async searchFlight(isDomestic = true) {
+    if (!isDomestic) {
+      this.searchInterFlight();
+      return;
+    }
     this.isCanleave = true;
     this.isleave = true;
     console.log(`启程日期${this.goDate.date},返程日期：${this.backDate.date}`);
