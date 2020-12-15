@@ -57,6 +57,7 @@ export class SearchFlightDfPage
   isCanleave = true;
   isleave = true;
   seg = "single";
+  domestic = "domestic";
   selectedInterPassengers: any[];
   FlightVoyageType = FlightVoyageType;
   private subscriptions: Subscription[] = [];
@@ -64,8 +65,8 @@ export class SearchFlightDfPage
     return this.flightService.getPassengerBookInfos().length;
   }
   isEn = false;
-  isDomestic = true;
   isIos = false;
+  isSwapingCity = false;
   constructor(
     public router: Router,
     route: ActivatedRoute,
@@ -153,8 +154,8 @@ export class SearchFlightDfPage
       this.internationalFlightService.initMultiTripSearchModel();
     }
   }
-  onToggleDomestic() {
-    this.isDomestic = !this.isDomestic;
+  onToggleDomestic(segv) {
+    this.domestic=segv;
   }
   private checkBackDateIsAfterflyDate() {
     if (this.goDate && this.backDate) {
@@ -491,10 +492,14 @@ export class SearchFlightDfPage
     return this.calendarService.getDescOfDay(d);
   }
   onSwapCity() {
-    if (this.disabled) {
+    if (this.disabled || this.isSwapingCity) {
       return;
     }
+    this.isSwapingCity = true;
     this.flightService.onSwapCity();
+    setTimeout(() => {
+      this.isSwapingCity = false;
+    }, 240);
   }
   onSelectCity(isFromCity = true) {
     this.isCanleave = true;

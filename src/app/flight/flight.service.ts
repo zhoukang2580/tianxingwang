@@ -1198,7 +1198,9 @@ export class FlightService {
         (it) => it.Number == oldSeg.Number
       );
       // 替换最低价
-      const newSeg = result.FlightSegments.find((it) => it.Number == oldSeg.Number);
+      const newSeg = result.FlightSegments.find(
+        (it) => it.Number == oldSeg.Number
+      );
       if (newSeg) {
         oldSeg.LowestFare = newSeg.LowestFare;
         oldSeg.Cabins = result.FlightFares as any;
@@ -1325,18 +1327,22 @@ export class FlightService {
   private getFlightSegments(r: FlightResultEntity) {
     console.log("getTotalFlySegments flyJourneys", r);
     const result: FlightSegmentEntity[] = [];
-    if (r.FlightSegments) {
-      for (const seg of r.FlightSegments) {
-        seg.TakeoffTimeStamp = AppHelper.getDate(seg.TakeoffTime).getTime();
-        seg.ArrivalTimeStamp = AppHelper.getDate(seg.ArrivalTime).getTime();
-        seg.TakeoffShortTime = this.getHHmm(seg.TakeoffTime);
-        seg.ArrivalShortTime = this.getHHmm(seg.ArrivalTime);
-        if (seg.AirlineSrc) {
-          seg.AirlineSrc = seg.AirlineSrc.toLowerCase();
+    try {
+      if (r && r.FlightSegments) {
+        for (const seg of r.FlightSegments) {
+          seg.TakeoffTimeStamp = AppHelper.getDate(seg.TakeoffTime).getTime();
+          seg.ArrivalTimeStamp = AppHelper.getDate(seg.ArrivalTime).getTime();
+          seg.TakeoffShortTime = this.getHHmm(seg.TakeoffTime);
+          seg.ArrivalShortTime = this.getHHmm(seg.ArrivalTime);
+          if (seg.AirlineSrc) {
+            seg.AirlineSrc = seg.AirlineSrc.toLowerCase();
+          }
+          seg.AddOneDayTip = this.addoneday(seg);
+          result.push({ ...seg });
         }
-        seg.AddOneDayTip = this.addoneday(seg);
-        result.push({ ...seg });
       }
+    } catch (e) {
+      console.error(e);
     }
     console.log("getTotalFlySegments", result);
     return result;
