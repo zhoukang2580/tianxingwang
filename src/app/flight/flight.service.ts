@@ -1384,7 +1384,7 @@ export class FlightService {
     await this.checkOrAddSelfBookTypeBookInfo();
     await this.setDefaultFilterInfo();
     const req = new RequestEntity();
-    req.Method = "TmcApiFlightUrl-Home-Detail ";
+    req.Method = "TmcApiFlightUrl-Home-Detail";
     const data = this.getSearchFlightModel();
     req.Data = {
       Date: data.Date, //  Yes 航班日期（yyyy-MM-dd）

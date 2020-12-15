@@ -10,7 +10,7 @@ export class LazyloadService {
   constructor(
     private ngZone: NgZone,
     private imageRecoverService: ImageRecoverService
-  ) { }
+  ) {}
   getNormalizeUrl(url: string) {
     if (url) {
       const m = url.includes("?v") ? url.substring(0, url.indexOf("?v")) : url;
@@ -120,11 +120,23 @@ export class LazyloadService {
           //   "IntersectionObserver  isIntersecting 耗时：",
           //   Date.now() - this.time
           // );
-          this.load({ el, src: el["lazyLoad"], defaultImage, loadingImage, isPreventBgImage });
+          this.load({
+            el,
+            src: el["lazyLoad"],
+            defaultImage,
+            loadingImage,
+            isPreventBgImage,
+          });
           this.removeIO(el);
         } else if (AppHelper.isDingtalkH5()) {
           setTimeout(() => {
-            this.load({ el, src: el["lazyLoad"], defaultImage, loadingImage, isPreventBgImage });
+            this.load({
+              el,
+              src: el["lazyLoad"],
+              defaultImage,
+              loadingImage,
+              isPreventBgImage,
+            });
             this.removeIO(el);
           }, 200);
         }
@@ -137,7 +149,13 @@ export class LazyloadService {
       // this.addToQueue(this.lazyLoad);
       setTimeout(
         () =>
-          this.load({ el, src: el["lazyLoad"], loadingImage, defaultImage, isPreventBgImage }),
+          this.load({
+            el,
+            src: el["lazyLoad"],
+            loadingImage,
+            defaultImage,
+            isPreventBgImage,
+          }),
         200
       );
     }
@@ -200,12 +218,27 @@ export class LazyloadService {
           el.classList.remove("lazyloading");
         },
         (failoverDefaultUrl) => {
+          el.addEventListener("error", () => {
+            if (!el.getAttribute("istryloadlocalassetsimg")) {
+              el.setAttribute("istryloadlocalassetsimg", "true");
+              const tmp = document.createElement("img");
+              tmp.onload = () => {
+                el["src"] = failoverDefaultUrl;
+              };
+              tmp.onerror = () => {
+                el["src"] = AppHelper.getFailoverDefaultUrl();
+              };
+              tmp.src = failoverDefaultUrl;
+            } else {
+            }
+          });
           el.classList.remove("lazyloaderror");
           el.classList.remove("lazyloading");
           if (el instanceof HTMLDivElement) {
             if (!data.isPreventBgImage) {
-              el.style.backgroundImage = `url('${defaultImage || failoverDefaultUrl
-                }')`;
+              el.style.backgroundImage = `url('${
+                defaultImage || failoverDefaultUrl
+              }')`;
             }
           } else {
             el["src"] = defaultImage || failoverDefaultUrl;

@@ -28,7 +28,7 @@
                 <span class="idcode"
                   >身份证号: {{combindInfo?.vmCredential?.Number}}</span
                 >
-                <span class="add" (click)="onManagementCredentials(combindInfo)"
+                <span class="add" (click)="onManagementCredentials()"
                   ><img
                     src="assets/images/update.png"
                     alt=""
@@ -166,7 +166,7 @@
             <ion-label class="ion-ema">{{email.email}}</ion-label> -->
           </ion-item>
           <ion-item>
-            <div class="flex padding-v" (click)="searchCostCenter(combindInfo)">
+            <div class="flex padding-v" (click)="searchCostCenter()">
               <ion-label class="label">部门：</ion-label>
               <ion-text>
                 {{combindInfo?.costCenter?.name}}
@@ -180,7 +180,7 @@
           <ion-item class="cost-center">
             <div
               class="flex padding-v"
-              (click)="searchOrganization(combindInfo)"
+              (click)="searchOrganization()"
             >
               <ion-label class="label">成本中心：</ion-label>
               <ion-text>
