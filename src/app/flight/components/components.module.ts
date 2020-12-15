@@ -25,10 +25,12 @@ import { MemberComponentsModule } from 'src/app/member/components/components.mod
 import { FlightSegmentItemEnComponent } from './flight-segment-item-en/flight-segment-item-en.component';
 import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment-item.component';
 import { CabinEnComponent } from './fly-filter/cabin_en/cabin_en.component';
+import { TakeOffTimeSpanDfComponent } from "./fly-filter/take-off-timespan-df/take-off-timespan-df.component";
 
 @NgModule({
   declarations: [
     FlightDynamicComponent,
+    TakeOffTimeSpanDfComponent,
     FlyListItemComponent,
     FlyFilterComponent,
     TakeOffTimeSpanComponent,
@@ -60,6 +62,7 @@ import { CabinEnComponent } from './fly-filter/cabin_en/cabin_en.component';
   ],
   exports: [
     AppDirectivesModule,
+    TakeOffTimeSpanDfComponent,
     FlightDynamicComponent,
     FlyListItemComponent,
     FlyFilterComponent,
