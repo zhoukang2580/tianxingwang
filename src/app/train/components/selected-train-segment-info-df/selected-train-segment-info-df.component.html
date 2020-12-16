@@ -8,13 +8,6 @@
       <ion-title>已选火车信息</ion-title>
     </ng-template>
     <ion-title *ngIf='isExchange else el' color='danger'>正在被改签的火车信息</ion-title>
-    <div *ngFor='let bookInfo of bookInfos$|async'>
-      <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
-        <ion-button fill='clear' expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'
-          *ngIf='!bookInfo.bookInfo?.isExchange'>重选
-        </ion-button>
-      </div>
-    </div>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -31,14 +24,19 @@
             <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
               <ion-icon name="trash" color='danger' mode='ios'>
               </ion-icon>
+              <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
+                <ion-button fill='clear' expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'
+                  *ngIf='!bookInfo.bookInfo?.isExchange'>重选
+                </ion-button>
+              </div>
             </ion-button>
           </div>
           <ion-label class='train-item'>
-            <app-train-list-item [seat]='bookInfo.bookInfo?.selectedSeat' [isShowSelectSeatLocation]="false"
+            <app-train-list-item-df [seat]='bookInfo.bookInfo?.selectedSeat' [isShowSelectSeatLocation]="false"
               [selectSeatLocation]='bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'
               (seatPicker)='onSeatPicked($event,bookInfo)' [bookInfo]='bookInfo?.bookInfo'
               [train]='bookInfo?.bookInfo?.trainEntity'>
-            </app-train-list-item>
+            </app-train-list-item-df>
           </ion-label>
           <ion-label class='rules ion-text-wrap' color='danger' >
             {{bookInfo?.bookInfo?.trainPolicy?.Rules?.join("; ")}}

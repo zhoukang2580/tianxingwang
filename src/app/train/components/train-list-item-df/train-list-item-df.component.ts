@@ -109,7 +109,8 @@ export class TrainListItemDfComponent implements OnInit {
 
     return this.train.Seats;
   }
-  ngOnInit() {}
+  ngOnInit() {
+  }
   onScheduls(evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();

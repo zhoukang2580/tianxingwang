@@ -16,7 +16,6 @@
       <ng-container *ngFor="let combindInfo of viewModel?.combindInfos">
       <ion-list
         class="list"
-        *ngFor="let combindInfo of viewModel?.combindInfos"
         lines="none"
       >
         <ion-item-group>
@@ -299,52 +298,46 @@
           <ion-label>{{combindInfo.serviceFee}}元</ion-label>
         </ion-item>
       </ion-list>
-      <ion-list class="list">
-        <ion-item-group *ngIf="!searchTrainModel?.isExchange">
-          <!-- <ion-item-divider>
-            授权账号查看订单：
-          </ion-item-divider> -->
-          <app-book-addcontacts-comp-df
-            buttonText="授权账号查看订单"
-            [(contacts)]="addContacts"
-          >
-          </app-book-addcontacts-comp-df>
-        </ion-item-group>
-        <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
-          <ion-item class="ion-one">
-            <div class="payment_method">支付方式</div>
-          </ion-item>
-          <ion-item class="ion-two" [disabled]="searchTrainModel?.isExchange">
-            <div class="pay-met">
-              <ion-radio-group
-                mode='md'
-                [(ngModel)]="viewModel.orderTravelPayType"
-                name="travelPayType"
-                (ionChange)="calcTotalPrice()"
-              >
-                <ion-item *ngFor="let pt of orderTravelPayTypes">
-                  <ion-label>{{pt.label}}</ion-label>
-                  <ion-radio
-                    [value]="pt.value"
-                    (ionSelect)="onOrderTravelPayTypeSelect(pt)"
-                    [class.radio-checked]="pt.checked"
-                  >
-                  </ion-radio>
-                </ion-item>
-              </ion-radio-group>
-            </div>
-          </ion-item>
-        </ion-item-group>
-      </ion-list>
-      
     </ng-container>
+    <ion-list class="list">
+      <ion-item-group *ngIf="!searchTrainModel?.isExchange">
+        <!-- <ion-item-divider>
+          授权账号查看订单：
+        </ion-item-divider> -->
+        <app-book-addcontacts-comp-df
+          buttonText="授权账号查看订单"
+          [(contacts)]="addContacts"
+        >
+        </app-book-addcontacts-comp-df>
+      </ion-item-group>
+      <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
+        <ion-item class="ion-one">
+          <div class="payment_method">支付方式</div>
+        </ion-item>
+        <ion-item class="ion-two" [disabled]="searchTrainModel?.isExchange">
+          <div class="pay-met">
+            <ion-radio-group
+              mode='md'
+              [(ngModel)]="viewModel.orderTravelPayType"
+              name="travelPayType"
+              (ionChange)="calcTotalPrice()"
+            >
+              <ion-item *ngFor="let pt of orderTravelPayTypes">
+                <ion-label>{{pt.label}}</ion-label>
+                <ion-radio
+                  [value]="pt.value"
+                  (ionSelect)="onOrderTravelPayTypeSelect(pt)"
+                  [class.radio-checked]="pt.checked"
+                >
+                </ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </div>
+        </ion-item>
+      </ion-item-group>
+    </ion-list>
   </ng-container>
 </ng-container>
-<div class="center">
-  <span>
-    自2019年08月18日到2020年11月20日期间入住，离到店日不足6小时取消将收取罚金全额房费的100%，到店日不足0小时之后无法取消。2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
-  </span>
-</div>
   <ng-template #retryTempl>
     <ion-row style="position: relative; top: 35%">
       <ion-col class="ion-text-center">

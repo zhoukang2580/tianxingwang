@@ -22,6 +22,7 @@ import {
   ViewChild,
   OnDestroy,
   AfterViewInit,
+  IterableDiffers,
 } from "@angular/core";
 import {
   IonRefresher,
@@ -76,6 +77,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   private trains: TrainEntity[] = [];
   private trainsForRender: TrainEntity[] = [];
   private subscriptions: Subscription[] = [];
+  private trainCodes: any[];
   progressName = "";
   trainsCount = 0;
   vmTrains: TrainEntity[] = [];
@@ -231,7 +233,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     });
     m.present();
   }
-  trackBy(idx: number, train: TrainEntity) {
+  trackBy(idx: number, train: TrainEntity){
     return train && train.TrainCode;
   }
   async onSelectStation(isFrom: boolean) {
@@ -281,6 +283,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async filterPolicyTrains() {
     try {
+      this.trainCodes = [];
       const popover = await this.popoverController.create({
         component: FilterPassengersPolicyComponent,
         componentProps: {
@@ -290,19 +293,31 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       });
       await popover.present();
       const d = await popover.onDidDismiss();
-      // this.doRefresh(false, false, d.data);
+      // this.doRefresh(false,d.data);
       this.isLoading = true;
       if (!d.data) {
         return;
       }
-      let data;
+      let data:TrainEntity[]=[];
       if (d.data == "isUnFilterPolicy") {
         data = this.filterPassengerPolicyTrains(null);
       } else {
         data = this.filterPassengerPolicyTrains(d.data);
       }
       data = this.filterTrains(data);
+      console.log(data,'data');
+
+      this.vmTrains.forEach(element => {
+        if(element.isShowSeats){
+          this.trainCodes.push(element.TrainCode);
+        }
+      });
+      console.log("TrainCodes ",this.trainCodes);
+      data.forEach(t=>{
+        t.isShowSeats = this.trainCodes.find(it=>it==t.TrainCode);
+      })
       this.vmTrains = data;
+      
       this.isLoading = false;
     } catch (e) {
       console.error(e);
@@ -387,6 +402,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     this.trainsForRender = [];
+    this.trainCodes = [];
     this.trainsCount = 0;
     if (this.scroller) {
       this.scroller.disabled = false;
