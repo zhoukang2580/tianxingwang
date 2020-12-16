@@ -84,7 +84,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   onOpenTest() {
-    const url = "https://open.es.xiaojukeji.com/webapp/feESWebappLogin/index";
+    const url = "https://open.es.xiaojukeji.com/webapp/feESWebappLogin/index?ticket=fmx18DLsOzBwd_ngDA8B5xr_1-04sz6zi4lO_BKvEdYkzbsKwkAQRuF3OfUQ_tnNjnFae9_BS7w0KyhWIe8uwerAab6FLpI6aBBGd9KNXkiXNBq9kjL6-E8jORwxTiQYZ3KKIt95aSoRTcaV9H1UYyYXPq_v-zKToZCvxo300OTu3opxJ_HNklqtI8ZjOxhPUusvAAD__w==&cell=11000005334";
     // this.router.navigate(["open-url"], {
     //   queryParams: {
     //     url,

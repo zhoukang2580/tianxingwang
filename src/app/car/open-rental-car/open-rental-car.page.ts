@@ -35,6 +35,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
   private browser: InAppBrowserObject;
   isApp = AppHelper.isApp();
   url$: Observable<string>;
+  private url;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
   constructor(
     private carService: CarService,
@@ -44,7 +45,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     private clipboard: Clipboard,
     private safariController: SafariViewController,
     private platform: Platform
-  ) {}
+  ) { }
   ngOnDestroy() {
     console.log("open-rental-car ondestroy");
     try {
@@ -74,6 +75,8 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     );
     if (ok) {
       this.backBtn.popToPrePage();
+    }else{
+      this.openInMyBrowser(this.url)
     }
   }
   private getQueryParams(url: string) {
@@ -124,7 +127,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
       closebuttoncaption: "关闭(CLOSE)",
       closebuttoncolor: color,
       navigationbuttoncolor: color,
-      toolbarcolor: color,
+      // toolbarcolor: color,
     };
     this.browser = this.iab.create(url, "_blank", options);
     this.subscriptions.push(
@@ -138,12 +141,13 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     // url = `http://test.version.testskytrip.com/download/test.html`;
   }
   private async openInMyBrowser(url: string) {
+    this.url=url;
     if (url) {
       url = decodeURIComponent(url);
     }
     try {
       if (this.platform.is("ios")) {
-        if (await this.safariController.isAvailable()) {
+        if (false && (await this.safariController.isAvailable())) {
           this.safariSubscription.unsubscribe();
           this.safariSubscription = this.safariController
             .show({ url, tintColor: "#2596d9" })
@@ -163,6 +167,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
               }
             );
         } else {
+          this.openInAppBrowser(url);
         }
         return;
       }
