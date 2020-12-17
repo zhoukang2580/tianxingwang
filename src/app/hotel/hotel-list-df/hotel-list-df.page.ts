@@ -1,13 +1,5 @@
 import { PinFabComponent } from "./../../components/pin-fab/pin-fab.component";
-import { RecommendRankComponent } from "./../components/recommend-rank/recommend-rank.component";
-import { HotelFilterComponent } from "./../components/hotel-filter/hotel-filter.component";
-import { HotelStarPriceComponent } from "./../components/hotel-starprice/hotel-starprice.component";
-import { HotelGeoComponent } from "./../components/hotel-geo/hotel-geo.component";
-import { ScrollerComponent } from "./../../components/scroller/scroller.component";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
-import { fadeInOut } from "./../../animations/fadeInOut";
-import { flyInOut } from "./../../animations/flyInOut";
-import { Storage } from "@ionic/storage";
 import { AgentEntity } from "./../../tmc/models/AgentEntity";
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { ConfigService } from "./../../services/config/config.service";
@@ -25,14 +17,10 @@ import {
   OnInit,
   OnDestroy,
   ViewChild,
-  HostBinding,
   ViewChildren,
   QueryList,
   AfterViewInit,
-  AfterContentInit,
   ElementRef,
-  EventEmitter,
-  NgZone,
 } from "@angular/core";
 import {
   IonContent,
@@ -40,25 +28,15 @@ import {
   IonToolbar,
   Platform,
   IonItem,
-  DomController,
   IonInfiniteScroll,
   ModalController,
-  IonRefresher,
-  NavController,
   IonHeader,
 } from "@ionic/angular";
-import { Subscription, Observable, fromEvent, merge } from "rxjs";
+import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { HotelDayPriceEntity } from "../models/HotelDayPriceEntity";
 import { finalize } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from "@angular/animations";
 
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { StaffService } from "src/app/hr/staff.service";
@@ -81,7 +59,6 @@ interface ISearchTextValue {
 })
 export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
-  private oldSearchText: ISearchTextValue;
   private isUseSearchText = false;
   private oldDestinationCode: string;
   @ViewChild(IonHeader) headerEl: IonHeader;
@@ -138,9 +115,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     private tmcService: TmcService,
     private staffService: StaffService,
     private configService: ConfigService,
-    plt: Platform,
-    private modalCtrl: ModalController
-  ) {
+    plt: Platform  ) {
     this.filterTab = {
       isActive: false,
       label: "",
@@ -257,7 +232,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       });
     }
   }
-  itemHeightFn(item: any, index: number) {
+  itemHeightFn() {
     // console.log(item);
     return 90;
   }
