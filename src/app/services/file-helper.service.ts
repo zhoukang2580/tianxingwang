@@ -1281,8 +1281,7 @@ export class FileHelperService {
     const lMinor = lVs[1];
     // 主版本不等或者次版本不等
     // this.logMessage(`比较应用主版本，判断是否需要升级,serverVersion=${serverVersion}<=>localVersion=${localVersion} `);
-    // return smain !== lmain || sMinor !== lMinor;
-    return smain !== lmain;
+    return smain !== lmain || sMinor !== lMinor;
   }
   private checkPathFileExists(
     path: string,
