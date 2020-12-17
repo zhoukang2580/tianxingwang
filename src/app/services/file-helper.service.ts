@@ -90,17 +90,16 @@ export class FileHelperService {
       if (this.hcpPlugin) {
         if (this.plt.is("ios")) {
           if (!(await this.checkIfIsRuningHcpVersion())) {
-            console.log("splashScreen.show()")
+            console.log("splashScreen.show()");
             this.splashScreen.show();
             setTimeout(() => {
-              console.log("setTimeout splashScreen.hide()")
+              console.log("setTimeout splashScreen.hide()");
               this.splashScreen.hide();
             }, 3000);
             await this.hcpPlugin.loadHcpPage();
-            console.log("splashScreen.hide()")
+            console.log("splashScreen.hide()");
             this.splashScreen.hide();
           }
-
         } else {
           this.hcpPlugin.loadHcpPage();
         }
@@ -201,7 +200,8 @@ export class FileHelperService {
     if (!this.hcpPlugin) {
       this.hcpPlugin = window["hcp"];
     }
-    const wvurl = await this.hcpPlugin && this.hcpPlugin.getWebViewUrl().catch(() => "");
+    const wvurl =
+      (await this.hcpPlugin) && this.hcpPlugin.getWebViewUrl().catch(() => "");
     if (wvurl) {
       return wvurl;
     }
@@ -302,8 +302,9 @@ export class FileHelperService {
     const pkgName = await this.getPackageName();
     req["type"] = "loadjson";
     req.Data = {
-      Name: `${pkgName}.${this.plt.is("ios") ? "ios" : "android"
-        }`.toLowerCase(),
+      Name: `${pkgName}.${
+        this.plt.is("ios") ? "ios" : "android"
+      }`.toLowerCase(),
     };
     req.IsShowLoading = true;
     req.LoadingMsg = "正在初始化";
@@ -317,32 +318,31 @@ export class FileHelperService {
       } as IHcpUpdateModel);
     }
     return new Promise<IUpdateList>((resolve, reject) => {
-      const sub = this.apiService.getResponse<string>(req)
-        .subscribe(
-          (r) => {
-            if (AppHelper.isFunction(onprogress)) {
-              onprogress({
-                total: 100,
-                loaded: 100,
-                taskDesc: LanguageHelper.getHcpFetchServerVersionTip(),
-              } as IHcpUpdateModel);
-            }
-            if (r.Status && r.Data) {
-              resolve(JSON.parse(r.Data));
-            } else {
-              reject(r.Message || "网络错误，无法获取配置文件");
-            }
-          },
-          (e) => {
-            reject(e);
-          },
-          () => {
-            if (sub) {
-              console.log("sub.unsubscribe()");
-              sub.unsubscribe();
-            }
+      const sub = this.apiService.getResponse<string>(req).subscribe(
+        (r) => {
+          if (AppHelper.isFunction(onprogress)) {
+            onprogress({
+              total: 100,
+              loaded: 100,
+              taskDesc: LanguageHelper.getHcpFetchServerVersionTip(),
+            } as IHcpUpdateModel);
           }
-        );
+          if (r.Status && r.Data) {
+            resolve(JSON.parse(r.Data));
+          } else {
+            reject(r.Message || "网络错误，无法获取配置文件");
+          }
+        },
+        (e) => {
+          reject(e);
+        },
+        () => {
+          if (sub) {
+            console.log("sub.unsubscribe()");
+            sub.unsubscribe();
+          }
+        }
+      );
     });
   }
   async checkHcpUpdate(): Promise<{
@@ -466,18 +466,18 @@ export class FileHelperService {
         const unZipOk = !AppHelper.isApp()
           ? 0
           : await this.zip.unzip(
-            zipFile.nativePath,
-            direntry.toInternalURL(),
-            (evt) => {
-              this.ngZone.run(() => {
-                onprogress({
-                  total: evt.total,
-                  loaded: evt.loaded,
-                  taskDesc: LanguageHelper.getHcpUnZipTip(),
-                } as IHcpUpdateModel);
-              });
-            }
-          );
+              zipFile.nativePath,
+              direntry.toInternalURL(),
+              (evt) => {
+                this.ngZone.run(() => {
+                  onprogress({
+                    total: evt.total,
+                    loaded: evt.loaded,
+                    taskDesc: LanguageHelper.getHcpUnZipTip(),
+                  } as IHcpUpdateModel);
+                });
+              }
+            );
         if (unZipOk !== 0) {
           reject(`解压文件失败`);
           return false;
@@ -597,8 +597,9 @@ export class FileHelperService {
         this.dataDirectory,
         this.updateDirectoryName
       );
-      const curUsingVersionDir = `${this.www
-        }_${this.getLocalHcpVersion()}`.replace(/\./g, "_");
+      const curUsingVersionDir = `${
+        this.www
+      }_${this.getLocalHcpVersion()}`.replace(/\./g, "_");
       const downloadedLatestApk =
         `${this.serverVersion}`.replace(/\./g, "_") + ".apk";
       for (let i = 0; i < versionFiles.length; i++) {
@@ -814,10 +815,11 @@ export class FileHelperService {
         if (check) {
           resove({
             hcpUpdateComplete: true,
-            nativePath: `${destFilePathDir.endsWith("/")
+            nativePath: `${
+              destFilePathDir.endsWith("/")
                 ? destFilePathDir
                 : destFilePathDir + "/"
-              }${fileName}`,
+            }${fileName}`,
           } as IHcpUpdateModel);
         } else {
           reject("文件写入失败");
@@ -1004,8 +1006,9 @@ export class FileHelperService {
     Md5: string
   ) {
     this.logMessage(`要下载的应用地址: ` + apkUrl);
-    const apkPath = `${this.dataDirectory}${this.updateDirectoryName
-      }/${this.serverVersion.replace(/\./g, "_")}.apk`;
+    const apkPath = `${this.dataDirectory}${
+      this.updateDirectoryName
+    }/${this.serverVersion.replace(/\./g, "_")}.apk`;
     onprogress({
       total: 100,
       loaded: 90,
@@ -1151,7 +1154,7 @@ export class FileHelperService {
       .catch((e) => {
         this.logMessage(
           `列出文件夹${path}/${dir}下面的所有文件抛出异常` +
-          JSON.stringify(e, null, 2)
+            JSON.stringify(e, null, 2)
         );
         return [] as Entry[];
       });
@@ -1236,7 +1239,7 @@ export class FileHelperService {
     const lmain = +lVs[0];
     const lMinor = +lVs[1];
     const lPatch = +lVs[sVs.length - 1];
-    return smain == lmain && sVs.slice(1).join(".") != lVs.slice(1).join(".");
+    return smain == lmain && sMinor == lMinor && sPatch != lPatch;
   }
   /**
    *
@@ -1292,14 +1295,16 @@ export class FileHelperService {
   }
   private checkDirExists(path: string, dirName: string) {
     this.logMessage(
-      `检查路径${path}${(path || "").endsWith("/") ? "" : "/"
+      `检查路径${path}${
+        (path || "").endsWith("/") ? "" : "/"
       }${dirName}是否存在`
     );
     return this.file
       .checkDir(path, dirName)
       .then((_) => {
         this.logMessage(
-          `路径${path}${(path || "").endsWith("/") ? "" : "/"
+          `路径${path}${
+            (path || "").endsWith("/") ? "" : "/"
           }${dirName}是否存在?${_}】`
         );
         return true;
@@ -1389,8 +1394,8 @@ export class FileHelperService {
         const origiFileMd5 = originFile.hash;
         const path = dirEntry.toInternalURL().endsWith("/")
           ? dirEntry
-            .toInternalURL()
-            .substring(0, dirEntry.toInternalURL().lastIndexOf("/"))
+              .toInternalURL()
+              .substring(0, dirEntry.toInternalURL().lastIndexOf("/"))
           : dirEntry.toInternalURL();
         const donwloadmd5 = await this.getFileMd5(path, f.name);
         if (!donwloadmd5) {
@@ -1413,12 +1418,14 @@ export class FileHelperService {
       }
       this.logMessage(`-----------完成文件校验-----------`);
       this.logMessage(
-        `总共有${checkMd5Failures.filter((item) => !item.downloadMd5 || !item.md5)
-          .length
+        `总共有${
+          checkMd5Failures.filter((item) => !item.downloadMd5 || !item.md5)
+            .length
         }个文件md5不存在`
       );
       this.logMessage(
-        `总共校验${files.length}个文件，其中${checkMd5Failures.length
+        `总共校验${files.length}个文件，其中${
+          checkMd5Failures.length
         }个校验失败，校验详细结果:${JSON.stringify(checkMd5Failures, null, 2)}`
       );
       return checkMd5Failures.length === 0;
