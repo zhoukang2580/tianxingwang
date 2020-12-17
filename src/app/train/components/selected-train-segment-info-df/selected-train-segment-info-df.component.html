@@ -8,6 +8,11 @@
       <ion-title>已选火车信息</ion-title>
     </ng-template>
     <ion-title *ngIf='isExchange else el' color='danger'>正在被改签的火车信息</ion-title>
+    <div class='reset' >
+      <ion-button fill='clear' expand='block' color='secondary' size='small' (click)='reelect()'
+        >重选
+      </ion-button>
+    </div>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -22,13 +27,13 @@
                 {{getTripTypeTip(bookInfo?.bookInfo)}}</ion-text> -->
               </strong>
             <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
-              <ion-icon name="trash" color='danger' mode='ios'>
+              <ion-icon name="trash" color='medium' mode='ios'>
               </ion-icon>
-              <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
+              <!-- <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
                 <ion-button fill='clear' expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'
                   *ngIf='!bookInfo.bookInfo?.isExchange'>重选
                 </ion-button>
-              </div>
+              </div> -->
             </ion-button>
           </div>
           <ion-label class='train-item'>

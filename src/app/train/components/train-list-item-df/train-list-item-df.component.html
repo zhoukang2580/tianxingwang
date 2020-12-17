@@ -1,6 +1,6 @@
 <ng-container *ngIf='!seat else seatTemp'>
   <div class='train-item' (click)='onShowSeats(train)'>
-    <div class='info'>
+    <div class='info' style="max-width: 17.5em;">
       <div class='time'>
         <strong>{{train?.StartShortTime}}</strong>
         <div class='travel-time-name'>{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}
@@ -15,7 +15,7 @@
             <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='train?.IsAccessByIdCard' alt="">
           </div>
         </div>
-        <div class='to-station-name'>{{train?.ToStationName}}</div>
+        <div class='to-station-name' style="min-width: 4em;">{{train?.ToStationName}}</div>
       </div>
     </div>
     <div class='right'>
@@ -32,7 +32,7 @@
   <ion-row class='seat-outline' color='medium'>
     <ion-col size='4' *ngFor='let seat of getSeats()'>
       <span>{{seat.SeatTypeName}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"":"无票"}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"张":"无票"}}</span>
       <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
     </ion-col>
   </ion-row>
@@ -46,7 +46,7 @@
             </ion-text>
           </ion-col>
           <ion-col size='4'>
-            <span class='seat-count'>{{langOpt.Left}}:{{seat.Count?seat.Count+"":""}}</span>
+            <span class='seat-count'>{{langOpt.Left}}:{{seat.Count?seat.Count+"张":""}}</span>
           </ion-col>
           <ion-col (click)='onBookTicket(seat)'>
             <ion-button *ngIf='showBookBtn' size='small' class='ion-text-start' [color]='seat.color'

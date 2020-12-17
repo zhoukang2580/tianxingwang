@@ -32,12 +32,12 @@ import { BookCredentialCompEnComponent } from './book-credential-comp_en/book-cr
 import { AddcontactsModalEnComponent } from './addcontacts-modal_en/addcontacts-modal_en.component';
 import { BookAddcontactsCompEnComponent } from './book-addcontacts-comp_en/book-addcontacts-comp_en.component';
 import { SearchApprovalEnComponent } from './search-approval_en/search-approval_en.component';
-import { DaysCalendarDfComponent } from './days-calendar-df/days-calendar-df.component';
 import { BookOrganizationDfCompComponent } from './book-organization-comp-df/book-organization-comp-df.component';
 import { BookCostcenterCompDfComponent } from './book-costcenter-comp-df/book-costcenter-comp-df.component';
 import { BookAddcontactsCompDfComponent } from './book-addcontacts-comp-df/book-addcontacts-comp-df.component';
 import { SearchDayDfComponent } from './search-day-df/search-day-df.component';
 import { AddcontactsModalDfComponent } from './addcontacts-modal-df/addcontacts-modal-df.component';
+import { DaysCalendarDfComponent } from "./days-calendar-df/days-calendar-df.component";
 
 @NgModule({
   declarations: [
