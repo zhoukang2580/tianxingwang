@@ -486,7 +486,7 @@ export class FlightListEnPage implements OnInit, OnDestroy {
           takeoffland: "Take off and landing Airport",
           morning: "A.M.",
           afternoon: "P.M.",
-          Determine: "Determine",
+          Determine: "Confirm",
           Reset: "Reset",
           Cancel: "Cancel",
         } : {

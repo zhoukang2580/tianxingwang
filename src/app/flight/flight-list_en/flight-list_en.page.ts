@@ -778,8 +778,8 @@ export class FlightListEnPage
           morning: "A.M.",
           afternoon: "P.M.",
           Reset: "Reset",
-          Determine: "Determine",
-        },
+          Determine: "Confirm"
+        }
       },
     });
     m.present();
