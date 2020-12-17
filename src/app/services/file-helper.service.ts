@@ -39,6 +39,7 @@ interface IUpdateList {
   ApkMd5: string;
   Version: string; // "2.0.0";
   Ignore: boolean;
+  isShowVConsole: boolean;
   EnabledHcpUpdate: boolean;
   EnabledAppUpdate: boolean;
   UpdateDescriptions?: string[];
@@ -328,7 +329,19 @@ export class FileHelperService {
             } as IHcpUpdateModel);
           }
           if (r.Status && r.Data) {
-            resolve(JSON.parse(r.Data));
+            try {
+              const a: IUpdateList = JSON.parse(r.Data);
+              if (a.isShowVConsole) {
+                if (window["vConsole"]) {
+                  window["vConsole"].destroy();
+                }
+                window["vConsole"] = new window["VConsole"]();
+              }
+              resolve(a);
+            } catch (e) {
+              console.error(e);
+              reject("配置文件格式错误");
+            }
           } else {
             reject(r.Message || "网络错误，无法获取配置文件");
           }
