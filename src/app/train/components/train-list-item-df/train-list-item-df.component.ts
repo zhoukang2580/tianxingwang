@@ -92,12 +92,6 @@ export class TrainListItemDfComponent implements OnInit {
               : "";
           }
         }
-        if(!this.trainService.isAgent){
-          if(tip){
-            AppHelper.alert(tip);
-          }
-          return;
-        }
       }
     }
     if (this.train) {
