@@ -1,23 +1,20 @@
 export const CONFIG = {
   // 该变量用于 启用 --prod 编译，若为true，访问的是测试库的地址，否则访问生产地址
-  mockProBuild: !false,
+  mockProBuild: false,
   production: true,
-  isShowVConsole:!!window['cordova'],
-  isForWechatMiniApproval: false,
-  isEnableTranslate: true,
+  isShowVConsole: false,  
+  isEnableTranslate: false,
   showNotUseWechatAccountTipTimeout: 5000,
+  isForWechatMiniApproval: false, // 小程序审核期间，请设置为true，通过后，设置false
   appDomain: {
-    production: "sky-trip.com",
-    debug: "testskytrip.com",
-    // production: "okoktrip.com",
-    // debug: "okoktrip.com",
+    production: "okoktrip.com",
+    debug: "okoktrip.com",
   },
-  appTitle: "天行商旅",
-  // appTitle: "毅博商旅",
-  AppleStoreAppId: "id1347643172",
+  appTitle: "毅博商旅",
+  AppleStoreAppId: "1541318591",
   wechat: {
-    appId: "wx0839a418ccafdf36",
-    universalLinks: "https://app.sky-trip.com/eskytripapp/",
+    appId: "wxb617241a0e6aac3e",
+    universalLinks: `https://app.okoktrip.com/ybslapp/`,
   },
   getApiUrl() {
     if (!this.mockProBuild && this.production) {
