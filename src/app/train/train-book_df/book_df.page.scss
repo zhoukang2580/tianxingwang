@@ -90,6 +90,8 @@ ion-content {
     font-size: 14px;
   }
   .ion-phone,.ion-ema{
+    display: flex;
+    align-items: center;
     font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;

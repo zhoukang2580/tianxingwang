@@ -501,6 +501,9 @@ export class TrainService {
             await AppHelper.alert(`超标:${cannotArr.join(",")}`);
           }
         }
+        // if(cannotArr.length == bookInfos.length){
+        //   return
+        // }
       } else {
         bookInfos = this.getBookInfos();
         if (bookInfos.length) {
@@ -518,6 +521,7 @@ export class TrainService {
           }
         }
       }
+      
     }
   }
   private async selectAndReplaceBookInfos(
@@ -566,6 +570,7 @@ export class TrainService {
         }
       }
     }
+    
     bookInfos = bookInfos.map((it) => {
       const item = data.find((d) => d.id == it.id);
       if (item) {

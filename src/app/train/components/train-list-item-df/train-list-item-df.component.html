@@ -9,7 +9,7 @@
           [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
       </div>
       <div class='station'>
-        <div class='from-station-name'>{{train?.FromStationName}}</div>
+        <div class='from-station-name' style="min-width: 4em;">{{train?.FromStationName}}</div>
         <div class='stop-line-stop' [attr.data]='train?.TrainCode'>
           <div class="line" (click)='onShowTip($event)'>
             <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='train?.IsAccessByIdCard' alt="">
@@ -48,8 +48,8 @@
           <ion-col size='4'>
             <span class='seat-count'>{{langOpt.Left}}:{{seat.Count?seat.Count+"张":""}}</span>
           </ion-col>
-          <ion-col (click)='onBookTicket(seat)'>
-            <ion-button *ngIf='showBookBtn' size='small' class='ion-text-start' [color]='seat.color'
+          <ion-col>
+            <ion-button (click)='onBookTicket(seat)' *ngIf='showBookBtn' size='small' class='ion-text-start' [color]='seat.color'
               [class.disabled]='seat.color=="danger"||seat.Count=="0"'>
               <ion-text color='light'>{{langOpt.reserve}}</ion-text>
             </ion-button>
@@ -69,13 +69,13 @@
         [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
     </div>
     <div class='station'>
-      <div class='from-station-name'>{{train?.FromStationName}}</div>
+      <div class='from-station-name' style="min-width: 4em;">{{train?.FromStationName}}</div>
       <div class='stop-line-stop' [attr.data]='train?.TrainCode'>
         <div class="line">
           <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='train?.IsAccessByIdCard' alt="">
         </div>
       </div>
-      <div class='to-station-name'>{{train?.ToStationName}}</div>
+      <div class='to-station-name' style="min-width: 4em;">{{train?.ToStationName}}</div>
     </div>
   </div>
   <div class='seat' *ngIf='seat'>

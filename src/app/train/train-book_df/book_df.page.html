@@ -154,7 +154,10 @@
             [disabled]="searchTrainModel?.isExchange"
           >
             <ion-label color="medium" class="ion-mobile">联系电话:</ion-label>
-            <ion-label class="ion-phone">{{mobile.mobile}}</ion-label>
+            <div class="ion-phone">
+              <ion-checkbox color="secondary" [(ngModel)]="mobile.checked"></ion-checkbox>
+              <ion-label>{{mobile.mobile}}</ion-label>
+            </div>
           </ion-item>
           <ion-item>
               <ion-label color="medium" class="ion-email">联系邮箱：</ion-label>
@@ -256,10 +259,31 @@
         </ng-container>
       </ion-list>
       <ion-list>
+        <ion-item lines='none' style='display: none;'>
+          <ion-label>
+            费用类别
+          </ion-label>
+          <ion-select #expenseTypeSelect [(ngModel)]='combindInfo.expenseType' name='Type' [compareWith]='expanseCompareFn' okText="确定" cancelText="取消">
+            <ion-select-option [value]="type" *ngFor='let type of viewModel?.expenseTypes'>
+              {{type}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
           <ion-item>
             <div class="passenger">出差信息</div>
           </ion-item>
           <ion-item>
+           
+            <div class="line" *ngIf='viewModel?.expenseTypes?.length'></div>
+            <div class="expanse" *ngIf='viewModel?.expenseTypes?.length'>
+              <div class="flex padding-v" *ngIf='tmc?.IsAllowCustomReason'>
+                <span class="label">费用类别：</span>
+                <div (click)='onOpenSelect(expenseTypeSelect)' style="display: flex;">
+                  {{combindInfo.expenseType}}
+                  <ion-icon name="caret-down-outline" class='down'></ion-icon>
+                </div>
+              </div>
+            </div>
             <div class="approval-info" *ngIf='isAllowSelectApprove(combindInfo)' [attr.approverid]='combindInfo.id' (click)='openApproverModal(combindInfo)'>
               <div class="flex padding-v">
                 <span class="label">审批人：</span>
@@ -287,8 +311,8 @@
           </div>
         </div>
       </ion-list>
-      <ion-list>
-        <ion-item class="ion-no-margin" *ngIf='viewModel?.isCanSkipApproval$|async'>
+      <ion-list *ngIf='viewModel?.isCanSkipApproval$|async'>
+        <ion-item class="ion-no-margin" >
           <ion-label>跳过审批:</ion-label>
           <ion-checkbox class='ion-margin-end' color="secondary" [(ngModel)]='combindInfo.isSkipApprove'>
           </ion-checkbox>

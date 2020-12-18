@@ -122,6 +122,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isCheckingPay = false;
   isShowFee = false;
   isSelfBookType = true;
+  expenseTypes: string[];
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
@@ -247,6 +248,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         });
       });
     }
+  }
+  expanseCompareFn(t1: string, t2: string) {
+    return t1 && t2 ? t1 === t2 : false;
   }
   onSeatPicker(seat: string, item: PassengerBookInfo<ITrainInfo>) {
     if (item.bookInfo) {

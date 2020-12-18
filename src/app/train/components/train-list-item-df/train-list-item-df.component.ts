@@ -78,7 +78,7 @@ export class TrainListItemDfComponent implements OnInit {
     }
     if ((seat && seat.color) == "danger") {
       if (seat && seat.Policy && seat.Policy.Rules) {
-        let tip = "";
+        let tip = seat.Policy.Rules.join(",");
         const bookInfos = this.trainService.getBookInfos();
         if (bookInfos && bookInfos.length) {
           const info = bookInfos.find(
@@ -87,16 +87,23 @@ export class TrainListItemDfComponent implements OnInit {
               it.bookInfo.id == (this.bookInfo && this.bookInfo.id)
           );
           if (info && info.passenger && info.passenger.Policy) {
-            tip = info.passenger.Policy.TrainIllegalTip
+            tip += info.passenger.Policy.TrainIllegalTip
               ? `(${info.passenger.Policy.TrainIllegalTip})`
               : "";
           }
+        }
+        if(!this.trainService.isAgent){
+          if(tip){
+            AppHelper.alert(tip);
+          }
+          return;
         }
       }
     }
     if (this.train) {
       this.train.BookSeatType = seat.SeatType;
     }
+    
     this.bookTicket.emit(seat);
   }
   onSeatPicker(seat: string) {
