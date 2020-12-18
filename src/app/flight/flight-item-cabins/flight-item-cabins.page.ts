@@ -170,7 +170,7 @@ export class FlightItemCabinsPage implements OnInit {
   }
   private setDefaultFilteredInfo() {
     let bookInfos = this.flightService.getPassengerBookInfos();
-    bookInfos=this.flightService.getPassengerBookInfos().map((it) => {
+    bookInfos = this.flightService.getPassengerBookInfos().map((it) => {
       it.isFilterPolicy = this.isSelf || !it.bookInfo || bookInfos.length == 1;
       return it;
     });
@@ -339,14 +339,15 @@ export class FlightItemCabinsPage implements OnInit {
     this.moreCabins = [];
     this.economyClassCabins = [];
     let lowestPrice = Infinity;
-    if (this.vmFlightSegment && this.vmFlightSegment.Cabins) {
-      this.vmFlightSegment.Cabins.forEach((it) => {
-        lowestPrice = Math.min(+it.SalesPrice, lowestPrice);
+    if (cabins) {
+      cabins.forEach((it) => {
+        lowestPrice = Math.min(+it.Cabin.SalesPrice, lowestPrice);
       });
     }
-    const isfirstAgreementCabin = cabins
-      .sort((a, b) => +a.Cabin.SalesPrice - +b.Cabin.SalesPrice)
-      .find((it) => it.Cabin && +it.Cabin.FareType == FlightFareType.Agreement);
+    cabins.sort((a, b) => +a.Cabin.SalesPrice - +b.Cabin.SalesPrice);
+    const isfirstAgreementCabin = cabins.find(
+      (it) => it.Cabin && +it.Cabin.FareType == FlightFareType.Agreement
+    );
 
     cabins.forEach((it) => {
       if (
