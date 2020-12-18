@@ -4,7 +4,8 @@ import { FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
-import { SelectTrainStationDfPage } from "./select-station_df.page";
+import { SelectTrainStationDfPage } from "./select-station-df.page";
+import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { SelectTrainStationDfPage } from "./select-station_df.page";
     RouterModule.forChild([
       {
         path: "",
-        component: SelectTrainStationDfPage
+        component: SelectTrainStationDfPage,
+        canDeactivate: [CandeactivateGuard]
       }
     ])
   ],

@@ -31,9 +31,9 @@ import {
 } from "@angular/animations";
 export const CACHE_KEY_STATIONS = "cache_key_stations";
 @Component({
-  selector: "app-select-station_df",
-  templateUrl: "./select-station_df.page.html",
-  styleUrls: ["./select-station_df.page.scss"],
+  selector: "app-select-station-df",
+  templateUrl: "./select-station-df.page.html",
+  styleUrls: ["./select-station-df.page.scss"],
   animations: [
     trigger("scaleAnimation", [
       state("true", style({ transform: "scale(1.1)" })),

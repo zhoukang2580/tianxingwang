@@ -55,7 +55,7 @@ export const routes: Routes = [
   {
     path: "select-station_df",
     loadChildren: () =>
-      import("./select-station_df/select-station_df.module").then(
+      import("./select-station-df/select-station-df.module").then(
         m => m.SelectStationDfPageModule
       )
   },
