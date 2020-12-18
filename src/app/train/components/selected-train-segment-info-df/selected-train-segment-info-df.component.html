@@ -9,9 +9,10 @@
     </ng-template>
     <ion-title *ngIf='isExchange else el' color='danger'>正在被改签的火车信息</ion-title>
     <div class='reset' >
-      <ion-button fill='clear' expand='block' color='secondary' size='small' (click)='reelect()'
+      <ion-text color='secondary' (click)='reelect()' style="padding: 15px;
+      "
         >重选
-      </ion-button>
+      </ion-text>
     </div>
   </ion-toolbar>
 </ion-header>
