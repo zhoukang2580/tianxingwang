@@ -480,7 +480,13 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       );
     }
     if (showResult) {
-      await this.showSelectedInfos();
+      this.trainService.getBookInfos().forEach(async e=>{
+        if(e.bookInfo == null){
+          return
+        }else{
+          await this.showSelectedInfos();
+        }
+      })
     }
   }
   private async showSelectedInfos() {

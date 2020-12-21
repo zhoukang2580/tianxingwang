@@ -284,6 +284,10 @@
                 </div>
               </div>
             </div>
+            
+          </ion-item>
+          <ion-item>
+            <div class="line" *ngIf='viewModel?.expenseTypes?.length'></div>
             <div class="approval-info" *ngIf='isAllowSelectApprove(combindInfo)' [attr.approverid]='combindInfo.id' (click)='openApproverModal(combindInfo)'>
               <div class="flex padding-v">
                 <span class="label">审批人：</span>

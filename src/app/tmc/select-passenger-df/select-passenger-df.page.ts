@@ -535,6 +535,9 @@ export class SelectPassengerDfPage
     } else {
       this.selectedCredentialId = credentialId;
     }
+    // if(credentialId){
+
+    // }
     console.log("this.selectedCredentialId", this.selectedCredentialId);
   }
   async onAddPassenger() {
@@ -654,6 +657,9 @@ export class SelectPassengerDfPage
       `完成`,
       `继续添加`
     );
+    if(ok){
+      console.log()
+    }
     if (ok) {
       this.back();
     } else {
