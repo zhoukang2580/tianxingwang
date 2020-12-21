@@ -120,6 +120,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
   isExceeding = false;
+  isShowOtherInfo = false;
   tmc: TmcEntity;
   serviceFee: number;
   detailServiceFee: number;
@@ -967,11 +968,14 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       }
       if (!p.Mobile) {
-        this.showErrorMsg(
-          LanguageHelper.Flight.getMobileTip(),
-          combindInfo,
-          this.getEleByAttr("mobilesid", combindInfo.id)
-        );
+        this.isShowOtherInfo = true;
+        setTimeout(()=>{
+          this.showErrorMsg(
+            LanguageHelper.Flight.getMobileTip(),
+            combindInfo,
+            this.getEleByAttr("mobilesid", combindInfo.id)
+          );
+        },1000)
         return false;
       }
       p.CostCenterCode =

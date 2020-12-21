@@ -65,7 +65,7 @@
               </div>
               <div (click)='onSelectDatetime(datetimeEl,combindInfo)' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">
-                  <ion-icon name="star" color='danger' style="font-size: 0.5rem;margin-right: 5px;"></ion-icon>到店时间：
+                  <ion-icon name="star" color='danger' style="font-size: 0.5rem;margin-right: 5px;"></ion-icon>到店时间:
                 </span>{{combindInfo?.arrivalHotelTime}}
                 <ion-icon name="caret-down-outline"></ion-icon>
               </div>
@@ -102,13 +102,13 @@
           <div class="info">
             <div class="title ion-padding-vertical">
               旅客信息
-              <ion-icon name="caret-down-outline" class='down' *ngIf='!combindInfo["isShowOtherInfo"]' (click)='combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]'></ion-icon>
-              <ion-icon name="caret-up-outline" class='down' *ngIf='combindInfo["isShowOtherInfo"]' (click)='combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]'></ion-icon>
+              <ion-icon name="caret-down-outline" class='down' *ngIf='!isShowOtherInfo' (click)='isShowOtherInfo=!isShowOtherInfo'></ion-icon>
+              <ion-icon name="caret-up-outline" class='down' *ngIf='isShowOtherInfo' (click)='isShowOtherInfo=!isShowOtherInfo'></ion-icon>
             </div>
             <div class="line"></div>
             <div class="credentials costcenter">
               <div class="flex padding-v mobiles" [class.multi]='combindInfo.credentialStaffMobiles?.length>1'>
-                <span class="label">联系电话</span>
+                <span class="label">联系电话:</span>
                 <div *ngFor='let m of combindInfo.credentialStaffMobiles;' class="item">
                   <ion-checkbox [(ngModel)]='m.checked'></ion-checkbox><span (click)='m.checked=!m.checked'>{{m.mobile}}</span>
                 </div>
@@ -131,7 +131,7 @@
                 <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
               </div>
             </div>
-            <div class="otherinfo" *ngIf='combindInfo["isShowOtherInfo"]'>
+            <div class="otherinfo" [attr.mobilesid]='combindInfo.id' *ngIf='isShowOtherInfo'>
               <div class="line"></div>
               <div class="flex padding-v">
                 <span class="label">其他电话：</span>
