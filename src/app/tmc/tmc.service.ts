@@ -140,6 +140,23 @@ export class TmcService {
         return r;
       });
   }
+
+  async getBoutique() {
+    if (this.banners && this.banners.length) {
+      return this.banners;
+    }
+    const req = new RequestEntity();
+    req.Method = "TmcApiHome-Home-List";
+    req.IsRedirctNoAuthorize = false;
+    req.IsRedirctLogin = false;
+    return this.apiService
+      .getPromiseData<{ ImageUrl: string; Title: string; Id: string }[]>(req)
+      .then((r) => {
+        this.banners = r;
+        return r;
+      });
+  }
+
   setTravelFormNumber(tn: string) {
     AppHelper.setQueryParamers("TravelNumber", tn);
   }
