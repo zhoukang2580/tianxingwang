@@ -95,6 +95,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
+  isShowOtherInfo = false;
   @Input() isOtherCostCenter: boolean;
   @Input() otherCostCenterCode: string;
   @Input() otherCostCenterName: string;
@@ -1269,8 +1270,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       }
       if (!p.Mobile) {
+        this.isShowOtherInfo = true;
         const ele: HTMLElement = this.getEleByAttr("mobileid", combindInfo.id);
-        showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
+        setTimeout(() => {
+          showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
+          
+        }, 1000);
         return false;
       }
       p.CostCenterCode =
