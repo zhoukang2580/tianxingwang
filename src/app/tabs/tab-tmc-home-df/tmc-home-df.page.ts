@@ -88,6 +88,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaFlight = CONFIG.mockProBuild;
   banners: { ImageUrl: string; Title: string; Id: string }[];
+  hothotels: { ImageUrl: string; Title: string; Id: string }[];
   config: ConfigEntity;
   curIndex = 0;
   constructor(
@@ -148,6 +149,27 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         .catch(() => [])
         .then((res) => {
           this.banners = res || [];
+          this.updateSwiper();
+        })
+        .finally(() => {
+          this.isLoadingBanners = false;
+        });
+    }
+  }
+  private async loadHotHotels() {
+    if (!this.hothotels || !this.hothotels.length) {
+      if (!(await this.hasTicket())) {
+        return;
+      }
+      if (this.isLoadingBanners) {
+        return;
+      }
+      this.isLoadingBanners = true;
+      this.tmcService
+        .getBoutique()
+        .catch(() => [])
+        .then((res) => {
+          this.hothotels = res || [];
           this.updateSwiper();
         })
         .finally(() => {
@@ -256,6 +278,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         this.banners = [];
         this.staffCredentials = null;
         this.loadBanners();
+        this.loadHotHotels();
         this.loadNotices();
       });
     const paramters = AppHelper.getQueryParamers();
@@ -417,6 +440,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     try {
       this.loadNotices();
       this.loadBanners();
+      this.loadHotHotels();
       this.staff = await this.staffService.getStaff();
       console.log("home check", this.staffCredentials);
       if (this.staff && this.staff.AccountId) {

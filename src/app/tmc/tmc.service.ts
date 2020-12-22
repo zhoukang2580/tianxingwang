@@ -62,6 +62,7 @@ export class TmcService {
   private fetchingTmcPromise: Promise<TmcEntity>;
   private companies: GroupCompanyEntity[];
   private banners: any[];
+  private hotHotel: any[];
   private memberDetail: any;
   // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
@@ -142,17 +143,18 @@ export class TmcService {
   }
 
   async getBoutique() {
-    if (this.banners && this.banners.length) {
-      return this.banners;
+    if (this.hotHotel && this.hotHotel.length) {
+      return this.hotHotel;
     }
     const req = new RequestEntity();
     req.Method = "TmcApiHome-Home-List";
     req.IsRedirctNoAuthorize = false;
     req.IsRedirctLogin = false;
+    // let imgs = ['/assets/home/ruojia.png','/assets/home/hotelbj.png'];
     return this.apiService
       .getPromiseData<{ ImageUrl: string; Title: string; Id: string }[]>(req)
       .then((r) => {
-        this.banners = r;
+        this.hotHotel = r;
         return r;
       });
   }

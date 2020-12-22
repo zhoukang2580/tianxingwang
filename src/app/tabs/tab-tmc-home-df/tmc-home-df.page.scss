@@ -23,11 +23,14 @@ ion-header ion-title {
   }
   .inner {
     padding: 20px;
-    height: 130px;
+    height: 138px;
     position: relative;
     img {
       width: 100%;
       border-radius: 10px;
+      background-repeat: no-repeat;
+      background-size: contain;
+      height: 117px;
       &.lazyloading {
         width: 100%;
         height: 100%;
@@ -47,7 +50,8 @@ ion-header ion-title {
   }
 }
 
-.dots {
+.dots,
+.dots-up {
   position: absolute;
   bottom: 1em;
   width: 100%;
@@ -64,6 +68,15 @@ ion-header ion-title {
     margin: 0 0.15em;
     &.active {
       background-color: rgba(255, 255, 255, 1);
+    }
+  }
+}
+.dots-up {
+  .dot {
+    &.active {
+      background-color: rgba(255, 255, 255, 1);
+      width: 25px;
+      border-radius: 4px;
     }
   }
 }
@@ -190,7 +203,7 @@ ion-header ion-title {
     margin: 20px;
     padding-bottom: 15px;
     border-bottom: 5px solid #e2eae8;
-    img{
+    img {
       height: 18px;
     }
     .not-jj {
@@ -213,39 +226,39 @@ ion-header ion-title {
       margin-left: 15px;
     }
 
-    .jiantou{
+    .jiantou {
       display: flex;
       align-items: center;
       margin-right: 6px;
       margin-left: 6px;
-      img{
+      img {
         width: 24px;
         height: 5px;
-        }
-      }
-    }
-
-    .not-warp {
-      display: flex;
-      flex-wrap: wrap;
-      margin-left: 18px;
-    }
-
-    .not-trip {
-      display: flex;
-    }
-
-    .wait-trip {
-      span {
-        color: #ff6600;
       }
     }
   }
 
-  .view-now {
-    color: #5099fe;
-    margin-left: 15px;
+  .not-warp {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 18px;
   }
+
+  .not-trip {
+    display: flex;
+  }
+
+  .wait-trip {
+    span {
+      color: #ff6600;
+    }
+  }
+}
+
+.view-now {
+  color: #5099fe;
+  margin-left: 15px;
+}
 
 .annoucement-container {
   height: 25px;
@@ -308,7 +321,7 @@ ion-header ion-title {
         display: flex;
         align-items: center;
         font-size: 16px;
-        color: #934ACA;
+        color: #934aca;
       }
       .jf {
         font-size: 12px;
@@ -327,7 +340,7 @@ ion-header ion-title {
       align-items: center;
       justify-content: center;
       flex: 1;
-      img{
+      img {
         width: 51px;
         height: 66px;
         border-radius: 4px;
