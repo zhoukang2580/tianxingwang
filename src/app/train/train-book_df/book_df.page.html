@@ -380,7 +380,7 @@
                 (ionChange)="calcTotalPrice()"
               >
                 <ion-item *ngFor="let pt of orderTravelPayTypes">
-                  <ion-label>{{pt.label}}</ion-label>
+                  <ion-label>{{pt.label}}<span class="person" *ngIf="pt?.value==2">(请在二十分钟内完成支付)</span></ion-label>
                   <ion-radio
                     [value]="pt.value"
                     (ionSelect)="onOrderTravelPayTypeSelect(pt)"
