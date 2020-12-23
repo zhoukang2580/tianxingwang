@@ -198,11 +198,12 @@ ion-header ion-title {
 .notice {
   margin-top: 25px;
   font-size: 12px;
+  // height: 40px;
+  overflow-y: auto;
   .not-item {
-    display: flex;
     margin: 20px;
-    padding-bottom: 15px;
-    border-bottom: 5px solid #e2eae8;
+    overflow-y: auto;
+    height: 20px;
     img {
       height: 18px;
     }
@@ -215,14 +216,21 @@ ion-header ion-title {
     }
   }
 
-  .not-item-u {
+  .it-list {
     display: flex;
+    line-height: 2;
+  }
+
+  .not-item-u {
     margin: 20px;
+    overflow-y: auto;
+    height: 60px;
+    border-top: 5px solid #f1f3f3;
+    padding-top: 10px;
     img {
       height: 20px;
     }
-    .wait-trip,
-    .starting-city {
+    .wait-trip {
       margin-left: 15px;
     }
 
@@ -242,6 +250,11 @@ ion-header ion-title {
     display: flex;
     flex-wrap: wrap;
     margin-left: 18px;
+    border-bottom: 0.5px solid #d0d0be;
+    margin-bottom: 16px;
+  }
+  .trips {
+    display: flex;
   }
 
   .not-trip {
@@ -249,6 +262,11 @@ ion-header ion-title {
   }
 
   .wait-trip {
+    span {
+      color: #ff6600;
+    }
+  }
+  .fly-time {
     span {
       color: #ff6600;
     }

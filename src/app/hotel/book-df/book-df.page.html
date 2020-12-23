@@ -28,7 +28,7 @@
                 {{combindInfo?.vmCredential?.Name}}
               </span>
               <span class="ctype">{{combindInfo?.vmCredential?.TypeName}}：</span>
-              <span class="cnumber">{{combindInfo?.vmCredential?.Number}}</span>
+              <span class="cnumber">{{combindInfo?.vmCredential?.HideNumber}}</span>
               <img class="editicon" src="assets/images/editicon.png" alt="" (click)='onChangeCredential(credentialSelect,combindInfo)'>
               <ion-text *ngIf='isSelfBookType' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
             </div>

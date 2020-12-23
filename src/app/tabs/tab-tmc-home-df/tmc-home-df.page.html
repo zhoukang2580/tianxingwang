@@ -141,27 +141,44 @@
         <div class="txt">积分商城</div>
       </div>
     </div>
-    <div class="notice">
+    <div class="notice" >
       <div class="not-item">
-        <img src="assets/home/home-text.png" alt="" />
-        <div class="not-jj">
-          <div class="not-name">徐晓丽</div>
-          <div calss="not-approvd">
-            您的审批<span style="color: crimson">廖凡</span>机票已通过
+        <div class="it-list" *ngFor="let task of tasklist">
+          <img src="assets/home/home-text.png" alt="" />
+          <div class="not-jj">
+            <div class="not-name">{{saName[0]}}</div>
+            <div calss="not-approvd" >
+              <span style="color: crimson">{{saName[1]}}</span><span>{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span>
+            </div>
+            <div class="view-now">立即查看</div>
           </div>
-          <div class="view-now">立即查看</div>
         </div>
       </div>
       <div class="not-item-u">
-        <img src="assets/home/home-trip.png" alt="" />
-        <div class="not-warp">
-          <div class="not-name">徐晓丽</div>
-          <div class="wait-trip">您有<span>一张</span>待出行行程</div>
-          <div class="starting-city">上海</div>
-          <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
-          <div class="arriving-city"><span>北京</span><span>(国家)</span></div>
-          <div class="fly-time"><span>几小时</span>起飞</div>
-          <div class="view-now">立即查看</div>
+        <div class="it-list" *ngFor="let trip of triplist;">
+          <img src="assets/home/home-trip.png" alt="" />
+          <div class="not-warp" >
+            <div class="not-name">{{saName[0]}}</div>
+            <div class="wait-trip">您有<span>1张</span>待出行行程</div>
+            <div class="view-now">立即查看</div>
+            <div *ngIf="trip.Type == 'Flight'" class="trips">
+              <div class="starting-city">{{trip?.FromName}}</div>
+              <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
+              <div class="arriving-city"><span>{{trip?.ToName}}</span></div>
+              <div class="fly-time"><span>{{trip.Hour}}小时</span>后起飞</div>
+            </div>
+            <div *ngIf="trip.Type == 'Train'" class="trips">
+              <div class="starting-city">{{trip?.FromName}}</div>
+              <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
+              <div class="arriving-city"><span>{{trip?.ToName}}</span></div>
+              <div class="fly-time" ><span>{{trip.Hour}}小时</span>后出发</div>
+            </div>
+            <div *ngIf="trip.Type == 'Hotel'" class="trips">
+              <div class="starting-city">{{trip?.Name}}</div>
+              <div class="fly-time" ><span>{{trip.Hour}}小时</span>前入住</div>
+            </div>
+            
+          </div>
         </div>
       </div>
     </div>

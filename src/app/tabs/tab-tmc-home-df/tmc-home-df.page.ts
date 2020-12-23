@@ -89,6 +89,28 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   isShowoverseaFlight = CONFIG.mockProBuild;
   banners: { ImageUrl: string; Title: string; Id: string }[];
   hothotels: { ImageUrl: string; Title: string; Id: string }[];
+  triplist: {
+    EndTime: String;
+    StartTime: String;
+    FromName: String;
+    ToName: String;
+    PassagerId: String;
+    Type: any;
+    Hour: String;
+    Name:String;
+    // ['Hotel','Train','Flight']
+  }[];
+
+  tasklist:{
+    Name: String;
+    Hour: String;
+    StatusName: String;
+    Variables:any;
+    VariablesObj:any;
+  }[];
+
+
+  saName:any;
   config: ConfigEntity;
   curIndex = 0;
   constructor(
@@ -156,6 +178,36 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         });
     }
   }
+
+  private async myItinerary(){
+    if(!this.triplist || !this.triplist.length){
+      this.triplist = await this.tmcService.getMyItinerary();
+      this.triplist.forEach(e =>{
+        console.log(e,'e');
+      });
+    }
+  }
+
+  
+
+  private async taskReviewed(){
+    if(!this.tasklist || !this.tasklist.length){
+      this.tasklist = await this.tmcService.getTaskReviewed();
+    }
+    try {
+      this.tasklist.forEach(e=>{
+        this.saName = e.Name.split('发起');
+        JSON.stringify(this.saName);
+        // JSON.stringify(e.Variables);
+        e.VariablesObj= JSON.parse(e.Variables);
+        console.log(e.VariablesObj,'Variables');
+      })
+    } catch (error) {
+      console.log(error);
+    }
+    
+  }
+
   private async loadHotHotels() {
     if (!this.hothotels || !this.hothotels.length) {
       if (!(await this.hasTicket())) {
@@ -276,10 +328,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.config = c;
         });
         this.banners = [];
+        this.triplist = [];
+        this.tasklist = [];
         this.staffCredentials = null;
         this.loadBanners();
         this.loadHotHotels();
         this.loadNotices();
+        this.myItinerary();
+        this.taskReviewed();
       });
     const paramters = AppHelper.getQueryParamers();
     if (paramters.wechatPayResultNumber) {

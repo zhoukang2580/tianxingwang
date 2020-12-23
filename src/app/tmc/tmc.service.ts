@@ -147,7 +147,7 @@ export class TmcService {
       return this.hotHotel;
     }
     const req = new RequestEntity();
-    req.Method = "TmcApiHome-Home-List";
+    req.Method = "TmcApiHomeUrl-Home-Banner";
     req.IsRedirctNoAuthorize = false;
     req.IsRedirctLogin = false;
     // let imgs = ['/assets/home/ruojia.png','/assets/home/hotelbj.png'];
@@ -157,6 +157,25 @@ export class TmcService {
         this.hotHotel = r;
         return r;
       });
+  }
+
+  async getTaskReviewed(){
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-TaskReviewed"
+    req.Data={
+      
+    };
+    return this.apiService.getPromiseData<any[]>(req);
+  }
+
+  async getMyItinerary(){
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-TripList";
+    req.Data={
+      
+    };
+    return this.apiService.getPromiseData<any[]>(req);
+    
   }
 
   setTravelFormNumber(tn: string) {
