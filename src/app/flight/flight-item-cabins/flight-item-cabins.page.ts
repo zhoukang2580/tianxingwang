@@ -177,6 +177,39 @@ export class FlightItemCabinsPage implements OnInit {
     });
     this.flightService.setPassengerBookInfosSource(bookInfos);
   }
+  private async getLowestFlightPolicyCabin(
+    lowestFlightSegment: FlightSegmentEntity
+  ) {
+    let flightPolicyCabin: FlightPolicy;
+    try {
+      if (lowestFlightSegment) {
+        const segs = this.flightService.getTotalFlySegments();
+        let seg = segs.find((it) => it.Number == lowestFlightSegment.Number);
+        seg =
+          segs.find(
+            (it) =>
+              it.Number == lowestFlightSegment.Number &&
+              it.TakeoffTime == lowestFlightSegment.TakeoffTime
+          ) || seg;
+        if (!seg.Cabins || !seg.Cabins.length) {
+          await this.flightService.initFlightSegmentCabins(seg);
+        }
+        if (seg.Cabins) {
+          seg.Cabins.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
+          flightPolicyCabin = {
+            Cabin: seg.Cabins[0],
+            CabinCode: seg.Cabins[0].Code,
+            Rules: [],
+            IsAllowBook: true,
+            FlightNo: seg.Number,
+          } as FlightPolicy;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return flightPolicyCabin;
+  }
   private async selectLowerCabin(
     info: PassengerBookInfo<IFlightSegmentInfo>,
     cabin: FlightPolicy
@@ -198,13 +231,11 @@ export class FlightItemCabinsPage implements OnInit {
       await this.flightService.initFlightSegmentCabins(fs);
       cabin.LowerSegment.Cabins = fs.Cabins.map((it) => ({ ...it }));
     }
-    if (!cabin.LowerSegment.Cabins || cabin.LowerSegment.Cabins.length) {
+    if (!cabin.LowerSegment.Cabins || !cabin.LowerSegment.Cabins.length) {
       return false;
     }
-    const lowestCabin = fs.Cabins.sort(
-      (a, b) => +a.SalesPrice - +b.SalesPrice
-    ).find((it) => +it.SalesPrice < +cabin.Cabin.SalesPrice);
     const lowestFlightSegment: FlightSegmentEntity = fs;
+    const lowestCabin = await this.getLowestFlightPolicyCabin(fs);
     const m = await this.modalCtrl.create({
       component: SelectFlightsegmentCabinComponent,
       componentProps: {
@@ -217,7 +248,7 @@ export class FlightItemCabinsPage implements OnInit {
     await this.flightService.dismissTopOverlay();
     await m.present();
     const result = await m.onDidDismiss();
-    const data = info.bookInfo;
+    // const data = info.bookInfo;
     if (result.data) {
       const cbin = result.data;
       if (!cbin) {
@@ -228,7 +259,7 @@ export class FlightItemCabinsPage implements OnInit {
         const bookInfo: IFlightSegmentInfo = {
           flightPolicy: cbin,
           flightSegment: lowestFlightSegment,
-          tripType: data.tripType,
+          // tripType: (data && data.tripType) || TripType.departureTrip,
           id: AppHelper.uuid(),
           lowerSegmentInfo: null,
           originalBookInfo: {
@@ -249,7 +280,17 @@ export class FlightItemCabinsPage implements OnInit {
           exchangeInfo: info.exchangeInfo,
         };
         this.flightService.replacePassengerBookInfo(info, newInfo);
+        if (
+          this.flightService
+            .getPassengerBookInfos()
+            .filter((it) => !!it.bookInfo).length
+        ) {
+          await this.onShowSelectedInfosPage();
+        }
+        return true;
       }
+    } else {
+      return false;
     }
     return true;
   }
@@ -303,16 +344,30 @@ export class FlightItemCabinsPage implements OnInit {
                   LanguageHelper.getCancelTip()
                 );
                 if (cabin.LowerSegment) {
-                  msg = "是否预订更低价航班？";
-                }
-                const ok = await AppHelper.alert(
-                  msg,
-                  true,
-                  LanguageHelper.getConfirmTip(),
-                  LanguageHelper.getCancelTip()
-                );
-                if (ok) {
-                  await this.selectLowerCabin(bookInfo, cabin);
+                  if (cabin.LowerSegment.LowerSegmentRangTime) {
+                    msg = `您指定的航班在差标指定范围${
+                      cabin.LowerSegment.LowerSegmentRangTime
+                    }内有更低价航班:${cabin.LowerSegment.Number} ${(
+                      cabin.LowerSegment.TakeoffTime || ""
+                    ).substr(11,5)},是否预订更低价航班？`;
+                  } else {
+                    msg = `是否预订更低价航班？${cabin.LowerSegment.Number} ${(
+                      cabin.LowerSegment.TakeoffTime || ""
+                    ).substr(11,5)}`;
+                  }
+                  const ok = await AppHelper.alert(
+                    msg,
+                    true,
+                    LanguageHelper.getConfirmTip(),
+                    LanguageHelper.getCancelTip()
+                  );
+                  if (ok) {
+                    const res = await this.selectLowerCabin(bookInfo, cabin);
+
+                    return;
+                  } else {
+                    return;
+                  }
                 } else {
                   return;
                 }
@@ -351,7 +406,13 @@ export class FlightItemCabinsPage implements OnInit {
           isShowPage = true;
         }
         if (isShowPage) {
-          await this.onShowSelectedInfosPage();
+          if (
+            this.flightService
+              .getPassengerBookInfos()
+              .filter((it) => !!it.bookInfo).length
+          ) {
+            await this.onShowSelectedInfosPage();
+          }
         }
       }
     } catch (e) {

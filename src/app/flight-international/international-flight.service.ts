@@ -410,9 +410,9 @@ export class InternationalFlightService {
               credential: passportOrHmTwPass,
             };
             this.addPassengerBookInfo(i);
-            resolve();
+            resolve(null);
           } else {
-            resolve();
+            resolve(null);
           }
         }).finally(() => {
           this.isInitializingSelfBookInfos = null;
@@ -871,6 +871,7 @@ export class InternationalFlightService {
             const s = new FlightSegmentEntity();
             s.Id = seg.Id;
             s.Duration = seg.Duration;
+            s.Number=seg.Number;
             return s;
           }),
         FlightFare: {
@@ -899,7 +900,7 @@ export class InternationalFlightService {
           IsIllegal: boolean;
           Message: string;
         };
-        flightCabinCodeDis: { [flightSegmentId: string]: string };
+        flightCabinCodeDis: { [flightSegmentNumber: string]: string };
       }>(req);
       if (result.Policy) {
         flightFare.policy = result.Policy;
@@ -915,7 +916,7 @@ export class InternationalFlightService {
       if (result.flightCabinCodeDis) {
         this.flightListResult.FlightSegments = this.flightListResult.FlightSegments.map(
           (seg) => {
-            const cabinCode = result.flightCabinCodeDis[seg.Id];
+            const cabinCode = result.flightCabinCodeDis[seg.Number];
             if (cabinCode) {
               seg.CabinCode = cabinCode;
             }

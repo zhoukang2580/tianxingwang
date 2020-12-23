@@ -29,6 +29,7 @@ export interface FlightSegmentModel {
   TakeoffTime; // Datetime 起飞时间
   FlyTime; // Int 飞行时间（分钟）
   LowestFare; // Decimal 最低价
+  LowerSegmentRangTime; // String 最低价舱位
   LowestCabinCode; // String 最低价舱位
   LowestCabinId; // String 最低价舱位
   LowestDiscount; // Decimal 最低价折扣
