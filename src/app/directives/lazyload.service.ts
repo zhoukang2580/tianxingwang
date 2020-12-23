@@ -115,7 +115,7 @@ export class LazyloadService {
         // we can just use data[0]
         // console.log("IntersectionObserver 耗时：", Date.now() - this.time);
         // console.log(data);
-        if (data[0].isIntersecting) {
+        if (data.find(it=>it.isIntersecting)) {
           // console.log(
           //   "IntersectionObserver  isIntersecting 耗时：",
           //   Date.now() - this.time
