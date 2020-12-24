@@ -38,6 +38,7 @@ import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntit
 import { OrderService } from "src/app/order/order.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
+import { SelectFlightsegmentCabinComponent } from "../components/select-flightsegment-cabin/select-flightsegment-cabin.component";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -170,97 +171,252 @@ export class FlightItemCabinsPage implements OnInit {
   }
   private setDefaultFilteredInfo() {
     let bookInfos = this.flightService.getPassengerBookInfos();
-    bookInfos=this.flightService.getPassengerBookInfos().map((it) => {
+    bookInfos = this.flightService.getPassengerBookInfos().map((it) => {
       it.isFilterPolicy = this.isSelf || !it.bookInfo || bookInfos.length == 1;
       return it;
     });
     this.flightService.setPassengerBookInfosSource(bookInfos);
   }
-  async onBookTicket(flightCabin: FlightCabinEntity) {
-    const bookInfos = this.flightService.getPassengerBookInfos();
-    let isShowPage = false;
-    if (!bookInfos.length) {
-      await this.flightService.initSelfBookTypeBookInfos();
+  private async getLowestFlightPolicyCabin(
+    lowestFlightSegment: FlightSegmentEntity
+  ) {
+    let flightPolicyCabin: FlightPolicy;
+    try {
+      if (lowestFlightSegment) {
+        const segs = this.flightService.getTotalFlySegments();
+        let seg = segs.find((it) => it.Number == lowestFlightSegment.Number);
+        seg =
+          segs.find(
+            (it) =>
+              it.Number == lowestFlightSegment.Number &&
+              it.TakeoffTime == lowestFlightSegment.TakeoffTime
+          ) || seg;
+        if (!seg.Cabins || !seg.Cabins.length) {
+          await this.flightService.initFlightSegmentCabins(seg);
+        }
+        if (seg.Cabins) {
+          seg.Cabins.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
+          flightPolicyCabin = {
+            Cabin: seg.Cabins[0],
+            CabinCode: seg.Cabins[0].Code,
+            Rules: [],
+            IsAllowBook: true,
+            FlightNo: seg.Number,
+          } as FlightPolicy;
+        }
+      }
+    } catch (e) {
+      console.error(e);
     }
-    if (bookInfos[0]) {
-      if (!bookInfos[0].exchangeInfo) {
+    return flightPolicyCabin;
+  }
+  private async selectLowerCabin(
+    info: PassengerBookInfo<IFlightSegmentInfo>,
+    cabin: FlightPolicy
+  ) {
+    if (!cabin || !cabin.LowerSegment) {
+      return false;
+    }
+    let fs = this.flightService.flightResult.FlightSegments.find(
+      (it) =>
+        it.Number == cabin.LowerSegment.Number &&
+        it.TakeoffTime == cabin.LowerSegment.TakeoffTime
+    );
+    if (!fs) {
+      fs = this.flightService.flightResult.FlightSegments.find(
+        (it) => it.Number == cabin.LowerSegment.Number
+      );
+    }
+    if (!cabin.LowerSegment.Cabins || !cabin.LowerSegment.Cabins.length) {
+      await this.flightService.initFlightSegmentCabins(fs);
+      cabin.LowerSegment.Cabins = fs.Cabins.map((it) => ({ ...it }));
+    }
+    if (!cabin.LowerSegment.Cabins || !cabin.LowerSegment.Cabins.length) {
+      return false;
+    }
+    const lowestFlightSegment: FlightSegmentEntity = fs;
+    const lowestCabin = await this.getLowestFlightPolicyCabin(fs);
+    const m = await this.modalCtrl.create({
+      component: SelectFlightsegmentCabinComponent,
+      componentProps: {
+        policiedCabins: [lowestCabin],
+        flightSegment: lowestFlightSegment,
+        isAgent: this.isAgent,
+      },
+    });
+    m.backdropDismiss = false;
+    await this.flightService.dismissTopOverlay();
+    await m.present();
+    const result = await m.onDidDismiss();
+    // const data = info.bookInfo;
+    if (result.data) {
+      const cbin = result.data;
+      if (!cbin) {
+        await AppHelper.alert(
+          LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
+        );
+      } else {
+        const bookInfo: IFlightSegmentInfo = {
+          flightPolicy: cbin,
+          flightSegment: lowestFlightSegment,
+          // tripType: (data && data.tripType) || TripType.departureTrip,
+          id: AppHelper.uuid(),
+          lowerSegmentInfo: null,
+          originalBookInfo: {
+            ...info,
+            bookInfo: {
+              ...info.bookInfo,
+              lowerSegmentInfo: null,
+            },
+          },
+        };
+        bookInfo.flightPolicy.LowerSegment = null; // 更低价仅能选择一次.
+        const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
+          id: AppHelper.uuid(),
+          passenger: info.passenger,
+          credential: info.credential,
+          isNotWhitelist: info.isNotWhitelist,
+          bookInfo,
+          exchangeInfo: info.exchangeInfo,
+        };
+        this.flightService.replacePassengerBookInfo(info, newInfo);
         if (
-          !this.flightService.policyFlights ||
-          !this.flightService.policyFlights.length
+          this.flightService
+            .getPassengerBookInfos()
+            .filter((it) => !!it.bookInfo).length
         ) {
-          await this.flightService.loadPolicyedFlightsAsync(
-            this.flightService.flightResult
-          );
+          await this.onShowSelectedInfosPage();
         }
-        if (
-          !this.flightService.policyFlights ||
-          !this.flightService.policyFlights.length
-        ) {
-          AppHelper.alert("差标获取失败");
-          if (!this.flightService.isAgent) {
-            return;
+        return true;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  }
+  async onBookTicket(cabin: FlightPolicy) {
+    try {
+      const flightCabin = cabin.Cabin;
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      let isShowPage = false;
+      if (!bookInfos.length) {
+        await this.flightService.initSelfBookTypeBookInfos();
+      }
+      if (bookInfos[0]) {
+        if (!bookInfos[0].exchangeInfo) {
+          if (
+            !this.flightService.policyFlights ||
+            !this.flightService.policyFlights.length
+          ) {
+            await this.flightService.loadPolicyedFlightsAsync(
+              this.flightService.flightResult
+            );
           }
-        }
-        const isSelf = await this.staffService.isSelfBookType();
-        if (isSelf) {
-          const bookInfo = bookInfos[0];
-          const info = this.flightService.getPolicyCabinBookInfo(
-            bookInfo,
-            flightCabin,
-            this.vmFlightSegment
-          );
-          const rules =
-            (info && info.flightPolicy && info.flightPolicy.Rules) || [];
-          let msg = rules.join(";");
-          if (!this.flightService.isAgent) {
-            if (info && info.isDontAllowBook) {
-              if (rules.length) {
-                msg += ",不可预订";
+          if (
+            !this.flightService.policyFlights ||
+            !this.flightService.policyFlights.length
+          ) {
+            AppHelper.alert("差标获取失败");
+            if (!this.flightService.isAgent) {
+              return;
+            }
+          }
+          const isSelf = await this.staffService.isSelfBookType();
+          if (isSelf) {
+            const bookInfo = bookInfos[0];
+            const info = this.flightService.getPolicyCabinBookInfo(
+              bookInfo,
+              flightCabin,
+              this.vmFlightSegment
+            );
+            const rules =
+              (info && info.flightPolicy && info.flightPolicy.Rules) || [];
+            let msg = rules.join(";");
+            if (!this.flightService.isAgent) {
+              if (info && info.isDontAllowBook) {
+                if (rules.length) {
+                  msg += ",不可预订";
+                }
+                await AppHelper.alert(
+                  msg,
+                  true,
+                  LanguageHelper.getConfirmTip(),
+                  LanguageHelper.getCancelTip()
+                );
+                if (cabin.LowerSegment) {
+                  if (cabin.LowerSegment.LowerSegmentRangTime) {
+                    msg = `您指定的航班在差标指定范围${
+                      cabin.LowerSegment.LowerSegmentRangTime
+                    }内有更低价航班:${cabin.LowerSegment.Number} ${(
+                      cabin.LowerSegment.TakeoffTime || ""
+                    ).substr(11,5)},是否预订更低价航班？`;
+                  } else {
+                    msg = `是否预订更低价航班？${cabin.LowerSegment.Number} ${(
+                      cabin.LowerSegment.TakeoffTime || ""
+                    ).substr(11,5)}`;
+                  }
+                  const ok = await AppHelper.alert(
+                    msg,
+                    true,
+                    LanguageHelper.getConfirmTip(),
+                    LanguageHelper.getCancelTip()
+                  );
+                  if (ok) {
+                    const res = await this.selectLowerCabin(bookInfo, cabin);
+
+                    return;
+                  } else {
+                    return;
+                  }
+                } else {
+                  return;
+                }
               }
+            } else {
               AppHelper.alert(
                 msg,
                 true,
                 LanguageHelper.getConfirmTip(),
                 LanguageHelper.getCancelTip()
               );
-              return;
             }
-          } else {
-            AppHelper.alert(
-              msg,
-              true,
-              LanguageHelper.getConfirmTip(),
-              LanguageHelper.getCancelTip()
-            );
+          }
+          const res = await this.flightService.addOrReplaceSegmentInfo(
+            flightCabin,
+            this.vmFlightSegment
+          );
+          if (res.isReselect) {
+            await this.flightService.onSelectReturnTrip();
+            return;
+          }
+          isShowPage = res.isReplace || res.isSelfBookType || res.isProcessOk;
+        } else {
+          const info = {
+            flightSegment: this.vmFlightSegment,
+            flightPolicy: {
+              Cabin: flightCabin,
+              CabinCode: flightCabin.Code,
+              IsAllowBook: true,
+            },
+            tripType: TripType.departureTrip,
+            id: AppHelper.uuid(),
+          } as IFlightSegmentInfo;
+          bookInfos[0].bookInfo = info;
+          this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
+          isShowPage = true;
+        }
+        if (isShowPage) {
+          if (
+            this.flightService
+              .getPassengerBookInfos()
+              .filter((it) => !!it.bookInfo).length
+          ) {
+            await this.onShowSelectedInfosPage();
           }
         }
-        const res = await this.flightService.addOrReplaceSegmentInfo(
-          flightCabin,
-          this.vmFlightSegment
-        );
-        if (res.isReselect) {
-          await this.flightService.onSelectReturnTrip();
-          return;
-        }
-        isShowPage = res.isReplace || res.isSelfBookType || res.isProcessOk;
-      } else {
-        const info = {
-          flightSegment: this.vmFlightSegment,
-          flightPolicy: {
-            Cabin: flightCabin,
-            CabinCode: flightCabin.Code,
-            IsAllowBook: true,
-          },
-          tripType: TripType.departureTrip,
-          id: AppHelper.uuid(),
-        } as IFlightSegmentInfo;
-        bookInfos[0].bookInfo = info;
-        this.flightService.setPassengerBookInfosSource([bookInfos[0]]);
-        isShowPage = true;
       }
-      if (isShowPage) {
-        await this.onShowSelectedInfosPage();
-      }
+    } catch (e) {
+      AppHelper.alert(e);
     }
   }
   async filterPolicyFlights() {
@@ -339,14 +495,15 @@ export class FlightItemCabinsPage implements OnInit {
     this.moreCabins = [];
     this.economyClassCabins = [];
     let lowestPrice = Infinity;
-    if (this.vmFlightSegment && this.vmFlightSegment.Cabins) {
-      this.vmFlightSegment.Cabins.forEach((it) => {
-        lowestPrice = Math.min(+it.SalesPrice, lowestPrice);
+    if (cabins) {
+      cabins.forEach((it) => {
+        lowestPrice = Math.min(+it.Cabin.SalesPrice, lowestPrice);
       });
     }
-    const isfirstAgreementCabin = cabins
-      .sort((a, b) => +a.Cabin.SalesPrice - +b.Cabin.SalesPrice)
-      .find((it) => it.Cabin && +it.Cabin.FareType == FlightFareType.Agreement);
+    cabins.sort((a, b) => +a.Cabin.SalesPrice - +b.Cabin.SalesPrice);
+    const isfirstAgreementCabin = cabins.find(
+      (it) => it.Cabin && +it.Cabin.FareType == FlightFareType.Agreement
+    );
 
     cabins.forEach((it) => {
       if (

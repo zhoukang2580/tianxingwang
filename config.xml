@@ -65,6 +65,9 @@
         <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
             <string>（需要获取地理位置来获取周边位置）need location access to find things nearby</string>
         </edit-config>
+        <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
+            <string>允许使用相机拍照上传头像或者扫码登陆等</string>
+        </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="LSApplicationQueriesSchemes">
             <array>
                 <string>skytripAlipay</string>

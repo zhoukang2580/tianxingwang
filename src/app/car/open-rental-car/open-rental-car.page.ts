@@ -147,7 +147,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     }
     try {
       if (this.platform.is("ios")) {
-        if (false && (await this.safariController.isAvailable())) {
+        if ((await this.safariController.isAvailable())) {
           this.safariSubscription.unsubscribe();
           this.safariSubscription = this.safariController
             .show({ url, tintColor: "#2596d9" })

@@ -125,7 +125,7 @@ export class AppHelper {
         t.present();
         t.onDidDismiss()
           .then((_) => {
-            resolve();
+            resolve(null);
           })
           .catch((_) => {
             reject();
@@ -207,7 +207,7 @@ export class AppHelper {
       if (userOp) {
         resolve(ok);
       } else {
-        resolve();
+        resolve(null);
       }
     });
   }
@@ -861,6 +861,14 @@ export class AppHelper {
       }
     }
     return html;
+  }
+  static openPrivacyPage() {
+    AppHelper.Router.navigate(["open-url"], {
+      queryParams: {
+        url: `${CONFIG.getApiUrl()}/privacy.html`,
+        title: "隐私策略",
+      },
+    });
   }
   static replaceAll(source: string, oldString: string, newString: string) {
     // 替换所有
