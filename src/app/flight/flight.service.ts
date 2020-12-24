@@ -1192,6 +1192,7 @@ export class FlightService {
       this.flightResult &&
       this.flightResult.FlightSegments &&
       result &&
+      result.FlightFares &&
       result.FlightSegments
     ) {
       const one = this.flightResult.FlightSegments.find(
@@ -1203,7 +1204,9 @@ export class FlightService {
       );
       if (newSeg) {
         oldSeg.LowestFare = newSeg.LowestFare;
-        oldSeg.Cabins = result.FlightFares as any;
+        oldSeg.Cabins = result.FlightFares.filter(
+          (it) => it.FlightNumber == oldSeg.Number
+        ) as any;
         oldSeg.Tax = newSeg.Tax;
       }
       if (one) {
