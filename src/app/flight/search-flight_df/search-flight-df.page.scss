@@ -1,6 +1,7 @@
 ion-header {
   ion-toolbar {
     --background: transparent;
+    --border-width: 0;
   }
 }
 .bgimg {
@@ -106,8 +107,8 @@ ion-card {
   width: 100%;
   justify-content: space-between;
   img {
-    width: 2em;
-    height: 2em;
+    width: 1.8em;
+    height: 1.8em;
     transition: all ease-in-out 200ms;
     transform: rotateZ(0);
     &.rotate {

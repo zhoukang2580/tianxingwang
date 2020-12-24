@@ -19,13 +19,14 @@ import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { SelectFlightPassengerComponent } from "./select-flight-passenger/select-flight-passenger.component";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
-import { PriceDetailComponent } from './price-detail/price-detail.component';
-import { SelectAndReplacebookinfoComponent } from './select-and-replacebookinfo/select-and-replacebookinfo.component';
-import { MemberComponentsModule } from 'src/app/member/components/components.module';
-import { FlightSegmentItemEnComponent } from './flight-segment-item-en/flight-segment-item-en.component';
-import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment-item.component';
-import { CabinEnComponent } from './fly-filter/cabin_en/cabin_en.component';
+import { PriceDetailComponent } from "./price-detail/price-detail.component";
+import { SelectAndReplacebookinfoComponent } from "./select-and-replacebookinfo/select-and-replacebookinfo.component";
+import { MemberComponentsModule } from "src/app/member/components/components.module";
+import { FlightSegmentItemEnComponent } from "./flight-segment-item-en/flight-segment-item-en.component";
+import { FlightSegmentItemComponent } from "./flight-segment-item/flight-segment-item.component";
+import { CabinEnComponent } from "./fly-filter/cabin_en/cabin_en.component";
 import { TakeOffTimeSpanDfComponent } from "./fly-filter/take-off-timespan-df/take-off-timespan-df.component";
+import { FlightSegmentItemDfComponent } from "./flight-segment-item-df/flight-segment-item-df.component";
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { TakeOffTimeSpanDfComponent } from "./fly-filter/take-off-timespan-df/ta
     SelectFlightPassengerComponent,
     SelectAndReplacebookinfoComponent,
     FlightSegmentItemComponent,
+    FlightSegmentItemDfComponent,
   ],
   imports: [
     CommonModule,
@@ -58,9 +60,10 @@ import { TakeOffTimeSpanDfComponent } from "./fly-filter/take-off-timespan-df/ta
     AppComponentsModule,
     TmcComponentsModule,
     MemberPipesModule,
-    MemberComponentsModule
+    MemberComponentsModule,
   ],
   exports: [
+    FlightSegmentItemDfComponent,
     AppDirectivesModule,
     TakeOffTimeSpanDfComponent,
     FlightDynamicComponent,
@@ -78,7 +81,7 @@ import { TakeOffTimeSpanDfComponent } from "./fly-filter/take-off-timespan-df/ta
     SelectAndReplacebookinfoComponent,
     FlightSegmentItemComponent,
     FlightSegmentItemEnComponent,
-    AppComponentsModule
-  ]
+    AppComponentsModule,
+  ],
 })
-export class FlightComponentsModule { }
+export class FlightComponentsModule {}
