@@ -50,6 +50,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isGetWechatMiniMobile: boolean;
   wechatMiniUser: any;
   wechatMiniMobile: any;
+  isShowPrivacy=CONFIG.isShowPrivacy;
   private mockDeviceInfo = {
     Device: `accw125487df1254accw125487df1254`,
     DeviceName: `pc模拟测试`,
@@ -82,6 +83,9 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     } else {
       this.eyeType = "password";
     }
+  }
+  onPrivacy() {
+    AppHelper.openPrivacyPage();
   }
   ngAfterViewInit() {
     this.listenKeyboard();

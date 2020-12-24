@@ -7,8 +7,7 @@
   </ion-toolbar>
 </ion-header>
 <ion-toolbar class='ion-text-center' [ngClass]='{"keyboard-show":isKeyboardShow,"is-app":isApp}'>
-  <img [lazyLoad]="config?.LogoImageUrl" alt="公司logo" class='logo' [loadingImage]='config?.PrerenderImageUrl'
-    [defaultImage]='config?.DefaultImageUrl' />
+  <img [lazyLoad]="config?.LogoImageUrl" alt="公司logo" class='logo' [loadingImage]='config?.PrerenderImageUrl' [defaultImage]='config?.DefaultImageUrl' />
 </ion-toolbar>
 <div class="container">
   <ion-list class="container">
@@ -34,8 +33,7 @@
             <ion-label color='secondary'>
               <i class='icon icon-lock'></i>
             </ion-label>
-            <ion-input [type]='eyeType' placeholder='请输入密码' clear-input='true' required='true'
-              formControlName="Password"></ion-input>
+            <ion-input [type]='eyeType' placeholder='请输入密码' clear-input='true' required='true' formControlName="Password"></ion-input>
             <ion-button (click)='onToggleEye()' fill='clear' color='secondary'>
               <ion-icon name='eye' *ngIf='eyeOn'></ion-icon>
               <ion-icon name='eye-off' *ngIf='!eyeOn'></ion-icon>
@@ -50,17 +48,14 @@
             <ion-label color='secondary'>
               <i class='icon icon-mobile'></i>
             </ion-label>
-            <ion-input placeholder='请输入已绑定的手机号' clear-input='true' required='true' formControlName="Mobile"
-              type="number" min="11"></ion-input>
+            <ion-input placeholder='请输入已绑定的手机号' clear-input='true' required='true' formControlName="Mobile" type="number" min="11"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label color='secondary'>
               <i class='icon icon-verify'></i>
             </ion-label>
-            <ion-input clear-input='true' required='true' type='text' placeholder='请输验证码' [maxlength]='6'
-              formControlName="MobileCode"></ion-input>
-            <ion-button slot='end' color='secondary' fill='outline' *ngIf='!countDown||countDown <= 0'
-              (click)="showImageCode('sendmobilecode')">发送验证码</ion-button>
+            <ion-input clear-input='true' required='true' type='text' placeholder='请输验证码' [maxlength]='6' formControlName="MobileCode"></ion-input>
+            <ion-button slot='end' color='secondary' fill='outline' *ngIf='!countDown||countDown <= 0' (click)="showImageCode('sendmobilecode')">发送验证码</ion-button>
             <ion-button slot='end' fill='outline' [disabled]='true' color='medium' *ngIf='countDown'>{{countDown}} 秒后重发
             </ion-button>
           </ion-item>
@@ -81,10 +76,13 @@
       </ion-button>
       <section class='register-forgetpassword'>
         <ion-button fill='clear' color='secondary' strong='true' (click)="forgetPassword()">忘记密码</ion-button>
-        <ng-container>
+        <span class='line'></span>
+        <ion-button fill='clear' color='secondary' strong='true' (click)="register()">
+          注册账号</ion-button>
+        <ng-container *ngIf='isShowPrivacy'>
           <span class='line'></span>
-          <ion-button fill='clear' color='secondary' strong='true' (click)="register()">
-            注册账号</ion-button>
+          <ion-button fill='clear' size='small' color='secondary' strong='true' (click)="onPrivacy()">
+            隐私策略</ion-button>
         </ng-container>
       </section>
       <ng-container *ngIf="isShowWechatLogin">
