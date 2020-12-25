@@ -45,6 +45,7 @@ import { LoginService } from "src/app/services/login/login.service";
 import { CONFIG } from "src/app/config";
 import { LangService } from 'src/app/services/lang.service';
 import { ProductItem } from "src/app/tmc/models/ProductItems";
+import { error } from "protractor";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home-df.page.html",
@@ -56,6 +57,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   @ViewChild(IonSlides) slidesEle: IonSlides;
   @ViewChild("container", { static: true }) containerEl: ElementRef<
+    HTMLElement
+  >;
+  @ViewChild("hothotel", { static: true }) hothotelEl: ElementRef<
     HTMLElement
   >;
   @ViewChild("announcementEl", { static: true }) announcementEl: ElementRef<
@@ -99,7 +103,19 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaFlight = CONFIG.mockProBuild;
   banners: { ImageUrl: string; Title: string; Id: string }[];
-  hothotels: { ImageUrl: string; Title: string; Id: string }[];
+  boutiqueHotel:{
+    HotelDayPrices:{
+      HotelFileName: string,
+      Id:string
+    }[],
+    HotelDefaultImg: string
+  };
+  hothotels: {
+    PageIndex: number,
+    PageSize: number,
+    CityCode: string,
+    SearchDate: string
+  };
   triplist: {
     Id: String;
     EndTime: String;
@@ -108,7 +124,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     ToName: String;
     PassagerId: String;
     Type: any;
-    OrderId:String;
+    OrderId: String;
     Hour: String;
     Name: String;
     FromCityName: String;
@@ -194,6 +210,29 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  private async loadHotHotels() {
+    if (!this.boutiqueHotel || !this.boutiqueHotel.HotelDayPrices||!this.boutiqueHotel.HotelDayPrices.length) {
+      if (!(await this.hasTicket())) {
+        return;
+      }
+      if (this.isLoadingHotelBanners) {
+        return;
+      }
+      this.isLoadingHotelBanners = true;
+      await this.tmcService
+        .getBoutique(this.hothotels)
+        .catch(() => null)
+        .then((res) => {
+          this.boutiqueHotel = res;
+
+          this.updateSwiper();
+        })
+        .finally(() => {
+          this.isLoadingHotelBanners = false;
+        });
+    } 
+  }
+
   private async myItinerary() {
     if (!this.triplist || !this.triplist.length) {
       this.triplist = await this.tmcService.getMyItinerary();
@@ -203,8 +242,13 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private async integral(){
-    await this.tmcService.getIntegral();
+  private async integral() {
+    try {
+      await this.tmcService.getIntegral();
+    } catch (e) {
+
+      console.log(e, 'e');
+    }
   }
 
 
@@ -270,27 +314,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     return task && task.HandleUrl;
   }
 
-  private async loadHotHotels() {
-    if (!this.hothotels || !this.hothotels.length) {
-      if (!(await this.hasTicket())) {
-        return;
-      }
-      if (this.isLoadingHotelBanners) {
-        return;
-      }
-      this.isLoadingHotelBanners = true;
-      this.tmcService
-        .getBoutique()
-        .catch(() => [])
-        .then((res) => {
-          this.hothotels = res || [];
-          this.updateSwiper();
-        })
-        .finally(() => {
-          this.isLoadingHotelBanners = false;
-        });
-    }
-  }
+  
   ngAfterViewInit() {
     setTimeout(() => {
       this.updateSwiper();
@@ -330,6 +354,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.slidesEle.startAutoplay();
     }
   }
+  
+
   private initSwiper() {
     if (this.containerEl && this.containerEl.nativeElement) {
       this.swiper = new Swiper(this.containerEl.nativeElement, {
@@ -349,13 +375,33 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         that.curIndex = this.activeIndex;
       });
     }
+
+    if (this.hothotelEl && this.hothotelEl.nativeElement) {
+      this.swiper = new Swiper(this.hothotelEl.nativeElement, {
+        loop: true,
+        autoplay: {
+          delay: 3000,
+          stopOnLastSlide: false,
+          disableOnInteraction: true,
+        },
+      });
+      this.swiper.on("touchEnd", () => {
+        this.onTouchEnd();
+      });
+      const that = this;
+      this.swiper.on("transitionEnd", function () {
+        that.onTouchEnd();
+        that.curIndex = this.activeIndex;
+      });
+    }
+
     if (this.announcementEl && this.announcementEl.nativeElement) {
       this.initAnnouncementSwiper();
     }
-    if (this.taskEle && this.taskEle.nativeElement){
+    if (this.taskEle && this.taskEle.nativeElement) {
       this.initTaskSpwiper();
     }
-    if (this.tripEle && this.tripEle.nativeElement){
+    if (this.tripEle && this.tripEle.nativeElement) {
       this.initTripSpwiper();
     }
 
@@ -431,6 +477,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async ngOnInit() {
+    var myDate = new Date();
     this.identityService.getIdentitySource().subscribe((id) => {
       this.canSelectCompany = id && id.Numbers && !!id.Numbers.AgentId;
     });
@@ -441,21 +488,32 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscription = this.identityService
       .getIdentitySource()
       .subscribe((_) => {
-        this.configService.getConfigAsync().then((c) => {
-          this.config = c;
-        });
-        this.banners = [];
-        this.triplist = [];
-        this.tasklist = [];
-        this.staffCredentials = null;
-        this.loadBanners();
-        this.loadHotHotels();
-        this.loadNotices();
-        this.myItinerary();
-        this.integral();
-        this.taskReviewed();
-        this.updateTaskSwiper();
-        this.updateTripSwiper();
+        try {
+
+          this.configService.getConfigAsync().then((c) => {
+            this.config = c;
+          });
+          this.banners = [];
+          this.hothotels = {
+            PageIndex: 0,
+            PageSize: 20,
+            CityCode: "3101",
+            SearchDate: myDate.toLocaleDateString()
+          };
+          this.triplist = [];
+          this.tasklist = [];
+          this.staffCredentials = null;
+          this.loadBanners();
+          this.loadHotHotels();
+          this.loadNotices();
+          this.myItinerary();
+          this.integral();
+          this.taskReviewed();
+          this.updateTaskSwiper();
+          this.updateTripSwiper();
+        } catch (e) {
+          console.error(e)
+        }
       });
     const paramters = AppHelper.getQueryParamers();
     if (paramters.wechatPayResultNumber) {
@@ -606,8 +664,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private async updateTaskSwiper(){
-    if(!this.tasklist || !this.tasklist.length){
+  private async updateTaskSwiper() {
+    if (!this.tasklist || !this.tasklist.length) {
       if (this.isLoadingNotice) {
         return;
       }
@@ -616,7 +674,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       }
       this.tasklist = [];
       this.isLoadingNotice = true;
-      this.taskReviewed().finally(() =>{
+      this.taskReviewed().finally(() => {
         this.isLoadingNotice = false;
         setTimeout(() => {
           if (this.taskEleSwiper) {
@@ -626,8 +684,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       })
     }
   }
-  private async updateTripSwiper(){
-    if(!this.triplist || !this.triplist.length){
+  private async updateTripSwiper() {
+    if (!this.triplist || !this.triplist.length) {
       if (this.isLoadingNotice) {
         return;
       }
@@ -636,7 +694,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       }
       this.triplist = [];
       this.isLoadingNotice = true;
-      this.myItinerary().finally(() =>{
+      this.myItinerary().finally(() => {
         this.isLoadingNotice = false;
         setTimeout(() => {
           if (this.tripEleSwiper) {
@@ -718,8 +776,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     let retryCount = 0;
     try {
       this.loadNotices();
-      this.updateTaskSwiper();
-      this.updateTripSwiper();
+      // this.updateTaskSwiper();
+      // this.updateTripSwiper();
       this.loadBanners();
       this.loadHotHotels();
       this.staff = await this.staffService.getStaff();

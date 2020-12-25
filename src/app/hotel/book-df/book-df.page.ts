@@ -1614,7 +1614,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private goToMyOrders(tab: ProductItemType) {
     if (this.langService.isCn) {
-      this.router.navigate(["order-list"], {
+      this.router.navigate(["checkout-success"], {
         queryParams: { tabId: tab },
       });
     } else {

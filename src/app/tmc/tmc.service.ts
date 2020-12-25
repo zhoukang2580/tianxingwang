@@ -142,46 +142,57 @@ export class TmcService {
       });
   }
 
-  async getBoutique() {
+  async getBoutique(d: { PageIndex: number, PageSize: number,CityCode:string,SearchDate:string }) {
     if (this.hotHotel && this.hotHotel.length) {
       return this.hotHotel;
     }
     const req = new RequestEntity();
-    req.Method = "TmcApiHomeUrl-Home-Banner";
+    req.Method = "TmcApiHomeUrl-Home-RecommendHotel";
     req.IsRedirctNoAuthorize = false;
     req.IsRedirctLogin = false;
-    // let imgs = ['/assets/home/ruojia.png','/assets/home/hotelbj.png'];
+    req.Data = {
+      PageIndex: 0,
+      PageSize: d.PageSize,
+      CityCode:d.CityCode,
+      SearchDate:d.SearchDate
+    }
     return this.apiService
-      .getPromiseData<{ ImageUrl: string; Title: string; Id: string }[]>(req)
+      .getPromiseData<{ DataCount: string; HotelDefaultImg: string ;HotelDayPrices:{
+        Id:string;
+        HotelName:string;
+        HotelAddress:string;
+        HotelCategory:string;
+        HotelFileName:string;
+      }[]}>(req)
       .then((r) => {
-        this.hotHotel = r;
+        this.hotHotel = r.HotelDayPrices;
         return r;
       });
   }
 
-  async getTaskReviewed(){
+  async getTaskReviewed() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TaskReviewed"
-    req.Data={
-      
+    req.Data = {
+
     };
     return this.apiService.getPromiseData<any[]>(req);
   }
 
-  async getMyItinerary(){
+  async getMyItinerary() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TripList";
-    req.Data={
-      
+    req.Data = {
+
     };
     return this.apiService.getPromiseData<any[]>(req);
   }
 
-  async getIntegral(){
+  async getIntegral() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Exchange";
-    req.Data={
-      
+    req.Data = {
+
     };
     return this.apiService.getPromiseData<any[]>(req);
   }
@@ -680,12 +691,12 @@ export class TmcService {
       }>(req)
       .catch(
         (_) =>
-          ({
-            Trafficlines: [],
-          } as {
-            HotelCities: any[];
-            Trafficlines: TrafficlineEntity[];
-          })
+        ({
+          Trafficlines: [],
+        } as {
+          HotelCities: any[];
+          Trafficlines: TrafficlineEntity[];
+        })
       );
     const local = this.localDomesticAirports;
     if (r.Trafficlines && r.Trafficlines.length) {

@@ -1,32 +1,3 @@
-<!-- <ion-header>
-    <ion-toolbar color='primary'>
-        <ion-buttons slot='start' class="ion-margin-start" *ngIf='canShow'>
-            <app-scan-comp></app-scan-comp>
-        </ion-buttons>
-        <ion-title class='ion-text-center' appShowtip>
-            <ng-container *ngIf='(canSelectCompany$|async)'>
-                <ion-text notranslate *ngIf='(selectedCompany$|async) as company'>{{company}}</ion-text>
-            </ng-container>
-            <ion-text class="ion-margin-start notranslate">欢迎你
-                <ng-container *ngIf='identity?.Name'>,{{identity?.Name}}</ng-container>
-            </ion-text>
-        </ion-title>
-        <ion-buttons slot='end'>
-            <ion-button fill='clear' size='small' (click)='onSwitchCustomer()' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
-                <ion-chip color='success'>
-                    <ion-label notranslate>切换客户</ion-label>
-                </ion-chip>
-            </ion-button>
-        </ion-buttons>
-        <ng-template #selectCompany>
-            <ion-button fill='clear' size='small' (click)='onSwitchCompany()' *ngIf="(canSelectCompany$|async)&&companies?.length>1">
-                <ion-chip color='success'>
-                    <ion-label notranslate>切换公司</ion-label>
-                </ion-chip>
-            </ion-button>
-        </ng-template>
-    </ion-toolbar>
-</ion-header> -->
 <ion-content class="home">
   <div class="info">
     <div class="name" (click)="onSwitchCustomer()">
@@ -143,33 +114,15 @@
     </div>
 
     <div class="notice">
-      <!-- <div class="swiper-container not-item">
-        <div class="swiper-wrapper warpper">
-          <div class="swiper-slide" *ngFor="let task of tasklist">
-            <img src="assets/home/home-text.png" alt="" />
-            <div class="not-jj">
-              <div class="not-name">{{saName[0]}}</div>
-              <div calss="not-approvd">
-                <span style="color: crimson"
-                  >{{saName[1].replace('(','').replace(')','')}}</span
-                ><span
-                  >{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span
-                >
-              </div>
-              <div class="view-now" (click)="onTaskDetail(task)">立即查看</div>
-            </div>
-          </div>
-        </div>
-      </div> -->
       <div class="swiper-container warpper-a" #taskEle>
         <div class="swiper-wrapper">
           <div class="swiper-slide swiper" *ngFor="let task of tasklist">
             <img src="assets/home/home-text.png" alt="" />
             <div class="not-jj">
-              <div class="not-name">{{saName[0]}}</div>
+              <div class="not-name">{{saName && saName[0]}}</div>
               <div calss="not-approvd">
                 <span style="color: crimson"
-                  >{{saName[1].replace('(','').replace(')','')}}</span
+                  >{{saName && saName[1].replace('(','').replace(')','')}}</span
                 ><span
                   >{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span
                 >
@@ -184,7 +137,7 @@
           <div class="swiper-slide it-list" *ngFor="let trip of triplist;">
             <img src="assets/home/home-trip.png" alt="" />
             <div class="not-warp">
-              <div class="not-name">{{saName[0]}}</div>
+              <div class="not-name">{{saName && saName[0]}}</div>
               <div class="wait-trip">您有<span>1张</span>待出行行程</div>
               <div
                 class="view-now"
@@ -217,13 +170,16 @@
 
   <div class="hot-hotel">
     <div class="title">热门酒店</div>
-    <div class="swiper-container" #container>
+    <div class="swiper-container" #hothotel>
       <div class="swiper-wrapper">
-        <ng-container *ngIf="banners?.length else deftpl">
-          <div class="swiper-slide" *ngFor="let pic of banners">
+        <ng-container *ngIf="boutiqueHotel?.HotelDayPrices?.length else deftpl">
+          <div
+            class="swiper-slide"
+            *ngFor="let pic of boutiqueHotel.HotelDayPrices"
+          >
             <div class="inner">
               <img
-                [lazyLoad]="pic.ImageUrl"
+                [lazyLoad]="pic.HotelFileName"
                 [defaultImage]="config?.DefaultImageUrl"
                 [loadingImage]="config?.PrerenderImageUrl"
               />
@@ -243,10 +199,10 @@
         </ng-template>
       </div>
     </div>
-    <div class="dots-up" *ngIf="banners?.length">
+    <div class="dots-up" *ngIf="boutiqueHotel?.HotelDayPrices?.length">
       <div
         class="dot"
-        *ngFor="let d of banners;let idx=index;"
+        *ngFor="let d of boutiqueHotel?.HotelDayPrices;let idx=index;"
         [class.active]="idx==curIndex"
       ></div>
     </div>

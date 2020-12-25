@@ -129,7 +129,12 @@ export const routes: Routes = [
   {
     path: 'hotel-map',
     loadChildren: () => import('./hotel-map/hotel-map.module').then( m => m.HotelMapPageModule)
+  },
+  {
+    path: 'checkout-success',
+    loadChildren: () => import('./checkout-success/checkout-success.module').then( m => m.CheckoutSuccessPageModule)
   }
+
 
 ];
 @NgModule({

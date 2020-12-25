@@ -528,6 +528,8 @@ export class HotelService {
   //   };
   //   return this.apiService.getResponse<TrafficlineEntity[]>(req);
   // }
+
+
   async getHotelCityAsync(forceRefresh = false) {
     try {
       if (
@@ -546,7 +548,6 @@ export class HotelService {
         this.localHotelCities &&
         this.localHotelCities.length
       ) {
-        // console.log("locals", this.localHotelCities);
         console.log(
           "locals 广元",
           this.localHotelCities.find((it) => it.Name == "广元")
@@ -665,6 +666,12 @@ export class HotelService {
     const local = await this.storage.get(`LocalHotelCityCache`);
     return local;
   }
+
+  async getBoutiqueHotel(){
+    const req = new RequestEntity();
+    req.Method = `TmcApiHotelUrl-Home`
+  }
+
   getHotelList(query: HotelQueryEntity) {
     const hotelquery: HotelQueryEntity = {
       ...this.getHotelQueryModel(),
