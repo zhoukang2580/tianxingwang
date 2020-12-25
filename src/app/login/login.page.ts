@@ -38,8 +38,10 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isLoginOk = false;
   eyeOn = false;
   isKeyboardShow = false;
+  isReadPrivacy = !!AppHelper.getStorage("isreadprivacy");
   eyeType = "password";
   isShowWechatLogin = false;
+  isShowPrivacyAlert = false;
   isShowImageCode: boolean;
   SlideEventType: string;
   environment = environment;
@@ -50,7 +52,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isGetWechatMiniMobile: boolean;
   wechatMiniUser: any;
   wechatMiniMobile: any;
-  isShowPrivacy=CONFIG.isShowPrivacy;
+  isShowPrivacy = CONFIG.isShowPrivacy;
   private mockDeviceInfo = {
     Device: `accw125487df1254accw125487df1254`,
     DeviceName: `pc模拟测试`,
@@ -84,7 +86,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.eyeType = "password";
     }
   }
-  onPrivacy() {
+  openPrivacyPage() {
     AppHelper.openPrivacyPage();
   }
   ngAfterViewInit() {
@@ -218,6 +220,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowImageCode = true;
   }
   onLoginButton(type: string) {
+    if (!this.isReadPrivacy) {
+      this.isShowPrivacyAlert = true;
+      return;
+    }
+    AppHelper.setStorage("isreadprivacy", true);
     console.log("onLoginButton login type " + type);
     if (this.loginType == "user") {
       if (!this.checkRquired()) {
@@ -232,6 +239,13 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     requestAnimationFrame(() => {
       this.isLogining = false;
     });
+  }
+  onReadPrivacy(isRead = false) {
+    if (!isRead) {
+      this.isReadPrivacy = !this.isReadPrivacy;
+    } else {
+      this.isReadPrivacy = isRead;
+    }
   }
   private checkRquired() {
     this.loginEntity.Data.Name = this.form.value.Name;

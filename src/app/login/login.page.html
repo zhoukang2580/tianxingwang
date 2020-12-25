@@ -79,11 +79,6 @@
         <span class='line'></span>
         <ion-button fill='clear' color='secondary' strong='true' (click)="register()">
           注册账号</ion-button>
-        <ng-container *ngIf='isShowPrivacy'>
-          <span class='line'></span>
-          <ion-button fill='clear' size='small' color='secondary' strong='true' (click)="onPrivacy()">
-            隐私策略</ion-button>
-        </ng-container>
       </section>
       <ng-container *ngIf="isShowWechatLogin">
         <app-or-comp>第三方登录</app-or-comp>
@@ -98,6 +93,27 @@
     </form>
   </ion-list>
 </div>
+<div class="privacy-c" *ngIf='isShowPrivacy||true'>
+  <ion-icon name="ellipse-outline" *ngIf='!isReadPrivacy' (click)='onReadPrivacy()'></ion-icon>
+  <ion-icon name="checkmark-circle-outline" *ngIf='isReadPrivacy' (click)='onReadPrivacy()' color='success'></ion-icon>
+  <span (click)='onReadPrivacy()'>
+    阅读并同意
+  </span>
+  <span class="privacy" (click)="openPrivacyPage()">
+    《隐私策略》</span>
+</div>
 <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
 <!-- <div class='shade' *ngIf='isLogining'></div>
 <div  *ngIf='isLogining' class='login-loading isloading'>正在登录,请稍候</div> -->
+<div class="privacy-alert" [class.show]='isShowPrivacyAlert'>
+  <header>请您阅读并同意一下条款</header>
+  <div class="privacy-c">
+    <span class="privacy" (click)="openPrivacyPage()">
+      《隐私策略》</span>
+  </div>
+  <div class="buttons">
+    <div class="button" (click)='onReadPrivacy(false)'>不同意</div>
+    <div class="button" (click)='onReadPrivacy(true)'>同意</div>
+  </div>
+</div>
+<div class="backdrop" [class.show]='isShowPrivacyAlert' (click)='isShowPrivacyAlert=false'></div>
