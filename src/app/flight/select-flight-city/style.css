@@ -1,0 +1,261 @@
+.flight-city-page-container {
+  transform: translate3d(100%, 0, 0);
+  transition: all ease-in-out 200ms;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
+  width: 100%;
+  background-color: white;
+}
+.flight-city-page-container.show {
+  transform: translate3d(0, 0, 0);
+}
+.flight-city-page-container .list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+.flight-city-page-container .item {
+  margin: 0;
+  padding: 0.5em 1em;
+}
+.flight-city-page-container .list .item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+.flight-city-page-container .list .item.selected {
+  color: var(--ion-color-secondary);
+}
+.flight-city-page-container .list .item label {
+  font-size: 14px;
+}
+.flight-city-page-container .list .letter-header {
+  font-weight: bolder;
+  background-color: #eee;
+  height: 20px;
+  padding: 0 0.6em;
+  position: sticky;
+  top: 0;
+}
+.flight-city-page-container .list .letter-header label {
+  font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
+}
+.flight-city-page-container .letters-wrapper {
+  position: sticky;
+  right: 0;
+  top: 0;
+  width: 2em;
+  float: right;
+}
+.flight-city-page-container .letter-navs {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  background: transparent;
+  position: absolute;
+  right: 0.5em;
+  z-index: 99;
+  top: 5vh;
+}
+.flight-city-page-container .letter-navs .nav-letter {
+  padding: 0.15em 0.5em;
+  font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #999999;
+}
+.flight-city-page-container .hot-cities-wrapper .header {
+  display: flex;
+  align-items: center;
+  padding: 1em;
+}
+.flight-city-page-container .hot-cities-wrapper .header .icon {
+  margin-left: auto;
+  margin-right: 1em;
+}
+.flight-city-page-container .hot-cities-wrapper .list {
+  display: flex;
+  flex-flow: row wrap;
+  list-style: none;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+}
+.flight-city-page-container .hot-cities-wrapper .list-wrapper {
+  width: 100%;
+  padding: 0 1.5em 0.5em 1.5em;
+}
+.flight-city-page-container.md .hot-cities-wrapper .list-wrapper {
+  padding: 0 0.5em 0 0.5em;
+}
+.flight-city-page-container .hot-cities-wrapper .b-item {
+  background: #f6f6f6;
+  border-radius: 5px;
+  width: 90px;
+  border-radius: 5px;
+  height: 30px;
+  line-height: 30px;
+  margin: 8px;
+  text-align: center;
+  padding: 0.1em 0.2em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.flight-city-page-container .b-item label {
+  font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
+}
+.flight-city-page-container .header {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding-top: 0.5em;
+}
+.flight-city-page-container .header ion-icon {
+  font-size: 1.2rem;
+  opacity: 0.8;
+  margin: 0 0.2em;
+}
+.flight-city-page-container .header .back-icon {
+  font-size: 1.5rem;
+}
+.flight-city-page-container .header ion-searchbar {
+  --border-radius: 5px;
+  padding: 0;
+  margin-right: -0.5em;
+  height: 100%;
+}
+.flight-city-page-container .header .cancel {
+  color: var(--ion-color-secondary);
+}
+.flight-city-page-container .segments {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em 4em;
+  border-bottom: 1px solid #e5e5e5;
+}
+.flight-city-page-container .segments .segment {
+  position: relative;
+}
+.flight-city-page-container .segments .segment.active label {
+  color: var(--ion-color-secondary);
+}
+.flight-city-page-container .segments .segment.active::after {
+  position: absolute;
+  content: "";
+  display: block;
+  height: 3px;
+  background-color: var(--ion-color-secondary, #5099fe);
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  border-radius: 4px;
+}
+.flight-city-page-container .container {
+  height: calc(100% - 98px);
+  overflow: auto;
+  position: relative;
+}
+.flight-city-page-container .container::-webkit-scrollbar {
+  display: none;
+}
+.flight-city-page-container .container .wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: all ease 200ms;
+}
+.flight-city-page-container .container .wrapper.domestic.show, .flight-city-page-container .container .wrapper.international.show {
+  transform: translate(0, 0);
+}
+.flight-city-page-container .container .wrapper.domestic {
+  transform: translate(-100%, 0);
+}
+.flight-city-page-container .container .wrapper.international {
+  transform: translate(100%, 0);
+}
+.flight-city-page-container .international-page-container {
+  display: flex;
+}
+.flight-city-page-container .international-page-container .sidebar {
+  text-align: center;
+  flex-basis: 100px;
+  width: 100px;
+  height: 100vh;
+  background: #f1f1f1;
+}
+.flight-city-page-container .international-page-container .sidebar .tab {
+  padding: 1em;
+}
+.flight-city-page-container .international-page-container .sidebar .tab.active {
+  background: #ffffff;
+  color: var(--ion-color-secondary, #5099fe);
+}
+.flight-city-page-container .international-page-container .main {
+  flex: 1;
+}
+.flight-city-page-container .international-page-container .main .label-header {
+  padding: 16px;
+  font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: bold;
+  color: #333333;
+}
+.flight-city-page-container .international-page-container .main .list {
+  text-align: center;
+}
+.flight-city-page-container .international-page-container .main .list .city-item {
+  font-size: 14px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+  white-space: nowrap;
+  background: #f6f6f6;
+  border-radius: 3px;
+  margin: 0.2em;
+  height: 35px;
+  border-radius: 3px;
+  line-height: 35px;
+  text-align: center;
+  width: 33.33%;
+}
+.flight-city-page-container .international-page-container .main .list .city-item.empty {
+  background: transparent;
+  visibility: collapse;
+}
+.flight-city-page-container .fab-btn {
+  color: white;
+  background-color: rgba(var(--ion-color-secondary-rgb), 0.6);
+  border-radius: 50%;
+  position: fixed;
+  right: 10vw;
+  width: 2em;
+  height: 2em;
+  bottom: 5vh;
+  z-index: -10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all ease-in-out 200ms;
+  transform: translate3d(1000%, 0, 0);
+}
+.flight-city-page-container .fab-btn ion-icon {
+  font-size: 1.1rem;
+}
+.flight-city-page-container .fab-btn.show {
+  z-index: 99;
+  transform: translate3d(0, 0, 0);
+}
+
+/*# sourceMappingURL=style.css.map */

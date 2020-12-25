@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css" />
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        button {
+            padding: .5em 1em;
+            color: white;
+            background-color: tomato;
+            border: none;
+            border-radius: 5px;
+            position: fixed;
+            right: 0;
+            bottom: 6vh;
+            z-index: 99;
+
+        }
+    </style>
+</head>
+
+<body>
+    <script src="mockcities.js"></script>
+    <script>
+        isShow = false;
+        let allItems = [];
+        let page;
+        const cities = window.cities;
+        let histories = [];
+        onToggle();
+        setTimeout(() => {
+            onToggleSegmentsPage(false);
+        }, 100);
+        function onToggle() {
+            isShow = !isShow;
+            openPage(isShow)
+        }
+        function getHeaderHtml() {
+            const header = document.createElement("div");
+            header.classList.add("header");
+            const backIcon = document.createElement("ion-icon");
+            backIcon.setAttribute("name", "chevron-back-outline");
+            backIcon.setAttribute("slot", "start");
+            const cancelBtn = document.createElement("ion-button");
+            cancelBtn.setAttribute("color", "secondary");
+            cancelBtn.setAttribute("fill", "clear");
+            cancelBtn.setAttribute("size", "small");
+            cancelBtn.classList.add("cancel")
+            const label = document.createElement("ion-label");
+            label.textContent = '取消';
+            cancelBtn.append(label);
+            cancelBtn.onclick = () => {
+                this.openPage(false);
+            };
+            backIcon.onclick = () => {
+                this.openPage(false);
+            };
+            const searchbar = document.createElement("ion-searchbar");
+            searchbar.setAttribute("disabled", "true");
+            header.append(backIcon);
+            header.append(searchbar);
+            header.append(cancelBtn);
+            return header;
+        }
+        function getSegmentHtml() {
+            const seg = document.createElement("div");
+            seg.classList.add("segments");
+            const d = document.createElement("div");
+            const label = document.createElement("label");
+            label.textContent = '国内';
+            d.append(label);
+            d.classList.add("segment");
+            const i = document.createElement('div');
+            i.classList.add("segment");
+            d.classList.add("active");
+            const lb = document.createElement("label");
+            lb.textContent = '国际/港澳台';
+            i.append(lb);
+            seg.append(d);
+            seg.append(i);
+            d.onclick = () => {
+                i.classList.remove("active");
+                d.classList.add("active");
+                onToggleSegmentsPage(true);
+            }
+            i.onclick = () => {
+                d.classList.remove("active");
+                i.classList.add("active");
+                onToggleSegmentsPage(false);
+            }
+            return seg;
+        }
+        function onToggleSegmentsPage(isDomestic) {
+            const d = getDomesticPageWrapper();
+            const i = getInternationalWrapper();
+            if (isDomestic) {
+                d.classList.add("show")
+                i.classList.remove("show")
+            } else {
+                i.classList.add("show")
+                d.classList.remove("show")
+            }
+        }
+        function openPage(open) {
+            page = document.body.querySelector(".flight-city-page-container");
+            if (!page) {
+                page = getHtml();
+                const fabbtn = document.body.querySelector(".fab-btn.flight-city-page-container");
+                page.onscroll = () => {
+                    if (fabbtn) {
+                        if (page.scrollTop > 0.6 * window.innerHeight) {
+                            fabbtn.classList.add("show");
+                        } else {
+                            fabbtn.classList.remove("show");
+                        }
+                    }
+                }
+            }
+            if (page) {
+                if (open) {
+                    page.classList.add("show")
+                } else {
+                    page.classList.remove("show")
+                }
+            }
+        }
+        function getHistoryHtml(cities) {
+            const rowNums = 3;
+            const wrapper = document.createElement("div");
+            try {
+                wrapper.classList.add("hot-cities-wrapper");
+                wrapper.classList.add("history-cities-wrapper");
+                if (!cities || !cities.length) { return wrapper };
+                const header = document.createElement("div");
+                header.classList.add("header");
+                const label = document.createElement("label");
+                label.textContent = '历史记录';
+                header.append(label);
+                const rmicon = document.createElement("ion-icon");
+                rmicon.classList.add("icon");
+                rmicon.setAttribute("name", 'trash-outline');
+                rmicon.onclick = () => {
+                    onClearHistories();
+                }
+                header.append(rmicon);
+                wrapper.append(header);
+                const list = document.createElement("div");
+                const listWrapper = document.createElement("div");
+                listWrapper.classList.add("list-wrapper");
+                listWrapper.append(list);
+                list.classList.add("list");
+                wrapper.append(listWrapper)
+                cities.slice(0, 20).forEach(c => {
+                    const item = getHistoryOrHotItem(c, true);
+                    const label = document.createElement("label");
+                    label.textContent = c.Name;
+                    item.onclick = () => {
+                        onSelectCity(c);
+                    }
+                    list.append(item);
+                })
+                if (cities.length % rowNums != 0) {
+                    const len = cities.length % rowNums;
+                    const item = document.createElement('div');
+                    item.classList.add("empty-item");
+                    item.classList.add("b-item");
+                    item.style.visibility = 'collapse'
+                    for (let i = 0; i < len; i++) {
+                        list.append(item);
+                    }
+                }
+            } catch (e) {
+                console.error(e)
+            }
+            return wrapper;
+
+        }
+        function getHistoryOrHotItem(c, isHistory) {
+            const item = document.createElement("div");
+            item.classList.add("b-item");
+            item.textContent = c.Name;
+            item.setAttribute("CityCode", c.CityCode);
+            item.onclick = () => {
+                if (!isHistory) {
+                    onSelectCity(c);
+                }
+            }
+            return item;
+        }
+        function getScrollToTopFab() {
+            const fab = document.createElement("div");
+            fab.classList.add("fab-btn");
+            fab.classList.add("flight-city-page-container");
+            const icon = document.createElement("ion-icon");
+            icon.setAttribute("name", 'chevron-up-outline');
+            fab.append(icon);
+            fab.onclick = () => {
+                page.scrollTop = 0;
+            }
+            return fab;
+        }
+        function getHotHtml(cities) {
+            const rowNums = 3;
+            const wrapper = document.createElement("div");
+            try {
+                wrapper.classList.add("hot-cities-wrapper");
+                const header = document.createElement("div");
+                header.classList.add("header");
+                const label = document.createElement("label");
+                label.textContent = '热门城市';
+                header.append(label);
+                wrapper.append(header);
+                const list = document.createElement("div");
+                const listWrapper = document.createElement("div");
+                listWrapper.classList.add("list-wrapper");
+                listWrapper.append(list);
+                list.classList.add("list");
+                wrapper.append(listWrapper)
+                cities.forEach(c => {
+                    const item = getHistoryOrHotItem(c);
+                    const label = document.createElement("label");
+                    label.textContent = c.Name;
+                    item.onclick = () => {
+                        onSelectCity(c);
+                    }
+                    list.append(item);
+                })
+                if (cities.length % rowNums != 0) {
+                    const len = cities.length % rowNums;
+                    const item = document.createElement('div');
+                    item.classList.add("empty-item");
+                    item.classList.add("b-item");
+                    item.style.visibility = 'collapse'
+                    for (let i = 0; i < len; i++) {
+                        list.append(item);
+                    }
+                }
+            } catch (e) {
+                console.error(e)
+            }
+            return wrapper;
+        }
+        function getPageEle() {
+            return document.querySelector(".flight-city-page-container");
+        }
+        function onShowInHistory(c) {
+            try {
+                const page = getDomesticContainerPage();
+                if (page) {
+                    let wrapper = getHistoryWrapperEl();
+                    if (!wrapper) {
+                        wrapper = getHistoryHtml();
+                        page.insertBefore(wrapper, page.querySelector(".hot-cities-wrapper"))
+                    }
+                    const items = wrapper.querySelectorAll(".b-item");
+                    const list = wrapper.querySelector(".list");
+                    if (!histories || !histories.length) {
+                        histories = [c];
+                    }
+                    if (histories.length >= 12) {
+                        histories.pop();
+                    } else if (!histories.find(it => it.Code == c.Code)) {
+                        histories.unshift(c);
+                    }
+                    const item = getHistoryOrHotItem(c);
+                    item.setAttribute("history", 'isHistory');
+                    if (wrapper) {
+                        if (items.length) {
+                            for (let i = 0; i < items.length; i++) {
+                                const one = items.item(i);
+                                if (one.getAttribute("CityCode") == c.CityCode) {
+                                    list.insertBefore(one, list.firstChild);
+                                    return;
+                                }
+                            }
+                            if (items && items.length >= 12) {
+                                if (list) {
+                                    list.removeChild(items.item(items.length - 1))
+                                }
+                            }
+                            list.insertBefore(item, list.firstChild);
+                        } else {
+                            page.removeChild(wrapper);
+                            wrapper = getHistoryHtml(histories);
+                            page.insertBefore(wrapper, page.querySelector(".hot-cities-wrapper"))
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error(e)
+            }
+        }
+        function getHistoryWrapperEl() {
+            const page = getPageEle();
+            return page && page.querySelector(".history-cities-wrapper");
+        }
+        function onSelectCity(c) {
+            onShowInHistory(c);
+            console.log(c);
+        }
+        function onClearHistories() {
+            const page = getDomesticContainerPage();
+            if (page) {
+                const history = getHistoryWrapperEl();
+                histories = [];
+                if (history) {
+                    if (history.firstChild) {
+                        history.removeChild(history.firstChild);
+                    }
+                    page.removeChild(history)
+                }
+            }
+        }
+        function getHtml() {
+            const cmap = getLeter2Cities(cities);
+            const page = document.createElement("div");
+            page.classList.add("flight-city-page-container");
+            const header = getHeaderHtml();
+            page.append(header);
+            const segs = getSegmentHtml();
+            page.append(segs);
+            const container = document.createElement("div");
+            container.classList.add("container");
+            page.append(container);
+            const domesticHtml = getDomesticHtml(cmap);
+            const domesticC = document.createElement('div');
+            domesticC.classList.add("wrapper");
+            domesticC.classList.add("show");
+            domesticC.classList.add("domestic");
+            domesticC.append(domesticHtml);
+            container.append(domesticC);
+            const interPageHtml = getInternationalHtml();
+            const international = document.createElement('div');
+            international.classList.add("wrapper");
+            international.classList.add("international");
+            international.append(interPageHtml);
+            container.append(international);
+            document.body.append(page);
+            document.body.append(getScrollToTopFab());
+            return page;
+        }
+        function getInternationalHtml() {
+            const div = document.createElement("div");
+            div.classList.add("international-page-container");
+            const sidebar = getInterSidebars();
+            const cnt = document.createElement("div");
+            cnt.classList.add("main");
+            div.append(sidebar);
+            div.append(cnt);
+            return div;
+        }
+        function getInternationalPageMainContainer() {
+            return getInternationalContainerPage().querySelector(".main");
+        }
+        function getInterSidebars() {
+            const sidebar = document.createElement("div");
+            sidebar.classList.add("sidebar");
+            sidebar.append(sidebar);
+            const recommend = getTab("推荐");
+            const rh = getTab("日韩");
+            const dny = getTab("东南亚");
+            const oz = getTab("欧洲");
+            const mz = getTab("美洲");
+            const lindex = getTab("字母索引");
+            sidebar.append(recommend);
+            sidebar.append(recommend);
+            sidebar.append(recommend);
+            sidebar.append(recommend);
+
+            return sidebar;
+        }
+        function initRecommendHtml(recommendCities) {
+            const main = getInternationalPageMainContainer();
+            if (main.firstChild) {
+                main.firstChild.remove();
+            }
+            const html = getHtml();
+            main.append(html);
+            function getHtml() {
+                const c = document.createElement("div");
+                const h = document.createElement("header");
+                h.classList.add("label-header")
+                const lb = document.createElement("label");
+                lb.textContent = '海外热门推荐';
+                h.append(lb);
+                c.append(h);
+                if (recommendCities) {
+                    const list = document.createElement('div');
+                    list.classList.add("list");
+                    if (recommendCities.length % 3 != 0) {
+                        for (let i = 0; i < recommendCities.length % 3; i++) {
+                            recommendCities.push({});
+                        }
+                    }
+                    recommendCities.forEach(c => {
+                        const el = getInterCityItemHtml(c);
+                        list.append(el);
+                    })
+                    c.append(list);
+                }
+                return c;
+            }
+
+        }
+        function getInterCityItemHtml(city) {
+            if (city) {
+                const div = document.createElement("div");
+                div.textContent = city.Name || "";
+                div.classList.add("city-item");
+                if (!city.Name) {
+                    div.classList.add("empty");
+                }
+                return div;
+            }
+            return null;
+        }
+        function onInterSidebarTabActive(tab) {
+            switch (tab && tab.getAttribute("name")) {
+                default: {
+                    initRecommendHtml(cities.filter(it => it.IsHot));
+                    break;
+                }
+                case "rh": {
+                    break;
+                }
+                case "dny": {
+                    break;
+                }
+                case "oz": {
+                    break;
+                }
+                case "mz": {
+                    break;
+                }
+                case "letterindex": {
+                    break;
+                }
+            }
+        }
+        function getInterSidebars() {
+            const sidebar = document.createElement("div");
+            sidebar.classList.add("sidebar");
+            const recommend = getTab("推荐", 'recommend');
+            const rh = getTab("日韩", 'rh');
+            const dny = getTab("东南亚", 'dny');
+            const oz = getTab("欧洲", 'oz');
+            const mz = getTab("美洲", 'mz');
+            const lindex = getTab("字母索引", 'letterindex');
+            sidebar.append(recommend);
+            sidebar.append(rh);
+            sidebar.append(dny);
+            sidebar.append(oz);
+            sidebar.append(mz);
+            sidebar.append(lindex);
+            function getTab(name, attrvalue) {
+                const tab = document.createElement("div");
+                tab.classList.add("tab");
+                const lb = document.createElement("label");
+                lb.textContent = name;
+                tab.setAttribute("name", attrvalue);
+                tab.append(lb);
+                tab.onclick = (evt) => {
+                    clearTabActive();
+                    tab.classList.add("active");
+                    onInterSidebarTabActive(tab);
+                }
+                return tab;
+            }
+            function clearTabActive() {
+                recommend.classList.remove('active');
+                rh.classList.remove('active');
+                dny.classList.remove('active');
+                oz.classList.remove('active');
+                mz.classList.remove('active');
+                lindex.classList.remove('active');
+            }
+            return sidebar;
+        }
+        function getDomesticPageWrapper() {
+            return getPageEle().querySelector(".domestic.wrapper");
+        }
+        function getDomesticContainerPage() {
+            return getPageEle().querySelector(".domestic.wrapper .domestic-page-container");
+        }
+        function getInternationalContainerPage() {
+            return getPageEle().querySelector(".international.wrapper .international-page-container");
+        }
+        function getInternationalWrapper() {
+            return getPageEle().querySelector(".international.wrapper");
+        }
+        function getContainerEle() {
+            return getPageEle().querySelector(".container");
+        }
+        function getDomesticHtml(cmap) {
+            const div = document.createElement("div");
+            div.classList.add("domestic-page-container");
+            div.classList.add("show");
+            const hotHtml = getHotHtml(cities.filter(it => it.IsHot));
+            const historyHtml = getHistoryHtml();
+            div.append(historyHtml);
+            div.append(hotHtml);
+            const letterNavs = getLetterNavs(cmap);
+            div.append(letterNavs)
+            const list = getList(cmap);
+            div.append(list);
+            return div;
+        }
+        function getLetterNavs(cmap) {
+            const letters = Object.keys(cmap);
+            letters.sort();
+            const letterDiv = document.createElement("div");
+            const divwrapper = document.createElement("div");
+            divwrapper.classList.add("letters-wrapper")
+            letterDiv.classList.add("letter-navs");
+            divwrapper.append(letterDiv);
+            letters.forEach(l => {
+                const li = document.createElement("div");
+                li.classList.add("nav-letter")
+                li.textContent = l;
+                letterDiv.append(li);
+                li.onclick = (evt) => {
+                    if (evt) {
+                        evt.stopPropagation();
+                    }
+                    try {
+                        const el = page.querySelector(`[letter='${l}']`);
+                        const rect = el.getBoundingClientRect();
+                        const headerEle = 97;
+                        let y = 0;
+                        y = rect.top - headerEle;
+                        const ul = getContainerEle();
+                        ul.scrollBy(0, y)
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            })
+            return divwrapper;
+        }
+        function getItem(c) {
+            const item = document.createElement("li");
+            item.classList.add("item");
+            item.onclick = (evt) => {
+                onSelectCity(c)
+                if (allItems) {
+                    for (let i = 0; i < allItems.length; i++) {
+                        const it = allItems[i];
+                        it.setAttribute("selected", "false");
+                        it.classList.remove("selected");
+                    }
+                }
+                const selected = item.getAttribute('selected') == 'true';
+                if (selected) {
+                    item.setAttribute("selected", "false")
+                    item.classList.remove("selected");
+                } else {
+                    item.setAttribute("selected", 'true')
+                    item.classList.add("selected");
+                }
+            }
+            const label = document.createElement("label");
+            label.textContent = c.Name;
+            item.append(label);
+            if (!allItems.find(it => it == item)) {
+                allItems.push(item)
+            }
+            return item;
+        }
+        function getLeter2Cities(cities) {
+            const cmap = {};
+            if (cities) {
+                cities.forEach(c => {
+                    const arr = cmap[c.FirstLetter];
+                    if (arr) {
+                        if (!arr.find(it => it.Code == c.Code)) { arr.push(c) }
+                    } else {
+                        cmap[c.FirstLetter] = [c];
+                    }
+                })
+            }
+            return cmap;
+        }
+        function getLetterHeader(l) {
+            const li = document.createElement("li");
+            li.classList.add('letter-header');
+            li.setAttribute("letter", l);
+            const label = document.createElement("label");
+            label.textContent = l;
+            li.append(label);
+            return li;
+        }
+        function getList(cmap) {
+            const list = document.createElement("ul");
+            list.classList.add("list")
+            if (cmap) {
+                const letters = Object.keys(cmap);
+                letters.sort();
+                if (letters && letters.length) {
+                    letters.forEach(l => {
+                        const letterHeader = getLetterHeader(l);
+                        list.append(letterHeader);
+                        const arr = cmap[l];
+                        if (arr) {
+                            arr.forEach(c => {
+                                const item = getItem(c);
+                                list.append(item);
+                            })
+                        }
+                    })
+                }
+            }
+            return list;
+        }
+    </script>
+</body>
+
+</html>
