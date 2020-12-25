@@ -199,7 +199,6 @@ ion-header ion-title {
   margin-top: 25px;
   font-size: 12px;
   // height: 40px;
-  overflow-y: auto;
   .not-item {
     margin: 20px;
     overflow-y: auto;
@@ -216,19 +215,24 @@ ion-header ion-title {
     }
   }
 
+  
+
   .it-list {
+    display: flex;
+    line-height: 2;
+  }
+
+  .swiper-slide {
     display: flex;
     line-height: 2;
   }
 
   .not-item-u {
     margin: 20px;
-    overflow-y: auto;
-    height: 60px;
-    border-top: 5px solid #f1f3f3;
-    padding-top: 10px;
+    height: 44px;
     img {
       height: 20px;
+      margin-top: 4px;
     }
     .wait-trip {
       margin-left: 15px;
@@ -250,7 +254,6 @@ ion-header ion-title {
     display: flex;
     flex-wrap: wrap;
     margin-left: 18px;
-    border-bottom: 0.5px solid #d0d0be;
     margin-bottom: 16px;
   }
   .trips {
@@ -366,3 +369,25 @@ ion-header ion-title {
     }
   }
 }
+
+.warpper-a{
+  height: 21px;
+  font-size: 12px;
+  margin: 20px;
+  margin-top: 24px;
+  .swiper{
+    display: flex;
+  }
+  img{    
+    height: 18px;
+  }
+  .not-jj {
+    display: flex;
+    .not-name {
+      margin-left: 15px;
+      padding-right: 15px;
+    }
+  }
+}
+
+

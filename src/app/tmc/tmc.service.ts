@@ -175,7 +175,15 @@ export class TmcService {
       
     };
     return this.apiService.getPromiseData<any[]>(req);
-    
+  }
+
+  async getIntegral(){
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-Exchange";
+    req.Data={
+      
+    };
+    return this.apiService.getPromiseData<any[]>(req);
   }
 
   setTravelFormNumber(tn: string) {
