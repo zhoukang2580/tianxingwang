@@ -91,7 +91,7 @@ export class HotelCityService {
           },
           (e) => {
             console.error(e);
-            rsv();
+            rsv(null);
           }
         );
     });
