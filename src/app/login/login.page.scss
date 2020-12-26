@@ -116,23 +116,37 @@ ion-row {
   }
   transition: all ease-in-out 200ms;
   .privacy-c {
+    padding: 2em 0;
+    justify-content: center;
     .privacy {
       color: var(--ion-color-secondary);
     }
   }
   border-radius: 5px;
-  padding: 1em 2em;
+  padding: 1em 2em 0.5em;
+  .line {
+    height: 1px;
+    background-color: rgba(var(--ion-color-dark-rgb), 0.13);
+    width: 200%;
+    margin: 0 -5em;
+  }
+  .h-line {
+    height: 1em;
+    flex-basis: 1px;
+    margin: 0 1em;
+    width: 1px;
+    background-color: rgba(var(--ion-color-dark-rgb), 0.13);
+  }
   .buttons {
     display: flex;
     align-items: center;
-    border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
+    justify-content: space-between;
+    margin: 0 -1em;
+    padding-top: 0.5em;
+    .button {
+      padding: 0.2em 0;
+      flex: 1;
+      text-align: center;
+    }
   }
-}
-.backdrop {
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(var(--ion-color-dark-rgb), 0.5);
 }

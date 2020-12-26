@@ -120,7 +120,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     while (--i > 0 && t) {
       t = await this.modalCtrl.getTop();
       if (t) {
-        await t.dismiss().catch((_) => {});
+        await t.dismiss().catch((_) => { });
       }
     }
   }
@@ -220,11 +220,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowImageCode = true;
   }
   onLoginButton(type: string) {
-    if (!this.isReadPrivacy) {
+    if (!this.isReadPrivacy && this.isShowPrivacy) {
       this.isShowPrivacyAlert = true;
       return;
     }
-    AppHelper.setStorage("isreadprivacy", true);
+    this. setIsReadPrivacy(true)
     console.log("onLoginButton login type " + type);
     if (this.loginType == "user") {
       if (!this.checkRquired()) {
@@ -240,12 +240,18 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.isLogining = false;
     });
   }
+  private setIsReadPrivacy(isreadprivacy = false) {
+    AppHelper.setStorage("isreadprivacy", isreadprivacy);
+  }
   onReadPrivacy(isRead = false) {
-    if (!isRead) {
-      this.isReadPrivacy = !this.isReadPrivacy;
-    } else {
-      this.isReadPrivacy = isRead;
-    }
+    this.isReadPrivacy = isRead;
+    this. setIsReadPrivacy(isRead)
+    this.isShowPrivacyAlert = false;
+    
+  }
+  onToggleIsReadPrivacy(){
+    this.isReadPrivacy=!this.isReadPrivacy;
+    this.setIsReadPrivacy(this.isReadPrivacy)
   }
   private checkRquired() {
     this.loginEntity.Data.Name = this.form.value.Name;
