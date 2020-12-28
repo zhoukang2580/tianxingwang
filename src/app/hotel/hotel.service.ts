@@ -50,6 +50,7 @@ import { OrderBookDto } from "../order/models/OrderBookDto";
 import { ConfigEntity } from "../services/config/config.entity";
 import { AgentEntity } from "../tmc/models/AgentEntity";
 import { CityEntity } from "../tmc/models/CityEntity";
+import { AgentRegionType } from "../tmc/models/AgentRegionType";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -290,6 +291,52 @@ export class HotelService {
       )
     );
   }
+  async checkHasAuth(isDomestic = true) {
+    try {
+      const msg = "您没有预定权限";
+      const Tmc = await this.tmcService.getTmc();
+      const tmcRegionTypeValues = Tmc.RegionTypeValue.split(",");
+      const Agent = await this.tmcService.getAgent();
+      if (!isDomestic) {
+        const pass =
+          Tmc &&
+          // tslint:disable-next-line: no-bitwise
+          (Tmc.RegionType & AgentRegionType.InternationalHotel) > 0 &&
+          Agent &&
+          // tslint:disable-next-line: no-bitwise
+          (Agent.RegionType & AgentRegionType.InternationalHotel) > 0;
+        if (
+          !tmcRegionTypeValues.find(
+            (it) => it.toLowerCase() == "internationalhotel"
+          ) ||
+          !pass
+        ) {
+          AppHelper.alert(msg);
+          return false;
+        }
+      }
+      if (isDomestic) {
+        const pass =
+          Tmc &&
+          // tslint:disable-next-line: no-bitwise
+          (Tmc.RegionType & AgentRegionType.Hotel) > 0 &&
+          Agent != null &&
+          // tslint:disable-next-line: no-bitwise
+          (Agent.RegionType & AgentRegionType.Hotel) > 0;
+        if (
+          !tmcRegionTypeValues.find((it) => it.toLowerCase() == "hotel") ||
+          !pass
+        ) {
+          AppHelper.alert(msg);
+          return false;
+        }
+      }
+    } catch (e) {
+      return false;
+    }
+
+    return true;
+  }
   getRoomPlanDescriptions(room: RoomEntity) {
     const itm =
       room &&
@@ -529,7 +576,6 @@ export class HotelService {
   //   return this.apiService.getResponse<TrafficlineEntity[]>(req);
   // }
 
-
   async getHotelCityAsync(forceRefresh = false) {
     try {
       if (
@@ -667,9 +713,9 @@ export class HotelService {
     return local;
   }
 
-  async getBoutiqueHotel(){
+  async getBoutiqueHotel() {
     const req = new RequestEntity();
-    req.Method = `TmcApiHotelUrl-Home`
+    req.Method = `TmcApiHotelUrl-Home`;
   }
 
   getHotelList(query: HotelQueryEntity) {

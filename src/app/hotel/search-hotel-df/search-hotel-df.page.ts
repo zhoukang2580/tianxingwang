@@ -198,7 +198,11 @@ export class SearchHotelDfPage
     //   this.initEles();
     // }
   }
-  onToggleDomestic(isDomestic) {
+  async onToggleDomestic(isDomestic) {
+    const ok = await this.hotelService.checkHasAuth(isDomestic);
+    if (!ok) {
+      return;
+    }
     this.isDomestic = isDomestic;
   }
   onSelectNationality() {
@@ -384,6 +388,10 @@ export class SearchHotelDfPage
     }
   }
   async onSearchHotel() {
+    const ok = await this.hotelService.checkHasAuth(this.isDomestic);
+    if (!ok) {
+      return;
+    }
     if (this.totalFlyDays >= 15) {
       const popover = await this.popoverCtrl.create({
         component: OverHotelComponent,
@@ -403,7 +411,7 @@ export class SearchHotelDfPage
       });
       this.hotelService.getConditions();
       this.isLeavePage = true;
-      this.isOpenSelectCityPage  = false;
+      this.isOpenSelectCityPage = false;
       this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
     } else {
       this.router.navigate([
