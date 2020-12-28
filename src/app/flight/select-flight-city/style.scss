@@ -176,6 +176,7 @@
       left: 0;
       right: 0;
       transition: all ease 200ms;
+      height: 100%;
       &.domestic.show,
       &.international.show {
         transform: translate(0, 0);
@@ -190,11 +191,12 @@
   }
   .international-page-container {
     display: flex;
+    height: 101%;
     .sidebar {
       text-align: center;
       flex-basis: 100px;
       width: 100px;
-      height: 100vh;
+      height: 100%;
       background: #f1f1f1;
       .tab {
         padding: 1em;
@@ -205,6 +207,8 @@
       }
     }
     .main {
+      max-height: 100%;
+      overflow: auto;
       flex: 1;
       .label-header {
         padding: 16px;
@@ -214,25 +218,43 @@
         color: #333333;
       }
       .list {
-        text-align: center;
+        padding-bottom: 0.5em;
+        .row {
+          display: flex;
+          justify-content: space-around;
+        }
+        .w-2 {
+          flex: 2;
+        }
         .city-item {
           font-size: 14px;
-          display: inline-block;
-          overflow: hidden;
-          text-overflow: ellipsis;
           max-width: 80px;
-          white-space: nowrap;
           background: #f6f6f6;
           border-radius: 3px;
-          margin: 0.2em;
-          height: 35px;
+          margin-top: 0.8em;
+          min-height: 35px;
           border-radius: 3px;
-          line-height: 35px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           text-align: center;
-          width: 33.33%;
+          // width: 33.33%;
+          flex: 1;
           &.empty {
             background: transparent;
             visibility: collapse;
+          }
+          &.f-8 {
+            font-size: 8px;
+            flex-basis: 66.66%;
+            max-width: initial;
+          }
+          &.f-10 {
+            flex-basis: 66.66%;
+            font-size: 10px;
+          }
+          &.f-12 {
+            font-size: 12px;
           }
         }
       }

@@ -36,10 +36,25 @@
     <script src="mockcities.js"></script>
     <script>
         isShow = false;
+        const tabObj = {
+            '推荐': 'isHot',
+            '港澳台': 11,
+            '东亚': 2,
+            '东南亚': 3,
+            '西亚': 4,
+            '中亚': 5,
+            '大洋洲': 6,
+            '北美洲': 7,
+            '南美洲': 8,
+            '欧洲': 9,
+            '非洲': 10,
+        };
         let allItems = [];
         let page;
         const cities = window.cities;
         let histories = [];
+        let allInterItems = [];
+        const internationalCities = window.internationalCities;
         onToggle();
         setTimeout(() => {
             onToggleSegmentsPage(false);
@@ -365,49 +380,76 @@
         function getInternationalPageMainContainer() {
             return getInternationalContainerPage().querySelector(".main");
         }
-        function getInterSidebars() {
-            const sidebar = document.createElement("div");
-            sidebar.classList.add("sidebar");
-            sidebar.append(sidebar);
-            const recommend = getTab("推荐");
-            const rh = getTab("日韩");
-            const dny = getTab("东南亚");
-            const oz = getTab("欧洲");
-            const mz = getTab("美洲");
-            const lindex = getTab("字母索引");
-            sidebar.append(recommend);
-            sidebar.append(recommend);
-            sidebar.append(recommend);
-            sidebar.append(recommend);
-
-            return sidebar;
-        }
-        function initRecommendHtml(recommendCities) {
+        function initRightSideMainHtml(recommendCities) {
             const main = getInternationalPageMainContainer();
+
             if (main.firstChild) {
                 main.firstChild.remove();
             }
             const html = getHtml();
             main.append(html);
+            setTimeout(() => {
+                main.scrollTo({
+                    top: 0,
+                    left: 0,
+                    behavior: 'smooth'
+                });
+            }, 200);
             function getHtml() {
+                const rowLen = 3;
                 const c = document.createElement("div");
                 const h = document.createElement("header");
                 h.classList.add("label-header")
                 const lb = document.createElement("label");
                 lb.textContent = '海外热门推荐';
-                h.append(lb);
                 c.append(h);
+                const hotArr = recommendCities.filter(it => it.IsHot);
+                if (hotArr.length) {
+                    h.append(lb);
+                }
                 if (recommendCities) {
+                    const rows = [];
+                    const len = 12;
+                    recommendCities.forEach(c => {
+                        const name = c.Name || "";
+
+                        if (name) {
+                            const obj = {
+                                ...c,
+                                isRowFlag: name.length >= len
+                            };
+                            const row = rows[rows.length - 1];
+                            if (row) {
+                                if (row.length < rowLen) {
+                                    if (!row.find(it => it.isRowFlag)) {
+                                    } else {
+                                        
+                                    }
+                                }
+                            } else {
+                                const cols = [obj];
+                                rows.push(cols);
+                            }
+                        }
+                    })
                     const list = document.createElement('div');
                     list.classList.add("list");
-                    if (recommendCities.length % 3 != 0) {
-                        for (let i = 0; i < recommendCities.length % 3; i++) {
-                            recommendCities.push({});
+                    // if (recommendCities.length % 3 != 0) {
+                    //     for (let i = 0; i < recommendCities.length % 3; i++) {
+                    //         recommendCities.push({});
+                    //     }
+                    // }
+                    rows.forEach(row => {
+                        const div = document.createElement('div');
+                        div.classList.add("row");
+                        if (row.length < rowLen) {
+                            div.classList.add("w-2");
                         }
-                    }
-                    recommendCities.forEach(c => {
-                        const el = getInterCityItemHtml(c);
-                        list.append(el);
+                        row.forEach(c => {
+                            const el = getInterCityItemHtml(c);
+                            div.append(el);
+                        })
+                        list.append(div);
                     })
                     c.append(list);
                 }
@@ -420,7 +462,15 @@
                 const div = document.createElement("div");
                 div.textContent = city.Name || "";
                 div.classList.add("city-item");
-                if (!city.Name) {
+                if (div.textContent.length >= 15) {
+                    div.classList.add("f-8");
+                } else if (div.textContent.length >= 10) {
+                    div.classList.add("f-10");
+                } else if (div.textContent.length >= 5) {
+                    div.classList.add("f-12");
+                }
+
+                if (!div.textContent) {
                     div.classList.add("empty");
                 }
                 return div;
@@ -428,43 +478,26 @@
             return null;
         }
         function onInterSidebarTabActive(tab) {
-            switch (tab && tab.getAttribute("name")) {
-                default: {
-                    initRecommendHtml(cities.filter(it => it.IsHot));
-                    break;
-                }
-                case "rh": {
-                    break;
-                }
-                case "dny": {
-                    break;
-                }
-                case "oz": {
-                    break;
-                }
-                case "mz": {
-                    break;
-                }
-                case "letterindex": {
-                    break;
-                }
+            try {
+                const name = tab.getAttribute("name");
+                let arr = name == 'isHot' ? internationalCities.filter(it => it.IsHot) : internationalCities.filter(it => it.DestinationAreaType == name);
+                const h = arr.filter(it => it.IsHot);
+                const notH = arr.filter(it => !it.IsHot).sort((a, b) => a.Sequence - b.Sequence);
+                arr = h.concat(notH);
+                initRightSideMainHtml(arr);
+            } catch (e) {
+                console.error(e)
             }
         }
         function getInterSidebars() {
             const sidebar = document.createElement("div");
             sidebar.classList.add("sidebar");
-            const recommend = getTab("推荐", 'recommend');
-            const rh = getTab("日韩", 'rh');
-            const dny = getTab("东南亚", 'dny');
-            const oz = getTab("欧洲", 'oz');
-            const mz = getTab("美洲", 'mz');
-            const lindex = getTab("字母索引", 'letterindex');
-            sidebar.append(recommend);
-            sidebar.append(rh);
-            sidebar.append(dny);
-            sidebar.append(oz);
-            sidebar.append(mz);
-            sidebar.append(lindex);
+            const tabs = [];
+            Object.keys(tabObj).forEach(n => {
+                const t = getTab(n, tabObj[n]);
+                tabs.push(t);
+                sidebar.append(t);
+            })
             function getTab(name, attrvalue) {
                 const tab = document.createElement("div");
                 tab.classList.add("tab");
@@ -480,12 +513,9 @@
                 return tab;
             }
             function clearTabActive() {
-                recommend.classList.remove('active');
-                rh.classList.remove('active');
-                dny.classList.remove('active');
-                oz.classList.remove('active');
-                mz.classList.remove('active');
-                lindex.classList.remove('active');
+                tabs.forEach(t => {
+                    t.classList.remove("active");
+                })
             }
             return sidebar;
         }
