@@ -43,6 +43,7 @@ import {
   ElementRef,
   ViewChildren,
   OnDestroy,
+  EventEmitter,
 } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
@@ -139,6 +140,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
   isSelfBookType = true;
   arrivalDateTimes: string[];
+  ionChange: EventEmitter<any>;
+  otherCostCenterCode: string;
+  otherCostCenterName: string;
+  costCenter: {
+    code: string;
+    name: string;
+  };
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   dates: { date: string; price: string | number }[] = [];
   constructor(
@@ -1417,6 +1425,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       const d = AppHelper.getDate(date);
       return this.calendarService.getDayOfWeekNames(d.getDay());
     }
+  }
+  onValueChange() {
+    this.ionChange.emit({
+      otherCostCenterCode: this.otherCostCenterCode,
+      otherCostCenterName: this.otherCostCenterName,
+      costCenter: this.costCenter,
+    });
   }
   private showTransform(show: boolean) {
     try {
