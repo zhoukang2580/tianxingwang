@@ -95,20 +95,27 @@
 </div>
 <app-slidvalidate-com *ngIf="isShowImageCode" (slideEvent)='onSlideEvent($event)'></app-slidvalidate-com>
 <ng-container *ngIf='isShowPrivacy'>
-  <div class="privacy-c" >
-    <ion-icon name="ellipse-outline" *ngIf='!isReadPrivacy' (click)='onReadPrivacy()'></ion-icon>
-    <ion-icon name="checkmark-circle-outline" *ngIf='isReadPrivacy' (click)='onReadPrivacy()' color='success'></ion-icon>
-    <span (click)='onToggleIsReadPrivacy()'>
-      阅读并同意
-    </span>
-    <span class="privacy" (click)="openPrivacyPage()">
-      《隐私策略》</span>
+  <div class="privacy-c">
+    <ng-container *ngIf='!hasReadPrivacy'>
+      <ion-icon name="ellipse-outline" *ngIf='!isReadPrivacy' (click)='onReadPrivacy()'></ion-icon>
+      <ion-icon name="checkmark-circle-outline" *ngIf='isReadPrivacy' (click)='onReadPrivacy()' color='success'></ion-icon>
+      <span (click)='onToggleIsReadPrivacy()'>
+        阅读并同意
+      </span>
+      <span class="privacy" (click)="openPrivacyPage()">
+        《隐私政策》</span>
+    </ng-container>
+    <ng-container *ngIf='hasReadPrivacy'>
+      <span>登录即代表您已同意我们的</span>
+      <span class="privacy" (click)="openPrivacyPage()">
+        《隐私政策》</span>
+    </ng-container>
   </div>
-  <div class="privacy-alert" [class.show]='isShowPrivacyAlert' >
+  <div class="privacy-alert" [class.show]='isShowPrivacyAlert'>
     <header>请您阅读并同意以下条款</header>
     <div class="privacy-c">
       <span class="privacy" (click)="openPrivacyPage()">
-        《隐私策略》</span>
+        《隐私政策》</span>
     </div>
     <div class="line"></div>
     <div class="buttons">
@@ -117,5 +124,5 @@
       <div class="button" (click)='onReadPrivacy(true)'>同意</div>
     </div>
   </div>
-  <div class="backdrop" [class.show]='isShowPrivacyAlert'  (click)='isShowPrivacyAlert=false'></div>
+  <div class="backdrop" [class.show]='isShowPrivacyAlert' (click)='isShowPrivacyAlert=false'></div>
 </ng-container>

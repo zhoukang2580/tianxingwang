@@ -39,6 +39,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   eyeOn = false;
   isKeyboardShow = false;
   isReadPrivacy = !!AppHelper.getStorage("isreadprivacy");
+  hasReadPrivacy = !!AppHelper.getStorage("isreadprivacy");
   eyeType = "password";
   isShowWechatLogin = false;
   isShowPrivacyAlert = false;
@@ -120,7 +121,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     while (--i > 0 && t) {
       t = await this.modalCtrl.getTop();
       if (t) {
-        await t.dismiss().catch((_) => { });
+        await t.dismiss().catch((_) => {});
       }
     }
   }
@@ -224,7 +225,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.isShowPrivacyAlert = true;
       return;
     }
-    this. setIsReadPrivacy(true)
+    this.setIsReadPrivacy(true);
     console.log("onLoginButton login type " + type);
     if (this.loginType == "user") {
       if (!this.checkRquired()) {
@@ -245,13 +246,12 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onReadPrivacy(isRead = false) {
     this.isReadPrivacy = isRead;
-    this. setIsReadPrivacy(isRead)
+    this.setIsReadPrivacy(isRead);
     this.isShowPrivacyAlert = false;
-    
   }
-  onToggleIsReadPrivacy(){
-    this.isReadPrivacy=!this.isReadPrivacy;
-    this.setIsReadPrivacy(this.isReadPrivacy)
+  onToggleIsReadPrivacy() {
+    this.isReadPrivacy = !this.isReadPrivacy;
+    this.setIsReadPrivacy(this.isReadPrivacy);
   }
   private checkRquired() {
     this.loginEntity.Data.Name = this.form.value.Name;
