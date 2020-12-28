@@ -25,10 +25,10 @@
   }
 }
 .arrow-icon {
-  width: 100%;
   display: flex;
   justify-content: flex-end;
-  padding-right: 1em;
+  padding-right: 0em;
+  align-items: center;
   ion-icon {
     font-size: 1.3rem;
     color: var(--ion-color-secondary);
@@ -50,13 +50,13 @@ ion-header {
   padding: 1em;
 }
 .name {
-  font-size: 15px;
+  font-size: 18px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
 }
 .address {
-  font-size: 12px;
+  font-size: 14px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #666666;
@@ -68,7 +68,7 @@ ion-header {
 }
 .grade-stars {
   padding: 0.5em 0;
-  font-size: 15px;
+  font-size: 16px;
   display: flex;
   align-items: center;
   .grade {
@@ -80,7 +80,7 @@ ion-header {
   .stars {
     display: flex;
     align-items: center;
-    font-size: 10px;
+    font-size: 16px;
   }
 }
 .loc-phone {
@@ -88,7 +88,7 @@ ion-header {
   align-items: center;
   margin-left: auto;
   margin-right: 1em;
-  font-size: 12px;
+  font-size: 14px;
   ion-icon {
     font-size: 20px;
   }
@@ -118,14 +118,14 @@ ion-header {
   align-items: center;
   justify-content: space-between;
   .desc {
-    font-size: 12px;
+    font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #999999;
   }
   .num {
     // align-self: flex-end;
-    font-size: 12px;
+    font-size: 14px;
   }
   .weekName {
     text-align: center;
@@ -133,17 +133,16 @@ ion-header {
 }
 .rules {
   margin-top: 0.5rem;
-  font-size: 15px;
+  font-size: 14px;
   background-color: var(--ion-color-light);
   padding: 1em 1em 0;
-  font-size: 9px;
   font-family: PingFang SC;
   font-weight: 500;
   line-height: 20px;
 }
 .room-info-title {
   padding: 1em;
-  font-size: 15px;
+  font-size: 17px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
@@ -217,21 +216,31 @@ ion-header {
     width: 100%;
     margin: 0 0 0 0.5em;
   }
+  .item-up {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .item-left {
+    display: flex;
+    align-items: center;
+  }
   .room-detail-desc {
     display: flex;
     align-items: center;
     flex-flow: row wrap;
-    max-width: 70%;
-    font-size: 9px;
+    font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #999999;
+    line-height: 2.4;
     span {
       margin: 0 0.25em;
     }
   }
   .room-name {
-    font-size: 15px;
+    font-size: 18px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
@@ -264,6 +273,7 @@ ion-item-divider {
   font-family: PingFang SC;
   font-weight: bold;
   color: #333333;
+  min-width: 6em;
 }
 .desc-detail {
   font-size: 14px;

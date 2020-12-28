@@ -20,6 +20,7 @@ import {
   AfterViewInit,
   EventEmitter,
   OnDestroy,
+  SimpleChanges,
 } from "@angular/core";
 import {
   Observable,
@@ -55,6 +56,7 @@ import {
 import { TripType } from "src/app/tmc/models/TripType";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
+import { DayModel } from "src/app/tmc/models/DayModel";
 type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 
 @Component({
@@ -217,6 +219,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       return this.calendarService.getDayOfWeekNames(d.getDay());
     }
   }
+
   isFullOnly(ps: RoomPlanEntity[]) {
     if (ps && ps.length) {
       return ps.every(

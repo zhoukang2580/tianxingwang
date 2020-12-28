@@ -12,7 +12,7 @@ ion-content.cnt {
   background-color: var(--ion-color-primary);
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
-  font-size: 12px;
+  font-size: 14px;
   box-shadow: 0.1em 0.2em 0.6em rgba(0, 0, 0, 0.1);
 }
 
@@ -51,27 +51,25 @@ ion-content.cnt {
   background-color: var(--ion-color-dark);
 }
 
-.exceeding{
+.exceeding {
   display: flex;
   padding-bottom: 15px;
-  ion-label{
-    flex:3;
-    font-size: 12px;
+  ion-label {
+    flex: 3;
+    font-size: 14px;
   }
 }
 
-.selfpay{
+.selfpay {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 31px;
   height: 16px;
-  background: #EECF9A;
+  background: #eecf9a;
   border-radius: 2px;
-  color:#fff;
+  color: #fff;
 }
-
-
 
 .hotel {
   .padding-v {
@@ -88,12 +86,13 @@ ion-content.cnt {
   }
 
   .room-info {
-    font-size: 12px;
+    font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
     display: flex;
-
+    align-items: center;
+    margin-top: -20px;
     span {
       margin-right: 0.5em;
     }
@@ -105,6 +104,7 @@ ion-content.cnt {
     color: #333333;
     display: flex;
     align-items: center;
+    font-size: 12px;
     .totals {
       font-size: 12px;
       color: #ea394b;
@@ -118,11 +118,11 @@ ion-content.cnt {
 }
 .editicon {
   width: 14px;
-  margin: 0 0.3em;
+  margin: 0 1em;
 }
 .cname {
   min-width: 100%;
-  font-size: 16px;
+  font-size: 18px;
   font-family: PingFang SC;
   font-weight: bold;
   color: #333333;
@@ -134,7 +134,7 @@ ion-content.cnt {
   margin-right: 0.78125em;
 }
 .cnumber {
-  font-size: 12px;
+  font-size: 14px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
@@ -144,7 +144,7 @@ ion-content.cnt {
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
-  font-size: 14px;
+  font-size: 16px;
 }
 ion-list .info {
   width: 100%;
@@ -172,7 +172,7 @@ ion-list .info {
   justify-content: space-between;
 }
 .sm-font {
-  font-size: 12px;
+  font-size: 14px;
 }
 .title {
   font-size: 18px;
@@ -250,7 +250,7 @@ ion-icon[name="caret-down-outline"] {
   margin-left: 8px;
 }
 .rules {
-  font-size: 12px;
+  font-size: 14px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
@@ -275,7 +275,7 @@ ion-content.ion-padding {
   padding: 0;
 }
 .orderpaytypes ion-item ion-label {
-  font-size: 14px;
+  font-size: 16px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
@@ -310,7 +310,7 @@ ion-footer {
       margin-left: 1em;
     }
     .total {
-      font-size: 12px;
+      font-size: 14px;
       color: red;
     }
     .price {

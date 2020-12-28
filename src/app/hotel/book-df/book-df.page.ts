@@ -1412,6 +1412,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.initDayPrice();
     this.showTransform(this.isShowFee)
   }
+  getWeekName(date: string) {
+    if (date) {
+      const d = AppHelper.getDate(date);
+      return this.calendarService.getDayOfWeekNames(d.getDay());
+    }
+  }
   private showTransform(show: boolean) {
     try {
       const el = this.ionFooter['el']

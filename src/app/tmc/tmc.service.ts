@@ -147,7 +147,7 @@ export class TmcService {
       return this.hotHotel;
     }
     const req = new RequestEntity();
-    req.Method = "TmcApiHomeUrl-Home-RecommendHotel";
+    req.Method = "TmcApiHomeUrl-Hotel-RecommendHotel";
     req.IsRedirctNoAuthorize = false;
     req.IsRedirctLogin = false;
     req.Data = {

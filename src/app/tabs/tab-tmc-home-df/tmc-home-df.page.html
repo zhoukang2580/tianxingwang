@@ -149,7 +149,7 @@
                 <div class="starting-city">{{trip?.FromCityName}}</div>
                 <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
                 <div class="arriving-city"><span>{{trip?.ToName}}</span></div>
-                <div class="fly-time"><span>{{trip.Hour}}小时</span>后起飞</div>
+                <div class="fly-time"><span ng>{{trip.Hour}}小时</span>后起飞</div>
               </div>
               <div *ngIf="trip.Type == 'Train'" class="trips">
                 <div class="starting-city">{{trip?.FromName}}</div>

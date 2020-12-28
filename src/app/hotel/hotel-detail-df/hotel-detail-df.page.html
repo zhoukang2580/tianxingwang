@@ -78,14 +78,14 @@
   <div class='date' (click)="onOpenCalendar()">
     <div class="checkin">
       <div class='weekName desc'>{{getWeekName(queryModel?.checkInDate)}}入住</div>
-      <div class='checkinoutdate item left'>{{queryModel?.checkInDate}}</div>
+      <div class='checkinoutdate item left'>{{queryModel?.checkInDate}}<span style="font-size:14px">{{getWeekName(queryModel?.checkInDate)}}</span></div>
     </div>
     <div class="num">
       <div class="item num">共{{totalNights}}晚</div>
     </div>
     <div class="checkout">
       <div class='weekName desc'>{{getWeekName(queryModel?.checkOutDate)}}离店</div>
-      <div class='checkinoutdate item right'>{{queryModel?.checkOutDate}} </div>
+      <div class='checkinoutdate item right'>{{queryModel?.checkOutDate}}<span style="font-size:14px">{{getWeekName(queryModel?.checkOutDate)}}</span></div>
     </div>
   </div>
   <div class="rules">
@@ -115,9 +115,19 @@
               </ng-container>
             </ion-thumbnail>
             <ion-label class='item'>
-              <h3 style="display: inline-flex;">
-                <ion-label class='room-name'>{{room.Name}}</ion-label>
-                <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
+              <h3 class="item-up">
+                <div class="item-left">
+                  <ion-label class='room-name'>{{room.Name}}</ion-label>
+                  <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
+                </div>
+                <div class="item-right">
+                  <ng-container *ngIf='!isFullOnly(room.RoomPlans)'>
+                    <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
+                      <strong><small style="font-size:1rem;margin-right:0em;">￥</small><span style="font-size: 1rem">{{price}}</span>
+                        <small style="font-size:1rem;margin-left:.2em">起</small></strong>
+                    </ion-text>
+                  </ng-container>
+                </div>
               </h3>
               <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='onShowRoomPlans(room)'>
                 <ion-label class='ion-text-wrap'>
@@ -128,19 +138,13 @@
                 <ion-button color='danger' class='full' [disabled]='true' *ngIf='isFullOnly(room.RoomPlans)'>
                   <ion-text color='light'>已满房</ion-text>
                 </ion-button>
+                <div class="arrow-icon">
+                  <ion-icon name="chevron-down-circle-outline" *ngIf='!room["isShowRoomPlans"]'></ion-icon>
+                  <ion-icon name="chevron-up-circle-outline" *ngIf='room["isShowRoomPlans"]'></ion-icon>
+                </div>
               </h4>
-              <h3 class='ion-text-end' style="padding-bottom: 0.5em;">
-                <ng-container *ngIf='!isFullOnly(room.RoomPlans)'>
-                  <ion-text color='danger' *ngIf='getRoomLowestAvgPrice(room) as price'>
-                    <strong><small style="font-size:.6rem;margin-right:0em;">￥</small><span style="font-size: 1rem">{{price}}</span>
-                      <small style="font-size:.6rem;margin-left:.2em">起</small></strong>
-                  </ion-text>
-                </ng-container>
-              </h3>
-              <div class="arrow-icon" (click)='onShowRoomPlans(room)'>
-                <ion-icon name="chevron-down-circle-outline" *ngIf='!room["isShowRoomPlans"]'></ion-icon>
-                <ion-icon name="chevron-up-circle-outline" *ngIf='room["isShowRoomPlans"]'></ion-icon>
-              </div>
+              
+              
             </ion-label>
           </div>
           <div class='room-plans' *ngIf='room["isShowRoomPlans"]' @flyInOut>

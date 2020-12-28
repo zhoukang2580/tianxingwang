@@ -6,6 +6,7 @@
 }
 .name {
   font-weight: bold;
+  min-width: 4em;
 }
 ion-col {
   align-self: flex-start;
@@ -48,4 +49,8 @@ ion-item-divider {
 }
 .details {
   margin-top: -0.5em;
+}
+
+.span{
+  font-size: 14px;
 }
