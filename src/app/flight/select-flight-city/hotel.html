@@ -409,27 +409,29 @@
                 if (recommendCities) {
                     const len = 12;
                     const rows = [];
-                    for (const c of recommendCities) {
+                    for (let i=0;i<recommendCities.length;i++) {
+                        const c=recommendCities[i];
                         const name = c.Name || "";
                         if (name) {
                             const obj = {
                                 ...c,
                                 isFlag: name.length >= len
                             }
-                            const row = rows[rows.length - 1];
-                            if (row) {
-                                if (row.length <= rowLen - 1) {
-                                    let cols = row;
-                                    if (cols.length == rowLen - 1) {
-                                        if (!cols.some(it => it.isFlag)) {
-                                            cols.push(obj);
-                                        }
-                                    } else {
-                                        cols.push(obj);
-                                    }
-                                } else {
-                                    rows.push([obj])
-                                }
+                            const cols = rows[rows.length - 1];
+                            if (cols) {
+                               if(cols.some(it=>it.isFlag)){
+                                   if(cols.length<rowLen-1){
+                                    cols.push(obj)
+                                   }else{
+                                       rows.push([obj])
+                                   }
+                               }else{
+                                   if(cols.length<rowLen){
+                                       cols.push(obj)
+                                   }else{
+                                       rows.push([obj])
+                                   }
+                               }
                             } else {
                                 rows.push([obj])
                             }
