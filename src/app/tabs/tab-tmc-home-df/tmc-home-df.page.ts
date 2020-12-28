@@ -73,6 +73,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   >;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   private swiper: any;
+  private hotels: any;
   private announcementElSwiper: any;
   private taskEleSwiper: any;
   private tripEleSwiper: any;
@@ -144,6 +145,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   config: ConfigEntity;
   activeTab: ProductItem;
   curIndex = 0;
+  hotIndex = 0;
   constructor(
     private identityService: IdentityService,
     private router: Router,
@@ -259,6 +261,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     try {
       this.tasklist.forEach(e => {
         this.saName = e.Name.split('发起');
+        this.saName[1].replace('(','').replace(')','');
         JSON.stringify(this.saName);
         // JSON.stringify(e.Variables);
         e.VariablesObj = JSON.parse(e.Variables);
@@ -355,10 +358,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   
-
-  private initSwiper() {
-    if (this.containerEl && this.containerEl.nativeElement) {
-      this.swiper = new Swiper(this.containerEl.nativeElement, {
+  private initSwiperhotels(){
+    if (this.hothotelEl && this.hothotelEl.nativeElement) {
+      this.hotels = new Swiper(this.hothotelEl.nativeElement, {
         loop: true,
         autoplay: {
           delay: 3000,
@@ -366,18 +368,20 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           disableOnInteraction: true,
         },
       });
-      this.swiper.on("touchEnd", () => {
+      this.hotels.on("touchEnd", () => {
         this.onTouchEnd();
       });
       const that = this;
-      this.swiper.on("transitionEnd", function () {
-        that.onTouchEnd();
-        that.curIndex = this.activeIndex;
+      this.hotels.on("transitionEnd", function () {
+        that.onTouchEnd();  
+        that.hotIndex = this.activeIndex;
       });
     }
+  }
 
-    if (this.hothotelEl && this.hothotelEl.nativeElement) {
-      this.swiper = new Swiper(this.hothotelEl.nativeElement, {
+  private initSwiper() {
+    if (this.containerEl && this.containerEl.nativeElement) {
+      this.swiper = new Swiper(this.containerEl.nativeElement, {
         loop: true,
         autoplay: {
           delay: 3000,
@@ -482,6 +486,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.canSelectCompany = id && id.Numbers && !!id.Numbers.AgentId;
     });
     this.initSwiper();
+    this.initSwiperhotels();
     this.tmcService.getSelectedCompanySource().subscribe((c) => {
       this.selectedCompany = c;
     });
@@ -659,6 +664,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.swiper) {
       setTimeout(() => {
         this.swiper.update();
+        this.hotels.update();
         this.startAutoPlay();
       }, 200);
     }

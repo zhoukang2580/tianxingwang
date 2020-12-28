@@ -1,0 +1,29 @@
+.container {
+  display: grid;
+  height: 200px;
+  justify-items: center;
+  align-items: center;
+  background: #fff;
+
+  .down {
+    width: 100%;
+    display: grid;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+    .success {
+      font-size: 18px;
+      color: #16b04b;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    .active {
+      font-size: 10px;
+    }
+  }
+}
+
+.up div img {
+  width: 79.5px;
+}

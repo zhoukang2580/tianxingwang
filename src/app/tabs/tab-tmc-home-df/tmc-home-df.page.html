@@ -122,7 +122,7 @@
               <div class="not-name">{{saName && saName[0]}}</div>
               <div calss="not-approvd">
                 <span style="color: crimson"
-                  >{{saName && saName[1].replace('(','').replace(')','')}}</span
+                  >{{saName && saName[1]}}</span
                 ><span
                   >{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span
                 >
@@ -202,8 +202,8 @@
     <div class="dots-up" *ngIf="boutiqueHotel?.HotelDayPrices?.length">
       <div
         class="dot"
-        *ngFor="let d of boutiqueHotel?.HotelDayPrices;let idx=index;"
-        [class.active]="idx==curIndex"
+        *ngFor="let d of boutiqueHotel?.HotelDayPrices;let ind=index;"
+        [class.active]="ind==hotIndex"
       ></div>
     </div>
   </div>

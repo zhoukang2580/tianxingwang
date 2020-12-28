@@ -63,6 +63,13 @@
                 </ion-label>
                 <!-- <ion-text color="secondary" (click)='combindInfo["isExceeding"]=!combindInfo["isExceeding"]'>预付规则</ion-text> -->
               </div>
+              <div>
+                <ion-button fill='clear' style="margin-left: -1em;" (click)='combindInfo["isShowRoomPlanRulesDesc"]=!combindInfo["isShowRoomPlanRulesDesc"]' color='secondary'>
+                  预订规则:
+                  <ion-icon name='caret-down-outline' *ngIf='combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
+                  <ion-icon name="caret-up-outline" *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'></ion-icon>
+                </ion-button>
+              </div>
               <div (click)='onSelectDatetime(datetimeEl,combindInfo)' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
                 <span class="label arrival-time">
                   <ion-icon name="star" color='danger' style="font-size: 0.5rem;margin-right: 5px;"></ion-icon>到店时间:

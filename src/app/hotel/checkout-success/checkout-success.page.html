@@ -1,14 +1,28 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot='start'>
+  <ion-toolbar style="--border-width: 0;">
+    <ion-buttons slot='start' style="font-size: 25px;">
       <ion-icon name="chevron-back-outline"></ion-icon>
     </ion-buttons>
     <ion-title>下单成功</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <div class="hotel-item">
-    <!-- <img class="hotel-img" [recoverImage]='false' [loadingImage]='config?.PrerenderImageUrl' [lazyLoad]='item?.Hotel?.FileName' [defaultImage]='config?.DefaultImageUrl' /> -->
+  <div class="container">
+    <div class="up">
+      <div>
+        <img src="assets/images/order.png" alt="">  
+      </div>
+    </div>
+    <div class="down">
+      <div class="success">
+        下单成功
+      </div>
+      <div class="active">
+        您的订单需要审批、请于审批完成后到订单列进行支付
+      </div>
+    </div>
+  </div>
+  <!-- <div class="hotel-item">
     <img src="" alt="">
     <div class="right-side">
       <div class='name ion-text-wrap'>
@@ -30,11 +44,8 @@
       <div class='ion-text-wrap location'>
         <ion-icon name="location" color='medium'></ion-icon>
         <div class="ion-text-wrap">地址</div>
-        <!-- <ion-label color='medium' *ngIf='item.Hotel?.VariablesJsonObj&&item.Hotel?.VariablesJsonObj["GeoDistance"]'>
-          距离{{item.Hotel?.VariablesJsonObj["geoDistance"].name}}直线距离约{{item.Hotel?.VariablesJsonObj["geoDistance"].distance}}km
-        </ion-label> -->
       </div>
     </div>
-  </div>
+  </div> -->
 
 </ion-content>

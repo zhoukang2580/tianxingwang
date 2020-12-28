@@ -31,6 +31,7 @@ ion-header ion-title {
       background-repeat: no-repeat;
       background-size: contain;
       height: 117px;
+      object-fit: cover;
       &.lazyloading {
         width: 100%;
         height: 100%;
