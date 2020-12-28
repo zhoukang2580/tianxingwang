@@ -382,7 +382,6 @@
         }
         function initRightSideMainHtml(recommendCities) {
             const main = getInternationalPageMainContainer();
-
             if (main.firstChild) {
                 main.firstChild.remove();
             }
@@ -408,30 +407,34 @@
                     h.append(lb);
                 }
                 if (recommendCities) {
-                    const rows = [];
                     const len = 12;
-                    recommendCities.forEach(c => {
+                    const rows = [];
+                    for (const c of recommendCities) {
                         const name = c.Name || "";
-
                         if (name) {
                             const obj = {
                                 ...c,
-                                isRowFlag: name.length >= len
-                            };
+                                isFlag: name.length >= len
+                            }
                             const row = rows[rows.length - 1];
                             if (row) {
-                                if (row.length < rowLen) {
-                                    if (!row.find(it => it.isRowFlag)) {
+                                if (row.length <= rowLen - 1) {
+                                    let cols = row;
+                                    if (cols.length == rowLen - 1) {
+                                        if (!cols.some(it => it.isFlag)) {
+                                            cols.push(obj);
+                                        }
                                     } else {
-                                        
+                                        cols.push(obj);
                                     }
+                                } else {
+                                    rows.push([obj])
                                 }
                             } else {
-                                const cols = [obj];
-                                rows.push(cols);
+                                rows.push([obj])
                             }
                         }
-                    })
+                    }
                     const list = document.createElement('div');
                     list.classList.add("list");
                     // if (recommendCities.length % 3 != 0) {
@@ -439,13 +442,10 @@
                     //         recommendCities.push({});
                     //     }
                     // }
-                    rows.forEach(row => {
-                        const div = document.createElement('div');
+                    rows.forEach(r => {
+                        const div = document.createElement("div");
                         div.classList.add("row");
-                        if (row.length < rowLen) {
-                            div.classList.add("w-2");
-                        }
-                        row.forEach(c => {
+                        r.forEach(c => {
                             const el = getInterCityItemHtml(c);
                             div.append(el);
                         })
