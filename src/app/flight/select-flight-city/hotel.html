@@ -36,7 +36,20 @@
     <script src="mockcities.js"></script>
     <script>
         isShow = false;
-        const tabObj = {
+        const cityPage=new CityPage(cities,internationalCities);
+        cityPage.onSelectCallback=(obj)=>{
+            console.log("onSelectCallback ",obj)
+        }
+        onToggle();
+        setTimeout(() => {
+           cityPage. onToggleSegmentsPage(false);
+        }, 100);
+        function onToggle() {
+            isShow = !isShow;
+            cityPage.openPage(isShow)
+        }
+        function CityPage(cities,internationalCities){
+            const tabObj = {
             '推荐': 'isHot',
             '港澳台': 11,
             '东亚': 2,
@@ -52,18 +65,11 @@
         let allItems = [];
         const lang = 'en';
         let page;
-        const cities = window.cities;
         let histories = [];
         let allInterItems = [];
-        const internationalCities = window.internationalCities;
-        onToggle();
-        setTimeout(() => {
-            onToggleSegmentsPage(false);
-        }, 100);
-        function onToggle() {
-            isShow = !isShow;
-            openPage(isShow)
-        }
+        that=this;
+        this.openPage=openPage;
+        this.onToggleSegmentsPage=onToggleSegmentsPage;
         function getHeaderHtml() {
             const header = document.createElement("div");
             header.classList.add("header");
@@ -369,6 +375,9 @@
         }
         function onSelectCity(c) {
             onShowInHistory(c);
+            if(that.onSelectCallback){
+                that.onSelectCallback({isDomestic:true,city});
+            }
             console.log(c);
         }
         function onClearHistories() {
@@ -523,6 +532,9 @@
                         el.classList.remove("active");
                     }
                 })
+            }
+            if(that.onSelectCallback){
+                that.onSelectCallback({isDomestic:false,city});
             }
             console.log("city", city);
         }
@@ -727,6 +739,8 @@
             }
             return list;
         }
+        }
+        
     </script>
 </body>
 
