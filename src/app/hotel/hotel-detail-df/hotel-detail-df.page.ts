@@ -66,6 +66,7 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
   animations: [flyInOut],
 })
 export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
+  private hotelId: string;
   private hotelDayPrice: HotelDayPriceEntity;
   private curPos = 0;
   private subscriptions: Subscription[] = [];
@@ -255,7 +256,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     );
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (q) => {
-        this.hotelDayPrice = this.hotelService.curViewHotel;
+        this.hotelId = q.get("hotelId");
         const isSelf = await this.staffService.isSelfBookType();
         if (!this.hotelPolicy || this.hotelPolicy.length == 0) {
           this.hotelPolicy = await this.getPolicy();
@@ -317,22 +318,20 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.hotelDetailSub.unsubscribe();
     }
     this.hotelDetailSub = this.hotelService
-      .getHotelDetail(this.hotelDayPrice)
+      .getHotelDetail(this.hotelId)
       .pipe(
         map((res) => res && res.Data),
         tap((r) => {
           console.log(r);
         })
       )
-      .pipe(finalize(() => {}))
+      .pipe(finalize(() => { }))
       .subscribe(
         async (hotel) => {
           if (hotel) {
             this.hotel = hotel.Hotel;
             if (this.hotel) {
-              if (this.hotelDayPrice) {
-                this.hotelDayPrice.Hotel = this.hotel;
-              }
+              this.hotelDayPrice = { Hotel: this.hotel } as any;
               this.hotelPolicy = await this.getPolicy();
               this.content.scrollToTop();
               this.initFilterPolicy();
@@ -839,7 +838,13 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   onOpenMap() {
-    this.router.navigate(["hotel-map"]);
+    this.router.navigate(["hotel-map"],{
+      queryParams: {
+        name: this.hotel && this.hotel.Name,
+        lat: this.hotel && this.hotel.Lat,
+        lng: this.hotel && this.hotel.Lng,
+      }
+    });
   }
   async ngAfterViewInit() {
     setTimeout(() => {

@@ -92,7 +92,7 @@ export class HotelService {
   get isAgent() {
     return this.tmcService.isAgent;
   }
-  curViewHotel: HotelDayPriceEntity;
+  // curViewHotel: HotelDayPriceEntity;
   showImages: any[];
   showRoomDetailInfo: {
     room: RoomEntity;
@@ -817,7 +817,7 @@ export class HotelService {
       })
     );
   }
-  getHotelDetail(hotelItem: HotelDayPriceEntity) {
+  getHotelDetail(hotelId: string) {
     // return throwError("没获取列表")
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-Detail`;
@@ -825,7 +825,7 @@ export class HotelService {
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
     hotelquery.IsLoadDetail = true;
-    hotelquery.HotelId = hotelItem && hotelItem.Hotel && hotelItem.Hotel.Id;
+    hotelquery.HotelId =hotelId;
     hotelquery.CityCode =
       this.getSearchHotelModel().destinationCity &&
       this.getSearchHotelModel().destinationCity.Code;

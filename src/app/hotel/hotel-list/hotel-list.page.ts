@@ -343,8 +343,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   goToDetail(item: HotelDayPriceEntity) {
-    this.hotelService.curViewHotel = { ...item };
-    this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
+    // this.hotelService.curViewHotel = { ...item };
+    this.router.navigate([AppHelper.getRoutePath("hotel-detail")],{queryParams:{hotelId:item.Hotel.Id}});
   }
   onCityClick() {
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
@@ -406,7 +406,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       })
     );
     const sub0 = this.route.queryParamMap.subscribe((_) => {
-      this.hotelService.curViewHotel = null;
+      // this.hotelService.curViewHotel = null;
       this.hideQueryPannel();
       if (this.checkDestinationChanged()) {
         this.searchHotelModel.searchText = null;

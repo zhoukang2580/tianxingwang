@@ -27,3 +27,66 @@
 .up div img {
   width: 79.5px;
 }
+
+.hotel-item {
+  // display: flex;
+  background: #fff;
+  margin: 12px;
+  .boutique {
+    font-size: 18px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    color: #333333;
+    padding: 20px;
+  }
+  .list {
+    display: flex;
+    padding: 10px;
+  }
+  img {
+    margin-right: 0.7em;
+    border-radius: 10px;
+    width: 100px;
+    height: 100px;
+  }
+  .right-side {
+    display: grid;
+    width: 100%;
+  }
+
+  .name {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+  }
+  .score {
+    display: flex;
+  }
+
+  .grade-stars {
+    display: flex;
+    justify-content: space-between;
+    .grade {
+      font-size: 12px;
+      margin: 1px 6px;
+    }
+  }
+
+  .price {
+    display: flex;
+    align-items: center;
+    color: red;
+    margin-right: 15px;
+  }
+
+  .ion-text-wrap {
+    display: flex;
+    font-size: 10px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+  }
+}

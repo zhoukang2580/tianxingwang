@@ -862,7 +862,13 @@ export class InternationalHotelDetailPage
     //     }, 100);
     //   }
     // }
-    this.router.navigate(["inter-hotel-map"]);
+    this.router.navigate(["inter-hotel-map"],{
+      queryParams: {
+        name: this.hotel && this.hotel.Name,
+        lat: this.hotel && this.hotel.Lat,
+        lng: this.hotel && this.hotel.Lng,
+      }
+    });
   }
   getWeekName(date: string) {
     return;

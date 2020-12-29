@@ -46,6 +46,8 @@ import { CONFIG } from "src/app/config";
 import { LangService } from 'src/app/services/lang.service';
 import { ProductItem } from "src/app/tmc/models/ProductItems";
 import { error } from "protractor";
+import { HotelDayPriceEntity } from "src/app/hotel/models/HotelDayPriceEntity";
+import { MapService } from "src/app/services/map/map.service";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home-df.page.html",
@@ -126,7 +128,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     PassagerId: String;
     Type: any;
     OrderId: String;
-    Hour: String;
+    Hour: Number;
     Name: String;
     FromCityName: String;
     // ['Hotel','Train','Flight']
@@ -147,6 +149,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   curIndex = 0;
   hotIndex = 0;
   constructor(
+    private mapService:MapService,
     private identityService: IdentityService,
     private router: Router,
     private tmcService: TmcService,
@@ -213,6 +216,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private async loadHotHotels() {
+    const city=await this.mapService.getCurrentCityPosition().catch(()=>null);
+    console.log("loadHotHotels",city);
     if (!this.boutiqueHotel || !this.boutiqueHotel.HotelDayPrices||!this.boutiqueHotel.HotelDayPrices.length) {
       if (!(await this.hasTicket())) {
         return;
@@ -226,7 +231,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         .catch(() => null)
         .then((res) => {
           this.boutiqueHotel = res;
-
           this.updateSwiper();
         })
         .finally(() => {
@@ -260,12 +264,13 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
     try {
       this.tasklist.forEach(e => {
-        this.saName = e.Name.split('发起');
-        this.saName[1].replace('(','').replace(')','');
-        JSON.stringify(this.saName);
-        // JSON.stringify(e.Variables);
-        e.VariablesObj = JSON.parse(e.Variables);
-        console.log(e.VariablesObj, 'Variables');
+        if(this.saName){
+          this.saName[1].replace('(','').replace(')','');
+          this.saName = e.Name.split('发起')
+          JSON.stringify(this.saName);
+          e.VariablesObj = JSON.parse(e.Variables);
+          console.log(e.VariablesObj, 'Variables');
+        }
       })
     } catch (error) {
       console.log(error);
@@ -296,6 +301,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.isOpenUrl = true;
         });
     }
+  }
+
+  goToDetail(id) {
+    this.router.navigate([AppHelper.getRoutePath("hotel-detail")],
+    {
+      queryParams: { hotelId: id},
+    }
+    );
   }
 
   private async getTaskHandleUrl(task) {

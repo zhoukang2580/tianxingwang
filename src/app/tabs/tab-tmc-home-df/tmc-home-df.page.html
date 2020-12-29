@@ -121,8 +121,7 @@
             <div class="not-jj">
               <div class="not-name">{{saName && saName[0]}}</div>
               <div calss="not-approvd">
-                <span style="color: crimson"
-                  >{{saName && saName[1]}}</span
+                <span style="color: crimson">{{saName && saName[1]}}</span
                 ><span
                   >{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span
                 >
@@ -149,7 +148,9 @@
                 <div class="starting-city">{{trip?.FromCityName}}</div>
                 <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
                 <div class="arriving-city"><span>{{trip?.ToName}}</span></div>
-                <div class="fly-time"><span ng>{{trip.Hour}}小时</span>后起飞</div>
+                <div class="fly-time">
+                  <span ng>{{trip.Hour}}小时</span>后起飞
+                </div>
               </div>
               <div *ngIf="trip.Type == 'Train'" class="trips">
                 <div class="starting-city">{{trip?.FromName}}</div>
@@ -176,6 +177,7 @@
           <div
             class="swiper-slide"
             *ngFor="let pic of boutiqueHotel.HotelDayPrices"
+            (click)="goToDetail(pic.Id)"
           >
             <div class="inner">
               <img

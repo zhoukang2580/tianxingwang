@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { CheckoutSuccessPageRoutingModule } from './checkout-success-routing.module';
 
 import { CheckoutSuccessPage } from './checkout-success.page';
+import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CheckoutSuccessPageRoutingModule
+    CheckoutSuccessPageRoutingModule,
+    AppComponentsModule,
   ],
   declarations: [CheckoutSuccessPage]
 })

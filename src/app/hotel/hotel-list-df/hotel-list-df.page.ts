@@ -115,7 +115,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     private tmcService: TmcService,
     private staffService: StaffService,
     private configService: ConfigService,
-    plt: Platform  ) {
+    plt: Platform) {
     this.filterTab = {
       isActive: false,
       label: "",
@@ -330,8 +330,10 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   goToDetail(item: HotelDayPriceEntity) {
-    this.hotelService.curViewHotel = { ...item };
-    this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
+    // this.hotelService.curViewHotel = { ...item };
+    if(item.Hotel){
+      this.router.navigate([AppHelper.getRoutePath("hotel-detail")], { queryParams: { hotelId: item.Hotel.Id } });
+    }
   }
   onCityClick() {
     this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
@@ -397,7 +399,6 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       if (this.checkDestinationChanged()) {
         this.searchHotelModel.searchText = null;
       }
-      this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
       const isrefresh =
         this.checkSearchTextChanged() ||
