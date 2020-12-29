@@ -50,6 +50,7 @@
             '非洲': 10,
         };
         let allItems = [];
+        const lang = 'en';
         let page;
         const cities = window.cities;
         let histories = [];
@@ -203,11 +204,16 @@
             return wrapper;
 
         }
-        function getHistoryOrHotItem(c, isHistory) {
+        function getHistoryOrHotItem(c, isHistory, lang) {
             const item = document.createElement("div");
             item.classList.add("b-item");
-            item.textContent = c.Name;
-            item.setAttribute("CityCode", c.CityCode);
+            item.textContent = lang == 'en' ? c.EnglishName : c.Name;
+            item.setAttribute("Code", c.Code);
+            const label = document.createElement("label");
+            label.textContent = c.Name;
+            item.onclick = () => {
+                onSelectCity(c);
+            }
             item.onclick = () => {
                 if (!isHistory) {
                     onSelectCity(c);
@@ -243,26 +249,65 @@
                 listWrapper.classList.add("list-wrapper");
                 listWrapper.append(list);
                 list.classList.add("list");
-                wrapper.append(listWrapper)
-                cities.forEach(c => {
-                    const item = getHistoryOrHotItem(c);
-                    const label = document.createElement("label");
-                    label.textContent = c.Name;
-                    item.onclick = () => {
-                        onSelectCity(c);
-                    }
-                    list.append(item);
-                })
-                if (cities.length % rowNums != 0) {
-                    const len = cities.length % rowNums;
-                    const item = document.createElement('div');
-                    item.classList.add("empty-item");
-                    item.classList.add("b-item");
-                    item.style.visibility = 'collapse'
-                    for (let i = 0; i < len; i++) {
-                        list.append(item);
+                wrapper.append(listWrapper);
+                const rowLen = 3;
+                const len = 12;
+                const enLen = 16;
+                const rows = [];
+                for (let i = 0; i < cities.length; i++) {
+                    const c = cities[i];
+                    const name = (lang == 'en' ? c.EnglishName : c.Name) || "";
+                    if (name) {
+                        const obj = {
+                            ...c,
+                            isFlag: name.length >= enLen || name.length >= len
+                        }
+                        const cols = rows[rows.length - 1];
+                        if (cols) {
+                            if (cols.some(it => it.isFlag)) {
+                                if (cols.length < rowLen - 1) {
+                                    cols.push(obj)
+                                } else {
+                                    rows.push([obj])
+                                }
+                            } else {
+                                if (obj.isFlag) {
+                                    if (cols.length >= rowLen - 1) {
+                                        rows.push([obj])
+                                    } else {
+                                        cols.push(obj)
+                                    }
+                                } else {
+                                    if (cols.length < rowLen) {
+                                        cols.push(obj)
+                                    } else {
+                                        rows.push([obj])
+                                    }
+                                }
+                            }
+                        } else {
+                            rows.push([obj])
+                        }
                     }
                 }
+                allInterItems = [];
+                rows.forEach(r => {
+                    r.forEach(c => {
+                        const item = getHistoryOrHotItem(c);
+                        item.classList.add(`col-${r.length}`);
+                        list.append(item);
+                    })
+                })
+                // if (cities.length % rowNums != 0) {
+                //     const len = cities.length % rowNums;
+                //     const item = document.createElement('div');
+                //     item.classList.add("empty-item");
+                //     item.classList.add("b-item");
+                //     item.style.visibility = 'collapse'
+                //     for (let i = 0; i < len; i++) {
+                //         list.append(item);
+                //     }
+                // }
             } catch (e) {
                 console.error(e)
             }
@@ -296,7 +341,7 @@
                         if (items.length) {
                             for (let i = 0; i < items.length; i++) {
                                 const one = items.item(i);
-                                if (one.getAttribute("CityCode") == c.CityCode) {
+                                if (one.getAttribute("Code") == c.Code) {
                                     list.insertBefore(one, list.firstChild);
                                     return;
                                 }
@@ -408,30 +453,39 @@
                 }
                 if (recommendCities) {
                     const len = 12;
+                    const enLen = 16;
                     const rows = [];
-                    for (let i=0;i<recommendCities.length;i++) {
-                        const c=recommendCities[i];
-                        const name = c.Name || "";
+                    for (let i = 0; i < recommendCities.length; i++) {
+                        const c = recommendCities[i];
+                        const name = (lang == 'en' ? c.EnglishName : c.Name) || "";
                         if (name) {
                             const obj = {
                                 ...c,
-                                isFlag: name.length >= len
+                                isFlag: name.length >= enLen || name.length >= len
                             }
                             const cols = rows[rows.length - 1];
                             if (cols) {
-                               if(cols.some(it=>it.isFlag)){
-                                   if(cols.length<rowLen-1){
-                                    cols.push(obj)
-                                   }else{
-                                       rows.push([obj])
-                                   }
-                               }else{
-                                   if(cols.length<rowLen){
-                                       cols.push(obj)
-                                   }else{
-                                       rows.push([obj])
-                                   }
-                               }
+                                if (cols.some(it => it.isFlag)) {
+                                    if (cols.length < rowLen - 1) {
+                                        cols.push(obj)
+                                    } else {
+                                        rows.push([obj])
+                                    }
+                                } else {
+                                    if (obj.isFlag) {
+                                        if (cols.length >= rowLen - 1) {
+                                            rows.push([obj])
+                                        } else {
+                                            cols.push(obj)
+                                        }
+                                    } else {
+                                        if (cols.length < rowLen) {
+                                            cols.push(obj)
+                                        } else {
+                                            rows.push([obj])
+                                        }
+                                    }
+                                }
                             } else {
                                 rows.push([obj])
                             }
@@ -439,16 +493,17 @@
                     }
                     const list = document.createElement('div');
                     list.classList.add("list");
-                    // if (recommendCities.length % 3 != 0) {
-                    //     for (let i = 0; i < recommendCities.length % 3; i++) {
-                    //         recommendCities.push({});
-                    //     }
-                    // }
+                    allInterItems = [];
                     rows.forEach(r => {
                         const div = document.createElement("div");
                         div.classList.add("row");
                         r.forEach(c => {
-                            const el = getInterCityItemHtml(c);
+                            const el = getInterCityItemHtml(c, lang);
+                            if (el.textContent >= enLen || el.textContent.length > len) {
+                                el.setAttribute("isflag", 'true')
+                            }
+                            allInterItems.push(el);
+                            el.classList.add(`col-${r.length}`);
                             div.append(el);
                         })
                         list.append(div);
@@ -459,10 +514,22 @@
             }
 
         }
-        function getInterCityItemHtml(city) {
+        function onSelectInterCity(city) {
+            if (allInterItems) {
+                allInterItems.forEach(el => {
+                    if (el.getAttribute("Code") == city.Code) {
+                        el.classList.add("active");
+                    } else {
+                        el.classList.remove("active");
+                    }
+                })
+            }
+            console.log("city", city);
+        }
+        function getInterCityItemHtml(city, lang) {
             if (city) {
                 const div = document.createElement("div");
-                div.textContent = city.Name || "";
+                div.textContent = (lang == 'en' ? city.EnglishName : city.Name) || "";
                 div.classList.add("city-item");
                 if (div.textContent.length >= 15) {
                     div.classList.add("f-8");
@@ -474,6 +541,10 @@
 
                 if (!div.textContent) {
                     div.classList.add("empty");
+                }
+                div.setAttribute("Code", city.Code);
+                div.onclick = () => {
+                    onSelectInterCity(city);
                 }
                 return div;
             }

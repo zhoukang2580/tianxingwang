@@ -221,15 +221,33 @@
         padding-bottom: 0.5em;
         .row {
           display: flex;
-          justify-content: space-around;
+          justify-content: space-between;
+          align-items: stretch;
+          margin: 0.5em;
+          min-height: 35px;
         }
         .city-item {
-          flex: 1;
+          &.active {
+            color: var(--ion-color-secondary,tomato);
+          }
+          &.col-2 {
+            flex-basis: 64.666%;
+            max-width: 64.666%;
+          }
+          &.col-2:first-child {
+            margin-right: 1.5%;
+          }
+          &.col-2:last-child {
+            margin-left: 1.5%;
+          }
+          &.col-3 {
+            flex-basis: 31.333%;
+            max-width: 31.333%;
+          }
           font-size: 14px;
           background: #f6f6f6;
           border-radius: 3px;
-          margin: 0.8em 0.5em;
-          min-height: 35px;
+          padding: 0.5em 0.1em;
           border-radius: 3px;
           display: flex;
           justify-content: center;
