@@ -19,6 +19,7 @@ export class MapService {
   private st = Date.now();
   private querys: any;
   private amap: any;
+  private isInitBMap = false;
   constructor(private apiService: ApiService) {
     this.querys = AppHelper.getQueryParamers();
     console.log("MapService,tree", this.querys);
@@ -33,21 +34,33 @@ export class MapService {
       this.initGaoDeMap();
     }
   }
-  private initBMap() {
-    setTimeout(() => {
-      try {
-        const script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = `https://api.map.baidu.com/getscript?v=3.0&ak=${baiduMapAk}&services=&t=20191126111618`;
-        (() => {
+  private async initBMap() {
+    return new Promise<boolean>(rsv => {
+      window['init'] = function init() {
+        console.log("callback call");
+        rsv(true);
+      }
+      setTimeout(() => {
+        try {
+          this.isInitBMap = !!document.querySelector("#bmapscript");
+          if (this.isInitBMap) {
+            rsv(true);
+            return;
+          }
+          const script = document.createElement("script");
+          script.id = 'bmapscript';
+          script.setAttribute("bmapscript", 'bmapscript');
+          script.type = "text/javascript";
+          script.src = `https://api.map.baidu.com/api?v=3.0&ak=${baiduMapAk}&callback=init`;
           window["BMAP_PROTOCOL"] = "https";
           window["BMap_loadScriptTime"] = new Date().getTime();
           document.head.appendChild(script);
-        })();
-      } catch (e) {
-        console.error(e);
-      }
-    }, 3000);
+        } catch (e) {
+          console.error(e);
+          rsv(false);
+        }
+      }, 0);
+    });
   }
   convertToAmap(p: { lat: string; lng: string }) {
     console.log("原始坐标", p);
@@ -220,7 +233,7 @@ export class MapService {
       });
     });
   }
-  private getCurrentPosition(): Promise<MapPoint> {
+  private async getCurrentPosition(): Promise<MapPoint> {
     // 关于状态码
     //  BMAP_STATUS_SUCCESS	检索成功。对应数值“0”。
     // BMAP_STATUS_CITY_LIST	城市列表。对应数值“1”。
@@ -244,7 +257,10 @@ export class MapService {
       8: `超时`,
     };
     if (!window["BMap"]) {
-      return Promise.reject("地图加载失败");
+      await this.initBMap()
+      if (!window["BMap"]) {
+        return Promise.reject("地图加载失败");
+      }
     }
     return new Promise<MapPoint>((s, reject) => {
       let point: MapPoint;
@@ -608,4 +624,4 @@ export interface AddressComponents {
   street: string;
   streetNumber: string;
 }
-interface TrafficlineEntity {}
+interface TrafficlineEntity { }

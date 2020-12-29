@@ -218,6 +218,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private async loadHotHotels() {
     const city=await this.mapService.getCurrentCityPosition().catch(()=>null);
     console.log("loadHotHotels",city);
+    
     if (!this.boutiqueHotel || !this.boutiqueHotel.HotelDayPrices||!this.boutiqueHotel.HotelDayPrices.length) {
       if (!(await this.hasTicket())) {
         return;
@@ -495,6 +496,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   async ngOnInit() {
     var myDate = new Date();
+    const city=await this.mapService.getCurrentCityPosition().catch(()=>null);
     this.identityService.getIdentitySource().subscribe((id) => {
       this.canSelectCompany = id && id.Numbers && !!id.Numbers.AgentId;
     });
@@ -515,7 +517,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.hothotels = {
             PageIndex: 0,
             PageSize: 20,
-            CityCode: "3101",
+            CityCode: city && city.CityCode || "3101",
             SearchDate: myDate.toLocaleDateString()
           };
           this.triplist = [];

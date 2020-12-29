@@ -1634,15 +1634,18 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    if (this.langService.isCn) {
-      this.router.navigate(["order-list"], {
-        queryParams: { tabId: tab },
-      });
-    } else {
-      this.router.navigate(["order-list_en"], {
-        queryParams: { tabId: tab },
-      });
-    }
+    this.router.navigate(["checkout-success"],{
+      queryParams: { tabId: tab },
+    });
+    // if (this.langService.isCn) {
+    //   this.router.navigate(["order-list"], {
+    //     queryParams: { tabId: tab },
+    //   });
+    // } else {
+    //   this.router.navigate(["order-list_en"], {
+    //     queryParams: { tabId: tab },
+    //   });
+    // }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {
