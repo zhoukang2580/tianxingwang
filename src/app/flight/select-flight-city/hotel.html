@@ -36,7 +36,7 @@
     <script src="mockcities.js"></script>
     <script>
         isShow = false;
-        const cityPage = new CityPage(cities, internationalCities);
+        const cityPage = new CityPage(domesticAirs, internationalCities);
         cityPage.onSelectCallback = (obj) => {
             console.log("onSelectCallback ", obj)
         }
@@ -831,13 +831,13 @@
                 const n = document.createElement("label")
                 n.classList.add("name");
                 n.textContent = `${lbtextContent}`;
+                item.append(n);
                 if (city.Code) {
                     const code = document.createElement("label");
                     code.classList.add("code");
                     code.textContent = city.Code;
                     item.append(code);
                 }
-                item.append(n);
                 if (city.CityName) {
                     const cn = document.createElement("label");
                     cn.classList.add("city-name");
@@ -854,23 +854,13 @@
                 let arr = that.isDomestic ? that.cities : that.internationalCities;
                 let temp = [];
                 if (kw) {
-                    const keys = `Code,Name,Nickname,CityName,Pinyin`.split(",");
-                    const name = kw;
+                    let tmpArr;
+                    if (kw.length == 3) {
+                        tmpArr = arr.filter(it => (it.Code || "").toLowerCase() == kw.toLowerCase());
+                    }
                     arr = arr.filter(it => {
-                        if (name.length == 3) {
-                            return keys.some((k) => {
-                                // console.log(`key=${k}`, c[k]);
-                                const n = ((c[k] && c[k]) || "").toLowerCase();
-                                if (name == "北京南苑") {
-                                    return n != name && n.includes("北京");
-                                }
-                                const reg = new RegExp("^[a-zA-Z]*$");
-                                if (reg.test(name) && name.length == 3) {
-                                    return name == n;
-                                } else {
-                                    return name == n || n.includes(name);
-                                }
-                            });
+                        if (tmpArr) {
+                            return tmpArr.some(one => it.matchStr.toLowerCase().includes(one.CityName.toLowerCase()))
                         }
                         return it.matchStr.toLowerCase().includes(kw.toLowerCase())
                     });
@@ -929,7 +919,7 @@
             function getSearchListPage() {
                 let sp = getPageEle().querySelector(".search-list-page");
                 if (sp) {
-                    const l = sp.querySelector(".list");
+                    const l = sp.querySelector("ion-list");
                     if (l) {
                         while (l.firstChild) {
                             l.removeChild(l.firstChild);
