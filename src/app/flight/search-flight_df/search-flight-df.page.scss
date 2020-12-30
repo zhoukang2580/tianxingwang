@@ -105,6 +105,7 @@ ion-card {
 }
 .city {
   width: 100%;
+  margin-top: 1.5em;
   justify-content: space-between;
   img {
     width: 1.8em;
@@ -120,6 +121,8 @@ ion-card {
     font-family: PingFang SC;
     font-weight: bold;
     color: #333333;
+    flex-basis: 33.33%;
+    max-width: 33.33%;
   }
 }
 .flight-date {

@@ -1668,11 +1668,6 @@ export class FlightService {
       ToAsAirport: s.FromAsAirport,
     });
   }
-  onSelectCity(isFrom: boolean) {
-    this.router.navigate([AppHelper.getRoutePath("select-flight-city")], {
-      queryParams: { requestCode: isFrom ? "select_from_city" : "to_city" },
-    });
-  }
   filterByFlightDirect(segs: FlightSegmentEntity[]) {
     let result = segs;
     if (this.filterCondition && this.filterCondition.onlyDirect) {

@@ -34,6 +34,7 @@ import {
   InternationalFlightService,
   ITripInfo,
 } from "src/app/flight-international/international-flight.service";
+import { FlightCityService } from "../flight-city.service";
 @Component({
   selector: "app-search-flight-df",
   templateUrl: "./search-flight-df.page.html",
@@ -73,6 +74,7 @@ export class SearchFlightDfPage
     private identityService: IdentityService,
     private calendarService: CalendarService,
     private navCtrl: NavController,
+    private flightCityService: FlightCityService,
     private flightService: FlightService,
     private internationalFlightService: InternationalFlightService,
     private storage: Storage,
@@ -155,7 +157,7 @@ export class SearchFlightDfPage
     }
   }
   onToggleDomestic(segv) {
-    this.domestic=segv;
+    this.domestic = segv;
   }
   private checkBackDateIsAfterflyDate() {
     if (this.goDate && this.backDate) {
@@ -207,6 +209,10 @@ export class SearchFlightDfPage
     }
   }
   async canDeactivate() {
+    if (this.flightCityService.isShowingPage) {
+      this.flightCityService.onSelectCity(false,false);
+      return false;
+    }
     if (this.isCanleave) {
       return true;
     }
@@ -501,9 +507,26 @@ export class SearchFlightDfPage
       this.isSwapingCity = false;
     }, 240);
   }
-  onSelectCity(isFromCity = true) {
+  async onSelectCity(isFromCity = true) {
     this.isCanleave = true;
-    this.flightService.onSelectCity(isFromCity);
+    const rs = await this.flightCityService.onSelectCity(true,isFromCity);
+    if (rs) {
+      const s = this.searchFlightModel;
+      if (rs.isDomestic) {
+        const fromCity = isFromCity ? rs.city : s.fromCity;
+        const toCity = isFromCity ? s.toCity : rs.city;
+        this.flightService.setSearchFlightModelSource({
+          ...s,
+          fromCity,
+          toCity,
+          FromCode: fromCity.Code,
+          ToCode: toCity.Code,
+          FromAsAirport: s.ToAsAirport,
+          ToAsAirport: s.FromAsAirport,
+        });
+      } else {
+      }
+    }
   }
   async onSelecFlyDate(flyTo: boolean, backDate: boolean) {
     if (this.disabled) {

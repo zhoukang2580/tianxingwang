@@ -48,6 +48,7 @@
 .flight-city-page-container .letters-wrapper {
   position: sticky;
   right: 0;
+  z-index: 10;
   top: 0;
   width: 2em;
   float: right;
@@ -119,8 +120,12 @@
   align-items: center;
   padding-top: 0.5em;
 }
+.flight-city-page-container .header .searchbar {
+  height: 100%;
+  flex: 1;
+}
 .flight-city-page-container .header ion-icon {
-  font-size: 1.2rem;
+  font-size: 1.7rem;
   opacity: 0.8;
   margin: 0 0.2em;
 }
@@ -288,6 +293,25 @@
 .flight-city-page-container .fab-btn.show {
   z-index: 99;
   transform: translate3d(0, 0, 0);
+}
+.flight-city-page-container .search-list-page {
+  transform: translate3d(0, 100%, 0);
+  transition: all ease-in-out 200ms;
+  position: fixed;
+  top: calc(44px + 0.3em);
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.flight-city-page-container .search-list-page.show {
+  transform: translate3d(0, 0, 0);
+}
+.flight-city-page-container .search-list-page .item {
+  padding: 0.5em 1em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+.flight-city-page-container .search-list-page .item .city-name {
+  color: gray;
 }
 
 /*# sourceMappingURL=style.css.map */

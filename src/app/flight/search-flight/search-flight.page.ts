@@ -27,6 +27,7 @@ import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
+import { FlightCityService } from "../flight-city.service";
 @Component({
   selector: "app-search-flight",
   templateUrl: "./search-flight.page.html",
@@ -66,7 +67,8 @@ export class SearchFlightPage
     private tmcService: TmcService,
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
-    private langService: LangService
+    private langService: LangService,
+    private flightCityService: FlightCityService
   ) {
     const sub = route.queryParamMap.subscribe(async (q) => {
       this.isEn = this.langService.isEn;
@@ -128,6 +130,10 @@ export class SearchFlightPage
     }
   }
   async canDeactivate() {
+    if (this.flightCityService.isShowingPage) {
+      this.flightCityService.onSelectCity(false,true);
+      return false;
+    }
     if (this.isCanleave) {
       return true;
     }
@@ -378,9 +384,26 @@ export class SearchFlightPage
     }
     this.flightService.onSwapCity();
   }
-  onSelectCity(isFromCity = true) {
+  async onSelectCity(isFromCity = true) {
     this.isCanleave = true;
-    this.flightService.onSelectCity(isFromCity);
+    const rs = await this.flightCityService.onSelectCity(true,isFromCity);
+    if (rs) {
+      const s = this.searchFlightModel;
+      if (rs.isDomestic) {
+        const fromCity = isFromCity ? rs.city : s.fromCity;
+        const toCity = isFromCity ? s.toCity : rs.city;
+        this.flightService.setSearchFlightModelSource({
+          ...s,
+          fromCity,
+          toCity,
+          FromCode: fromCity.Code,
+          ToCode: toCity.Code,
+          FromAsAirport: s.ToAsAirport,
+          ToAsAirport: s.FromAsAirport,
+        });
+      } else {
+      }
+    }
   }
   async onSelecFlyDate(flyTo: boolean, backDate: boolean) {
     if (this.disabled) {

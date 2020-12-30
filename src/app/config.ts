@@ -3,7 +3,7 @@ export const CONFIG = {
   mockProBuild: true,
   isShowPrivacy: false,
   production: true,
-  isShowVConsole:true|| !!window['cordova'],
+  isShowVConsole:!!window['cordova'],
   isForWechatMiniApproval: false,
   isEnableTranslate: true,
   showNotUseWechatAccountTipTimeout: 5000,
