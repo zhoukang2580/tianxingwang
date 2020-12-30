@@ -26,6 +26,7 @@ import { TravelApplicationModule } from "./travel-application/travel-application
 import { LoginEnModule } from "./login_en/login_en.module";
 import { RegisterEnPageModule } from './register_en/register_en.page.module';
 import { RegisterEnModule } from './register_en/register_en.module';
+import { DemandModule } from "./demand/demand.module";
 
 const routes: Routes = [
   {
@@ -117,13 +118,15 @@ const routes: Routes = [
     path: "**",
     loadChildren: () =>
       import("./page404/page404.module").then((m) => m.Page404PageModule),
-  },
+  }
+
 ];
 @NgModule({
   imports: [
     CarModule,
     RegisterModule,
     RegisterEnModule,
+    DemandModule,
     LoginModule,
     LoginEnModule,
     FlightModule,
