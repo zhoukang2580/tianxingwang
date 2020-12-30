@@ -195,7 +195,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onDemand(){
-    this.router.navigate([AppHelper.getRoutePath("de-list")]);
+    this.router.navigate([AppHelper.getRoutePath("demand-list")]);
   }
   private async loadBanners() {
     if (!this.banners || !this.banners.length) {

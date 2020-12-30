@@ -1,0 +1,77 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>签证</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list class="list">
+    <div class="container">
+      <div class="item">
+        <div class="label">签证类型</div>
+        <label>
+          <input type="radio" name="demo" value="1" onclick="ClickMe(1)" />商务签证
+        </label>
+        <label>
+          <input type="radio" name="demo" value="2" onclick="ClickMe(2)" />旅游签证
+        </label>
+      </div>
+      <div class="item">
+        <div class="label">联系人</div>
+        <div class="main">
+          <ion-text>高飞</ion-text>
+        </div>
+      </div>
+      <div class="item">
+        <div class="label">联系手机</div>
+        <div class="main">
+          <ion-input placeholder='请输入手机号'></ion-input>
+        </div>
+      </div>
+      <div class="item">
+        <div class="label">邮箱</div>
+        <div class="main">
+          <ion-input placeholder='请输入邮箱'></ion-input>
+        </div>
+      </div>
+      <div class="item">
+        <div class="label">目的地国家</div>
+        <div class="main">
+          <ion-text>韩国</ion-text>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="item">
+        <div class="label">工作居住地</div>
+        <div class="main">
+          <ion-text>韩国</ion-text>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="item">
+        <div class="label">人数</div>
+        <div class="main">
+          <ion-text>不限</ion-text>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </div>
+      <div class="item">
+        <div class="label">备注</div>
+        <div class="main">
+          <ion-input size='2' placeholder='请输入备注'></ion-input>
+        </div>
+      </div>
+    </div>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <div class="btn_container">
+    <ion-button color="secondary" class="ion-top">
+      <ion-text>提 交</ion-text>
+    </ion-button>
+  </div>
+</ion-footer>

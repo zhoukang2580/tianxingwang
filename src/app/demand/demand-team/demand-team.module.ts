@@ -4,10 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { DemandListPageRoutingModule } from './demand-list-routing.module';
+import { DemandTeamPageRoutingModule } from './demand-team-routing.module';
 
-import { DemandListPage } from './demand-list.page';
-import { AppDirectivesModule } from 'src/app/directives/directives.module';
+import { DemandTeamPage } from './demand-team.page';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 
 @NgModule({
@@ -15,10 +14,9 @@ import { AppComponentsModule } from 'src/app/components/appcomponents.module';
     CommonModule,
     FormsModule,
     IonicModule,
-    DemandListPageRoutingModule,
-    AppDirectivesModule,
+    DemandTeamPageRoutingModule,
     AppComponentsModule,
   ],
-  declarations: [DemandListPage]
+  declarations: [DemandTeamPage]
 })
-export class DemandListPageModule {}
+export class DemandTeamPageModule {}
