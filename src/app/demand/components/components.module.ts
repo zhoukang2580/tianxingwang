@@ -5,31 +5,28 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { DemandItemCarComponent } from './demand-item-car/demand-item-car.component';
 import { DemandItemMeetingComponent } from './demand-item-meeting/demand-item-meeting.component';
+import { DemandItemTeamComponent } from './demand-item-team/demand-item-team.component';
+import { DemandItemVisaComponent } from './demand-item-visa/demand-item-visa.component';
 
 @NgModule({
   declarations: [
     DemandAirportServicesComponent,
-    DemandItemCarComponent,
+    DemandItemTeamComponent,
     DemandItemMeetingComponent,
     DemandItemCarComponent,
-    DemandItemCarComponent
+    DemandItemVisaComponent,
   ],
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
-    DemandAirportServicesComponent,
-    DemandItemCarComponent,
-    DemandItemMeetingComponent,
-    DemandItemCarComponent,
-    DemandItemCarComponent
+    IonicModule
   ],
   exports: [
     DemandAirportServicesComponent,
-    DemandItemCarComponent,
+    DemandItemTeamComponent,
     DemandItemMeetingComponent,
     DemandItemCarComponent,
-    DemandItemCarComponent
+    DemandItemVisaComponent,
   ]
 
 })

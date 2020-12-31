@@ -9,6 +9,7 @@ import { DemandListPageRoutingModule } from './demand-list-routing.module';
 import { DemandListPage } from './demand-list.page';
 import { AppDirectivesModule } from 'src/app/directives/directives.module';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
+import { ComponentsModule } from '../components/components.module';
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { AppComponentsModule } from 'src/app/components/appcomponents.module';
     DemandListPageRoutingModule,
     AppDirectivesModule,
     AppComponentsModule,
+    ComponentsModule
   ],
   declarations: [DemandListPage]
 })

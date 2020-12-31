@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FlightType } from '../demand.service';
 
 @Component({
   selector: 'app-demand-list',
@@ -8,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class DemandListPage implements OnInit {
 
   listType = 'team' || 'meeting' || 'visa' || 'car' || 'flight';
-
+  FlightType = FlightType;
   constructor() { }
 
   ngOnInit() {

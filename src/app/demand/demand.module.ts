@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Route, RouterModule } from '@angular/router';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 const routes: Route[] = [
   {
     path: 'demand-list',
@@ -14,7 +16,9 @@ const routes: Route[] = [
   declarations: [],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    BrowserModule,
+    FormsModule
   ],
   exports: [
     RouterModule

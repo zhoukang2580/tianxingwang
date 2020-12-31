@@ -46,11 +46,14 @@
   }
 }
 
-ion-footer {
+.ion-footer {
   display: flex;
   align-items: center;
   justify-items: center;
   background: #fff;
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
   .btn_container {
     display: flex;
     justify-content: center;

@@ -5,28 +5,47 @@
     </ion-buttons>
     <ion-title>需求单</ion-title>
   </ion-toolbar>
+  
+  <ion-toolbar style="--border-width: 0;" class="toolbar">
+    <ion-segment scrollable (ionChange)="segmentChanged($event)" mode='md' value="team" color='secondary'>
+      <ion-segment-button value="{{FlightType.TeamDemand}}">
+        <ion-label>团队</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="meeting">
+        <ion-label>会议</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="visa">
+        <ion-label>签证</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="car">
+        <ion-label>用车</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="flight">
+        <ion-label>机场服务</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
 </ion-header>
 
 <ion-content>
-  <ion-list class="list">
-    <div class="container">
-      <ion-segment (ionChange)="segmentChanged($event)" mode='md' value="plane" color='secondary'>
-        <ion-segment-button value="team">
-          <ion-label>团队</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="meeting">
-          <ion-label>会议</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="visa">
-          <ion-label>签证</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="car">
-          <ion-label>用车</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="flight">
-          <ion-label>机场服务</ion-label>
-        </ion-segment-button>
-      </ion-segment>
-      </div>
-    </ion-list>
+  <ion-list *ngIf="FlightType.TeamDemand == 8">
+    <app-demand-item-team></app-demand-item-team>
+  </ion-list>
+  <ion-list class="list" *ngIf='listType == "meeting"'>
+    <app-demand-item-meeting>
+    </app-demand-item-meeting>
+  </ion-list>
+  <ion-list class="list" *ngIf='listType == "visa"'>
+    <app-demand-item-visa>
+    </app-demand-item-visa>
+  </ion-list>
+  <ion-list class="list" *ngIf='listType == "car"'>
+    <app-demand-item-car>
+    </app-demand-item-car>
+  </ion-list>
+  <ion-list class="list" *ngIf='listType == "flight"'>
+    <app-demand-airport-services>
+    </app-demand-airport-services>
+  </ion-list>
 </ion-content>

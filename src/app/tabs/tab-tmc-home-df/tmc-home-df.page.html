@@ -193,10 +193,10 @@
           </div>
         </ng-container>
         <ng-template #deftpl>
-          <div class="swiper-slide">
+          <div class="swiper-slide" *ngFor="let bot of boutiqueHotel">
             <div class="inner">
               <img
-                [lazyLoad]="config?.DefaultImageUrl"
+                [lazyLoad]="bot?.HotelDefaultImg"
                 [defaultImage]="config?.DefaultImageUrl"
                 [loadingImage]="config?.PrerenderImageUrl"
               />
