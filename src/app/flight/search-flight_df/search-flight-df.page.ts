@@ -109,7 +109,7 @@ export class SearchFlightDfPage
     }
     const rs=await this.flightCityService.onSelectCity(true,isFrom,this.domestic=='domestic');
     if(rs&&rs.city){
-      if(!rs.isDomestic){
+      if(this.domestic!='domestic'){
         this.internationalFlightService.onCitySelected(rs.city,isFrom);
       }
     }
