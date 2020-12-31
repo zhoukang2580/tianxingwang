@@ -94,7 +94,7 @@ ion-content.cnt {
     align-items: center;
     margin-top: -20px;
     span {
-      margin-right: 0.5em;
+      margin-right: 0.4em;
     }
   }
   .date {
@@ -241,7 +241,7 @@ ion-icon[name="caret-down-outline"] {
   .detail {
     display: flex;
     align-items: center;
-    font-size: 10px;
+    font-size: 15px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
@@ -304,14 +304,14 @@ ion-footer {
       margin-right: 0.5em;
     }
     .detail {
-      font-size: 8px;
+      font-size: 14px;
       font-family: PingFang SC;
       font-weight: 500;
       color: #333333;
       margin-left: 1em;
     }
     .total {
-      font-size: 14px;
+      font-size: 15px;
       color: red;
     }
     .price {

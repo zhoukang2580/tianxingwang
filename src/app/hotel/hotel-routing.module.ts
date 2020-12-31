@@ -44,6 +44,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "hotel-show-images_df",
+    loadChildren: () =>
+      import("./show-images-df/show-images-df.module").then(
+        m => m.ShowImagesDfPageModule
+      )
+  },
+  {
     path: "hotel-room-detail",
     loadChildren: () =>
       import("./room-detail/room-detail.module").then(

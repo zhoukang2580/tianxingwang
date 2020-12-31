@@ -963,16 +963,17 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combindInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.roomPlan &&
-        combindInfo.bookInfo.bookInfo.roomPlan.Rules
+        combindInfo.bookInfo.bookInfo.roomPlan.Rules &&
+        !this.isRoomPlanFreeBook(combindInfo)
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
         if (!p.IllegalReason) {
-          this.showErrorMsg(
-            LanguageHelper.Flight.getIllegalReasonTip(),
-            combindInfo,
-            this.getEleByAttr("illegalReasonsid", combindInfo.id)
-          );
-          return false;
+            this.showErrorMsg(
+              LanguageHelper.Flight.getIllegalReasonTip(),
+              combindInfo,
+              this.getEleByAttr("illegalReasonsid", combindInfo.id)
+            );
+            return false;
         }
       }
       if (!p.Mobile) {
@@ -1078,7 +1079,6 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         //   Hotel: { Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id }
         // } as RoomEntity;
         // p.RoomPlan.Room.Hotel = {
-        //   // ...combindInfo.bookInfo.bookInfo.hotelEntity,
         //   Rooms: null,
         //   Id:combindInfo.bookInfo.bookInfo.hotelEntity.Id,
         //   HotelDayPrices: [],

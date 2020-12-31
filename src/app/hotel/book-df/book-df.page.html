@@ -288,11 +288,10 @@
             </div>
             <div
               class="otherinfo"
-              [attr.mobilesid]="combindInfo.id"
               *ngIf="isShowOtherInfo"
             >
               <div class="line"></div>
-              <div class="flex padding-v">
+              <div class="flex padding-v" [attr.mobilesid]="combindInfo.id">
                 <span class="label">其他电话：</span>
                 <ion-input
                   [(ngModel)]="combindInfo.credentialStaffOtherMobile"

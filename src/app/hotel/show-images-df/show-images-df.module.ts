@@ -3,7 +3,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from "@angular/router";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { NgModule } from "@angular/core";
-import { ShowImagesPage } from "./show-images.page";
+import { ShowImagesDfPage } from "./show-images-df.page";
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 @NgModule({
@@ -14,12 +14,12 @@ import { StylePageGuard } from 'src/app/guards/style-page.guard';
     RouterModule.forChild([
       {
         path: "",
-        component: ShowImagesPage,
+        component: ShowImagesDfPage,
         canActivate:[StylePageGuard]
       }
     ])
   ],
-  declarations: [ShowImagesPage],
+  declarations: [ShowImagesDfPage],
   exports: []
 })
-export class ShowImagesPageModule {}
+export class ShowImagesDfPageModule {}

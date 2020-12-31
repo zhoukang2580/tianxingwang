@@ -22,6 +22,7 @@ export class ShowImagesPage implements OnInit, AfterViewInit, OnDestroy {
   images: { url: string; active: boolean; idx: number }[];
   config: ConfigEntity;
   // agent: AgentEntity;
+  curIndex=1;
   initPos: number;
   constructor(
     private configservice: ConfigService,
@@ -61,6 +62,9 @@ export class ShowImagesPage implements OnInit, AfterViewInit, OnDestroy {
         return { ...it, imageUrl: it.url };
       });
     }
+  }
+  onSlideChange(idx){
+    this.curIndex=idx;
   }
   onClose() {
     this.modalCtrl.dismiss();
