@@ -33,18 +33,14 @@ export class FlightCityService {
       });
     };
   }
-  async onSelectCity(isShow, isFrom) {
+  async onSelectCity(isShow, isFrom, isDomestic = true) {
     if (!this.cityPage) {
       await this.initPage();
-      if (this.cityPage) {
-        setTimeout(() => {
-          this.cityPage.openPage(isShow, isFrom);
-        }, 2000);
-      }
     }
     if (!this.cityPage) {
       return null;
     }
+    this.cityPage.isDomestic = isDomestic;
     this.isShowingPage = isShow;
     this.onSearbarClick(isFrom);
     this.cityPage.openPage(isShow);
@@ -62,7 +58,7 @@ export class FlightCityService {
     );
   }
 }
-function CityPage(domesticCities, interCities) {
+function CityPage(domesticCities, interCities, lang = "cn") {
   const tabObj = {
     推荐: "isHot",
     港澳台: 11,
@@ -78,14 +74,17 @@ function CityPage(domesticCities, interCities) {
   };
   let allItems = [];
   this.textSearchResults = [];
-  const lang = "en";
+  this.lang = lang;
   let page;
-  let histories = [];
+  this.histories = getCachedSelectedCities();
   let allInterItems = [];
   const that = this;
+  this.infinite;
+  this.interSidebarsTabs;
   this.pageSize = 40;
   this.isDomestic = true;
   this.textSearchResults = [];
+  this.getPageEle = getPageEle;
   this.openPage = openPage;
   this.onToggleSegmentsPage = onToggleSegmentsPage;
   this.cities = initData(domesticCities);
@@ -102,6 +101,11 @@ function CityPage(domesticCities, interCities) {
         .filter((it) => it.IsHot)
         .concat(cities.filter((it) => !it.IsHot))
         .map((it) => {
+          if (!it.FirstLetter) {
+            if (it.Pinyin) {
+              it.FirstLetter = it.Pinyin.substr(0, 1).toUpperCase();
+            }
+          }
           it.matchStr = keys
             .map((k) => it[k])
             .filter((i) => i && i.length > 0)
@@ -129,11 +133,10 @@ function CityPage(domesticCities, interCities) {
     label.textContent = "取消";
     cancelBtn.append(label);
     cancelBtn.onclick = () => {
-      that.openPage(false);
+      hidePages();
     };
     backIcon.onclick = () => {
-      that.openPage(false);
-      showSearchListPage(false);
+      hidePages();
     };
     const bform = document.createElement("form");
     bform.setAttribute("action", "javascript:void(0)");
@@ -144,6 +147,7 @@ function CityPage(domesticCities, interCities) {
       onSearch();
     };
     searchbar.setAttribute("debounce", "300");
+    searchbar.setAttribute("mode", "ios");
     searchbar.addEventListener("ionFocus", function () {
       showSearchListPage(true);
     });
@@ -157,6 +161,18 @@ function CityPage(domesticCities, interCities) {
     header.append(bform);
     header.append(cancelBtn);
     return header;
+  }
+  function hidePages() {
+    if (that.searchListPage) {
+      if (that.searchListPage.classList.contains("show")) {
+        that.openPage(false);
+        showSearchListPage(false);
+      } else {
+        that.openPage(false);
+      }
+    } else {
+      that.openPage(false);
+    }
   }
   function getSegmentHtml() {
     const seg = document.createElement("div");
@@ -195,10 +211,19 @@ function CityPage(domesticCities, interCities) {
       i.classList.remove("show");
     } else {
       i.classList.add("show");
+      const mainEl = i.querySelector(".main");
+      if (mainEl) {
+        if (!mainEl.firstChild) {
+          if (that.interSidebarsTabs) {
+            onInterSidebarTabActive(that.interSidebarsTabs[0]);
+          }
+        }
+      }
       d.classList.remove("show");
     }
   }
   function openPage(open) {
+    const isDomestic=that.isDomestic;
     page = document.body.querySelector(".flight-city-page-container");
     if (!page) {
       page = getHtml();
@@ -218,13 +243,17 @@ function CityPage(domesticCities, interCities) {
     if (page) {
       if (open) {
         page.classList.add("show");
+        if (that.searchListPage) {
+          if (!that.searchListPage.classList.contains("show")) {
+            clearSearchPageListItems();
+          }
+        }
       } else {
         page.classList.remove("show");
       }
     }
   }
   function getHistoryHtml(cities) {
-    const rowNums = 3;
     const wrapper = document.createElement("div");
     try {
       wrapper.classList.add("hot-cities-wrapper");
@@ -251,25 +280,21 @@ function CityPage(domesticCities, interCities) {
       listWrapper.append(list);
       list.classList.add("list");
       wrapper.append(listWrapper);
-      cities.slice(0, 20).forEach((c) => {
-        const item = getHistoryOrHotItem(c, true);
-        const label = document.createElement("label");
-        label.textContent = c.Name;
-        item.onclick = () => {
-          onSelectCity(c);
-        };
-        list.append(item);
+      const rowLen = 3;
+      const len = 12;
+      const enLen = 16;
+      const rows = getListRows(cities, rowLen, enLen, len, that.lang);
+      rows.forEach((r) => {
+        const div = document.createElement("div");
+        div.classList.add("row");
+        div.classList.add("full-w");
+        r.forEach((c) => {
+          const item = getHistoryOrHotItem(c);
+          item.classList.add(`col-${r.length}`);
+          div.append(item);
+        });
+        list.append(div);
       });
-      if (cities.length % rowNums != 0) {
-        const len = cities.length % rowNums;
-        const item = document.createElement("div");
-        item.classList.add("empty-item");
-        item.classList.add("b-item");
-        item.style.visibility = "collapse";
-        for (let i = 0; i < len; i++) {
-          list.append(item);
-        }
-      }
     } catch (e) {
       console.error(e);
     }
@@ -277,11 +302,14 @@ function CityPage(domesticCities, interCities) {
   }
   function getHistoryOrHotItem(c, isHistory = false, lang = "cn") {
     const item = document.createElement("div");
-    item.classList.add("b-item");
+    item.classList.add("city-item");
     item.textContent = lang == "en" ? c.EnglishName : c.Name;
     item.setAttribute("Code", c.Code);
     const label = document.createElement("label");
     label.textContent = c.Name;
+    if (!label.textContent) {
+      item.classList.add("empty");
+    }
     item.onclick = () => {
       onSelectCity(c);
     };
@@ -305,7 +333,6 @@ function CityPage(domesticCities, interCities) {
     return fab;
   }
   function getHotHtml(cities) {
-    const rowNums = 3;
     const wrapper = document.createElement("div");
     try {
       wrapper.classList.add("hot-cities-wrapper");
@@ -324,55 +351,75 @@ function CityPage(domesticCities, interCities) {
       const rowLen = 3;
       const len = 12;
       const enLen = 16;
-      const rows = [];
-      for (let i = 0; i < cities.length; i++) {
-        const c = cities[i];
-        const name = (lang == "en" ? c.EnglishName : c.Name) || "";
-        if (name) {
-          const obj = {
-            ...c,
-            isFlag: name.length >= enLen || name.length >= len,
-          };
-          const cols = rows[rows.length - 1];
-          if (cols) {
-            if (cols.some((it) => it.isFlag)) {
-              if (cols.length < rowLen - 1) {
-                cols.push(obj);
-              } else {
-                rows.push([obj]);
-              }
-            } else {
-              if (obj.isFlag) {
-                if (cols.length >= rowLen - 1) {
-                  rows.push([obj]);
-                } else {
-                  cols.push(obj);
-                }
-              } else {
-                if (cols.length < rowLen) {
-                  cols.push(obj);
-                } else {
-                  rows.push([obj]);
-                }
-              }
-            }
-          } else {
-            rows.push([obj]);
-          }
-        }
-      }
-      allInterItems = [];
+      const rows = getListRows(cities, rowLen, enLen, len, that.lang);
       rows.forEach((r) => {
+        const div = document.createElement("div");
+        div.classList.add("row");
+        div.classList.add("full-w");
         r.forEach((c) => {
           const item = getHistoryOrHotItem(c);
           item.classList.add(`col-${r.length}`);
-          list.append(item);
+          div.append(item);
         });
+        list.append(div);
       });
     } catch (e) {
       console.error(e);
     }
     return wrapper;
+  }
+  function getListRows(cities, rowLen, enLen, len, lang) {
+    const rows = [];
+    for (let i = 0; i < cities.length; i++) {
+      const c = cities[i];
+      const name = (lang == "en" ? c.EnglishName : c.Name) || "";
+      if (name) {
+        const obj = {
+          ...c,
+          isFlag: name.length >= enLen || name.length >= len,
+        };
+        const cols = rows[rows.length - 1];
+        if (cols) {
+          if (cols.some((it) => it.isFlag)) {
+            if (cols.length < rowLen - 1) {
+              cols.push(obj);
+            } else {
+              rows.push([obj]);
+            }
+          } else {
+            if (obj.isFlag) {
+              if (cols.length >= rowLen - 1) {
+                rows.push([obj]);
+              } else {
+                cols.push(obj);
+              }
+            } else {
+              if (cols.length < rowLen) {
+                cols.push(obj);
+              } else {
+                rows.push([obj]);
+              }
+            }
+          }
+        } else {
+          rows.push([obj]);
+        }
+      }
+    }
+    if (rows.length) {
+      const last = rows[rows.length - 1];
+      if (last) {
+        if (last.length < rowLen) {
+          const lastlen = last.length;
+          if (!last.some((it) => it.isFlag)) {
+            for (let i = 0; i < rowLen - lastlen; i++) {
+              last.push({});
+            }
+          }
+        }
+      }
+    }
+    return rows;
   }
   function getPageEle() {
     return document.querySelector(".flight-city-page-container");
@@ -388,6 +435,7 @@ function CityPage(domesticCities, interCities) {
         }
         const items = wrapper.querySelectorAll(".b-item");
         const list = wrapper.querySelector(".list");
+        let histories = that.histories;
         if (!histories || !histories.length) {
           histories = [c];
         }
@@ -422,6 +470,7 @@ function CityPage(domesticCities, interCities) {
             );
           }
         }
+        cacheSelectedCities(histories);
       }
     } catch (e) {
       console.error(e);
@@ -432,8 +481,7 @@ function CityPage(domesticCities, interCities) {
     return page && page.querySelector(".history-cities-wrapper");
   }
   function onSelectCity(c) {
-    openPage(false);
-    showSearchListPage(false);
+    hidePages();
     onShowInHistory(c);
     if (that.onSelectCallback) {
       that.onSelectCallback({ isDomestic: that.isDomestic, city: c });
@@ -441,10 +489,11 @@ function CityPage(domesticCities, interCities) {
     console.log(c);
   }
   function onClearHistories() {
+    clearCachedHistories();
     const page = getDomesticContainerPage();
     if (page) {
       const history = getHistoryWrapperEl();
-      histories = [];
+      that.histories = [];
       if (history) {
         if (history.firstChild) {
           history.removeChild(history.firstChild);
@@ -454,17 +503,21 @@ function CityPage(domesticCities, interCities) {
     }
   }
   function getHtml() {
-    const cmap = getLeter2Cities(cities);
     const page = document.createElement("div");
     page.classList.add("flight-city-page-container");
     const header = getHeaderHtml();
     page.append(header);
     const segs = getSegmentHtml();
+    if (that.isDomestic) {
+      segs.classList.add("hidden");
+    } else {
+      segs.classList.remove("hidden");
+    }
     page.append(segs);
     const container = document.createElement("div");
     container.classList.add("container");
     page.append(container);
-    const domesticHtml = getDomesticHtml(cmap);
+    const domesticHtml = getDomesticHtml(cities);
     const domesticC = document.createElement("div");
     domesticC.classList.add("wrapper");
     domesticC.classList.add("show");
@@ -480,7 +533,7 @@ function CityPage(domesticCities, interCities) {
     document.body.append(page);
     document.body.append(getScrollToTopFab());
     that.searchListPage = getSearchListPage();
-    page.append(that.searchListPage);
+    document.body.append(that.searchListPage);
     that.page = page;
     return page;
   }
@@ -512,7 +565,6 @@ function CityPage(domesticCities, interCities) {
       });
     }, 200);
     function getHtml() {
-      const rowLen = 3;
       const c = document.createElement("div");
       const h = document.createElement("header");
       h.classList.add("label-header");
@@ -526,43 +578,14 @@ function CityPage(domesticCities, interCities) {
       if (recommendCities) {
         const len = 12;
         const enLen = 16;
-        const rows = [];
-        for (let i = 0; i < recommendCities.length; i++) {
-          const c = recommendCities[i];
-          const name = (lang == "en" ? c.EnglishName : c.Name) || "";
-          if (name) {
-            const obj = {
-              ...c,
-              isFlag: name.length >= enLen || name.length >= len,
-            };
-            const cols = rows[rows.length - 1];
-            if (cols) {
-              if (cols.some((it) => it.isFlag)) {
-                if (cols.length < rowLen - 1) {
-                  cols.push(obj);
-                } else {
-                  rows.push([obj]);
-                }
-              } else {
-                if (obj.isFlag) {
-                  if (cols.length >= rowLen - 1) {
-                    rows.push([obj]);
-                  } else {
-                    cols.push(obj);
-                  }
-                } else {
-                  if (cols.length < rowLen) {
-                    cols.push(obj);
-                  } else {
-                    rows.push([obj]);
-                  }
-                }
-              }
-            } else {
-              rows.push([obj]);
-            }
-          }
-        }
+        const rowLen = 3;
+        const rows = getListRows(
+          recommendCities,
+          rowLen,
+          enLen,
+          len,
+          that.lang
+        );
         const list = document.createElement("div");
         list.classList.add("list");
         allInterItems = [];
@@ -595,6 +618,7 @@ function CityPage(domesticCities, interCities) {
         }
       });
     }
+    hidePages();
     if (that.onSelectCallback) {
       that.onSelectCallback({ isDomestic: false, city });
     }
@@ -627,6 +651,8 @@ function CityPage(domesticCities, interCities) {
   function onInterSidebarTabActive(tab) {
     try {
       const name = tab.getAttribute("name");
+      clearTabActive();
+      tab.classList.add("active");
       let arr =
         name == "isHot"
           ? internationalCities.filter((it) => it.IsHot)
@@ -650,6 +676,7 @@ function CityPage(domesticCities, interCities) {
       tabs.push(t);
       sidebar.append(t);
     });
+    that.interSidebarsTabs = tabs;
     function getTab(name, attrvalue) {
       const tab = document.createElement("div");
       tab.classList.add("tab");
@@ -658,18 +685,18 @@ function CityPage(domesticCities, interCities) {
       tab.setAttribute("name", attrvalue);
       tab.append(lb);
       tab.onclick = (evt) => {
-        clearTabActive();
-        tab.classList.add("active");
         onInterSidebarTabActive(tab);
       };
       return tab;
     }
-    function clearTabActive() {
-      tabs.forEach((t) => {
+    return sidebar;
+  }
+  function clearTabActive() {
+    if (that.interSidebarsTabs) {
+      that.interSidebarsTabs.forEach((t) => {
         t.classList.remove("active");
       });
     }
-    return sidebar;
   }
   function getDomesticPageWrapper() {
     return getPageEle().querySelector(".domestic.wrapper");
@@ -690,12 +717,33 @@ function CityPage(domesticCities, interCities) {
   function getContainerEle() {
     return getPageEle().querySelector(".container");
   }
-  function getDomesticHtml(cmap) {
+  function cacheSelectedCities(histories) {
+    window.localStorage.setItem(
+      "flight_cached_histories_cities_key",
+      JSON.stringify(histories)
+    );
+  }
+  function getCachedSelectedCities() {
+    try {
+      const l = window.localStorage.getItem(
+        "flight_cached_histories_cities_key"
+      );
+      if (l) {
+        return JSON.parse(l);
+      }
+    } catch (e) {}
+    return [];
+  }
+  function clearCachedHistories() {
+    window.localStorage.removeItem("flight_cached_histories_cities_key");
+  }
+  function getDomesticHtml(cities) {
     const div = document.createElement("div");
     div.classList.add("domestic-page-container");
     div.classList.add("show");
+    const cmap = getLeter2Cities(cities);
     const hotHtml = getHotHtml(cities.filter((it) => it.IsHot));
-    const historyHtml = getHistoryHtml(cities);
+    const historyHtml = getHistoryHtml(that.histories);
     div.append(historyHtml);
     div.append(hotHtml);
     const letterNavs = getLetterNavs(cmap);
@@ -722,9 +770,13 @@ function CityPage(domesticCities, interCities) {
           evt.stopPropagation();
         }
         try {
-          const el = page.querySelector(`[letter='${l}']`);
+          const p = page.querySelector(".container");
+          const el = p.querySelector(`[letter='${l}']`);
           const rect = el.getBoundingClientRect();
-          const headerEle = 97;
+          let headerEle = 97;
+          const h = page.querySelector(".header");
+          const segs = page.querySelector(".segments");
+          headerEle = h.clientHeight + segs.clientHeight || 97;
           let y = 0;
           y = rect.top - headerEle;
           const ul = getContainerEle();
@@ -832,10 +884,15 @@ function CityPage(domesticCities, interCities) {
         }
         sp.classList.add("show");
       } else {
+        clearSearchBarText();
         sp.classList.remove("show");
+        setTimeout(() => {
+          clearSearchPageListItems();
+        }, 200);
       }
     }
   }
+
   function getSearchPageListItem(city, lang) {
     const item = document.createElement("div");
     item.classList.add("item");
@@ -845,6 +902,12 @@ function CityPage(domesticCities, interCities) {
     n.classList.add("name");
     n.textContent = `${lbtextContent}`;
     item.append(n);
+    if (city.Code) {
+      const code = document.createElement("label");
+      code.classList.add("code");
+      code.textContent = city.Code;
+      item.append(code);
+    }
     if (city.CityName) {
       const cn = document.createElement("label");
       cn.classList.add("city-name");
@@ -861,9 +924,20 @@ function CityPage(domesticCities, interCities) {
     let arr = that.isDomestic ? that.cities : that.internationalCities;
     let temp = [];
     if (kw) {
-      arr = arr.filter((it) =>
-        it.matchStr.toLowerCase().includes(kw.toLowerCase())
-      );
+      let tmpArr;
+      if (kw.length == 3) {
+        tmpArr = arr.filter(
+          (it) => (it.Code || "").toLowerCase() == kw.toLowerCase()
+        );
+      }
+      arr = arr.filter((it) => {
+        if (tmpArr) {
+          return tmpArr.some((one) =>
+            it.matchStr.toLowerCase().includes(one.CityName.toLowerCase())
+          );
+        }
+        return it.matchStr.toLowerCase().includes(kw.toLowerCase());
+      });
       temp = arr.slice(
         that.textSearchResults.length,
         that.textSearchResults.length + that.pageSize
@@ -883,8 +957,11 @@ function CityPage(domesticCities, interCities) {
     if (infinite) {
       infinite.disabled = temp.length < that.pageSize;
     }
-    if (temp) {
+    if (temp && temp.length) {
       appMoreItems(temp);
+    } else {
+      const l = that.searchListPage.querySelector(".search-list-page__list");
+      renderNoMoreData(l);
     }
     if (infinite) {
       infinite.complete();
@@ -899,9 +976,21 @@ function CityPage(domesticCities, interCities) {
       }
     }
   }
+  function renderNoMoreData(container) {
+    if (container) {
+      const lb = document.createElement("label");
+      lb.classList.add("no-more-data");
+      lb.textContent = "暂无数据";
+      container.append(lb);
+    }
+  }
   function getSearchBarText() {
     const searchbar = that.page.querySelector("ion-searchbar");
     return (searchbar && searchbar.value) || "";
+  }
+  function clearSearchBarText() {
+    const searchbar = that.page.querySelector("ion-searchbar");
+    searchbar.value = "";
   }
   function appMoreItems(arr) {
     try {
@@ -917,14 +1006,14 @@ function CityPage(domesticCities, interCities) {
     }
   }
   function getSearchListPage() {
-    let sp = getPageEle().querySelector(".search-list-page");
+    let sp = document.body.querySelector(".search-list-page");
     if (sp) {
-      const l = sp.querySelector(".list");
-      if (l) {
-        while (l.firstChild) {
-          l.removeChild(l.firstChild);
-        }
-      }
+      // const l = sp.querySelector("ion-list");
+      // if (l) {
+      //     while (l.firstChild) {
+      //         l.removeChild(l.firstChild);
+      //     }
+      // }
       return sp;
     }
     sp = document.createElement("div");
@@ -932,6 +1021,7 @@ function CityPage(domesticCities, interCities) {
     const content = document.createElement("ion-content");
     const list = document.createElement("ion-list");
     const infinite = document.createElement("ion-infinite-scroll");
+    that.infinite = infinite;
     content.classList.add("content");
     list.classList.add("search-list-page__list");
     infinite.classList.add("ion-infinite-scroll");

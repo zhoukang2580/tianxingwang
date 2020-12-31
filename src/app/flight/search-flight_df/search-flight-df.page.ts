@@ -58,7 +58,7 @@ export class SearchFlightDfPage
   isCanleave = true;
   isleave = true;
   seg = "single";
-  domestic = "domestic";
+  domestic:"domestic"|"international" = "domestic";
   selectedInterPassengers: any[];
   FlightVoyageType = FlightVoyageType;
   private subscriptions: Subscription[] = [];
@@ -103,17 +103,22 @@ export class SearchFlightDfPage
   onCabinChange() {
     // this.loadLoadingLevelPolicies();
   }
-  onSelectInterCity(isFrom: boolean, trip: ITripInfo) {
+  async onSelectInterCity(isFrom: boolean, trip: ITripInfo) {
     if (this.disabled) {
       return;
     }
-    this.internationalFlightService.beforeSelectCity(isFrom, trip);
+    const rs=await this.flightCityService.onSelectCity(true,isFrom,this.domestic=='domestic');
+    if(rs&&rs.city){
+      if(!rs.isDomestic){
+        this.internationalFlightService.onCitySelected(rs.city,isFrom);
+      }
+    }
   }
   async onSelectInterFlyDate(isFrom: boolean, trip: ITripInfo) {
     if (this.disabled) {
       return;
     }
-    this.internationalFlightService.onSelecFlyDate(isFrom, trip);
+    this.internationalFlightService.onSelectFlyDate(isFrom, trip);
   }
   onSwapInterCity(trip: {
     fromCity: TrafficlineEntity;
@@ -210,7 +215,7 @@ export class SearchFlightDfPage
   }
   async canDeactivate() {
     if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity(false,false);
+      this.flightCityService.onSelectCity(false, false);
       return false;
     }
     if (this.isCanleave) {
@@ -509,7 +514,7 @@ export class SearchFlightDfPage
   }
   async onSelectCity(isFromCity = true) {
     this.isCanleave = true;
-    const rs = await this.flightCityService.onSelectCity(true,isFromCity);
+    const rs = await this.flightCityService.onSelectCity(true, isFromCity);
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {

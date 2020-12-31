@@ -64,7 +64,7 @@ export class SearchInternationalFlightPage
     if (this.disabled) {
       return;
     }
-    this.flightService.beforeSelectCity(isFrom, trip);
+    // this.flightService.beforeSelectCity(isFrom, trip);
   }
   async onShowStandardDesc() {
     this.isSelf = await this.staffService.isSelfBookType();
@@ -146,7 +146,7 @@ export class SearchInternationalFlightPage
     if (this.disabled) {
       return;
     }
-    this.flightService.onSelecFlyDate(isFrom, trip);
+    this.flightService.onSelectFlyDate(isFrom, trip);
   }
   onRemoveTrip(trip: ITripInfo) {
     if (this.searchFlightModel && trip) {

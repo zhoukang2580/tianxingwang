@@ -171,7 +171,7 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
       }
       await this.storage.set("historyInternationalAirports", this.histories);
     }
-    this.flightService.afterCitySelected(city, this.isFromCity);
+    // this.flightService.afterCitySelected(city, this.isFromCity);
     if (this.backBtn) {
       this.backBtn.popToPrePage();
     }

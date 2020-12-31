@@ -36,7 +36,7 @@
   background-color: #eee;
   height: 20px;
   padding: 0 0.6em;
-  position: sticky;
+  position: static;
   top: 0;
 }
 .flight-city-page-container .list .letter-header label {
@@ -47,11 +47,11 @@
 }
 .flight-city-page-container .letters-wrapper {
   position: sticky;
-  right: 0;
+  left: 90%;
   z-index: 10;
   top: 0;
   width: 2em;
-  float: right;
+  height: 100%;
 }
 .flight-city-page-container .letter-navs {
   display: flex;
@@ -61,11 +61,11 @@
   position: absolute;
   right: 0.5em;
   z-index: 99;
-  top: 5vh;
+  top: 4vh;
 }
 .flight-city-page-container .letter-navs .nav-letter {
   padding: 0.15em 0.5em;
-  font-size: 14px;
+  font-size: 16px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #999999;
@@ -94,26 +94,6 @@
 .flight-city-page-container.md .hot-cities-wrapper .list-wrapper {
   padding: 0 0.5em 0 0.5em;
 }
-.flight-city-page-container .hot-cities-wrapper .b-item {
-  background: #f6f6f6;
-  border-radius: 5px;
-  width: 90px;
-  border-radius: 5px;
-  height: 30px;
-  line-height: 30px;
-  margin: 8px;
-  text-align: center;
-  padding: 0.1em 0.2em;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-.flight-city-page-container .b-item label {
-  font-size: 14px;
-  font-family: PingFang SC;
-  font-weight: 500;
-  color: #333333;
-}
 .flight-city-page-container .header {
   height: 44px;
   display: flex;
@@ -125,7 +105,7 @@
   flex: 1;
 }
 .flight-city-page-container .header ion-icon {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   opacity: 0.8;
   margin: 0 0.2em;
 }
@@ -168,6 +148,7 @@
 .flight-city-page-container .container {
   height: calc(100% - 98px);
   overflow: auto;
+  overflow-x: hidden;
   position: relative;
 }
 .flight-city-page-container .container::-webkit-scrollbar {
@@ -223,54 +204,6 @@
 .flight-city-page-container .international-page-container .main .list {
   padding-bottom: 0.5em;
 }
-.flight-city-page-container .international-page-container .main .list .row {
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  margin: 0.5em;
-  min-height: 35px;
-}
-.flight-city-page-container .international-page-container .main .list .city-item {
-  font-size: 14px;
-  background: #f6f6f6;
-  border-radius: 3px;
-  padding: 0.5em 0.1em;
-  border-radius: 3px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-.flight-city-page-container .international-page-container .main .list .city-item.active {
-  color: var(--ion-color-secondary, tomato);
-}
-.flight-city-page-container .international-page-container .main .list .city-item.col-2 {
-  flex-basis: 64.666%;
-  max-width: 64.666%;
-}
-.flight-city-page-container .international-page-container .main .list .city-item.col-2:first-child {
-  margin-right: 1.5%;
-}
-.flight-city-page-container .international-page-container .main .list .city-item.col-2:last-child {
-  margin-left: 1.5%;
-}
-.flight-city-page-container .international-page-container .main .list .city-item.col-3 {
-  flex-basis: 31.333%;
-  max-width: 31.333%;
-}
-.flight-city-page-container .international-page-container .main .list .city-item.empty {
-  background: transparent;
-  visibility: collapse;
-}
-.flight-city-page-container .international-page-container .main .list .city-item.f-8 {
-  font-size: 8px;
-}
-.flight-city-page-container .international-page-container .main .list .city-item.f-10 {
-  font-size: 10px;
-}
-.flight-city-page-container .international-page-container .main .list .city-item.f-12 {
-  font-size: 12px;
-}
 .flight-city-page-container .fab-btn {
   color: white;
   background-color: rgba(var(--ion-color-secondary-rgb), 0.6);
@@ -294,7 +227,62 @@
   z-index: 99;
   transform: translate3d(0, 0, 0);
 }
-.flight-city-page-container .search-list-page {
+.flight-city-page-container .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  margin: 0.5em;
+  min-height: 35px;
+}
+.flight-city-page-container .row.full-w {
+  width: 100%;
+}
+.flight-city-page-container .row .city-item {
+  font-size: 14px;
+  background: #f6f6f6;
+  border-radius: 3px;
+  padding: 0.5em 0.1em;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.flight-city-page-container .row .city-item.empty {
+  visibility: collapse;
+}
+.flight-city-page-container .row .city-item.active {
+  color: var(--ion-color-secondary, tomato);
+}
+.flight-city-page-container .row .city-item.col-2 {
+  flex-basis: 64.666%;
+  max-width: 64.666%;
+}
+.flight-city-page-container .row .city-item.col-2:first-child {
+  margin-right: 1.5%;
+}
+.flight-city-page-container .row .city-item.col-2:last-child {
+  margin-left: 1.5%;
+}
+.flight-city-page-container .row .city-item.col-3 {
+  flex-basis: 31.333%;
+  max-width: 31.333%;
+}
+.flight-city-page-container .row .city-item.empty {
+  background: transparent;
+  visibility: collapse;
+}
+.flight-city-page-container .row .city-item.f-8 {
+  font-size: 8px;
+}
+.flight-city-page-container .row .city-item.f-10 {
+  font-size: 10px;
+}
+.flight-city-page-container .row .city-item.f-12 {
+  font-size: 12px;
+}
+
+.search-list-page {
   transform: translate3d(0, 100%, 0);
   transition: all ease-in-out 200ms;
   position: fixed;
@@ -302,15 +290,17 @@
   left: 0;
   right: 0;
   bottom: 0;
+  opacity: 0;
 }
-.flight-city-page-container .search-list-page.show {
+.search-list-page.show {
+  opacity: 1;
   transform: translate3d(0, 0, 0);
 }
-.flight-city-page-container .search-list-page .item {
+.search-list-page .item {
   padding: 0.5em 1em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 }
-.flight-city-page-container .search-list-page .item .city-name {
+.search-list-page .item .city-name {
   color: gray;
 }
 
