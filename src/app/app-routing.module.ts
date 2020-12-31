@@ -118,13 +118,14 @@ const routes: Routes = [
     path: "**",
     loadChildren: () =>
       import("./page404/page404.module").then((m) => m.Page404PageModule),
-  },  {
+  },
+  {
     path: 'demand-visa',
-    loadChildren: () => import('./demand/demand-visa/demand-visa.module').then( m => m.DemandVisaPageModule)
+    loadChildren: () => import('./demand/components/demand-visa/demand-visa.module').then( m => m.DemandVisaPageModule)
   },
   {
     path: 'airport-services',
-    loadChildren: () => import('./demand/airport-services/airport-services.module').then( m => m.AirportServicesPageModule)
+    loadChildren: () => import('./demand/components/airport-services/airport-services.module').then( m => m.AirportServicesPageModule)
   },
   {
     path: 'demand-meeting',

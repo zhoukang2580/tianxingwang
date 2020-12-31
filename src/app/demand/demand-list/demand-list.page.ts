@@ -7,9 +7,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DemandListPage implements OnInit {
 
+  listType = 'team' || 'meeting' || 'visa' || 'car' || 'flight';
+
   constructor() { }
 
   ngOnInit() {
+
   }
 
+  getListType(type: string){
+    this.listType = type;
+  }
+
+  segmentChanged(evt :CustomEvent){
+    this.getListType(evt.detail.value);
+  }
 }

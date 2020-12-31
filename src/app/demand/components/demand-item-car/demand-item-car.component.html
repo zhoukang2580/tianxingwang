@@ -1,8 +1,4 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>用车</ion-title>
-  </ion-toolbar>
-</ion-header>
+
 <ion-content>
   <ion-list class="list">
     <div class="container">
@@ -17,7 +13,7 @@
           <ion-label>国内包车</ion-label>
         </ion-segment-button>
       </ion-segment>
-      <!-- <ng-container *ngIf='carType=="plane"'>
+      <ng-container *ngIf='carType=="plane"'>
         <div class="plane">
           <div class="item">
             <ion-input placeholder='请输入联系人'></ion-input>
@@ -78,8 +74,8 @@
             </div>
           </div>
         </div>
-      </ng-container> -->
-      <ng-container *ngIf='carType=="plane"'>
+      </ng-container>
+      <ng-container *ngIf='carType=="domestic"'>
         <div class="department">
           <div class="item">
             <ion-input placeholder='请输入联系人'></ion-input>

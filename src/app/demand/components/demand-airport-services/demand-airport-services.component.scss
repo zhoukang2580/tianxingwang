@@ -1,0 +1,64 @@
+.list {
+  margin: 10px;
+  border-radius: 10px;
+  .container {
+    line-height: 3.3;
+    padding-left: 1.5em;
+  }
+  .item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    .label {
+      font-size: 15px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: #333333;
+      min-width: 7em;
+    }
+
+    .time {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      ion-text {
+        margin-right: 40px;
+      }
+    }
+
+    .main {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      ion-input {
+        font-size: 15px;
+        height: 40px;
+      }
+      ion-text {
+        min-width: 13.5em;
+        font-size: 15px;
+      }
+    }
+    ion-icon {
+      font-size: 18px;
+      margin-left: -36px;
+    }
+  }
+}
+
+ion-footer {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  background: #fff;
+  .btn_container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    .ion-top {
+      --border-radius: 20px;
+      width: 90%;
+      height: 2.5rem;
+    }
+  }
+}
