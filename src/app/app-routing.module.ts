@@ -119,25 +119,7 @@ const routes: Routes = [
     loadChildren: () =>
       import("./page404/page404.module").then((m) => m.Page404PageModule),
   },
-  {
-    path: 'demand-visa',
-    loadChildren: () => import('./demand/components/demand-visa/demand-visa.module').then( m => m.DemandVisaPageModule)
-  },
-  {
-    path: 'airport-services',
-    loadChildren: () => import('./demand/components/airport-services/airport-services.module').then( m => m.AirportServicesPageModule)
-  },
-  {
-    path: 'demand-meeting',
-    loadChildren: () => import('./demand/demand-meeting/demand-meeting.module').then( m => m.DemandMeetingPageModule)
-  },
-  {
-    path: 'demand-car',
-    loadChildren: () => import('./demand/demand-car/demand-car.module').then( m => m.DemandCarPageModule)
-  }
-
-
-
+  
 ];
 @NgModule({
   imports: [

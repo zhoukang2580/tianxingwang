@@ -6,8 +6,6 @@ import { IonicModule } from '@ionic/angular';
 import { DemandItemCarComponent } from './demand-item-car/demand-item-car.component';
 import { DemandItemMeetingComponent } from './demand-item-meeting/demand-item-meeting.component';
 
-
-
 @NgModule({
   declarations: [
     DemandAirportServicesComponent,
