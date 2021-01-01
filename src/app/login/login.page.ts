@@ -38,8 +38,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isLoginOk = false;
   eyeOn = false;
   isKeyboardShow = false;
+  isReadPrivacy = !!AppHelper.getStorage("isreadprivacy");
+  hasReadPrivacy = !!AppHelper.getStorage("isreadprivacy");
   eyeType = "password";
   isShowWechatLogin = false;
+  isShowPrivacyAlert = false;
   isShowImageCode: boolean;
   SlideEventType: string;
   environment = environment;
@@ -50,7 +53,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
   isGetWechatMiniMobile: boolean;
   wechatMiniUser: any;
   wechatMiniMobile: any;
-  isShowPrivacy=CONFIG.isShowPrivacy;
+  isShowPrivacy = CONFIG.isShowPrivacy;
   private mockDeviceInfo = {
     Device: `accw125487df1254accw125487df1254`,
     DeviceName: `pc模拟测试`,
@@ -84,7 +87,7 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
       this.eyeType = "password";
     }
   }
-  onPrivacy() {
+  openPrivacyPage() {
     AppHelper.openPrivacyPage();
   }
   ngAfterViewInit() {
@@ -218,6 +221,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     this.isShowImageCode = true;
   }
   onLoginButton(type: string) {
+    if (!this.isReadPrivacy && this.isShowPrivacy) {
+      this.isShowPrivacyAlert = true;
+      return;
+    }
+    this.setIsReadPrivacy(true);
     console.log("onLoginButton login type " + type);
     if (this.loginType == "user") {
       if (!this.checkRquired()) {
@@ -232,6 +240,18 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     requestAnimationFrame(() => {
       this.isLogining = false;
     });
+  }
+  private setIsReadPrivacy(isreadprivacy = false) {
+    AppHelper.setStorage("isreadprivacy", isreadprivacy);
+  }
+  onReadPrivacy(isRead = false) {
+    this.isReadPrivacy = isRead;
+    this.setIsReadPrivacy(isRead);
+    this.isShowPrivacyAlert = false;
+  }
+  onToggleIsReadPrivacy() {
+    this.isReadPrivacy = !this.isReadPrivacy;
+    this.setIsReadPrivacy(this.isReadPrivacy);
   }
   private checkRquired() {
     this.loginEntity.Data.Name = this.form.value.Name;

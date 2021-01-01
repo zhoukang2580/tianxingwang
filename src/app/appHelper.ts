@@ -866,7 +866,7 @@ export class AppHelper {
     AppHelper.Router.navigate(["open-url"], {
       queryParams: {
         url: `${CONFIG.getApiUrl()}/privacy.html`,
-        title: "隐私策略",
+        title: "隐私政策",
       },
     });
   }

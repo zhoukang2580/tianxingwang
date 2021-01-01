@@ -31,14 +31,16 @@ export class RegisterPage implements OnInit {
   wechatMiniMobile: any;
   isWechatMini: boolean;
   isGetWechatMiniMobile: boolean;
-  isShowPrivacy=CONFIG.isShowPrivacy;
+  isShowPrivacy = CONFIG.isShowPrivacy;
+  isReadPrivacy = false;
+  isShowPrivacyAlert = false;
   constructor(
     private apiService: ApiService,
     private loginService: LoginService,
     private fb: FormBuilder,
     private router: Router,
     private navController: NavController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -95,7 +97,7 @@ export class RegisterPage implements OnInit {
   showImageCode(type: string) {
     this.isShowImageCode = true;
   }
-  onPrivacy() {
+  openPrivacyPage() {
     AppHelper.openPrivacyPage();
   }
   onSlideEvent(valid: boolean) {
@@ -141,8 +143,12 @@ export class RegisterPage implements OnInit {
       );
   }
   register() {
+    if (!this.isReadPrivacy && this.isShowPrivacy) {
+      this.isShowPrivacyAlert = true;
+      return;
+    }
     if (this.form.value.Password !== this.form.value.SurePassword) {
-      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip);
+      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip());
       return;
     }
     const req = new RequestEntity();
@@ -192,7 +198,7 @@ export class RegisterPage implements OnInit {
             return;
           }
         },
-        (e) => {},
+        (e) => { },
         () => {
           sub.unsubscribe();
         }
@@ -244,8 +250,8 @@ export class RegisterPage implements OnInit {
         ExpiredInterval: number;
       }>(req)
       .subscribe(
-        (res) => {},
-        (e) => {},
+        (res) => { },
+        (e) => { },
         () => {
           sub.unsubscribe();
         }
@@ -288,5 +294,13 @@ export class RegisterPage implements OnInit {
     this.mobileChangeSubscription.unsubscribe();
     this.mobileNewPasswordSubscription.unsubscribe();
     this.mobileSurePasswordSubscription.unsubscribe();
+  }
+  onReadPrivacy(isRead = false) {
+    this.isReadPrivacy = isRead;
+    this.isShowPrivacyAlert = false;
+
+  }
+  onToggleIsReadPrivacy() {
+    this.isReadPrivacy = !this.isReadPrivacy;
   }
 }
