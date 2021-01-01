@@ -651,6 +651,9 @@ export class FlightListEnPage
           FromAsAirport: s.ToAsAirport,
           ToAsAirport: s.FromAsAirport,
         });
+        if(this.checkIfCityChanged()){
+          this.doRefresh(true,false);
+        }
       } else {
       }
     }

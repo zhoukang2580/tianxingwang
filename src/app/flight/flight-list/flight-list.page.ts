@@ -49,6 +49,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightCityService } from "../flight-city.service";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -631,8 +632,12 @@ export class FlightListPage
           FromAsAirport: s.ToAsAirport,
           ToAsAirport: s.FromAsAirport,
         });
+        if(this.checkIfCityChanged()){
+          this.doRefresh(true,false);
+        }
       } else {
       }
+
     }
   }
   private async initSearchModelParams() {
