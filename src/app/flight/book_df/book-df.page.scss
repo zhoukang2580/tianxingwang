@@ -326,6 +326,8 @@ ion-footer {
     }
 }
 .transfrom {
+    padding: 0 1em;
+    font-size: 14px;
     background-color: white;
     transform: translate(0, 100%);
     position: fixed;
@@ -345,8 +347,25 @@ ion-footer {
     .wrapper {
         display: flex;
         width: 100%;
-        // max-width: 100%;
-        overflow: scroll;
+        max-height: 70vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        -webkit-overflow-scrolling: touch;
+    }
+    .itm {
+        border-bottom: 1px solid #eeeeee;
+    }
+    .name-num {
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #333333;
+    }
+    .spacebetween {
+        margin: 0.5em 0;
+        color: #666666;
     }
 }
 
