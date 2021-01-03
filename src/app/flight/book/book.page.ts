@@ -432,7 +432,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       }
       this.errors = "";
       this.vmCombindInfos = [];
-      if (!environment.production) {
+      if (false&&!environment.production) {
         const local = await this.storage.get(MOCK_FLIGHT_VMCOMBINDINFO);
         if (local && Array.isArray(local) && local.length) {
           this.vmCombindInfos = local;
@@ -466,7 +466,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       this.initTmcOutNumberInfos();
       await this.initOrderTravelPayTypes();
       console.log("vmCombindInfos", this.vmCombindInfos);
-      if (!environment.production) {
+      if (false&&!environment.production) {
         this.storage.set(MOCK_FLIGHT_VMCOMBINDINFO, this.vmCombindInfos);
       }
     } catch (err) {
