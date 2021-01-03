@@ -326,6 +326,7 @@ ion-footer {
     }
 }
 .transfrom {
+    border-radius: 10px 10px 0px 0px;
     padding: 0 1em;
     font-size: 14px;
     background-color: white;
@@ -345,7 +346,6 @@ ion-footer {
         transform: translate(0, -44px);
     }
     .wrapper {
-        display: flex;
         width: 100%;
         max-height: 70vh;
         overflow-x: hidden;

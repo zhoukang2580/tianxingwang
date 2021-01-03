@@ -324,21 +324,21 @@
                 <ion-text color="secondary">{{infos.modal?.bookInfo?.flightSegment?.ToCityName}}</ion-text>
             </div>
             <div class="spacebetween" *ngIf="infos.modal?.bookInfo?.flightPolicy?.Cabin?.SalesPrice">
-                <ion-text style="color: #ccc;">机票票价</ion-text>
+                <ion-text >机票票价</ion-text>
                 <ion-text>{{infos?.modal?.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}元</ion-text>
             </div>
             <div class="spacebetween" *ngIf="infos.modal?.bookInfo?.flightSegment?.Tax">
-                <ion-text style="color: #ccc;">税费</ion-text>
+                <ion-text >税费</ion-text>
                 <ion-text>{{infos?.modal?.bookInfo?.flightSegment?.Tax}}元</ion-text>
             </div>
             <div *ngFor='let insurance of infos?.insuranceProducts'>
                 <div class="spacebetween" *ngIf="insurance.insuranceResult?.Id==infos.selectedInsuranceProductId">
-                    <ion-text style="color: #ccc;">{{insurance.insuranceResult?.Name}}</ion-text>
+                    <ion-text >{{insurance.insuranceResult?.Name}}</ion-text>
                     <ion-text>{{insurance?.insuranceResult?.Price}}元</ion-text>
                 </div>
             </div>
             <div class="spacebetween" *ngIf="identity?.Numbers?.AgentId||tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)">
-                <ion-text style="color: #ccc;">服务费</ion-text>
+                <ion-text >服务费</ion-text>
                 <ion-text>{{passengerServiceFeesObj[infos.modal?.id]}}元</ion-text>
             </div>
         </div>
