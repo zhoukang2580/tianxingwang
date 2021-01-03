@@ -32,7 +32,7 @@
     </div>
   </div>
   <div class="row2">
-    <div class="price"><small>￥</small>{{(segment?.LowestFare)|flightprice}}</div>
+    <div class="price" *ngIf='isShowPrice'><small>￥</small>{{(segment?.LowestFare)|flightprice}}</div>
     <div class="air">
       <img [src]='segment?.AirlineSrc' alt="">
       <ng-container *ngIf='isHasAgreement'>
