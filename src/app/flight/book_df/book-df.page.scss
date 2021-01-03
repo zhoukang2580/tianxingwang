@@ -357,6 +357,9 @@ ion-footer {
     }
     .itm {
         border-bottom: 1px solid #eeeeee;
+        &:last-child{
+            border: none;
+        }
     }
     .name-num {
         font-family: PingFang SC;

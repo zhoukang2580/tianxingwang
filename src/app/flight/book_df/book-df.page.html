@@ -316,7 +316,7 @@
 <div class="zz" *ngIf="isShowFee" (click)="onToggleIsShowFee()"></div>
 <div [class.show]="isShowFee" class="transfrom" #transfromEle>
     <div class="wrapper">
-        <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee itm" >
+        <div *ngFor="let infos of vmCombindInfos" class="fee itm" >
             <div class="name-num">{{infos?.vmCredential?.Name}}({{infos?.vmCredential?.Number}})
             </div>
             <div class="spacebetween f-t-c">
