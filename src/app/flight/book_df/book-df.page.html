@@ -204,7 +204,7 @@
                             <div class="row " *ngIf='tmc?.IsAllowCustomReason'>
                               <span class='label'>费用类别</span>
                               <div class="value">{{combindInfo.expenseType}}</div>
-                              <ion-icon name="caret-down-outline" class='down'></ion-icon>
+                              <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                             </div>
                           </div>
                         <div class="approval-info" *ngIf='isAllowSelectApprove(combindInfo)' [attr.approverid]='combindInfo.id' (click)='openApproverModal(combindInfo)'>
