@@ -91,7 +91,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="section" [class.hidden]='combindInfo.isShowDetail'>
+                <div class="section" [class.hidden]='!combindInfo.isShowDetail'>
                     <div class="title">
                         <div class="name">
                             旅客信息
@@ -158,7 +158,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="section"  [class.hidden]='combindInfo.isShowDetail'>
+                <div class="section"  [class.hidden]='!combindInfo.isShowDetail'>
                     <div class="title">
                         <div class="name">
                             出差信息
@@ -175,10 +175,6 @@
                                 <div class="vlaue">{{combindInfo?.illegalReason}}</div>
                                 <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                             </div>
-                            <!-- *ngIf='combindInfo.isShowGroupedInfo' -->
-                            <div  class="outnumbers" [attr.outnumberid]='combindInfo.id'>
-                                <app-flight-outnumber [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-flight-outnumber>
-                            </div>
                             <div class="showmore" *ngIf='combindInfo.isShowTravelDetail'>
                                 <div class="row illegal"  *ngIf='tmc?.IsAllowCustomReason'>
                                     <div class="label">
@@ -188,6 +184,10 @@
                                         <ion-input [(ngModel)]='combindInfo.otherIllegalReason' placeholder='请输入其他原因'></ion-input>
                                     </div>
                                   </div>
+                            </div>
+                            <!-- *ngIf='combindInfo.isShowGroupedInfo' -->
+                            <div  class="outnumbers" [attr.outnumberid]='combindInfo.id'>
+                                <app-flight-outnumber [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-flight-outnumber>
                             </div>
                         </ng-container>
                         <ion-item lines='none' style='display: none;'>
