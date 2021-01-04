@@ -99,6 +99,7 @@ import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { SelectComponent } from "src/app/components/select/select.component";
+import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
 
 @Component({
   selector: "app-book",
@@ -109,6 +110,7 @@ import { SelectComponent } from "src/app/components/select/select.component";
 export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   private isShowInsuranceBack = false;
   private isPlaceOrderOk = false;
+  private isManagentCredentails = false;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
@@ -147,9 +149,8 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
-  @ViewChild("transfromEle", { static: true }) transfromEle: ElementRef<
-    HTMLElement
-  >;
+  @ViewChild("transfromEle", { static: true })
+  transfromEle: ElementRef<HTMLElement>;
   @ViewChild(IonFooter, { static: true }) ionFooter: IonFooter;
   constructor(
     private flightService: FlightService,
@@ -197,9 +198,9 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
             }
           }
         }
-      } catch { }
+      } catch {}
       setTimeout(() => {
-        if (!this.isShowInsuranceBack) {
+        if (!this.isShowInsuranceBack || this.isManagentCredentails) {
           this.refresh(false);
         }
         this.isShowInsuranceBack = false;
@@ -249,6 +250,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   onToggleIsShowDetail(item: ICombindInfo) {
     item.isShowDetail = !item.isShowDetail;
   }
+
   async onSelectIllegalReason(item: ICombindInfo) {
     if (item.isOtherIllegalReason) {
       return;
@@ -432,7 +434,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       }
       this.errors = "";
       this.vmCombindInfos = [];
-      if (false&&!environment.production) {
+      if (false && !environment.production) {
         const local = await this.storage.get(MOCK_FLIGHT_VMCOMBINDINFO);
         if (local && Array.isArray(local) && local.length) {
           this.vmCombindInfos = local;
@@ -466,7 +468,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       this.initTmcOutNumberInfos();
       await this.initOrderTravelPayTypes();
       console.log("vmCombindInfos", this.vmCombindInfos);
-      if (false&&!environment.production) {
+      if (false && !environment.production) {
         this.storage.set(MOCK_FLIGHT_VMCOMBINDINFO, this.vmCombindInfos);
       }
     } catch (err) {
@@ -595,14 +597,45 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   }
   async onOpenrules(item: ICombindInfo) {
     try {
-      console.log("CombineedSelectedInfo", item);
-      if (!item.modal.bookInfo.flightPolicy.Cabin.Explain) {
-        item.modal.bookInfo.flightPolicy.Cabin.Explain = await this.flightService.getTravelNDCFlightCabinRuleResult(
-          item.modal.bookInfo.flightPolicy.Cabin as any
-        );
+      const cabin = item.modal.bookInfo.flightPolicy.Cabin;
+      console.log("cabin", cabin);
+      if (cabin && !cabin.Explain) {
+        cabin.Explain = await this.flightService
+          .getTravelNDCFlightCabinRuleResult(cabin as any)
+          .catch(() => "");
+        if (cabin.Explain) {
+          cabin.Explain = cabin.Explain;
+        }
       }
-    } catch (e) { }
-    item.openrules = !item.openrules;
+      // this.popoverController.dismiss().catch(_ => {});
+      const m = await this.popoverCtrl.create({
+        component: TicketchangingComponent,
+        componentProps: { cabin: { Cabin: cabin } },
+        showBackdrop: true,
+        cssClass: "ticket-changing",
+        // animated: false
+      });
+      m.backdropDismiss = true;
+      await m.present();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async onChangeCredential(credentialSelect: IonSelect, item: ICombindInfo) {
+    await this.onModify(item);
+    if (credentialSelect) {
+      credentialSelect.open();
+    }
+  }
+  onManagementCredentials(item: ICombindInfo) {
+    item.credentialsRequested = false;
+    this.isManagentCredentails = true;
+    this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
+  }
+  credentialCompareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
+    return (
+      (t1 && t2 && t1 == t2) || (t1.Type == t2.Type && t1.Number == t2.Number)
+    );
   }
   private async getTmc() {
     this.tmc = await this.tmcService.getTmc();
@@ -696,10 +729,11 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     if (!info) {
       return "";
     }
-    return `[${info.tripType == TripType.departureTrip
-      ? LanguageHelper.getDepartureTip()
-      : LanguageHelper.getReturnTripTip()
-      }]`;
+    return `[${
+      info.tripType == TripType.departureTrip
+        ? LanguageHelper.getDepartureTip()
+        : LanguageHelper.getReturnTripTip()
+    }]`;
   }
   back() {
     this.natCtrl.back();
@@ -942,7 +976,8 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       ele: HTMLElement
     ) => {
       await AppHelper.alert(
-        `${item.credentialStaff && item.credentialStaff.Name} 【${item.modal.credential && item.modal.credential.Number
+        `${item.credentialStaff && item.credentialStaff.Name} 【${
+          item.modal.credential && item.modal.credential.Number
         }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
@@ -1025,10 +1060,11 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${p.Mobile
-          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-          : combindInfo.credentialStaffOtherMobile
-          }`;
+        p.Mobile = `${
+          p.Mobile
+            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+            : combindInfo.credentialStaffOtherMobile
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1038,10 +1074,11 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${p.Email
-          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-          : combindInfo.credentialStaffOtherEmail
-          }`;
+        p.Email = `${
+          p.Email
+            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+            : combindInfo.credentialStaffOtherEmail
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1506,28 +1543,28 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
-          item.bookInfo.flightSegment &&
-          item.bookInfo.flightSegment.TakeoffTime
+            item.bookInfo.flightSegment &&
+            item.bookInfo.flightSegment.TakeoffTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1696,10 +1733,10 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     return false;
   }
   isHasAgreement(segment) {
-    return segment.Cabins &&
-      segment.Cabins.some(
-        (c) => c.FareType == FlightCabinFareType.Agreement
-      );
+    return (
+      segment.Cabins &&
+      segment.Cabins.some((c) => c.FareType == FlightCabinFareType.Agreement)
+    );
   }
   onToggleShowCredentialDetail(item: ICombindInfo) {
     item.isShowCredentialDetail = !item.isShowCredentialDetail;
@@ -1714,9 +1751,11 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   }
   hasInsurance(item: ICombindInfo) {
     if (!item.insuranceProducts || !item.insuranceProducts.length) {
-      return null
+      return null;
     }
-    return item.insuranceProducts.find(it => it.insuranceResult.Id == item.selectedInsuranceProductId)
+    return item.insuranceProducts.find(
+      (it) => it.insuranceResult.Id == item.selectedInsuranceProductId
+    );
   }
   async searchOrganization(combindInfo: ICombindInfo) {
     if (combindInfo.isOtherOrganization) {
