@@ -888,6 +888,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   }
   private goToMyOrders(tab: ProductItemType) {
     this.router.navigate(["order-list"], {
+      // isbackhome:true，是防止 android 通过物理返回键返回当前页面
       queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
     });
   }
@@ -975,9 +976,12 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       item: ICombindInfo,
       ele: HTMLElement
     ) => {
+      if(!item.isShowDetail){
+        item.isShowDetail=true;
+      }
       await AppHelper.alert(
-        `${item.credentialStaff && item.credentialStaff.Name} 【${
-          item.modal.credential && item.modal.credential.Number
+        `${item.vmCredential && item.vmCredential.Name} 【${
+          item.vmCredential && item.vmCredential.Number
         }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
@@ -1107,7 +1111,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       ) {
         // 只有白名单的才需要考虑差标
         const ele: HTMLElement = this.getEleByAttr(
-          "illegalReasonid",
+          "illegalreasonsid",
           combindInfo.id
         );
         if (!p.IllegalReason) {
@@ -1144,9 +1148,9 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
           p.OutNumbers = {};
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
-              const el = this.getEleByAttr("outnumber", combindInfo.id);
+              const el = this.getEleByAttr("outnumberid", combindInfo.id);
               showErrorMsg(
-                it.label + this.LangService.isCn ? "必填" : " Required ",
+                it.label +( this.LangService.isCn ? "必填" : " Required "),
                 combindInfo,
                 el
               );
@@ -1260,7 +1264,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     this.generateAnimation(el);
   }
   private generateAnimation(el: HTMLElement) {
-    el.style.display = "block";
+    // el.style.display = "block";
     setTimeout(() => {
       requestAnimationFrame(() => {
         el.style.color = "var(--ion-color-danger)";

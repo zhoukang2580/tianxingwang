@@ -9,11 +9,15 @@ import { IonicModule } from "@ionic/angular";
 import { OrderListDfPage } from "./order-list_df.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
+import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: OrderListDfPage,
+    canDeactivate: [CandeactivateGuard],
+    canActivate: [StylePageGuard],
   },
 ];
 

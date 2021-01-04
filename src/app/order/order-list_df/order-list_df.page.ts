@@ -47,14 +47,18 @@ import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-order-list_df",
   templateUrl: "./order-list_df.page.html",
   styleUrls: ["./order-list_df.page.scss"],
 })
-export class OrderListDfPage implements OnInit, OnDestroy {
+export class OrderListDfPage
+  implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
+  private isGoDetail = false;
+  private isBackHome = false;
   public loadDataSub = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private selectDateChange = new EventEmitter();
@@ -91,7 +95,16 @@ export class OrderListDfPage implements OnInit, OnDestroy {
     private cdref: ChangeDetectorRef,
     private LangService: LangService
   ) {}
-
+  canDeactivate() {
+    console.log("canDeactivate isbackhome=", this.isBackHome);
+    if (this.isBackHome && !this.isGoDetail) {
+      // this.natCtrl.navigateRoot("", { animated: true });
+      this.isBackHome = false;
+      this.router.navigate([""]);
+      return false;
+    }
+    return true;
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -470,6 +483,7 @@ export class OrderListDfPage implements OnInit, OnDestroy {
   }
   goToDetailPage(orderId: string, type: string) {
     // Flight
+    this.isGoDetail = true;
     console.log(type, "dddd");
 
     if (type && type.toLowerCase() == "car") {
@@ -671,6 +685,7 @@ export class OrderListDfPage implements OnInit, OnDestroy {
     return url;
   }
   async onTaskDetail(task: TaskEntity) {
+    this.isGoDetail = true;
     const url = await this.getTaskHandleUrl(task);
     if (url) {
       this.router
@@ -823,6 +838,8 @@ export class OrderListDfPage implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
+        this.isBackHome = d.get("isBackHome") == "true";
+        this.isGoDetail = false;
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );

@@ -90,27 +90,27 @@
       .agreement {
         color: tomato;
       }
-    }
-    .left {
-      display: flex;
-      flex-flow: row wrap;
-      flex: 1;
-    }
-    .ticket-info {
-      font-size: 12px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      line-height: 15px;
-      color: #333333;
-      display: flex;
-      flex-flow: column;
-      align-items: flex-end;
-      margin-left: auto;
+      .left {
+        display: flex;
+        flex-flow: row wrap;
+        flex: 1;
+      }
+      .ticket-info {
+        font-size: 12px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        line-height: 15px;
+        color: #333333;
+        display: flex;
+        flex-flow: column;
+        align-items: flex-end;
+        margin-left: auto;
+      }
     }
     .tax {
-      padding: 0.7em 0;
-      display: flex;
-      line-height: 1.7;
+        padding: 0.5em 0 0;
+        display: flex;
+        line-height: 1.7;
       .insurance small {
         font-size: 8px;
       }
@@ -122,6 +122,8 @@
       font-size: 14px;
       font-family: PingFang SC;
       font-weight: 500;
+      padding: 1em 0 0;
+      margin-bottom: -0.5em;
       color: #333333;
     }
     .center {
@@ -177,6 +179,14 @@
       .name {
         margin-right: auto;
         margin-left: 0.5em;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #333333;
+      }
+      .price {
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #333333;
       }
     }
     .show-more {
@@ -259,7 +269,7 @@
       flex: 1;
     }
     &.rules-desc {
-      padding: 0;
+      padding: 0.5em 0;
     }
     .mobiles,
     .emails {

@@ -68,6 +68,7 @@ export class OrderListPage
   private selectDateChange = new EventEmitter();
   private selectDateSubscription = Subscription.EMPTY;
   private isBackHome = false;
+  private isGoDetail = false;
   productItemType = ProductItemType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
@@ -103,10 +104,10 @@ export class OrderListPage
   ) {}
   canDeactivate() {
     console.log("canDeactivate isbackhome=", this.isBackHome);
-    if (this.isBackHome) {
+    if (this.isBackHome && !this.isGoDetail) {
       // this.natCtrl.navigateRoot("", { animated: true });
-      this.router.navigate([""]);
       this.isBackHome = false;
+      this.router.navigate([""]);
       return false;
     }
     return true;
@@ -476,7 +477,7 @@ export class OrderListPage
   goToDetailPage(orderId: string, type: string) {
     // Flight
     console.log(type, "dddd");
-
+    this.isGoDetail = true;
     if (type && type.toLowerCase() == "car") {
       this.router.navigate([AppHelper.getRoutePath("order-car-detail")], {
         queryParams: { Id: orderId },
@@ -676,6 +677,7 @@ export class OrderListPage
     return url;
   }
   async onTaskDetail(task: TaskEntity) {
+    this.isGoDetail = true;
     const url = await this.getTaskHandleUrl(task);
     if (url) {
       this.router
@@ -829,6 +831,7 @@ export class OrderListPage
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
         this.isBackHome = d.get("isBackHome") == "true";
+        this.isGoDetail = false;
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );

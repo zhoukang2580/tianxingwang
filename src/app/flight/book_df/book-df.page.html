@@ -33,7 +33,7 @@
                     </ion-select>
                 </ion-item>
                 <div class="main-info section">
-                    <div class="header">
+                    <div class="header" [attr.credentialcompid]='combindInfo.id'>
                         <div class="c-name">
                             {{combindInfo.vmCredential?.Name}}
                         </div>
@@ -59,7 +59,7 @@
                                     <ion-item>
                                         <ion-radio mode="md" [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
                                         <ion-label class="name">
-                                            {{insurance.insuranceResult?.Name}} <small>￥</small> {{insurance.insuranceResult?.Price}}/人
+                                            {{insurance.insuranceResult?.Name}} <span class="price"><small>￥</small> {{insurance.insuranceResult?.Price}}/人</span>
                                         </ion-label>
                                     </ion-item>
                                     <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
