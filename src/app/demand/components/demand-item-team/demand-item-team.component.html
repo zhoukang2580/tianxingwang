@@ -18,8 +18,7 @@
     <div class="item">
       <div class="label">出差类型</div>
       <ion-list lines="none">
-        <ion-radio-group value="biff" class="group" mode="md" 
-        [(ngModel)]="demandTeamModel.TravelType">
+        <ion-radio-group value="biff" class="group" mode="md" [(ngModel)]="demandTeamModel.TravelType">
           <ion-item style="border-bottom: 0">
             <ion-label>因公</ion-label>
             <ion-radio slot="start" value="biff"></ion-radio>
@@ -36,14 +35,14 @@
     <div class="item">
       <div class="label">出发地</div>
       <div class="main" (click)="onSelectCity(true)">
-        <ion-text >{{demandTeamModel.FromCityCode}}</ion-text>
+        <ion-text>{{demandTeamModel.FromAddress}}</ion-text>
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>
     </div>
     <div class="item" (click)="onSelectCity(false)">
-      <div class="label" >目的地</div>
-      <div class="main" >
-        <ion-input placeholder="请输入目的地" [(ngModel)]='demandTeamModel.ToCityCode'></ion-input>
+      <div class="label">目的地</div>
+      <div class="main">
+        <ion-input placeholder="请输入目的地" [(ngModel)]='demandTeamModel.ToAddress'></ion-input>
         <!-- <ion-text >{{demandTeamModel.ToCityCode}}</ion-text>
         <ion-icon name="chevron-forward-outline"></ion-icon> -->
       </div>
@@ -51,7 +50,7 @@
     <div class="item">
       <div class="label">往返时间</div>
       <div class="main" (click)="onOpenDate()">
-        <ion-text >
+        <ion-text>
           {{demandTeamModel.ReturnDate}}
           <!-- <app-search-day-comp [day]='goDate' (click)="onSelecDate(true)" [disabled]='searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'>
         </app-search-day-comp> -->
@@ -88,13 +87,7 @@
     <div class="item">
       <div class="label type">产品类型</div>
       <div class="main more">
-        <ion-select
-          class="custom-options"
-          cancelText="取消"
-          okText="确定"
-          multiple="true"
-          [(ngModel)]="demandTeamModel.ProductType"
-        >
+        <ion-select class="custom-options" cancelText="取消" okText="确定" multiple="true" [(ngModel)]="demandTeamModel.ProductType">
           <ion-select-option value="hotel">酒店</ion-select-option>
           <ion-select-option value="domestic">国内机票</ion-select-option>
           <ion-select-option value="international">国际机票</ion-select-option>

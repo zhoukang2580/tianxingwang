@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-toolbar>
+    <form action='javascript:void(0)'>
+      <ion-buttons>
+        <app-back-button [backFn]='back.bind(this)'>
+        </app-back-button>
+        <ion-searchbar name='searchbar' mode='ios' style='padding:0' debounce="300" animated placeholder='请输入关键字' (ionChange)='onSearch()' [(ngModel)]='kw'>
+        </ion-searchbar>
+      </ion-buttons>
+    </form>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-item *ngIf='isLoading' lines='none'>正在获取...</ion-item>
+  <ion-list>
+    <ion-item *ngFor='let p of posList' (click)='onSelect(p)'>{{p}}</ion-item>
+  </ion-list>
+</ion-content>

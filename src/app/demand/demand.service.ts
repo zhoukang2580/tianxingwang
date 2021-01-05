@@ -1,28 +1,24 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { AppHelper } from '../appHelper';
-import { ApiService } from '../services/api/api.service';
-import { RequestEntity } from '../services/api/Request.entity';
+import { Injectable } from "@angular/core";
+import { Router } from "@angular/router";
+import { AppHelper } from "../appHelper";
+import { ApiService } from "../services/api/api.service";
+import { RequestEntity } from "../services/api/Request.entity";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class DemandService {
+  constructor(private apiService: ApiService, private router: Router) {}
 
-
-  constructor(
-    private apiService: ApiService,
-    private router: Router
-  ) { }
-
-  saveDemand(d: { Tag: String, DemandType: Number, Demand: any }) {
+  saveDemand(d: { Tag: String; DemandType: Number; Demand: any }) {
     const req = new RequestEntity();
-    req.Method = "TmcApiHomeUrl-Home-SaveDemand"
+    req.Method = "TmcApiHomeUrl-Home-SaveDemand";
     req.Data = {
       DemandType: d.DemandType,
       Tag: d.Tag,
-      Demand: d.Demand
+      Demand: d.Demand,
     };
+    req.IsShowLoading = true;
     return this.apiService.getPromiseData<any[]>(req);
   }
 
@@ -40,21 +36,20 @@ export class DemandService {
       queryParams: { requestCode: isFrom ? "from_station" : "to_station" },
     });
   }
-
 }
 
 export class OtherDemandModel {
-  DemandType: FlightType
+  DemandType: FlightType;
   Tag: string;
-  demandTeam: DemandTeamModel
-  demandTour: DemandTourModel
-  demandVisa: DemandVisaModel
-  demandPickUpFlight: DemandPickUpFlightModel
-  demandDeliverFlight: DemandDeliverFlightModel
-  demandPickUpTrain: DemandPickUpTrainModel
-  demandDeliverTrain: DemandDeliverTrainModel
-  demandCharterCar: DemandCharterCarModel
-  demandAirportService: DemandAirportServiceModel
+  demandTeam: DemandTeamModel;
+  demandTour: DemandTourModel;
+  demandVisa: DemandVisaModel;
+  demandPickUpFlight: DemandPickUpFlightModel;
+  demandDeliverFlight: DemandDeliverFlightModel;
+  demandPickUpTrain: DemandPickUpTrainModel;
+  demandDeliverTrain: DemandDeliverTrainModel;
+  demandCharterCar: DemandCharterCarModel;
+  demandAirportService: DemandAirportServiceModel;
 }
 
 export enum FlightType {
@@ -117,9 +112,8 @@ export enum FlightType {
   /// 机场服务需求单
   /// </summary>
   //  [Description("机场服务需求单")]
-  AirportDemand = 12
+  AirportDemand = 12,
 }
-
 
 export class DemandTeamModel {
   TravelType: string;
@@ -135,7 +129,7 @@ export class DemandTeamModel {
   LiaisonEmail: string;
   ToCityCode: string;
   FromCityCode: string;
-};
+}
 
 export class DemandTourModel {
   MeetingType: string;
