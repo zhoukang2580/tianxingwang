@@ -70,7 +70,7 @@ export class DemandItemTeamComponent implements OnInit {
     m.present();
     const d = await m.onDidDismiss();
     if (d && d.data) {
-      const c = d.data.adress;
+      const c = d.data;
       this.demandTeamModel.FromAddress = `${c.address.province || ""}${
         c.address.city || ""
       }${c.address.district || ""}${c.address.street}`;
