@@ -58,7 +58,7 @@ export class SearchFlightDfPage
   isCanleave = true;
   isleave = true;
   seg = "single";
-  domestic:"domestic"|"international" = "domestic";
+  domestic: "domestic" | "international" = "domestic";
   selectedInterPassengers: any[];
   FlightVoyageType = FlightVoyageType;
   private subscriptions: Subscription[] = [];
@@ -107,11 +107,10 @@ export class SearchFlightDfPage
     if (this.disabled) {
       return;
     }
-    const rs=await this.flightCityService.onSelectCity(true,isFrom,this.domestic=='domestic');
-    if(rs&&rs.city){
-      if(this.domestic!='domestic'){
-        this.internationalFlightService.onCitySelected(rs.city,isFrom);
-      }
+    trip.isSelectInfo = true;
+    const rs = await this.flightCityService.onSelectCity(true, isFrom, false);
+    if (rs && rs.city) {
+      this.internationalFlightService.onCitySelected(rs.city, isFrom);
     }
   }
   async onSelectInterFlyDate(isFrom: boolean, trip: ITripInfo) {
@@ -246,11 +245,15 @@ export class SearchFlightDfPage
     if (!s || !s.Policy || !s.Policy.FlightDescription) {
       return;
     }
+    const desc =
+      this.domestic == "domestic"
+        ? s.Policy.FlightDescription
+        : s.Policy.InternationalFlightDescription;
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
       mode: "md",
       componentProps: {
-        details: s.Policy.FlightDescription.split(","),
+        details: desc.split(","),
       },
       cssClass: "ticket-changing",
     });
@@ -318,6 +321,7 @@ export class SearchFlightDfPage
         }
         this.showReturnTrip = await this.staffService.isSelfBookType();
       });
+    this.subscriptions.push(this.searchConditionSubscription);
     this.isShowBookInfos$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(map((infos) => infos.filter((it) => !!it.bookInfo).length));

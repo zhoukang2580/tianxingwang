@@ -8,3 +8,15 @@ li {
   padding: 1.07em 0 0.66em 1.47em;
   border-bottom: 1px solid rgba(0, 0, 0, 0.07);
 }
+.wrapper {
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 90vh;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+ol {
+  margin-left: -0.4em;
+}

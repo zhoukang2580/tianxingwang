@@ -123,7 +123,7 @@
             </ion-button>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf='cabin?.Rules'>
+        <ion-row *ngIf='cabin?.Rules' class="rules">
           <ion-col>
             <ion-label *ngFor='let r of cabin.Rules' color='danger' class='rule ion-text-wrap'>{{r}}</ion-label>
             <ion-label *ngIf='cabin.Rules?.length&&getFlightIllegalTip()' color='danger' class='rule ion-text-wrap'>提示：({{getFlightIllegalTip()}})

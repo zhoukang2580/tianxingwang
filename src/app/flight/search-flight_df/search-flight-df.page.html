@@ -115,7 +115,7 @@
             </ion-text>
           </ion-button>
         </li>
-        <ion-select (ionChange)='onCabinChange()' style="padding: 0;margin:1em 0;" [(ngModel)]='searchInterFlightModel.cabin.value' color="dark" cancel-text="取消" interface="action-sheet"
+        <ion-select (ionChange)='onCabinChange()' style="padding: 0 1em 0 0;margin:1em 0;" [(ngModel)]='searchInterFlightModel.cabin.value' color="dark" cancel-text="取消" interface="action-sheet"
           [compareWith]="compareWithFn">
           <ion-select-option [value]="flightCabin.value" *ngFor="let flightCabin of searchInterFlightModel?.cabins">
             {{flightCabin.label}}</ion-select-option>
