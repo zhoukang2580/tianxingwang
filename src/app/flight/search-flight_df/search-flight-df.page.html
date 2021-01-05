@@ -36,9 +36,9 @@
   <ion-card class='ion-padding' [class.hidden]='domestic!="domestic"'>
     <ion-card-content>
       <div class="segments">
-        <div class="seg" (click)='segmentChanged("single")' [class.active]='seg=="single"'>单程</div>
+        <div class="seg" (click)='segmentChanged("single")' [class.active]='isSingle'>单程</div>
         <div class="seg"></div>
-        <div class="seg" (click)='segmentChanged("round")' [class.active]='seg=="round"'>往返</div>
+        <div class="seg" (click)='segmentChanged("round")' [class.active]='!isSingle'>往返</div>
       </div>
       <ion-buttons class="city">
         <ion-text class="ion-text-wrap city-name ion-text-start" [class.disabled]='disabled' (click)='onSelectCity(true)' color='{{disabled?"medium":"secondary"}}'>
