@@ -12,7 +12,7 @@ import { MapService } from "src/app/services/map/map.service";
 export class MapSearchComponent implements OnInit, OnDestroy {
   curPos: { lat: string; lng: string };
   kw: string;
-  posList: string[];
+  posList: any[];
   isLoading = false;
   private subscription = Subscription.EMPTY;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
@@ -30,7 +30,7 @@ export class MapSearchComponent implements OnInit, OnDestroy {
   onSelect(it) {
     AppHelper.modalController.getTop().then((t) => {
       if (t) {
-        t.dismiss({ name: it });
+        t.dismiss({ ...it });
       }
     });
   }
@@ -39,7 +39,7 @@ export class MapSearchComponent implements OnInit, OnDestroy {
       .getBMapLocalSearchSources()
       .subscribe((r) => {
         this.isLoading = false;
-        this.posList = r.map((it) => it.address);
+        this.posList = r;
       });
   }
   onSearch() {
