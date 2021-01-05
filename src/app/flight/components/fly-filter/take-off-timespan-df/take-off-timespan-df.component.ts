@@ -39,7 +39,20 @@ export class TakeOffTimeSpanDfComponent implements OnInit, AfterViewInit {
       this.filterConditionChange.emit(this.filterCondition);
     }
   }
-  ngOnInit() {}
+  ngOnInit() {
+    this.selectItem = "unlimit";
+    if (this.filterCondition && this.filterCondition.takeOffTimeSpan) {
+      if (
+        this.filterCondition.takeOffTimeSpan.lower != 0 &&
+        this.filterCondition.takeOffTimeSpan.upper != 24
+      ) {
+        this.selectItem = [
+          this.filterCondition.takeOffTimeSpan.lower,
+          this.filterCondition.takeOffTimeSpan.upper,
+        ].join(",");
+      }
+    }
+  }
   onReset() {
     // if (this.filterCondition && this.filterCondition.takeOffTimeSpan) {
     //   this.filterCondition.takeOffTimeSpan.lower = 0;
