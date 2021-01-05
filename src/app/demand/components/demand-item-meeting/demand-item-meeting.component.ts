@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DemandTourModel } from '../../demand.service';
 
 @Component({
   selector: 'app-demand-item-meeting',
@@ -6,9 +7,17 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./demand-item-meeting.component.scss'],
 })
 export class DemandItemMeetingComponent implements OnInit {
+  @Input() demandTourModel: DemandTourModel;
+  @Output() demandMeeting: EventEmitter<any>;
+  constructor() {
+    this.demandMeeting = new EventEmitter();
+  }
 
-  constructor() { }
+  ngOnInit() {
+    this.demandTourModel = {} as any;
+  }
 
-  ngOnInit() {}
-
+  onSubmit() {
+    this.demandMeeting.emit({ demandTourModel: this.demandTourModel });
+  }
 }

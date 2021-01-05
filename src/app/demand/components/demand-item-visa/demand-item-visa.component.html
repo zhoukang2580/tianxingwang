@@ -1,72 +1,68 @@
 <div class="list">
-    <div class="container">
-      <div class="item">
-        <div class="label">签证类型</div>
-        <label>
-          <input
-            type="radio"
-            name="demo"
-            value="1"
-            onclick="ClickMe(1)"
-          />商务签证
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="demo"
-            value="2"
-            onclick="ClickMe(2)"
-          />旅游签证
-        </label>
+  <div class="container">
+    <div class="item">
+      <div class="label">签证类型</div>
+      <label> <input type="radio" name="demo" value="1" />商务签证 </label>
+      <label> <input type="radio" name="demo" value="2" />旅游签证 </label>
+    </div>
+    <div class="item">
+      <div class="label">联系人</div>
+      <div class="main">
+        <ion-text>高飞</ion-text>
       </div>
-      <div class="item">
-        <div class="label">联系人</div>
-        <div class="main">
-          <ion-text>高飞</ion-text>
-        </div>
+    </div>
+    <div class="item">
+      <div class="label">联系手机</div>
+      <div class="main">
+        <ion-input placeholder="请输入手机号"></ion-input>
       </div>
-      <div class="item">
-        <div class="label">联系手机</div>
-        <div class="main">
-          <ion-input placeholder="请输入手机号"></ion-input>
-        </div>
+    </div>
+    <div class="item">
+      <div class="label">邮箱</div>
+      <div class="main">
+        <ion-input placeholder="请输入邮箱"></ion-input>
       </div>
-      <div class="item">
-        <div class="label">邮箱</div>
-        <div class="main">
-          <ion-input placeholder="请输入邮箱"></ion-input>
-        </div>
+    </div>
+    <div class="item">
+      <div class="label">目的地国家</div>
+      <div class="main">
+        <ion-text>韩国</ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>
-      <div class="item">
-        <div class="label">目的地国家</div>
-        <div class="main">
-          <ion-text>韩国</ion-text>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </div>
+    </div>
+    <div class="item">
+      <div class="label">工作居住地</div>
+      <div class="main">
+        <ion-text>韩国</ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>
-      <div class="item">
-        <div class="label">工作居住地</div>
-        <div class="main">
-          <ion-text>韩国</ion-text>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </div>
+    </div>
+    <div class="item">
+      <div class="label">人数</div>
+      <div class="main more">
+        <ion-select
+          class="custom-options"
+          cancelText="取消"
+          okText="确定"
+          value="brown"
+        >
+          <ion-select-option value="brown">不限</ion-select-option>
+          <ion-select-option value="blonde">0-50</ion-select-option>
+          <ion-select-option value="black">51-100</ion-select-option>
+          <ion-select-option value="red">101-200</ion-select-option>
+          <ion-select-option value="yellow">200以上</ion-select-option>
+        </ion-select>
+        <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
       </div>
-      <div class="item">
-        <div class="label">人数</div>
-        <div class="main">
-          <ion-text>不限</ion-text>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </div>
-      </div>
-      <div class="item">
-        <div class="label">备注</div>
-        <div class="main">
-          <ion-input size="2" placeholder="请输入备注"></ion-input>
-        </div>
+    </div>
+    <div class="item">
+      <div class="label">备注</div>
+      <div class="main">
+        <ion-input size="2" placeholder="请输入备注"></ion-input>
       </div>
     </div>
   </div>
-
+</div>
 
 <div class="ion-footer">
   <div class="btn_container">

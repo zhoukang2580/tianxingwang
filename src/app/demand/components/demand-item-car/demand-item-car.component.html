@@ -17,6 +17,18 @@
       </ion-segment-button>
     </ion-segment>
     <ng-container *ngIf="carType == 'plane'">
+      <ion-list lines="none">
+        <ion-radio-group value="biff" class="group" mode="md">
+          <ion-item style="border-bottom: 0">
+            <ion-label>国内</ion-label>
+            <ion-radio slot="start" value="biff"></ion-radio>
+          </ion-item>
+          <ion-item style="border-bottom: 0">
+            <ion-label>境外</ion-label>
+            <ion-radio slot="start" value="Griff"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
       <div class="plane">
         <div class="item">
           <ion-input placeholder="请输入联系人"></ion-input>
@@ -107,7 +119,9 @@
             </div>
             <div class="address">
               <div class="city">上海市</div>
-              <div class="detailed">上海市徐汇区肇嘉浜路376号</div>
+              <div class="detailed">
+                <ion-input placeholder="上海市徐汇区肇嘉浜路376号"></ion-input>
+              </div>
             </div>
           </div>
           <div class="right">
@@ -122,7 +136,9 @@
             </div>
             <div class="address">
               <div class="city">上海市</div>
-              <div class="detailed">上海市徐汇区肇嘉浜路376号</div>
+              <div class="detailed">
+                <ion-input placeholder="上海市徐汇区肇嘉浜路376号"></ion-input>
+              </div>
             </div>
           </div>
           <div class="right">

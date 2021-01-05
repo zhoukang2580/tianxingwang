@@ -2,54 +2,64 @@
     <div class="container">
       <div class="item">
         <div class="label">签证类型</div>
-        <label>
-          <input type="radio" name="demo" value="1"/>公司会议
-        </label>
-        <label>
-          <input type="radio" name="demo" value="2"/>个人会议
-        </label>
+        <ion-list lines="none">
+          <ion-radio-group value="biff" class="group" mode="md" 
+          [(ngModel)]="demandTourModel.MeetingType">
+            <ion-item style="border-bottom: 0;--padding-start: 0;">
+              <label>公司会议</label>
+              <ion-radio slot="start" value="biff"></ion-radio>
+            </ion-item>
+            <ion-item style="border-bottom: 0;--padding-start: 0;">
+              <label>个人会议</label>
+              <ion-radio slot="start" value="Griff"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </ion-list>
       </div>
       <div class="item">
         <div class="label">联系人</div>
-        <div class="main">
+        <!-- <div class="main">
           <ion-text>高飞</ion-text>
+        </div> -->
+        <div class="main">
+          <ion-input [(ngModel)]='demandTourModel.LiaisonName' placeholder='请输入联系人'></ion-input>
         </div>
       </div>
       <div class="item">
         <div class="label">联系手机</div>
         <div class="main">
-          <ion-input placeholder='请输入手机号'></ion-input>
+          <ion-input [(ngModel)]='demandTourModel.LiaisonPhone' placeholder='请输入手机号'></ion-input>
         </div>
       </div>
       <div class="item">
         <div class="label">公司全称</div>
         <div class="main">
-          <ion-text>东美在线旅行社</ion-text>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
+          <ion-input [(ngModel)]='demandTourModel.CompanyName' placeholder='请输入公司名'></ion-input>
+          <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
         </div>
       </div>
       <div class="item">
         <div class="label">公司邮箱</div>
         <div class="main">
-          <ion-input placeholder='请输入公司邮箱'></ion-input>
+          <ion-input [(ngModel)]='demandTourModel.CompanyEmail' placeholder='请输入公司邮箱'></ion-input>
         </div>
       </div>
-      <div class="item">
+      <!-- <div class="item">
         <div class="label">公司电话</div>
         <div class="main">
-          <ion-input placeholder='请输入公司电话'></ion-input>
+          <ion-input [(ngModel)]='demandTourModel.' placeholder='请输入公司电话'></ion-input>
         </div>
-      </div>
-      <div class="item">
+      </div> -->
+      <!-- <div class="item">
         <div class="label">手机号码</div>
         <div class="main">
-          <ion-input placeholder='请输入手机号'></ion-input>
+          <ion-input [(ngModel)]='demandTourModel.LiaisonPhone' placeholder='请输入手机号'></ion-input>
         </div>
-      </div>
+      </div> -->
       <div class="item">
         <div class="label">备注</div>
         <div class="main">
-          <ion-input size='2' placeholder='请输入内容'></ion-input>
+          <ion-input size='2' [(ngModel)]='demandTourModel.Remarks' placeholder='请输入内容'></ion-input>
         </div>
       </div>
     </div>
@@ -57,7 +67,7 @@
 
 <div class="ion-footer">
   <div class="btn_container">
-    <ion-button color="secondary" class="ion-top">
+    <ion-button color="secondary" class="ion-top" (click)="onSubmit()">
       <ion-text>提 交</ion-text>
     </ion-button>
   </div>

@@ -1,0 +1,9 @@
+<section>
+  <ion-label [class.start]='isCheckIn||isCheckOut' class="date">
+    <h5 class="h5"><ng-container *ngIf='langOpt.isShowDayDesc'>{{dayDesc}}</ng-container>
+      <ng-container *ngIf='isCheckIn'>{{langOpt.checkin}}</ng-container>
+      <ng-container *ngIf='isCheckOut'>{{langOpt.checkout}}</ng-container>
+    </h5>
+    <h2 class="h2">{{yearMonth}}</h2>
+  </ion-label>
+</section>

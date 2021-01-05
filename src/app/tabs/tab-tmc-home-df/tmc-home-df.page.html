@@ -118,7 +118,7 @@
     </div>
 
     <div class="notice">
-      <div class="swiper-container warpper-a" #taskEle>
+      <div class="swiper-container warpper-a" *ngIf="tasklist && tasklist.length" #taskEle>
         <div class="swiper-wrapper">
           <div class="swiper-slide swiper" *ngFor="let task of tasklist">
             <img src="assets/home/home-text.png" alt="" />
@@ -135,7 +135,7 @@
           </div>
         </div>
       </div>
-      <div class="swiper-container not-item-u" #tripEle>
+      <div class="swiper-container not-item-u" *ngIf="triplist && triplist.length" #tripEle>
         <div class="swiper-wrapper" style="height: 51px">
           <div class="swiper-slide it-list" *ngFor="let trip of triplist;">
             <img src="assets/home/home-trip.png" alt="" />

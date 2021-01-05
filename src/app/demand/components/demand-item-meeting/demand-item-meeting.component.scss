@@ -20,7 +20,6 @@
       font-size: 15px;
       display: flex;
       align-items: center;
-      margin-right: 13px;
       input {
         margin-right: 12px;
       }
@@ -35,6 +34,8 @@
         height: 40px;
       }
     }
+
+
     ion-icon {
       font-size: 18px;
       margin-left: -36px;
@@ -46,7 +47,7 @@
   }
 }
 
-.ion-footer{
+.ion-footer {
   display: flex;
   align-items: center;
   justify-items: center;
@@ -64,4 +65,13 @@
       height: 2.5rem;
     }
   }
+}
+
+.group{
+  display: flex;
+  height: 3em;
+}
+
+ion-radio{
+  margin: 0 10px 0 0;
 }

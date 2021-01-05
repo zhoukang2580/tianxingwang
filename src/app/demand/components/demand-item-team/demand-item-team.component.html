@@ -1,76 +1,114 @@
 <div class="list">
   <div class="container">
     <div class="info">基本信息</div>
-    <div class="item">
-      <div class="label">出差类型</div>
-      <label> <input type="radio" name="demo" value="1" />应公 </label>
-      <label> <input type="radio" name="demo" value="2" />应私 </label>
-    </div>
-    <div class="item">
-      <div class="label">出发地</div>
-      <div class="main">
-        <ion-text placeholder="出发城市"></ion-text>
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+    <div class="footer">
+      <div class="item">
+        <div class="label">姓名</div>
+        <ion-input placeholder="请输入姓名" [(ngModel)]='demandTeamModel.LiaisonName'></ion-input>
+      </div>
+      <div class="item">
+        <div class="label">手机号码</div>
+        <ion-input placeholder="请输入手机号" [(ngModel)]='demandTeamModel.LiaisonPhone'></ion-input>
+      </div>
+      <div class="item">
+        <div class="label">电子邮箱</div>
+        <ion-input placeholder="请输入姓名" [(ngModel)]='demandTeamModel.LiaisonEmail'></ion-input>
       </div>
     </div>
     <div class="item">
-      <div class="label">目的地</div>
-      <div class="main">
-        <ion-text placeholder="到达城市"></ion-text>
+      <div class="label">出差类型</div>
+      <ion-list lines="none">
+        <ion-radio-group value="biff" class="group" mode="md" 
+        [(ngModel)]="demandTeamModel.TravelType">
+          <ion-item style="border-bottom: 0">
+            <ion-label>因公</ion-label>
+            <ion-radio slot="start" value="biff"></ion-radio>
+          </ion-item>
+          <ion-item style="border-bottom: 0">
+            <ion-label>因私</ion-label>
+            <ion-radio slot="start" value="Griff"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+      <!-- <label> <input type="radio" name="demo" value="Company" [(ngModel)]='demandTeamModel.TravelType' />因公 </label>
+      <label> <input type="radio" name="demo" value="Person" [(ngModel)]='demandTeamModel.TravelType'/>因私 </label> -->
+    </div>
+    <div class="item">
+      <div class="label">出发地</div>
+      <div class="main" (click)="onSelectCity(true)">
+        <ion-text >{{demandTeamModel.FromCityCode}}</ion-text>
         <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="item" (click)="onSelectCity(false)">
+      <div class="label" >目的地</div>
+      <div class="main" >
+        <ion-input placeholder="请输入目的地" [(ngModel)]='demandTeamModel.ToCityCode'></ion-input>
+        <!-- <ion-text >{{demandTeamModel.ToCityCode}}</ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon> -->
       </div>
     </div>
     <div class="item">
       <div class="label">往返时间</div>
-      <div class="main">
-        <ion-text>2020-11-5</ion-text>
+      <div class="main" (click)="onOpenDate()">
+        <ion-text >
+          {{demandTeamModel.ReturnDate}}
+          <!-- <app-search-day-comp [day]='goDate' (click)="onSelecDate(true)" [disabled]='searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'>
+        </app-search-day-comp> -->
+        </ion-text>
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>
     </div>
     <div class="item">
       <div class="label">人数</div>
-      <div class="main">
-        <ion-text>不限</ion-text>
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+      <div class="main more">
+        <ion-select value="0" [(ngModel)]='demandTeamModel.PersonCount' cancelText="取消" okText="确定">
+          <ion-select-option value="0">不限</ion-select-option>
+          <ion-select-option value="0-50">0-50</ion-select-option>
+          <ion-select-option value="51-100">51-100</ion-select-option>
+          <ion-select-option value="101-200">101-200</ion-select-option>
+          <ion-select-option value="200以上">200以上</ion-select-option>
+        </ion-select>
+        <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
       </div>
     </div>
     <div class="item">
       <div class="label">人均预算</div>
-      <div class="main">
-        <ion-text>不限</ion-text>
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+      <div class="main more">
+        <ion-select value="0" cancelText="取消" okText="确定">
+          <ion-select-option value="0">不限</ion-select-option>
+          <ion-select-option value="100-1000">100-1000</ion-select-option>
+          <ion-select-option value="1001-2000">1001-2000</ion-select-option>
+          <ion-select-option value="2001-5000">2001-5000</ion-select-option>
+          <ion-select-option value="5000以上">5000以上</ion-select-option>
+        </ion-select>
+        <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
       </div>
     </div>
     <div class="item">
-      <div class="label">产品类型</div>
-      <div class="main">
-        <ion-text>酒店 国内机票 国际机票 包车</ion-text>
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+      <div class="label type">产品类型</div>
+      <div class="main more">
+        <ion-select
+          class="custom-options"
+          cancelText="取消"
+          okText="确定"
+          multiple="true"
+          [(ngModel)]="demandTeamModel.ProductType"
+        >
+          <ion-select-option value="hotel">酒店</ion-select-option>
+          <ion-select-option value="domestic">国内机票</ion-select-option>
+          <ion-select-option value="international">国际机票</ion-select-option>
+          <ion-select-option value="car">包车</ion-select-option>
+        </ion-select>
+        <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
       </div>
     </div>
   </div>
 </div>
-<ion-list class="list-ion">
-  <div class="footer">
-    <div class="info">联系人信息</div>
-    <div class="item">
-      <div class="label">姓名</div>
-      <ion-input placeholder="请输入姓名"></ion-input>
-    </div>
-    <div class="item">
-      <div class="label">手机号码</div>
-      <ion-input placeholder="请输入姓名"></ion-input>
-    </div>
-    <div class="item">
-      <div class="label">电子邮箱</div>
-      <ion-input placeholder="请输入姓名"></ion-input>
-    </div>
-  </div>
-</ion-list>
 
 <div class="ion-footer">
   <div class="btn_container">
-    <ion-button color="secondary" class="ion-top">
+    <ion-button color="secondary" class="ion-top" (click)="onSubmit()">
       <ion-text>提 交</ion-text>
     </ion-button>
   </div>

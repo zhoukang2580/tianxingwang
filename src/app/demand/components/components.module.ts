@@ -27,6 +27,7 @@ import { DemandItemVisaComponent } from './demand-item-visa/demand-item-visa.com
     DemandItemMeetingComponent,
     DemandItemCarComponent,
     DemandItemVisaComponent,
+    
   ]
 
 })
