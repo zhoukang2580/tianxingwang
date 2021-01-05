@@ -73,7 +73,7 @@ export class DemandItemTeamComponent implements OnInit {
       const c = d.data;
       this.demandTeamModel.FromAddress = `${c.address.province || ""}${
         c.address.city || ""
-      }${c.address.district || ""}${c.address.street}`;
+      }${c.address.district || ""}${c.address.street || c.address || ""}`;
     }
   }
 
