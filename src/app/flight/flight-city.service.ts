@@ -45,7 +45,7 @@ export class FlightCityService {
     this.onSearbarClick(isFrom);
     this.cityPage.openPage(isShow);
     if (!isShow) {
-        return null;
+      return null;
     }
     this.cityPage.onToggleSegmentsPage(isDomestic);
     return new Promise<{ isDomestic: boolean; city: TrafficlineEntity }>(
@@ -445,9 +445,10 @@ function CityPage(domesticCities, interCities, lang = "cn") {
         let histories = that.histories;
         if (!histories || !histories.length) {
           histories = [c];
-          that.histories=histories;
+          that.histories = histories;
         }
         if (histories.length >= 12) {
+          histories.unshift(c);
           histories.pop();
         } else if (!histories.find((it) => it.Code == c.Code)) {
           histories.unshift(c);
@@ -580,7 +581,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       }
       if (recommendCities) {
         const len = 12;
-        const enLen = 16;
+        const enLen = 10;
         const rowLen = 3;
         const rows = getListRows(
           recommendCities,
@@ -814,6 +815,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     };
     const label = document.createElement("label");
     label.textContent = c.Name;
+    if (c.CityName) {
+      const sp = document.createElement("span");
+      sp.textContent = `(${c.CityName})`;
+      sp.classList.add("city-name");
+      label.append(sp);
+    }
     item.append(label);
     if (!allItems.find((it) => it == item)) {
       allItems.push(item);
@@ -825,7 +832,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     if (cities) {
       cities.forEach((c) => {
         if (!c.FirstLetter) {
-          c.FirstLetter = (c.Initial || "").substr(0, 1).toUpperCase();
+          c.FirstLetter = (c.Pinyin || "").substr(0, 1).toUpperCase();
         }
         const arr = cmap[c.FirstLetter];
         if (arr) {

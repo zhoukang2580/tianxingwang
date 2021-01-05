@@ -641,9 +641,6 @@ export class InternationalFlightService {
       },
       cabins: this.cabins,
     };
-    if (!environment.production) {
-      this.searchModel = MOCK_MultiCity_SEARCHMODEL;
-    }
     this.setSearchModelSource(this.searchModel);
   }
   disposal() {

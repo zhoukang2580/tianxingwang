@@ -30,6 +30,10 @@
   }
   .list .item label {
     font-size: 14px;
+    .city-name {
+      color: #666;
+      margin-left: 1em;
+    }
   }
   .list .letter-header {
     font-weight: bolder;
@@ -237,11 +241,11 @@
     align-items: stretch;
     margin: 0.5em;
     min-height: 35px;
-    &.full-w{
+    &.full-w {
       width: 100%;
     }
     .city-item {
-      &.empty{
+      &.empty {
         visibility: collapse;
       }
       &.active {
