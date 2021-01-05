@@ -8,7 +8,8 @@ const routes: Routes = [
       import(
         "./search-international-flight/search-international-flight.module"
       ).then((m) => m.SearchInternationalFlightPageModule),
-  }, {
+  },
+  {
     path: "search-international-flight_en",
     loadChildren: () =>
       import(
@@ -63,6 +64,11 @@ const routes: Routes = [
       import("./flight-ticket-reserve/flight-ticket-reserve.module").then(
         (m) => m.FlightTicketReservePageModule
       ),
+  },
+  {
+    path: "book_df",
+    loadChildren: () =>
+      import("./book_df/book-df.module").then((m) => m.FlightBookDfPageModule),
   },
   {
     path: "flight-ticket-reserve_en",
