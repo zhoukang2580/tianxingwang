@@ -25,9 +25,9 @@
         <img
           #img
           [lazyLoad]="it.imageUrl"
-          [loadingImage]="loadingImage"
+          [loadingImage]="config?.PrerenderImageUrl"
           class="pic"
-          [defaultImage]="defaultImage"
+          [defaultImage]="config?.DefaultImageUrl"
           alt="图片"
         />
         <div class="logo" *ngIf="config?.LogoImageUrl">

@@ -124,8 +124,8 @@
                             </ng-container>
                         </ion-thumbnail>
                         <ion-label class='item'>
-                            <h3 style="display: flex;">
-                                <ion-label class='ion-margin-end' style="text-transform:capitalize;">{{room.Name.replace('无窗','No Window').replace('大床','Queen bed').replace('双床','Twin bed')}}</ion-label>
+                            <h3 style="display: inline-flex;">
+                                <ion-label class='ion-margin-end' style="text-transform:capitalize;">{{room.Name.replace('无窗','No Window')}}</ion-label>
                                 <ion-text color='secondary' (click)='onShowRoomDetails(room)'>Details</ion-text>
                             </h3>
                             <h4 *ngIf='room.RoomDetails' class='show-desc' (click)='onShowRoomPlans(room)'>
