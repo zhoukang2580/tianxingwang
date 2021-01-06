@@ -1,21 +1,60 @@
 import { flyInOut } from "../../animations/flyInOut";
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from "@angular/core";
-import { ActivatedRoute, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from "@angular/router";
-import { IonCheckbox, IonContent, IonFooter, NavController, ModalController, PopoverController, Platform, IonSelect } from "@ionic/angular";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from "@angular/core";
+import {
+  ActivatedRoute,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from "@angular/router";
+import {
+  IonCheckbox,
+  IonContent,
+  IonFooter,
+  NavController,
+  ModalController,
+  PopoverController,
+  Platform,
+  IonSelect,
+} from "@ionic/angular";
 import * as moment from "moment";
-import { Subscription, Subject, BehaviorSubject, combineLatest, from, fromEvent } from "rxjs";
+import {
+  Subscription,
+  Subject,
+  BehaviorSubject,
+  combineLatest,
+  from,
+  fromEvent,
+} from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { AppHelper } from "src/app/appHelper";
 import { RefresherComponent } from "src/app/components/refresher";
 import { SelectComponent } from "src/app/components/select/select.component";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
-import { StaffEntity, StaffService, OrganizationEntity, StaffApprover, CostCenterEntity } from "src/app/hr/staff.service";
+import {
+  StaffEntity,
+  StaffService,
+  OrganizationEntity,
+  StaffApprover,
+  CostCenterEntity,
+} from "src/app/hr/staff.service";
 import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
 import { LanguageHelper } from "src/app/languageHelper";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
 import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
-import { OrderTravelType, OrderTravelPayType } from "src/app/order/models/OrderTravelEntity";
+import {
+  OrderTravelType,
+  OrderTravelPayType,
+} from "src/app/order/models/OrderTravelEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { CalendarService } from "src/app/tmc/calendar.service";
@@ -29,7 +68,17 @@ import { DayModel } from "src/app/tmc/models/DayModel";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
 import { TripType } from "src/app/tmc/models/TripType";
-import { InitialBookDtoModel, TmcEntity, TravelFormEntity, IllegalReasonEntity, TmcService, TmcApprovalType, TravelUrlInfo, IBookOrderResult, PassengerBookInfo } from "src/app/tmc/tmc.service";
+import {
+  InitialBookDtoModel,
+  TmcEntity,
+  TravelFormEntity,
+  IllegalReasonEntity,
+  TmcService,
+  TmcApprovalType,
+  TravelUrlInfo,
+  IBookOrderResult,
+  PassengerBookInfo,
+} from "src/app/tmc/tmc.service";
 import { TaskType } from "src/app/workflow/models/TaskType";
 import { environment } from "src/environments/environment";
 import { PriceDetailComponent } from "../components/price-detail/price-detail.component";
@@ -1087,6 +1136,7 @@ export class FlightBookDfPage
           combindInfo.id
         );
         if (!p.IllegalReason) {
+          combindInfo.isShowTravelDetail = true;
           showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo,
