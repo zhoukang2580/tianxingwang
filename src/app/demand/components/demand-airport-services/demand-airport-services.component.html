@@ -16,42 +16,48 @@
     <div class="item">
       <div class="label">服务类型</div>
       <div class="main">
-        <ion-select class="custom-options" cancelText="取消" okText="确定">
-          <ion-select-option value="1">休息室</ion-select-option>
-          <ion-select-option value="2">礼宾车</ion-select-option>
-          <ion-select-option value="3">要客通</ion-select-option>
-          <ion-select-option value="4">代客泊车</ion-select-option>
-          <ion-select-option value="5">预留登机牌</ion-select-option>
-          <ion-select-option value="6">登机口迎送</ion-select-option>
-          <ion-select-option value="7">行李托运</ion-select-option>
-          <ion-select-option value="8">物品快递服务</ion-select-option>
+        <ion-select class="custom-options" value="休息室" cancelText="取消" okText="确定" [(ngModel)]="demandAirportModel.ServiceType">
+          <ion-select-option value="休息室">休息室</ion-select-option>
+          <ion-select-option value="礼宾车">礼宾车</ion-select-option>
+          <ion-select-option value="要客通">要客通</ion-select-option>
+          <ion-select-option value="代客泊车">代客泊车</ion-select-option>
+          <ion-select-option value="预留登机牌">预留登机牌</ion-select-option>
+          <ion-select-option value="登机口迎送">登机口迎送</ion-select-option>
+          <ion-select-option value="行李托运">行李托运</ion-select-option>
+          <ion-select-option value="物品快递服务">物品快递服务</ion-select-option>
         </ion-select>
       </div>
     </div>
     <div class="item">
       <div class="label">机场信息</div>
       <div class="main">
-        <ion-text>浦东</ion-text>
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+        <ion-input placeholder="请输入机场信息" [(ngModel)]="demandAirportModel.AirportName"></ion-input>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">城市</div>
+      <div class="main">
+        <ion-input placeholder="请输入城市" [(ngModel)]="demandAirportModel.City"></ion-input>
       </div>
     </div>
     <div class="item">
       <div class="label">需求时间</div>
       <div class="time">
-        <ion-text>12月20日</ion-text>
-        <ion-text>12:30</ion-text>
+        <ion-text (click)="onOpenDate()">{{demandAirportModel.DepartureDateDay}}</ion-text>
+        <ion-text>{{demandAirportModel.DepartureDateHour}}</ion-text>
       </div>
     </div>
     <div class="item">
       <div class="label">航站楼</div>
       <div class="main">
-        <ion-text>T2航站楼</ion-text>
+        <ion-input placeholder="请输入城市" [(ngModel)]="demandAirportModel.Terminal"></ion-input>
+        <!-- <ion-text>T2航站楼</ion-text> -->
       </div>
     </div>
     <div class="item">
       <div class="label" style="min-width: 5.8em;">人数</div>
       <div class="main">
-        <ion-select class="custom-options" cancelText="取消" okText="确定" value='1'>
+        <ion-select class="custom-options" cancelText="取消" okText="确定" value="1" [(ngModel)]="demandAirportModel.NumberOfPeople">
           <ion-select-option value="1">1人</ion-select-option>
           <ion-select-option value="2">2人</ion-select-option>
           <ion-select-option value="3">3人</ion-select-option>
@@ -69,7 +75,7 @@
     <div class="item">
       <div class="label">备注</div>
       <div class="main">
-        <ion-input size="2" placeholder="请输入备注"></ion-input>
+        <ion-input size="2" placeholder="请输入备注" [(ngModel)]="demandAirportModel.Remarks"></ion-input>
       </div>
     </div>
   </div>

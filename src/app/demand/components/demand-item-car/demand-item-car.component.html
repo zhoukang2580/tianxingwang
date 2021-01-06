@@ -1,22 +1,29 @@
 <div class="list">
   <div class="container">
     <ion-segment
+      scrollable
       (ionChange)="segmentChanged($event)"
       mode="md"
       value="plane"
       color="secondary"
     >
-      <ion-segment-button value="plane">
-        <ion-label>接/送机</ion-label>
+      <ion-segment-button value="PickUpFlight">
+        <ion-label>接机</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="train">
-        <ion-label>接/送火车</ion-label>
+      <ion-segment-button value="DeliverFlight">
+        <ion-label>送机</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="domestic">
+      <ion-segment-button value="PickUpTrain">
+        <ion-label>接火车</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="DeliverTrain">
+        <ion-label>送火车</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="CharterCar">
         <ion-label>国内包车</ion-label>
       </ion-segment-button>
     </ion-segment>
-    <ng-container *ngIf="carType == 'plane'">
+    <ng-container *ngIf="carType == 'PickUpFlight'">
       <ion-list lines="none">
         <ion-radio-group value="biff" class="group" mode="md">
           <ion-item style="border-bottom: 0">
@@ -60,7 +67,66 @@
         </div>
       </div>
     </ng-container>
-    <ng-container *ngIf="carType == 'train'">
+    <ng-container *ngIf="carType == 'DeliverFlight'">
+      <ion-list lines="none">
+        <ion-radio-group value="biff" class="group" mode="md">
+          <ion-item style="border-bottom: 0">
+            <ion-label>国内</ion-label>
+            <ion-radio slot="start" value="biff"></ion-radio>
+          </ion-item>
+          <ion-item style="border-bottom: 0">
+            <ion-label>境外</ion-label>
+            <ion-radio slot="start" value="Griff"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+      <div class="plane">
+        <div class="item">
+          <ion-input placeholder="请输入联系人"></ion-input>
+        </div>
+        <div class="item">
+          <ion-input placeholder="请输入手机号"></ion-input>
+        </div>
+        <div class="item">
+          <ion-text
+            >12月20日
+            <span>今天</span>
+          </ion-text>
+          <ion-text>12:30</ion-text>
+        </div>
+        <div class="item">
+          <ion-input placeholder="出发时间"></ion-input>
+        </div>
+        <div class="item">
+          <ion-text>MU3880</ion-text>
+        </div>
+        <div class="item">
+          <div class="label">上海市</div>
+          <div class="main">
+            <ion-text>徐汇区肇家浜路</ion-text>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+        </div>
+        <div class="item">
+          <div class="main">
+            <ion-input size="2" placeholder="请输入备注"></ion-input>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="carType == 'PickUpTrain'">
+      <ion-list lines="none">
+        <ion-radio-group value="biff" class="group" mode="md">
+          <ion-item style="border-bottom: 0">
+            <ion-label>国内</ion-label>
+            <ion-radio slot="start" value="biff"></ion-radio>
+          </ion-item>
+          <ion-item style="border-bottom: 0">
+            <ion-label>境外</ion-label>
+            <ion-radio slot="start" value="Griff"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
       <div class="train">
         <div class="item">
           <ion-input placeholder="请输入联系人"></ion-input>
@@ -92,7 +158,66 @@
         </div>
       </div>
     </ng-container>
-    <ng-container *ngIf="carType == 'domestic'">
+    <ng-container *ngIf="carType == 'DeliverTrain'">
+      <ion-list lines="none">
+        <ion-radio-group value="biff" class="group" mode="md">
+          <ion-item style="border-bottom: 0">
+            <ion-label>国内</ion-label>
+            <ion-radio slot="start" value="biff"></ion-radio>
+          </ion-item>
+          <ion-item style="border-bottom: 0">
+            <ion-label>境外</ion-label>
+            <ion-radio slot="start" value="Griff"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+      <div class="train">
+        <div class="item">
+          <ion-input placeholder="请输入联系人"></ion-input>
+        </div>
+        <div class="item">
+          <ion-input placeholder="请输入手机号"></ion-input>
+        </div>
+        <div class="item">
+          <ion-text
+            >12月20日
+            <span>今天</span>
+          </ion-text>
+          <ion-text>12:30</ion-text>
+        </div>
+        <div class="item">
+          <ion-input placeholder="出发时间"></ion-input>
+        </div>
+        <div class="item">
+          <ion-text>上海火车站</ion-text>
+        </div>
+        <div class="item">
+          <div class="label">上海市</div>
+          <div class="main">
+            <ion-text>徐汇区肇家浜路</ion-text>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+        </div>
+        <div class="item">
+          <div class="main">
+            <ion-input size="2" placeholder="请输入备注"></ion-input>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="carType == 'CharterCar'">
+      <ion-list lines="none">
+        <ion-radio-group value="biff" class="group" mode="md">
+          <ion-item style="border-bottom: 0">
+            <ion-label>市内</ion-label>
+            <ion-radio slot="start" value="biff"></ion-radio>
+          </ion-item>
+          <ion-item style="border-bottom: 0">
+            <ion-label>跨域</ion-label>
+            <ion-radio slot="start" value="Griff"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
       <div class="department">
         <div class="item">
           <ion-input placeholder="请输入联系人"></ion-input>
@@ -162,7 +287,7 @@
 
 <div class="ion-footer">
   <div class="btn_container">
-    <ion-button color="secondary" class="ion-top">
+    <ion-button color="secondary" class="ion-top" (click)="onSubmit()">
       <ion-text>提 交</ion-text>
     </ion-button>
   </div>

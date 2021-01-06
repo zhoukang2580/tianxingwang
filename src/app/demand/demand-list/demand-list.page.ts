@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
-import { FlightService } from 'src/app/flight/flight.service';
 import { DemandService, DemandTeamModel, FlightType, OtherDemandModel } from '../demand.service';
 
 @Component({
@@ -38,9 +37,20 @@ export class DemandListPage implements OnInit {
         DemandType: FlightType.TourDemand,
         Demand: this.otherDemandModel.demandTour
       }
+    }else if (this.teams.DemandType == 10) {
+      this.teams = {
+        Tag: '',
+        DemandType: FlightType.VisaDemand,
+        Demand: this.otherDemandModel.demandVisa
+      }
     }
-    // this.demandTeamModel = [];
-    // this.demandTeam();
+    // else if (this.teams.DemandType == 12) {
+    //   this.teams = {
+    //     Tag: '',
+    //     DemandType: FlightType.AirportDemand,
+    //     Demand: this.otherDemandModel.demandAirportService
+    //   }
+    // }
   }
 
   getListType(type: number) {
@@ -70,9 +80,16 @@ export class DemandListPage implements OnInit {
   }
 
   async onMeetingSubmit(obj) {
-    try { 
-      console.log('123');
-      this.teams.Demand = obj.demandTourModel;
+    try {
+      let type = this.teams.DemandType;
+      if(type == 9){
+        this.teams.Demand = obj.demandTourModel;
+      }else if(type == 10){
+        this.teams.Demand = obj.demandVisaModel;
+      }
+      // else if(type == 12){
+      //   this.teams.Demand = obj.DemandAirportServiceModel;
+      // }
       this.apiservice.saveDemand(this.teams);
     } catch (e) {
       AppHelper.alert(e);

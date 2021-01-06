@@ -33,11 +33,11 @@
     <app-demand-item-team (demandTeam)='onTeamSubmit($event)'></app-demand-item-team>
   </ion-list>
   <ion-list class="list" *ngIf='teams?.DemandType == 9'>
-    <app-demand-item-meeting (demandMeeting)='onMeetingSubmit($event)'>
+    <app-demand-item-meeting (demandTour)='onMeetingSubmit($event)'>
     </app-demand-item-meeting>
   </ion-list>
   <ion-list class="list" *ngIf='teams?.DemandType == 10'>
-    <app-demand-item-visa>
+    <app-demand-item-visa (demandVisa)='onMeetingSubmit($event)'>
     </app-demand-item-visa>
   </ion-list>
   <ion-list class="list" *ngIf='teams?.DemandType == 11'>
@@ -45,7 +45,7 @@
     </app-demand-item-car>
   </ion-list>
   <ion-list class="list" *ngIf='teams?.DemandType == 12'>
-    <app-demand-airport-services>
+    <app-demand-airport-services >
     </app-demand-airport-services>
   </ion-list>
 </ion-content>

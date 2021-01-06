@@ -35,7 +35,10 @@ export class DemandItemTeamComponent implements OnInit {
 
   ngOnInit() {
     this.demandTeamModel = {} as any;
-    this.demandTeamModel.FromAddress = "上海";
+    let date = new Date();
+    console.log(date.toLocaleTimeString());
+    this.demandTeamModel.ReturnDate = date.toLocaleDateString();
+    this.demandTeamModel.FromAddress = "上海市";
     this.mapService
       .getCurMapPoint()
       .then((c) => {
@@ -44,6 +47,9 @@ export class DemandItemTeamComponent implements OnInit {
         };
         if (c && c.address) {
           this.demandTeamModel.FromAddress = `${c.address.province || ""}${
+            c.address.city || ""
+          }${c.address.district || ""}${c.address.street}`;
+          this.demandTeamModel.ToAddress = `${c.address.province || ""}${
             c.address.city || ""
           }${c.address.district || ""}${c.address.street}`;
         }
@@ -58,11 +64,7 @@ export class DemandItemTeamComponent implements OnInit {
     this.demandTeam.emit({ demandTeamModel: this.demandTeamModel });
   }
 
-  async onSelectCity(isFromCity = true) {
-    // this.apiservice.onSelectCity(isFromCity);
-    // if (!this.curPos) {
-    //   this.curPos = await this.mapService.getCurMapPoint();
-    // }
+  async onSelectFromCity() {
     const m = await AppHelper.modalController.create({
       component: MapSearchComponent,
       componentProps: { curPos: this.curPos },
@@ -77,6 +79,23 @@ export class DemandItemTeamComponent implements OnInit {
     }
   }
 
+  async onSelectToCity() {
+    const m = await AppHelper.modalController.create({
+      component: MapSearchComponent,
+      componentProps: { curPos: this.curPos },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      const c = d.data;
+      this.demandTeamModel.ToAddress = `${c.address.province || ""}${
+        c.address.city || ""
+      }${c.address.district || ""}${c.address.street || c.address || ""}`;
+    }
+  }
+
+
+
   async onOpenDate() {
     const r = await this.calendarService.openCalendar({
       goArrivalTime: "",
@@ -87,6 +106,7 @@ export class DemandItemTeamComponent implements OnInit {
     });
     if (r && r.length) {
       this.demandTeamModel.ReturnDate = r[0].date;
+
     }
   }
 }
