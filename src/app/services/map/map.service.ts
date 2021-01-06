@@ -113,10 +113,14 @@ export class MapService {
     };
     setTimeout(() => {
       try {
+        if (document.querySelector("#amapscript")) {
+          return;
+        }
         const url = `https://webapi.amap.com/maps?v=1.4.15&key=${GaodeMapKey}&callback=onAmapLoad`;
         const jsapi = document.createElement("script");
         jsapi.charset = "utf-8";
         jsapi.src = url;
+        jsapi.id = "amapscript";
         document.head.appendChild(jsapi);
       } catch (e) {
         console.error(e);
