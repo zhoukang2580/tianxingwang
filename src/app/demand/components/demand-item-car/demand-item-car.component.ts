@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DemandItemCarComponent implements OnInit {
 
-  carType = 'plane' || 'train' || 'domestic';
+  carType = 'PickUpFlight' || 'DeliverFlight' || 'PickUpTrain' || 'DeliverTrain' || 'CharterCar';
 
   constructor() { }
 
@@ -21,5 +21,9 @@ export class DemandItemCarComponent implements OnInit {
 
   segmentChanged(evt: CustomEvent) {
     this.switchCarType(evt.detail.value);
+  }
+
+  onSubmit(){
+    
   }
 }

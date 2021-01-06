@@ -34,15 +34,16 @@
     </div>
     <div class="item">
       <div class="label">出发地</div>
-      <div class="main" (click)="onSelectCity(true)">
+      <div class="main" (click)="onSelectFromCity()">
         <ion-text>{{demandTeamModel.FromAddress}}</ion-text>
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>
     </div>
-    <div class="item" (click)="onSelectCity(false)">
+    <div class="item" (click)="onSelectToCity()">
       <div class="label">目的地</div>
       <div class="main">
-        <ion-input placeholder="请输入目的地" [(ngModel)]='demandTeamModel.ToAddress'></ion-input>
+        <ion-text>{{demandTeamModel.ToAddress}}</ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
         <!-- <ion-text >{{demandTeamModel.ToCityCode}}</ion-text>
         <ion-icon name="chevron-forward-outline"></ion-icon> -->
       </div>
