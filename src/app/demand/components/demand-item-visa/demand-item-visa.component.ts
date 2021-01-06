@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DemandVisaModel } from '../../demand.service';
 
 @Component({
   selector: 'app-demand-item-visa',
@@ -7,8 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DemandItemVisaComponent implements OnInit {
 
-  constructor() { }
+  @Input() demandVisaModel:DemandVisaModel;
+  @Output() demandVisa: EventEmitter<any>;
+  constructor() { 
+    this.demandVisa = new EventEmitter();
+  }
 
   ngOnInit() {}
 
+  onSubmit(){
+    this.demandVisa.emit({demandVisaModel:this.demandVisaModel});
+  }
 }
