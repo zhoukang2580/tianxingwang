@@ -8,8 +8,9 @@
     display: flex;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
-    margin-left: 1.5em;    
-    line-height: 3.3;
+    margin-left: 1.5em;
+    // line-height: 3.3;
+    height: 50px;
     ion-input {
       height: 52px;
       font-size: 15px;
@@ -46,11 +47,11 @@
     }
     ion-text {
       min-width: 13.5em;
-      font-size: 15px;
+      font-size: 12px;
     }
 
-    .left {
-      display: grid;
+    .left {    
+      height: 50px;
       .label {
         font-size: 11px;
         font-family: PingFang SC;
@@ -59,10 +60,12 @@
         min-width: 7em;
         display: flex;
         align-items: center;
+        height: 25px;
       }
       .address {
         display: flex;
-        font-size: 15px;
+        min-width: 36vh;    
+        margin-top: -16px;
       }
       .yellow,
       .green {
@@ -112,9 +115,6 @@
   align-items: center;
   justify-items: center;
   background: #fff;
-  position: fixed;
-  bottom: 10px;
-  width: 100%;
   .btn_container {
     display: flex;
     justify-content: center;
@@ -127,7 +127,11 @@
   }
 }
 
-.group{
+.group {
   display: flex;
   height: 3.4em;
+}
+
+.date,.address {
+  min-width: 6.5em;
 }

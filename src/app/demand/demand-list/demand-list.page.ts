@@ -43,14 +43,13 @@ export class DemandListPage implements OnInit {
         DemandType: FlightType.VisaDemand,
         Demand: this.otherDemandModel.demandVisa
       }
+    }else if (this.teams.DemandType == 12) {
+      this.teams = {
+        Tag: '',
+        DemandType: FlightType.AirportDemand,
+        Demand: this.otherDemandModel.demandAirportService
+      }
     }
-    // else if (this.teams.DemandType == 12) {
-    //   this.teams = {
-    //     Tag: '',
-    //     DemandType: FlightType.AirportDemand,
-    //     Demand: this.otherDemandModel.demandAirportService
-    //   }
-    // }
   }
 
   getListType(type: number) {
@@ -86,10 +85,9 @@ export class DemandListPage implements OnInit {
         this.teams.Demand = obj.demandTourModel;
       }else if(type == 10){
         this.teams.Demand = obj.demandVisaModel;
+      }else if(type == 12){
+        this.teams.Demand = obj.DemandAirportServiceModel;
       }
-      // else if(type == 12){
-      //   this.teams.Demand = obj.DemandAirportServiceModel;
-      // }
       this.apiservice.saveDemand(this.teams);
     } catch (e) {
       AppHelper.alert(e);

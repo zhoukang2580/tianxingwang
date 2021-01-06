@@ -19,7 +19,7 @@ export class DemandAirportServicesComponent implements OnInit {
   ngOnInit() {
     this.demandAirportModel = {} as any;
     let date = new Date();
-    this.demandAirportModel.DepartureDateDay = date.toLocaleDateString.toString();
+    this.demandAirportModel.DepartureDateDay = date.toLocaleDateString();
     this.demandAirportModel.DepartureDateHour = '12:30';
   }
 
