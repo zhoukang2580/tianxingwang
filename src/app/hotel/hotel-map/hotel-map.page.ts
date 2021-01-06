@@ -17,16 +17,21 @@ export class HotelMapPage implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private hotelService: HotelService
-  ) {}
+  ) { }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   ngOnInit() {
     this.subscriptions.push(
       this.route.queryParamMap.subscribe((q) => {
-        this.hotel =
-          this.hotelService.curViewHotel &&
-          this.hotelService.curViewHotel.Hotel;
+        this.hotel = {} as any;
+        this.hotel.Name = q.get("name");
+        this.latLng = {
+          lat: q.get("lat"),
+          lng: q.get("lng")
+        }
+        this.hotel.Lat=this.latLng.lat;
+        this.hotel.Lng=this.latLng.lng
         this.onReload();
       })
     );

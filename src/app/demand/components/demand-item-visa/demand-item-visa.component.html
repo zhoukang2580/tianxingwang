@@ -1,0 +1,86 @@
+<div class="list">
+  <div class="container">
+    <div class="item">
+      <div class="label">签证类型</div>
+      <ion-list lines="none">
+        <ion-radio-group value="biff" class="group" mode="md" 
+        [(ngModel)]="demandVisaModel.VisaType">
+          <ion-item style="border-bottom: 0;--padding-start: 0;">
+            <label>商务签证</label>
+            <ion-radio slot="start" value="biff"></ion-radio>
+          </ion-item>
+          <ion-item style="border-bottom: 0;--padding-start: 0;">
+            <label>旅游签证</label>
+            <ion-radio slot="start" value="Griff"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+    </div>
+    <div class="item">
+      <div class="label">联系人</div>
+      <div class="main">
+        <ion-input [(ngModel)]="demandVisaModel.LiaisonName" placeholder="请输入联系人"></ion-input>
+        <!-- <ion-text>高飞</ion-text> -->
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">联系手机</div>
+      <div class="main">
+        <ion-input [(ngModel)]="demandVisaModel.LiaisonPhone" placeholder="请输入手机号"></ion-input>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">邮箱</div>
+      <div class="main">
+        <ion-input [(ngModel)]="demandVisaModel.Email" placeholder="请输入邮箱"></ion-input>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">目的地国家</div>
+      <div class="main">
+        <ion-text>{{demandVisaModel.Destination}}</ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">工作居住地</div>
+      <div class="main">
+        <ion-text>{{demandVisaModel.WorkPlace}}</ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">人数</div>
+      <div class="main more">
+        <ion-select
+          class="custom-options"
+          cancelText="取消"
+          okText="确定"
+          value="brown"
+          [(ngModel)]="demandVisaModel.WorkPlaceCode"
+        >
+          <ion-select-option value="brown">不限</ion-select-option>
+          <ion-select-option value="blonde">0-50</ion-select-option>
+          <ion-select-option value="black">51-100</ion-select-option>
+          <ion-select-option value="red">101-200</ion-select-option>
+          <ion-select-option value="yellow">200以上</ion-select-option>
+        </ion-select>
+        <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">备注</div>
+      <div class="main">
+        <ion-input size="2" placeholder="请输入备注"></ion-input>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ion-footer">
+  <div class="btn_container">
+    <ion-button color="secondary" class="ion-top" (click)="onSubmit()">
+      <ion-text>提 交</ion-text>
+    </ion-button>
+  </div>
+</div>

@@ -1,13 +1,13 @@
 <section>
-  <!-- <ion-text color='secondary' style="display: none;">
+  <!-- <ion-text color='secondary'>
     <i class="icon icon-calendar"></i>
-  </ion-text> -->
-  <ion-label class='day'>{{yearMonth}}</ion-label>
+  </ion-text>
+  <ion-label class='day'>{{dayNumber}}</ion-label> -->
   <ion-label [class.start]='isCheckIn||isCheckOut' class="date">
-    <h5><ng-container *ngIf='langOpt.isShowDayDesc'>{{dayDesc}}</ng-container>
+    <h5 class="h5"><ng-container *ngIf='langOpt.isShowDayDesc'>{{dayDesc}}</ng-container>
       <ng-container *ngIf='isCheckIn'>{{langOpt.checkin}}</ng-container>
       <ng-container *ngIf='isCheckOut'>{{langOpt.checkout}}</ng-container>
     </h5>
-    <!-- <h5>{{yearMonth}}</h5> -->
+    <h2 class="h2">{{yearMonth}}</h2>
   </ion-label>
 </section>

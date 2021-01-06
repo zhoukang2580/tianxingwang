@@ -31,13 +31,13 @@
   </div>
   <div class="freebook" *ngIf='isFreeBook' (click)='onShowFreeBookTip()'>
     <span>贵公司已开通超标随心住，自行支付超标部分即可享受心仪的房间</span>
-    <ion-text color='secondary'>了解随心住>></ion-text>
+    <ion-text color='secondary' class='ion-margin-start'>了解随心住>></ion-text>
   </div>
   <ng-container *ngIf='!isLoadingHotels else fakeList'>
     <ion-list>
       <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
         <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
-          <app-hotel-list-item [item]='item' [config]='config'></app-hotel-list-item>
+          <app-hotel-list-item [item]='item' [config]='{DefaultImageUrl:RoomDefaultImg||config?.DefaultImageUrl,PrerenderImageUrl:config?.PrerenderImageUrl}'></app-hotel-list-item>
         </li>
       </ul>
     </ion-list>
@@ -74,13 +74,13 @@
   </ion-infinite-scroll>
 </ion-content>
 <div class="backdrop " [ngClass]='{ios:isIos,show:filterTab?.isActive}' (click)='onBackdropClick($event)'></div>
-<div>
-  <app-recommend-rank class="filter-condition {{isIos?'ios':''}}" (rank)='onRank()' [class.show]='filterTab?.id=="Recommended"&&filterTab.isActive'>
+<div #filterCondition>
+  <app-recommend-rank id='Recommended' class="filter-condition {{isIos?'ios':''}}" (rank)='onRank()' [class.show]='filterTab?.id=="Recommended"&&filterTab.isActive'>
   </app-recommend-rank>
-  <app-hotel-starprice class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="PriceStar"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
+  <app-hotel-starprice class="filter-condition   {{isIos?'ios':''}}" id="PriceStar" [class.show]='filterTab?.id=="PriceStar"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
   </app-hotel-starprice>
-  <app-hotel-filter class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Filter"&&filterTab.isActive' (filter)='onFilter()'>
+  <app-hotel-filter id="Filter" class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Filter"&&filterTab.isActive' (filter)='onFilter()'>
   </app-hotel-filter>
-  <app-hotel-geo class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Location"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
+  <app-hotel-geo id="Location" class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Location"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
   </app-hotel-geo>
 </div>

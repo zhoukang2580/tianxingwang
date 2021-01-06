@@ -151,7 +151,6 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
   }
   async onTaskDetail(task: TaskEntity) {
     const url = await this.getTaskHandleUrl(task);
-
     if (url) {
       this.router
         .navigate(["open-url"], {

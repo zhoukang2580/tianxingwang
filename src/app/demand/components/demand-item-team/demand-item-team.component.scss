@@ -1,0 +1,88 @@
+.list {
+  margin: 10px;
+  border-radius: 10px;
+  .container {
+    line-height: 3.3;
+    padding-left: 1.5em;
+  }
+  .info {
+    font-size: 20px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    color: #333333;
+  }
+  .item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    .label {
+      font-size: 15px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: #333333;
+      min-width: 5em;
+    }
+
+    .type{
+      min-width: 4em;
+    }
+    label {
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      margin-right: 13px;
+      input {
+        margin-right: 12px;
+      }
+    }
+    .main {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      ion-input {
+        font-size: 15px;
+        height: 40px;
+        max-width: 13.5em;
+      }
+    }
+
+    .more {
+      justify-content: flex-end;
+      margin-right: 1.7em;
+      font-size: 15px;
+    }
+
+    ion-icon {
+      font-size: 18px;
+      margin-right: 2em;
+    }
+    ion-text {
+      min-width: 13.9em;
+      font-size: 15px;
+    }
+  }
+}
+
+.group{
+  display: flex;
+  height: 3em;
+}
+
+.ion-footer {
+  display: flex;
+  align-items: center;
+  justify-items: center;
+  background: #fff;
+  bottom: 10px;
+  width: 100%;
+  .btn_container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    .ion-top {
+      --border-radius: 20px;
+      width: 90%;
+      height: 2.5rem;
+    }
+  }
+}

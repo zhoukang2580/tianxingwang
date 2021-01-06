@@ -26,19 +26,21 @@ export class RecommendRankComponent implements OnInit {
       label: "低价优先",
       value: "Price",
       orderBy: "PriceAsc",
+      isSelected: false,
     });
     this.hotelQuery.ranks.push({
       id: 3,
       label: "高价优先",
       value: "Price",
       orderBy: "PriceDesc",
+      isSelected: false,
     });
     this.hotelQuery.ranks.push({
       id: 0,
       label: "星级升序",
       value: "Category",
       orderBy: "CategoryAsc",
-      isSelected: true,
+      isSelected: false,
     });
     this.hotelQuery.ranks.push({
       id: 1,
@@ -47,16 +49,14 @@ export class RecommendRankComponent implements OnInit {
       orderBy: "CategoryDesc",
       isSelected: false,
     });
-    let rank =
-      this.hotelQuery.ranks.find((it) => it.isSelected) ||
-      this.hotelQuery.ranks[0];
+    let rank = this.hotelQuery.ranks.find((it) => it.isSelected);
     if (this.hotelQuery) {
       rank =
         this.hotelQuery.ranks.find(
           (it) => it.orderBy == this.hotelQuery.Orderby
         ) || rank;
     }
-    rank.isSelected = true;
+    // rank.isSelected = true;
     this.hotelService.setHotelQuerySource(this.hotelQuery);
   }
   ngOnInit() {

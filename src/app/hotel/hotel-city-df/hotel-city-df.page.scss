@@ -1,0 +1,63 @@
+form {
+  width: 100%;
+  padding-right: 1em;
+}
+
+.ion-text {
+  display: flex;
+}
+.container {
+  display: flex;
+  background: #fff;
+  align-items: center;
+  flex: 0.2;
+}
+.hot,
+.his {
+  background: #fff;
+  line-height: 4;
+  padding-left: 15px;
+  flex: 1;
+}
+.search-page {
+  transition: all ease-in-out 200ms;
+  transform: translate3d(100%, 0, 0);
+  &.show {
+    transform: translate3d(0, 0, 0);
+  }
+}
+.citylist {
+  transition: all ease-in-out 200ms;
+  transform: translate3d(-100%, 0, 0);
+  &.show {
+    transform: translate3d(0, 0, 0);
+  }
+}
+.list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.btn-city {
+  width: 80px;
+  height: 30px;
+  background: #f6f6f6;
+  border-radius: 5px;
+  margin-top: 10px;
+  outline: none;
+  margin-left: 6px;
+}
+
+.letter {
+  // font-size: 12px;
+  color: #333333;
+}
+
+.suspension {
+  font-size: 16px;
+  font-family: fangsong;
+  color: #999999;
+  margin-top: 6px;
+  width: 30px;
+  text-align: end;
+}

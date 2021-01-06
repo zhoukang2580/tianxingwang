@@ -38,17 +38,21 @@ import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standa
 import { OverHotelComponent } from "../components/over-hotel/over-hotel.component";
 import { environment } from "src/environments/environment";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { HotelCityService } from "../hotel-city.service";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-search-hotel-df",
   templateUrl: "./search-hotel-df.page.html",
   styleUrls: ["./search-hotel-df.page.scss"],
 })
-export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
+export class SearchHotelDfPage
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   @ViewChild("imgEles", { static: true }) imgEles: ElementRef<HTMLElement>;
   @ViewChild("ionCardEle", { static: true }) ionCard: IonCard;
   private subscriptions: Subscription[] = [];
   private fromRoute: string;
+  private isOpenSelectCityPage = false;
   get isShowSelectedInfos() {
     return this.hotelService.getBookInfos().some((it) => !!it.bookInfo);
   }
@@ -106,6 +110,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     public router: Router,
     private hotelService: HotelService,
     route: ActivatedRoute,
+    private hotelCityService: HotelCityService,
     private modalController: ModalController,
     private staffService: StaffService,
     private calendarService: CalendarService,
@@ -141,6 +146,15 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.isIos = plt.is("ios");
     });
     this.subscriptions.push(sub);
+  }
+  canDeactivate() {
+    console.log("isOpenSelectCityPage", this.isOpenSelectCityPage);
+    if (this.isOpenSelectCityPage) {
+      this.hotelCityService.onSelectCity(false);
+      this.isOpenSelectCityPage = false;
+      return false;
+    }
+    return true;
   }
   private observeSearchCondition() {
     this.subscriptions.push(
@@ -184,7 +198,11 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     //   this.initEles();
     // }
   }
-  onToggleDomestic(isDomestic) {
+  async onToggleDomestic(isDomestic) {
+    const ok = await this.hotelService.checkHasAuth(isDomestic);
+    if (!ok) {
+      return;
+    }
     this.isDomestic = isDomestic;
   }
   onSelectNationality() {
@@ -238,9 +256,18 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.observeSearchCondition();
     this.onPosition();
   }
-  onSearchCity() {
+  async onSearchCity() {
     if (this.isDomestic) {
-      this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+      // this.router.navigate([AppHelper.getRoutePath("hotel-city-df")]);
+      this.isOpenSelectCityPage = true;
+      const city = await this.hotelCityService.onSelectCity(true);
+      if (city) {
+        this.hotelService.setSearchHotelModel({
+          ...this.searchHotelModel,
+          destinationCity: city,
+        });
+        this.hotelCityService.onSelectCity(false);
+      }
     } else {
       this.router.navigate([AppHelper.getRoutePath("select-inter-city")]);
     }
@@ -272,7 +299,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.isPositioning = false;
   }
   onShowSelectedBookInfos() {
-    this.router.navigate([AppHelper.getRoutePath("hotel-room-bookedinfos")]);
+    this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
   }
   onSelectPassenger() {
     this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
@@ -361,6 +388,10 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async onSearchHotel() {
+    const ok = await this.hotelService.checkHasAuth(this.isDomestic);
+    if (!ok) {
+      return;
+    }
     if (this.totalFlyDays >= 15) {
       const popover = await this.popoverCtrl.create({
         component: OverHotelComponent,
@@ -380,6 +411,7 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
       });
       this.hotelService.getConditions();
       this.isLeavePage = true;
+      this.isOpenSelectCityPage = false;
       this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
     } else {
       this.router.navigate([

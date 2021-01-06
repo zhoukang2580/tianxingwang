@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button></app-back-button>
+    </ion-buttons>
+    <ion-title>需求单</ion-title>
+  </ion-toolbar>
+  
+  <ion-toolbar style="--border-width: 0;" class="toolbar">
+    <ion-segment scrollable (ionChange)="segmentChanged($event)" mode='md' [value]="teams.DemandType " color='secondary'>
+      <ion-segment-button value="{{FlightType?.TeamDemand}}">
+        <ion-label>团队</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="{{FlightType?.TourDemand}}">
+        <ion-label>会议</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="{{FlightType?.VisaDemand}}">
+        <ion-label>签证</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="{{FlightType?.CarDemand}}">
+        <ion-label>用车</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="{{FlightType?.AirportDemand}}">
+        <ion-label>机场服务</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-list *ngIf="teams?.DemandType == 8">
+    <app-demand-item-team (demandTeam)='onTeamSubmit($event)'></app-demand-item-team>
+  </ion-list>
+  <ion-list class="list" *ngIf='teams?.DemandType == 9'>
+    <app-demand-item-meeting (demandMeeting)='onMeetingSubmit($event)'>
+    </app-demand-item-meeting>
+  </ion-list>
+  <ion-list class="list" *ngIf='teams?.DemandType == 10'>
+    <app-demand-item-visa>
+    </app-demand-item-visa>
+  </ion-list>
+  <ion-list class="list" *ngIf='teams?.DemandType == 11'>
+    <app-demand-item-car>
+    </app-demand-item-car>
+  </ion-list>
+  <ion-list class="list" *ngIf='teams?.DemandType == 12'>
+    <app-demand-airport-services>
+    </app-demand-airport-services>
+  </ion-list>
+</ion-content>

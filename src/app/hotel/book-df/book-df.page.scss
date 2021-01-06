@@ -1,15 +1,18 @@
 .spacebetween {
   display: flex;
   justify-content: space-between;
-  font-size: 0.8em;
+  // font-size: 0.8em;
   color: var(--ion-color-dark);
 }
-
+ion-content.cnt {
+  --padding-end: 0.8em;
+  --padding-start: 0.8em;
+}
 .fee {
   background-color: var(--ion-color-primary);
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
-  font-size: 0.9rem;
+  font-size: 14px;
   box-shadow: 0.1em 0.2em 0.6em rgba(0, 0, 0, 0.1);
 }
 
@@ -47,12 +50,35 @@
   opacity: 0.5;
   background-color: var(--ion-color-dark);
 }
+
+.exceeding {
+  display: flex;
+  padding-bottom: 15px;
+  ion-label {
+    flex: 3;
+    font-size: 14px;
+  }
+}
+
+.selfpay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 31px;
+  height: 16px;
+  background: #eecf9a;
+  border-radius: 2px;
+  color: #fff;
+}
+
 .hotel {
   .padding-v {
     padding: 0.25em 0;
   }
   width: 100%;
   .name {
+    display: flex;
+    align-items: center;
     font-size: 15px;
     font-family: PingFang SC;
     font-weight: bold;
@@ -60,25 +86,28 @@
   }
 
   .room-info {
-    font-size: 11px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-
-    span {
-      margin-right: 0.5em;
-    }
-  }
-  .date {
-    padding: 0.8rem 0;
-    font-size: 10px;
+    font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
     display: flex;
     align-items: center;
+    margin-top: -20px;
+    span {
+      margin-right: 0.4em;
+    }
+  }
+  .date {
+    padding: 0.8rem 0;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    white-space: nowrap;
     .totals {
-      font-size: 9px;
+      font-size: 12px;
       color: #ea394b;
     }
   }
@@ -90,30 +119,33 @@
 }
 .editicon {
   width: 14px;
-  margin-left: 1em;
+  margin: 0 1em;
 }
 .cname {
-  font-size: 15px;
+  min-width: 100%;
+  font-size: 18px;
   font-family: PingFang SC;
   font-weight: bold;
   color: #333333;
   align-self: flex-start;
+  margin-bottom: 10px;
 }
 .flex .label.cname {
   width: initial;
   margin-right: 0.78125em;
 }
 .cnumber {
-  font-size: 10px;
+  font-size: 14px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
+  margin-right: 16px;
 }
 .font {
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
-  font-size: 12px;
+  font-size: 16px;
 }
 ion-list .info {
   width: 100%;
@@ -127,7 +159,7 @@ ion-list .info {
   display: flex;
   align-items: center;
   .label {
-    width: 70px;
+    width: 7em;
   }
   ion-input {
     --padding-top: 0;
@@ -141,7 +173,7 @@ ion-list .info {
   justify-content: space-between;
 }
 .sm-font {
-  font-size: 10px;
+  font-size: 14px;
 }
 .title {
   font-size: 18px;
@@ -152,7 +184,7 @@ ion-list .info {
   align-items: center;
   justify-content: space-between;
 }
-ion-icon[name='caret-down-outline']{
+ion-icon[name="caret-down-outline"] {
   font-size: 0.9rem;
 }
 .passenger-info {
@@ -184,7 +216,7 @@ ion-icon[name='caret-down-outline']{
     }
   }
   .tmc-name {
-    font-size: 8px;
+    font-size: 10px;
   }
   .name {
     display: flex;
@@ -209,7 +241,7 @@ ion-icon[name='caret-down-outline']{
   .detail {
     display: flex;
     align-items: center;
-    font-size: 10px;
+    font-size: 15px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
@@ -219,7 +251,7 @@ ion-icon[name='caret-down-outline']{
   margin-left: 8px;
 }
 .rules {
-  font-size: 8px;
+  font-size: 14px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
@@ -229,7 +261,7 @@ ion-icon[name='caret-down-outline']{
   border-top: 1px solid #5d5d5d2e;
 }
 .line {
-  width: 340px;
+  width: 100%;
   height: 1px;
   background: #eee;
 }
@@ -240,23 +272,25 @@ ion-list {
 ion-content.ion-padding {
   padding: 0.8rem;
 }
+.addcontacts {
+  padding: 0;
+}
 .orderpaytypes ion-item ion-label {
-  font-size: 12px;
+  font-size: 16px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
 }
 ion-footer {
-  width: 375px;
   height: 49px;
   &.freebook {
-    height: 60px;
+    height: 70px;
   }
   background: #ffffff;
   .price-detail {
     display: flex;
     align-items: center;
-    padding: 0.5em;
+    padding: 0.8em;
     .submit-btn {
       width: 150px;
       height: 32px;
@@ -270,14 +304,14 @@ ion-footer {
       margin-right: 0.5em;
     }
     .detail {
-      font-size: 8px;
+      font-size: 14px;
       font-family: PingFang SC;
       font-weight: 500;
       color: #333333;
       margin-left: 1em;
     }
     .total {
-      font-size: 12px;
+      font-size: 15px;
       color: red;
     }
     .price {
@@ -285,7 +319,10 @@ ion-footer {
     }
   }
   &.freebook .freebook-price {
-    padding: 0.5em;
+    padding: 0.5em 0.8em;
     margin-top: -1.2em;
   }
+}
+.flex-row-wrap {
+  flex-flow: row wrap;
 }

@@ -78,6 +78,8 @@ export class InternationalHotelService {
   get isAgent() {
     return this.tmcService.isAgent;
   }
+  RoomDefaultImg: string;
+  HotelDefaultImg: string;
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -391,6 +393,10 @@ export class InternationalHotelService {
     }
     return this.apiService.getResponse<IInterHotelSearchResult>(req).pipe(
       map((res) => {
+        if (res && res.Data) {
+          this.RoomDefaultImg = res.Data.RoomDefaultImg;
+          this.HotelDefaultImg = res.Data.HotelDefaltImg;
+        }
         if (res && res.Data && res.Data.HotelDayPrices) {
           res.Data.HotelDayPrices = res.Data.HotelDayPrices.map((it) => {
             if (it.Hotel) {
@@ -804,18 +810,28 @@ export class InternationalHotelService {
     const res = this.getFullHouseOrCanBook(p);
     return res && res.toLowerCase().includes("full");
   }
+  getRoomPlanDescriptions(room: RoomEntity) {
+    const itm =
+      room &&
+      room.RoomDetails &&
+      room.RoomDetails.find((it) => it.Name == "描述");
+    if (!itm || !itm.Description) {
+      return [];
+    }
+    return itm.Description.split("、");
+  }
   getRoomArea(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Area")
+      room.RoomDetails.find((it) => it.Tag == "Area" || it.Name == "面积")
     );
   }
   getFloor(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Floor")
+      room.RoomDetails.find((it) => it.Tag == "Floor" || it.Name == "楼层")
     );
   }
   getRenovationDate(room: RoomEntity) {
@@ -833,17 +849,22 @@ export class InternationalHotelService {
     );
   }
   getCapacity(room: RoomEntity) {
-    return (
+    const one =
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "Capacity")
-    );
+      room.RoomDetails.find(
+        (it) =>
+          it.Tag == "Capacity" || (it.Name && it.Name.includes("入住人数"))
+      );
+    return one && one.Description && one;
   }
   getBedType(room: RoomEntity) {
     return (
       room &&
       room.RoomDetails &&
-      room.RoomDetails.find((it) => it.Tag == "BedType")
+      room.RoomDetails.find(
+        (it) => it.Tag == "BedType" || (it.Name && it.Name.includes("床型"))
+      )
     );
   }
   getRoomPlanUniqueId(p: RoomPlanEntity) {
@@ -882,6 +903,8 @@ export interface ISearchInterHotelResult {
   Value?: string; // Code
 }
 export interface IInterHotelSearchResult {
+  RoomDefaultImg: string;
+  HotelDefaltImg: string;
   CityCode: string;
   Hotel: HotelEntity;
   HotelQuery: any;

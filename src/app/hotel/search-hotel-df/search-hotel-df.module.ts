@@ -11,12 +11,14 @@ import { SearchHotelDfPage } from "./search-hotel-df.page";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 import { AuthorityGuard } from 'src/app/guards/authority.guard';
+import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: SearchHotelDfPage,
-    canActivate: [AuthorityGuard,ConfirmCredentialInfoGuard,StylePageGuard]
+    canActivate: [AuthorityGuard,ConfirmCredentialInfoGuard,StylePageGuard],
+    canDeactivate:[CandeactivateGuard]
   }
 ];
 

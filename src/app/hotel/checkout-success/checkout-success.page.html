@@ -1,0 +1,48 @@
+<ion-header>
+  <ion-toolbar style="--border-width: 0">
+    <ion-buttons slot="start" style="font-size: 25px">
+      <ion-icon name="chevron-back-outline" (click)="onClickList()"></ion-icon>
+    </ion-buttons>
+    <ion-title>下单成功</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="container">
+    <div class="up">
+      <div>
+        <img src="assets/images/order.png" alt="" />
+      </div>
+    </div>
+    <div class="down">
+      <div class="success">下单成功</div>
+      <div class="active">您的订单需要审批、请于审批完成后到订单列进行支付</div>
+    </div>
+  </div>
+  <div class="hotel-item">
+    <div class="boutique">精品酒店</div>
+    <div class="list" *ngFor="let item of boutiqueHotel?.HotelDayPrices" (click)="goToDetail(item.Id)">
+      <img [lazyLoad]="item.HotelFileName"/>
+      <div class="right-side">
+        <div class="name">{{item?.HotelName}}</div>
+        <div class="grade-stars">
+          <div class="score">
+            <ion-text class="grade" color="danger">{{item?.HotelCategory}}分</ion-text>
+            <div class="stars">
+              <ng-container>
+                <ion-icon name="star" color="warning"></ion-icon>
+                <ion-icon name="star-half" color="warning"></ion-icon>
+              </ng-container>
+            </div>
+          </div>
+          <ion-text class="ion-text-end ion-padding-end price" color="danger"
+            ><small>￥</small><strong>{{item?.Price}}</strong><small>起</small>
+          </ion-text>
+        </div>
+        <div class="ion-text-wrap location">
+          <ion-icon name="location" color="medium" style="margin-top:3px;"></ion-icon>
+          <div class="ion-text-wrap">{{item?.HotelAddress}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

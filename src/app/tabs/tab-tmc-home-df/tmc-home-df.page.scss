@@ -10,7 +10,49 @@ ion-header ion-title {
   position: relative;
   width: 100vw;
 }
-.dots {
+.hot-hotel {
+  --background: white;
+  --border-width: 0;
+  position: relative;
+  width: 100vw;
+  .title {
+    font-size: 18px;
+    margin-left: 20px;
+    border-left: 3px solid #5099fe;
+    padding: 0 10px;
+  }
+  .inner {
+    padding: 20px;
+    height: 138px;
+    position: relative;
+    img {
+      width: 100%;
+      border-radius: 10px;
+      background-repeat: no-repeat;
+      background-size: contain;
+      height: 117px;
+      object-fit: cover;
+      &.lazyloading {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+    .desc {
+      font-size: 0.6rem;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba(var(--ion-color-dark-rgb), 0.2);
+      color: white;
+      border-radius: 0em;
+    }
+  }
+}
+
+.dots,
+.dots-up {
   position: absolute;
   bottom: 1em;
   width: 100%;
@@ -27,6 +69,15 @@ ion-header ion-title {
     margin: 0 0.15em;
     &.active {
       background-color: rgba(255, 255, 255, 1);
+    }
+  }
+}
+.dots-up {
+  .dot {
+    &.active {
+      background-color: rgba(255, 255, 255, 1);
+      width: 25px;
+      border-radius: 4px;
     }
   }
 }
@@ -137,6 +188,9 @@ ion-header ion-title {
     align-items: center;
     flex-flow: column nowrap;
     padding: 0 1em;
+    img{
+      width: 19px;
+    }
   }
   .txt {
     white-space: nowrap;
@@ -145,6 +199,92 @@ ion-header ion-title {
     margin-top: 0.5em;
   }
 }
+.notice {
+  margin-top: 25px;
+  font-size: 12px;
+  // height: 40px;
+  .not-item {
+    margin: 20px;
+    overflow-y: auto;
+    height: 20px;
+    img {
+      height: 18px;
+    }
+    .not-jj {
+      display: flex;
+      .not-name {
+        margin-left: 15px;
+        padding-right: 15px;
+      }
+    }
+  }
+
+  
+
+  .it-list {
+    display: flex;
+    line-height: 2;
+  }
+
+  .swiper-slide {
+    display: flex;
+    line-height: 2;
+  }
+
+  .not-item-u {
+    margin: 20px;
+    height: 44px;
+    img {
+      height: 20px;
+      margin-top: 4px;
+    }
+    .wait-trip {
+      margin-left: 15px;
+    }
+
+    .jiantou {
+      display: flex;
+      align-items: center;
+      margin-right: 6px;
+      margin-left: 6px;
+      img {
+        width: 24px;
+        height: 5px;
+      }
+    }
+  }
+
+  .not-warp {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 18px;
+    margin-bottom: 16px;
+  }
+  .trips {
+    display: flex;
+  }
+
+  .not-trip {
+    display: flex;
+  }
+
+  .wait-trip {
+    span {
+      color: #ff6600;
+    }
+  }
+  .fly-time {
+    span {
+      color: #ff6600;
+    }
+  }
+}
+
+.view-now {
+  color: #5099fe;
+  margin-left: 15px;
+}
+
 .annoucement-container {
   height: 25px;
   margin: 0 1em;
@@ -178,3 +318,80 @@ ion-header ion-title {
     font-size: 12px;
   }
 }
+
+.points-mall {
+  margin: 20px;
+  .title {
+    font-size: 18px;
+    border-left: 3px solid #5099fe;
+    padding: 0 10px;
+    margin-bottom: 15px;
+  }
+  .commodity {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .list {
+    width: 156px;
+    height: 87px;
+    background: linear-gradient(90deg, #dec6fd 0%, #d1b7ff 100%);
+    opacity: 0.8;
+    border-radius: 10px;
+    margin: 5px;
+    display: flex;
+    .left {
+      display: grid;
+      margin-left: 12px;
+      .item-name {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        color: #934aca;
+      }
+      .jf {
+        font-size: 12px;
+      }
+      button {
+        font-size: 12px;
+        background: #934aca;
+        color: #fff;
+        height: 18px;
+        width: 64px;
+        border-radius: 5px;
+      }
+    }
+    .right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      img {
+        width: 51px;
+        height: 66px;
+        border-radius: 4px;
+      }
+    }
+  }
+}
+
+.warpper-a{
+  height: 21px;
+  font-size: 12px;
+  margin: 20px;
+  margin-top: 24px;
+  .swiper{
+    display: flex;
+  }
+  img{    
+    height: 18px;
+  }
+  .not-jj {
+    display: flex;
+    .not-name {
+      margin-left: 15px;
+      padding-right: 15px;
+    }
+  }
+}
+
+
