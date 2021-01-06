@@ -2,16 +2,16 @@ import { flyInOut } from "../../animations/flyInOut";
 import {
   Component,
 } from "@angular/core";
-import { BookPage } from '../book/book.page';
 import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
+import { FlightBookPage } from "../flight-book/flight-book.page";
 
 @Component({
-  selector: "app-book-df",
-  templateUrl: "./book-df.page.html",
-  styleUrls: ["./book-df.page.scss"],
+  selector: "app-flight-book-df",
+  templateUrl: "./flight-book-df.page.html",
+  styleUrls: ["./flight-book-df.page.scss"],
   animations: [flyInOut],
 })
-export class BookDfPage extends BookPage {
+export class FlightBookDfPage extends FlightBookPage {
   langOpt: any = {
     has: "有",
     meal: "餐食",

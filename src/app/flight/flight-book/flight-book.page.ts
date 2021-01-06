@@ -1,17 +1,17 @@
 import { LangService } from "src/app/services/lang.service";
-import { flyInOut } from "./../../animations/flyInOut";
-import { PriceDetailComponent } from "./../components/price-detail/price-detail.component";
-import { PayService } from "./../../services/pay/pay.service";
-import { OrderBookDto } from "./../../order/models/OrderBookDto";
+import { flyInOut } from "../../animations/flyInOut";
+import { PriceDetailComponent } from "../components/price-detail/price-detail.component";
+import { PayService } from "../../services/pay/pay.service";
+import { OrderBookDto } from "../../order/models/OrderBookDto";
 import {
   ActivatedRoute,
   Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
 } from "@angular/router";
-import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
+import { InsuranceProductEntity } from "../../insurance/models/InsuranceProductEntity";
 import { CalendarService } from "../../tmc/calendar.service";
-import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
+import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import {
   NavController,
   ModalController,
@@ -34,7 +34,7 @@ import {
   PassengerBookInfo,
   InitialBookDtoModel,
   IBookOrderResult,
-} from "./../../tmc/tmc.service";
+} from "../../tmc/tmc.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import {
   StaffService,
@@ -43,7 +43,7 @@ import {
   OrganizationEntity,
   StaffApprover,
   StaffBookType,
-} from "./../../hr/staff.service";
+} from "../../hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
 import {
   Component,
@@ -102,12 +102,12 @@ import { SelectComponent } from "src/app/components/select/select.component";
 import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
 
 @Component({
-  selector: "app-book",
-  templateUrl: "./book.page.html",
-  styleUrls: ["./book.page.scss"],
+  selector: "app-flight-book",
+  templateUrl: "./flight-book.page.html",
+  styleUrls: ["./flight-book.page.scss"],
   animations: [flyInOut],
 })
-export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
+export class FlightBookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   private isShowInsuranceBack = false;
   private isPlaceOrderOk = false;
   private isManagentCredentails = false;
