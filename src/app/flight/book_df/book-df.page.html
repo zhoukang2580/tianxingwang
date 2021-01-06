@@ -240,7 +240,7 @@
                     </ion-item>
                     <div class="row" (click)='onOpenSelect(langel)'>
                         <div class="label">通知语言</div>
-                        <div class="value">{{combindInfo.notifyLanguage}}</div>
+                        <div class="value">{{combindInfo.notifyLanguage=='cn'?"中文":combindInfo.notifyLanguage=='en'?"英文":"不发"}}</div>
                         <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                     </div>
                     <div class="row" *ngIf='(isCanSkipApproval$|async)'>
