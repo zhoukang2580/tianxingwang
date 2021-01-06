@@ -215,7 +215,7 @@
                                 <ion-select-option value='en'>English</ion-select-option>
                             </ion-select>
                         </ion-item>
-                        <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>
+                        <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval'>
                             <ion-label style='margin-right: 0.5em'>Skip approval:</ion-label>
                             <ion-checkbox class='ion-margin-end' color="secondary" [(ngModel)]='combindInfo.isSkipApprove'>
                             </ion-checkbox>
@@ -282,12 +282,8 @@
 <ion-footer>
     <ion-toolbar (click)="onToggleIsShowFee();">
         <ion-buttons slot='start'>
-            <!-- <ion-button color='secondary' (click)='onShowPriceDetail()'>总计:
-        <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)|flightprice:"1"}}</ion-text>
-        <ion-icon name='caret-up-outline' slot='end' color='secondary' mode='md'></ion-icon>
-      </ion-button> -->
             <ion-text color="secondary">Total:</ion-text>
-            <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
+            <ion-text slot='end' color='danger'>￥{{totalPrice}}</ion-text>
             <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
             <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
         </ion-buttons>

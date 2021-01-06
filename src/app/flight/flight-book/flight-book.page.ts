@@ -53,6 +53,7 @@ import {
   AfterViewInit,
   ElementRef,
   ViewChild,
+  OnDestroy,
 } from "@angular/core";
 import { Storage } from "@ionic/storage";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -67,6 +68,7 @@ import {
   combineLatest,
   of,
   fromEvent,
+  Subscription,
 } from "rxjs";
 import {
   OrderTravelType,
@@ -107,10 +109,14 @@ import { TicketchangingComponent } from "../components/ticketchanging/ticketchan
   styleUrls: ["./flight-book.page.scss"],
   animations: [flyInOut],
 })
-export class FlightBookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
+export class FlightBookPage
+  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
   private isShowInsuranceBack = false;
   private isPlaceOrderOk = false;
   private isManagentCredentails = false;
+  private subscriptions: Subscription[] = [];
+  private totalPriceSource: Subject<number>;
+  totalPrice = 0;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
@@ -126,7 +132,6 @@ export class FlightBookPage implements OnInit, AfterViewInit, CanComponentDeacti
   checkPayCount = 5;
   checkPayCountIntervalTime = 3 * 1000;
   checkPayCountIntervalId: any;
-  totalPriceSource: Subject<number>;
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
@@ -134,7 +139,7 @@ export class FlightBookPage implements OnInit, AfterViewInit, CanComponentDeacti
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   isCheckingPay: boolean;
-  isCanSkipApproval$ = of(false);
+  isCanSkipApproval = false;
   isCanSave = false;
   isRoundTrip = false;
   isShowFee = false;
@@ -175,6 +180,11 @@ export class FlightBookPage implements OnInit, AfterViewInit, CanComponentDeacti
     this.flightService.setPassengerBookInfosSource(
       this.flightService.getPassengerBookInfos().filter((it) => !!it.bookInfo)
     );
+    this.subscriptions.push(
+      this.totalPriceSource.subscribe((p) => {
+        this.totalPrice = p;
+      })
+    );
     // 秘书和特殊角色可以跳过审批(如果有审批人)
     this.route.queryParamMap.subscribe(async () => {
       this.isCanSave = await this.identityService
@@ -206,25 +216,33 @@ export class FlightBookPage implements OnInit, AfterViewInit, CanComponentDeacti
         this.isShowInsuranceBack = false;
       }, 200);
     });
-    this.isCanSkipApproval$ = combineLatest([
+    const sub = combineLatest([
       from(this.tmcService.getTmc()),
       from(this.staffService.isSelfBookType()),
       this.identityService.getIdentitySource(),
-    ]).pipe(
-      map(([tmc, isSelfType, identity]) => {
-        return (
-          tmc.FlightApprovalType != 0 &&
-          tmc.FlightApprovalType != TmcApprovalType.None &&
-          !isSelfType &&
-          !(identity && identity.Numbers && identity.Numbers.AgentId)
-        );
-      }),
-      tap((can) => {
-        console.log("是否可以跳过审批", can);
-      })
-    );
+    ])
+      .pipe(
+        map(([tmc, isSelfType, identity]) => {
+          return (
+            tmc.FlightApprovalType != 0 &&
+            tmc.FlightApprovalType != TmcApprovalType.None &&
+            !isSelfType &&
+            !(identity && identity.Numbers && identity.Numbers.AgentId)
+          );
+        }),
+        tap((can) => {
+          console.log("是否可以跳过审批", can);
+        })
+      )
+      .subscribe((is) => {
+        this.isCanSkipApproval = is;
+      });
+    this.subscriptions.push(sub);
     this.isself = await this.staffService.isSelfBookType();
     console.log(this.isself, "isself");
+  }
+  ngOnDestroy() {
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
   canDeactivate(
     currentRoute: ActivatedRouteSnapshot,
@@ -976,8 +994,8 @@ export class FlightBookPage implements OnInit, AfterViewInit, CanComponentDeacti
       item: ICombindInfo,
       ele: HTMLElement
     ) => {
-      if(!item.isShowDetail){
-        item.isShowDetail=true;
+      if (!item.isShowDetail) {
+        item.isShowDetail = true;
       }
       await AppHelper.alert(
         `${item.vmCredential && item.vmCredential.Name} 【${
@@ -1150,7 +1168,7 @@ export class FlightBookPage implements OnInit, AfterViewInit, CanComponentDeacti
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumberid", combindInfo.id);
               showErrorMsg(
-                it.label +( this.LangService.isCn ? "必填" : " Required "),
+                it.label + (this.LangService.isCn ? "必填" : " Required "),
                 combindInfo,
                 el
               );
