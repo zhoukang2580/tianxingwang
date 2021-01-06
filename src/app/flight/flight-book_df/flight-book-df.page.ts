@@ -969,7 +969,7 @@ export class FlightBookDfPage
         !combindInfo.isSkipApprove
       ) {
         const ele: HTMLElement = this.getEleByAttr(
-          "approvalid",
+          "approverid",
           combindInfo.id
         );
         showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo, ele);
