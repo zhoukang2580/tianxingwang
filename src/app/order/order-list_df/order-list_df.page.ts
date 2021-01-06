@@ -425,6 +425,7 @@ export class OrderListDfPage
         isRoundTrip: false,
         Date: date.substr(0, 10),
       });
+      this.isGoDetail=true;
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true },
       });

@@ -4,7 +4,7 @@
       <app-back-button defaultHref="" color='light'></app-back-button>
     </ion-buttons>
     <ion-buttons slot='end'>
-      <ion-button fill='clear' *ngIf='(isShowBookInfos$|async) as num' color='secondary' size='small' (click)='onShowSelectedInfosPage();isCanleave=true'>已选航班
+      <ion-button fill='clear' *ngIf='(isShowBookInfos$|async) as num' color='light' size='small' (click)='onShowSelectedInfosPage();isCanleave=true'>已选航班
         <ion-badge slot='end' color='danger'>
           <ion-text color='light'>{{num}}</ion-text>
         </ion-badge>
