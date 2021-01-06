@@ -30,7 +30,7 @@
           <ng-container *ngIf='combindInfo.isShowApprovalInfo'>
             <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
               <ion-label>Notification language:</ion-label>
-              <ion-select value='cn' okText="Determine" cancelText="Cancel" [(ngModel)]='combindInfo.notifyLanguage'>
+              <ion-select value='cn' okText="Confirm" cancelText="Cancel" [(ngModel)]='combindInfo.notifyLanguage'>
                 <ion-select-option value=''>No hair</ion-select-option>
                 <ion-select-option value='cn' notranslate>中文</ion-select-option>
                 <ion-select-option value='en'>English</ion-select-option>

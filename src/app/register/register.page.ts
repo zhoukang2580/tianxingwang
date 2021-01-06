@@ -9,6 +9,7 @@ import { Router } from "@angular/router";
 import { LanguageHelper } from "src/app/languageHelper";
 import { LoginService } from "../services/login/login.service";
 import { WechatHelper } from "../wechatHelper";
+import { CONFIG } from "../config";
 
 @Component({
   selector: "app-register",
@@ -30,13 +31,16 @@ export class RegisterPage implements OnInit {
   wechatMiniMobile: any;
   isWechatMini: boolean;
   isGetWechatMiniMobile: boolean;
+  isShowPrivacy = CONFIG.isShowPrivacy;
+  isReadPrivacy = false;
+  isShowPrivacyAlert = false;
   constructor(
     private apiService: ApiService,
     private loginService: LoginService,
     private fb: FormBuilder,
     private router: Router,
     private navController: NavController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -93,6 +97,9 @@ export class RegisterPage implements OnInit {
   showImageCode(type: string) {
     this.isShowImageCode = true;
   }
+  openPrivacyPage() {
+    AppHelper.openPrivacyPage();
+  }
   onSlideEvent(valid: boolean) {
     if (valid) {
       this.isShowImageCode = false;
@@ -104,12 +111,10 @@ export class RegisterPage implements OnInit {
     req.IsShowLoading = true;
     req.Method = "ApiRegisterUrl-Home-SendMobileCode";
     req.Data = JSON.stringify({ Mobile: this.form.value.Mobile });
-    var paramters= AppHelper.getQueryParamers();
-    if(paramters)
-    {
-      for(var p in paramters)
-      {
-        req[p]=paramters[p];
+    var paramters = AppHelper.getQueryParamers();
+    if (paramters) {
+      for (var p in paramters) {
+        req[p] = paramters[p];
       }
     }
     const sub = this.apiService
@@ -138,8 +143,12 @@ export class RegisterPage implements OnInit {
       );
   }
   register() {
+    if (!this.isReadPrivacy && this.isShowPrivacy) {
+      this.isShowPrivacyAlert = true;
+      return;
+    }
     if (this.form.value.Password !== this.form.value.SurePassword) {
-      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip);
+      AppHelper.alert(LanguageHelper.TwicePasswordNotEqualTip());
       return;
     }
     const req = new RequestEntity();
@@ -169,7 +178,6 @@ export class RegisterPage implements OnInit {
       }
     }
 
-  
     this.isCodeOk = true;
     const sub = this.apiService
       .getResponse<{
@@ -179,7 +187,7 @@ export class RegisterPage implements OnInit {
         (res) => {
           if (res.Status) {
             this.isCodeOk = true;
-           
+
             if (res.Data && res.Data.Mobile) {
               this.form.patchValue({ Mobile: res.Data.Mobile });
             }
@@ -190,7 +198,7 @@ export class RegisterPage implements OnInit {
             return;
           }
         },
-        (e) => {},
+        (e) => { },
         () => {
           sub.unsubscribe();
         }
@@ -242,8 +250,8 @@ export class RegisterPage implements OnInit {
         ExpiredInterval: number;
       }>(req)
       .subscribe(
-        (res) => {},
-        (e) => {},
+        (res) => { },
+        (e) => { },
         () => {
           sub.unsubscribe();
         }
@@ -266,7 +274,7 @@ export class RegisterPage implements OnInit {
     const token =
       (this.apiService.apiConfig && this.apiService.apiConfig.Token) || "";
     const key = AppHelper.uuid();
-    const desc="小程序需要获取你的手机号码来完成注册功能";
+    const desc = "小程序需要获取你的手机号码来完成注册功能";
     let url = `/pages/phonenumber/index?key=${key}&token=${token}&description=${desc}`;
     if (!this.wechatMiniUser) {
       url = url + "&isLogin=true";
@@ -286,5 +294,13 @@ export class RegisterPage implements OnInit {
     this.mobileChangeSubscription.unsubscribe();
     this.mobileNewPasswordSubscription.unsubscribe();
     this.mobileSurePasswordSubscription.unsubscribe();
+  }
+  onReadPrivacy(isRead = false) {
+    this.isReadPrivacy = isRead;
+    this.isShowPrivacyAlert = false;
+
+  }
+  onToggleIsReadPrivacy() {
+    this.isReadPrivacy = !this.isReadPrivacy;
   }
 }

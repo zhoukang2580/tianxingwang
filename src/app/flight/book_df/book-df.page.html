@@ -230,7 +230,7 @@
                         </ion-item>
                     </ion-item-group>
                     <ion-item-group *ngIf='combindInfo.isShowGroupedInfo'>
-                        <app-book-tmc-outnumber [attr.outnumber]='combindInfo.id' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true"
+                        <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true"
                             (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
                         </app-book-tmc-outnumber>
                     </ion-item-group>

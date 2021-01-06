@@ -15,11 +15,11 @@ import { CONFIG } from "./app/config";
 // const module = window["module"];
 try {
   AppHelper.initlizeQueryParamers();
-  if (CONFIG.mockProBuild) {
-    const obj = AppHelper.getQueryParamers();
-    obj.style = "df";
-    obj.language = "cn";
-  }
+  // if (CONFIG.mockProBuild) {
+  //   const obj = AppHelper.getQueryParamers();
+  //   obj.style = "df";
+  //   obj.language = "cn";
+  // }
   processPath();
   console.log("url,locationurl", window.location.href);
   changeAppTitle();

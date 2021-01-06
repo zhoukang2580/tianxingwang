@@ -8,7 +8,10 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { WechatHelper } from "src/app/wechatHelper";
 import { Subscription } from "rxjs";
-import { ScanService } from "src/app/services/scan/scan.service";
+import {
+  IQrScannerStatus,
+  ScanService,
+} from "src/app/services/scan/scan.service";
 @Component({
   selector: "app-scan-comp",
   templateUrl: "./scan.component.html",
@@ -91,14 +94,34 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private async appScan() {
-    await this.plt.ready();
-    const status = await this.qrScanService.prepare();
-    if (status.authorized == "1") {
-      this.router.navigate(["qrscan"], {
-        queryParams: { autoClose: this.isAutoCloseScanPage },
-      });
-    } else {
-      throw new Error("您拒绝使用相机功能");
+    try {
+      await this.plt.ready();
+      let status: IQrScannerStatus = await this.qrScanService
+        .prepare()
+        .catch(() => null);
+      if (!status) {
+        status = await this.qrScanService.getStatus();
+      }
+      console.log("appScan status", status);
+      if (status.authorized == "1") {
+        this.router.navigate(["qrscan"], {
+          queryParams: { autoClose: this.isAutoCloseScanPage },
+        });
+      } else {
+        if (status.canOpenSettings == "1") {
+          const ok = await AppHelper.alert("允许打开设置应用权限管理界面？",true,"允许",'拒绝');
+          if (ok) {
+            await this.qrScanService.openSettings().catch((e) => {
+              console.log("openSettings error", e);
+            });
+            return;
+          }
+        }
+        throw new Error("您拒绝使用相机功能");
+      }
+    } catch (e) {
+      console.log("appScan error", e);
+      AppHelper.alert(e || "您拒绝使用相机功能");
     }
   }
   private async wechatH5Scan() {

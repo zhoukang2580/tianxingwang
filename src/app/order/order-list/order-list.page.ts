@@ -10,13 +10,19 @@ import {
   TmcService,
   PassengerBookInfo,
 } from "../../tmc/tmc.service";
-import { ActivatedRoute, Router } from "@angular/router";
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  Router,
+  RouterStateSnapshot,
+} from "@angular/router";
 import {
   ModalController,
   IonInfiniteScroll,
   IonContent,
   IonDatetime,
   PickerController,
+  NavController,
 } from "@ionic/angular";
 import {
   Component,
@@ -47,18 +53,21 @@ import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-order-list",
   templateUrl: "./order-list.page.html",
   styleUrls: ["./order-list.page.scss"],
 })
-export class OrderListPage implements OnInit, OnDestroy {
+export class OrderListPage
+  implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
   public loadDataSub = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private selectDateChange = new EventEmitter();
   private selectDateSubscription = Subscription.EMPTY;
+  private isBackHome = false;
   productItemType = ProductItemType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
@@ -89,9 +98,19 @@ export class OrderListPage implements OnInit, OnDestroy {
     private flightService: FlightService,
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
-    private LangService: LangService
+    private langService: LangService,
+    private natCtrl: NavController
   ) {}
-
+  canDeactivate() {
+    console.log("canDeactivate isbackhome=", this.isBackHome);
+    if (this.isBackHome) {
+      // this.natCtrl.navigateRoot("", { animated: true });
+      this.router.navigate([""]);
+      this.isBackHome = false;
+      return false;
+    }
+    return true;
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -363,39 +382,26 @@ export class OrderListPage implements OnInit, OnDestroy {
         TicketId: data.ticketId,
         ExchangeDate: date,
       });
-      if (
-        !res ||
-        !res.trip ||
-        !res.order ||
-        !res.order.OrderPassengers ||
-        !res.order.OrderPassengers[0]
-      ) {
+      if (!res || !res.trip || !res.order) {
         AppHelper.alert("改签失败，请重试");
         return;
       }
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
-      let passenger: StaffEntity = {
-        Account: {
-          Id: res.order.OrderPassengers[0].Id,
-        },
-        AccountId: res.order.OrderPassengers[0].Id,
-        Name: res.order.OrderPassengers[0].Name,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-        // isNotWhiteList: !res.staff,
-      } as StaffEntity;
+      await this.flightService.initSelfBookTypeBookInfos();
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      if (!bookInfos.length) {
+        AppHelper.alert("改签失败，请重试");
+        return;
+      }
+      let passenger: StaffEntity = bookInfos[0].passenger;
       if (res.staff) {
         passenger = {
           ...passenger,
           ...res.staff,
         };
       }
-      const credential: CredentialsEntity = {
-        Name: res.order.OrderPassengers[0].Name,
-        Type: res.order.OrderPassengers[0].CredentialsType,
-        TypeName: res.order.OrderPassengers[0].PassengerTypeName,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-      } as CredentialsEntity;
+      const credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
         credential,
@@ -403,7 +409,6 @@ export class OrderListPage implements OnInit, OnDestroy {
         // isNotWhitelist: !res.staff,
       };
       this.flightService.addPassengerBookInfo(info);
-      const bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
         AppHelper.alert("改签失败，请重试");
         return;
@@ -823,6 +828,7 @@ export class OrderListPage implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
+        this.isBackHome = d.get("isBackHome") == "true";
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );
@@ -850,7 +856,7 @@ export class OrderListPage implements OnInit, OnDestroy {
         .filter((t) => t.value != ProductItemType.more && t.isDisplay)
         .map((t) => {
           const it = { ...t };
-          if (this.LangService.isEn) {
+          if (this.langService.isEn) {
             it.label = t.labelEn;
           } else {
             it["isActive"] = t.value == this.activeTab.value;

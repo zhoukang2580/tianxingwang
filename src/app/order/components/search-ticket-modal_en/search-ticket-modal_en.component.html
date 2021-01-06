@@ -32,13 +32,13 @@
         </ion-item>
         <ion-item>
             <ion-label>Order status</ion-label>
-            <ion-select value="" okText="Determine" cancelText="Cancel" [(ngModel)]='condition.orderStatus'>
+            <ion-select value="" okText="Confirm" cancelText="Cancel" [(ngModel)]='condition.orderStatus'>
                 <ion-select-option [value]="item.value" *ngFor='let item of orderStatus' notranslate>{{item.label}}</ion-select-option>
             </ion-select>
         </ion-item>
         <ion-item *ngIf='condition?.orderFlightTicketStatusTypes?.length'>
             <ion-label>Ticket status</ion-label>
-            <ion-select value="" okText="Determine" cancelText="Cancel" [(ngModel)]='condition.orderFlightTicketStatusType'>
+            <ion-select value="" okText="Confirm" cancelText="Cancel" [(ngModel)]='condition.orderFlightTicketStatusType'>
                 <ion-select-option [value]="item.Value" *ngFor='let item of condition.orderFlightTicketStatusTypes'>
                     {{item.Text}}</ion-select-option>
             </ion-select>

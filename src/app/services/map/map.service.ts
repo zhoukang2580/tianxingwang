@@ -3,6 +3,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { WechatHelper } from "src/app/wechatHelper";
+import { BehaviorSubject, Subject } from "rxjs";
 export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
 export const GaodeMapKey = `42acb0dcc0c0541c738f8842ffb360ce`;
 export interface MapPoint {
@@ -10,6 +11,15 @@ export interface MapPoint {
   lat: string;
   province?: string;
   cityName?: string;
+  address?: {
+    city: string; // "上海市";
+    city_code: string; // 0;
+    country: string; // "";
+    district: string; // "";
+    province: string; // "上海市";
+    street: string; // "";
+    street_number: string; // "";
+  };
 }
 @Injectable({
   providedIn: "root",
@@ -19,8 +29,12 @@ export class MapService {
   private st = Date.now();
   private querys: any;
   private amap: any;
+  private isInitBMap = false;
+  private bMapLocalSearchObj;
+  private bMapLocalSearchSources: Subject<any[]>;
   constructor(private apiService: ApiService) {
     this.querys = AppHelper.getQueryParamers();
+    this.bMapLocalSearchSources = new BehaviorSubject([]);
     console.log("MapService,tree", this.querys);
     this.st = Date.now();
     AppHelper.isWechatMiniAsync().then((isMini) => {
@@ -33,21 +47,33 @@ export class MapService {
       this.initGaoDeMap();
     }
   }
-  private initBMap() {
-    setTimeout(() => {
-      try {
-        const script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = `https://api.map.baidu.com/getscript?v=3.0&ak=${baiduMapAk}&services=&t=20191126111618`;
-        (() => {
+  private async initBMap() {
+    return new Promise<boolean>((rsv) => {
+      window["init"] = function init() {
+        console.log("callback call");
+        rsv(true);
+      };
+      setTimeout(() => {
+        try {
+          this.isInitBMap = !!document.querySelector("#bmapscript");
+          if (this.isInitBMap) {
+            rsv(true);
+            return;
+          }
+          const script = document.createElement("script");
+          script.id = "bmapscript";
+          script.setAttribute("bmapscript", "bmapscript");
+          script.type = "text/javascript";
+          script.src = `https://api.map.baidu.com/api?v=3.0&ak=${baiduMapAk}&callback=init`;
           window["BMAP_PROTOCOL"] = "https";
           window["BMap_loadScriptTime"] = new Date().getTime();
           document.head.appendChild(script);
-        })();
-      } catch (e) {
-        console.error(e);
-      }
-    }, 3000);
+        } catch (e) {
+          console.error(e);
+          rsv(false);
+        }
+      }, 0);
+    });
   }
   convertToAmap(p: { lat: string; lng: string }) {
     console.log("原始坐标", p);
@@ -220,7 +246,7 @@ export class MapService {
       });
     });
   }
-  private getCurrentPosition(): Promise<MapPoint> {
+  private async getCurrentPosition(): Promise<MapPoint> {
     // 关于状态码
     //  BMAP_STATUS_SUCCESS	检索成功。对应数值“0”。
     // BMAP_STATUS_CITY_LIST	城市列表。对应数值“1”。
@@ -244,7 +270,10 @@ export class MapService {
       8: `超时`,
     };
     if (!window["BMap"]) {
-      return Promise.reject("地图加载失败");
+      await this.initBMap();
+      if (!window["BMap"]) {
+        return Promise.reject("地图加载失败");
+      }
     }
     return new Promise<MapPoint>((s, reject) => {
       let point: MapPoint;
@@ -278,6 +307,7 @@ export class MapService {
                 lng: point.lng,
                 cityName: r.address && r.address.city,
                 province: r.address && r.address.province,
+                address: r.address,
               });
             } else {
               reject(
@@ -297,6 +327,31 @@ export class MapService {
       );
     });
   }
+  getBMapLocalSearchSources() {
+    return this.bMapLocalSearchSources.asObservable();
+  }
+  onBMapLocalSearch(kw: string, p?: MapPoint) {
+    if (!this.bMapLocalSearchObj) {
+      let pt;
+      if (!p) {
+        p = {
+          lat: "31.18334",
+          lng: "121.43348",
+        };
+      }
+      pt = new window["BMap"].Point(p.lng, p.lat);
+      this.bMapLocalSearchObj = new window["BMap"].LocalSearch(pt, {
+        pageCapacity: 20,
+        onSearchComplete: (r) => {
+          console.log(r);
+          this.bMapLocalSearchSources.next((r && r.Ar) || []);
+        },
+      });
+    } else {
+      this.bMapLocalSearchObj.search(kw);
+    }
+    return this.bMapLocalSearchSources.asObservable();
+  }
   private getCityFromMap(p: MapPoint): Promise<AddressComponents> {
     if (!window["BMap"]) {
       return Promise.reject("地图加载失败");
@@ -308,6 +363,39 @@ export class MapService {
         s(addComp);
       });
     });
+  }
+  async getaddressComponents(latlng: MapPoint) {
+    try {
+      alert(!!window["BMap"]);
+      const pt = new window["BMap"].Point(latlng.lng, latlng.lat);
+      return new Promise<{
+        province: string;
+        city: string;
+        district: string;
+        street: string;
+        streetNumber: string;
+      }>((rsv) => {
+        const geoc = new window["BMap"].Geocoder();
+        geoc.getLocation(pt, function (rs) {
+          const addComp = rs.addressComponents;
+          // alert(
+          //   addComp.province +
+          //     ", " +
+          //     addComp.city +
+          //     ", " +
+          //     addComp.district +
+          //     ", " +
+          //     addComp.street +
+          //     ", " +
+          //     addComp.streetNumber
+          // );
+          rsv(addComp);
+        });
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
   }
   async getCurMapPoint() {
     if (await AppHelper.isWechatMiniAsync()) {

@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.okoktrip.ybapp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.okoktrip.ybapp" version="1.4.0"
+    xmlns="http://www.w3.org/ns/widgets"
+    xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>毅博商旅</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
@@ -64,6 +66,9 @@
         <preference name="CordovaWebViewEngine" value="CDVWKWebViewEngine" />
         <edit-config file="*-Info.plist" mode="merge" target="NSLocationWhenInUseUsageDescription">
             <string>（需要获取地理位置来获取周边位置）need location access to find things nearby</string>
+        </edit-config>
+        <edit-config file="*-Info.plist" mode="merge" target="NSCameraUsageDescription">
+            <string>允许使用相机拍照上传头像或者扫码登陆等</string>
         </edit-config>
         <edit-config file="*-Info.plist" mode="merge" target="LSApplicationQueriesSchemes">
             <array>

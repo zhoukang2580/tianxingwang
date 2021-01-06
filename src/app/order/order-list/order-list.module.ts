@@ -9,11 +9,13 @@ import { IonicModule } from "@ionic/angular";
 import { OrderListPage } from "./order-list.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
+import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: OrderListPage,
+    canDeactivate:[CandeactivateGuard]
   },
 ];
 
