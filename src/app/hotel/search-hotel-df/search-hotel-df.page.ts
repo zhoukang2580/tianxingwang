@@ -38,8 +38,8 @@ import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standa
 import { OverHotelComponent } from "../components/over-hotel/over-hotel.component";
 import { environment } from "src/environments/environment";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
-import { HotelCityService } from "../hotel-city.service";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
+import { HotelCityService } from "../hotel-city.service";
 @Component({
   selector: "app-search-hotel-df",
   templateUrl: "./search-hotel-df.page.html",
