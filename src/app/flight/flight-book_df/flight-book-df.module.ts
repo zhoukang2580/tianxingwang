@@ -13,7 +13,7 @@ import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-in
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 import { StylePageGuard } from "src/app/guards/style-page.guard";
-import { FlightBookDfPage } from "src/app/flight-international/book_df/book-df.page";
+import { FlightBookDfPage } from "./flight-book-df.page";
 
 const routes: Routes = [
   {
