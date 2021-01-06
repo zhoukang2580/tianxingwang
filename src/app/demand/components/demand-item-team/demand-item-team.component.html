@@ -74,7 +74,7 @@
     <div class="item">
       <div class="label">人均预算</div>
       <div class="main more">
-        <ion-select value="0" cancelText="取消" okText="确定">
+        <ion-select value="0" cancelText="取消" okText="确定" [(ngModel)]="demandTeamModel.PersonBudget">
           <ion-select-option value="0">不限</ion-select-option>
           <ion-select-option value="100-1000">100-1000</ion-select-option>
           <ion-select-option value="1001-2000">1001-2000</ion-select-option>

@@ -3,20 +3,29 @@
     <div class="item">
       <div class="label">联系人</div>
       <div class="main">
-        <ion-text>高飞</ion-text>
+        <ion-input placeholder="请输入联系人" [(ngModel)]="demandAirportModel.AirportName"></ion-input>
+        <!-- <ion-text>高飞</ion-text> -->
       </div>
     </div>
     <div class="item">
       <div class="label">联系手机</div>
       <div class="main">
-        <ion-input placeholder="请输入手机号"></ion-input>
+        <ion-input placeholder="请输入手机号" [(ngModel)]="demandAirportModel.LiaisonPhone"></ion-input>
       </div>
     </div>
     <div class="item">
       <div class="label">服务类型</div>
       <div class="main">
-        <ion-text>休息室</ion-text>
-        <ion-icon name="chevron-forward-outline"></ion-icon>
+        <ion-select class="custom-options" cancelText="取消" okText="确定">
+          <ion-select-option value="1">休息室</ion-select-option>
+          <ion-select-option value="2">礼宾车</ion-select-option>
+          <ion-select-option value="3">要客通</ion-select-option>
+          <ion-select-option value="4">代客泊车</ion-select-option>
+          <ion-select-option value="5">预留登机牌</ion-select-option>
+          <ion-select-option value="6">登机口迎送</ion-select-option>
+          <ion-select-option value="7">行李托运</ion-select-option>
+          <ion-select-option value="8">物品快递服务</ion-select-option>
+        </ion-select>
       </div>
     </div>
     <div class="item">
@@ -68,7 +77,7 @@
 
 <div class="ion-footer">
   <div class="btn_container">
-    <ion-button color="secondary" class="ion-top">
+    <ion-button color="secondary" class="ion-top" (click)="onSubmit()">
       <ion-text>提 交</ion-text>
     </ion-button>
   </div>

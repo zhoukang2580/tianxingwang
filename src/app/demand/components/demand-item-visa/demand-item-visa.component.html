@@ -50,28 +50,9 @@
       </div>
     </div>
     <div class="item">
-      <div class="label">人数</div>
-      <div class="main more">
-        <ion-select
-          class="custom-options"
-          cancelText="取消"
-          okText="确定"
-          value="brown"
-          [(ngModel)]="demandVisaModel.WorkPlaceCode"
-        >
-          <ion-select-option value="brown">不限</ion-select-option>
-          <ion-select-option value="blonde">0-50</ion-select-option>
-          <ion-select-option value="black">51-100</ion-select-option>
-          <ion-select-option value="red">101-200</ion-select-option>
-          <ion-select-option value="yellow">200以上</ion-select-option>
-        </ion-select>
-        <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
-      </div>
-    </div>
-    <div class="item">
       <div class="label">备注</div>
       <div class="main">
-        <ion-input size="2" placeholder="请输入备注"></ion-input>
+        <ion-input [(ngModel)]="demandVisaModel.Remarks" placeholder="请输入备注"></ion-input>
       </div>
     </div>
   </div>

@@ -8,9 +8,9 @@ import { DemandTourModel } from '../../demand.service';
 })
 export class DemandItemMeetingComponent implements OnInit {
   @Input() demandTourModel: DemandTourModel;
-  @Output() demandMeeting: EventEmitter<any>;
+  @Output() demandTour: EventEmitter<any>;
   constructor() {
-    this.demandMeeting = new EventEmitter();
+    this.demandTour = new EventEmitter();
   }
 
   ngOnInit() {
@@ -18,6 +18,6 @@ export class DemandItemMeetingComponent implements OnInit {
   }
 
   onSubmit() {
-    this.demandMeeting.emit({ demandTourModel: this.demandTourModel });
+    this.demandTour.emit({ demandTourModel: this.demandTourModel });
   }
 }
