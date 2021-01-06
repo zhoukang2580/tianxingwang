@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { DemandAirportServiceModel } from '../../demand.service';
 
 @Component({
   selector: 'app-demand-airport-services',
@@ -6,9 +7,18 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./demand-airport-services.component.scss'],
 })
 export class DemandAirportServicesComponent implements OnInit {
+  @Input() demandAirportModel:DemandAirportServiceModel;
+  @Output() demandAirport: EventEmitter<any>;
+  constructor() {
+    this.demandAirport = new EventEmitter();
+   }
 
-  constructor() { }
+  ngOnInit() {
+    this.demandAirportModel = {} as any;
+  }
 
-  ngOnInit() {}
+  onSubmit(){
+    this.demandAirport.emit({demandAirportModel:this.demandAirportModel})
+  }
 
 }
