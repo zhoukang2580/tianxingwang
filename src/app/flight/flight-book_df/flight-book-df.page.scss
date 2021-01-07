@@ -108,9 +108,9 @@
       }
     }
     .tax {
-        padding: 0.5em 0 0;
-        display: flex;
-        line-height: 1.7;
+      padding: 0.5em 0 0;
+      display: flex;
+      line-height: 1.7;
       .insurance small {
         font-size: 8px;
       }
@@ -234,6 +234,9 @@
   padding: 0.5em 0;
   margin: 0.5em;
   background-color: var(--ion-color-light);
+  &.n-p-b {
+    padding-bottom: 0;
+  }
   &.payways {
     ion-item {
       --border-color: #eee;

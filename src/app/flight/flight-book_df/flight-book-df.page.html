@@ -260,16 +260,12 @@
                     </div>
                 </div>
             </ion-list>
-            <div class='section'>
+            <div class='section n-p-b'>
                 <div class="title">
                     <div class="name">授权账号查看订单</div>
                 </div>
-                <div class="row">
-                    <ion-item lines='none'>
-                        <app-book-addcontacts-comp buttonText='授权账号查看订单' [(contacts)]='addContacts'>
-                        </app-book-addcontacts-comp>
-                    </ion-item>
-                </div>
+                <app-flightbook-addcontacts buttonText='授权账号查看订单' [(contacts)]='addContacts'>
+                </app-flightbook-addcontacts>
             </div>
             <div class="section payways">
                 <div class="title  n-b">

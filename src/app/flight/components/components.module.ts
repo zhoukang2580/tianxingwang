@@ -28,6 +28,7 @@ import { CabinEnComponent } from "./fly-filter/cabin_en/cabin_en.component";
 import { TakeOffTimeSpanDfComponent } from "./fly-filter/take-off-timespan-df/take-off-timespan-df.component";
 import { FlightSegmentItemDfComponent } from "./flight-segment-item-df/flight-segment-item-df.component";
 import { FlightOutNumberComponent } from "./flight-outnumber/flight-outnumber.component";
+import { FlightBookAddcontactsCompComponent } from "./flightbook-addcontacts/flightbook-addcontacts.component";
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { FlightOutNumberComponent } from "./flight-outnumber/flight-outnumber.co
     SelectedPassengersComponent,
     SelectFlightsegmentCabinComponent,
     PriceDetailComponent,
+    FlightBookAddcontactsCompComponent,
     SelectFlightPassengerComponent,
     SelectAndReplacebookinfoComponent,
     FlightSegmentItemComponent,
@@ -71,6 +73,7 @@ import { FlightOutNumberComponent } from "./flight-outnumber/flight-outnumber.co
     TakeOffTimeSpanDfComponent,
     FlightDynamicComponent,
     FlyListItemComponent,
+    FlightBookAddcontactsCompComponent,
     FlyFilterComponent,
     TakeOffTimeSpanComponent,
     AircompanyComponent,
