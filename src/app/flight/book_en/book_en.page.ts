@@ -1385,7 +1385,10 @@ export class BookEnPage
         const cs = this.initialBookDtoModel.Staffs.find(
           (it) => it.Account.Id == item.passenger.AccountId
         );
-        const cstaff = cs && cs.CredentialStaff;
+        const cstaff =
+          item.passenger.AccountId == this.tmc.Account.Id
+            ? item.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
