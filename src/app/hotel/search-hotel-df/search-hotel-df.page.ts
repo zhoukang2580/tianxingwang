@@ -52,7 +52,6 @@ export class SearchHotelDfPage
   @ViewChild("ionCardEle", { static: true }) ionCard: IonCard;
   private subscriptions: Subscription[] = [];
   private fromRoute: string;
-  private isOpenSelectCityPage = false;
   get isShowSelectedInfos() {
     return this.hotelService.getBookInfos().some((it) => !!it.bookInfo);
   }
@@ -148,10 +147,8 @@ export class SearchHotelDfPage
     this.subscriptions.push(sub);
   }
   canDeactivate() {
-    console.log("isOpenSelectCityPage", this.isOpenSelectCityPage);
-    if (this.isOpenSelectCityPage) {
+    if (this.hotelCityService.isShowingPage) {
       this.hotelCityService.onSelectCity(false);
-      this.isOpenSelectCityPage = false;
       return false;
     }
     return true;
@@ -259,12 +256,11 @@ export class SearchHotelDfPage
   async onSearchCity() {
     if (this.isDomestic) {
       // this.router.navigate([AppHelper.getRoutePath("hotel-city-df")]);
-      this.isOpenSelectCityPage = true;
-      const city = await this.hotelCityService.onSelectCity(true);
-      if (city) {
+      const rs = await this.hotelCityService.onSelectCity(true);
+      if (rs) {
         this.hotelService.setSearchHotelModel({
           ...this.searchHotelModel,
-          destinationCity: city,
+          destinationCity: rs.city,
         });
         this.hotelCityService.onSelectCity(false);
       }
@@ -411,7 +407,6 @@ export class SearchHotelDfPage
       });
       this.hotelService.getConditions();
       this.isLeavePage = true;
-      this.isOpenSelectCityPage = false;
       this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
     } else {
       this.router.navigate([
