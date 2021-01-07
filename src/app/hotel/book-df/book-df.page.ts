@@ -1178,7 +1178,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           (this.initialBookDto && this.initialBookDto.Staffs) ||
           []
         ).find((it) => it.Account.Id == bookInfo.passenger.AccountId);
-        const cstaff = cs && cs.CredentialStaff;
+        const cstaff =
+        bookInfo.passenger.AccountId == this.tmc.Account.Id
+          ? bookInfo.credential.Staff
+          : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
