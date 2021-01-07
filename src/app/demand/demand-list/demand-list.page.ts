@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
-import { DemandService, DemandTeamModel, FlightType, OtherDemandModel } from '../demand.service';
+import { CarType, DemandService, DemandTeamModel, FlightType, OtherDemandModel } from '../demand.service';
 
 @Component({
   selector: 'app-demand-list',
@@ -10,10 +10,15 @@ import { DemandService, DemandTeamModel, FlightType, OtherDemandModel } from '..
 export class DemandListPage implements OnInit {
   teams: {
     Tag: string,
-    DemandType: number,
+    DemandType: FlightType,
     Demand: any,
   }
   demandTeamModel: DemandTeamModel;
+
+  DemandCarType: string;
+
+  // carType = 'PickUpFlight' || 'DeliverFlight' || 'PickUpTrain' || 'DeliverTrain' || 'CharterCar';
+  CarType = CarType;
 
   otherDemandModel: OtherDemandModel;
   FlightType = FlightType;
@@ -23,36 +28,17 @@ export class DemandListPage implements OnInit {
 
   ngOnInit() {
     this.demandTeamModel = {} as any;
-    this.otherDemandModel = {} as any;
-    this.otherDemandModel.demandTeam = {} as any;
+    // this.otherDemandModel = {} as any;
+    // this.otherDemandModel.demandTeam = {} as any;
+
     this.teams = {
       Tag: '',
       DemandType: FlightType.TeamDemand,
       Demand: this.demandTeamModel
     }
-
-    if (this.teams.DemandType == 9) {
-      this.teams = {
-        Tag: '',
-        DemandType: FlightType.TourDemand,
-        Demand: this.otherDemandModel.demandTour
-      }
-    }else if (this.teams.DemandType == 10) {
-      this.teams = {
-        Tag: '',
-        DemandType: FlightType.VisaDemand,
-        Demand: this.otherDemandModel.demandVisa
-      }
-    }else if (this.teams.DemandType == 12) {
-      this.teams = {
-        Tag: '',
-        DemandType: FlightType.AirportDemand,
-        Demand: this.otherDemandModel.demandAirportService
-      }
-    }
   }
 
-  getListType(type: number) {
+  getListType(type: FlightType) {
     this.teams.DemandType = type;
   }
 
@@ -63,34 +49,66 @@ export class DemandListPage implements OnInit {
 
   async onTeamSubmit(obj) {
     try {
-      // let type = this.teams.DemandType;
-      // this.teams.Demand=obj.demandTeamModel;
-      // if(type == 8){
       let teams = {
         ...this.teams,
         Demand: { ...obj.demandTeamModel, ProductType: (obj.demandTeamModel.ProductType || []).join(',') }
       }
-      // }
       this.apiservice.saveDemand(teams);
-      teams = null;
+      AppHelper.alert('添加成功');
+      console.log(obj.demandTeamModel, this.teams.Demand);
+      console.log("========================");
+      console.log(obj.demandTeamModel.LiaisonName);
+      obj.demandTeamModel.LiaisonName = "";
+
     } catch (e) {
-      console.error(e)
+      AppHelper.alert(e)
     }
   }
 
-  async onMeetingSubmit(obj) {
+  async onTourSubmit(obj) {
     try {
-      let type = this.teams.DemandType;
-      if(type == 9){
-        this.teams.Demand = obj.demandTourModel;
-      }else if(type == 10){
-        this.teams.Demand = obj.demandVisaModel;
-      }else if(type == 12){
-        this.teams.Demand = obj.DemandAirportServiceModel;
-      }
+      this.teams.Demand = obj.demandTourModel;
       this.apiservice.saveDemand(this.teams);
     } catch (e) {
       AppHelper.alert(e);
+    }
+  }
+  async onVisaSubmit(obj) {
+    try {
+      this.teams.Demand = obj.demandVisaModel;
+      this.apiservice.saveDemand(this.teams);
+    } catch (e) {
+      AppHelper.alert(e);
+    }
+  }
+
+  async onAirportSubmit(obj) {
+    try {
+      this.teams.Demand = obj.DemandAirportServiceModel;
+      this.apiservice.saveDemand(this.teams);
+    } catch (e) {
+      AppHelper.alert(e);
+    }
+  }
+  async onCarSubmit(obj) {
+    try {
+      const type = obj.type;
+      const data: OtherDemandModel = obj.data;
+      this.teams.Tag = type || "";
+      if (type == this.CarType.PickUpFlight) {
+        this.teams.Demand = data.demandPickUpFlight;
+      } else if (type == this.CarType.DeliverFlight) {
+        this.teams.Demand = data.demandDeliverFlight;
+      } else if (type == this.CarType.PickUpTrain) {
+        this.teams.Demand = data.demandPickUpTrain;
+      } else if (type == this.CarType.DeliverTrain) {
+        this.teams.Demand = data.demandDeliverTrain;
+      } else if (type == this.CarType.CharterCar) {
+        this.teams.Demand = data.demandCharterCar;
+      }
+      this.apiservice.saveDemand(this.teams);
+    } catch (e) {
+      AppHelper.alert(e)
     }
   }
 }

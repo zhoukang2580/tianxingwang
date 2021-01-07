@@ -29,23 +29,23 @@
 </ion-header>
 
 <ion-content>
-  <ion-list *ngIf="teams?.DemandType == 8">
+  <ion-list *ngIf="teams?.DemandType == FlightType.TeamDemand">
     <app-demand-item-team (demandTeam)='onTeamSubmit($event)'></app-demand-item-team>
   </ion-list>
-  <ion-list class="list" *ngIf='teams?.DemandType == 9'>
-    <app-demand-item-meeting (demandTour)='onMeetingSubmit($event)'>
+  <ion-list class="list" *ngIf='teams?.DemandType == FlightType.TourDemand'>
+    <app-demand-item-meeting (demandTour)='onTourSubmit($event)'>
     </app-demand-item-meeting>
   </ion-list>
-  <ion-list class="list" *ngIf='teams?.DemandType == 10'>
-    <app-demand-item-visa (demandVisa)='onMeetingSubmit($event)'>
+  <ion-list class="list" *ngIf='teams?.DemandType == FlightType.VisaDemand'>
+    <app-demand-item-visa (demandVisa)='onVisaSubmit($event)'>
     </app-demand-item-visa>
   </ion-list>
-  <ion-list *ngIf='teams?.DemandType == 11'>
-    <app-demand-item-car>
+  <ion-list class="list" *ngIf='teams?.DemandType == FlightType.CarDemand'>
+    <app-demand-item-car (demandCar)='onCarSubmit($event)'>
     </app-demand-item-car>
   </ion-list>
-  <ion-list class="list" *ngIf='teams?.DemandType == 12'>
-    <app-demand-airport-services (demandAirport)='onMeetingSubmit($event)'>
+  <ion-list class="list" *ngIf='teams?.DemandType == FlightType.AirportDemand'>
+    <app-demand-airport-services (demandAirport)='onAirportSubmit($event)'>
     </app-demand-airport-services>
   </ion-list>
 </ion-content>

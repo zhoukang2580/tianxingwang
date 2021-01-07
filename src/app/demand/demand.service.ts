@@ -8,7 +8,7 @@ import { RequestEntity } from "../services/api/Request.entity";
   providedIn: "root",
 })
 export class DemandService {
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(private apiService: ApiService, private router: Router) { }
 
   saveDemand(d: { Tag: String; DemandType: Number; Demand: any }) {
     const req = new RequestEntity();
@@ -115,6 +115,14 @@ export enum FlightType {
   AirportDemand = 12,
 }
 
+// export type CarType ='PickUpFlight' | '' | '' | '' | '';
+export enum CarType{
+  PickUpFlight="PickUpFlight",
+  DeliverFlight="DeliverFlight",
+  PickUpTrain="PickUpTrain",
+  DeliverTrain="DeliverTrain",
+  CharterCar="CharterCar",
+}
 export class DemandTeamModel {
   TravelType: string;
   FromAddress: string;

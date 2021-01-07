@@ -4,26 +4,25 @@
       scrollable
       (ionChange)="segmentChanged($event)"
       mode="md"
-      value="PickUpFlight"
-      color="secondary"
-    >
-      <ion-segment-button value="PickUpFlight">
+      value="{{demandCarType}}"
+      color="secondary">
+      <ion-segment-button value="{{CarType.PickUpFlight}}">
         <ion-label>接机</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="DeliverFlight">
+      <ion-segment-button value="{{CarType.DeliverFlight}}">
         <ion-label>送机</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="PickUpTrain">
+      <ion-segment-button value="{{CarType.PickUpTrain}}">
         <ion-label>接火车</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="DeliverTrain">
+      <ion-segment-button value="{{CarType.DeliverTrain}}">
         <ion-label>送火车</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="CharterCar">
+      <ion-segment-button value="{{CarType.CharterCar}}">
         <ion-label>国内包车</ion-label>
       </ion-segment-button>
     </ion-segment>
-    <ng-container *ngIf="carType == 'PickUpFlight'">
+    <ng-container *ngIf="demandCarType == CarType.PickUpFlight">
       <ion-list lines="none">
         <ion-radio-group value="biff" class="group" mode="md">
           <ion-item style="border-bottom: 0">
@@ -51,9 +50,6 @@
         <div class="item">
           <ion-input placeholder="请输入航班号" [(ngModel)]="demandPickUpFlightModel.FlightNumber"></ion-input>
         </div>
-        <!-- <div class="item">
-          <ion-text>{{demandPickUpFlightModel.AirportName}}</ion-text>
-        </div> -->
         <div class="item">
           <div class="main" (click)="onSelectFromCity()">
             <ion-text size="2">{{demandPickUpFlightModel.CityName}}</ion-text>
@@ -66,7 +62,7 @@
         </div>
       </div>
     </ng-container>
-    <ng-container *ngIf="carType == 'DeliverFlight'">
+    <ng-container *ngIf="demandCarType == CarType.DeliverFlight">
       <ion-list lines="none">
         <ion-radio-group value="biff" class="group" mode="md">
           <ion-item style="border-bottom: 0">
@@ -107,7 +103,7 @@
         </div>
         <div class="item">
           <div class='address'>详细地址</div>
-          <div class="main" (click)="onSelectFromCity()">
+          <div class="main" (click)="onSelectDetailCity()">
             <ion-text>{{demandDeliverFlightModel.Address}}</ion-text>
             <ion-icon name="chevron-forward-outline"></ion-icon>
           </div>
@@ -119,7 +115,7 @@
         </div>
       </div>
     </ng-container>
-    <ng-container *ngIf="carType == 'PickUpTrain'">
+    <ng-container *ngIf="demandCarType == CarType.PickUpTrain">
       <ion-list lines="none">
         <ion-radio-group value="biff" class="group" mode="md">
           <ion-item style="border-bottom: 0">
@@ -154,7 +150,7 @@
         </div>
         <div class="item">
           <div class='address'>详细地址</div>
-          <div class="main" (click)="onSelectFromCity()">
+          <div class="main" (click)="onSelectPickUpCity()">
             <ion-text>{{demandPickUpTrainModel.Address}}</ion-text>
           </div>
         </div>
@@ -165,7 +161,7 @@
         </div>
       </div>
     </ng-container>
-    <ng-container *ngIf="carType == 'DeliverTrain'">
+    <ng-container *ngIf="demandCarType == CarType.DeliverTrain">
       <ion-list lines="none">
         <ion-radio-group value="biff" class="group" mode="md" >
           <ion-item style="border-bottom: 0">
@@ -200,7 +196,7 @@
         </div>
         <div class="item">
           <div class='address'>详细地址</div>
-          <div class="main" (click)="onSelectFromCity()">
+          <div class="main" (click)="onSelectDeliverCity()">
             <ion-text>{{demandDeliverTrainModel.Address}}</ion-text>
             <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
           </div>
@@ -212,7 +208,7 @@
         </div>
       </div>
     </ng-container>
-    <ng-container *ngIf="carType == 'CharterCar'">
+    <ng-container *ngIf="demandCarType == CarType.CharterCar">
       <ion-list lines="none">
         <ion-radio-group value="biff" class="group" mode="md" [(ngModel)]="demandCharterCarModel.CharterCarType">
           <ion-item style="border-bottom: 0">
@@ -257,7 +253,7 @@
             </ion-select>
           </div>
         </div>
-        <div class="item" (click)="onSelectFromCity()">
+        <div class="item" (click)="onSelectStartCity()">
           <div class="left">
             <div class="label">
               <div class="yellow"></div>
@@ -273,7 +269,7 @@
             <ion-icon name="chevron-forward-outline"></ion-icon>
           </div>
         </div>
-        <div class="item" (click)="onSelectFromCity()">
+        <div class="item" (click)="onSelectEndCity()">
           <div class="left">
             <div class="label">
               <div class="green"></div>
@@ -281,7 +277,7 @@
             </div>
             <div class="address">
                 <div class="detailed" >
-                  <ion-text>{{demandCharterCarModel.ServiceStartCity}}</ion-text>
+                  <ion-text>{{demandCharterCarModel.ServiceEndCity}}</ion-text>
                 </div>
             </div>
           </div>

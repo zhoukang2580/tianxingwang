@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
 import { MapService } from 'src/app/services/map/map.service';
-import { DemandCharterCarModel, DemandDeliverFlightModel, DemandDeliverTrainModel, DemandPickUpFlightModel, DemandPickUpTrainModel } from '../../demand.service';
+import { CarType, DemandCharterCarModel, DemandDeliverFlightModel, DemandDeliverTrainModel, DemandPickUpFlightModel, DemandPickUpTrainModel, OtherDemandModel } from '../../demand.service';
 import { MapSearchComponent } from '../map-search/map-search.component';
 
 @Component({
@@ -11,17 +11,24 @@ import { MapSearchComponent } from '../map-search/map-search.component';
 })
 export class DemandItemCarComponent implements OnInit {
 
-  carType = 'PickUpFlight' || 'DeliverFlight' || 'PickUpTrain' || 'DeliverTrain' || 'CharterCar';
-  @Input() demandPickUpFlightModel:DemandPickUpFlightModel;
-  @Input() demandDeliverFlightModel:DemandDeliverFlightModel;
-  @Input() demandPickUpTrainModel:DemandPickUpTrainModel;
-  @Input() demandDeliverTrainModel:DemandDeliverTrainModel;
-  @Input() demandCharterCarModel:DemandCharterCarModel;
+  // carType = 'PickUpFlight' || 'DeliverFlight' || 'PickUpTrain' || 'DeliverTrain' || 'CharterCar';
+  demandPickUpFlightModel: DemandPickUpFlightModel;
+  demandDeliverFlightModel: DemandDeliverFlightModel;
+  demandPickUpTrainModel: DemandPickUpTrainModel;
+  demandDeliverTrainModel: DemandDeliverTrainModel;
+  demandCharterCarModel: DemandCharterCarModel;
+  otherDemandModel: OtherDemandModel;
   @Output() demandCar: EventEmitter<any>;
   private curPos;
+  CarType = CarType;
+  demandCarType: CarType;
   constructor(
-    private mapService:MapService
-  ) { }
+    private mapService: MapService
+  ) {
+    this.demandCar = new EventEmitter();
+  }
+
+  private seition;
 
   ngOnInit() {
     this.demandPickUpFlightModel = {} as any;
@@ -29,6 +36,14 @@ export class DemandItemCarComponent implements OnInit {
     this.demandPickUpTrainModel = {} as any;
     this.demandDeliverTrainModel = {} as any;
     this.demandCharterCarModel = {} as any;
+    this.otherDemandModel = {
+      demandPickUpFlight: this.demandPickUpFlightModel,
+      demandDeliverFlight: this.demandDeliverFlightModel,
+      demandPickUpTrain: this.demandPickUpTrainModel,
+      demandDeliverTrain: this.demandDeliverTrainModel,
+      demandCharterCar: this.demandCharterCarModel
+    } as any;
+    this.demandCarType = CarType.PickUpFlight;
 
     let date = new Date();
     this.demandPickUpFlightModel.FilghtDepartureDate = date.toLocaleDateString();
@@ -46,37 +61,28 @@ export class DemandItemCarComponent implements OnInit {
     this.demandCharterCarModel.CharterCarDate = date.toLocaleDateString();
     this.demandCharterCarModel.CharterCarTime = '12:30';
     this.demandCharterCarModel.ServiceStartCity = '上海市徐汇区肇嘉浜路376号';
-    this.demandCharterCarModel.ServiceStartCity = '上海市徐汇区肇嘉浜路376号';
+    this.demandCharterCarModel.ServiceEndCity = '上海市徐汇区肇嘉浜路376号';
+
     this.mapService
       .getCurMapPoint()
       .then((c) => {
+        let temStr = `${c.address.province || ""}${c.address.city || ""
+          }${c.address.district || ""}${c.address.street}`;
         this.curPos = {
           ...c,
         };
         if (c && c.address) {
-          this.demandPickUpFlightModel.CityName = `${c.address.province || ""}${
-            c.address.city || ""
-          }${c.address.district || ""}${c.address.street}`;
-          
-          this.demandDeliverFlightModel.Address = `${c.address.province || ""}${
-            c.address.city || ""
-          }${c.address.district || ""}${c.address.street}`;
+          this.demandPickUpFlightModel.CityName = temStr;
 
-          this.demandPickUpTrainModel.Address = `${c.address.province || ""}${
-            c.address.city || ""
-          }${c.address.district || ""}${c.address.street}`;
+          this.demandDeliverFlightModel.Address = temStr;
 
-          this.demandDeliverTrainModel.Address = `${c.address.province || ""}${
-            c.address.city || ""
-          }${c.address.district || ""}${c.address.street}`;
+          this.demandPickUpTrainModel.Address = temStr;
 
-          this.demandCharterCarModel.ServiceStartCity = `${c.address.province || ""}${
-            c.address.city || ""
-          }${c.address.district || ""}${c.address.street}`;
+          this.demandDeliverTrainModel.Address = temStr;
 
-          this.demandCharterCarModel.ServiceEndCity = `${c.address.province || ""}${
-            c.address.city || ""
-          }${c.address.district || ""}${c.address.street}`;  
+          this.demandCharterCarModel.ServiceStartCity = temStr;
+
+          this.demandCharterCarModel.ServiceEndCity = temStr;
         }
       })
       .catch((e) => {
@@ -84,8 +90,8 @@ export class DemandItemCarComponent implements OnInit {
       });
   }
 
-  switchCarType(type: string) {
-    this.carType = type;
+  switchCarType(type: CarType) {
+    this.demandCarType = type;
   }
 
   segmentChanged(evt: CustomEvent) {
@@ -101,43 +107,100 @@ export class DemandItemCarComponent implements OnInit {
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      this.demandPickUpFlightModel.CityName = `${c.address.province || ""}${
-        c.address.city || ""
-      }${c.address.district || ""}${c.address.street || c.address || ""}`;
-
-      this.demandDeliverFlightModel.Address = `${c.address.province || ""}${
-        c.address.city || ""
-      }${c.address.district || ""}${c.address.street || c.address || ""}`;
-
-      this.demandPickUpTrainModel.Address = `${c.address.province || ""}${
-        c.address.city || ""
-      }${c.address.district || ""}${c.address.street || c.address || ""}`;
-
-      this.demandDeliverTrainModel.Address = `${c.address.province || ""}${
-        c.address.city || ""
-      }${c.address.district || ""}${c.address.street || c.address || ""}`;
-
-      this.demandCharterCarModel.ServiceStartCity = `${c.address.province || ""}${
-        c.address.city || ""
-      }${c.address.district || ""}${c.address.street || c.address || ""}`;
-
-      this.demandCharterCarModel.ServiceEndCity = `${c.address.province || ""}${
-        c.address.city || ""
-      }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      let temStr = `${c.address.province || ""}${c.address.city || ""
+        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      this.demandPickUpFlightModel.CityName = temStr;
     }
   }
 
-  onSubmit(){
-    if(this.carType = 'PickUpFlght'){
-      this.demandCar.emit({demandPickUpFlightModel:this.demandPickUpFlightModel});
-    }else if(this.carType = 'DeliverFlight'){
-      this.demandCar.emit({demandDeliverFlightModel:this.demandDeliverFlightModel});
-    }else if(this.carType = 'PickUpTrain'){
-      this.demandCar.emit({demandPickUpTrainModel:this.demandPickUpTrainModel});
-    }else if(this.carType = 'DeliverTrain'){
-      this.demandCar.emit({demandDeliverFlightModel:this.demandDeliverFlightModel});
-    }else{
-      this.demandCar.emit({demandCharterCarModel:this.demandCharterCarModel});
+  async onSelectDetailCity(){
+    const m = await AppHelper.modalController.create({
+      component: MapSearchComponent,
+      componentProps: { curPos: this.curPos },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      const c = d.data;
+      let temStr = `${c.address.province || ""}${c.address.city || ""
+        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      this.demandDeliverFlightModel.Address = temStr;
+      }
+  }
+  
+  async onSelectPickUpCity(){
+    const m = await AppHelper.modalController.create({
+      component: MapSearchComponent,
+      componentProps: { curPos: this.curPos },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      const c = d.data;
+      let temStr = `${c.address.province || ""}${c.address.city || ""
+        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      this.demandPickUpTrainModel.Address = temStr;
+      }
+  }
+
+  async onSelectDeliverCity(){
+    const m = await AppHelper.modalController.create({
+      component: MapSearchComponent,
+      componentProps: { curPos: this.curPos },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      const c = d.data;
+      let temStr = `${c.address.province || ""}${c.address.city || ""
+        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      this.demandDeliverTrainModel.Address = temStr;
+      }
+  }
+  async onSelectStartCity(){
+    const m = await AppHelper.modalController.create({
+      component: MapSearchComponent,
+      componentProps: { curPos: this.curPos },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      const c = d.data;
+      let temStr = `${c.address.province || ""}${c.address.city || ""
+        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+        this.demandCharterCarModel.ServiceStartCity = temStr;
+      }
+  }
+  async onSelectEndCity(){
+    const m = await AppHelper.modalController.create({
+      component: MapSearchComponent,
+      componentProps: { curPos: this.curPos },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      const c = d.data;
+      let temStr = `${c.address.province || ""}${c.address.city || ""
+        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+        this.demandCharterCarModel.ServiceEndCity = temStr;
+      }
+  }
+
+  
+
+  onSubmit() {
+    let type: CarType;
+    if (this.demandCarType == CarType.PickUpFlight) {
+      type = CarType.PickUpFlight;
+    } else if (this.demandCarType == CarType.DeliverFlight) {
+      type = CarType.DeliverFlight;
+    } else if (this.demandCarType == CarType.PickUpTrain) {
+      type = CarType.PickUpTrain;
+    } else if (this.demandCarType == CarType.DeliverTrain) {
+      type = CarType.DeliverTrain;
+    } else if (this.demandCarType == CarType.CharterCar) {
+      type = CarType.CharterCar
     }
+    this.demandCar.emit({ data: this.otherDemandModel, type });
   }
 }
