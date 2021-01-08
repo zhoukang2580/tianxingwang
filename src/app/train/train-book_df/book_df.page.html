@@ -309,20 +309,6 @@
           </ion-item-group>
         </ion-list>
         <ion-list>
-          <ng-container *ngIf="combindInfo.isShowGroupedInfo">
-            <ion-item-group>
-              <app-book-tmc-outnumber
-                outnumber="outnumber"
-                [tmcOutNumberInfos]="combindInfo?.tmcOutNumberInfos"
-                [isExchange]="searchTrainModel?.isExchange"
-                [isShowGroupedInfo]="true"
-                (tmcOutNumber)="onSelectTravelNumber($event,combindInfo)"
-              >
-              </app-book-tmc-outnumber>
-            </ion-item-group>
-          </ng-container>
-        </ion-list>
-        <ion-list>
           <ion-item lines="none" style="display: none">
             <ion-label> 费用类别 </ion-label>
             <ion-select
@@ -344,7 +330,7 @@
           <ion-item>
             <div class="passenger">出差信息</div>
           </ion-item>
-          <ion-item *ngIf="tmc?.IsAllowCustomReason">
+          <ion-item *ngIf="viewModel?.expenseTypes?.length">
             <div class="line" *ngIf="viewModel?.expenseTypes?.length"></div>
             <div class="expanse" *ngIf="viewModel?.expenseTypes?.length">
               <div class="flex padding-v">
@@ -376,6 +362,18 @@
               </div>
             </div>
           </ion-item>
+          <ng-container *ngIf="combindInfo.isShowGroupedInfo">
+            <ion-item-group>
+              <app-book-tmc-outnumber
+                outnumber="outnumber"
+                [tmcOutNumberInfos]="combindInfo?.tmcOutNumberInfos"
+                [isExchange]="searchTrainModel?.isExchange"
+                [isShowGroupedInfo]="true"
+                (tmcOutNumber)="onSelectTravelNumber($event,combindInfo)"
+              >
+              </app-book-tmc-outnumber>
+            </ion-item-group>
+          </ng-container>
         </ion-list>
         <ion-list
           class="notify-lang section"
