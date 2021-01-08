@@ -41,7 +41,7 @@ import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ORDER_TABS } from "../product-list/product-list.page";
-import { StaffEntity } from "src/app/hr/staff.service";
+import { StaffEntity, StaffService } from "src/app/hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
@@ -89,7 +89,8 @@ export class OrderListDfPage implements OnInit, OnDestroy {
     private flightService: FlightService,
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
-    private LangService: LangService
+    private langService: LangService,
+    private staffService: StaffService
   ) {}
 
   ngOnDestroy() {
@@ -350,30 +351,56 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         new Date().getFullYear() + 1,
       ];
       if (!data) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       const date = await this.getExchangeDate(data.trip.TakeoffDate);
       if (!date) {
         AppHelper.alert("请选择改签日期");
       }
-      console.log("改签日期", date);
+      // console.log("改签日期", date);
       const res = await this.orderService.getExchangeFlightTrip({
         OrderId: data.orderId,
         TicketId: data.ticketId,
         ExchangeDate: date,
       });
-      if (!res || !res.trip || !res.order) {
-        AppHelper.alert("改签失败，请重试");
+      if (
+        !res ||
+        !res.trip ||
+        !res.order ||
+        !res.order.OrderPassengers ||
+        !res.order.OrderPassengers.length
+      ) {
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
+      const orderPassenger = res.order.OrderPassengers[0];
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
       await this.flightService.initSelfBookTypeBookInfos();
+      const isSelf = await this.staffService.isSelfBookType();
       const bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
-        AppHelper.alert("改签失败，请重试");
-        return;
+        if (isSelf) {
+          await AppHelper.alert("改签失败，请联系客服人员");
+          return;
+        } else {
+          bookInfos.push({
+            passenger: {
+              Name: orderPassenger.Name,
+              Mobile: orderPassenger.Mobile,
+              Email: orderPassenger.Email,
+              isNotWhiteList: !isSelf,
+            } as StaffEntity,
+            credential: {
+              Number: orderPassenger.CredentialsNumber,
+              Type: orderPassenger.CredentialsType,
+              TypeName: orderPassenger.CredentialsTypeName,
+              Name: orderPassenger.Name,
+            } as CredentialsEntity,
+            id: AppHelper.uuid(),
+          });
+        }
       }
       let passenger: StaffEntity = bookInfos[0].passenger;
       if (res.staff) {
@@ -382,16 +409,16 @@ export class OrderListDfPage implements OnInit, OnDestroy {
           ...res.staff,
         };
       }
-      const credential: CredentialsEntity = bookInfos[0].credential;
+      let credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
         credential,
         isFilterPolicy: false,
-        // isNotWhitelist: !res.staff,
+        isNotWhitelist: !isSelf,
       };
       this.flightService.addPassengerBookInfo(info);
       if (!bookInfos.length) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       bookInfos[0].exchangeInfo = {
@@ -836,7 +863,7 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         .filter((t) => t.value != ProductItemType.more && t.isDisplay)
         .map((t) => {
           const it = { ...t };
-          if (this.LangService.isEn) {
+          if (this.langService.isEn) {
             it.label = t.labelEn;
           } else {
             it["isActive"] = t.value == this.activeTab.value;
