@@ -90,6 +90,7 @@ import { OrganizationComponent } from 'src/app/tmc/components/organization/organ
 export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private checkPayCountIntervalId: any;
   private isShowInsuranceBack = false;
+  private isManagentCredentails =false;
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
   private subscription = Subscription.EMPTY;
@@ -307,7 +308,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     await this.initOrderTravelPayTypes();
     console.log("viewModel", this.viewModel);
   }
-  onManagementCredentials() {
+  onManagementCredentials(item: ITrainPassengerBookInfo) {
+    item.credentialsRequested = false;
+    this.isManagentCredentails = true;
     this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
   }
   onShowInsuranceDetail(insurance: { showDetail: boolean }, evt: CustomEvent) {
