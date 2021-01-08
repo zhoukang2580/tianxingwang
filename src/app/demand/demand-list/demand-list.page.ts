@@ -1,7 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
+import { DemandAirportServicesComponent } from '../components/demand-airport-services/demand-airport-services.component';
+import { DemandItemCarComponent } from '../components/demand-item-car/demand-item-car.component';
 import { DemandItemMeetingComponent } from '../components/demand-item-meeting/demand-item-meeting.component';
 import { DemandItemTeamComponent } from '../components/demand-item-team/demand-item-team.component';
+import { DemandItemVisaComponent } from '../components/demand-item-visa/demand-item-visa.component';
 import { CarType, DemandService, DemandTeamModel, FlightType, OtherDemandModel } from '../demand.service';
 
 @Component({
@@ -12,9 +15,9 @@ import { CarType, DemandService, DemandTeamModel, FlightType, OtherDemandModel }
 export class DemandListPage implements OnInit {
   @ViewChild(DemandItemTeamComponent)tcomp:DemandItemTeamComponent;
   @ViewChild(DemandItemMeetingComponent)tcomp2:DemandItemMeetingComponent;
-  @ViewChild(DemandItemMeetingComponent)tcomp3:DemandItemMeetingComponent;
-  @ViewChild(DemandItemMeetingComponent)tcomp4:DemandItemMeetingComponent;
-  @ViewChild(DemandItemMeetingComponent)tcomp5:DemandItemMeetingComponent;
+  @ViewChild(DemandItemVisaComponent)tcomp3:DemandItemVisaComponent;
+  @ViewChild(DemandItemCarComponent)tcomp4:DemandItemCarComponent;
+  @ViewChild(DemandAirportServicesComponent)tcomp5:DemandAirportServicesComponent;
   teams: {
     Tag: string,
     DemandType: FlightType,
@@ -58,6 +61,12 @@ export class DemandListPage implements OnInit {
       this.tcomp.onReset();
     }else if(this.tcomp2){
       this.tcomp2.ngOnInit();
+    }else if(this.tcomp3){
+      this.tcomp3.ngOnInit();
+    }else if(this.tcomp4){
+      this.tcomp4.ngOnInit();
+    }else if(this.tcomp5){
+      this.tcomp5.ngOnInit();
     }
   }
   async onTeamSubmit(obj) {
