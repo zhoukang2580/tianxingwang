@@ -853,15 +853,16 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     // console.timeEnd("总计");
   }
   private goToMyOrders(tab: ProductItemType, isExchange = false) {
-    if (this.langService.isCn) {
-      this.router.navigate(["order-list"], {
-        queryParams: { tabId: tab, doRefresh: isExchange },
-      });
-    } else {
-      this.router.navigate(["order-list_en"], {
-        queryParams: { tabId: tab, doRefresh: isExchange },
-      });
-    }
+    const m = this.trainService.getSearchTrainModel();
+    const city = m.toCity;
+    this.router.navigate(["checkout-success"], {
+      queryParams: {
+        tabId: ProductItemType.train,
+        cityCode: city && city.CityCode,
+        cityName: city && city.CityName,
+        date: m.Date
+      },
+    });
   }
   private isShowInsurances(takeoffTime: string) {
     if (takeoffTime) {

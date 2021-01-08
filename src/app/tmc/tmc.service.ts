@@ -142,7 +142,7 @@ export class TmcService {
       });
   }
 
-  async getBoutique(d: { PageIndex: number, PageSize: number,CityCode:string,SearchDate:string }) {
+  async getRecommendHotel(d: { PageIndex: number, PageSize: number,CityCode:string,SearchDate:string }) {
     if (this.hotHotel && this.hotHotel.length) {
       return this.hotHotel;
     }

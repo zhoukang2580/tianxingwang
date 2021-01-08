@@ -232,7 +232,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       }
       this.isLoadingHotelBanners = true;
       await this.tmcService
-        .getBoutique(this.hothotels)
+        .getRecommendHotel(this.hothotels)
         .catch(() => null)
         .then((res) => {
           this.boutiqueHotel = res;
