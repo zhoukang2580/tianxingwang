@@ -90,7 +90,7 @@ import { OrganizationComponent } from 'src/app/tmc/components/organization/organ
 export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private checkPayCountIntervalId: any;
   private isShowInsuranceBack = false;
-  private isManagentCredentails =false;
+  private isManagentCredentails = false;
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
   private subscription = Subscription.EMPTY;
@@ -350,9 +350,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           []
         ).find((it) => it.Account.Id == bookInfo.passenger.AccountId);
         const cstaff =
-        bookInfo.passenger.AccountId == this.tmc.Account.Id
-          ? bookInfo.credential.Staff
-          : cs && cs.CredentialStaff;
+          bookInfo.passenger.AccountId == this.tmc.Account.Id
+            ? bookInfo.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
@@ -428,8 +428,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
-            bookInfo.bookInfo.trainEntity &&
-            bookInfo.bookInfo.trainEntity.StartTime
+          bookInfo.bookInfo.trainEntity &&
+          bookInfo.bookInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
@@ -437,11 +437,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -457,11 +457,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -724,8 +724,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 exchangeInfo && exchangeInfo.exchangeInfo
                   ? res.Message || exchangeTip
                   : this.langService.isEn
-                  ? "Checkout success"
-                  : "下单成功!",
+                    ? "Checkout success"
+                    : "下单成功!",
                 true
               );
             }
@@ -852,17 +852,24 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.timeEnd("总计");
   }
-  private goToMyOrders(tab: ProductItemType, isExchange = false) {
-    const m = this.trainService.getSearchTrainModel();
-    const city = m.toCity;
-    this.router.navigate(["checkout-success"], {
-      queryParams: {
-        tabId: ProductItemType.train,
-        cityCode: city && city.CityCode,
-        cityName: city && city.CityName,
-        date: m.Date
-      },
-    });
+  private async goToMyOrders(tab: ProductItemType, isExchange = false) {
+    try {
+      const m = this.trainService.getSearchTrainModel();
+      const cities = await this.trainService.getStationsAsync();
+      const city = m.toCity;
+      const c = cities.find(it => it.Code == (city && city.Code));
+      this.router.navigate(["checkout-success"], {
+        queryParams: {
+          tabId: ProductItemType.train,
+          cityCode: c && c.CityCode,
+          cityName: c && c.CityName,
+          date: m.Date
+        },
+      });
+    } catch (e) {
+      console.error(e);
+
+    }
   }
   private isShowInsurances(takeoffTime: string) {
     if (takeoffTime) {
@@ -992,7 +999,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     return fee || 0;
   }
   isAllowSelectApprove(info: ITrainPassengerBookInfo) {
-    
+
     const Tmc = this.initialBookDto.Tmc;
     const staff = info.credentialStaff;
     if (
@@ -1136,26 +1143,21 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     ) => {
       await AppHelper.alert(
         this.langService.isCn
-          ? `${
-              (item.credentialStaff && item.credentialStaff.Name) ||
-              (item.bookInfo.credential &&
-                item.bookInfo.credential.Surname +
-                  item.bookInfo.credential.Givenname)
-            } 【${
-              item.bookInfo.credential && item.bookInfo.credential.Number
-            }】 ${msg} 信息不能为空`
-          : `${
-              (item.credentialStaff && item.credentialStaff.Name) ||
-              (item.bookInfo.credential &&
-                item.bookInfo.credential.Surname +
-                  item.bookInfo.credential.Givenname)
-            } 【${
-              item.bookInfo.credential && item.bookInfo.credential.Number
-            }】 ${msg} ${
-              this.langService.isEn
-                ? "Information cannot be empty"
-                : "信息不能为空"
-            }`
+          ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
+          }】 ${msg} 信息不能为空`
+          : `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
+          }】 ${msg} ${this.langService.isEn
+            ? "Information cannot be empty"
+            : "信息不能为空"
+          }`
       );
       this.moveRequiredEleToViewPort(ele);
     };
@@ -1228,11 +1230,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
-            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-            : combindInfo.credentialStaffOtherMobile
-        }`;
+        p.Mobile = `${p.Mobile
+          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+          : combindInfo.credentialStaffOtherMobile
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1242,11 +1243,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
-            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-            : combindInfo.credentialStaffOtherEmail
-        }`;
+        p.Email = `${p.Email
+          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+          : combindInfo.credentialStaffOtherEmail
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1293,7 +1293,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         const ele: HTMLElement = this.getEleByAttr("mobileid", combindInfo.id);
         setTimeout(() => {
           showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
-          
+
         }, 1000);
         return false;
       }

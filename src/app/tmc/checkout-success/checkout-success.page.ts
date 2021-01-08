@@ -6,6 +6,7 @@ import { LangService } from 'src/app/services/lang.service';
 import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 import { TmcService } from 'src/app/tmc/tmc.service';
+import { CalendarService } from '../calendar.service';
 
 @Component({
   selector: 'app-checkout-success',
@@ -31,6 +32,7 @@ export class CheckoutSuccessPage implements OnInit {
     SearchDate: string
   };
   city: TrafficlineEntity;
+  private date;
   private tabId;
   constructor(
     private hotelService: HotelService,
@@ -38,6 +40,7 @@ export class CheckoutSuccessPage implements OnInit {
     private langService: LangService,
     private tmcService: TmcService,
     private route: ActivatedRoute,
+    private calendarService: CalendarService
   ) {
 
   }
@@ -48,16 +51,18 @@ export class CheckoutSuccessPage implements OnInit {
       if (q.get("cityCode")) {
         this.city = {} as any;
         this.city.CityCode = q.get("cityCode");
+        this.city.Code = q.get("cityCode");
         this.city.CityName = q.get("cityName");
-        let myDate = new Date().toLocaleDateString();
+        this.city.Name = q.get("cityName");
+        this.date = new Date().toLocaleDateString();
         if (q.get('date')) {
-          myDate = q.get('date');
+          this.date = q.get('date');
         }
         this.hothotels = {
           PageIndex: 0,
           PageSize: 20,
-          CityCode: this.city && this.city.Code,
-          SearchDate: myDate
+          CityCode: this.city && this.city.CityCode,
+          SearchDate: this.date
         };
         this.getRecommendHotel();
       }
@@ -67,19 +72,19 @@ export class CheckoutSuccessPage implements OnInit {
   onMore() {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
-      destinationCity: this.city
+      destinationCity: this.city,
+      checkInDate: this.date,
+      checkOutDate: this.calendarService.getMoment(1, this.date).format("YYYY-MM-DD")
     })
     this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
   }
   private async getRecommendHotel() {
-    if (!this.boutiqueHotel || !this.boutiqueHotel.HotelDayPrices || !this.boutiqueHotel.HotelDayPrices.length) {
-      await this.tmcService
-        .getRecommendHotel(this.hothotels)
-        .catch(() => null)
-        .then((res) => {
-          this.boutiqueHotel = res;
-        })
-    }
+    this.tmcService
+      .getRecommendHotel(this.hothotels)
+      .catch(() => null)
+      .then((res) => {
+        this.boutiqueHotel = res;
+      })
   }
 
   goToDetail(id) {

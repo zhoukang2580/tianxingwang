@@ -62,7 +62,6 @@ export class TmcService {
   private fetchingTmcPromise: Promise<TmcEntity>;
   private companies: GroupCompanyEntity[];
   private banners: any[];
-  private hotHotel: any[];
   private memberDetail: any;
   // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
@@ -142,10 +141,7 @@ export class TmcService {
       });
   }
 
-  async getRecommendHotel(d: { PageIndex: number, PageSize: number,CityCode:string,SearchDate:string }) {
-    if (this.hotHotel && this.hotHotel.length) {
-      return this.hotHotel;
-    }
+  async getRecommendHotel(d: { PageIndex: number, PageSize: number, CityCode: string, SearchDate: string }) {
     const req = new RequestEntity();
     req.Method = "TmcApiHotelUrl-Home-RecommendHotel";
     req.IsRedirctNoAuthorize = false;
@@ -153,21 +149,19 @@ export class TmcService {
     req.Data = {
       PageIndex: 0,
       PageSize: d.PageSize,
-      CityCode:d.CityCode,
-      SearchDate:d.SearchDate
+      CityCode: d.CityCode,
+      SearchDate: d.SearchDate
     }
     return this.apiService
-      .getPromiseData<{ DataCount: string; HotelDefaultImg: string ;HotelDayPrices:{
-        Id:string;
-        HotelName:string;
-        HotelAddress:string;
-        HotelCategory:string;
-        HotelFileName:string;
-      }[]}>(req)
-      .then((r) => {
-        this.hotHotel = r.HotelDayPrices;
-        return r;
-      });
+      .getPromiseData<{
+        DataCount: string; HotelDefaultImg: string; HotelDayPrices: {
+          Id: string;
+          HotelName: string;
+          HotelAddress: string;
+          HotelCategory: string;
+          HotelFileName: string;
+        }[]
+      }>(req)
   }
 
   async getTaskReviewed() {
