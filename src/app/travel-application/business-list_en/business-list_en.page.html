@@ -12,7 +12,7 @@
     <form action="javascript:void(0)" (ngSubmit)="onSearch(true)">
         <ion-searchbar name="searchbar" placeholder="Query name,city,keyword,etc" mode="ios" animated="true" [(ngModel)]="searchModel&&searchModel.SearchContent"></ion-searchbar>
         <ion-item style="display: none">
-            <ion-select cancelText="Cancel" okText="Determine" backdrop-dismiss="true" #statusSelect translucent="true" [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="Please select" [(ngModel)]="searchModel&&searchModel.StatusType"
+            <ion-select cancelText="Cancel" okText="Confirm" backdrop-dismiss="true" #statusSelect translucent="true" [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="Please select" [(ngModel)]="searchModel&&searchModel.StatusType"
                 name="status" (ionChange)="onSearch(false)">
                 <ion-select-option value="0">All</ion-select-option>
                 <ion-select-option value="{{ApprovalStatusType.Pass}}">Pass</ion-select-option>

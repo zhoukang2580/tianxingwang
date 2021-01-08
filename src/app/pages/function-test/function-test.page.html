@@ -9,14 +9,24 @@
 </ion-header>
 
 <ion-content>
+  <ion-button (click)='onPos()'>获取地址</ion-button>
+  <ion-button (click)='onGetInfoByLatlng()'>获取latlng的地址信息</ion-button>
+  <ion-label>{{posInfo|json}}</ion-label>
+  <ion-label>
+    addressComponents
+    <div>
+      {{addressComponents|json}}
+    </div>
+  </ion-label>
+  <ion-input [(ngModel)]='kw' placeholder="关键字" (ionChange)='onSearchPos()' [debounce]='300'></ion-input>
+  <ion-list>
+    <ion-item *ngFor='let adr of posList'>
+      {{adr}}
+    </ion-item>
+  </ion-list>
   <!-- <ion-button (click)='openSelectCityPage()'>选择城市</ion-button> -->
-
-
-
-
-
-  <ion-button (click)='showModal()'  color='"dark"'>点击测试更新</ion-button>
-  <app-update-comp *ngIf='showHcp'></app-update-comp>
+  <!-- <ion-button (click)='showModal()'  color='"dark"'>点击测试更新</ion-button> -->
+  <!-- <app-update-comp *ngIf='showHcp'></app-update-comp> -->
   <!-- <ion-button (click)='showModal()' *ngIf='!showHcp' color='success'>测试更新</ion-button> -->
   <!-- <ion-button [routerLink]="['/login']" routerLinkActive="router-link-active">回到登录界面</ion-button> -->
   <!-- <ion-button color='secondary' [routerLink]="['/tabs/tmc-home']" color='dark'>回到首页</ion-button> -->

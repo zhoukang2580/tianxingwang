@@ -1208,6 +1208,7 @@ export class TmcEntity extends BaseEntity {
   /// 校验行程单
   /// </summary>
   CheckTravelUrl: string;
+  HotelSelfPayAmount: string;
 
   /// <summary>
   /// 获取员工行程单列表

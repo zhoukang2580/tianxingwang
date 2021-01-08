@@ -1,19 +1,24 @@
 import { ActivatedRoute } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
-import { NavController, IonInfiniteScroll, IonRefresher } from "@ionic/angular";
+import {
+  NavController,
+  IonInfiniteScroll,
+  IonRefresher,
+  IonSearchbar,
+} from "@ionic/angular";
 import {
   distinctUntilChanged,
   switchMap,
   catchError,
   finalize,
   tap,
-  debounceTime
+  debounceTime,
 } from "rxjs/operators";
 import { Subscription, of } from "rxjs";
 import {
   InternationalHotelService,
-  ISearchTextValue
+  ISearchTextValue,
 } from "./../international-hotel.service";
 import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
@@ -22,12 +27,13 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
   selector: "app-search-by-text",
   templateUrl: "./combo-search-inter-hotel.page.html",
   styleUrls: ["./combo-search-inter-hotel.page.scss"],
-  animations: [flyInOut]
+  animations: [flyInOut],
 })
 export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
+  @ViewChild("searchbar", { static: true }) searchbar: IonSearchbar;
   private pageIndex = 0;
   private subscription = Subscription.EMPTY;
   private subscription2 = Subscription.EMPTY;
@@ -44,6 +50,9 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
   }
   ngOnInit() {
     this.subscription2 = this.route.queryParamMap.subscribe(() => {
+      setTimeout(() => {
+        this.searchbar.setFocus();
+      }, 200);
       this.doRefresh();
     });
   }
@@ -54,10 +63,10 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap(name => this.load(name)),
-        catchError(_ => of({ Data: [] }))
+        switchMap((name) => this.load(name)),
+        catchError((_) => of({ Data: [] }))
       )
-      .subscribe(res => {
+      .subscribe((res) => {
         this.searchResult = res.Data;
         this.enableScroller(res.Data && res.Data.length >= 20);
       });
@@ -76,7 +85,7 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
         }
         this.isLoading = false;
       }),
-      catchError(e => {
+      catchError((e) => {
         console.error(e);
         return of({ Data: [] });
       })
@@ -94,7 +103,7 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
           }
         })
       )
-      .subscribe(res => {
+      .subscribe((res) => {
         const arr = (res && res.Data) || [];
         this.enableScroller(arr.length >= 20);
         if (arr.length) {
@@ -122,8 +131,8 @@ export class ComboSearchInterHotelPage implements OnInit, OnDestroy {
       ...this.hotelService.getSearchCondition(),
       searchText: it || {
         Text: this.searchText,
-        Value: null
-      }
+        Value: null,
+      },
     });
     setTimeout(() => {
       this.back();

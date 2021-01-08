@@ -20,9 +20,9 @@
             <div class='tab' [class.active]='tab===4' [class.user-op]='userOps?.airTypeOp' (click)='onTabClick(4)'>
                 <span>{{langOpt.Aircraft}}</span>
             </div>
-            <div class='tab' [class.active]='tab===5' [class.user-op]='userOps?.cabinOp' (click)='onTabClick(5)'>
+            <!-- <div class='tab' [class.active]='tab===5' [class.user-op]='userOps?.cabinOp' (click)='onTabClick(5)'>
                 <span>{{langOpt.Cabins}}</span>
-            </div>
+            </div> -->
         </article>
         <article class="right">
             <ion-list>
@@ -37,7 +37,7 @@
                 <!-- <app-cabin_en [langOpt] = '{
           any: "Any"
         }' [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin_en> -->
-                <app-cabin [langOpt]='langOpt' [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin>
+                <!-- <app-cabin [langOpt]='langOpt' [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin> -->
             </ion-list>
         </article>
     </section>

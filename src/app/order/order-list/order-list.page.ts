@@ -10,13 +10,19 @@ import {
   TmcService,
   PassengerBookInfo,
 } from "../../tmc/tmc.service";
-import { ActivatedRoute, Router } from "@angular/router";
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  Router,
+  RouterStateSnapshot,
+} from "@angular/router";
 import {
   ModalController,
   IonInfiniteScroll,
   IonContent,
   IonDatetime,
   PickerController,
+  NavController,
 } from "@ionic/angular";
 import {
   Component,
@@ -41,24 +47,27 @@ import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ORDER_TABS } from "../product-list/product-list.page";
-import { StaffEntity } from "src/app/hr/staff.service";
+import { StaffEntity, StaffService } from "src/app/hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-order-list",
   templateUrl: "./order-list.page.html",
   styleUrls: ["./order-list.page.scss"],
 })
-export class OrderListPage implements OnInit, OnDestroy {
+export class OrderListPage
+  implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
   public loadDataSub = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private selectDateChange = new EventEmitter();
   private selectDateSubscription = Subscription.EMPTY;
+  private isBackHome = false;
   productItemType = ProductItemType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
@@ -89,9 +98,20 @@ export class OrderListPage implements OnInit, OnDestroy {
     private flightService: FlightService,
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
-    private LangService: LangService
+    private langService: LangService,
+    private natCtrl: NavController,
+    private staffService: StaffService
   ) {}
-
+  canDeactivate() {
+    console.log("canDeactivate isbackhome=", this.isBackHome);
+    if (this.isBackHome) {
+      // this.natCtrl.navigateRoot("", { animated: true });
+      this.router.navigate([""]);
+      this.isBackHome = false;
+      return false;
+    }
+    return true;
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -350,14 +370,14 @@ export class OrderListPage implements OnInit, OnDestroy {
         new Date().getFullYear() + 1,
       ];
       if (!data) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       const date = await this.getExchangeDate(data.trip.TakeoffDate);
       if (!date) {
         AppHelper.alert("请选择改签日期");
       }
-      console.log("改签日期", date);
+      // console.log("改签日期", date);
       const res = await this.orderService.getExchangeFlightTrip({
         OrderId: data.orderId,
         TicketId: data.ticketId,
@@ -368,44 +388,56 @@ export class OrderListPage implements OnInit, OnDestroy {
         !res.trip ||
         !res.order ||
         !res.order.OrderPassengers ||
-        !res.order.OrderPassengers[0]
+        !res.order.OrderPassengers.length
       ) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
+      const orderPassenger = res.order.OrderPassengers[0];
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
-      let passenger: StaffEntity = {
-        Account: {
-          Id: res.order.OrderPassengers[0].Id,
-        },
-        AccountId: res.order.OrderPassengers[0].Id,
-        Name: res.order.OrderPassengers[0].Name,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-        // isNotWhiteList: !res.staff,
-      } as StaffEntity;
+      await this.flightService.initSelfBookTypeBookInfos();
+      const isSelf = await this.staffService.isSelfBookType();
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      if (!bookInfos.length) {
+        if (isSelf) {
+          await AppHelper.alert("改签失败，请联系客服人员");
+          return;
+        } else {
+          bookInfos.push({
+            passenger: {
+              Name: orderPassenger.Name,
+              Mobile: orderPassenger.Mobile,
+              Email: orderPassenger.Email,
+              isNotWhiteList: !isSelf,
+            } as StaffEntity,
+            credential: {
+              Number: orderPassenger.CredentialsNumber,
+              Type: orderPassenger.CredentialsType,
+              TypeName: orderPassenger.CredentialsTypeName,
+              Name: orderPassenger.Name,
+            } as CredentialsEntity,
+            id: AppHelper.uuid(),
+          });
+        }
+      }
+      let passenger: StaffEntity = bookInfos[0].passenger;
       if (res.staff) {
         passenger = {
           ...passenger,
           ...res.staff,
         };
       }
-      const credential: CredentialsEntity = {
-        Name: res.order.OrderPassengers[0].Name,
-        Type: res.order.OrderPassengers[0].CredentialsType,
-        TypeName: res.order.OrderPassengers[0].PassengerTypeName,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-      } as CredentialsEntity;
+      let credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
         credential,
         isFilterPolicy: false,
-        // isNotWhitelist: !res.staff,
+        isNotWhitelist: !isSelf,
       };
       this.flightService.addPassengerBookInfo(info);
-      const bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       bookInfos[0].exchangeInfo = {
@@ -823,6 +855,7 @@ export class OrderListPage implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
+        this.isBackHome = d.get("isBackHome") == "true";
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );
@@ -850,7 +883,7 @@ export class OrderListPage implements OnInit, OnDestroy {
         .filter((t) => t.value != ProductItemType.more && t.isDisplay)
         .map((t) => {
           const it = { ...t };
-          if (this.LangService.isEn) {
+          if (this.langService.isEn) {
             it.label = t.labelEn;
           } else {
             it["isActive"] = t.value == this.activeTab.value;

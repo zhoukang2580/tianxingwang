@@ -1,0 +1,93 @@
+<ng-container *ngIf='!seat else seatTemp'>
+  <div class='train-item' (click)='onShowSeats(train)'>
+    <div class='info'>
+      <div class='time'>
+        <strong>{{train?.StartShortTime}}</strong>
+        <div class='travel-time-name'>{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}
+        </div>
+        <strong [class.has-add-day-tip]='train?.AddOneDayTip'
+          [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
+      </div>
+      <div class='station'>
+        <div class='from-station-name'>{{train?.FromStationName}}</div>
+        <div class='stop-line-stop' [attr.data]='train?.TrainCode'>
+          <div class="line" (click)='onShowTip($event)'>
+            <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='train?.IsAccessByIdCard' alt="">
+          </div>
+        </div>
+        <div class='to-station-name'>{{train?.ToStationName}}</div>
+      </div>
+    </div>
+    <div class='right'>
+      <div class='price'>￥{{getLowestSeatPrice()}}
+        <ng-container *ngIf='showOpenCloseIcon()'>
+          <!-- <ion-icon name='caret-down-outline' color='secondary' *ngIf='train["isShowSeats"]'></ion-icon>
+          <ion-icon name="caret-up-outline" color='secondary' *ngIf='!train["isShowSeats"]'></ion-icon> -->
+        </ng-container>
+      </div>
+      <!-- <ion-button (click)='onScheduls($event)' fill='clear' size='small' style="margin-left: 1em" color='secondary'>{{langOpt.isStopInfo}}
+      </ion-button> -->
+    </div>
+  </div>
+  <ion-row class='seat-outline' color='medium'>
+    <ion-col size='4' *ngFor='let seat of getSeats()'>
+      <span>{{seat.SeatTypeName}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"":"无票"}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
+    </ion-col>
+  </ion-row>
+  <ion-grid class='seats' *ngIf='train["isShowSeats"]'>
+    <ng-container *ngFor='let seat of getSeats()' >
+      <ion-row [attr.color]='seat.color' *ngIf="seat.Count > '0'">
+          <ion-col>{{seat.SeatTypeName}}</ion-col>
+          <ion-col>
+            <ion-text color='danger'>
+              ￥{{seat.SalesPrice}}
+            </ion-text>
+          </ion-col>
+          <ion-col size='4'>
+            <span class='seat-count'>{{langOpt.Left}}:{{seat.Count?seat.Count+"":""}}</span>
+          </ion-col>
+          <ion-col (click)='onBookTicket(seat)'>
+            <ion-button *ngIf='showBookBtn' size='small' class='ion-text-start' [color]='seat.color'
+              [class.disabled]='seat.color=="danger"||seat.Count=="0"'>
+              <ion-text color='light'>{{langOpt.reserve}}</ion-text>
+            </ion-button>
+          </ion-col>
+      </ion-row>
+    </ng-container>
+  </ion-grid>
+</ng-container>
+<ng-template #seatTemp>
+  <div class='info'>
+    <div class='time'>
+      <strong>{{train?.StartShortTime}}</strong>
+      <div class='travel-time-name'>{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}
+      </div>
+      <!-- <div class='travel-time-name'>{{train?.TravelTimeName}}</div> -->
+      <strong [class.has-add-day-tip]='train?.AddOneDayTip'
+        [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
+    </div>
+    <div class='station'>
+      <div class='from-station-name'><ion-icon name="location-outline"></ion-icon>{{train?.FromStationName}}</div>
+      <div class='stop-line-stop' [attr.data]='train?.TrainCode'>
+        <div class="line">
+          <img src="assets/images/idcard.png" class='access-by-IdCard' *ngIf='train?.IsAccessByIdCard' alt="">
+        </div>
+      </div>
+      <div class='to-station-name'><ion-icon name="location-outline"></ion-icon>{{train?.ToStationName}}</div>
+    </div>
+  </div>
+  <!-- <div class='seat' *ngIf='seat'>
+    <div class='seat-item'>
+      <span>{{seat.SeatTypeName}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"张":""}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"no"}}{{langOpt.Left}}</span>
+    </div>
+    <div class='price' style='margin-left: auto'>￥{{seat.SalesPrice}}</div>
+  </div> -->
+  <div *ngIf='!bookInfo?.isExchange&&isShowSelectSeatLocation'>
+    <app-seat-picker-df [selectdSeat]='seat' [selectSeatLocation]='selectSeatLocation' (seatPicker)='onSeatPicker($event)'>
+    </app-seat-picker-df>
+  </div>
+</ng-template>

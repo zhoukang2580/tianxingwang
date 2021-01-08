@@ -1,0 +1,44 @@
+.jin {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.selectSeatLocation {
+  border: 1px;
+  width: 20px;
+  text-align: center;
+  cursor: pointer;
+  // background: #fff;
+  margin-left: 0.5em;
+}
+.selectSeatLocationBlank {
+  border: none;
+  margin-left: 1em;
+}
+.selected {
+  color: white;
+  background: var(--ion-color-secondary);
+}
+.trainCode {
+  display: none;
+  margin: 0px;
+  padding: 0px;
+  font-size: 1.5rem;
+  height: 30px;
+  font-weight: bolder;
+}
+.red {
+  color: tomato;
+}
+.window{
+  background: #c3c3c3;
+  width: 1.7em;
+  height: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.font{
+  font-size: 0.6rem;
+}

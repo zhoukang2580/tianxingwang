@@ -12,21 +12,27 @@ import { TrainscheduleComponent } from "./trainschedule/trainschedule.component"
 import { TimeSpanComponent } from "./train-filter/time-span/time-span.component";
 import { TrainFilterComponent } from "./train-filter/train-filter.component";
 import { SeatPickerComponent } from './seat-picker/seat-picker.component';
+import { SeatPickerDfComponent } from './seat-picker-df/seat-picker-df.component';
 import { TrainRefundComponent } from './train-refund/train-refund.component';
 import { TrainTicketComponent } from './train-ticket/train-ticket.component';
 import { TrainListItemEnComponent } from './train-list-item_en/train-list-item_en.component';
 import { SelectedTrainSegmentInfoEnComponent } from './selected-train-segment-info_en/selected-train-segment-info_en.component';
+import { SelectedTrainSegmentInfoDfComponent } from './selected-train-segment-info-df/selected-train-segment-info-df.component';
+import { TrainListItemDfComponent } from './train-list-item-df/train-list-item-df.component';
 
 @NgModule({
   declarations: [
     TrainListItemComponent,
     TrainListItemEnComponent,
+    TrainListItemDfComponent,
     SelectedTrainSegmentInfoComponent,
     SelectedTrainSegmentInfoEnComponent,
+    SelectedTrainSegmentInfoDfComponent,
     TrainscheduleComponent,
     TimeSpanComponent,
     TrainFilterComponent,
     SeatPickerComponent,
+    SeatPickerDfComponent,
     TrainRefundComponent,
     TrainTicketComponent,
     SelectAndReplaceTrainInfoComponent
@@ -43,11 +49,13 @@ import { SelectedTrainSegmentInfoEnComponent } from './selected-train-segment-in
   exports: [
     TrainListItemComponent,
     TrainListItemEnComponent,
+    TrainListItemDfComponent,
     TrainscheduleComponent,
     TimeSpanComponent,
     TrainFilterComponent,
     SelectedTrainSegmentInfoComponent,
     SelectedTrainSegmentInfoEnComponent,
+    SelectedTrainSegmentInfoDfComponent,
     SeatPickerComponent,
     TrainTicketComponent
   ],

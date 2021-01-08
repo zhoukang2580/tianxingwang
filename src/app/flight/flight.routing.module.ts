@@ -8,84 +8,91 @@ const routes: Routes = [
     path: "search-flight",
     loadChildren: () =>
       import("./search-flight/search-flight.module").then(
-        m => m.SearchFlightPageModule
-      )
+        (m) => m.SearchFlightPageModule
+      ),
   },
   {
     path: "search-flight_en",
     loadChildren: () =>
       import("./search-flight_en/search-flight_en.module").then(
-        m => m.SearchFlightEnPageModule
-      )
+        (m) => m.SearchFlightEnPageModule
+      ),
   },
   {
     path: "selected-flight-bookinfos",
     loadChildren: () =>
-      import("./selected-flight-bookinfos/selected-flight-bookinfos.module").then(
-        m => m.SelectedFlightBookInfosPageModule
-      )
+      import(
+        "./selected-flight-bookinfos/selected-flight-bookinfos.module"
+      ).then((m) => m.SelectedFlightBookInfosPageModule),
   },
   {
     path: "selected-flight-bookinfos_en",
     loadChildren: () =>
-      import("./selected-flight-bookinfos_en/selected-flight-bookinfos_en.module").then(
-        m => m.SelectedFlightBookInfosEnPageModule
-      )
+      import(
+        "./selected-flight-bookinfos_en/selected-flight-bookinfos_en.module"
+      ).then((m) => m.SelectedFlightBookInfosEnPageModule),
   },
   {
     path: "flight-list",
     loadChildren: () =>
       import("./flight-list/flight-list.module").then(
-        m => m.FlightListPageModule
-      )
+        (m) => m.FlightListPageModule
+      ),
   },
   {
     path: "flight-list_en",
     loadChildren: () =>
       import("./flight-list_en/flight-list_en.module").then(
-        m => m.FlightListEnPageModule
-      )
+        (m) => m.FlightListEnPageModule
+      ),
   },
   {
     path: "select-flight-city",
     loadChildren: () =>
       import("./select-flight-city/select-flight-city.module").then(
-        m => m.SelectFlightCityPageModule
-      )
+        (m) => m.SelectFlightCityPageModule
+      ),
   },
   {
     path: "flight-item-cabins",
     loadChildren: () =>
       import(
         "src/app/flight/flight-item-cabins/flight-item-cabins.module"
-      ).then(m => m.FlightItemCabinsPageModule),
-    canActivate: [TmcGuard]
+      ).then((m) => m.FlightItemCabinsPageModule),
+    canActivate: [TmcGuard],
   },
   {
     path: "flight-item-cabins_en",
     loadChildren: () =>
       import(
         "src/app/flight/flight-item-cabins_en/flight-item-cabins_en.module"
-      ).then(m => m.FlightItemCabinsEnPageModule),
-    canActivate: [TmcGuard]
+      ).then((m) => m.FlightItemCabinsEnPageModule),
+    canActivate: [TmcGuard],
   },
   {
     path: "flight-book",
     loadChildren: () =>
       import("src/app/flight/book/book.module").then(
-        m => m.FlightBookPageModule
-      )
+        (m) => m.FlightBookPageModule
+      ),
+  },
+  {
+    path: "flight-book_df",
+    loadChildren: () =>
+      import("src/app/flight/book_df/book-df.module").then(
+        (m) => m.FlightBookDfPageModule
+      ),
   },
   {
     path: "flight-book_en",
     loadChildren: () =>
       import("src/app/flight/book_en/book_en.module").then(
-        m => m.FlightBookEnPageModule
-      )
-  }
+        (m) => m.FlightBookEnPageModule
+      ),
+  },
 ];
 @NgModule({
   imports: [FlightComponentsModule, RouterModule.forChild(routes)],
-  exports: [RouterModule, FlightComponentsModule]
+  exports: [RouterModule, FlightComponentsModule],
 })
-export class FlightRoutingModule { }
+export class FlightRoutingModule {}

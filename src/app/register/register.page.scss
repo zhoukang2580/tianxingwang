@@ -1,3 +1,63 @@
-.register-btn{
-    margin-top: 2em;
+.register-btn {
+  margin-top: 2em;
+}
+.privacy-c {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  ion-icon {
+    font-size: 16px;
+  }
+  background: var(--ion-color-light);
+  padding: 1em;
+  .privacy {
+    text-decoration: underline;
+  }
+}
+.privacy-alert {
+  position: fixed;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  transform: translate3d(0, 1000%, 0);
+  z-index: 1000;
+  background: var(--ion-color-light);
+  &.show {
+    transform: translate3d(0, -50%, 0);
+  }
+  transition: all ease-in-out 200ms;
+  .privacy-c {
+    padding: 2em 0;
+    justify-content: center;
+    .privacy {
+      color: var(--ion-color-secondary);
+    }
+  }
+  border-radius: 5px;
+  padding: 1em 2em 0.5em;
+  .line {
+    height: 1px;
+    background-color: rgba(var(--ion-color-dark-rgb), 0.13);
+    width: 200%;
+    margin: 0 -5em;
+  }
+  .h-line {
+    height: 1em;
+    flex-basis: 1px;
+    margin: 0 1em;
+    width: 1px;
+    background-color: rgba(var(--ion-color-dark-rgb), 0.13);
+  }
+  .buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 -1em;
+    padding-top: 0.5em;
+    .button {
+      padding: 0.2em 0;
+      flex: 1;
+      text-align: center;
+    }
+  }
 }

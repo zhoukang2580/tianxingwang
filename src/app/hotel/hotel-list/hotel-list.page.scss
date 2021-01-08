@@ -19,6 +19,13 @@ ul {
   padding: 0.5em 1em;
   --ion-item-background: #f6f6f6ff;
 }
+.freebook {
+  font-size: 0.8rem;
+  padding: 0 1em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 .filter-condition {
   z-index: -200;
   position: fixed;

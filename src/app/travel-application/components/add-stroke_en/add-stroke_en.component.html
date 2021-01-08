@@ -10,7 +10,7 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     Travel type
                 </ion-text>
-                <ion-select mode='ios' class="ion-text-end" [(ngModel)]="trip.TripType" okText="Determine" cancelText="Cancel" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(trip.TripType)" [disabled]="!enable">
+                <ion-select mode='ios' class="ion-text-end" [(ngModel)]="trip.TripType" okText="Confirm" cancelText="Cancel" [compareWith]="compareWithFn" (ionChange)="getRegionTypes(trip.TripType)" [disabled]="!enable">
                     <ion-select-option value="Domestic" *ngIf="domestic">Domestic</ion-select-option>
                     <ion-select-option value="International" *ngIf="international">INT*HK&MAC&TW</ion-select-option>
                 </ion-select>
@@ -20,7 +20,7 @@
                 <ion-text [color]="!enable?'dark':'dark'">
                     Traffic of stay
                 </ion-text>
-                <ion-select mode='ios' (ionChange)='onRegionTypeChange($event)' [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.travelTools" okText="Determine" multiple="true" cancelText="Cancel" [compareWith]="compareTravelToolWithFn">
+                <ion-select mode='ios' (ionChange)='onRegionTypeChange($event)' [disabled]="!enable" style="max-width: initial;flex: 3; text-align: end;" [(ngModel)]="trip.travelTools" okText="Confirm" multiple="true" cancelText="Cancel" [compareWith]="compareTravelToolWithFn">
                     <ion-select-option value="{{t.value}}" *ngFor='let t of vmRegionTypes'>{{t.label}}</ion-select-option>
                 </ion-select>
             </ion-item>
