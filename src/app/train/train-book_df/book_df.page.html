@@ -16,6 +16,25 @@
       <ng-container *ngFor="let combindInfo of viewModel?.combindInfos">
         <ion-list class="list" lines="none">
           <ion-item-group>
+            <ion-item lines="none" style="display: none">
+              <ion-label>选择证件</ion-label>
+              <ion-select
+                #credentialSelect
+                [(ngModel)]="combindInfo.vmCredential"
+                name="Type"
+                okText="确定"
+                cancelText="取消"
+                selectedText="{{combindInfo.vmCredential?.Type}}"
+                [compareWith]="credentialCompareFn"
+              >
+                <ion-select-option
+                  [value]="opt"
+                  *ngFor="let opt of combindInfo?.credentials"
+                >
+                  {{(opt?.Type)}}{{opt?.Number}}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
             <ion-item class="ion-inbook">
               <div style="width: 100%; padding: 1.6em 0.25em">
                 <div>
@@ -24,11 +43,17 @@
                   <span class="idcode"
                     >身份证号: {{combindInfo?.vmCredential?.Number}}</span
                   >
-                  <span class="add" (click)="onManagementCredentials()"
-                    ><img
-                      src="assets/images/update.png"
-                      alt=""
-                    />&nbsp;&nbsp;新增</span
+                  <img
+                    class="editicon"
+                    src="assets/images/editicon.png"
+                    alt=""
+                    (click)="onChangeCredential(credentialSelect,combindInfo)"
+                  />
+                  <ion-text
+                    *ngIf="isSelfBookType"
+                    color="secondary"
+                    (click)="onManagementCredentials(combindInfo)"
+                    >新增</ion-text
                   >
                 </div>
                 <strong>
@@ -191,7 +216,11 @@
                 ></ion-icon>
               </div>
             </ion-item>
-            <ion-item class="other_equipment" *ngIf="isShowOtherInfo" [attr.mobileid]="combindInfo.id">
+            <ion-item
+              class="other_equipment"
+              *ngIf="isShowOtherInfo"
+              [attr.mobileid]="combindInfo.id"
+            >
               <div class="otherinfo">
                 <div class="other">
                   <span class="label">其他电话：</span>
@@ -202,7 +231,11 @@
                 </div>
               </div>
             </ion-item>
-            <ion-item class="other_equipment" *ngIf="isShowOtherInfo" [attr.mobileid]="combindInfo.id">
+            <ion-item
+              class="other_equipment"
+              *ngIf="isShowOtherInfo"
+              [attr.mobileid]="combindInfo.id"
+            >
               <div class="otherinfo">
                 <div class="other">
                   <span class="label">其他邮箱：</span>
@@ -213,7 +246,11 @@
                 </div>
               </div>
             </ion-item>
-            <ion-item class="other_equipment" *ngIf="isShowOtherInfo" [attr.mobileid]="combindInfo.id">
+            <ion-item
+              class="other_equipment"
+              *ngIf="isShowOtherInfo"
+              [attr.mobileid]="combindInfo.id"
+            >
               <div class="otherinfo">
                 <div class="other">
                   <span class="label">其他成本中心：</span>
@@ -222,14 +259,18 @@
                     placeholder="名称"
                   ></ion-input>
                   <ion-input
-                  [(ngModel)]="otherCostCenterCode"
-                  placeholder="代码"
-                  (ionChange)="onValueChange()"
-                ></ion-input>
+                    [(ngModel)]="otherCostCenterCode"
+                    placeholder="代码"
+                    (ionChange)="onValueChange()"
+                  ></ion-input>
                 </div>
               </div>
             </ion-item>
-            <ion-item class="other_equipment" *ngIf="isShowOtherInfo" [attr.mobileid]="combindInfo.id">
+            <ion-item
+              class="other_equipment"
+              *ngIf="isShowOtherInfo"
+              [attr.mobileid]="combindInfo.id"
+            >
               <div class="otherinfo">
                 <div class="other">
                   <span class="label">其他部门：</span>
@@ -266,6 +307,8 @@
               </div>
             </ion-item>
           </ion-item-group>
+        </ion-list>
+        <ion-list>
           <ng-container *ngIf="combindInfo.isShowGroupedInfo">
             <ion-item-group>
               <app-book-tmc-outnumber
@@ -304,7 +347,7 @@
           <ion-item *ngIf="tmc?.IsAllowCustomReason">
             <div class="line" *ngIf="viewModel?.expenseTypes?.length"></div>
             <div class="expanse" *ngIf="viewModel?.expenseTypes?.length">
-              <div class="flex padding-v" >
+              <div class="flex padding-v">
                 <span class="label">费用类别：</span>
                 <div
                   (click)="onOpenSelect(expenseTypeSelect)"
@@ -404,7 +447,11 @@
                 (ionChange)="calcTotalPrice()"
               >
                 <ion-item *ngFor="let pt of orderTravelPayTypes">
-                  <ion-label>{{pt.label}}<span class="person" *ngIf="pt?.value==2">(请在二十分钟内完成支付)</span></ion-label>
+                  <ion-label
+                    >{{pt.label}}<span class="person" *ngIf="pt?.value==2"
+                      >(请在二十分钟内完成支付)</span
+                    ></ion-label
+                  >
                   <ion-radio
                     [value]="pt.value"
                     (ionSelect)="onOrderTravelPayTypeSelect(pt)"

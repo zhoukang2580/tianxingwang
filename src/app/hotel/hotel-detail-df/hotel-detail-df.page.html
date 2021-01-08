@@ -78,14 +78,13 @@
   <div class='date' (click)="onOpenCalendar()">
     <div class="checkin">
       <div class='weekName desc'>{{getWeekName(queryModel?.checkInDate)}}入住</div>
-      <div class='checkinoutdate item left'>{{queryModel?.checkInDate}}<span style="font-size:14px">{{getWeekName(queryModel?.checkInDate)}}</span></div>
+      <!-- <div class='checkinoutdate item left'>{{queryModel?.checkInDate}}<span style="font-size:14px">{{getWeekName(queryModel?.checkInDate)}}</span></div> -->
     </div>
     <div class="num">
       <div class="item num">共{{totalNights}}晚</div>
     </div>
     <div class="checkout">
       <div class='weekName desc'>{{getWeekName(queryModel?.checkOutDate)}}离店</div>
-      <div class='checkinoutdate item right'>{{queryModel?.checkOutDate}}<span style="font-size:14px">{{getWeekName(queryModel?.checkOutDate)}}</span></div>
     </div>
   </div>
   <div class="rules">

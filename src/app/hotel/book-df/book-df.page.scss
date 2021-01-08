@@ -92,6 +92,7 @@ ion-content.cnt {
     color: #333333;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     margin-top: -20px;
     span {
       margin-right: 0.4em;
