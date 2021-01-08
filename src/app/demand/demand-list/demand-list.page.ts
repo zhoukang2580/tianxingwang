@@ -59,7 +59,11 @@ export class DemandListPage implements OnInit {
       console.log("========================");
       console.log(obj.demandTeamModel.LiaisonName);
       obj.demandTeamModel.LiaisonName = "";
-
+      this.teams = {
+        Tag: '',
+        DemandType: FlightType.TeamDemand,
+        Demand: this.demandTeamModel
+      }
     } catch (e) {
       AppHelper.alert(e)
     }
