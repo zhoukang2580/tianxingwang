@@ -79,16 +79,10 @@ export class CheckoutSuccessPage implements OnInit {
   //   }
   // }
 
-  onClickList(tab: ProductItemType){
-    if (this.langService.isCn) {
-      this.router.navigate(["order-list"], {
-        queryParams: { tabId: 3 },
-      });
-    } else {
-      this.router.navigate(["order-list_en"], {
-        queryParams: { tabId: 3 },
-      });
-    }
+  onClickList(){
+    this.router.navigate(["order-list"], {
+      queryParams: { tabId: ProductItemType.hotel },
+    });
   }
 
 }

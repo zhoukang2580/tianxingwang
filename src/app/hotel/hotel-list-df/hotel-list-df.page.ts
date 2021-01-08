@@ -41,6 +41,7 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { StaffService } from "src/app/hr/staff.service";
 import { ShowFreebookTipComponent } from "../components/show-freebook-tip/show-freebook-tip.component";
+import { HotelCityService } from "../hotel-city.service";
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -115,7 +116,9 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     private tmcService: TmcService,
     private staffService: StaffService,
     private configService: ConfigService,
-    plt: Platform) {
+    private hotelCityService: HotelCityService,
+    plt: Platform
+  ) {
     this.filterTab = {
       isActive: false,
       label: "",
@@ -331,12 +334,24 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   goToDetail(item: HotelDayPriceEntity) {
     // this.hotelService.curViewHotel = { ...item };
-    if(item.Hotel){
-      this.router.navigate([AppHelper.getRoutePath("hotel-detail")], { queryParams: { hotelId: item.Hotel.Id } });
+    if (item.Hotel) {
+      this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
+        queryParams: { hotelId: item.Hotel.Id },
+      });
     }
   }
-  onCityClick() {
-    this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+  async onCityClick() {
+    // this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+    const rs = await this.hotelCityService.onSelectCity(true, true);
+    if (rs && rs.city) {
+      this.hotelService.setSearchHotelModel({
+        ...this.searchHotelModel,
+        destinationCity: rs.city,
+      });
+      if (this.checkDestinationChanged()) {
+        this.doRefresh();
+      }
+    }
   }
   onSearchByText() {
     this.isUseSearchText = true;
