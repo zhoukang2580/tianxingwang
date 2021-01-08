@@ -1239,10 +1239,17 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         );
         return false;
       }
-      p.Credentials.Account =
-        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
-      p.Credentials.Account =
-        p.Credentials.Account || combindInfo.credential.Account;
+      if (
+        combindInfo.credentialStaff &&
+        combindInfo.credentialStaff.Account &&
+        combindInfo.credentialStaff.Account.Id &&
+        combindInfo.credentialStaff.Account.Id != "0"
+      ) {
+        p.Credentials.Account =
+          combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+        p.Credentials.Account =
+          p.Credentials.Account || combindInfo.credential.Account;
+      }
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.viewModel.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
