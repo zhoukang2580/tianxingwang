@@ -263,9 +263,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   getCredentialTypeName(item: IPassengerHotelBookInfo) {
     switch (
-    item &&
-    item.creditCardPersionInfo &&
-    item.creditCardPersionInfo.credentialType
+      item &&
+      item.creditCardPersionInfo &&
+      item.creditCardPersionInfo.credentialType
     ) {
       case `${CredentialsType.IdCard}`:
         return "身份证";
@@ -623,16 +623,20 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   ) {
     await AppHelper.alert(
       this.langService.isCn
-        ? `${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential &&
-          item.credential.Surname + item.credential.Givenname)
-        } 【${item.credential && item.credential.Number
-        }】 ${msg} 信息不能为空`
-        : `${(item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential &&
-          item.credential.Surname + item.credential.Givenname)
-        } 【${item.credential && item.credential.Number
-        }】 ${msg} Information cannot be empty`
+        ? `${
+            (item.credentialStaff && item.credentialStaff.Name) ||
+            (item.credential &&
+              item.credential.Surname + item.credential.Givenname)
+          } 【${
+            item.credential && item.credential.Number
+          }】 ${msg} 信息不能为空`
+        : `${
+            (item.credentialStaff && item.credentialStaff.Name) ||
+            (item.credential &&
+              item.credential.Surname + item.credential.Givenname)
+          } 【${
+            item.credential && item.credential.Number
+          }】 ${msg} Information cannot be empty`
     );
     this.moveRequiredEleToViewPort(ele);
   }
@@ -735,8 +739,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private fillBookLinkmans(bookDto: OrderBookDto) {
     bookDto.Linkmans = [];
     const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) =>
-      `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
-      (item.credential && item.credential.Number)
+      `联系人${
+        (item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential && item.credential.Number)
       }信息${msg}不能为空`;
     for (let i = 0; i < this.combindInfos.length; i++) {
       const item = this.combindInfos[i];
@@ -839,17 +844,17 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.name
+            combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.credentialNumber
+            combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-          combindInfo.creditCardPersionInfo.credentialType
+            combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -934,10 +939,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${p.Mobile
+        p.Mobile = `${
+          p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -947,10 +953,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${p.Email
+        p.Email = `${
+          p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       p.IllegalReason =
         (this.tmc &&
@@ -968,23 +975,23 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
         if (!p.IllegalReason) {
-            this.showErrorMsg(
-              LanguageHelper.Flight.getIllegalReasonTip(),
-              combindInfo,
-              this.getEleByAttr("illegalReasonsid", combindInfo.id)
-            );
-            return false;
+          this.showErrorMsg(
+            LanguageHelper.Flight.getIllegalReasonTip(),
+            combindInfo,
+            this.getEleByAttr("illegalReasonsid", combindInfo.id)
+          );
+          return false;
         }
       }
       if (!p.Mobile) {
         this.isShowOtherInfo = true;
-        setTimeout(()=>{
+        setTimeout(() => {
           this.showErrorMsg(
             LanguageHelper.Flight.getMobileTip(),
             combindInfo,
             this.getEleByAttr("mobilesid", combindInfo.id)
           );
-        },1000)
+        }, 1000);
         return false;
       }
       p.CostCenterCode =
@@ -1036,10 +1043,17 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         );
         return false;
       }
-      p.Credentials.Account =
-        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
-      p.Credentials.Account =
-        p.Credentials.Account || combindInfo.credential.Account;
+      if (
+        combindInfo.credentialStaff &&
+        combindInfo.credentialStaff.Account &&
+        combindInfo.credentialStaff.Account.Id &&
+        combindInfo.credentialStaff.Account.Id != "0"
+      ) {
+        p.Credentials.Account =
+          combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+        p.Credentials.Account =
+          p.Credentials.Account || combindInfo.credential.Account;
+      }
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
@@ -1162,9 +1176,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           []
         ).find((it) => it.Account.Id == bookInfo.passenger.AccountId);
         const cstaff =
-        bookInfo.passenger.AccountId == this.tmc.Account.Id
-          ? bookInfo.credential.Staff
-          : cs && cs.CredentialStaff;
+          bookInfo.passenger.AccountId == this.tmc.Account.Id
+            ? bookInfo.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
@@ -1243,20 +1257,20 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1404,7 +1418,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.isShowFee = !this.isShowFee;
     this.detailServiceFee = this.getServiceFees();
     this.initDayPrice();
-    this.showTransform(this.isShowFee)
+    this.showTransform(this.isShowFee);
   }
   getWeekName(date: string) {
     if (date) {
@@ -1421,7 +1435,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private showTransform(show: boolean) {
     try {
-      const el = this.ionFooter['el']
+      const el = this.ionFooter["el"];
       const transfromEle = this.transfromEle.nativeElement;
       const rect = el.getBoundingClientRect();
       if (show) {
@@ -1574,9 +1588,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           // );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
-          if (!isSave && isSelf &&
+          if (
+            !isSave &&
+            isSelf &&
             (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)) {
+              this.orderTravelPayType == OrderTravelPayType.Credit)
+          ) {
             let canPay = true;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;
@@ -1620,7 +1637,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["checkout-success"],{
+    this.router.navigate(["checkout-success"], {
       queryParams: { tabId: tab },
     });
     // if (this.langService.isCn) {
