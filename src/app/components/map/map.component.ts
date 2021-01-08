@@ -154,7 +154,7 @@ export class MapComponent
       // console.log("marker", this.marker);
       if (this.marker) {
         this.marker.setAnimation(window["BMAP_ANIMATION_BOUNCE"]); // 跳动的动画
-        const el = this.marker.ca;
+        const el = this.marker.Cc;
         if (el) {
           if (!isSet) {
             isSet = true;
