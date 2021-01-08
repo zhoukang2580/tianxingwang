@@ -41,7 +41,7 @@ import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ORDER_TABS } from "../product-list/product-list.page";
-import { StaffEntity } from "src/app/hr/staff.service";
+import { StaffEntity, StaffService } from "src/app/hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
@@ -90,7 +90,8 @@ export class OrderListEnPage implements OnInit, OnDestroy {
     private flightService: FlightService,
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
-    private langService: LangService
+    private langService: LangService,
+    private staffService: StaffService
   ) {}
 
   ngOnDestroy() {
@@ -353,14 +354,14 @@ export class OrderListEnPage implements OnInit, OnDestroy {
         new Date().getFullYear() + 1,
       ];
       if (!data) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       const date = await this.getExchangeDate(data.trip.TakeoffDate);
       if (!date) {
         AppHelper.alert("请选择改签日期");
       }
-      console.log("改签日期", date);
+      // console.log("改签日期", date);
       const res = await this.orderService.getExchangeFlightTrip({
         OrderId: data.orderId,
         TicketId: data.ticketId,
@@ -371,44 +372,56 @@ export class OrderListEnPage implements OnInit, OnDestroy {
         !res.trip ||
         !res.order ||
         !res.order.OrderPassengers ||
-        !res.order.OrderPassengers[0]
+        !res.order.OrderPassengers.length
       ) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
+      const orderPassenger = res.order.OrderPassengers[0];
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
-      let passenger: StaffEntity = {
-        Account: {
-          Id: res.order.OrderPassengers[0].Id,
-        },
-        AccountId: res.order.OrderPassengers[0].Id,
-        Name: res.order.OrderPassengers[0].Name,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-        // isNotWhiteList: !res.staff,
-      } as StaffEntity;
+      await this.flightService.initSelfBookTypeBookInfos();
+      const isSelf = await this.staffService.isSelfBookType();
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      if (!bookInfos.length) {
+        if (isSelf) {
+          await AppHelper.alert("改签失败，请联系客服人员");
+          return;
+        } else {
+          bookInfos.push({
+            passenger: {
+              Name: orderPassenger.Name,
+              Mobile: orderPassenger.Mobile,
+              Email: orderPassenger.Email,
+              isNotWhiteList: !isSelf,
+            } as StaffEntity,
+            credential: {
+              Number: orderPassenger.CredentialsNumber,
+              Type: orderPassenger.CredentialsType,
+              TypeName: orderPassenger.CredentialsTypeName,
+              Name: orderPassenger.Name,
+            } as CredentialsEntity,
+            id: AppHelper.uuid(),
+          });
+        }
+      }
+      let passenger: StaffEntity = bookInfos[0].passenger;
       if (res.staff) {
         passenger = {
           ...passenger,
           ...res.staff,
         };
       }
-      const credential: CredentialsEntity = {
-        Name: res.order.OrderPassengers[0].Name,
-        Type: res.order.OrderPassengers[0].CredentialsType,
-        TypeName: res.order.OrderPassengers[0].PassengerTypeName,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-      } as CredentialsEntity;
+      let credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
         credential,
         isFilterPolicy: false,
-        // isNotWhitelist: !res.staff,
+        isNotWhitelist: !isSelf,
       };
       this.flightService.addPassengerBookInfo(info);
-      const bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       bookInfos[0].exchangeInfo = {
