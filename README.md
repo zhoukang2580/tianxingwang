@@ -135,3 +135,7 @@ cordova 官网 `https://cordova.apache.org/`
 4. 修改config.ts里面的配置
 5. 删除旧的platform `ionic cordova platform remove android ` 添加新的platform `ionic cordova platform add android `
 6. 生成apk，ionic cordova build android --prod --release
+
+## 打包编译报内存不足
+1. `npm install -g increase-memory-limit`
+2. `increase-memory-limit`
