@@ -34,6 +34,10 @@ export class DemandItemTeamComponent implements OnInit {
   }
 
   ngOnInit() {
+   this.onReset();
+    // this.onSubmit();
+  }
+  onReset(){
     this.demandTeamModel = {} as any;
     let date = new Date();
     console.log(date.toLocaleTimeString());
@@ -57,9 +61,7 @@ export class DemandItemTeamComponent implements OnInit {
       .catch((e) => {
         console.error(e);
       });
-    // this.onSubmit();
   }
-
   onSubmit() {
     this.demandTeam.emit({ demandTeamModel: this.demandTeamModel });
   }

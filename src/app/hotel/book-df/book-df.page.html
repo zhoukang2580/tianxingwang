@@ -143,7 +143,7 @@
                 class="exceeding"
                 *ngIf="getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg"
               >
-                <ion-label class="ion-text-wrap" color="danger"
+                <ion-label class="ion-text-wrap" color="danger" *ngIf="!isRoomPlanFreeBook(combindInfo)"
                   >超标:{{msg}}
                   <!-- 违反提前3天以上预定航班的政策 -->
                 </ion-label>

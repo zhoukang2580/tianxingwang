@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
+import { DemandItemMeetingComponent } from '../components/demand-item-meeting/demand-item-meeting.component';
+import { DemandItemTeamComponent } from '../components/demand-item-team/demand-item-team.component';
 import { CarType, DemandService, DemandTeamModel, FlightType, OtherDemandModel } from '../demand.service';
 
 @Component({
@@ -8,6 +10,11 @@ import { CarType, DemandService, DemandTeamModel, FlightType, OtherDemandModel }
   styleUrls: ['./demand-list.page.scss'],
 })
 export class DemandListPage implements OnInit {
+  @ViewChild(DemandItemTeamComponent)tcomp:DemandItemTeamComponent;
+  @ViewChild(DemandItemMeetingComponent)tcomp2:DemandItemMeetingComponent;
+  @ViewChild(DemandItemMeetingComponent)tcomp3:DemandItemMeetingComponent;
+  @ViewChild(DemandItemMeetingComponent)tcomp4:DemandItemMeetingComponent;
+  @ViewChild(DemandItemMeetingComponent)tcomp5:DemandItemMeetingComponent;
   teams: {
     Tag: string,
     DemandType: FlightType,
@@ -46,7 +53,13 @@ export class DemandListPage implements OnInit {
     this.getListType(evt.detail.value);
   }
 
-
+  private onReset(){
+    if(this.tcomp){
+      this.tcomp.onReset();
+    }else if(this.tcomp2){
+      this.tcomp2.ngOnInit();
+    }
+  }
   async onTeamSubmit(obj) {
     try {
       let teams = {
@@ -55,15 +68,7 @@ export class DemandListPage implements OnInit {
       }
       this.apiservice.saveDemand(teams);
       AppHelper.alert('添加成功');
-      console.log(obj.demandTeamModel, this.teams.Demand);
-      console.log("========================");
-      console.log(obj.demandTeamModel.LiaisonName);
-      obj.demandTeamModel.LiaisonName = "";
-      this.teams = {
-        Tag: '',
-        DemandType: FlightType.TeamDemand,
-        Demand: this.demandTeamModel
-      }
+      this.onReset();
     } catch (e) {
       AppHelper.alert(e)
     }
