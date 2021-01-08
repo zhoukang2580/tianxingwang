@@ -2,7 +2,13 @@ ion-input.travel-number {
   font-size: 0.9rem;
 }
 ion-input {
-  text-align: end;
+  // text-align: end;
+}
+ion-label{
+  flex: initial;
+  min-width: 10em;
+  pointer-events: none;
+  font-size: 12px;
 }
 ion-icon {
   font-size: 1rem;

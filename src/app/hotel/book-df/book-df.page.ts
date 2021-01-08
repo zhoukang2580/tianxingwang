@@ -1067,23 +1067,6 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             CityCode: combindInfo.bookInfo.bookInfo.hotelEntity.CityCode,
           },
         } as RoomEntity;
-        // p.RoomPlan.Room = {
-        //   Name:combindInfo.bookInfo.bookInfo.hotelRoom.Name,
-        //   RoomPlans:combindInfo.bookInfo.bookInfo.hotelRoom.RoomPlans.map(it=>{
-        //     const plan = new RoomPlanEntity();
-        //     plan.Room=new RoomEntity();
-        //     plan.Room.Id=combindInfo.bookInfo.bookInfo.hotelRoom.Id;
-        //     plan.Remark=p.RoomPlan.Remark;
-        //     return plan;
-        //   }),
-        //   Hotel: { Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id }
-        // } as RoomEntity;
-        // p.RoomPlan.Room.Hotel = {
-        //   Rooms: null,
-        //   Id:combindInfo.bookInfo.bookInfo.hotelEntity.Id,
-        //   HotelDayPrices: [],
-        //   HotelDetails: []
-        // } as HotelEntity;
       }
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;

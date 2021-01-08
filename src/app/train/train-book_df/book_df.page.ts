@@ -130,6 +130,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     checked?: boolean;
   }[];
   CredentialsType = CredentialsType;
+  combindInfos: ITrainPassengerBookInfo[];
   constructor(
     private trainService: TrainService,
     private storage: Storage,
@@ -525,6 +526,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       console.error(e);
     }
   }
+
+  async onChangeCredential(
+    credentialSelect: IonSelect,
+    item: ITrainPassengerBookInfo
+  ) {
+    await this.onModify(item);
+    if (credentialSelect) {
+      credentialSelect.open();
+    }
+  }
+
   getGroupedTitle(item: ITrainPassengerBookInfo) {
     const group = this.getGroupedCombindInfo(
       this.viewModel.combindInfos,
@@ -1584,6 +1596,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.otherCostCenterCode = data.otherCostCenterCode;
       item.otherCostCenterName = data.otherCostCenterName;
     }
+  }
+  credentialCompareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
+    return (
+      (t1 && t2 && t1 == t2) || (t1.Type == t2.Type && t1.Number == t2.Number)
+    );
   }
   onOrganizationChange(
     data: {
