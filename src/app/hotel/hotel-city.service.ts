@@ -919,12 +919,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     n.classList.add("name");
     n.textContent = `${lbtextContent}`;
     item.append(n);
-    if (city.Code) {
-      const code = document.createElement("label");
-      code.classList.add("code");
-      code.textContent = city.Code;
-      item.append(code);
-    }
+    // if (city.Code) {
+    //   const code = document.createElement("label");
+    //   code.classList.add("code");
+    //   code.textContent = city.Code;
+    //   item.append(code);
+    // }
     if (city.CityName) {
       const cn = document.createElement("label");
       cn.classList.add("city-name");
