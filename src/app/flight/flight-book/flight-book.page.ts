@@ -1,17 +1,17 @@
 import { LangService } from "src/app/services/lang.service";
-import { flyInOut } from "./../../animations/flyInOut";
-import { PriceDetailComponent } from "./../components/price-detail/price-detail.component";
-import { PayService } from "./../../services/pay/pay.service";
-import { OrderBookDto } from "./../../order/models/OrderBookDto";
+import { flyInOut } from "../../animations/flyInOut";
+import { PriceDetailComponent } from "../components/price-detail/price-detail.component";
+import { PayService } from "../../services/pay/pay.service";
+import { OrderBookDto } from "../../order/models/OrderBookDto";
 import {
   ActivatedRoute,
   Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
 } from "@angular/router";
-import { InsuranceProductEntity } from "./../../insurance/models/InsuranceProductEntity";
+import { InsuranceProductEntity } from "../../insurance/models/InsuranceProductEntity";
 import { CalendarService } from "../../tmc/calendar.service";
-import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
+import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import {
   NavController,
   ModalController,
@@ -22,6 +22,7 @@ import {
   IonRefresher,
   IonRadio,
   IonFooter,
+  IonSelect,
 } from "@ionic/angular";
 import {
   TmcService,
@@ -33,7 +34,7 @@ import {
   PassengerBookInfo,
   InitialBookDtoModel,
   IBookOrderResult,
-} from "./../../tmc/tmc.service";
+} from "../../tmc/tmc.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import {
   StaffService,
@@ -42,7 +43,7 @@ import {
   OrganizationEntity,
   StaffApprover,
   StaffBookType,
-} from "./../../hr/staff.service";
+} from "../../hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
 import {
   Component,
@@ -52,6 +53,7 @@ import {
   AfterViewInit,
   ElementRef,
   ViewChild,
+  OnDestroy,
 } from "@angular/core";
 import { Storage } from "@ionic/storage";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -66,6 +68,7 @@ import {
   combineLatest,
   of,
   fromEvent,
+  Subscription,
 } from "rxjs";
 import {
   OrderTravelType,
@@ -95,16 +98,25 @@ import {
   CanComponentDeactivate,
 } from "src/app/guards/candeactivate.guard";
 import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
+import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
+import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
+import { SelectComponent } from "src/app/components/select/select.component";
+import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
 
 @Component({
-  selector: "app-book",
-  templateUrl: "./book.page.html",
-  styleUrls: ["./book.page.scss"],
+  selector: "app-flight-book",
+  templateUrl: "./flight-book.page.html",
+  styleUrls: ["./flight-book.page.scss"],
   animations: [flyInOut],
 })
-export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
+export class FlightBookPage
+  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
   private isShowInsuranceBack = false;
   private isPlaceOrderOk = false;
+  private isManagentCredentails = false;
+  private subscriptions: Subscription[] = [];
+  private totalPriceSource: Subject<number>;
+  totalPrice = 0;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
   initialBookDtoModel: InitialBookDtoModel;
@@ -120,7 +132,6 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   checkPayCount = 5;
   checkPayCountIntervalTime = 3 * 1000;
   checkPayCountIntervalId: any;
-  totalPriceSource: Subject<number>;
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
@@ -128,7 +139,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   isCheckingPay: boolean;
-  isCanSkipApproval$ = of(false);
+  isCanSkipApproval = false;
   isCanSave = false;
   isRoundTrip = false;
   isShowFee = false;
@@ -143,9 +154,8 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
-  @ViewChild("transfromEle", { static: true }) transfromEle: ElementRef<
-    HTMLElement
-  >;
+  @ViewChild("transfromEle", { static: true })
+  transfromEle: ElementRef<HTMLElement>;
   @ViewChild(IonFooter, { static: true }) ionFooter: IonFooter;
   constructor(
     private flightService: FlightService,
@@ -169,6 +179,11 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     this.isRoundTrip = this.flightService.getSearchFlightModel().isRoundTrip;
     this.flightService.setPassengerBookInfosSource(
       this.flightService.getPassengerBookInfos().filter((it) => !!it.bookInfo)
+    );
+    this.subscriptions.push(
+      this.totalPriceSource.subscribe((p) => {
+        this.totalPrice = p;
+      })
     );
     // 秘书和特殊角色可以跳过审批(如果有审批人)
     this.route.queryParamMap.subscribe(async () => {
@@ -195,31 +210,39 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
         }
       } catch {}
       setTimeout(() => {
-        if (!this.isShowInsuranceBack) {
+        if (!this.isShowInsuranceBack || this.isManagentCredentails) {
           this.refresh(false);
         }
         this.isShowInsuranceBack = false;
       }, 200);
     });
-    this.isCanSkipApproval$ = combineLatest([
+    const sub = combineLatest([
       from(this.tmcService.getTmc()),
       from(this.staffService.isSelfBookType()),
       this.identityService.getIdentitySource(),
-    ]).pipe(
-      map(([tmc, isSelfType, identity]) => {
-        return (
-          tmc.FlightApprovalType != 0 &&
-          tmc.FlightApprovalType != TmcApprovalType.None &&
-          !isSelfType &&
-          !(identity && identity.Numbers && identity.Numbers.AgentId)
-        );
-      }),
-      tap((can) => {
-        console.log("是否可以跳过审批", can);
-      })
-    );
+    ])
+      .pipe(
+        map(([tmc, isSelfType, identity]) => {
+          return (
+            tmc.FlightApprovalType != 0 &&
+            tmc.FlightApprovalType != TmcApprovalType.None &&
+            !isSelfType &&
+            !(identity && identity.Numbers && identity.Numbers.AgentId)
+          );
+        }),
+        tap((can) => {
+          console.log("是否可以跳过审批", can);
+        })
+      )
+      .subscribe((is) => {
+        this.isCanSkipApproval = is;
+      });
+    this.subscriptions.push(sub);
     this.isself = await this.staffService.isSelfBookType();
     console.log(this.isself, "isself");
+  }
+  ngOnDestroy() {
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
   canDeactivate(
     currentRoute: ActivatedRouteSnapshot,
@@ -242,6 +265,34 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       this.transfromEle.nativeElement.style.transform = `transform: translate(0, -${this.ionFooter["el"].clientHeight}px)`;
     }
   }
+  onToggleIsShowDetail(item: ICombindInfo) {
+    item.isShowDetail = !item.isShowDetail;
+  }
+
+  async onSelectIllegalReason(item: ICombindInfo) {
+    if (item.isOtherIllegalReason) {
+      return;
+    }
+    const p = await this.popoverCtrl.create({
+      component: SelectComponent,
+      cssClass: "vw-70",
+      componentProps: {
+        label: "超标原因",
+        data: (this.illegalReasons || []).map((it) => {
+          return {
+            label: it.Name,
+            value: it.Name,
+          };
+        }),
+      },
+    });
+    p.present();
+    const data = await p.onDidDismiss();
+    if (data && data.data) {
+      item.illegalReason = data.data;
+    }
+  }
+
   private async initOrderTravelPayTypes() {
     const bookInfos = this.flightService.getPassengerBookInfos();
     const cabinPaytypes: string[] = [];
@@ -405,6 +456,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
         const local = await this.storage.get(MOCK_FLIGHT_VMCOMBINDINFO);
         if (local && Array.isArray(local) && local.length) {
           this.vmCombindInfos = local;
+          await this.initOrderTravelPayTypes();
           return local;
         }
       }
@@ -442,6 +494,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       console.error(err);
     }
   }
+
   checkOrderTravelType(type: OrderTravelType) {
     const Tmc = this.tmc;
     if (!Tmc || !Tmc.FlightOrderType) {
@@ -562,14 +615,45 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   }
   async onOpenrules(item: ICombindInfo) {
     try {
-      console.log("CombineedSelectedInfo", item);
-      if (!item.modal.bookInfo.flightPolicy.Cabin.Explain) {
-        item.modal.bookInfo.flightPolicy.Cabin.Explain = await this.flightService.getTravelNDCFlightCabinRuleResult(
-          item.modal.bookInfo.flightPolicy.Cabin as any
-        );
+      const cabin = item.modal.bookInfo.flightPolicy.Cabin;
+      console.log("cabin", cabin);
+      if (cabin && !cabin.Explain) {
+        cabin.Explain = await this.flightService
+          .getTravelNDCFlightCabinRuleResult(cabin as any)
+          .catch(() => "");
+        if (cabin.Explain) {
+          cabin.Explain = cabin.Explain;
+        }
       }
-    } catch (e) {}
-    item.openrules = !item.openrules;
+      // this.popoverController.dismiss().catch(_ => {});
+      const m = await this.popoverCtrl.create({
+        component: TicketchangingComponent,
+        componentProps: { cabin: { Cabin: cabin } },
+        showBackdrop: true,
+        cssClass: "ticket-changing",
+        // animated: false
+      });
+      m.backdropDismiss = true;
+      await m.present();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async onChangeCredential(credentialSelect: IonSelect, item: ICombindInfo) {
+    await this.onModify(item);
+    if (credentialSelect) {
+      credentialSelect.open();
+    }
+  }
+  onManagementCredentials(item: ICombindInfo) {
+    item.credentialsRequested = false;
+    this.isManagentCredentails = true;
+    this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
+  }
+  credentialCompareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
+    return (
+      (t1 && t2 && t1 == t2) || (t1.Type == t2.Type && t1.Number == t2.Number)
+    );
   }
   private async getTmc() {
     this.tmc = await this.tmcService.getTmc();
@@ -822,7 +906,8 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
   }
   private goToMyOrders(tab: ProductItemType) {
     this.router.navigate(["order-list"], {
-      queryParams: { tabId: tab, fromRoute: "bookflight",isBackHome:true },
+      // isbackhome:true，是防止 android 通过物理返回键返回当前页面
+      queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
     });
   }
   private async checkPay(tradeNo: string) {
@@ -909,9 +994,12 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       item: ICombindInfo,
       ele: HTMLElement
     ) => {
+      if (!item.isShowDetail) {
+        item.isShowDetail = true;
+      }
       await AppHelper.alert(
-        `${item.credentialStaff && item.credentialStaff.Name} 【${
-          item.modal.credential && item.modal.credential.Number
+        `${item.vmCredential && item.vmCredential.Name} 【${
+          item.vmCredential && item.vmCredential.Number
         }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
@@ -1041,7 +1129,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
       ) {
         // 只有白名单的才需要考虑差标
         const ele: HTMLElement = this.getEleByAttr(
-          "illegalReasonid",
+          "illegalreasonsid",
           combindInfo.id
         );
         if (!p.IllegalReason) {
@@ -1078,9 +1166,9 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
           p.OutNumbers = {};
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
-              const el = this.getEleByAttr("outnumber", combindInfo.id);
+              const el = this.getEleByAttr("outnumberid", combindInfo.id);
               showErrorMsg(
-                it.label + this.LangService.isCn ? "必填" : " Required ",
+                it.label + (this.LangService.isCn ? "必填" : " Required "),
                 combindInfo,
                 el
               );
@@ -1115,10 +1203,17 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
         );
         return false;
       }
-      p.Credentials.Account =
-        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
-      p.Credentials.Account =
-        p.Credentials.Account || combindInfo.modal.credential.Account;
+      if (
+        combindInfo.credentialStaff &&
+        combindInfo.credentialStaff.Account &&
+        combindInfo.credentialStaff.Account.Id &&
+        combindInfo.credentialStaff.Account.Id != "0"
+      ) {
+        p.Credentials.Account =
+          combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+        p.Credentials.Account =
+          p.Credentials.Account || combindInfo.modal.credential.Account;
+      }
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
@@ -1194,7 +1289,7 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     this.generateAnimation(el);
   }
   private generateAnimation(el: HTMLElement) {
-    el.style.display = "block";
+    // el.style.display = "block";
     setTimeout(() => {
       requestAnimationFrame(() => {
         el.style.color = "var(--ion-color-danger)";
@@ -1395,7 +1490,10 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
         const cs = this.initialBookDtoModel.Staffs.find(
           (it) => it.Account.Id == item.passenger.AccountId
         );
-        const cstaff = cs && cs.CredentialStaff;
+        const cstaff =
+          item.passenger.AccountId == this.tmc.Account.Id
+            ? item.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
@@ -1666,6 +1764,69 @@ export class BookPage implements OnInit, AfterViewInit, CanComponentDeactivate {
     }
     return false;
   }
+  isHasAgreement(segment) {
+    return (
+      segment.Cabins &&
+      segment.Cabins.some((c) => c.FareType == FlightCabinFareType.Agreement)
+    );
+  }
+  onToggleShowCredentialDetail(item: ICombindInfo) {
+    item.isShowCredentialDetail = !item.isShowCredentialDetail;
+  }
+  onToggleShowTravelDetail(item: ICombindInfo) {
+    item.isShowTravelDetail = !item.isShowTravelDetail;
+  }
+  onOpenSelect(select: IonSelect) {
+    if (select) {
+      select.open();
+    }
+  }
+  hasInsurance(item: ICombindInfo) {
+    if (!item.insuranceProducts || !item.insuranceProducts.length) {
+      return null;
+    }
+    return item.insuranceProducts.find(
+      (it) => it.insuranceResult.Id == item.selectedInsuranceProductId
+    );
+  }
+  async searchOrganization(combindInfo: ICombindInfo) {
+    if (combindInfo.isOtherOrganization) {
+      return;
+    }
+    const modal = await this.modalCtrl.create({
+      component: OrganizationComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    console.log("organization", result.data);
+    if (result && result.data) {
+      const res = result.data as OrganizationEntity;
+      combindInfo.organization = {
+        ...combindInfo.organization,
+        Code: res.Code,
+        Name: res.Name,
+      };
+    }
+  }
+  async searchCostCenter(combindInfo: ICombindInfo) {
+    if (combindInfo.isOtherCostCenter) {
+      return;
+    }
+    const modal = await this.modalCtrl.create({
+      component: SearchCostcenterComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    if (result && result.data) {
+      const res = result.data as { Text: string; Value: string };
+      combindInfo.costCenter = {
+        code: res.Value,
+        name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1),
+      };
+    }
+  }
 }
 // updateCredential(credential){
 
@@ -1747,6 +1908,9 @@ interface ICombindInfo {
   appovalStaff: StaffEntity;
   credentialStaff: StaffEntity;
   isSkipApprove: boolean;
+  isShowDetail: boolean;
+  isShowCredentialDetail: boolean;
+  isShowTravelDetail: boolean;
   notifyLanguage: string;
   serviceFee: number;
   isShowGroupedInfo: boolean;

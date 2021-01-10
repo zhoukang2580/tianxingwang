@@ -1,5 +1,7 @@
-import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
-import { FlightComponentsModule } from "src/app/flight/components/components.module";
+import { AuthorityGuard } from "src/app/guards/authority.guard";
+import { CandeactivateGuard } from "../../guards/candeactivate.guard";
+import { SearchFlightDfPage } from "./search-flight-df.page";
+import { AgentGuard } from "../../guards/agent.guard";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
@@ -7,19 +9,23 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { BookDfPage } from "./book-df.page";
-import { FlightPipesModule } from "../pipes/Pipes.module";
+import { FlightComponentsModule } from "../components/components.module";
+import { AppDirectivesModule } from "src/app/directives/directives.module";
+import { TmcGuard } from "src/app/guards/tmc.guard";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
-import { AppComponentsModule } from "src/app/components/appcomponents.module";
-import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
-    component: BookDfPage,
-    canActivate: [StylePageGuard, ConfirmCredentialInfoGuard],
+    component: SearchFlightDfPage,
+    canActivate: [
+      StylePageGuard,
+      AuthorityGuard,
+      TmcGuard,
+      ConfirmCredentialInfoGuard,
+    ],
     canDeactivate: [CandeactivateGuard],
   },
 ];
@@ -31,11 +37,10 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     FlightComponentsModule,
-    MemberPipesModule,
-    FlightPipesModule,
+    AppDirectivesModule,
     TmcComponentsModule,
-    AppComponentsModule,
   ],
-  declarations: [BookDfPage],
+  declarations: [SearchFlightDfPage],
+  entryComponents: [],
 })
-export class FlightBookDfPageModule {}
+export class SearchFlightDfPageModule {}

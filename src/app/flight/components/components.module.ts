@@ -19,16 +19,21 @@ import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { SelectFlightPassengerComponent } from "./select-flight-passenger/select-flight-passenger.component";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
-import { PriceDetailComponent } from './price-detail/price-detail.component';
-import { SelectAndReplacebookinfoComponent } from './select-and-replacebookinfo/select-and-replacebookinfo.component';
-import { MemberComponentsModule } from 'src/app/member/components/components.module';
-import { FlightSegmentItemEnComponent } from './flight-segment-item-en/flight-segment-item-en.component';
-import { FlightSegmentItemComponent } from './flight-segment-item/flight-segment-item.component';
-import { CabinEnComponent } from './fly-filter/cabin_en/cabin_en.component';
+import { PriceDetailComponent } from "./price-detail/price-detail.component";
+import { SelectAndReplacebookinfoComponent } from "./select-and-replacebookinfo/select-and-replacebookinfo.component";
+import { MemberComponentsModule } from "src/app/member/components/components.module";
+import { FlightSegmentItemEnComponent } from "./flight-segment-item-en/flight-segment-item-en.component";
+import { FlightSegmentItemComponent } from "./flight-segment-item/flight-segment-item.component";
+import { CabinEnComponent } from "./fly-filter/cabin_en/cabin_en.component";
+import { TakeOffTimeSpanDfComponent } from "./fly-filter/take-off-timespan-df/take-off-timespan-df.component";
+import { FlightSegmentItemDfComponent } from "./flight-segment-item-df/flight-segment-item-df.component";
+import { FlightOutNumberComponent } from "./flight-outnumber/flight-outnumber.component";
+import { FlightBookAddcontactsCompComponent } from "./flightbook-addcontacts/flightbook-addcontacts.component";
 
 @NgModule({
   declarations: [
     FlightDynamicComponent,
+    TakeOffTimeSpanDfComponent,
     FlyListItemComponent,
     FlyFilterComponent,
     TakeOffTimeSpanComponent,
@@ -42,9 +47,12 @@ import { CabinEnComponent } from './fly-filter/cabin_en/cabin_en.component';
     SelectedPassengersComponent,
     SelectFlightsegmentCabinComponent,
     PriceDetailComponent,
+    FlightBookAddcontactsCompComponent,
     SelectFlightPassengerComponent,
     SelectAndReplacebookinfoComponent,
     FlightSegmentItemComponent,
+    FlightOutNumberComponent,
+    FlightSegmentItemDfComponent,
   ],
   imports: [
     CommonModule,
@@ -56,12 +64,16 @@ import { CabinEnComponent } from './fly-filter/cabin_en/cabin_en.component';
     AppComponentsModule,
     TmcComponentsModule,
     MemberPipesModule,
-    MemberComponentsModule
+    MemberComponentsModule,
   ],
   exports: [
+    FlightOutNumberComponent,
+    FlightSegmentItemDfComponent,
     AppDirectivesModule,
+    TakeOffTimeSpanDfComponent,
     FlightDynamicComponent,
     FlyListItemComponent,
+    FlightBookAddcontactsCompComponent,
     FlyFilterComponent,
     TakeOffTimeSpanComponent,
     AircompanyComponent,
@@ -75,7 +87,7 @@ import { CabinEnComponent } from './fly-filter/cabin_en/cabin_en.component';
     SelectAndReplacebookinfoComponent,
     FlightSegmentItemComponent,
     FlightSegmentItemEnComponent,
-    AppComponentsModule
-  ]
+    AppComponentsModule,
+  ],
 })
-export class FlightComponentsModule { }
+export class FlightComponentsModule {}

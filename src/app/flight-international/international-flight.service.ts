@@ -470,7 +470,7 @@ export class InternationalFlightService {
   getFilterCondition() {
     return this.filterCondition || ({} as IFilterCondition);
   }
-  async onSelecFlyDate(isFrom: boolean, t: ITripInfo) {
+  async onSelectFlyDate(isFrom: boolean, t: ITripInfo) {
     const dates = await this.openCalendar(false, isFrom, t);
     if (dates && dates.length) {
       if (this.searchModel) {
@@ -641,9 +641,6 @@ export class InternationalFlightService {
       },
       cabins: this.cabins,
     };
-    if (!environment.production) {
-      this.searchModel = MOCK_MultiCity_SEARCHMODEL;
-    }
     this.setSearchModelSource(this.searchModel);
   }
   disposal() {
@@ -1381,26 +1378,7 @@ export class InternationalFlightService {
   getCountries(forceFetch = false) {
     return this.tmcService.getCountries(forceFetch);
   }
-  beforeSelectCity(isFrom: boolean, trip: ITripInfo) {
-    if (this.searchModel) {
-      if (this.searchModel.trips) {
-        this.searchModel.trips = this.searchModel.trips.map((t) => {
-          t.isSelectInfo = t.id == trip.id;
-          return t;
-        });
-      }
-    }
-    this.setSearchModelSource(this.searchModel);
-    this.router.navigate(
-
-      this.LangService.isCn ? [AppHelper.getRoutePath("select-international-flight-city")] :
-      [AppHelper.getRoutePath("select-international-flight-city_en")],
-      {
-        queryParams: { requestCode: isFrom ? "select_from_city" : "to_city" },
-      }
-    );
-  }
-  afterCitySelected(city: TrafficlineEntity, isFrom: boolean) {
+  onCitySelected(city: TrafficlineEntity, isFrom: boolean) {
     if (this.searchModel && this.searchModel.trips) {
       const trip = this.searchModel.trips.find((t) => t.isSelectInfo);
       if (trip) {

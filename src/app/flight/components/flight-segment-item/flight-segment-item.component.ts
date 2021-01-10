@@ -22,6 +22,7 @@ export class FlightSegmentItemComponent implements OnInit, OnChanges {
   @Input() segment: FlightSegmentEntity;
   @Input() isHasFiltered: boolean;
   @Input() isRecomendSegment: boolean;
+  @Input() isShowPrice=true;
   @Input() langOpt: any = {
     has: "有",
     meal: "餐食",

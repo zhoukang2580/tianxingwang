@@ -1,13 +1,13 @@
-<div class="title">
-  {{title}}
-</div>
-<ion-content class='ion-padding-end desc'>
+<div class="wrapper">
+  <div class="title">
+    {{title}}
+  </div>
   <ion-list>
     <ol>
       <li *ngFor='let desc of details'>{{desc}}</li>
     </ol>
   </ion-list>
-</ion-content>
-<div class="footer"  (click)='back()'>
-  <ion-button  expand='block' class="ion-margin-horizontal ion-margin-bottom" color='secondary'>确定</ion-button>
+  <div class="footer" (click)='back()'>
+    <ion-button expand='block' class="ion-margin-horizontal ion-margin-bottom" color='secondary'>确定</ion-button>
+  </div>
 </div>

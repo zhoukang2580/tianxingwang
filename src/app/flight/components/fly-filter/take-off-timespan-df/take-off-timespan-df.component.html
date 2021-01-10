@@ -1,0 +1,32 @@
+<ion-list>
+  <ion-radio-group mode='md' [value]='selectItem' (ionChange)='onionChange($event)'>
+    <ion-item>
+      <ion-label>{{langOpt.any}}</ion-label>
+      <ion-radio value='unlimit'></ion-radio>
+    </ion-item>
+    <ion-item>
+      <ion-label>06:00-09:00</ion-label>
+      <ion-radio value="6,9"></ion-radio>
+    </ion-item>
+    <ion-item>
+      <ion-label>09:00-12:00</ion-label>
+      <ion-radio value="9,12"></ion-radio>
+    </ion-item>
+    <ion-item>
+      <ion-label>12:00-15:00</ion-label>
+      <ion-radio value="12,15"></ion-radio>
+    </ion-item>
+    <ion-item>
+      <ion-label>15:00-18:00</ion-label>
+      <ion-radio value="15,18"></ion-radio>
+    </ion-item>
+    <ion-item>
+      <ion-label>18:00-21:00</ion-label>
+      <ion-radio value="18,21"></ion-radio>
+    </ion-item>
+    <ion-item>
+      <ion-label>21:00-24:00</ion-label>
+      <ion-radio value="21,24"></ion-radio>
+    </ion-item>
+  </ion-radio-group>
+</ion-list>

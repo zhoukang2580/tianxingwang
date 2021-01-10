@@ -48,6 +48,8 @@ import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
+import { FlightCityService } from "../flight-city.service";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -146,6 +148,7 @@ export class FlightListPage
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
     private storage: Storage,
+    private flightCityService:FlightCityService,
     private tmcService: TmcService
   ) {
     this.subscriptions.push(
@@ -608,12 +611,34 @@ export class FlightListPage
     );
     this.doRefresh(false, true);
   }
-  onSelectCity(isFrom: boolean) {
+  async onSelectCity(isFrom: boolean) {
     if (this.flightService.getSearchFlightModel().isLocked) {
       return;
     }
     this.isCanLeave = true;
-    this.flightService.onSelectCity(isFrom);
+    // this.flightService.onSelectCity(isFrom);
+    const rs = await this.flightCityService.onSelectCity(true,isFrom);
+    if (rs) {
+      const s = this.searchFlightModel;
+      if (rs.isDomestic) {
+        const fromCity = isFrom ? rs.city : s.fromCity;
+        const toCity = isFrom ? s.toCity : rs.city;
+        this.flightService.setSearchFlightModelSource({
+          ...s,
+          fromCity,
+          toCity,
+          FromCode: fromCity.Code,
+          ToCode: toCity.Code,
+          FromAsAirport: s.ToAsAirport,
+          ToAsAirport: s.FromAsAirport,
+        });
+        if(this.checkIfCityChanged()){
+          this.doRefresh(true,false);
+        }
+      } else {
+      }
+
+    }
   }
   private async initSearchModelParams() {
     this.subscriptions.push(
@@ -883,6 +908,10 @@ export class FlightListPage
     return result;
   }
   canDeactivate() {
+    if (this.flightCityService.isShowingPage) {
+      this.flightCityService.onSelectCity(false,false);
+      return false;
+    }
     const s = this.flightService.getSearchFlightModel();
     if (s.isExchange) {
       if (this.isCanLeave) {

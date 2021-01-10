@@ -50,6 +50,8 @@ body.dark {
 }
 @import "../app/components/refresher/refresher.scss";
 @import "../app/tmc/calendar.scss";
+@import "./hotel/hotel-city-df/style.scss";
+@import "./flight/select-flight-city/style.scss";
 .inner-html {
   .line {
     margin: 0 0.2em;

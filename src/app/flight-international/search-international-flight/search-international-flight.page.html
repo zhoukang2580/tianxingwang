@@ -62,8 +62,8 @@
               </ion-buttons>
               <div style="height: 2em;">
                 <ion-buttons class="ion-justify-content-between">
-                  <ion-text color='secondary' (click)="onSelecFlyDate(true,trip)">{{trip.date}}</ion-text>
-                  <ion-text color='secondary' (click)="onSelecFlyDate(false,trip)"
+                  <ion-text color='secondary' (click)="onSelectFlyDate(true,trip)">{{trip.date}}</ion-text>
+                  <ion-text color='secondary' (click)="onSelectFlyDate(false,trip)"
                     *ngIf='searchFlightModel.voyageType==FlightVoyageType.GoBack'>{{searchFlightModel.trips[1]?.date}}
                   </ion-text>
                   <ion-button (click)='onRemoveTrip(trip)' color='danger'

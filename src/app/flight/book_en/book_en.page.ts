@@ -47,6 +47,7 @@ import {
   ElementRef,
   ViewChild,
   Component,
+  OnDestroy,
 } from "@angular/core";
 import { Storage } from "@ionic/storage";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -60,6 +61,7 @@ import {
   combineLatest,
   of,
   fromEvent,
+  Subscription,
 } from "rxjs";
 import {
   OrderTravelType,
@@ -90,7 +92,7 @@ import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
   styleUrls: ["./book_en.page.scss"],
 })
 export class BookEnPage
-  implements OnInit, AfterViewInit, CanComponentDeactivate {
+  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
   langOpt = {
     meal: "Meal",
     isStop: "Stop over",
@@ -104,6 +106,9 @@ export class BookEnPage
     lowestPriceRecommend: "LowestPriceRecommend",
   };
   private isShowInsuranceBack = false;
+  private subscriptions: Subscription[] = [];
+  private totalPriceSource: Subject<number>;
+  totalPrice = 0;
   FlightCabinFareType = FlightCabinFareType;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
@@ -119,7 +124,6 @@ export class BookEnPage
   checkPayCount = 5;
   checkPayCountIntervalTime = 3 * 1000;
   checkPayCountIntervalId: any;
-  totalPriceSource: Subject<number>;
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
@@ -127,7 +131,7 @@ export class BookEnPage
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   isCheckingPay: boolean;
-  isCanSkipApproval$ = of(false);
+  isCanSkipApproval = false;
   isCanSave = false;
   isRoundTrip = false;
   isShowFee = false;
@@ -142,9 +146,8 @@ export class BookEnPage
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
-  @ViewChild("transfromEle", { static: true }) transfromEle: ElementRef<
-    HTMLElement
-  >;
+  @ViewChild("transfromEle", { static: true })
+  transfromEle: ElementRef<HTMLElement>;
   @ViewChild(IonFooter, { static: true }) ionFooter: IonFooter;
   constructor(
     private flightService: FlightService,
@@ -163,8 +166,15 @@ export class BookEnPage
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
-
+  ngOnDestroy() {
+    this.subscriptions.forEach((s) => s.unsubscribe());
+  }
   async ngOnInit() {
+    this.subscriptions.push(
+      this.totalPriceSource.subscribe((p) => {
+        this.totalPrice = p;
+      })
+    );
     this.isRoundTrip = this.flightService.getSearchFlightModel().isRoundTrip;
     this.flightService.setPassengerBookInfosSource(
       this.flightService.getPassengerBookInfos().filter((it) => !!it.bookInfo)
@@ -200,22 +210,28 @@ export class BookEnPage
         this.isShowInsuranceBack = false;
       }, 200);
     });
-    this.isCanSkipApproval$ = combineLatest([
-      from(this.tmcService.getTmc()),
-      from(this.staffService.isSelfBookType()),
-      this.identityService.getIdentitySource(),
-    ]).pipe(
-      map(([tmc, isSelfType, identity]) => {
-        return (
-          tmc.FlightApprovalType != 0 &&
-          tmc.FlightApprovalType != TmcApprovalType.None &&
-          !isSelfType &&
-          !(identity && identity.Numbers && identity.Numbers.AgentId)
-        );
-      }),
-      tap((can) => {
-        console.log("是否可以跳过审批", can);
-      })
+    this.subscriptions.push(
+      combineLatest([
+        from(this.tmcService.getTmc()),
+        from(this.staffService.isSelfBookType()),
+        this.identityService.getIdentitySource(),
+      ])
+        .pipe(
+          map(([tmc, isSelfType, identity]) => {
+            return (
+              tmc.FlightApprovalType != 0 &&
+              tmc.FlightApprovalType != TmcApprovalType.None &&
+              !isSelfType &&
+              !(identity && identity.Numbers && identity.Numbers.AgentId)
+            );
+          }),
+          tap((can) => {
+            console.log("是否可以跳过审批", can);
+          })
+        )
+        .subscribe((is) => {
+          this.isCanSkipApproval = is;
+        })
     );
     this.isself = await this.staffService.isSelfBookType();
     console.log(this.isself, "isself");
@@ -1089,10 +1105,17 @@ export class BookEnPage
         );
         return false;
       }
-      p.Credentials.Account =
-        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
-      p.Credentials.Account =
-        p.Credentials.Account || combindInfo.modal.credential.Account;
+      if (
+        combindInfo.credentialStaff &&
+        combindInfo.credentialStaff.Account &&
+        combindInfo.credentialStaff.Account.Id &&
+        combindInfo.credentialStaff.Account.Id != "0"
+      ) {
+        p.Credentials.Account =
+          combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+        p.Credentials.Account =
+          p.Credentials.Account || combindInfo.modal.credential.Account;
+      }
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
@@ -1369,7 +1392,10 @@ export class BookEnPage
         const cs = this.initialBookDtoModel.Staffs.find(
           (it) => it.Account.Id == item.passenger.AccountId
         );
-        const cstaff = cs && cs.CredentialStaff;
+        const cstaff =
+          item.passenger.AccountId == this.tmc.Account.Id
+            ? item.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {

@@ -20,13 +20,13 @@
             <div class='tab' [class.active]='tab===4' [class.user-op]='userOps?.airTypeOp' (click)='onTabClick(4)'>
                 <span>{{langOpt.Aircraft}}</span>
             </div>
-            <!-- <div class='tab' [class.active]='tab===5' [class.user-op]='userOps?.cabinOp' (click)='onTabClick(5)'>
+            <div class='tab' [ngClass]='{active:tab===5,hidden:!filterCondition?.cabins?.length,"user-op":userOps?.cabinOp}' (click)='onTabClick(5)'>
                 <span>{{langOpt.Cabins}}</span>
-            </div> -->
+            </div> 
         </article>
         <article class="right">
             <ion-list>
-                <app-take-off-timespan [langOpt]='langOpt' [class.hidden]='tab!==1' [(filterCondition)]='filterCondition'></app-take-off-timespan>
+                <app-take-off-timespan-df [langOpt]='langOpt' [class.hidden]='tab!==1' [(filterCondition)]='filterCondition'></app-take-off-timespan-df>
                 <app-aircompany [langOpt]='langOpt' [class.hidden]='tab!==2' [(filterCondition)]='filterCondition'>
                 </app-aircompany>
                 <app-airports [langOpt]='langOpt' #fromAirports [class.hidden]='tab!==3' [isFromAirports]="true" [(filterCondition)]='filterCondition'>
@@ -34,10 +34,7 @@
                 <app-airports [langOpt]='langOpt' #toAirports [isFromAirports]="false" [(filterCondition)]='filterCondition' [class.hidden]='tab!==6'>
                 </app-airports>
                 <app-airtype [langOpt]='langOpt' [class.hidden]='tab!==4' [(filterCondition)]='filterCondition'></app-airtype>
-                <!-- <app-cabin_en [langOpt] = '{
-          any: "Any"
-        }' [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin_en> -->
-                <!-- <app-cabin [langOpt]='langOpt' [class.hidden]='tab!==5' [(filterCondition)]='filterCondition'></app-cabin> -->
+                <app-cabin [langOpt]='langOpt' [class.hidden]='tab!==5||!filterCondition?.cabins?.length' [(filterCondition)]='filterCondition'></app-cabin>
             </ion-list>
         </article>
     </section>
