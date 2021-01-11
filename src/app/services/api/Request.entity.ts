@@ -33,6 +33,7 @@ export class RequestEntity {
       "wechatcode",
       "wechatminicode",
       "dingtalkcode",
+      "language",
       "ticket",
       "ticketname",
       "wechatopenid",
@@ -45,7 +46,7 @@ export class RequestEntity {
       if (tags.includes(p.toLowerCase())) {
         continue;
       }
-      this[p] = paramters[p];
+      this[p] = paramters[p]||"";
     }
     if (this.TicketName != "ticket") {
       this[this.TicketName] = this.Ticket;
