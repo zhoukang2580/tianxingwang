@@ -65,6 +65,11 @@
   .score {
     display: flex;
   }
+  .label{
+    color: #eb445a;
+    min-width: 3em;
+    font-size: 13px;
+  }
 
   .grade-stars {
     display: flex;

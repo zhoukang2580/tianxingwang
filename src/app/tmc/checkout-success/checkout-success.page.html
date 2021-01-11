@@ -30,15 +30,18 @@
         <div class="name">{{item?.HotelName}}</div>
         <div class="grade-stars">
           <div class="score">
+            <div class="label">
+              评分:
+            </div>
             <ion-text class="grade" color="danger"
               >{{item?.HotelCategory}}分</ion-text
             >
-            <div class="stars">
+            <!-- <div class="stars">
               <ng-container>
                 <ion-icon name="star" color="warning"></ion-icon>
                 <ion-icon name="star-half" color="warning"></ion-icon>
               </ng-container>
-            </div>
+            </div> -->
           </div>
           <ion-text class="ion-text-end ion-padding-end price" color="danger"
             ><small>￥</small><strong>{{item?.Price}}</strong><small>起</small>
