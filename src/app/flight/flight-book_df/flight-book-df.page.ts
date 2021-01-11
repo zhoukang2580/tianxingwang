@@ -908,10 +908,30 @@ export class FlightBookDfPage
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["order-list"], {
-      // isbackhome:true，是防止 android 通过物理返回键返回当前页面
-      queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
-    });
+    // this.router.navigate(["order-list"], {
+    //   // isbackhome:true，是防止 android 通过物理返回键返回当前页面
+    //   queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
+    // });
+    try {
+      const m = this.flightService.getSearchFlightModel();
+      // const cities = await this.flightService.getStationsAsync();
+      // const city = m.toCity;
+      const cities = this.flightService.getSearchFlightModel().toCity;
+      // const c = cities.find(it => it.Code == (city && city.Code));
+      this.router.navigate(["checkout-success"], {
+        queryParams: {
+          tabId: ProductItemType.plane,
+          // cityCode: c && c.CityCode,
+          // cityName: c && c.CityName,
+          cityCode: cities && cities.CityCode,
+          cityName: cities && cities.CityName,
+          date: m.Date
+        },
+      });
+    } catch (e) {
+      console.error(e);
+
+    }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {
