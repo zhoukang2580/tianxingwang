@@ -74,7 +74,7 @@ ion-content {
   }
   .editicon {
     width: 14px;
-    margin: 0 1em;
+    margin: -3px 1em;
   }
   .passenger {
     font-size: 18px;
@@ -140,8 +140,8 @@ ion-content {
   }
   .wrapper {
     width: 100%;
-    overflow: scroll;
-    height: 70px;
+    overflow: scroll;    
+    line-height: 2;
   }
 }
 
