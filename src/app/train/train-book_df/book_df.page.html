@@ -31,7 +31,7 @@
                   [value]="opt"
                   *ngFor="let opt of combindInfo?.credentials"
                 >
-                  {{(opt?.Type)}}{{opt?.Number}}
+                  {{(opt?.Type)}}{{opt?.HideNumber}}
                 </ion-select-option>
               </ion-select>
             </ion-item>
@@ -41,7 +41,7 @@
                   <span class="name">{{combindInfo?.vmCredential?.Name}}</span
                   >&nbsp;&nbsp;
                   <span class="idcode"
-                    >身份证号: {{combindInfo?.vmCredential?.Number}}</span
+                    >身份证号: {{combindInfo?.vmCredential?.HideNumber}}</span
                   >
                   <img
                     class="editicon"

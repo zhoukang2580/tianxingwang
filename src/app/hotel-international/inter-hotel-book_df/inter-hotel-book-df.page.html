@@ -19,7 +19,7 @@
               <ion-select #credentialSelect [(ngModel)]='combindInfo.vmCredential' name='Type' okText="确定" cancelText="取消" selectedText='{{combindInfo.vmCredential?.Type|credential}}'
                 [compareWith]='credentialCompareFn'>
                 <ion-select-option [value]="opt" *ngFor='let opt of combindInfo?.credentials'>
-                  {{(opt?.Type|credential)}}{{opt?.Number}}
+                  {{(opt?.Type|credential)}}{{opt?.HideNumber}}
                 </ion-select-option>
               </ion-select>
             </ion-item>

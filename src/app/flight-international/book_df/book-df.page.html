@@ -19,7 +19,7 @@
           <div style="width: 100%">
             {{combindInfo?.vmCredential?.Name}}
             【{{tmc?.Name}}】
-            {{combindInfo?.vmCredential?.Number}}
+            {{combindInfo?.vmCredential?.HideNumber}}
           </div>
         </ion-item-divider>
         <ion-item lines='none' *ngIf="searchModel?.trips?.length&&first">
@@ -219,7 +219,7 @@
 <div [class.show]="isShowFee" class="transfrom" #transfromEl>
   <div class="wrapper">
     <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee" [style.min-width]="vmCombindInfos.length>1?'90%':'100%'">
-      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmCredential?.Number}})
+      <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmCredential?.HideNumber}})
       </div>
       <div *ngFor="let trip of searchModel?.trips">
         <div class="spacebetween">
