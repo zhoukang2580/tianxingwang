@@ -12,78 +12,8 @@
     <div class="swiper-slide" #slide>
       <!-- 订单信息 -->
       <div class="container">
-        <div class="ion-item-divider"> 订单信息 </div>
-        <div class="container-div">
-          <ion-row>
-            <ion-col size="3">订单编号:</ion-col>
-            <ion-col>{{orderDetail.Order.Id}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="3">订单状态:</ion-col>
-            <ion-col
-              >{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" :
-              orderDetail.Order.StatusName}}
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="3">付款方式:</ion-col>
-            <ion-col
-              >{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col
-            >
-          </ion-row>
-          <ion-row>
-            <ion-col size="3">完成时间:</ion-col>
-            <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
-          </ion-row>
-          <ion-row (click)="showPricePopover()">
-            <ion-col size="3">应付金额:</ion-col>
-            <ion-col>
-              <div>
-                <ion-text color="danger"
-                  >￥{{orderDetail.Order.TotalAmount}}
-                </ion-text>
-                <span *ngIf="getInsuranceAmount() as insuranceAmount"
-                  >(含保险{{insuranceAmount}})</span
-                >
-                <ion-text color="secondary" style="font-size: 0.7rem"
-                  >应付明细</ion-text
-                >
-              </div>
-            </ion-col>
-          </ion-row>
-          <ng-container>
-            <ng-container *ngIf="tmc?.IsShowServiceFee">
-              <ion-row *ngFor="let orderHotel of orderDetail.Order.OrderHotels">
-                <ion-col size="3">
-                  <ng-container *ngIf="orderDetail.Order.OrderHotels.length>1">
-                    <strong *ngIf="orderHotel.HotelName as n">
-                      {{n.length>10?n.substr(0,10)+"...":n}}
-                    </strong>
-                  </ng-container>
-                  服务费:
-                </ion-col>
-                <ion-col>{{getHotelServiceFee(orderHotel.Key)}} </ion-col>
-              </ion-row>
-            </ng-container>
-          </ng-container>
-          <ion-row>
-            <ion-col size="3">已付金额:</ion-col>
-            <ion-col>{{getOrderPayAmount()}}</ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="3" *ngIf="orderDetail?.Order?.OrderNumbers"
-              >外部编号</ion-col
-            >
-            <ion-col>
-              <div *ngFor="let n of orderDetail?.Order?.OrderNumbers">
-                <span *ngIf='n.Tag=="TmcOutNumber"'
-                  >{{n.Name}}:{{n.Number}}</span
-                >
-              </div>
-            </ion-col>
-          </ion-row>
-        </div>
-        <div *ngFor="let ticket of orderDetail?.Order?.OrderTrainTickets;let i=index"
+        <div
+          *ngFor="let ticket of orderDetail?.Order?.OrderTrainTickets;let i=index"
         >
           <div
             class="swiper-slide"
@@ -91,85 +21,9 @@
             *ngIf="ticket.VariablesJsonObj.isShow"
           >
             <div class="container-div">
-              <!-- 旅客信息 -->
-              <ng-container *ngIf="getTicketPassenger(ticket) as p">
-                <div class="ion-item-divider"> 旅客信息 </div>
-                <ion-row>
-                  <ion-col size="3">姓名</ion-col>
-                  <ion-col>
-                    {{p.Name}}
-                    <span *ngIf="p.PassengerTypeName"
-                      >({{p.PassengerTypeName}})</span
-                    >
-                  </ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size="3">证件号码</ion-col>
-                  <ion-col>{{p.CredentialsNumber}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size="3">费用类别</ion-col>
-                  <ion-col>{{getExpenseType(ticket)}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size="3">联系电话</ion-col>
-                  <ion-col>{{p.Mobile}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size="3">邮箱</ion-col>
-                  <ion-col>{{p.Email}}</ion-col>
-                </ion-row>
-                <ng-container *ngIf="getPassengerCostOrgInfo(ticket) as info">
-                  <ion-row>
-                    <ion-col size="3">成本中心</ion-col>
-                    <ion-col>
-                      {{info.CostCenterCode}}-{{info.CostCenterName}}
-                    </ion-col>
-                  </ion-row>
-                  <ion-row>
-                    <ion-col size="3">组织架构</ion-col>
-                    <ion-col
-                      >{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col
-                    >
-                  </ion-row>
-                  <ion-row>
-                    <ion-col size="3">违规内容</ion-col>
-                    <ion-col *ngIf="info.IllegalPolicy"
-                      >{{info.IllegalPolicy}}</ion-col
-                    >
-                  </ion-row>
-                  <ion-row>
-                    <ion-col size="3">违规原因</ion-col>
-                    <ion-col *ngIf="info.IllegalReason"
-                      >{{info.IllegalReason}}</ion-col
-                    >
-                  </ion-row>
-                </ng-container>
-              </ng-container>
-              <!-- 联系信息 -->
-              <ion-item-divider *ngIf="orderDetail?.Order?.OrderLinkmans">
-                联系人信息
-              </ion-item-divider>
-              <ng-container
-                *ngFor="let man of orderDetail?.Order?.OrderLinkmans"
-              >
-                <ion-row>
-                  <ion-col size="3">姓名</ion-col>
-                  <ion-col>{{man.Name}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size="3">邮箱</ion-col>
-                  <ion-col>{{man.Email}}</ion-col>
-                </ion-row>
-                <ion-row>
-                  <ion-col size="3">电话</ion-col>
-                  <ion-col>{{man.Mobile}}</ion-col>
-                </ion-row>
-              </ng-container>
-              <!-- <ng-container> -->
               <div class="getHeight">
                 <ng-container>
-                  <div class="ion-item-divider"> 车次信息 </div>
+                  <div class="ion-item-divider">车次信息</div>
                   <ion-row>
                     <ion-col size="3"> 车票状态 </ion-col>
                     <ion-col>
@@ -365,6 +219,83 @@
                   </ion-col>
                 </ion-row>
               </div>
+              <!-- 旅客信息 -->
+              <ng-container *ngIf="getTicketPassenger(ticket) as p">
+                <div class="ion-item-divider">旅客信息</div>
+                <ion-row>
+                  <ion-col size="3">姓名</ion-col>
+                  <ion-col>
+                    {{p.Name}}
+                    <span *ngIf="p.PassengerTypeName"
+                      >({{p.PassengerTypeName}})</span
+                    >
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">证件号码</ion-col>
+                  <ion-col>{{p.CredentialsNumber}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">费用类别</ion-col>
+                  <ion-col>{{getExpenseType(ticket)}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">联系电话</ion-col>
+                  <ion-col>{{p.Mobile}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">邮箱</ion-col>
+                  <ion-col>{{p.Email}}</ion-col>
+                </ion-row>
+                <ng-container *ngIf="getPassengerCostOrgInfo(ticket) as info">
+                  <ion-row>
+                    <ion-col size="3">成本中心</ion-col>
+                    <ion-col>
+                      {{info.CostCenterCode}}-{{info.CostCenterName}}
+                    </ion-col>
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size="3">组织架构</ion-col>
+                    <ion-col
+                      >{{info.OrganizationCode}}-{{info.OrganizationName}}</ion-col
+                    >
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size="3">违规内容</ion-col>
+                    <ion-col *ngIf="info.IllegalPolicy"
+                      >{{info.IllegalPolicy}}</ion-col
+                    >
+                  </ion-row>
+                  <ion-row>
+                    <ion-col size="3">违规原因</ion-col>
+                    <ion-col *ngIf="info.IllegalReason"
+                      >{{info.IllegalReason}}</ion-col
+                    >
+                  </ion-row>
+                </ng-container>
+              </ng-container>
+              <!-- 联系信息 -->
+              <ion-item-divider *ngIf="orderDetail?.Order?.OrderLinkmans">
+                联系人信息
+              </ion-item-divider>
+              <ng-container
+                *ngFor="let man of orderDetail?.Order?.OrderLinkmans"
+              >
+                <ion-row>
+                  <ion-col size="3">姓名</ion-col>
+                  <ion-col>{{man.Name}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">邮箱</ion-col>
+                  <ion-col>{{man.Email}}</ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="3">电话</ion-col>
+                  <ion-col>{{man.Mobile}}</ion-col>
+                </ion-row>
+              </ng-container>
+              <!-- <ng-container> -->
+
               <ng-container
                 @flyInOut
                 *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[ticket?.Id]?.length"
@@ -585,9 +516,79 @@
             </div>
           </div>
         </div>
+        <div class="ion-item-divider">订单信息</div>
+        <div class="container-div">
+          <ion-row>
+            <ion-col size="3">订单编号:</ion-col>
+            <ion-col>{{orderDetail.Order.Id}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="3">订单状态:</ion-col>
+            <ion-col
+              >{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" :
+              orderDetail.Order.StatusName}}
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="3">付款方式:</ion-col>
+            <ion-col
+              >{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col
+            >
+          </ion-row>
+          <ion-row>
+            <ion-col size="3">完成时间:</ion-col>
+            <ion-col>{{orderDetail.Order.InsertDateTime}}</ion-col>
+          </ion-row>
+          <ion-row (click)="showPricePopover()">
+            <ion-col size="3">应付金额:</ion-col>
+            <ion-col>
+              <div>
+                <ion-text color="danger"
+                  >￥{{orderDetail.Order.TotalAmount}}
+                </ion-text>
+                <span *ngIf="getInsuranceAmount() as insuranceAmount"
+                  >(含保险{{insuranceAmount}})</span
+                >
+                <ion-text color="secondary" style="font-size: 0.7rem"
+                  >应付明细</ion-text
+                >
+              </div>
+            </ion-col>
+          </ion-row>
+          <ng-container>
+            <ng-container *ngIf="tmc?.IsShowServiceFee">
+              <ion-row *ngFor="let orderHotel of orderDetail.Order.OrderHotels">
+                <ion-col size="3">
+                  <ng-container *ngIf="orderDetail.Order.OrderHotels.length>1">
+                    <strong *ngIf="orderHotel.HotelName as n">
+                      {{n.length>10?n.substr(0,10)+"...":n}}
+                    </strong>
+                  </ng-container>
+                  服务费:
+                </ion-col>
+                <ion-col>{{getHotelServiceFee(orderHotel.Key)}} </ion-col>
+              </ion-row>
+            </ng-container>
+          </ng-container>
+          <ion-row>
+            <ion-col size="3">已付金额:</ion-col>
+            <ion-col>{{getOrderPayAmount()}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="3" *ngIf="orderDetail?.Order?.OrderNumbers"
+              >外部编号</ion-col
+            >
+            <ion-col>
+              <div *ngFor="let n of orderDetail?.Order?.OrderNumbers">
+                <span *ngIf='n.Tag=="TmcOutNumber"'
+                  >{{n.Name}}:{{n.Number}}</span
+                >
+              </div>
+            </ion-col>
+          </ion-row>
+        </div>
       </div>
     </div>
-    <!-- </app-swiper-slide-content> -->
   </ng-container>
   <ng-template #nomoredata>
     <span *ngIf="isLoading"> 正在获取订单详情... </span>

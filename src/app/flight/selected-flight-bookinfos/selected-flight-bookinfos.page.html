@@ -10,7 +10,7 @@
   <ion-item-group *ngFor='let bookInfo of  passengerAndBookInfos$|async'>
     <ng-container *ngIf='bookInfo.bookInfo'>
       <ion-item-divider color='primary' sticky>
-        <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;&nbsp;{{bookInfo?.credential?.Number}}</ion-label>
+        <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;&nbsp;{{bookInfo?.credential?.HideNumber}}</ion-label>
       </ion-item-divider>
       <ion-item>
         <div class='detail'>

@@ -34,6 +34,8 @@ export class CheckoutSuccessPage implements OnInit {
   city: TrafficlineEntity;
   private date;
   private tabId;
+  isApproval: boolean;
+  isShow = true;
   constructor(
     private hotelService: HotelService,
     private router: Router,
@@ -66,6 +68,7 @@ export class CheckoutSuccessPage implements OnInit {
         };
         this.getRecommendHotel();
       }
+      this.isApproval = !!q.get("isApproval");
     })
   }
 
@@ -88,6 +91,11 @@ export class CheckoutSuccessPage implements OnInit {
   }
 
   goToDetail(id) {
+    this.hotelService.setSearchHotelModel({
+      ...this.hotelService.getSearchHotelModel(),
+      checkInDate: this.date,
+      checkOutDate: this.calendarService.getMoment(1, this.date).format("YYYY-MM-DD")
+    })
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")],
       {
         queryParams: { hotelId: id },

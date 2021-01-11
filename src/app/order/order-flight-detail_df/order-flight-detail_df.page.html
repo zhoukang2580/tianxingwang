@@ -21,13 +21,13 @@
             <div>
               <ng-container>
                 <div class="ion-item-divider"><img src="assets/images/1.png" alt=""> 航班信息</div>
-                <div class="ion-trip" *ngIf='tikect2Insurance[flightTicket.Key] as orderInsurances'>
-                  <div *ngFor='let orderInsurance of orderInsurances'>
+                <div class="ion-trip" *ngFor="let trip of flightTicket.OrderFlightTrips;">
+                  <div>
                     <span>
-                      {{orderInsurance?.VariablesJsonObj?.trip?.FromCityName}}—{{orderInsurance?.VariablesJsonObj?.trip?.ToCityName}}
+                      {{trip.FromCityName}}—{{trip?.ToCityName}}
                     </span>
-                    <span>{{orderInsurance?.VariablesJsonObj?.trip?.TakeoffTime?.substr(0,10)}}</span>
-                    <span>&nbsp;{{getWeekName(orderInsurance?.VariablesJsonObj?.trip?.TakeoffTime?.substr(0,10))}}</span>
+                    <span>{{trip?.TakeoffTime?.substr(0,10)}}</span>
+                    <span>&nbsp;{{getWeekName(trip?.TakeoffTime?.substr(0,10))}}</span>
                   </div>
                 </div>
                 <div class="container" *ngFor="let trip of flightTicket.OrderFlightTrips;">

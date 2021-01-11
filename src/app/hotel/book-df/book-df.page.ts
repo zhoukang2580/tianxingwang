@@ -1631,31 +1631,25 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           this.hotelService.removeAllBookInfos();
           this.combindInfos = [];
           this.hotelService.dismissAllTopOverlays();
-          this.goToMyOrders();
+          this.goToMyOrders(ProductItemType.hotel);
         }
       }
     }
   }
-  private goToMyOrders() {
-    const m = this.hotelService.getSearchHotelModel();
-    const city = m.destinationCity;
-    this.router.navigate(["checkout-success"], {
-      queryParams: {
-        tabId: ProductItemType.hotel,
-        cityCode: city && city.CityCode,
-        cityName: city && city.CityName,
-        date: m.checkInDate
-      },
+  private goToMyOrders(tab: ProductItemType) {
+    // const m = this.hotelService.getSearchHotelModel();
+    // const city = m.destinationCity;
+    // this.router.navigate(["checkout-success"], {
+    //   queryParams: {
+    //     tabId: ProductItemType.hotel,
+    //     cityCode: city && city.CityCode,
+    //     cityName: city && city.CityName,
+    //     date: m.checkInDate
+    //   },
+    // });
+    this.router.navigate(["order-list"], {
+      queryParams: { tabId: tab },
     });
-    // if (this.langService.isCn) {
-    //   this.router.navigate(["order-list"], {
-    //     queryParams: { tabId: tab },
-    //   });
-    // } else {
-    //   this.router.navigate(["order-list_en"], {
-    //     queryParams: { tabId: tab },
-    //   });
-    // }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {

@@ -886,22 +886,22 @@ export class FlightBookDfPage
             }
           }
           const hasRight = await this.tmcService.checkHasHotelBookRight();
-          if (hasRight) {
-            const ok = await AppHelper.alert(
-              "您的预订已完成，是否继续预订酒店？",
-              true,
-              "是",
-              "否"
-            );
-            if (ok) {
-              this.router.navigate([AppHelper.getRoutePath("search-hotel")], {
-                queryParams: {
-                  fromRoute: "bookflight",
-                },
-              });
-              return;
-            }
-          }
+          // if (hasRight) {
+          //   const ok = await AppHelper.alert(
+          //     "您的预订已完成，是否继续预订酒店？",
+          //     true,
+          //     "是",
+          //     "否"
+          //   );
+          //   if (ok) {
+          //     this.router.navigate([AppHelper.getRoutePath("search-hotel")], {
+          //       queryParams: {
+          //         fromRoute: "bookflight",
+          //       },
+          //     });
+          //     return;
+          //   }
+          // }
           this.goToMyOrders(ProductItemType.plane);
         }
       }

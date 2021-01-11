@@ -124,6 +124,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isCheckingPay = false;
   isShowFee = false;
   isSelfBookType = true;
+  isApproval = true;
   expenseTypes: string[];
   orderTravelPayTypes: {
     label: string;
@@ -738,7 +739,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             isLocked: false,
           });
           const isExchange = exchangeInfo && !!exchangeInfo.exchangeInfo;
-          this.goToMyOrders(ProductItemType.train, isExchange);
+          // const isApproval = 
+          this.goToMyOrders(isExchange);
         }
       }
     }
@@ -852,23 +854,26 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.timeEnd("总计");
   }
-  private async goToMyOrders(tab: ProductItemType, isExchange = false) {
+  private async goToMyOrders(isExchange = false,isApproval = true) {
     try {
       const m = this.trainService.getSearchTrainModel();
       const cities = await this.trainService.getStationsAsync();
       const city = m.toCity;
       const c = cities.find(it => it.Code == (city && city.Code));
+      if(this.viewModel.orderTravelPayType == 3){
+        isApproval = false;
+      }
       this.router.navigate(["checkout-success"], {
         queryParams: {
           tabId: ProductItemType.train,
           cityCode: c && c.CityCode,
           cityName: c && c.CityName,
-          date: m.Date
+          date: m.Date,
+          doRefresh: isExchange
         },
       });
     } catch (e) {
       console.error(e);
-
     }
   }
   private isShowInsurances(takeoffTime: string) {

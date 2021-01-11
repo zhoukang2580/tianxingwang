@@ -264,10 +264,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
 
 
   private async taskReviewed() {
-    if (!this.tasklist || !this.tasklist.length) {
-      this.tasklist = await this.tmcService.getTaskReviewed();
-    }
     try {
+      if (!this.tasklist || !this.tasklist.length) {
+        this.tasklist = await this.tmcService.getTaskReviewed();
+      }
       this.tasklist.forEach(e => {
         if(this.saName){
           this.saName[1].replace('(','').replace(')','');

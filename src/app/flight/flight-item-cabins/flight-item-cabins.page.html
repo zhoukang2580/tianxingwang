@@ -28,7 +28,7 @@
   <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo' class='rule'>
     <ion-col *ngIf='bookInfo.credential as credential' class='ion-text-center'>
       <ion-text color='secondary'>
-        当前已过滤【{{credential.Name}}】({{credential.Number}})差标
+        当前已过滤【{{credential.Name}}】({{credential.HideNumber}})差标
       </ion-text>
     </ion-col>
   </ion-row>
