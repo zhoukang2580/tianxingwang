@@ -15,7 +15,7 @@
     </div>
     <div class="down">
       <div class="success">下单成功</div>
-      <div class="active" *ngIf="isApproval">
+      <div class="active" *ngIf="tabId==2">
         您的订单需要审批、请于审批完成后到订单列进行支付
       </div>
     </div>
@@ -28,7 +28,7 @@
       </div>
     </div>
   </div>
-  <div class="hotel-item" *ngIf="!isShow">
+  <div class="hotel-item">
     <div class="boutique">{{city?.CityName}}精品酒店推荐</div>
     <div
       class="list"

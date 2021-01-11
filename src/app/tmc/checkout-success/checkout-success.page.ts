@@ -33,7 +33,7 @@ export class CheckoutSuccessPage implements OnInit {
   };
   city: TrafficlineEntity;
   private date;
-  private tabId;
+  tabId;
   isApproval: boolean;
   isShow = true;
   constructor(
@@ -115,7 +115,8 @@ export class CheckoutSuccessPage implements OnInit {
   //   }
   // }
 
-  onOrderList() {
+  onOrderList(tab: ProductItemType) {
+    console.log(tab,'tab',this.tabId);
     this.router.navigate(["order-list"], {
       queryParams: { tabId: this.tabId },
     });
