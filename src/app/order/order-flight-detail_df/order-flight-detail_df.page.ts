@@ -56,6 +56,8 @@ import { OrderTravelPayType } from "../models/OrderTravelEntity";
 import { OrderFlightTicketType } from "../models/OrderFlightTicketType";
 import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
 import { OrderItemPricePopoverEnComponent } from '../components/order-item-price-popover_en/order-item-price-popover_en.component';
+import { FlightSegmentEntity } from 'src/app/flight/models/flight/FlightSegmentEntity';
+import { FilterConditionModel } from 'src/app/flight/models/flight/advanced-search-cond/FilterConditionModel';
 
 export interface TabItem {
   label: string;
@@ -77,6 +79,7 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
   items: { label: string; value: string }[] = [];
   tabs: TabItem[] = [];
   orderDetail: OrderDetailModel;
+  lowestPriceSegments: FlightSegmentEntity[];
   isLoading = false;
   showTiket = false;
   tikectNo = [];
@@ -91,6 +94,7 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
   // selectedTrainTicket: OrderTrainTicketEntity;
   // selectedInsuranceId: string;
   identity: IdentityEntity;
+  filterCondition: FilterConditionModel;
   flightTickect: { [tickectId: string]: OrderFlightTicketEntity[] };
   tikect2Insurance: { [tikectKey: string]: OrderInsuranceEntity[] } = {};
   tikectId2OriginalTickets: {
@@ -107,12 +111,23 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService,
-    private langService: LangService
+    private langService: LangService,
+    private calendarService: CalendarService
   ) { }
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
     return t1 && t2 && t1.Id == t2.Id;
+  }
+
+  get filterConditionIsFiltered() {
+    return (
+      (this.filterCondition && this.filterCondition.onlyDirect) ||
+      (this.filterCondition.userOps &&
+        Object.keys(this.filterCondition.userOps).some(
+          (k) => this.filterCondition.userOps[k]
+        ))
+    );
   }
 
   getPassengerCostOrgInfo(ticket: OrderFlightTicketEntity) {
@@ -468,6 +483,14 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
       return it.VariablesDictionary[key];
     }
   }
+
+  getWeekName(date: string) {
+    if (date) {
+      const d = AppHelper.getDate(date);
+      return this.calendarService.getDayOfWeekNames(d.getDay());
+    }
+  }
+
   getOrderItemsSum(Tag: string = "", name: string = "Amount") {
     return (
       this.orderDetail.Order &&
@@ -669,7 +692,7 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
         });
       }
       console.log("orderDetail ", this.orderDetail);
-    }    
+    }
   }
   private transformTime(datetime: string) {
     if (datetime && datetime.includes("T")) {
@@ -813,7 +836,7 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
   }
   private sortFlightTicket() {
     const trips: OrderFlightTripEntity[] = [];
-    if (this.orderDetail&&this.orderDetail.Order && this.orderDetail.Order.OrderFlightTickets) {
+    if (this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderFlightTickets) {
       this.orderDetail.Order.OrderFlightTickets.sort(
         (t1, t2) => +t2.Id - +t1.Id
       );
