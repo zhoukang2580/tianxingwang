@@ -140,6 +140,57 @@ export class TmcService {
         return r;
       });
   }
+
+  async getRecommendHotel(d: { PageIndex: number, PageSize: number, CityCode: string, SearchDate: string }) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHotelUrl-Home-RecommendHotel";
+    req.IsRedirctNoAuthorize = false;
+    req.IsRedirctLogin = false;
+    req.Data = {
+      PageIndex: 0,
+      PageSize: d.PageSize,
+      CityCode: d.CityCode,
+      SearchDate: d.SearchDate
+    }
+    return this.apiService
+      .getPromiseData<{
+        DataCount: string; HotelDefaultImg: string; HotelDayPrices: {
+          Id: string;
+          HotelName: string;
+          HotelAddress: string;
+          HotelCategory: string;
+          HotelFileName: string;
+        }[]
+      }>(req)
+  }
+
+  async getTaskReviewed() {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-TaskReviewed"
+    req.Data = {
+
+    };
+    return this.apiService.getPromiseData<any[]>(req);
+  }
+
+  async getMyItinerary() {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-TripList";
+    req.Data = {
+
+    };
+    return this.apiService.getPromiseData<any[]>(req);
+  }
+
+  async getIntegral() {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-Exchange";
+    req.Data = {
+
+    };
+    return this.apiService.getPromiseData<any[]>(req);
+  }
+
   setTravelFormNumber(tn: string) {
     AppHelper.setQueryParamers("TravelNumber", tn);
   }
@@ -634,12 +685,12 @@ export class TmcService {
       }>(req)
       .catch(
         (_) =>
-          ({
-            Trafficlines: [],
-          } as {
-            HotelCities: any[];
-            Trafficlines: TrafficlineEntity[];
-          })
+        ({
+          Trafficlines: [],
+        } as {
+          HotelCities: any[];
+          Trafficlines: TrafficlineEntity[];
+        })
       );
     const local = this.localDomesticAirports;
     if (r.Trafficlines && r.Trafficlines.length) {

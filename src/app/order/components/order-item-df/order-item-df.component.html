@@ -146,10 +146,10 @@
                 (含保险)
               </span>
             </ion-text>
-            <ng-container *ngIf='order.VariablesJsonObj.isPay'>
-              <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
-              </ion-button>
-            </ng-container>
+          </ion-col>
+          <ion-col color='danger' class="train_ion_money">
+            <ion-text color='danger'>￥{{order.TotalAmount}}</ion-text>
+            <ion-text color='medium' class="ion-padding-end">{{orderTrainTicket.StatusName}}</ion-text>
           </ion-col>
           <!-- <ion-col class='ion-text-end' *ngIf='check(orderTrainTicket)' size='3'>
             <ion-col style="justify-content: flex-end;">

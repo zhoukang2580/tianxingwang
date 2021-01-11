@@ -29,6 +29,10 @@ export const routes: Routes = [
       import("./select-passenger-df/select-passenger-df.module").then(
         m => m.SelectPassengerDfPageModule
       )
+  },
+  {
+    path: 'checkout-success',
+    loadChildren: () => import('./checkout-success/checkout-success.module').then( m => m.CheckoutSuccessPageModule)
   }
 
 ];

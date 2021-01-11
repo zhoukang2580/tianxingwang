@@ -1,13 +1,5 @@
 import { PinFabComponent } from "./../../components/pin-fab/pin-fab.component";
-import { RecommendRankComponent } from "./../components/recommend-rank/recommend-rank.component";
-import { HotelFilterComponent } from "./../components/hotel-filter/hotel-filter.component";
-import { HotelStarPriceComponent } from "./../components/hotel-starprice/hotel-starprice.component";
-import { HotelGeoComponent } from "./../components/hotel-geo/hotel-geo.component";
-import { ScrollerComponent } from "./../../components/scroller/scroller.component";
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
-import { fadeInOut } from "./../../animations/fadeInOut";
-import { flyInOut } from "./../../animations/flyInOut";
-import { Storage } from "@ionic/storage";
 import { AgentEntity } from "./../../tmc/models/AgentEntity";
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { ConfigService } from "./../../services/config/config.service";
@@ -25,14 +17,10 @@ import {
   OnInit,
   OnDestroy,
   ViewChild,
-  HostBinding,
   ViewChildren,
   QueryList,
   AfterViewInit,
-  AfterContentInit,
   ElementRef,
-  EventEmitter,
-  NgZone,
 } from "@angular/core";
 import {
   IonContent,
@@ -40,29 +28,20 @@ import {
   IonToolbar,
   Platform,
   IonItem,
-  DomController,
   IonInfiniteScroll,
   ModalController,
-  IonRefresher,
-  NavController,
   IonHeader,
 } from "@ionic/angular";
-import { Subscription, Observable, fromEvent, merge } from "rxjs";
+import { Subscription } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { HotelDayPriceEntity } from "../models/HotelDayPriceEntity";
 import { finalize } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
-import {
-  trigger,
-  state,
-  style,
-  transition,
-  animate,
-} from "@angular/animations";
 
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { StaffService } from "src/app/hr/staff.service";
-import { ShowFreebookTipComponent } from '../components/show-freebook-tip/show-freebook-tip.component';
+import { ShowFreebookTipComponent } from "../components/show-freebook-tip/show-freebook-tip.component";
+import { HotelCityService } from "../hotel-city.service";
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -81,7 +60,6 @@ interface ISearchTextValue {
 })
 export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
-  private oldSearchText: ISearchTextValue;
   private isUseSearchText = false;
   private oldDestinationCode: string;
   @ViewChild(IonHeader) headerEl: IonHeader;
@@ -89,9 +67,11 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
+  @ViewChild(IonHeader) headerEle: IonHeader;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
+  @ViewChild("filterCondition") filterCondition: ElementRef<HTMLElement>;
   @ViewChildren(IonItem) hotelItemEl: QueryList<any>;
   @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
   isLeavePage = false;
@@ -106,6 +86,9 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   config: ConfigEntity;
   agent: AgentEntity;
   isIos = false;
+  isInitTop = false;
+  RoomDefaultImg: string;
+  HotelDefaltImg: string;
   hotelType = [
     {
       value: "normal",
@@ -133,8 +116,8 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     private tmcService: TmcService,
     private staffService: StaffService,
     private configService: ConfigService,
-    plt: Platform,
-    private modalCtrl: ModalController
+    private hotelCityService: HotelCityService,
+    plt: Platform
   ) {
     this.filterTab = {
       isActive: false,
@@ -158,10 +141,10 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
     m.present();
   }
-  onSegmentChanged(ev: CustomEvent) {
+  onSegmentChanged(ev: any) {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
-      hotelType: ev.detail.value,
+      hotelType: ev,
     });
     this.hotelDayPrices = [];
     this.doRefresh();
@@ -169,7 +152,15 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     this.autofocusSearchBarInput();
     // this.setQueryConditionEleTop();
+    // setTimeout(() => {
+    //   try {
+    //     this.initTop();
+    //   } catch (e) {
+    //     console.error(e);
+    //   }
+    // }, 1000);
   }
+
   private getStars(hotel: HotelEntity) {
     if (hotel && hotel.Category) {
       hotel.Category = `${hotel.Category}`;
@@ -211,7 +202,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
         const isSelf = await this.staffService.isSelfBookType();
         this.isFreeBook =
           tmc &&
-          tmc['HotelSelfPayAmount'] == "1" &&
+          tmc["HotelSelfPayAmount"] == "1" &&
           isSelf &&
           !this.tmcService.isAgent;
       } catch (e) {
@@ -244,7 +235,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       });
     }
   }
-  itemHeightFn(item: any, index: number) {
+  itemHeightFn() {
     // console.log(item);
     return 90;
   }
@@ -257,6 +248,8 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       .getHotelList(this.hotelQueryModel)
       .pipe(
         finalize(() => {
+          this.RoomDefaultImg = this.hotelService.RoomDefaultImg;
+          this.HotelDefaltImg = this.hotelService.HotelDefaltImg;
           setTimeout(() => {
             this.isLoadingHotels = false;
             this.isUseSearchText = false;
@@ -340,11 +333,25 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   goToDetail(item: HotelDayPriceEntity) {
-    this.hotelService.curViewHotel = { ...item };
-    this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
+    // this.hotelService.curViewHotel = { ...item };
+    if (item.Hotel) {
+      this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
+        queryParams: { hotelId: item.Hotel.Id },
+      });
+    }
   }
-  onCityClick() {
-    this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+  async onCityClick() {
+    // this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+    const rs = await this.hotelCityService.onSelectCity(true, true);
+    if (rs && rs.city) {
+      this.hotelService.setSearchHotelModel({
+        ...this.searchHotelModel,
+        destinationCity: rs.city,
+      });
+      if (this.checkDestinationChanged()) {
+        this.doRefresh();
+      }
+    }
   }
   onSearchByText() {
     this.isUseSearchText = true;
@@ -407,7 +414,6 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       if (this.checkDestinationChanged()) {
         this.searchHotelModel.searchText = null;
       }
-      this.hotelService.curViewHotel = null;
       this.isLeavePage = false;
       const isrefresh =
         this.checkSearchTextChanged() ||
@@ -469,10 +475,29 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     //     this.scroller.disabled = false;
     //   }
     // }
+    this.initTop();
     if (this.content) {
       this.content.scrollToTop(100);
     }
     this.hotelService.setHotelQuerySource(this.hotelQueryModel);
+  }
+  private initTop() {
+    try {
+      const arr = this.filterCondition.nativeElement.querySelectorAll(
+        ".filter-condition"
+      );
+      const h = this.headerEle["el"].getBoundingClientRect().height;
+      if (!h || h < 4.5 * 16 || this.isInitTop) {
+        return;
+      }
+      this.isInitTop = true;
+      for (let i = 0; i < arr.length; i++) {
+        const el: HTMLElement = arr[i] as any;
+        el.style.top = `${h}px`;
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
   onStarPriceChange() {
     const query = { ...this.hotelService.getHotelQueryModel() };

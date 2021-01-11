@@ -1,5 +1,5 @@
 <ion-header class='ion-text-center'>
-  <ion-toolbar>
+  <ion-toolbar class="ion-toolbar">
     <ion-buttons slot='start'>
       <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
@@ -39,33 +39,6 @@
 <ion-content #cnt>
   <ion-list>
     <div class="content-header">
-      <!-- <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'"
-        (click)='showSelectedBookInfos()'>
-        <ion-row *ngIf='curFilteredBookInfo$|async as bookInfo' class='xs-font-size'>
-          <ion-col *ngIf='bookInfo.credential as credential'>
-            <ion-text color='secondary'>
-              当前已过滤【{{credential.Name}}】({{credential.Number}})差标
-            </ion-text>
-          </ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col>
-            <ion-text color='secondary'>{{searchTrainModel?.Date}}共{{trainsCount}}趟火车</ion-text>
-            <ion-text color='danger' *ngIf='isFiltered'>(筛选后)</ion-text>
-          </ion-col>
-        </ion-row>
-        <ng-container *ngIf='isShowRoundtripTip'>
-          <ion-row *ngIf='goRoundTripDateTime$|async as datetime'>
-            <ion-col *ngIf='datetime?.goArrivalDateTime'>
-              <ion-text color='secondary'>去程<ion-text color='danger'>(到达)</ion-text>:{{datetime?.goArrivalDateTime}}
-              </ion-text>
-            </ion-col>
-            <ion-col *ngIf='datetime?.backDateTime'>
-              <ion-text color='secondary'>返程:{{datetime?.backDateTime}}</ion-text>
-            </ion-col>
-          </ion-row>
-        </ng-container>
-      </ion-grid> -->
       <ion-toolbar class="fly-days">
         <app-days-calendar-df (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
         </app-days-calendar-df>
@@ -128,6 +101,7 @@
     <app-pin-fab></app-pin-fab>
   </ion-fab>
 </ion-content>
+<div class="backdrop" [class.show]='isOpenFilter' (click)='onCloseFilter()'></div>
 <ion-footer color="primary">
   <ion-toolbar>
     <div class="tabs">

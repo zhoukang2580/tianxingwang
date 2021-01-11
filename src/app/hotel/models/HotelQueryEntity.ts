@@ -88,6 +88,7 @@ export interface IRankItem {
   orderBy: "PriceAsc" | "PriceDesc" | "CategoryAsc" | "CategoryDesc";
   isSelected?: boolean;
   value: "Category" | "Price";
+  isAsc?: boolean;
 }
 export interface IStarPriceTab<T> {
   isActive?: boolean;

@@ -391,8 +391,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       const fromCity: TrafficlineEntity = a.VariablesJsonObj.City || {};
       this.internationalHotelService.setSearchConditionSource({
         ...this.internationalHotelService.getSearchCondition(),
-        checkinDate: this.getDate(this.trip.StartDate),
-        checkoutDate: this.addOneDate(this.trip.EndDate),
+        checkInDate: this.getDate(this.trip.StartDate),
+        checkOutDate: this.addOneDate(this.trip.EndDate),
         destinationCity: fromCity,
         country: countries.find((it) => it.Code == fromCity.CountryCode),
         adultCount: 1,

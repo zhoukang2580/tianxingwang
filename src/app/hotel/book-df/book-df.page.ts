@@ -29,6 +29,7 @@ import {
   Platform,
   IonSelect,
   IonDatetime,
+  IonFooter,
 } from "@ionic/angular";
 import { NavController } from "@ionic/angular";
 import {
@@ -42,6 +43,7 @@ import {
   ElementRef,
   ViewChildren,
   OnDestroy,
+  EventEmitter,
 } from "@angular/core";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
@@ -111,12 +113,15 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
-  @ViewChild(RefresherComponent, { static: true })
-  ionRefresher: RefresherComponent;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonContent) ionContent: IonContent;
+  @ViewChild(IonFooter) ionFooter: IonFooter;
+  @ViewChild("transfromEle") transfromEle: ElementRef<HTMLDivElement>;
   error: any;
   identity: IdentityEntity;
   bookInfos: PassengerBookInfo<IHotelInfo>[];
+  isExceeding = false;
+  isShowOtherInfo = false;
   tmc: TmcEntity;
   serviceFee: number;
   detailServiceFee: number;
@@ -135,6 +140,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
   isSelfBookType = true;
   arrivalDateTimes: string[];
+  ionChange: EventEmitter<any>;
+  otherCostCenterCode: string;
+  otherCostCenterName: string;
+  costCenter: {
+    code: string;
+    name: string;
+  };
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   dates: { date: string; price: string | number }[] = [];
   constructor(
@@ -238,6 +250,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.illegalReason = data.data;
     }
   }
+
+  onPay() {
+    // this.combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]
+    // this.isExceeding[] = true;
+  }
+
   onOpenSelect(select: IonSelect) {
     if (select) {
       select.open();
@@ -245,9 +263,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   getCredentialTypeName(item: IPassengerHotelBookInfo) {
     switch (
-      item &&
-      item.creditCardPersionInfo &&
-      item.creditCardPersionInfo.credentialType
+    item &&
+    item.creditCardPersionInfo &&
+    item.creditCardPersionInfo.credentialType
     ) {
       case `${CredentialsType.IdCard}`:
         return "身份证";
@@ -336,8 +354,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.bookInfo.bookInfo &&
       item.bookInfo.bookInfo.roomPlan
     ) {
-      return this.hotelService.checkRoomPlanIsFreeBook(
-        item.bookInfo.bookInfo.roomPlan
+      return (
+        this.hotelService.checkRoomPlanIsFreeBook(
+          item.bookInfo.bookInfo.roomPlan
+        ) && item.bookInfo.bookInfo.roomPlan.isFreeBookRoom
       );
     }
   }
@@ -392,11 +412,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh(byUser: boolean) {
     try {
-      if (this.ionRefresher) {
-        this.ionRefresher.complete();
-        this.ionRefresher.disabled = true;
+      if (this.refresher) {
+        this.refresher.complete();
+        this.refresher.disabled = true;
         setTimeout(() => {
-          this.ionRefresher.disabled = false;
+          this.refresher.disabled = false;
         }, 300);
       }
       if (byUser) {
@@ -603,20 +623,16 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   ) {
     await AppHelper.alert(
       this.langService.isCn
-        ? `${
-            (item.credentialStaff && item.credentialStaff.Name) ||
-            (item.credential &&
-              item.credential.Surname + item.credential.Givenname)
-          } 【${
-            item.credential && item.credential.Number
-          }】 ${msg} 信息不能为空`
-        : `${
-            (item.credentialStaff && item.credentialStaff.Name) ||
-            (item.credential &&
-              item.credential.Surname + item.credential.Givenname)
-          } 【${
-            item.credential && item.credential.Number
-          }】 ${msg} Information cannot be empty`
+        ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.Surname + item.credential.Givenname)
+        } 【${item.credential && item.credential.Number
+        }】 ${msg} 信息不能为空`
+        : `${(item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.Surname + item.credential.Givenname)
+        } 【${item.credential && item.credential.Number
+        }】 ${msg} Information cannot be empty`
     );
     this.moveRequiredEleToViewPort(ele);
   }
@@ -719,9 +735,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private fillBookLinkmans(bookDto: OrderBookDto) {
     bookDto.Linkmans = [];
     const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) =>
-      `联系人${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Number)
+      `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
+      (item.credential && item.credential.Number)
       }信息${msg}不能为空`;
     for (let i = 0; i < this.combindInfos.length; i++) {
       const item = this.combindInfos[i];
@@ -824,17 +839,17 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.name
+          combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialNumber
+          combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialType
+          combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -919,11 +934,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
-            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-            : combindInfo.credentialStaffOtherMobile
-        }`;
+        p.Mobile = `${p.Mobile
+          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+          : combindInfo.credentialStaffOtherMobile
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -933,11 +947,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
-            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-            : combindInfo.credentialStaffOtherEmail
-        }`;
+        p.Email = `${p.Email
+          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+          : combindInfo.credentialStaffOtherEmail
+          }`;
       }
       p.IllegalReason =
         (this.tmc &&
@@ -950,7 +963,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combindInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.roomPlan &&
-        combindInfo.bookInfo.bookInfo.roomPlan.Rules
+        combindInfo.bookInfo.bookInfo.roomPlan.Rules &&
+        !this.isRoomPlanFreeBook(combindInfo)
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
         if (!p.IllegalReason) {
@@ -963,11 +977,14 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       }
       if (!p.Mobile) {
-        this.showErrorMsg(
-          LanguageHelper.Flight.getMobileTip(),
-          combindInfo,
-          this.getEleByAttr("mobilesid", combindInfo.id)
-        );
+        this.isShowOtherInfo = true;
+        setTimeout(() => {
+          this.showErrorMsg(
+            LanguageHelper.Flight.getMobileTip(),
+            combindInfo,
+            this.getEleByAttr("mobilesid", combindInfo.id)
+          );
+        }, 1000);
         return false;
       }
       p.CostCenterCode =
@@ -989,11 +1006,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         if (!exists || !exists.OutNumbers) {
           p.OutNumbers = {};
           for (const it of combindInfo.tmcOutNumberInfos) {
-            if (it.required && !it.value) {
+            if (!this.isRoomPlanFreeBook(combindInfo)) {
               const el = this.getEleByAttr("outnumberid", combindInfo.id);
               this.showErrorMsg(it.label + "必填", combindInfo, el);
               return;
             }
+
             if (it.value) {
               p.OutNumbers[it.key] = it.value;
             }
@@ -1019,10 +1037,17 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         );
         return false;
       }
-      p.Credentials.Account =
-        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
-      p.Credentials.Account =
-        p.Credentials.Account || combindInfo.credential.Account;
+      if (
+        combindInfo.credentialStaff &&
+        combindInfo.credentialStaff.Account &&
+        combindInfo.credentialStaff.Account.Id &&
+        combindInfo.credentialStaff.Account.Id != "0"
+      ) {
+        p.Credentials.Account =
+          combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+        p.Credentials.Account =
+          p.Credentials.Account || combindInfo.credential.Account;
+      }
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
@@ -1050,24 +1075,6 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             CityCode: combindInfo.bookInfo.bookInfo.hotelEntity.CityCode,
           },
         } as RoomEntity;
-        // p.RoomPlan.Room = {
-        //   Name:combindInfo.bookInfo.bookInfo.hotelRoom.Name,
-        //   RoomPlans:combindInfo.bookInfo.bookInfo.hotelRoom.RoomPlans.map(it=>{
-        //     const plan = new RoomPlanEntity();
-        //     plan.Room=new RoomEntity();
-        //     plan.Room.Id=combindInfo.bookInfo.bookInfo.hotelRoom.Id;
-        //     plan.Remark=p.RoomPlan.Remark;
-        //     return plan;
-        //   }),
-        //   Hotel: { Id: combindInfo.bookInfo.bookInfo.hotelEntity.Id }
-        // } as RoomEntity;
-        // p.RoomPlan.Room.Hotel = {
-        //   // ...combindInfo.bookInfo.bookInfo.hotelEntity,
-        //   Rooms: null,
-        //   Id:combindInfo.bookInfo.bookInfo.hotelEntity.Id,
-        //   HotelDayPrices: [],
-        //   HotelDetails: []
-        // } as HotelEntity;
       }
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
@@ -1162,7 +1169,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           (this.initialBookDto && this.initialBookDto.Staffs) ||
           []
         ).find((it) => it.Account.Id == bookInfo.passenger.AccountId);
-        const cstaff = cs && cs.CredentialStaff;
+        const cstaff =
+          bookInfo.passenger.AccountId == this.tmc.Account.Id
+            ? bookInfo.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
@@ -1241,20 +1251,20 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1402,6 +1412,34 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.isShowFee = !this.isShowFee;
     this.detailServiceFee = this.getServiceFees();
     this.initDayPrice();
+    this.showTransform(this.isShowFee);
+  }
+  getWeekName(date: string) {
+    if (date) {
+      const d = AppHelper.getDate(date);
+      return this.calendarService.getDayOfWeekNames(d.getDay());
+    }
+  }
+  onValueChange() {
+    this.ionChange.emit({
+      otherCostCenterCode: this.otherCostCenterCode,
+      otherCostCenterName: this.otherCostCenterName,
+      costCenter: this.costCenter,
+    });
+  }
+  private showTransform(show: boolean) {
+    try {
+      const el = this.ionFooter["el"];
+      const transfromEle = this.transfromEle.nativeElement;
+      const rect = el.getBoundingClientRect();
+      if (show) {
+        transfromEle.style.transform = `translate(0,-${rect.height}px)`;
+      } else {
+        transfromEle.style.transform = `translate(0,100%)`;
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
   private initDayPrice() {
     const bookInfos = this.hotelService.getBookInfos();
@@ -1474,10 +1512,21 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   async onBook(isSave: boolean, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
-    if (this.isSubmitDisabled) {
+    if (
+      this.isSubmitDisabled ||
+      !this.combindInfos ||
+      !this.combindInfos.length ||
+      !this.combindInfos[0].bookInfo
+    ) {
       return;
     }
     const bookDto: OrderBookDto = new OrderBookDto();
+    const roomPlan =
+      this.combindInfos && this.combindInfos[0].bookInfo.bookInfo.roomPlan;
+    if (this.hotelService.checkRoomPlanIsFreeBook(roomPlan)) {
+      bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
+
+    }
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
@@ -1500,6 +1549,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     );
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
+
+    bookDto.Passengers.forEach(p => {
+      p.IllegalPolicy = "";
+      p.IllegalReason = "";
+    })
     if (canBook && canBook2) {
       const popover = await this.popoverCtrl.create({
         component: WarrantyComponent,
@@ -1527,11 +1581,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(
-            this.langService.isCn ? "下单成功!" : "Checkout success",
-            1400,
-            "top"
-          );
+          // AppHelper.toast(
+          //   this.langService.isCn ? "下单成功!" : "Checkout success",
+          //   1400,
+          //   "top"
+          // );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
           if (
@@ -1577,21 +1631,31 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           this.hotelService.removeAllBookInfos();
           this.combindInfos = [];
           this.hotelService.dismissAllTopOverlays();
-          this.goToMyOrders(ProductItemType.hotel);
+          this.goToMyOrders();
         }
       }
     }
   }
-  private goToMyOrders(tab: ProductItemType) {
-    if (this.langService.isCn) {
-      this.router.navigate(["order-list"], {
-        queryParams: { tabId: tab },
-      });
-    } else {
-      this.router.navigate(["order-list_en"], {
-        queryParams: { tabId: tab },
-      });
-    }
+  private goToMyOrders() {
+    const m = this.hotelService.getSearchHotelModel();
+    const city = m.destinationCity;
+    this.router.navigate(["checkout-success"], {
+      queryParams: {
+        tabId: ProductItemType.hotel,
+        cityCode: city && city.CityCode,
+        cityName: city && city.CityName,
+        date: m.checkInDate
+      },
+    });
+    // if (this.langService.isCn) {
+    //   this.router.navigate(["order-list"], {
+    //     queryParams: { tabId: tab },
+    //   });
+    // } else {
+    //   this.router.navigate(["order-list_en"], {
+    //     queryParams: { tabId: tab },
+    //   });
+    // }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {

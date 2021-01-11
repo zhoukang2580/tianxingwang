@@ -19,6 +19,8 @@ export class CredentialsEntity {
   /// </summary>
   Number: string;
 
+  HideNumber: string;
+
   /// <summary>
   /// 姓
   /// </summary>

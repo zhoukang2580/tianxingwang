@@ -40,6 +40,7 @@ import { OrderService } from "../../order.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { tick } from "@angular/core/testing";
+import { TrainSeatEntity } from 'src/app/train/models/TrainSeatEntity';
 @Component({
   selector: "app-order-item-df",
   templateUrl: "./order-item-df.component.html",

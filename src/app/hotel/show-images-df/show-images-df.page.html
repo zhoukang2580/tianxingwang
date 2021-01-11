@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
+    <ion-title>{{hotel?.name}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-swiper-slides
+    [items]="images"
+    [initialPos]="initPos"
+    (slideChange)='onSlideChange($event)'
+    [bgColorBlack]="true"
+    [defaultImage]="config?.DefaultImageUrl"
+    [loadingImage]="config?.PrerenderImageUrl"
+    [logoUrl]="config?.LogoImageUrl"
+    [options]="{slideTplRef:slideTplRef,indicator:'none'}"
+  >
+  </app-swiper-slides>
+
+  <ng-template #slideTplRef let-it="item" >
+    <div class="list">
+      <div class="inner">
+        <img
+          #img
+          [lazyLoad]="it.imageUrl"
+          [loadingImage]="config?.PrerenderImageUrl"
+          class="pic"
+          [defaultImage]="config?.DefaultImageUrl"
+          alt="图片"
+        />
+        <div class="logo" *ngIf="config?.LogoImageUrl">
+          <img [src]="config?.LogoImageUrl" alt="logo" />
+        </div>
+      </div>
+      <ion-text>
+        {{it.text}}
+      </ion-text>
+    </div>
+  </ng-template>
+  <ng-container>
+    <ion-text color='light' *ngIf='images?.length' class="indicator">{{curIndex+1}}/{{images?.length}}
+    </ion-text>
+  </ng-container>
+</ion-content>

@@ -72,9 +72,13 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
       .getHotelQuerySource()
       .subscribe((q) => {
         this.hotelQuery = q;
-        // if (!this.hotelQuery || !this.hotelQuery.filters) {
-        //   this.onReset();
-        // }
+        if (
+          !this.hotelQuery ||
+          !this.hotelQuery.filters ||
+          !this.hotelQuery.filters.length
+        ) {
+          this.onReset();
+        }
       });
     this.conditionModel = await this.hotelService.getConditions();
     if (!query || !query.filters) {
@@ -89,6 +93,10 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
       if (!this.conditionModel) {
         this.conditionModel = await this.hotelService.getConditions();
       }
+      if (!this.conditionModel || !this.conditionModel.Brands) {
+        return;
+      }
+      console.log("resetTabs");
       this.resetTabBrand();
       this.resetTabTheme();
       this.resetTabService();

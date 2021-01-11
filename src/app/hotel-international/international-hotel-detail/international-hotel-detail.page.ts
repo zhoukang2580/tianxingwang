@@ -7,8 +7,8 @@ import { AppHelper } from "./../../appHelper";
 import { SlidesComponent } from "./../../components/slides/slides.component";
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { ConfigService } from "./../../services/config/config.service";
-import { finalize, debounceTime } from "rxjs/operators";
-import { Subscription, fromEvent } from "rxjs";
+import { finalize, debounceTime, map } from "rxjs/operators";
+import { Subscription, fromEvent, of, from } from "rxjs";
 import {
   InternationalHotelService,
   IInterHotelSearchCondition,
@@ -51,7 +51,7 @@ import { RoomEntity } from "src/app/hotel/models/RoomEntity";
 import { LanguageHelper } from "src/app/languageHelper";
 import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
 import { LangService } from "src/app/services/lang.service";
-import { SelectPassengerEnPage } from 'src/app/tmc/select-passenger_en/select-passenger_en.page';
+import { SelectPassengerEnPage } from "src/app/tmc/select-passenger_en/select-passenger_en.page";
 
 @Component({
   selector: "app-international-hotel-detail",
@@ -76,8 +76,11 @@ export class InternationalHotelDetailPage
   private isAutoOpenHotelInfoDetails = true;
   private isAutoOpenHotelInfoTrafficInfo = true;
   private curSlideIndx = 0;
+  private isLoading = false;
   hotelName: string;
   canAddPassengers = false;
+  isShowAddPassenger$ = of(false);
+  selectedPassengersNumbers$ = of(0);
   selectedPassengers: PassengerBookInfo<IInterHotelInfo>[];
   hotel: HotelEntity;
   config: ConfigEntity;
@@ -93,6 +96,8 @@ export class InternationalHotelDetailPage
   }[];
   colors: {};
   isIos = false;
+  RoomDefaultImg: string;
+  HotelDefaultImg: string;
   constructor(
     public hotelService: InternationalHotelService,
     private route: ActivatedRoute,
@@ -118,10 +123,34 @@ export class InternationalHotelDetailPage
           this.hotel.HotelImages[0].FullFileName))
     );
   }
+  async onCall() {
+    if (this.hotel && this.hotel.Phone) {
+      const phoneNumber = this.hotel.Phone;
+      const callNumber = window["call"];
+      // window.location.href=`tel:${phoneNumber}`;
+      if (callNumber) {
+        callNumber
+          .callNumber(phoneNumber, true)
+          .then((res) => console.log("Launched dialer!", res))
+          .catch((err) => console.log("Error launching dialer", err));
+      } else {
+        const a = document.createElement("a");
+        a.href = `tel:${phoneNumber}`;
+        a.click();
+      }
+    } else {
+    }
+  }
   ngOnInit() {
     this.colors = {};
     this.hotel = this.hotelService.viewHotel;
     this.initQueryModel();
+    this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
+      map((isSelf) => !isSelf)
+    );
+    this.selectedPassengersNumbers$ = this.hotelService
+      .getBookInfoSource()
+      .pipe(map((infos) => infos.length));
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(() => {
         this.staffService.isSelfBookType().then((self) => {
@@ -149,6 +178,9 @@ export class InternationalHotelDetailPage
       })
     );
     this.doRefresh();
+  }
+  getRoomDescriptions(room: RoomEntity) {
+    return this.hotelService.getRoomPlanDescriptions(room);
   }
   async onOpenSelectedPassengers() {
     const removeitem = new EventEmitter();
@@ -477,17 +509,24 @@ export class InternationalHotelDetailPage
   doRefresh() {
     this.initConfig();
     this.hotel = this.hotelService.viewHotel;
+    if (this.refresher) {
+      this.refresher.complete();
+    }
     if (this.hotel) {
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
       this.subscription.unsubscribe();
       this.subscription = this.hotelService
         .getHotelDetail(this.hotel.Id)
-        // .pipe(
-        //   finalize(() => {
-        //     if (this.refresher) {
-        //       this.refresher.complete();
-        //     }
-        //   })
-        // )
+        .pipe(
+          finalize(() => {
+            this.RoomDefaultImg = this.hotelService.RoomDefaultImg;
+            this.HotelDefaultImg = this.hotelService.HotelDefaultImg;
+            this.isLoading = false;
+          })
+        )
         .subscribe((res) => {
           console.log("getHotelDetail", res);
           if (res) {
@@ -506,11 +545,9 @@ export class InternationalHotelDetailPage
             this.initHotelDetailInfos();
             this.initHotelImages();
             this.initFilterPolicy();
+            this.initHotelDetails();
           }
         });
-    }
-    if (this.refresher) {
-      this.refresher.complete();
     }
   }
   ngAfterViewInit() {
@@ -750,9 +787,9 @@ export class InternationalHotelDetailPage
     }
   }
   public onShowBookInfos() {
-    this.langService.isCn ?
-    this.router.navigate(["international-hotel-bookinfos"]) :
-    this.router.navigate(["international-hotel-bookinfos_en"]);
+    this.langService.isCn
+      ? this.router.navigate(["international-hotel-bookinfos"])
+      : this.router.navigate(["international-hotel-bookinfos_en"]);
   }
   private checkIfPassengerCanBookRoomPlan(
     policies: HotelPassengerModel[],
@@ -800,13 +837,13 @@ export class InternationalHotelDetailPage
     });
   }
   async onOpenCalendar() {
-    const checkindate = this.queryModel && this.queryModel.checkinDate;
-    const checkoutDate = this.queryModel && this.queryModel.checkoutDate;
+    const checkindate = this.queryModel && this.queryModel.checkInDate;
+    const checkoutDate = this.queryModel && this.queryModel.checkOutDate;
     await this.hotelService.openCalendar(checkindate);
     if (this.queryModel) {
       if (
-        this.queryModel.checkinDate != checkindate ||
-        this.queryModel.checkoutDate != checkoutDate
+        this.queryModel.checkInDate != checkindate ||
+        this.queryModel.checkOutDate != checkoutDate
       ) {
         this.onSearch();
       }
@@ -825,10 +862,27 @@ export class InternationalHotelDetailPage
     //     }, 100);
     //   }
     // }
-    this.router.navigate(["inter-hotel-map"]);
+    this.router.navigate(["inter-hotel-map"],{
+      queryParams: {
+        name: this.hotel && this.hotel.Name,
+        lat: this.hotel && this.hotel.Lat,
+        lng: this.hotel && this.hotel.Lng,
+      }
+    });
   }
   getWeekName(date: string) {
     return;
+  }
+  private initHotelDetails() {
+    if (this.hotel && this.hotel.HotelDetails) {
+      this.hotel.HotelDetails.forEach((it) => {
+        it["isHtmlDescription"] = this.checkHtml(it.Description);
+      });
+    }
+  }
+  private checkHtml(htmlStr) {
+    const reg = /<[^>]+>/g;
+    return reg.test(htmlStr);
   }
   getStars(grade: string) {
     const res = [];
@@ -848,11 +902,11 @@ export class InternationalHotelDetailPage
   private calcTotalNights() {
     if (
       this.queryModel &&
-      this.queryModel.checkoutDate &&
-      this.queryModel.checkinDate
+      this.queryModel.checkOutDate &&
+      this.queryModel.checkInDate
     ) {
-      const end = AppHelper.getDate(this.queryModel.checkoutDate).getTime();
-      const start = AppHelper.getDate(this.queryModel.checkinDate).getTime();
+      const end = AppHelper.getDate(this.queryModel.checkOutDate).getTime();
+      const start = AppHelper.getDate(this.queryModel.checkInDate).getTime();
       this.totalNights = Math.ceil((end - start) / 1000 / 3600 / 24);
     }
   }
@@ -920,16 +974,22 @@ export class InternationalHotelDetailPage
     });
   }
   private initHotelImages() {
-    this.hotelImages = this.getHotelImages().map((it) => {
+    let hotelImages = this.getHotelImages().map((it) => {
       return { imageUrl: it };
     });
+    if (!hotelImages.length) {
+      if (this.hotelService.HotelDefaultImg) {
+        hotelImages = [{ imageUrl: this.hotelService.HotelDefaultImg }];
+      }
+    }
+    this.hotelImages = hotelImages;
   }
   private getHotelImages() {
     return (
       (this.hotel &&
         this.hotel.HotelImages &&
         this.hotel.HotelImages.map((it) => {
-          return it.FullFileName;
+          return it.FullFileName || it.FileName;
         })) ||
       []
     );

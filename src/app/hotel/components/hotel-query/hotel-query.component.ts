@@ -68,7 +68,7 @@ export class HotelQueryComponent implements OnInit, OnDestroy {
     return !!(
       this.hotelQueryModel &&
       this.hotelQueryModel.ranks &&
-      this.hotelQueryModel.ranks.some((it) => it.value != "Category")
+      this.hotelQueryModel.ranks.some((it) => it.isSelected)
     );
   }
   get isFiltersConditionFiltered() {

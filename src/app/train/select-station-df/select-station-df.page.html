@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <form>
+      <ion-buttons>
+        <app-back-button>
+        </app-back-button>
+        <ion-searchbar name='searchbar' style='padding:0' debounce="300" animated placeholder="中文/拼音/首字母/城市" (ionChange)='doSearch()'
+          [(ngModel)]='vmKeyword'>
+        </ion-searchbar>
+      </ion-buttons>
+    </form>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
+  </app-refresher>
+  <ng-container *ngIf='!isLoading else loadingTemp'>
+    <ng-container *ngIf='vmStations?.length else nomatchdata'>
+      <ion-list>
+        <ion-item *ngFor='let s of vmStations' (click)='onSelectStation(s)'>
+          <ion-label>
+            <ion-text style="position: relative;padding-left: 1em;" [color]="s?.Selected?'secondary':'dark'">
+              <ion-icon *ngIf='s.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;"
+                name="flame-outline"></ion-icon>
+              {{s?.Name}}
+            </ion-text>
+            <ion-text *ngIf='s.CityName as n' color='medium'>({{n}})</ion-text>
+            <ion-text *ngIf='s.Pinyin as n' color='medium'>({{n}})</ion-text>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+    <ng-template #nomatchdata>
+      <app-or-comp>没有符合条件的数据</app-or-comp>
+    </ng-template>
+  </ng-container>
+  <ng-template #loadingTemp>
+    正在加载...
+  </ng-template>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color='danger' size='small' (click)='onShowHot()'>
+      <ion-text color='light'>热门</ion-text>
+    </ion-fab-button>
+    <ion-fab-button color='secondary' size='small' (click)='onShowHistory()'>历史</ion-fab-button>
+  </ion-fab>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>

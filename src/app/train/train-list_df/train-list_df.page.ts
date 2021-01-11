@@ -22,6 +22,7 @@ import {
   ViewChild,
   OnDestroy,
   AfterViewInit,
+  IterableDiffers,
 } from "@angular/core";
 import {
   IonRefresher,
@@ -76,10 +77,12 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   private trains: TrainEntity[] = [];
   private trainsForRender: TrainEntity[] = [];
   private subscriptions: Subscription[] = [];
+  private trainCodes: any[];
   progressName = "";
   trainsCount = 0;
   vmTrains: TrainEntity[] = [];
   isLoading = false;
+  isOpenFilter = false;
   get isFiltered() {
     return (
       this.filterCondition &&
@@ -230,7 +233,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     });
     m.present();
   }
-  trackBy(idx: number, train: TrainEntity) {
+  trackBy(idx: number, train: TrainEntity){
     return train && train.TrainCode;
   }
   async onSelectStation(isFrom: boolean) {
@@ -280,6 +283,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async filterPolicyTrains() {
     try {
+      this.trainCodes = [];
       const popover = await this.popoverController.create({
         component: FilterPassengersPolicyComponent,
         componentProps: {
@@ -289,19 +293,31 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       });
       await popover.present();
       const d = await popover.onDidDismiss();
-      // this.doRefresh(false, false, d.data);
+      // this.doRefresh(false,d.data);
       this.isLoading = true;
       if (!d.data) {
         return;
       }
-      let data;
+      let data:TrainEntity[]=[];
       if (d.data == "isUnFilterPolicy") {
         data = this.filterPassengerPolicyTrains(null);
       } else {
         data = this.filterPassengerPolicyTrains(d.data);
       }
       data = this.filterTrains(data);
+      console.log(data,'data');
+
+      this.vmTrains.forEach(element => {
+        if(element.isShowSeats){
+          this.trainCodes.push(element.TrainCode);
+        }
+      });
+      console.log("TrainCodes ",this.trainCodes);
+      data.forEach(t=>{
+        t.isShowSeats = this.trainCodes.find(it=>it==t.TrainCode);
+      })
       this.vmTrains = data;
+      
       this.isLoading = false;
     } catch (e) {
       console.error(e);
@@ -311,10 +327,18 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.lastSelectedPassengerIds = this.trainService
       .getBookInfos()
       .map((it) => it.passenger && it.passenger.AccountId);
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger-df")], {
       queryParams: {
         forType: FlightHotelTrainType.Train,
       },
+    });
+  }
+  onCloseFilter() {
+    this.isOpenFilter = false;
+    this.modalCtrl.getTop().then((t) => {
+      if (t) {
+        t.dismiss();
+      }
     });
   }
   async onFilter() {
@@ -324,6 +348,14 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       componentProps: {
         trains: JSON.parse(JSON.stringify(this.trains)),
       },
+      cssClass: "offset-top-40 top-radius-8",
+      showBackdrop: false,
+      swipeToClose: true,
+    });
+    m.present();
+    this.isOpenFilter = true;
+    m.onWillDismiss().then(() => {
+      this.isOpenFilter = false;
     });
     if (m) {
       m.present();
@@ -370,6 +402,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     this.trainsForRender = [];
+    this.trainCodes = [];
     this.trainsCount = 0;
     if (this.scroller) {
       this.scroller.disabled = false;
@@ -447,7 +480,13 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       );
     }
     if (showResult) {
-      await this.showSelectedInfos();
+      this.trainService.getBookInfos().forEach(async e=>{
+        if(e.bookInfo == null){
+          return
+        }else{
+          await this.showSelectedInfos();
+        }
+      })
     }
   }
   private async showSelectedInfos() {

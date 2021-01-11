@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+
+      <app-back-button defaultHref=''></app-back-button>
+    </ion-buttons>
+    <ion-title>{{hotelName}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="images" *ngIf='roomImages?.length'>
+    <app-swiper-slides [loadingImage]='config?.PrerenderImageUrl' [items]='images' [logoUrl]='agent?.LogoFullFileName' [defaultImage]='config?.DefaultImageUrl'>
+    </app-swiper-slides>
+  </div>
+  <ion-list class="house-info">
+    <ion-item-divider>
+      {{room?.Name}}详情
+    </ion-item-divider>
+    <ion-item *ngIf='room?.RoomDetails' class='details'>
+      <ion-label class='ion-text-wrap container'>
+        <div *ngFor='let it of room.RoomDetails' class='flex'>
+          <div class="name">
+            {{it.Name}}
+          </div>
+          <div class="desc">
+            {{it.Description}}
+          </div>
+        </div>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

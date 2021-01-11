@@ -1,5 +1,5 @@
 ion-row {
-    padding: 0 0.5em 0 0;
+    padding: 0 0.5em;
 }
 
 ion-col {
@@ -7,14 +7,24 @@ ion-col {
         width: 100%;
         justify-content: center;
         border-radius: 0.5em;
-        min-width: 9.5em;
     }
 }
 
 ion-list-header {
-    --background: var(--ion-color-primary);
+    // --background: var(--ion-color-primary);
+    --background:#fff;
+    font:inherit;
+
 }
 
 :host {
     padding-top: 3em;
+}
+
+ion-title{
+    font:inherit;
+}
+
+.ion-padding-horizontal{
+    margin-bottom: 20px;
 }

@@ -4,6 +4,7 @@ import { RouterModule } from "@angular/router";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { NgModule } from "@angular/core";
 import { ShowImagesPage } from "./show-images.page";
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { ShowImagesPage } from "./show-images.page";
     RouterModule.forChild([
       {
         path: "",
-        component: ShowImagesPage
+        component: ShowImagesPage,
+        canActivate:[StylePageGuard]
       }
     ])
   ],

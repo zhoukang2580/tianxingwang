@@ -3,6 +3,15 @@
   align-items: center;
   .label {
     width: 90px;
+    margin-left: 15px;
+  }
+  .title{
+    width: 100%;
+    font-size: 18px;
+    margin-left: 15px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    color: #333333;
   }
   ion-input {
     --padding-top: 0;
@@ -33,10 +42,12 @@ ion-icon.trash {
 }
 .linkman {
   margin-top: 0.5em;
+  font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
 }
-.lang {
-  margin-left: 8px;
-}
+
 .btn {
   width: 264px;
   height: 26px;

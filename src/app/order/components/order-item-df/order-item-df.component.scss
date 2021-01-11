@@ -42,6 +42,11 @@
 .select-text {
   user-select: text;
 }
+
+.select-text strong{
+  user-select:text;
+  font:inherit
+}
 .order-flight-ticket ~ .order-flight-ticket {
   border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
 }

@@ -25,10 +25,10 @@
   }
 }
 .arrow-icon {
-  width: 100%;
   display: flex;
   justify-content: flex-end;
-  padding-right: 1em;
+  padding-right: 0em;
+  align-items: center;
   ion-icon {
     font-size: 1.3rem;
     color: var(--ion-color-secondary);
@@ -50,13 +50,13 @@ ion-header {
   padding: 1em;
 }
 .name {
-  font-size: 15px;
+  font-size: 18px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #333333;
 }
 .address {
-  font-size: 12px;
+  font-size: 14px;
   font-family: PingFang SC;
   font-weight: 500;
   color: #666666;
@@ -67,13 +67,20 @@ ion-header {
   }
 }
 .grade-stars {
-  font-size: 15px;
+  padding: 0.5em 0;
+  font-size: 16px;
   display: flex;
   align-items: center;
   .grade {
     margin-right: 1em;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
   }
   .stars {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
   }
 }
 .loc-phone {
@@ -81,20 +88,26 @@ ion-header {
   align-items: center;
   margin-left: auto;
   margin-right: 1em;
-  font-size: 12px;
+  font-size: 14px;
   ion-icon {
     font-size: 20px;
   }
   .loc {
     text-align: center;
-    margin-right: 26px;
+    margin-right: 33px;
+    img {
+      width: 14px;
+    }
   }
   .phone {
     text-align: center;
+    img {
+      width: 14px;
+    }
   }
 }
 .date {
-  margin-top: 1em;
+  margin-top: 0.5rem;
   padding: 1em;
   background-color: var(--ion-color-light);
   font-size: 16px;
@@ -105,33 +118,36 @@ ion-header {
   align-items: center;
   justify-content: space-between;
   .desc {
-    font-size: 10px;
+    font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #999999;
   }
   .num {
-    align-self: flex-end;
+    // align-self: flex-end;
+    font-size: 14px;
   }
   .weekName {
     text-align: center;
   }
 }
 .rules {
-  margin-top: 1em;
-  font-size: 15px;
+  margin-top: 0.5rem;
+  font-size: 14px;
   background-color: var(--ion-color-light);
+  padding: 1em 1em 0;
+  font-family: PingFang SC;
+  font-weight: 500;
+  line-height: 20px;
+}
+.room-info-title {
   padding: 1em;
+  font-size: 17px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
 }
 .room-list {
-  margin-top: 1em;
-  .room-info-title {
-    padding: 1em;
-    font-size: 15px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-  }
   .img {
     width: 100%;
     height: 100%;
@@ -200,12 +216,36 @@ ion-header {
     width: 100%;
     margin: 0 0 0 0.5em;
   }
-
-  .room-detail-desc span {
-    margin-right: 1em;
-    font-size: 0.8rem;
+  .item-up {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
   }
-
+  .item-left {
+    display: flex;
+    align-items: center;
+  }
+  .room-detail-desc {
+    display: flex;
+    align-items: center;
+    flex-flow: row wrap;
+    font-size: 14px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #999999;
+    line-height: 2.4;
+    span {
+      margin: 0 0.25em;
+    }
+  }
+  .room-name {
+    font-size: 18px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+    margin-right: 0.5em;
+  }
   .name {
     display: flex;
     align-items: center;
@@ -213,8 +253,51 @@ ion-header {
   }
 }
 .show-desc {
-  display:flex;
-  .full{
+  display: flex;
+  .full {
     margin-left: auto;
+  }
+}
+.hotel-info {
+  margin-top: 0.5rem;
+}
+ion-item-divider {
+  --background: initial;
+  font-size: 15px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
+}
+.desc-name {
+  font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: bold;
+  color: #333333;
+  min-width: 6em;
+}
+.desc-detail {
+  font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #666666;
+  padding-left: 1em;
+  // line-height: 17px;
+}
+ion-row {
+  padding: 0.5em;
+}
+.other-templ {
+  .desc-name {
+    padding-bottom: 0.5em;
+  }
+}
+.tmpl {
+  display: flex;
+  align-items: center;
+  .desc-name {
+    align-self: flex-start;
+  }
+  .desc-detail {
+    flex: 1;
   }
 }

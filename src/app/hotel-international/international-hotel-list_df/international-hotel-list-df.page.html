@@ -7,10 +7,10 @@
         <div class="date">
           <div (click)='onChangeDate()' class="checkin-checkout-date">
             <div>
-              <span>住</span><span class="checkin">{{searchCondition?.checkinDate?.substring(5)}}</span>
+              <span>住</span><span class="checkin">{{searchCondition?.checkInDate?.substring(5)}}</span>
             </div>
             <div>
-              <span>离</span> <span class="checkout">{{searchCondition?.checkoutDate?.substring(5)}}</span>
+              <span>离</span> <span class="checkout">{{searchCondition?.checkOutDate?.substring(5)}}</span>
             </div>
           </div>
           <div class="search-box" (click)='onSearchText()'>
@@ -74,7 +74,7 @@
     </ng-template>
     <ng-container *ngIf='hotels?.length else nodata'>
       <ion-list lines='full' *ngIf='hotels?.length else nodata'>
-        <app-hotel-list-item [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel' [defaultImage]='config?.DefaultImageUrl'>
+        <app-hotel-list-item [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel' [defaultImage]='HotelDefaltImg|| config?.DefaultImageUrl'>
         </app-hotel-list-item>
       </ion-list>
     </ng-container>
@@ -97,6 +97,6 @@
 <app-inter-recommend-rank class='query-condition {{classMode}}' [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="rank"' (rank)='onRank($event)'
   (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'>
 </app-inter-recommend-rank>
-<app-inter-hotel-starprice class='query-condition {{classMode}}' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
-  [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"' (starPriceChange)='onStarPriceChange()'>
+<app-inter-hotel-starprice class='query-condition {{classMode}}' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()' [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"'
+  (starPriceChange)='onStarPriceChange()'>
 </app-inter-hotel-starprice>

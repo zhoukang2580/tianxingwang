@@ -38,6 +38,9 @@ import {
   QueryList,
   AfterViewInit,
   OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
 } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
@@ -49,6 +52,7 @@ import {
   ModalController,
   PopoverController,
   Platform,
+  IonSelect,
 } from "@ionic/angular";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import {
@@ -75,6 +79,8 @@ import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/boo
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { SearchCostcenterComponent } from 'src/app/tmc/components/search-costcenter/search-costcenter.component';
+import { OrganizationComponent } from 'src/app/tmc/components/organization/organization.component';
 
 @Component({
   selector: "app-train-book-df",
@@ -84,11 +90,24 @@ import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private checkPayCountIntervalId: any;
   private isShowInsuranceBack = false;
+  private isManagentCredentails = false;
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
   private subscription = Subscription.EMPTY;
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
+  isShowOtherInfo = false;
+  @Input() isOtherCostCenter: boolean;
+  @Input() otherCostCenterCode: string;
+  @Input() otherCostCenterName: string;
+  @Input() costCenter: {
+    code: string;
+    name: string;
+  };
+  @Output() ionChange: EventEmitter<any>;
+  @Input() isOtherOrganization: boolean;
+  @Input() organization: OrganizationEntity;
+  @Input() otherOrganizationName: string;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -105,12 +124,14 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isCheckingPay = false;
   isShowFee = false;
   isSelfBookType = true;
+  expenseTypes: string[];
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
   CredentialsType = CredentialsType;
+  combindInfos: ITrainPassengerBookInfo[];
   constructor(
     private trainService: TrainService,
     private storage: Storage,
@@ -125,6 +146,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private langService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
+    this.ionChange = new EventEmitter();
   }
   back() {
     this.navCtrl.pop();
@@ -230,6 +252,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   }
+  expanseCompareFn(t1: string, t2: string) {
+    return t1 && t2 ? t1 === t2 : false;
+  }
   onSeatPicker(seat: string, item: PassengerBookInfo<ITrainInfo>) {
     if (item.bookInfo) {
       item.bookInfo.pickSeat = seat || "";
@@ -283,6 +308,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     await this.initOrderTravelPayTypes();
     console.log("viewModel", this.viewModel);
   }
+  onManagementCredentials(item: ITrainPassengerBookInfo) {
+    item.credentialsRequested = false;
+    this.isManagentCredentails = true;
+    this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
+  }
   onShowInsuranceDetail(insurance: { showDetail: boolean }, evt: CustomEvent) {
     if (evt) {
       evt.stopImmediatePropagation();
@@ -319,7 +349,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           (this.initialBookDto && this.initialBookDto.Staffs) ||
           []
         ).find((it) => it.Account.Id == bookInfo.passenger.AccountId);
-        const cstaff = cs && cs.CredentialStaff;
+        const cstaff =
+          bookInfo.passenger.AccountId == this.tmc.Account.Id
+            ? bookInfo.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
@@ -395,8 +428,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
-            bookInfo.bookInfo.trainEntity &&
-            bookInfo.bookInfo.trainEntity.StartTime
+          bookInfo.bookInfo.trainEntity &&
+          bookInfo.bookInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
@@ -404,11 +437,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -424,11 +457,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -496,6 +529,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       console.error(e);
     }
   }
+
+  async onChangeCredential(
+    credentialSelect: IonSelect,
+    item: ITrainPassengerBookInfo
+  ) {
+    await this.onModify(item);
+    if (credentialSelect) {
+      credentialSelect.open();
+    }
+  }
+
   getGroupedTitle(item: ITrainPassengerBookInfo) {
     const group = this.getGroupedCombindInfo(
       this.viewModel.combindInfos,
@@ -514,6 +558,69 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+
+  async searchCostCenter() {
+    if (this.isOtherCostCenter) {
+      return;
+    }
+    const modal = await this.modalCtrl.create({
+      component: SearchCostcenterComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    if (result && result.data) {
+      const res = result.data as { Text: string; Value: string };
+      this.costCenter = {
+        code: res.Value,
+        name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1),
+      };
+      this.onValueChange();
+    }
+  }
+
+  onValueChange() {
+    this.ionChange.emit({
+      isOtherCostCenter: this.isOtherCostCenter,
+      otherCostCenterCode: this.otherCostCenterCode,
+      otherCostCenterName: this.otherCostCenterName,
+      costCenter: this.costCenter,
+    });
+  }
+  onOpenSelect(select: IonSelect) {
+    if (select) {
+      select.open();
+    }
+  }
+  async searchOrganization() {
+    if (this.isOtherOrganization) {
+      return;
+    }
+    const modal = await this.modalCtrl.create({
+      component: OrganizationComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    console.log("organization", result.data);
+    if (result && result.data) {
+      const res = result.data as OrganizationEntity;
+      this.organization = {
+        ...this.organization,
+        Code: res.Code,
+        Name: res.Name,
+      };
+      this.onValueChanges();
+    }
+  }
+  onValueChanges() {
+    this.ionChange.emit({
+      isOtherOrganization: this.isOtherOrganization,
+      organization: this.organization,
+      otherOrganizationName: this.otherOrganizationName,
+    });
+  }
+
   async bookTrain(isSave: boolean = false, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
@@ -617,8 +724,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 exchangeInfo && exchangeInfo.exchangeInfo
                   ? res.Message || exchangeTip
                   : this.langService.isEn
-                  ? "Checkout success"
-                  : "下单成功!",
+                    ? "Checkout success"
+                    : "下单成功!",
                 true
               );
             }
@@ -745,15 +852,23 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.timeEnd("总计");
   }
-  private goToMyOrders(tab: ProductItemType, isExchange = false) {
-    if (this.langService.isCn) {
-      this.router.navigate(["order-list"], {
-        queryParams: { tabId: tab, doRefresh: isExchange },
+  private async goToMyOrders(tab: ProductItemType, isExchange = false) {
+    try {
+      const m = this.trainService.getSearchTrainModel();
+      const cities = await this.trainService.getStationsAsync();
+      const city = m.toCity;
+      const c = cities.find(it => it.Code == (city && city.Code));
+      this.router.navigate(["checkout-success"], {
+        queryParams: {
+          tabId: ProductItemType.train,
+          cityCode: c && c.CityCode,
+          cityName: c && c.CityName,
+          date: m.Date
+        },
       });
-    } else {
-      this.router.navigate(["order-list_en"], {
-        queryParams: { tabId: tab, doRefresh: isExchange },
-      });
+    } catch (e) {
+      console.error(e);
+
     }
   }
   private isShowInsurances(takeoffTime: string) {
@@ -884,6 +999,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     return fee || 0;
   }
   isAllowSelectApprove(info: ITrainPassengerBookInfo) {
+
     const Tmc = this.initialBookDto.Tmc;
     const staff = info.credentialStaff;
     if (
@@ -1027,26 +1143,21 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     ) => {
       await AppHelper.alert(
         this.langService.isCn
-          ? `${
-              (item.credentialStaff && item.credentialStaff.Name) ||
-              (item.bookInfo.credential &&
-                item.bookInfo.credential.Surname +
-                  item.bookInfo.credential.Givenname)
-            } 【${
-              item.bookInfo.credential && item.bookInfo.credential.Number
-            }】 ${msg} 信息不能为空`
-          : `${
-              (item.credentialStaff && item.credentialStaff.Name) ||
-              (item.bookInfo.credential &&
-                item.bookInfo.credential.Surname +
-                  item.bookInfo.credential.Givenname)
-            } 【${
-              item.bookInfo.credential && item.bookInfo.credential.Number
-            }】 ${msg} ${
-              this.langService.isEn
-                ? "Information cannot be empty"
-                : "信息不能为空"
-            }`
+          ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
+          }】 ${msg} 信息不能为空`
+          : `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
+          }】 ${msg} ${this.langService.isEn
+            ? "Information cannot be empty"
+            : "信息不能为空"
+          }`
       );
       this.moveRequiredEleToViewPort(ele);
     };
@@ -1119,11 +1230,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
-            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-            : combindInfo.credentialStaffOtherMobile
-        }`;
+        p.Mobile = `${p.Mobile
+          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+          : combindInfo.credentialStaffOtherMobile
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1133,11 +1243,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
-            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-            : combindInfo.credentialStaffOtherEmail
-        }`;
+        p.Email = `${p.Email
+          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+          : combindInfo.credentialStaffOtherEmail
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1180,8 +1289,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       }
       if (!p.Mobile) {
+        this.isShowOtherInfo = true;
         const ele: HTMLElement = this.getEleByAttr("mobileid", combindInfo.id);
-        showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
+        setTimeout(() => {
+          showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
+
+        }, 1000);
         return false;
       }
       p.CostCenterCode =
@@ -1237,10 +1350,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         );
         return false;
       }
-      p.Credentials.Account =
-        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
-      p.Credentials.Account =
-        p.Credentials.Account || combindInfo.credential.Account;
+      if (
+        combindInfo.credentialStaff &&
+        combindInfo.credentialStaff.Account &&
+        combindInfo.credentialStaff.Account.Id &&
+        combindInfo.credentialStaff.Account.Id != "0"
+      ) {
+        p.Credentials.Account =
+          combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+        p.Credentials.Account =
+          p.Credentials.Account || combindInfo.credential.Account;
+      }
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.viewModel.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
@@ -1487,6 +1607,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.otherCostCenterCode = data.otherCostCenterCode;
       item.otherCostCenterName = data.otherCostCenterName;
     }
+  }
+  credentialCompareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
+    return (
+      (t1 && t2 && t1 == t2) || (t1.Type == t2.Type && t1.Number == t2.Number)
+    );
   }
   onOrganizationChange(
     data: {

@@ -44,6 +44,10 @@ import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-in
 import { LoginService } from "src/app/services/login/login.service";
 import { CONFIG } from "src/app/config";
 import { LangService } from 'src/app/services/lang.service';
+import { ProductItem } from "src/app/tmc/models/ProductItems";
+import { error } from "protractor";
+import { HotelDayPriceEntity } from "src/app/hotel/models/HotelDayPriceEntity";
+import { MapService } from "src/app/services/map/map.service";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home-df.page.html",
@@ -57,13 +61,27 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("container", { static: true }) containerEl: ElementRef<
     HTMLElement
   >;
+  @ViewChild("hothotel", { static: true }) hothotelEl: ElementRef<
+    HTMLElement
+  >;
   @ViewChild("announcementEl", { static: true }) announcementEl: ElementRef<
+    HTMLElement
+  >;
+  @ViewChild("taskEle", { static: true }) taskEle: ElementRef<
+    HTMLElement
+  >;
+  @ViewChild("tripEle", { static: true }) tripEle: ElementRef<
     HTMLElement
   >;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   private swiper: any;
+  private hotels: any;
   private announcementElSwiper: any;
+  private taskEleSwiper: any;
+  private tripEleSwiper: any;
   private isLoadingBanners = false;
+  private isLoadingHotelBanners = false;
+  private isOpenUrl = false;
   identity: IdentityEntity;
   isLoadingNotice = false;
   isAgent = false;
@@ -88,9 +106,50 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaFlight = CONFIG.mockProBuild;
   banners: { ImageUrl: string; Title: string; Id: string }[];
+  boutiqueHotel:{
+    HotelDayPrices:{
+      HotelFileName: string,
+      Id:string
+    }[],
+    HotelDefaultImg: string
+  };
+  hothotels: {
+    PageIndex: number,
+    PageSize: number,
+    CityCode: string,
+    SearchDate: string
+  };
+  triplist: {
+    Id: String;
+    EndTime: String;
+    StartTime: String;
+    FromName: String;
+    ToName: String;
+    PassagerId: String;
+    Type: any;
+    OrderId: String;
+    Hour: Number;
+    Name: String;
+    FromCityName: String;
+    // ['Hotel','Train','Flight']
+  }[];
+
+  tasklist: {
+    Name: String;
+    Hour: String;
+    StatusName: String;
+    Variables: any;
+    VariablesObj: any;
+  }[];
+
+
+  saName: any;
   config: ConfigEntity;
+  activeTab: ProductItem;
   curIndex = 0;
+  hotIndex = 0;
   constructor(
+    private mapService:MapService,
     private identityService: IdentityService,
     private router: Router,
     private tmcService: TmcService,
@@ -134,6 +193,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   goBusiness() {
     this.router.navigate([AppHelper.getRoutePath("business-list")]);
   }
+
+  onDemand(){
+    this.router.navigate([AppHelper.getRoutePath("demand-list")]);
+  }
   private async loadBanners() {
     if (!this.banners || !this.banners.length) {
       if (!(await this.hasTicket())) {
@@ -155,6 +218,124 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         });
     }
   }
+
+  private async loadHotHotels() {
+    const city=await this.mapService.getCurrentCityPosition().catch(()=>null);
+    console.log("loadHotHotels",city);
+    
+    if (!this.boutiqueHotel || !this.boutiqueHotel.HotelDayPrices||!this.boutiqueHotel.HotelDayPrices.length) {
+      if (!(await this.hasTicket())) {
+        return;
+      }
+      if (this.isLoadingHotelBanners) {
+        return;
+      }
+      this.isLoadingHotelBanners = true;
+      await this.tmcService
+        .getRecommendHotel(this.hothotels)
+        .catch(() => null)
+        .then((res) => {
+          this.boutiqueHotel = res;
+          this.updateSwiper();
+        })
+        .finally(() => {
+          this.isLoadingHotelBanners = false;
+        });
+    } 
+  }
+
+  private async myItinerary() {
+    if (!this.triplist || !this.triplist.length) {
+      this.triplist = await this.tmcService.getMyItinerary();
+      this.triplist.forEach(e => {
+        console.log(e, 'e');
+      });
+    }
+  }
+
+  private async integral() {
+    try {
+      await this.tmcService.getIntegral();
+    } catch (e) {
+
+      console.log(e, 'e');
+    }
+  }
+
+
+  private async taskReviewed() {
+    if (!this.tasklist || !this.tasklist.length) {
+      this.tasklist = await this.tmcService.getTaskReviewed();
+    }
+    try {
+      this.tasklist.forEach(e => {
+        if(this.saName){
+          this.saName[1].replace('(','').replace(')','');
+          this.saName = e.Name.split('发起')
+          JSON.stringify(this.saName);
+          e.VariablesObj = JSON.parse(e.Variables);
+          console.log(e.VariablesObj, 'Variables');
+        }
+      })
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
+
+  async onTaskDetail(task) {
+    const url = await this.getTaskHandleUrl(task);
+    if (url) {
+      this.router
+        .navigate(["open-url"], {
+          queryParams: {
+            url,
+            title: task && task.Name,
+            tabId: this.activeTab?.value,
+            // isOpenInAppBrowser: AppHelper.isApp(),
+            isOpenInAppBrowser: false,
+            isIframeOpen: true,
+            isHideTitle: false,
+            goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
+            // goPathQueryParams: JSON.stringify({
+            //   tab: "已审任务"
+            // })
+          },
+        })
+        .then((_) => {
+          this.isOpenUrl = true;
+        });
+    }
+  }
+
+  goToDetail(id) {
+    this.router.navigate([AppHelper.getRoutePath("hotel-detail")],
+    {
+      queryParams: { hotelId: id},
+    }
+    );
+  }
+
+  private async getTaskHandleUrl(task) {
+    const identity: IdentityEntity = await this.identityService
+      .getIdentityAsync()
+      .catch((_) => null);
+    let url = this.getTaskUrl(task);
+    if (url?.includes("?")) {
+      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+    } else {
+      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+    }
+    return url;
+  }
+
+  getTaskUrl(task) {
+    return task && task.HandleUrl;
+  }
+
+  
   ngAfterViewInit() {
     setTimeout(() => {
       this.updateSwiper();
@@ -187,13 +368,35 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) {}
+    } catch (e) { }
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
       this.slidesEle.startAutoplay();
     }
   }
+  
+  private initSwiperhotels(){
+    if (this.hothotelEl && this.hothotelEl.nativeElement) {
+      this.hotels = new Swiper(this.hothotelEl.nativeElement, {
+        loop: true,
+        autoplay: {
+          delay: 3000,
+          stopOnLastSlide: false,
+          disableOnInteraction: true,
+        },
+      });
+      this.hotels.on("touchEnd", () => {
+        this.onTouchEnd();
+      });
+      const that = this;
+      this.hotels.on("transitionEnd", function () {
+        that.onTouchEnd();  
+        that.hotIndex = this.activeIndex;
+      });
+    }
+  }
+
   private initSwiper() {
     if (this.containerEl && this.containerEl.nativeElement) {
       this.swiper = new Swiper(this.containerEl.nativeElement, {
@@ -213,10 +416,66 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         that.curIndex = this.activeIndex;
       });
     }
+
     if (this.announcementEl && this.announcementEl.nativeElement) {
       this.initAnnouncementSwiper();
     }
+    if (this.taskEle && this.taskEle.nativeElement) {
+      this.initTaskSpwiper();
+    }
+    if (this.tripEle && this.tripEle.nativeElement) {
+      this.initTripSpwiper();
+    }
+
   }
+
+  private initTaskSpwiper() {
+    const mySwiper: any = {
+      loop: true,
+      autoplay: {
+        delay: 3000,
+        stopOnLastSlide: false,
+        disableOnInteraction: true,
+      },
+      speed: 1000,
+      direction: "vertical",
+    }
+    if (this.taskEle && this.taskEle.nativeElement) {
+      setTimeout(() => {
+        this.taskEleSwiper = new Swiper(
+          this.taskEle.nativeElement,
+          mySwiper
+        )
+        this.taskEleSwiper.on("touchEnd", () => {
+          this.onTouchEnd();
+        });
+      }, 200);
+    }
+  }
+  private initTripSpwiper() {
+    const mySwiper: any = {
+      loop: true,
+      autoplay: {
+        delay: 3000,
+        stopOnLastSlide: false,
+        disableOnInteraction: true,
+      },
+      speed: 1000,
+      direction: "vertical",
+    }
+    if (this.tripEle && this.tripEle.nativeElement) {
+      setTimeout(() => {
+        this.tripEleSwiper = new Swiper(
+          this.tripEle.nativeElement,
+          mySwiper
+        )
+        this.tripEleSwiper.on("touchEnd", () => {
+          this.onTouchEnd();
+        });
+      }, 200);
+    }
+  }
+
   private initAnnouncementSwiper() {
     const options: any = {
       loop: true,
@@ -240,23 +499,45 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async ngOnInit() {
+    var myDate = new Date();
+    const city=await this.mapService.getCurrentCityPosition().catch(()=>null);
     this.identityService.getIdentitySource().subscribe((id) => {
       this.canSelectCompany = id && id.Numbers && !!id.Numbers.AgentId;
     });
     this.initSwiper();
+    this.initSwiperhotels();
     this.tmcService.getSelectedCompanySource().subscribe((c) => {
       this.selectedCompany = c;
     });
     this.subscription = this.identityService
       .getIdentitySource()
       .subscribe((_) => {
-        this.configService.getConfigAsync().then((c) => {
-          this.config = c;
-        });
-        this.banners = [];
-        this.staffCredentials = null;
-        this.loadBanners();
-        this.loadNotices();
+        try {
+
+          this.configService.getConfigAsync().then((c) => {
+            this.config = c;
+          });
+          this.banners = [];
+          this.hothotels = {
+            PageIndex: 0,
+            PageSize: 20,
+            CityCode: city && city.CityCode || "3101",
+            SearchDate: myDate.toLocaleDateString()
+          };
+          this.triplist = [];
+          this.tasklist = [];
+          this.staffCredentials = null;
+          this.loadBanners();
+          this.loadHotHotels();
+          this.loadNotices();
+          this.myItinerary();
+          this.integral();
+          this.taskReviewed();
+          this.updateTaskSwiper();
+          this.updateTripSwiper();
+        } catch (e) {
+          console.error(e)
+        }
       });
     const paramters = AppHelper.getQueryParamers();
     if (paramters.wechatPayResultNumber) {
@@ -290,6 +571,22 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     ) {
       this.announcementElSwiper.autoplay.start();
     }
+
+    if (
+      this.taskEleSwiper &&
+      this.taskEleSwiper.autoplay &&
+      this.taskEleSwiper.autoplay.start
+    ) {
+      this.taskEleSwiper.autoplay.start();
+    }
+    if (
+      this.tripEleSwiper &&
+      this.tripEleSwiper.autoplay &&
+      this.tripEleSwiper.autoplay.start
+    ) {
+      this.tripEleSwiper.autoplay.start();
+    }
+
   }
 
   private async getAgentNotices() {
@@ -307,6 +604,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       };
     });
   }
+
 
   async goToPage(name: string, params?: any) {
     const tmc = await this.tmcService.getTmc();
@@ -385,10 +683,97 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.swiper) {
       setTimeout(() => {
         this.swiper.update();
+        this.hotels.update();
         this.startAutoPlay();
       }, 200);
     }
   }
+
+  private async updateTaskSwiper() {
+    if (!this.tasklist || !this.tasklist.length) {
+      if (this.isLoadingNotice) {
+        return;
+      }
+      if (!(await this.hasTicket())) {
+        return;
+      }
+      this.tasklist = [];
+      this.isLoadingNotice = true;
+      this.taskReviewed().finally(() => {
+        this.isLoadingNotice = false;
+        setTimeout(() => {
+          if (this.taskEleSwiper) {
+            this.taskEleSwiper.update();
+          }
+        }, 200);
+      })
+    }
+  }
+  private async updateTripSwiper() {
+    if (!this.triplist || !this.triplist.length) {
+      if (this.isLoadingNotice) {
+        return;
+      }
+      if (!(await this.hasTicket())) {
+        return;
+      }
+      this.triplist = [];
+      this.isLoadingNotice = true;
+      this.myItinerary().finally(() => {
+        this.isLoadingNotice = false;
+        setTimeout(() => {
+          if (this.tripEleSwiper) {
+            this.tripEleSwiper.update();
+          }
+        }, 200);
+      })
+    }
+  }
+
+  goToDetailPage(orderId: string, type: string) {
+    // Flight
+    console.log(type, "dddd");
+
+    if (type && type.toLowerCase() == "car") {
+      this.router.navigate([AppHelper.getRoutePath("order-car-detail")], {
+        queryParams: { Id: orderId },
+      });
+      return;
+    }
+    if (type && type.toLowerCase() == "flight") {
+      this.router.navigate([AppHelper.getRoutePath("order-flight-detail")], {
+        queryParams: {
+          tab: JSON.stringify(this.activeTab),
+          orderId: orderId,
+        },
+      });
+      return;
+    } else if (type && type.toLowerCase() == "hotel") {
+      this.router.navigate([AppHelper.getRoutePath("order-hotel-detail")], {
+        queryParams: {
+          tab: JSON.stringify(this.activeTab),
+          orderId: orderId,
+        },
+      });
+      return;
+    }
+    if (type && type.toLowerCase() == "train") {
+      this.router.navigate([AppHelper.getRoutePath("order-train-detail")], {
+        queryParams: {
+          tab: JSON.stringify(this.activeTab),
+          orderId: orderId,
+        },
+      });
+      return;
+    }
+    this.router.navigate([AppHelper.getRoutePath("order-detail")], {
+      queryParams: {
+        tab: JSON.stringify(this.activeTab),
+        orderId: orderId,
+      },
+    });
+  }
+
   private async loadNotices() {
     if (!this.agentNotices || !this.agentNotices.length) {
       if (this.isLoadingNotice) {
@@ -416,7 +801,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     let retryCount = 0;
     try {
       this.loadNotices();
+      // this.updateTaskSwiper();
+      // this.updateTripSwiper();
       this.loadBanners();
+      this.loadHotHotels();
       this.staff = await this.staffService.getStaff();
       console.log("home check", this.staffCredentials);
       if (this.staff && this.staff.AccountId) {
@@ -490,56 +878,4 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   onSwitchCompany() {
     this.router.navigate([AppHelper.getRoutePath("switch-company")]);
   }
-  // wechatpay() {
-  //   const req = new RequestEntity();
-  //   req.Method = "TmcApiOrderUrl-Pay-Create";
-  //   req.Version = "2.0";
-  //   req.Data = {
-  //     Channel: "App",
-  //     Type: "3",
-  //     OrderId: "190000047133",
-  //     IsApp: AppHelper.isApp()
-  //   };
-  //   this.payService
-  //     .wechatpay(req, "")
-  //     .then(r => {
-  //       const req1 = new RequestEntity();
-  //       req1.Method = "TmcApiOrderUrl-Pay-Process";
-  //       req1.Version = "2.0";
-  //       req1.Data = {
-  //         OutTradeNo: r,
-  //         Type: "3"
-  //       };
-  //       this.payService.process(req1);
-  //     })
-  //     .catch(r => {
-  //       AppHelper.alert(r);
-  //     });
-  // }
-  // alipay() {
-  //   const req = new RequestEntity();
-  //   req.Method = "TmcApiOrderUrl-Pay-Create";
-  //   req.Version = "2.0";
-  //   req.Data = {
-  //     Channel: "App",
-  //     Type: "2",
-  //     IsApp: AppHelper.isApp(),
-  //     OrderId: "190000047133"
-  //   };
-  //   this.payService
-  //     .alipay(req, "")
-  //     .then(r => {
-  //       const req1 = new RequestEntity();
-  //       req1.Method = "TmcApiOrderUrl-Pay-Process";
-  //       req1.Version = "2.0";
-  //       req1.Data = {
-  //         OutTradeNo: r,
-  //         Type: "2"
-  //       };
-  //       this.payService.process(req1);
-  //     })
-  //     .catch(r => {
-  //       AppHelper.alert(r);
-  //     });
-  // }
 }

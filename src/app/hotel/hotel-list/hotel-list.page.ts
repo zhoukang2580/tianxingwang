@@ -63,6 +63,7 @@ import {
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { StaffService } from "src/app/hr/staff.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
+import { HotelCityService } from "../hotel-city.service";
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -89,9 +90,8 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChild("querytoolbar") querytoolbar: IonToolbar;
-  @ViewChild("queryconditoneleContainer") queryconditoneleContainer: ElementRef<
-    HTMLElement
-  >;
+  @ViewChild("queryconditoneleContainer")
+  queryconditoneleContainer: ElementRef<HTMLElement>;
   @ViewChild(IonContent) content: IonContent;
   @ViewChild(HotelQueryComponent) queryComp: HotelQueryComponent;
   @ViewChildren(IonSearchbar) searchbarEls: QueryList<IonSearchbar>;
@@ -137,6 +137,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     private configService: ConfigService,
     private identityService: IdentityService,
     plt: Platform,
+    private hotelCityService: HotelCityService,
     private modalCtrl: ModalController
   ) {
     this.filterTab = {
@@ -221,7 +222,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
   }
   doRefresh(isKeepQueryCondition = false) {
     this.hideQueryPannel();
-    
+
     if (!isKeepQueryCondition) {
       if (this.queryComp) {
         this.queryComp.onReset();
@@ -343,11 +344,23 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   goToDetail(item: HotelDayPriceEntity) {
-    this.hotelService.curViewHotel = { ...item };
-    this.router.navigate([AppHelper.getRoutePath("hotel-detail")]);
+    // this.hotelService.curViewHotel = { ...item };
+    this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
+      queryParams: { hotelId: item.Hotel.Id },
+    });
   }
-  onCityClick() {
-    this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+  async onCityClick() {
+    // this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+    const rs = await this.hotelCityService.onSelectCity(true, true);
+    if (rs && rs.city) {
+      this.hotelService.setSearchHotelModel({
+        ...this.searchHotelModel,
+        destinationCity: rs.city,
+      });
+      if (this.checkDestinationChanged()) {
+        this.doRefresh();
+      }
+    }
   }
   onSearchByText() {
     this.isUseSearchText = true;
@@ -406,7 +419,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
       })
     );
     const sub0 = this.route.queryParamMap.subscribe((_) => {
-      this.hotelService.curViewHotel = null;
+      // this.hotelService.curViewHotel = null;
       this.hideQueryPannel();
       if (this.checkDestinationChanged()) {
         this.searchHotelModel.searchText = null;

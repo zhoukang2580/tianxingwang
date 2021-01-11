@@ -39,8 +39,8 @@ export class ChangeInterRoomPlanDateComponent implements OnInit {
   }
   onConfirm() {
     this.confirm.emit({
-      checkInDate: this.hotelService.getSearchCondition().checkinDate,
-      checkOutDate: this.hotelService.getSearchCondition().checkoutDate
+      checkInDate: this.hotelService.getSearchCondition().checkInDate,
+      checkOutDate: this.hotelService.getSearchCondition().checkOutDate
     });
     setTimeout(() => {
       this.onClose();
@@ -56,8 +56,8 @@ export class ChangeInterRoomPlanDateComponent implements OnInit {
       .format("YYYY-MM-DD");
     this.hotelService.setSearchConditionSource({
       ...this.hotelService.getSearchCondition(),
-      checkinDate: checkInDate,
-      checkoutDate: checkOutDate
+      checkInDate: checkInDate,
+      checkOutDate: checkOutDate
     });
   }
   onAddCheckOutDays(days: number, evt: CustomEvent) {
@@ -70,7 +70,7 @@ export class ChangeInterRoomPlanDateComponent implements OnInit {
       .format("YYYY-MM-DD");
     this.hotelService.setSearchConditionSource({
       ...this.hotelService.getSearchCondition(),
-      checkoutDate: checkOutDate
+      checkOutDate: checkOutDate
     });
   }
   calcNights() {
@@ -87,8 +87,8 @@ export class ChangeInterRoomPlanDateComponent implements OnInit {
   }
   ngOnInit() {
     this.hotelService.getSearchConditionSource().subscribe(s => {
-      this.checkInDate = s.checkinDate;
-      this.checkOutDate = s.checkoutDate;
+      this.checkInDate = s.checkInDate;
+      this.checkOutDate = s.checkOutDate;
     });
     setTimeout(() => {
       this.show = true;
