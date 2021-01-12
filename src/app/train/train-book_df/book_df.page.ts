@@ -685,13 +685,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           // );
           this.isSubmitDisabled = true;
           const isSelf = await this.staffService.isSelfBookType();
-          if (
-            !isSave &&
-            isSelf &&
-            (this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
-              this.viewModel.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            let canPay = true;
+          if (!isSave) {
+            let canPay = res.IsCheckPay;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;
               canPay = await this.checkPay(res.TradeNo);
@@ -709,10 +704,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              // if(res.IsCheckPay){
+              //   await AppHelper.alert(
+              //     LanguageHelper.Order.getBookTicketWaitingTip(),
+              //     true
+              //   );
+              // }
             }
           } else {
             if (isSave) {

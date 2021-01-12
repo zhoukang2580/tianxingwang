@@ -851,13 +851,8 @@ export class FlightBookDfPage
           this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
           this.flightService.removeAllBookInfos();
-          if (
-            !isSave &&
-            isSelf &&
-            (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            let canPay = true;
+          if (!isSave) {
+            let canPay = res.IsCheckPay;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;
               canPay = await this.checkPay(res.TradeNo);
@@ -873,16 +868,16 @@ export class FlightBookDfPage
                 await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              // await AppHelper.alert(
+              //   LanguageHelper.Order.getBookTicketWaitingTip(),
+              //   true
+              // );
             }
           } else {
             if (isSave) {
               await AppHelper.alert("订单已保存!");
             } else {
-              await AppHelper.alert("下单成功!");
+              // await AppHelper.alert("下单成功!");
             }
           }
           const hasRight = await this.tmcService.checkHasHotelBookRight();
