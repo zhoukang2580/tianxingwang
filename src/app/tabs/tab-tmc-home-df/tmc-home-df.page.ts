@@ -59,7 +59,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private staffCredentials: MemberCredential[];
   private subscription = Subscription.EMPTY;
   private curCity: TrafficlineEntity;
-  private isLoadingCurCity = false;
+  private isLoadingHotHotels = false;
+  private isLoadingReviewedTask = false;
   @ViewChild(IonSlides) slidesEle: IonSlides;
   @ViewChild("container", { static: true })
   containerEl: ElementRef<HTMLElement>;
@@ -75,6 +76,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private taskEleSwiper: any;
   private tripEleSwiper: any;
   private isLoadingBanners = false;
+  private isLoadingMyItinerary = false;
   private isLoadingHotelBanners = false;
   private isOpenUrl = false;
   identity: IdentityEntity;
@@ -114,7 +116,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     CityCode: string;
     SearchDate: string;
   };
-  triplist: {
+  itineraryList: {
     Id: String;
     EndTime: String;
     StartTime: String;
@@ -125,19 +127,19 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     OrderId: String;
     Hour: Number;
     Name: String;
+    PassagerName: String;
     FromCityName: String;
     // ['Hotel','Train','Flight']
   }[];
 
   tasklist: {
     Name: String;
+    saName: String;
     Hour: String;
     StatusName: String;
     Variables: any;
     VariablesObj: any;
   }[];
-
-  saName: any;
   config: ConfigEntity;
   activeTab: ProductItem;
   curIndex = 0;
@@ -214,11 +216,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private async loadHotHotels() {
-    const city = await this.mapService
-      .getCurrentCityPosition()
-      .catch(() => null);
-    console.log("loadHotHotels", city);
-
+    if (this.isLoadingHotHotels) {
+      return;
+    }
     if (
       !this.boutiqueHotel ||
       !this.boutiqueHotel.HotelDayPrices ||
@@ -227,10 +227,19 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       if (!(await this.hasTicket())) {
         return;
       }
-      if (this.isLoadingHotelBanners) {
-        return;
+      if (!this.curCity) {
+        this.curCity = await this.mapService
+          .getCurrentCityPosition()
+          .catch(() => null);
       }
-      this.isLoadingHotelBanners = true;
+      var myDate = new Date();
+      this.hothotels = {
+        PageIndex: 0,
+        PageSize: 20,
+        CityCode: (this.curCity && this.curCity.CityCode) || "3101",
+        SearchDate: myDate.toLocaleDateString(),
+      };
+      this.isLoadingHotHotels = true;
       await this.tmcService
         .getRecommendHotel(this.hothotels)
         .catch(() => null)
@@ -239,17 +248,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.updateSwiper();
         })
         .finally(() => {
-          this.isLoadingHotelBanners = false;
+          this.isLoadingHotHotels = false;
         });
     }
   }
 
   private async myItinerary() {
-    if (!this.triplist || !this.triplist.length) {
-      this.triplist = await this.tmcService.getMyItinerary();
-      this.triplist.forEach((e) => {
-        console.log(e, "e");
-      });
+    if (!this.itineraryList || !this.itineraryList.length) {
+      this.itineraryList = await this.tmcService.getMyItinerary();
     }
   }
 
@@ -261,24 +267,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private async taskReviewed() {
-    try {
-      if (!this.tasklist || !this.tasklist.length) {
-        this.tasklist = await this.tmcService.getTaskReviewed();
-      }
-      this.tasklist.forEach((e) => {
-        if (this.saName) {
-          this.saName[1].replace("(", "").replace(")", "");
-          this.saName = e.Name.split("发起");
-          JSON.stringify(this.saName);
-          e.VariablesObj = JSON.parse(e.Variables);
-          console.log(e.VariablesObj, "Variables");
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
 
   async onTaskDetail(task) {
     const url = await this.getTaskHandleUrl(task);
@@ -317,13 +306,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url?.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     }
     return url;
   }
@@ -364,7 +351,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) {}
+    } catch (e) { }
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
@@ -488,16 +475,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async ngOnInit() {
-    var myDate = new Date();
-    if (!this.curCity) {
-      if (!this.isLoadingCurCity) {
-        this.isLoadingCurCity = true;
-        this.curCity = await this.mapService
-          .getCurrentCityPosition()
-          .catch(() => null);
-        this.isLoadingCurCity = false;
-      }
-    }
+
     this.identityService.getIdentitySource().subscribe((id) => {
       this.canSelectCompany = id && id.Numbers && !!id.Numbers.AgentId;
     });
@@ -514,13 +492,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
             this.config = c;
           });
           this.banners = [];
-          this.hothotels = {
-            PageIndex: 0,
-            PageSize: 20,
-            CityCode: (this.curCity && this.curCity.CityCode) || "3101",
-            SearchDate: myDate.toLocaleDateString(),
-          };
-          this.triplist = [];
+          this.itineraryList = [];
           this.tasklist = [];
           this.staffCredentials = null;
           if (!(await this.hasTicket())) {
@@ -531,9 +503,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.loadNotices();
           this.myItinerary();
           this.integral();
-          this.taskReviewed();
-          this.updateTaskSwiper();
-          this.updateTripSwiper();
+          this.loadReviewedTask();
+          this.loadMyItinerary();
         } catch (e) {
           console.error(e);
         }
@@ -686,38 +657,56 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private async updateTaskSwiper() {
+  private async loadReviewedTask() {
     if (!this.tasklist || !this.tasklist.length) {
-      if (this.isLoadingNotice) {
+      if (this.isLoadingReviewedTask) {
         return;
       }
       if (!(await this.hasTicket())) {
         return;
       }
-      this.tasklist = [];
-      this.isLoadingNotice = true;
-      this.taskReviewed().finally(() => {
-        this.isLoadingNotice = false;
-        setTimeout(() => {
-          if (this.taskEleSwiper) {
-            this.taskEleSwiper.update();
+      this.isLoadingReviewedTask = true;
+      this.tasklist = await this.tmcService.getTaskReviewed();
+      this.isLoadingReviewedTask = false;
+      try {
+        if (this.tasklist) {
+          for (const e of this.tasklist) {
+            if (e.Name) {
+              const arr = e.Name.split("(");
+              if (arr.length > 1) {
+                e.Name = arr[0].replace("发起", "")
+                e.saName = arr[1].replace(")", "");
+              }
+              try {
+                e.VariablesObj = JSON.parse(e.Variables);
+              } catch (e) {
+                console.log(e);
+              }
+            }
           }
-        }, 200);
-      });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      setTimeout(() => {
+        if (this.taskEleSwiper) {
+          this.taskEleSwiper.update();
+        }
+      }, 200);
     }
   }
-  private async updateTripSwiper() {
-    if (!this.triplist || !this.triplist.length) {
-      if (this.isLoadingNotice) {
+  private async loadMyItinerary() {
+    if (!this.itineraryList || !this.itineraryList.length) {
+      if (this.isLoadingMyItinerary) {
         return;
       }
       if (!(await this.hasTicket())) {
         return;
       }
-      this.triplist = [];
-      this.isLoadingNotice = true;
+      this.itineraryList = [];
+      this.isLoadingMyItinerary = true;
       this.myItinerary().finally(() => {
-        this.isLoadingNotice = false;
+        this.isLoadingMyItinerary = false;
         setTimeout(() => {
           if (this.tripEleSwiper) {
             this.tripEleSwiper.update();

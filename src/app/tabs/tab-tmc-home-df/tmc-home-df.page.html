@@ -112,20 +112,24 @@
         <div class="txt">积分商城</div>
       </div>
       <div class="item" (click)="onDemand()">
-        <img src="assets/home/demand.png" alt="">
+        <img class="imgs" src="assets/home/demand.png" alt="" />
         <div class="txt">需求单</div>
       </div>
     </div>
 
     <div class="notice">
-      <div class="swiper-container warpper-a" *ngIf="tasklist && tasklist.length" #taskEle>
+      <div
+        class="swiper-container warpper-a"
+        [class.hidden]="!tasklist || !tasklist.length"
+        #taskEle
+      >
         <div class="swiper-wrapper">
           <div class="swiper-slide swiper" *ngFor="let task of tasklist">
             <img src="assets/home/home-text.png" alt="" />
             <div class="not-jj">
-              <div class="not-name">{{saName && saName[0]}}</div>
+              <div class="not-name">{{task.Name}}</div>
               <div calss="not-approvd">
-                <span style="color: crimson">{{saName && saName[1]}}</span
+                <span style="color: crimson">{{task.saName}}</span
                 ><span
                   >{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span
                 >
@@ -135,12 +139,16 @@
           </div>
         </div>
       </div>
-      <div class="swiper-container not-item-u" *ngIf="triplist && triplist.length" #tripEle>
+      <div
+        class="swiper-container not-item-u"
+        [class.hidden]="!itineraryList ||! itineraryList.length"
+        #tripEle
+      >
         <div class="swiper-wrapper" style="height: 51px">
-          <div class="swiper-slide it-list" *ngFor="let trip of triplist;">
+          <div class="swiper-slide it-list" *ngFor="let trip of itineraryList;">
             <img src="assets/home/home-trip.png" alt="" />
             <div class="not-warp">
-              <div class="not-name">{{saName && saName[0]}}</div>
+              <div class="not-name">{{trip.PassagerName}}</div>
               <div class="wait-trip">您有<span>1张</span>待出行行程</div>
               <div
                 class="view-now"
@@ -227,7 +235,10 @@
           <img src="assets/images/balance.png" alt="" />
         </div>
       </div>
-      <div class="list" style="background: linear-gradient(90deg, #FBDDB1 0%, #FBC696 100%);">
+      <div
+        class="list"
+        style="background: linear-gradient(90deg, #fbddb1 0%, #fbc696 100%)"
+      >
         <div class="left">
           <div class="item-sign">签到有奖</div>
           <div class="jd">20积分</div>

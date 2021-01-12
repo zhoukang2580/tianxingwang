@@ -188,8 +188,8 @@ ion-header ion-title {
     align-items: center;
     flex-flow: column nowrap;
     padding: 0 1em;
-    img{
-      width: 19px;
+    .imgs{
+      width: 17px;
     }
   }
   .txt {
@@ -396,6 +396,7 @@ ion-header ion-title {
   }
   img{    
     height: 18px;
+    margin-top: 3px;
   }
   .not-jj {
     display: flex;
