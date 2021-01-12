@@ -55,9 +55,9 @@ import { MOCK_TMC_DATA } from "../mock-data";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
 import { OrderFlightTicketType } from "../models/OrderFlightTicketType";
 import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
-import { OrderItemPricePopoverEnComponent } from '../components/order-item-price-popover_en/order-item-price-popover_en.component';
-import { FlightSegmentEntity } from 'src/app/flight/models/flight/FlightSegmentEntity';
-import { FilterConditionModel } from 'src/app/flight/models/flight/advanced-search-cond/FilterConditionModel';
+import { OrderItemPricePopoverEnComponent } from "../components/order-item-price-popover_en/order-item-price-popover_en.component";
+import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
+import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
 
 export interface TabItem {
   label: string;
@@ -70,7 +70,8 @@ export interface TabItem {
   styleUrls: ["./order-flight-detail_df.page.scss"],
   animations: [flyInOut],
 })
-export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
+export class OrderFlightDetailDfPage
+  implements OnInit, AfterViewInit, OnDestroy {
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
@@ -83,6 +84,7 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
   isLoading = false;
   showTiket = false;
   tikectNo = [];
+  selectedOrderFlightTicket: OrderFlightTicketEntity;
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
   @ViewChildren("slide") slides: QueryList<any>;
   @ViewChild(IonHeader) headerEle: IonHeader;
@@ -95,7 +97,7 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
   // selectedInsuranceId: string;
   identity: IdentityEntity;
   filterCondition: FilterConditionModel;
-  flightTickect: { [tickectId: string]: OrderFlightTicketEntity[] };
+  // flightTickect: { [tickectId: string]: OrderFlightTicketEntity[] };
   tikect2Insurance: { [tikectKey: string]: OrderInsuranceEntity[] } = {};
   tikectId2OriginalTickets: {
     [ticketId: string]: OrderFlightTicketEntity[];
@@ -113,7 +115,7 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
     private identityService: IdentityService,
     private langService: LangService,
     private calendarService: CalendarService
-  ) { }
+  ) {}
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -231,6 +233,9 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
         .map((it) => it.ExpenseType)
         .join(",")
     );
+  }
+  onSelectTicket(t: OrderFlightTicketEntity) {
+    this.selectedOrderFlightTicket = t;
   }
   private getOrderInsurances(ticket: OrderFlightTicketEntity) {
     const passengerId = ticket && ticket.Passenger && ticket.Passenger.Id;
@@ -691,6 +696,9 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
           return h;
         });
       }
+      if(this.orderDetail&&this.orderDetail.Order&&this.orderDetail.Order.OrderFlightTickets){
+        this.onSelectTicket(this.orderDetail.Order.OrderFlightTickets[0]);
+      }
       console.log("orderDetail ", this.orderDetail);
     }
   }
@@ -786,7 +794,9 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
         orderItems = orderItems.filter((it) => !(it.Tag || "").endsWith("Fee"));
       }
       const p = await this.popoverCtrl.create({
-        component: this.langService.isCn ? OrderItemPricePopoverComponent : OrderItemPricePopoverEnComponent,
+        component: this.langService.isCn
+          ? OrderItemPricePopoverComponent
+          : OrderItemPricePopoverEnComponent,
         cssClass: "ticket-changing",
         componentProps: {
           order: this.orderDetail && this.orderDetail.Order,
@@ -836,7 +846,11 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
   }
   private sortFlightTicket() {
     const trips: OrderFlightTripEntity[] = [];
-    if (this.orderDetail && this.orderDetail.Order && this.orderDetail.Order.OrderFlightTickets) {
+    if (
+      this.orderDetail &&
+      this.orderDetail.Order &&
+      this.orderDetail.Order.OrderFlightTickets
+    ) {
       this.orderDetail.Order.OrderFlightTickets.sort(
         (t1, t2) => +t2.Id - +t1.Id
       );
@@ -890,7 +904,7 @@ export class OrderFlightDetailDfPage implements OnInit, AfterViewInit, OnDestroy
       t.VariablesJsonObj = t.VariablesJsonObj || JSON.parse(t.Variables) || {};
     }
     if (!t.VariablesJsonObj) {
-      t.VariablesJsonObj = {}
+      t.VariablesJsonObj = {};
     }
     const it = orderFlightTickets.find(
       (itm) => itm.Id == t.VariablesJsonObj.OriginalTicketId
