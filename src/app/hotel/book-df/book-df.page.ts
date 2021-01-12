@@ -251,10 +251,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  onPay() {
-    // this.combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]
-    // this.isExceeding[] = true;
-  }
+  // onPay() {
+  //   this.combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]
+  //   this.isExceeding[] = true;
+  // }
 
   onOpenSelect(select: IonSelect) {
     if (select) {
@@ -1587,13 +1587,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           // );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
-          if (
-            !isSave &&
-            isSelf &&
-            (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            let canPay = true;
+          if (!isSave) {
+            let canPay = res.IsCheckPay;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;
               canPay = await this.checkPay(res.TradeNo);
@@ -1609,10 +1604,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              // await AppHelper.alert(
+              //   LanguageHelper.Order.getBookTicketWaitingTip(),
+              //   true
+              // );
             }
           } else {
             if (isSave) {

@@ -212,6 +212,10 @@ ion-header {
     }
   }
 
+  .label{
+    flex: 1;
+  }
+
   ion-label.item {
     width: 100%;
     margin: 0 0 0 0.5em;
@@ -300,3 +304,4 @@ ion-row {
     flex: 1;
   }
 }
+
