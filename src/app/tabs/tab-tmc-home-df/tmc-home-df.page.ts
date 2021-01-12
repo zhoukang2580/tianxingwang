@@ -511,7 +511,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
     this.subscription = this.identityService
       .getIdentitySource()
-      .subscribe((_) => {
+      .subscribe(async(_) => {
         try {
 
           this.configService.getConfigAsync().then((c) => {
@@ -527,6 +527,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.triplist = [];
           this.tasklist = [];
           this.staffCredentials = null;
+          if (!(await this.hasTicket())) {
+            return;
+          }
           this.loadBanners();
           this.loadHotHotels();
           this.loadNotices();
