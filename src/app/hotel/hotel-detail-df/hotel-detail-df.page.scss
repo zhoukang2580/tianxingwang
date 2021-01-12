@@ -244,10 +244,11 @@ ion-header {
     }
   }
   .room-name {
-    font-size: 16px;
+    font-size: 17px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
+    max-width: 9em;
   }
   .name {
     display: flex;
