@@ -1617,9 +1617,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 LanguageHelper.getConfirmTip()
               );
             } else {
-              await AppHelper.alert(
-                this.langService.isCn ? "下单成功!" : "Checkout success"
-              );
+              // await AppHelper.alert(
+              //   this.langService.isCn ? "下单成功!" : "Checkout success"
+              // );
             }
           }
           this.hotelService.removeAllBookInfos();

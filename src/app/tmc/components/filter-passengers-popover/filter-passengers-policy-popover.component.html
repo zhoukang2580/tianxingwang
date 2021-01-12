@@ -2,7 +2,7 @@
   name='CredentialsRemark'>
   <ion-item *ngFor='let info of bookInfos'>
     <ion-label class='sm-font-size' *ngIf='info?.credential?.Name'>
-      {{info.credential.Name}} {{info?.credential?.Number}}</ion-label>
+      {{info.credential.Name}} {{info?.credential?.HideNumber}}</ion-label>
     <ion-radio [value]="info"></ion-radio>
   </ion-item>
   <ion-item (click)='onUnFilterPolicy()'>

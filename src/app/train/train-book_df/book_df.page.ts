@@ -721,14 +721,14 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 true
               );
             } else {
-              await AppHelper.alert(
-                exchangeInfo && exchangeInfo.exchangeInfo
-                  ? res.Message || exchangeTip
-                  : this.langService.isEn
-                    ? "Checkout success"
-                    : "下单成功!",
-                true
-              );
+              // await AppHelper.alert(
+              //   exchangeInfo && exchangeInfo.exchangeInfo
+              //     ? res.Message || exchangeTip
+              //     : this.langService.isEn
+              //       ? "Checkout success"
+              //       : "下单成功!",
+              //   true
+              // );
             }
           }
           this.trainService.removeAllBookInfos();

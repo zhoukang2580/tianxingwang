@@ -3,9 +3,14 @@
   <ng-container *ngIf='order.OrderFlightTickets?.length'>
     <ng-container *ngIf='order.OrderFlightTickets?.length'>
       <div class="item">
-        <div>编号</div>
-        <div class="select-text">
-          <span>{{order.Id}}</span>
+        <div class="left">
+          <div class="id">编号</div>
+          <div class="select-text">
+            <span>{{order.Id}}</span>
+          </div>
+        </div>
+        <div class="status">
+          <span>{{order.StatusName}}</span>
         </div>
       </div>
       <ng-container *ngFor='let ticket of order.OrderFlightTickets;let i=index;'>
@@ -92,6 +97,12 @@
           <ion-col class='select-text' class='dark'>
             <strong class="strong">{{order.Id}}</strong>
           </ion-col>
+          <ion-col style="text-align: end;" class='dark'>
+            <strong class="strong">{{order.StatusName}}</strong>
+          </ion-col>
+          <!-- <ion-text color='medium'>
+            （{{order.StatusName}}）
+          </ion-text> -->
           <!-- <ion-col>
             <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime}}</span>
           </ion-col> -->
@@ -174,6 +185,9 @@
           </ion-col>
           <ion-col class='select-text' class='dark'>
             <strong class="strong">{{order.Id}}</strong>
+          </ion-col>
+          <ion-col style="text-align:end" class='dark'>
+            <strong class="strong">{{order.StatusName}}</strong>
           </ion-col>
         </ion-row>
         <ion-row class="ion-img">

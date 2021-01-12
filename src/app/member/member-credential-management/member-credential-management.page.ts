@@ -33,6 +33,7 @@ export class MemberCredentialManagementPage
   isModify = false;
   isKeyBoardShow = false;
   isFromConformCredentials = false;
+  eyeOn = true;
   constructor(
     private memberService: MemberService,
     route: ActivatedRoute,

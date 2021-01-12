@@ -32,6 +32,7 @@ export class MemberCredential {
   /// </summary>
   Type: CredentialsType; //
   Number: string; //
+  HideNumber: string; //
   /// <summary>
   /// 姓
   /// </summary>
