@@ -1006,12 +1006,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         if (!exists || !exists.OutNumbers) {
           p.OutNumbers = {};
           for (const it of combindInfo.tmcOutNumberInfos) {
-            if (!this.isRoomPlanFreeBook(combindInfo)) {
+            if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumberid", combindInfo.id);
               this.showErrorMsg(it.label + "必填", combindInfo, el);
               return;
             }
-
             if (it.value) {
               p.OutNumbers[it.key] = it.value;
             }
