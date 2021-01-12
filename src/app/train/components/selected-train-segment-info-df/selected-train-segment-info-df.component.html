@@ -15,7 +15,7 @@
     <ng-container *ngIf='bookInfo?.bookInfo'>
       <ion-item lines='none' style="--background:#fff">
         <div class='detail'>
-          <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;{{bookInfo?.credential?.Number}}</ion-label>
+          <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;{{bookInfo?.credential?.HideNumber}}</ion-label>
           <div class='date'>
             <strong>{{getDate(bookInfo?.bookInfo?.trainEntity)}}
               <!-- <ion-text color='secondary' *ngIf='!bookInfo.bookInfo?.isExchange'>
