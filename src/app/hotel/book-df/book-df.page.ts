@@ -1637,19 +1637,19 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private goToMyOrders(tab: ProductItemType) {
-    // const m = this.hotelService.getSearchHotelModel();
-    // const city = m.destinationCity;
-    // this.router.navigate(["checkout-success"], {
-    //   queryParams: {
-    //     tabId: ProductItemType.hotel,
-    //     cityCode: city && city.CityCode,
-    //     cityName: city && city.CityName,
-    //     date: m.checkInDate
-    //   },
-    // });
-    this.router.navigate(["order-list"], {
-      queryParams: { tabId: tab },
+    const m = this.hotelService.getSearchHotelModel();
+    const city = m.destinationCity;
+    this.router.navigate(["checkout-success"], {
+      queryParams: {
+        tabId: ProductItemType.hotel,
+        cityCode: city && city.CityCode,
+        cityName: city && city.CityName,
+        date: m.checkInDate
+      },
     });
+    // this.router.navigate(["order-list"], {
+    //   queryParams: { tabId: tab },
+    // });
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {

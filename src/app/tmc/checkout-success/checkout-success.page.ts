@@ -115,8 +115,7 @@ export class CheckoutSuccessPage implements OnInit {
   //   }
   // }
 
-  onOrderList(tab: ProductItemType) {
-    console.log(tab,'tab',this.tabId);
+  onOrderList() {
     this.router.navigate(["order-list"], {
       queryParams: { tabId: this.tabId },
     });

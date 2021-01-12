@@ -15,12 +15,12 @@
     </div>
     <div class="down">
       <div class="success">下单成功</div>
-      <div class="active" *ngIf="tabId==2">
+      <div class="active" *ngIf="isApproval">
         您的订单需要审批、请于审批完成后到订单列进行支付
       </div>
     </div>
   </div>
-  <div class="integral" *ngIf="isShow">
+  <div class="integral" *ngIf="tabId==3">
     <div class="img">
       <div class="inside">
         <div class="right">+200<span>积分</span></div>
@@ -28,7 +28,7 @@
       </div>
     </div>
   </div>
-  <div class="hotel-item">
+  <div class="hotel-item" *ngIf="tabId!=3">
     <div class="boutique">{{city?.CityName}}精品酒店推荐</div>
     <div
       class="list"
@@ -44,12 +44,6 @@
             <ion-text class="grade" color="danger"
               >{{item?.HotelCategory}}分</ion-text
             >
-            <!-- <div class="stars">
-              <ng-container>
-                <ion-icon name="star" color="warning"></ion-icon>
-                <ion-icon name="star-half" color="warning"></ion-icon>
-              </ng-container>
-            </div> -->
           </div>
           <ion-text class="ion-text-end ion-padding-end price" color="danger"
             ><small>￥</small><strong>{{item?.Price}}</strong><small>起</small>
