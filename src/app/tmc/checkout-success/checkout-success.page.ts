@@ -50,6 +50,7 @@ export class CheckoutSuccessPage implements OnInit {
   ngOnInit() {
     this.route.queryParamMap.subscribe(q => {
       this.tabId = q.get("tabId");
+      console.log(this.tabId,'tabId')
       if (q.get("cityCode")) {
         this.city = {} as any;
         this.city.CityCode = q.get("cityCode");
