@@ -225,14 +225,14 @@
   <div class="points-mall">
     <div class="title">积分商城</div>
     <div class="commodity">
-      <div class="list">
+      <div class="list" *ngFor="let item of exchangeList">
         <div class="left">
-          <div class="item-name">蓝牙体脂坪</div>
-          <div class="jf">150积分</div>
-          <button class="btn1">立即兑换</button>
+          <div class="item-name">{{item.Name}}</div>
+          <div class="jf">{{item.Count}}积分</div>
+          <button class="btn1" (click)="onRedeemNow()">立即兑换</button>
         </div>
         <div class="right">
-          <img src="assets/images/balance.png" alt="" />
+          <img [lazyLoad]="item.ImageUrl" alt="" />
         </div>
       </div>
       <div

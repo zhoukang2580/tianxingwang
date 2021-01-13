@@ -116,6 +116,26 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     CityCode: string;
     SearchDate: string;
   };
+  integralRegion: {
+    Tag: string;
+    PageSize: number;
+  }
+
+  sign:{
+    Name: string;
+    Number: string;
+    Tag: string
+  };
+  
+  signList:any;
+
+  exchangeList:{
+    Id:string;
+    Name:string;
+    ImageUrl:string;
+    Count:string;
+  };
+
   itineraryList: {
     Id: String;
     EndTime: String;
@@ -129,8 +149,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     Name: String;
     PassagerName: String;
     FromCityName: String;
-    // ['Hotel','Train','Flight']
   }[];
+
+
 
   tasklist: {
     Name: String;
@@ -261,11 +282,34 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
 
   private async integral() {
     try {
-      await this.tmcService.getIntegral();
+      this.integralRegion = {
+        Tag: '热卖',
+        PageSize: 20,
+      }
+      this.exchangeList = await this.tmcService.getIntegral(this.integralRegion);
     } catch (e) {
-      console.log(e, "e");
+      console.error(e);
     }
   }
+
+  onRedeemNow() {
+
+  }
+
+
+  private async getSignIn(){
+    try {
+      this.sign = {
+          Name:"哈哈",
+          Number:'123',
+          Tag: 'Signdaily'
+      };
+       this.signList = await this.tmcService.getSign(this.sign);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
 
 
 
@@ -278,14 +322,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
             url,
             title: task && task.Name,
             tabId: this.activeTab?.value,
-            // isOpenInAppBrowser: AppHelper.isApp(),
             isOpenInAppBrowser: false,
             isIframeOpen: true,
             isHideTitle: false,
             goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
-            // goPathQueryParams: JSON.stringify({
-            //   tab: "已审任务"
-            // })
           },
         })
         .then((_) => {
@@ -503,6 +543,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.loadNotices();
           this.myItinerary();
           this.integral();
+          this.getSignIn();
           this.loadReviewedTask();
           this.loadMyItinerary();
         } catch (e) {
@@ -786,11 +827,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
     let retryCount = 0;
     try {
-      this.loadNotices();
+      // this.loadNotices();
       // this.updateTaskSwiper();
       // this.updateTripSwiper();
-      this.loadBanners();
-      this.loadHotHotels();
+      // this.loadBanners();
+      // this.loadHotHotels();
       this.staff = await this.staffService.getStaff();
       console.log("home check", this.staffCredentials);
       if (this.staff && this.staff.AccountId) {

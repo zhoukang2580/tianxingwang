@@ -182,13 +182,34 @@ export class TmcService {
     return this.apiService.getPromiseData<any[]>(req);
   }
 
-  async getIntegral() {
+  async getIntegral(d: { Tag: string, PageSize: number}) {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Exchange";
     req.Data = {
-
+      Tag:d.Tag,
+      PageSize:d.PageSize,
     };
-    return this.apiService.getPromiseData<any[]>(req);
+    return this.apiService.getPromiseData<any>(req).then(it=>{
+      if(it){
+        try{
+          return JSON.parse(it);
+        }catch(e){
+          console.log(e);
+          return null;
+        }
+      }
+      return null;
+    });
+  }
+  async getSign(d:{Name:string,Number:string,Tag:string}) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-Sign";
+    req.Data = {
+      Name:d.Name,
+      Number:d.Number,
+      Tag:d.Tag
+    };
+    return this.apiService.getPromiseData<any>(req);
   }
 
   setTravelFormNumber(tn: string) {

@@ -339,14 +339,15 @@ ion-header ion-title {
     border-radius: 10px;
     margin: 5px;
     display: flex;
-    flex: 1;
+    flex: 0.5;
     .left {
       display: grid;
       margin-left: 12px;
       .item-name{
         display: flex;
         align-items: center;
-        font-size: 16px;
+        max-width: 6em;
+        font-size: 14px;
         color: #934aca;
       }
       .item-sign{
