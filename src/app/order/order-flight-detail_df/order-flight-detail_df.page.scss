@@ -113,6 +113,9 @@
 }
 
 .ion-item-divider {
+  &.n-b {
+    border-top: none;
+  }
   display: flex;
   align-items: center;
   background: #fff;
