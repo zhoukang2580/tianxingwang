@@ -333,7 +333,7 @@ export class SearchFlightDfPage
   onSelectPassenger(isDomestic = true) {
     this.isCanleave = true;
     this.isleave = true;
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger-df")], {
       queryParams: {
         forType: isDomestic
           ? FlightHotelTrainType.Flight

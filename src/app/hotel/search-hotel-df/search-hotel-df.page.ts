@@ -298,7 +298,7 @@ export class SearchHotelDfPage
     this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
   }
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger-df")], {
       queryParams: {
         forType: this.isDomestic
           ? FlightHotelTrainType.Hotel
