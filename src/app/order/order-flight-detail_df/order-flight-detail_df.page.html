@@ -15,8 +15,8 @@
     <div class="tabs" *ngIf='orderFlightTicketsTabs?.length' #tabsEl>
       <div class="tab" #tabEl (click)='onSelectTicket(t,tabsEl,tabEl)' [ngClass]='{
         active:t.Id==selectedOrderFlightTicket?.Id,
-        hasMore:orderDetail?.Order?.OrderFlightTickets?.length>1}' *ngFor='let t of orderFlightTicketsTabs;let idx=index;'>
-        {{tikectId2OriginalTickets&&tikectId2OriginalTickets[t.Id]?.length>0?"原始航班"+(t?.VariablesJsonObj?.OriginalTicketId):t.Id}}
+        hasMore:orderFlightTicketsTabs.length>1}' *ngFor='let t of orderFlightTicketsTabs;let idx=index;'>
+        {{t?.VariablesJsonObj?.OriginalTicketId?"原始航班"+(t.Id):t.Id}}
       </div>
     </div>
     <ng-container *ngIf='selectedOrderFlightTicket'>

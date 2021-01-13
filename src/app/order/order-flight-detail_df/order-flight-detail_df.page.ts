@@ -423,17 +423,7 @@ export class OrderFlightDetailDfPage
       this.orderDetail.Order.OrderFlightTickets &&
       this.tikectId2OriginalTickets
     ) {
-      const hasOrgArr = this.orderDetail.Order.OrderFlightTickets.filter(
-        (it) => !!this.tikectId2OriginalTickets[it.Id].length
-      );
-      const noOrgArr = this.orderDetail.Order.OrderFlightTickets.filter(
-        (it) => !this.tikectId2OriginalTickets[it.Id].length
-      );
-      this.orderDetail.Order.OrderFlightTickets = noOrgArr.concat(hasOrgArr);
       this.orderDetail.Order.OrderFlightTickets.forEach((it, idx) => {
-        if (it.VariablesJsonObj.isShow) {
-          this.orderFlightTicketsTabs.push(it);
-        }
         if (it.Variables && !it.VariablesJsonObj) {
           it.VariablesJsonObj =
             it.VariablesJsonObj || JSON.parse(it.Variables) || {};
@@ -441,6 +431,14 @@ export class OrderFlightDetailDfPage
         it.VariablesJsonObj.isShowExchange = this.isShowExchange(it);
         it.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(it);
       });
+
+      const hasOrgArr = this.orderDetail.Order.OrderFlightTickets.filter(
+        (it) => it.VariablesJsonObj && it.VariablesJsonObj.OriginalTicketId
+      );
+      const noOrgArr = this.orderDetail.Order.OrderFlightTickets.filter(
+        (it) => !it.VariablesJsonObj || !it.VariablesJsonObj.OriginalTicketId
+      );
+      this.orderFlightTicketsTabs = noOrgArr.concat(hasOrgArr);
     }
   }
   private isShowExchange(orderFlightTicket: OrderFlightTicketEntity) {
@@ -685,12 +683,8 @@ export class OrderFlightDetailDfPage
           return h;
         });
       }
-      if (
-        this.orderDetail &&
-        this.orderDetail.Order &&
-        this.orderDetail.Order.OrderFlightTickets
-      ) {
-        this.onSelectTicket(this.orderDetail.Order.OrderFlightTickets[0]);
+      if (this.orderFlightTicketsTabs) {
+        this.onSelectTicket(this.orderFlightTicketsTabs[0]);
       }
       console.log("orderDetail ", this.orderDetail);
     }
