@@ -126,7 +126,7 @@
         <div class="swiper-wrapper">
           <div class="swiper-slide swiper" *ngFor="let task of tasklist">
             <img src="assets/home/home-text.png" alt="" />
-            <div class="not-jj">
+            <div class="not-jj" (click)="onTaskDetail(task)">
               <div class="not-name">{{task.Name}}</div>
               <div calss="not-approvd">
                 <span style="color: crimson">{{task.saName}}</span
@@ -147,15 +147,10 @@
         <div class="swiper-wrapper" style="height: 51px">
           <div class="swiper-slide it-list" *ngFor="let trip of itineraryList;">
             <img src="assets/home/home-trip.png" alt="" />
-            <div class="not-warp">
+            <div class="not-warp" (click)="goToDetailPage(trip.OrderId,trip.Type)">
               <div class="not-name">{{trip.PassagerName}}</div>
               <div class="wait-trip">您有<span>1张</span>待出行行程</div>
-              <div
-                class="view-now"
-                (click)="goToDetailPage(trip.OrderId,trip.Type)"
-              >
-                立即查看
-              </div>
+              <div class="view-now">立即查看</div>
               <div *ngIf="trip.Type == 'Flight'" class="trips">
                 <div class="starting-city">{{trip?.FromCityName}}</div>
                 <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
@@ -229,7 +224,7 @@
         <div class="left">
           <div class="item-name">{{item.Name}}</div>
           <div class="jf">{{item.Count}}积分</div>
-          <button class="btn1" (click)="onRedeemNow()">立即兑换</button>
+          <button class="btn1" (click)="onRedeemNow(item)">立即兑换</button>
         </div>
         <div class="right">
           <img [lazyLoad]="item.ImageUrl" alt="" />
@@ -242,7 +237,7 @@
         <div class="left">
           <div class="item-sign">签到有奖</div>
           <div class="jd">20积分</div>
-          <button class="btn2">立即签到</button>
+          <button class="btn2" (click)="onSignIn()">立即签到</button>
         </div>
         <div class="right">
           <img src="assets/home/mobile.png" alt="" />

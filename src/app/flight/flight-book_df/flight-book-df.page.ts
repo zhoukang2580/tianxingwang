@@ -1017,7 +1017,7 @@ export class FlightBookDfPage
       }
       await AppHelper.alert(
         `${item.vmCredential && item.vmCredential.Name} 【${
-          item.vmCredential && item.vmCredential.Number
+          item.vmCredential && item.vmCredential.HideNumber
         }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);

@@ -121,19 +121,19 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     PageSize: number;
   }
 
-  sign:{
+  sign: {
+    Amount: number;
     Name: string;
-    Number: string;
-    Tag: string
   };
-  
-  signList:any;
 
-  exchangeList:{
-    Id:string;
-    Name:string;
-    ImageUrl:string;
-    Count:string;
+
+  signList: any;
+
+  exchangeList: {
+    Id: string;
+    Name: string;
+    ImageUrl: string;
+    Count: string;
   };
 
   itineraryList: {
@@ -184,7 +184,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private configService: ConfigService,
     private loginService: LoginService,
-    private langService: LangService
+    private langService: LangService,
+    // private appHelper:AppHelper
   ) {
     this.staff = null;
     route.queryParamMap.subscribe(async (p) => {
@@ -292,17 +293,16 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onRedeemNow() {
-
+  onRedeemNow(item: any) {
+    this.getLogin();
   }
 
 
-  private async getSignIn(){
+  async OnSignIn(){
     try {
       this.sign = {
-          Name:"哈哈",
-          Number:'123',
-          Tag: 'Signdaily'
+        Amount:1,
+        Name:"手机",
       };
        this.signList = await this.tmcService.getSign(this.sign);
     } catch (e) {
@@ -311,6 +311,28 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
 
+  private async getLogin() {
+    try {
+      const url = await this.tmcService.getLogin();
+
+      console.log(url, 'url');
+      AppHelper.jump(this.router, url, null);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  async onSignIn() {
+    try {
+      this.sign = {
+        Amount: 20,
+        Name: "手机",
+      };
+      this.signList = await this.tmcService.getSign(this.sign);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
 
   async onTaskDetail(task) {
@@ -538,12 +560,13 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           if (!(await this.hasTicket())) {
             return;
           }
-          this.loadBanners();
           this.loadHotHotels();
+          this.loadBanners();
           this.loadNotices();
           this.myItinerary();
           this.integral();
-          this.getSignIn();
+          // this.getLogin();
+          // this.getSignIn();
           this.loadReviewedTask();
           this.loadMyItinerary();
         } catch (e) {

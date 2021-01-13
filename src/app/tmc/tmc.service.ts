@@ -201,13 +201,21 @@ export class TmcService {
       return null;
     });
   }
-  async getSign(d:{Name:string,Number:string,Tag:string}) {
+  async getSign(d:{Amount:number,Name:string}) {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Sign";
     req.Data = {
-      Name:d.Name,
-      Number:d.Number,
-      Tag:d.Tag
+      Amount:d.Amount,
+      Name:d.Name
+    };
+    return this.apiService.getPromiseData<any>(req);
+  }
+  
+  async getLogin() {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-Login";
+    req.Data = {
+
     };
     return this.apiService.getPromiseData<any>(req);
   }
