@@ -5,8 +5,9 @@ ion-input {
   // text-align: end;
 }
 ion-label{
-  flex: initial;
-  min-width: 10em;
+  flex: initial;       
+  min-width: 6.6em;
+  padding-left: 16px;
   pointer-events: none;
   font-size: 12px;
 }
