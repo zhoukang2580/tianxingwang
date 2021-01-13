@@ -322,14 +322,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
             url,
             title: task && task.Name,
             tabId: this.activeTab?.value,
-            // isOpenInAppBrowser: AppHelper.isApp(),
             isOpenInAppBrowser: false,
             isIframeOpen: true,
             isHideTitle: false,
             goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
-            // goPathQueryParams: JSON.stringify({
-            //   tab: "已审任务"
-            // })
           },
         })
         .then((_) => {
