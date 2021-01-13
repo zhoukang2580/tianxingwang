@@ -5,9 +5,9 @@
     </ion-buttons>
     <ion-title></ion-title>
   </ion-toolbar>
-  <div class="conter" *ngFor="let flightTicket of orderDetail?.Order?.OrderFlightTickets">
+  <div class="conter">
     <div><img src="assets/images/success.png" alt=""></div>
-    <div class="status">{{flightTicket?.StatusName}}</div>
+    <div class="status">{{selectedOrderFlightTicket?.StatusName}}</div>
   </div>
 </ion-header>
 <ion-content style="z-index: 100;">
@@ -16,7 +16,7 @@
       <div class="tab" (click)='onSelectTicket(t)' [ngClass]='{
         active:t.Id==selectedOrderFlightTicket?.Id,
         hasMore:orderDetail?.Order?.OrderFlightTickets?.length>1}' *ngFor='let t of orderFlightTicketsTabs;let idx=index;'>
-       {{tikectId2OriginalTickets&&tikectId2OriginalTickets[t.Id]?.length>0?"原始航班"+(t?.VariablesJsonObj?.OriginalTicketId):t.Id}}
+        {{tikectId2OriginalTickets&&tikectId2OriginalTickets[t.Id]?.length>0?"原始航班"+(t?.VariablesJsonObj?.OriginalTicketId):t.Id}}
       </div>
     </div>
     <ng-container *ngIf='selectedOrderFlightTicket'>
