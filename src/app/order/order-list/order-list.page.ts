@@ -10,19 +10,13 @@ import {
   TmcService,
   PassengerBookInfo,
 } from "../../tmc/tmc.service";
-import {
-  ActivatedRoute,
-  ActivatedRouteSnapshot,
-  Router,
-  RouterStateSnapshot,
-} from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   ModalController,
   IonInfiniteScroll,
   IonContent,
   IonDatetime,
   PickerController,
-  NavController,
 } from "@ionic/angular";
 import {
   Component,
@@ -59,15 +53,16 @@ import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
   templateUrl: "./order-list.page.html",
   styleUrls: ["./order-list.page.scss"],
 })
-export class OrderListPage
+export class OrderListDfPage
   implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
+  private isGoDetail = false;
+  private isBackHome = false;
   public loadDataSub = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private selectDateChange = new EventEmitter();
   private selectDateSubscription = Subscription.EMPTY;
-  private isBackHome = false;
   productItemType = ProductItemType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
@@ -99,15 +94,14 @@ export class OrderListPage
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
     private langService: LangService,
-    private natCtrl: NavController,
     private staffService: StaffService
   ) {}
   canDeactivate() {
     console.log("canDeactivate isbackhome=", this.isBackHome);
-    if (this.isBackHome) {
+    if (this.isBackHome && !this.isGoDetail) {
       // this.natCtrl.navigateRoot("", { animated: true });
-      this.router.navigate([""]);
       this.isBackHome = false;
+      this.router.navigate([""]);
       return false;
     }
     return true;
@@ -458,6 +452,7 @@ export class OrderListPage
         isRoundTrip: false,
         Date: date.substr(0, 10),
       });
+      this.isGoDetail = true;
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true },
       });
@@ -502,6 +497,7 @@ export class OrderListPage
   }
   goToDetailPage(orderId: string, type: string) {
     // Flight
+    this.isGoDetail = true;
     console.log(type, "dddd");
 
     if (type && type.toLowerCase() == "car") {
@@ -703,6 +699,7 @@ export class OrderListPage
     return url;
   }
   async onTaskDetail(task: TaskEntity) {
+    this.isGoDetail = true;
     const url = await this.getTaskHandleUrl(task);
     if (url) {
       this.router
@@ -856,6 +853,7 @@ export class OrderListPage
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
         this.isBackHome = d.get("isBackHome") == "true";
+        this.isGoDetail = false;
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );

@@ -50,42 +50,43 @@
                     <div class="flight-info">
                         <ng-container [ngTemplateOutlet]='fsgm' [ngTemplateOutletContext]='{obj:{s:combindInfo.modal?.bookInfo?.flightSegment,combindInfo:combindInfo}}'></ng-container>
                     </div>
-                    <ng-container *ngIf='combindInfo?.insuranceProducts?.length'></ng-container>
-                    <div class="insurances" *ngIf='combindInfo.isShowDetail'>
-                        <ion-radio-group mode="md" allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId'
-                            (ionChange)='calcTotalPrice()'>
-                            <div *ngFor='let insurance of combindInfo?.insuranceProducts' class='ins'>
-                                <div class="ins-item">
-                                    <ion-item>
-                                        <ion-radio mode="md" [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
-                                        <ion-label class="name">
-                                            {{insurance.insuranceResult?.Name}} <span class="price"><small>￥</small> {{insurance.insuranceResult?.Price}}/人</span>
-                                        </ion-label>
-                                    </ion-item>
-                                    <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
-                                        详情
-                                        <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
-                                        </ion-icon>
-                                        <ion-icon name="caret-down-outline" *ngIf='!insurance.showDetail'>
-                                        </ion-icon>
-                                    </ion-label>
-                                </div>
-                                <div [@flyInOut] *ngIf='insurance.showDetail' class="ins-detail" (click)='insurance.showDetail=!insurance.showDetail'>
-                                    <ion-row>
-                                        <ion-col>
-                                            <ion-label color='medium' class='small-font ion-text-wrap'>
-                                                <div style="user-select: text;" [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
+                    <ng-container *ngIf='combindInfo?.insuranceProducts?.length'>
+                        <div class="insurances" >
+                            <ion-radio-group mode="md" allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId'
+                                (ionChange)='calcTotalPrice()'>
+                                <div *ngFor='let insurance of combindInfo?.insuranceProducts' class='ins'>
+                                    <div class="ins-item">
+                                        <ion-item>
+                                            <ion-radio mode="md" [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
+                                            <ion-label class="name">
+                                                {{insurance.insuranceResult?.Name}} <span class="price"><small>￥</small> {{insurance.insuranceResult?.Price}}/人</span>
                                             </ion-label>
-                                        </ion-col>
-                                    </ion-row>
-                                    <ion-row class="show-more" *ngIf='insurance.insuranceResult?.DetailUrl' detail button (click)='onShowProductDetail(insurance.insuranceResult,$event)'>
-                                        <ion-label color='secondary'>显示更多</ion-label>
-                                        <ion-icon name="chevron-forward-outline"></ion-icon>
-                                    </ion-row>
+                                        </ion-item>
+                                        <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
+                                            详情
+                                            <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
+                                            </ion-icon>
+                                            <ion-icon name="caret-down-outline" *ngIf='!insurance.showDetail'>
+                                            </ion-icon>
+                                        </ion-label>
+                                    </div>
+                                    <div [@flyInOut] *ngIf='insurance.showDetail' class="ins-detail" (click)='insurance.showDetail=!insurance.showDetail'>
+                                        <ion-row>
+                                            <ion-col>
+                                                <ion-label color='medium' class='small-font ion-text-wrap'>
+                                                    <div style="user-select: text;" [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
+                                                </ion-label>
+                                            </ion-col>
+                                        </ion-row>
+                                        <ion-row class="show-more" *ngIf='insurance.insuranceResult?.DetailUrl' detail button (click)='onShowProductDetail(insurance.insuranceResult,$event)'>
+                                            <ion-label color='secondary'>显示更多</ion-label>
+                                            <ion-icon name="chevron-forward-outline"></ion-icon>
+                                        </ion-row>
+                                    </div>
                                 </div>
-                            </div>
-                        </ion-radio-group>
-                    </div>
+                            </ion-radio-group>
+                        </div>
+                    </ng-container>
                     <div style='width: 100%;padding: 0 1em;' *ngIf='combindInfo?.modal?.bookInfo as s'>
                         <p *ngIf='s.flightSegment.Carrier=="9C"' style="font-size: 14px;color:darkblue">
                             温馨提醒： 无论何种原因航班延误或取消，春秋航空不提供任何补偿。

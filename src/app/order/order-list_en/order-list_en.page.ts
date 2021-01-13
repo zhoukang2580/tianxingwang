@@ -47,15 +47,19 @@ import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { SearchTicketModalEnComponent } from "../components/search-ticket-modal_en/search-ticket-modal_en.component";
 @Component({
   selector: "app-order-list_en",
   templateUrl: "./order-list_en.page.html",
   styleUrls: ["./order-list_en.page.scss"],
 })
-export class OrderListEnPage implements OnInit, OnDestroy {
+export class OrderListDfPage
+  implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
+  private isGoDetail = false;
+  private isBackHome = false;
   public loadDataSub = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private selectDateChange = new EventEmitter();
@@ -67,7 +71,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
   orderModel: OrderModel;
   dataCount: number;
   isLoading = true;
-  titles = "";
+  title = "机票订单";
   tasks: TaskEntity[];
   curTaskPageIndex = 0;
   isShowMyTrips = false;
@@ -93,7 +97,16 @@ export class OrderListEnPage implements OnInit, OnDestroy {
     private langService: LangService,
     private staffService: StaffService
   ) {}
-
+  canDeactivate() {
+    console.log("canDeactivate isbackhome=", this.isBackHome);
+    if (this.isBackHome && !this.isGoDetail) {
+      // this.natCtrl.navigateRoot("", { animated: true });
+      this.isBackHome = false;
+      this.router.navigate([""]);
+      return false;
+    }
+    return true;
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -157,9 +170,9 @@ export class OrderListEnPage implements OnInit, OnDestroy {
     this.activeTab = tab;
     this.dataCount = 0;
     this.myTripsTotalCount = 0;
-    this.titles = tab.label + " Orders";
+    this.title = tab.label + " Orders";
     if (this.activeTab.value == ProductItemType.waitingApprovalTask) {
-      this.titles = tab.label;
+      this.title = tab.label;
     }
     this.doRefresh();
   }
@@ -173,7 +186,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
     await this.orderService
       .refundFlightTicket(data)
       .then(() => {
-        AppHelper.alert("Refund application in progress");
+        AppHelper.toast("退票申请中", 2000, "middle");
         this.doRefresh();
         this.doRefreshTasks();
       })
@@ -261,9 +274,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
   async openSearchModal() {
     const condition = new SearchTicketConditionModel();
     const m = await this.modalCtrl.create({
-      component: this.langService.isCn
-        ? SearchTicketModalComponent
-        : SearchTicketModalEnComponent,
+      component: SearchTicketModalEnComponent,
       componentProps: {
         type: this.activeTab,
         condition: {
@@ -442,6 +453,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
         isRoundTrip: false,
         Date: date.substr(0, 10),
       });
+      this.isGoDetail = true;
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true },
       });
@@ -462,7 +474,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
           TicketId: data.ticketId,
         })
         .then(() => {
-          AppHelper.alert("Order cancellation application");
+          AppHelper.toast("订单取消申请中", 2000, "middle");
           this.doRefresh();
         })
         .catch((e) => {
@@ -476,7 +488,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
           TicketId: data.ticketId,
         })
         .then(() => {
-          AppHelper.alert("Order cancellation application");
+          AppHelper.toast("订单取消申请中", 2000, "middle");
           this.doRefresh();
         })
         .catch((e) => {
@@ -486,6 +498,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
   }
   goToDetailPage(orderId: string, type: string) {
     // Flight
+    this.isGoDetail = true;
     console.log(type, "dddd");
 
     if (type && type.toLowerCase() == "car") {
@@ -687,13 +700,14 @@ export class OrderListEnPage implements OnInit, OnDestroy {
     return url;
   }
   async onTaskDetail(task: TaskEntity) {
+    this.isGoDetail = true;
     const url = await this.getTaskHandleUrl(task);
     if (url) {
       this.router
         .navigate(["open-url"], {
           queryParams: {
             url,
-            titles: task && task.Name,
+            title: task && task.Name,
             tabId: this.activeTab.value,
             isOpenInAppBrowser: AppHelper.isApp(),
           },
@@ -839,6 +853,8 @@ export class OrderListEnPage implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
+        this.isBackHome = d.get("isBackHome") == "true";
+        this.isGoDetail = false;
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );
@@ -849,7 +865,7 @@ export class OrderListEnPage implements OnInit, OnDestroy {
         this.activeTab = this.isOpenUrl
           ? this.activeTab
           : this.activeTab || tab;
-        this.titles = tab.labelEn + " Orders";
+        this.title = tab.label;
         // console.log("order-list", this.activeTab);
         this.isOpenUrl = false;
         if (d && d.get("doRefresh") == "true") {
@@ -868,8 +884,9 @@ export class OrderListEnPage implements OnInit, OnDestroy {
           const it = { ...t };
           if (this.langService.isEn) {
             it.label = t.labelEn;
+          } else {
+            it["isActive"] = t.value == this.activeTab.value;
           }
-          it["isActive"] = t.value == this.activeTab.value;
           return it;
         });
       this.tmc = await this.tmcService.getTmc();
