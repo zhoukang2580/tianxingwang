@@ -51,7 +51,7 @@
                         <ng-container [ngTemplateOutlet]='fsgm' [ngTemplateOutletContext]='{obj:{s:combindInfo.modal?.bookInfo?.flightSegment,combindInfo:combindInfo}}'></ng-container>
                     </div>
                     <ng-container *ngIf='combindInfo?.insuranceProducts?.length'>
-                        <div class="insurances" >
+                        <div class="insurances">
                             <ion-radio-group mode="md" allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId'
                                 (ionChange)='calcTotalPrice()'>
                                 <div *ngFor='let insurance of combindInfo?.insuranceProducts' class='ins'>
@@ -114,10 +114,10 @@
                         </div>
                     </div>
                     <div class="info">
-                        <div class="row ">
+                        <div class="row" [attr.mobileid]='combindInfo.id'>
                             <div class="label">联系方式</div>
                             <div class="value">
-                                <div class="mobiles" [class.ismulti]='combindInfo?.credentialStaffMobiles?.length>1' [attr.mobileid]='combindInfo.id'>
+                                <div class="mobiles" [class.ismulti]='combindInfo?.credentialStaffMobiles?.length>1'>
                                     <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'>
                                         <ion-checkbox color="secondary" [(ngModel)]="mobile.checked"></ion-checkbox>
                                         <ion-label style='margin-left: 0.5em'>{{mobile.mobile}}</ion-label>
@@ -125,10 +125,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row ">
+                        <div class="row" [attr.emailid]='combindInfo.id'>
                             <div class="label">联系邮箱</div>
                             <div class="value">
-                                <div class="emails" [class.ismulti]='combindInfo?.credentialStaffMobiles?.length>1' [attr.emailid]='combindInfo.id'>
+                                <div class="emails" [class.ismulti]='combindInfo?.credentialStaffMobiles?.length>1'>
                                     <ion-item *ngFor='let email of combindInfo?.credentialStaffEmails'>
                                         <ion-checkbox color="secondary" [(ngModel)]="email.checked"></ion-checkbox>
                                         <ion-label style='margin-left: 0.5em'>{{email.email}}</ion-label>
@@ -136,6 +136,24 @@
                                 </div>
                             </div>
                         </div>
+                        <ng-container *ngIf='combindInfo.isShowCredentialDetail'>
+                            <div class="row" [attr.othermobileid]='combindInfo.id'>
+                                <div class="label">
+                                    其他号码
+                                </div>
+                                <div class="value">
+                                    <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='请输入其他号码'></ion-input>
+                                </div>
+                            </div>
+                            <div class="row" [attr.otheremialid]='combindInfo.id'>
+                                <div class="label">
+                                    其他邮箱
+                                </div>
+                                <div class="value">
+                                    <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
+                                </div>
+                            </div>
+                        </ng-container>
                         <div class="row" (click)='searchCostCenter(combindInfo)'>
                             <span class="label">部门</span>
                             <div class="value">
@@ -149,24 +167,6 @@
                                 {{combindInfo?.organization?.Name}}
                             </div>
                             <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
-                        </div>
-                        <div class="showmore" *ngIf='combindInfo.isShowCredentialDetail'>
-                            <div class="row ">
-                                <div class="label">
-                                    其他号码
-                                </div>
-                                <div class="value">
-                                    <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='请输入其他号码'></ion-input>
-                                </div>
-                            </div>
-                            <div class="row ">
-                                <div class="label">
-                                    其他邮箱
-                                </div>
-                                <div class="value">
-                                    <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>

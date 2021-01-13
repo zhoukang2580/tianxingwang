@@ -25,6 +25,7 @@ export class MemberCredential {
   variables: any;
   CredentialsRemark: any;
   Id: string; //
+  TypeName: string; //
   AccountId: string; //
   Account: AccountEntity;
   /// <summary>

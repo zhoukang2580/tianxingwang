@@ -53,7 +53,7 @@ import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
   templateUrl: "./order-list.page.html",
   styleUrls: ["./order-list.page.scss"],
 })
-export class OrderListDfPage
+export class OrderListPage
   implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;

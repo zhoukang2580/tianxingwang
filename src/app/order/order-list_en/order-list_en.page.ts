@@ -54,7 +54,7 @@ import { SearchTicketModalEnComponent } from "../components/search-ticket-modal_
   templateUrl: "./order-list_en.page.html",
   styleUrls: ["./order-list_en.page.scss"],
 })
-export class OrderListDfPage
+export class OrderListEnPage
   implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;

@@ -43,7 +43,7 @@ import { StaffEntity } from "src/app/hr/staff.service";
 import { Observable, Subscription, fromEvent } from "rxjs";
 import { tap, finalize } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
-import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { CredentialPipe, CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
@@ -609,6 +609,11 @@ export class SelectPassengerPage
       this.vmNewCredential &&
       selectedCredential.Id == this.vmNewCredential.Id
     ) {
+      if (!selectedCredential.TypeName) {
+        selectedCredential.TypeName = new CredentialPipe().transform(
+          selectedCredential.Type
+        );
+      }
       selectedCredential = {
         ...selectedCredential,
         showCountry: {
@@ -632,12 +637,16 @@ export class SelectPassengerPage
       );
       return;
     }
+    const isNotWhitelist =
+      this.selectedPassenger.isNotWhiteList || !this.selectedPassenger.Policy;
+    if (isNotWhitelist) {
+      selectedCredential.HideNumber = selectedCredential.Number;
+    }
     const passengerBookInfo: PassengerBookInfo<any> = {
       credential: ({
         ...selectedCredential,
       } as any) as CredentialsEntity,
-      isNotWhitelist:
-        this.selectedPassenger.isNotWhiteList || !this.selectedPassenger.Policy,
+      isNotWhitelist,
       passenger: {
         ...this.selectedPassenger,
         Name: this.selectedPassenger.Name,

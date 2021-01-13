@@ -1161,7 +1161,8 @@ export class FlightBookDfPage
         }
       }
       if (!p.Mobile) {
-        const ele: HTMLElement = this.getEleByAttr("mobileid", combindInfo.id);
+        const ele: HTMLElement = this.getEleByAttr("othermobileid", combindInfo.id);
+        combindInfo.isShowCredentialDetail=true;
         showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
         return false;
       }
