@@ -41,20 +41,24 @@ import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ORDER_TABS } from "../product-list/product-list.page";
-import { StaffEntity } from "src/app/hr/staff.service";
+import { StaffEntity, StaffService } from "src/app/hr/staff.service";
 import { FlightService } from "src/app/flight/flight.service";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 @Component({
   selector: "app-order-list_df",
   templateUrl: "./order-list_df.page.html",
   styleUrls: ["./order-list_df.page.scss"],
 })
-export class OrderListDfPage implements OnInit, OnDestroy {
+export class OrderListDfPage
+  implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
+  private isGoDetail = false;
+  private isBackHome = false;
   public loadDataSub = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private selectDateChange = new EventEmitter();
@@ -89,9 +93,19 @@ export class OrderListDfPage implements OnInit, OnDestroy {
     private flightService: FlightService,
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
-    private LangService: LangService
+    private langService: LangService,
+    private staffService: StaffService
   ) {}
-
+  canDeactivate() {
+    console.log("canDeactivate isbackhome=", this.isBackHome);
+    if (this.isBackHome && !this.isGoDetail) {
+      // this.natCtrl.navigateRoot("", { animated: true });
+      this.isBackHome = false;
+      this.router.navigate([""]);
+      return false;
+    }
+    return true;
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -350,14 +364,14 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         new Date().getFullYear() + 1,
       ];
       if (!data) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       const date = await this.getExchangeDate(data.trip.TakeoffDate);
       if (!date) {
         AppHelper.alert("请选择改签日期");
       }
-      console.log("改签日期", date);
+      // console.log("改签日期", date);
       const res = await this.orderService.getExchangeFlightTrip({
         OrderId: data.orderId,
         TicketId: data.ticketId,
@@ -368,44 +382,56 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         !res.trip ||
         !res.order ||
         !res.order.OrderPassengers ||
-        !res.order.OrderPassengers[0]
+        !res.order.OrderPassengers.length
       ) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
+      const orderPassenger = res.order.OrderPassengers[0];
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
-      let passenger: StaffEntity = {
-        Account: {
-          Id: res.order.OrderPassengers[0].Id,
-        },
-        AccountId: res.order.OrderPassengers[0].Id,
-        Name: res.order.OrderPassengers[0].Name,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-        // isNotWhiteList: !res.staff,
-      } as StaffEntity;
+      await this.flightService.initSelfBookTypeBookInfos();
+      const isSelf = await this.staffService.isSelfBookType();
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      if (!bookInfos.length) {
+        if (isSelf) {
+          await AppHelper.alert("改签失败，请联系客服人员");
+          return;
+        } else {
+          bookInfos.push({
+            passenger: {
+              Name: orderPassenger.Name,
+              Mobile: orderPassenger.Mobile,
+              Email: orderPassenger.Email,
+              isNotWhiteList: !isSelf,
+            } as StaffEntity,
+            credential: {
+              Number: orderPassenger.CredentialsNumber,
+              Type: orderPassenger.CredentialsType,
+              TypeName: orderPassenger.CredentialsTypeName,
+              Name: orderPassenger.Name,
+            } as CredentialsEntity,
+            id: AppHelper.uuid(),
+          });
+        }
+      }
+      let passenger: StaffEntity = bookInfos[0].passenger;
       if (res.staff) {
         passenger = {
           ...passenger,
           ...res.staff,
         };
       }
-      const credential: CredentialsEntity = {
-        Name: res.order.OrderPassengers[0].Name,
-        Type: res.order.OrderPassengers[0].CredentialsType,
-        TypeName: res.order.OrderPassengers[0].PassengerTypeName,
-        Number: res.order.OrderPassengers[0].CredentialsNumber,
-      } as CredentialsEntity;
+      let credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
         credential,
         isFilterPolicy: false,
-        // isNotWhitelist: !res.staff,
+        isNotWhitelist: !isSelf,
       };
       this.flightService.addPassengerBookInfo(info);
-      const bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
-        AppHelper.alert("改签失败，请重试");
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       bookInfos[0].exchangeInfo = {
@@ -426,6 +452,7 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         isRoundTrip: false,
         Date: date.substr(0, 10),
       });
+      this.isGoDetail = true;
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true },
       });
@@ -470,6 +497,7 @@ export class OrderListDfPage implements OnInit, OnDestroy {
   }
   goToDetailPage(orderId: string, type: string) {
     // Flight
+    this.isGoDetail = true;
     console.log(type, "dddd");
 
     if (type && type.toLowerCase() == "car") {
@@ -671,6 +699,7 @@ export class OrderListDfPage implements OnInit, OnDestroy {
     return url;
   }
   async onTaskDetail(task: TaskEntity) {
+    this.isGoDetail = true;
     const url = await this.getTaskHandleUrl(task);
     if (url) {
       this.router
@@ -823,6 +852,8 @@ export class OrderListDfPage implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
+        this.isBackHome = d.get("isBackHome") == "true";
+        this.isGoDetail = false;
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );
@@ -850,7 +881,7 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         .filter((t) => t.value != ProductItemType.more && t.isDisplay)
         .map((t) => {
           const it = { ...t };
-          if (this.LangService.isEn) {
+          if (this.langService.isEn) {
             it.label = t.labelEn;
           } else {
             it["isActive"] = t.value == this.activeTab.value;
