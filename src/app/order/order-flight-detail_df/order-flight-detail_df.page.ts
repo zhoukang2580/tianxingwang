@@ -229,8 +229,23 @@ export class OrderFlightDetailDfPage
         .join(",")
     );
   }
-  onSelectTicket(t: OrderFlightTicketEntity) {
+  onSelectTicket(
+    t: OrderFlightTicketEntity,
+    container?: HTMLElement,
+    tabEl?: HTMLElement
+  ) {
     this.selectedOrderFlightTicket = t;
+    if (container) {
+      try {
+        if (tabEl) {
+          const rect = tabEl.getBoundingClientRect();
+          const left = rect.left + rect.width / 2 - this.plt.width() / 2;
+          container.scrollBy({ left, behavior: "smooth" });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
   private getOrderInsurances(ticket: OrderFlightTicketEntity) {
     const passengerId = ticket && ticket.Passenger && ticket.Passenger.Id;
@@ -455,11 +470,11 @@ export class OrderFlightDetailDfPage
   isShowDetail(t: OrderFlightTicketEntity, event: CustomEvent) {
     t["isShowExplain"] = !t["isShowExplain"];
     if (t["isShowExplain"]) {
-      const height = this.plt.height();
-      setTimeout(() => {
-        const rect = (event.target as HTMLElement).getBoundingClientRect();
-        this.ionContent.scrollToBottom(100);
-      }, 200);
+      // const height = this.plt.height();
+      // setTimeout(() => {
+      //   const rect = (event.target as HTMLElement).getBoundingClientRect();
+      //   this.ionContent.scrollToBottom(100);
+      // }, 200);
     }
   }
   async ngOnInit() {

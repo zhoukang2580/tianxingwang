@@ -12,8 +12,8 @@
 </ion-header>
 <ion-content style="z-index: 100;">
   <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
-    <div class="tabs" *ngIf='orderFlightTicketsTabs?.length'>
-      <div class="tab" (click)='onSelectTicket(t)' [ngClass]='{
+    <div class="tabs" *ngIf='orderFlightTicketsTabs?.length' #tabsEl>
+      <div class="tab" #tabEl (click)='onSelectTicket(t,tabsEl,tabEl)' [ngClass]='{
         active:t.Id==selectedOrderFlightTicket?.Id,
         hasMore:orderDetail?.Order?.OrderFlightTickets?.length>1}' *ngFor='let t of orderFlightTicketsTabs;let idx=index;'>
         {{tikectId2OriginalTickets&&tikectId2OriginalTickets[t.Id]?.length>0?"原始航班"+(t?.VariablesJsonObj?.OriginalTicketId):t.Id}}
