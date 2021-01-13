@@ -346,7 +346,8 @@ ion-header ion-title {
       .item-name{
         display: flex;
         align-items: center;
-        font-size: 16px;
+        max-width: 6em;
+        font-size: 14px;
         color: #934aca;
       }
       .item-sign{
