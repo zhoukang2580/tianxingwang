@@ -25,11 +25,18 @@
   }
 }
 .tabs {
-  margin: 0.5em 1em 0 1em;
   display: flex;
   align-items: center;
   font-size: 15px;
   font-family: PingFang SC;
+  padding: 0.5em 1em 0 1em;
+  background: var(--ion-color-light);
+  white-space: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   .tab {
     &.hasMore {
       max-width: 232px;
@@ -46,8 +53,7 @@
     padding: 0.5em 1em;
     &.active {
       padding: 0.7em 1em;
-      width: 232px;
-      flex-basis: 232px;
+      min-width: 232px;
       font-weight: bold;
       background-color: #5099fe;
       color: var(--ion-color-light);

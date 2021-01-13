@@ -5,26 +5,18 @@
     </ion-buttons>
     <ion-title></ion-title>
   </ion-toolbar>
-  <div
-    class="conter"
-    *ngFor="let flightTicket of orderDetail?.Order?.OrderFlightTickets"
-  >
-    <div><img src="assets/images/success.png" alt="" /></div>
-    <div class="status">{{flightTicket?.StatusName}}</div>
+  <div class="conter">
+    <div><img src="assets/images/success.png" alt=""></div>
+    <div class="status">{{selectedOrderFlightTicket?.StatusName}}</div>
   </div>
 </ion-header>
-<ion-content style="z-index: 100">
-  <ng-container *ngIf="orderDetail&&orderDetail.Order else nomoredata">
-    <div class="tabs" *ngIf="orderDetail?.Order?.OrderFlightTickets?.length">
-      <div
-        class="tab"
-        (click)="onSelectTicket(t)"
-        [ngClass]="{
+<ion-content style="z-index: 100;">
+  <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
+    <div class="tabs" *ngIf='orderFlightTicketsTabs?.length' #tabsEl>
+      <div class="tab" #tabEl (click)='onSelectTicket(t,tabsEl,tabEl)' [ngClass]='{
         active:t.Id==selectedOrderFlightTicket?.Id,
-        hasMore:orderDetail?.Order?.OrderFlightTickets?.length>1}"
-        *ngFor="let t of orderDetail?.Order?.OrderFlightTickets;let idx=index;"
-      >
-        {{t.Id}}
+        hasMore:orderFlightTicketsTabs.length>1}' *ngFor='let t of orderFlightTicketsTabs;let idx=index;'>
+        {{t?.VariablesJsonObj?.OriginalTicketId?"原始航班"+(t.Id):t.Id}}
       </div>
     </div>
     <ng-container *ngIf="selectedOrderFlightTicket">
@@ -180,10 +172,7 @@
               </ion-row>
             </div>
           </ng-container>
-          <ion-row
-            style="padding-left: 0em"
-            *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[selectedOrderFlightTicket.Id]?.length>0"
-          >
+          <!-- <ion-row style="padding-left:0em;" *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[selectedOrderFlightTicket.Id]?.length>0">
             <ion-col class="ion-text-justify" color="secondary">
               <ion-button
                 expand="full"
@@ -203,7 +192,7 @@
                 </ion-icon>
               </ion-button>
             </ion-col>
-          </ion-row>
+          </ion-row> -->
         </div>
         <!-- 旅客信息 -->
         <ng-container
@@ -285,10 +274,7 @@
           </ion-row>
         </ng-container>
 
-        <div
-          class="getHeight ion-padding-bottom"
-          *ngFor="let ticket of tikectId2OriginalTickets[selectedOrderFlightTicket.Id]"
-        >
+        <!-- <div class="getHeight ion-padding-bottom" *ngFor="let ticket of tikectId2OriginalTickets[selectedOrderFlightTicket.Id]">
           <ng-container *ngIf="ticket.isShowOriginalTicket" @flyInOut>
             <ion-row>
               <ion-col size="2.5"> 机票状态 </ion-col>
@@ -407,11 +393,7 @@
                 </p>
               </ion-col>
             </ion-row>
-
-            <ion-row
-              style="padding-left: 0em"
-              *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[ticket.Id]?.length>0"
-            >
+            <ion-row style="padding-left:0em;" *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[ticket.Id]?.length>0">
               <ion-col class="ion-text-justify" color="secondary">
                 <ion-button
                   expand="full"
@@ -433,7 +415,7 @@
               </ion-col>
             </ion-row>
           </ng-container>
-        </div>
+        </div> -->
         <div>
           <div class="ion-item-divider">订单信息</div>
           <div>
