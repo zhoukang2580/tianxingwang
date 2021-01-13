@@ -12,11 +12,11 @@
 </ion-header>
 <ion-content style="z-index: 100;">
   <ng-container *ngIf='orderDetail&&orderDetail.Order else nomoredata'>
-    <div class="tabs" *ngIf='orderDetail?.Order?.OrderFlightTickets?.length'>
+    <div class="tabs" *ngIf='orderFlightTicketsTabs?.length'>
       <div class="tab" (click)='onSelectTicket(t)' [ngClass]='{
         active:t.Id==selectedOrderFlightTicket?.Id,
-        hasMore:orderDetail?.Order?.OrderFlightTickets?.length>1}' *ngFor='let t of orderDetail?.Order?.OrderFlightTickets;let idx=index;'>
-        {{t.Id}}
+        hasMore:orderDetail?.Order?.OrderFlightTickets?.length>1}' *ngFor='let t of orderFlightTicketsTabs;let idx=index;'>
+       {{tikectId2OriginalTickets&&tikectId2OriginalTickets[t.Id]?.length>0?"原始航班"+(t?.VariablesJsonObj?.OriginalTicketId):t.Id}}
       </div>
     </div>
     <ng-container *ngIf='selectedOrderFlightTicket'>
@@ -148,7 +148,7 @@
               </ion-row>
             </div>
           </ng-container>
-          <ion-row style="padding-left:0em;" *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[selectedOrderFlightTicket.Id]?.length>0">
+          <!-- <ion-row style="padding-left:0em;" *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[selectedOrderFlightTicket.Id]?.length>0">
             <ion-col class="ion-text-justify" color="secondary">
               <ion-button expand='full' color="secondary" (click)="onShowFlightTicket(selectedOrderFlightTicket,selectedOrderFlightTicket?.VariablesJsonObj?.OriginalTicketId,$event)">
                 原始航班信息{{selectedOrderFlightTicket?.VariablesJsonObj?.OriginalTicketId}}
@@ -158,7 +158,7 @@
                 </ion-icon>
               </ion-button>
             </ion-col>
-          </ion-row>
+          </ion-row> -->
         </div>
         <!-- 旅客信息 -->
         <ng-container *ngIf='getTicketPassenger(selectedOrderFlightTicket) as p'>
@@ -228,7 +228,7 @@
           </ion-row>
         </ng-container>
 
-        <div class="getHeight ion-padding-bottom" *ngFor="let ticket of tikectId2OriginalTickets[selectedOrderFlightTicket.Id]">
+        <!-- <div class="getHeight ion-padding-bottom" *ngFor="let ticket of tikectId2OriginalTickets[selectedOrderFlightTicket.Id]">
           <ng-container *ngIf="ticket.isShowOriginalTicket" @flyInOut>
             <ion-row>
               <ion-col size='2.5'>
@@ -335,7 +335,6 @@
                   {{ticket.Explain?.split("\\n").join("")}}</p>
               </ion-col>
             </ion-row>
-
             <ion-row style="padding-left:0em;" *ngIf="tikectId2OriginalTickets&&tikectId2OriginalTickets[ticket.Id]?.length>0">
               <ion-col class="ion-text-justify" color="secondary">
                 <ion-button expand='full' color="secondary" (click)="onShowFlightTicket(ticket,ticket.VariablesJsonObj.OriginalTicketId,$event)">
@@ -348,7 +347,7 @@
               </ion-col>
             </ion-row>
           </ng-container>
-        </div>
+        </div> -->
         <div>
           <div class="ion-item-divider">
             订单信息

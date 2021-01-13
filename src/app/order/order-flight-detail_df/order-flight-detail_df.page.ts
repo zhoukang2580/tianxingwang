@@ -59,11 +59,6 @@ import { OrderItemPricePopoverEnComponent } from "../components/order-item-price
 import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
 import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
 
-export interface TabItem {
-  label: string;
-  value: number;
-}
-
 @Component({
   selector: "app-order-flight-detail_df",
   templateUrl: "./order-flight-detail_df.page.html",
@@ -78,7 +73,6 @@ export class OrderFlightDetailDfPage
   TaskStatusType = TaskStatusType;
   ProductItemType = ProductItemType;
   items: { label: string; value: string }[] = [];
-  tabs: TabItem[] = [];
   orderDetail: OrderDetailModel;
   lowestPriceSegments: FlightSegmentEntity[];
   isLoading = false;
@@ -102,6 +96,7 @@ export class OrderFlightDetailDfPage
   tikectId2OriginalTickets: {
     [ticketId: string]: OrderFlightTicketEntity[];
   } = {};
+  orderFlightTicketsTabs: OrderFlightTicketEntity[];
   OrderFlightTicketStatusType = OrderFlightTicketStatusType;
   constructor(
     private plt: Platform,
@@ -406,20 +401,23 @@ export class OrderFlightDetailDfPage
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   private initTabs() {
-    this.tabs = [];
-    this.tabs.push({ label: "订单信息", value: 0 });
+    this.orderFlightTicketsTabs = [];
     if (
       this.orderDetail &&
       this.orderDetail.Order &&
-      this.orderDetail.Order.OrderFlightTickets
+      this.orderDetail.Order.OrderFlightTickets &&
+      this.tikectId2OriginalTickets
     ) {
+      const hasOrgArr = this.orderDetail.Order.OrderFlightTickets.filter(
+        (it) => !!this.tikectId2OriginalTickets[it.Id].length
+      );
+      const noOrgArr = this.orderDetail.Order.OrderFlightTickets.filter(
+        (it) => !this.tikectId2OriginalTickets[it.Id].length
+      );
+      this.orderDetail.Order.OrderFlightTickets = noOrgArr.concat(hasOrgArr);
       this.orderDetail.Order.OrderFlightTickets.forEach((it, idx) => {
         if (it.VariablesJsonObj.isShow) {
-          this.tabs.push({
-            label:
-              typeof it.Id === "string" ? it.VariablesJsonObj.selfId : it.Id,
-            value: idx + 1,
-          });
+          this.orderFlightTicketsTabs.push(it);
         }
         if (it.Variables && !it.VariablesJsonObj) {
           it.VariablesJsonObj =
@@ -469,7 +467,6 @@ export class OrderFlightDetailDfPage
     //   this.title =  "机票订单";
     // });
     this.route.queryParamMap.subscribe((q) => {
-      this.initTabs();
       if (q.get("orderId")) {
         this.getOrderInfo(q.get("orderId"));
       }
@@ -542,29 +539,6 @@ export class OrderFlightDetailDfPage
     ) {
       return;
     }
-    // this.orderDetail.Order.OrderFlightTickets = this.orderService.checkIfOrderFlightTicketShow(
-    //   this.orderDetail.Order.OrderFlightTickets
-    // );
-    // let ob = this.orderDetail.Order.OrderFlightTickets.filter(f => f.VariablesJsonObj.isShow && (f.VariablesJsonObj.IsCustomApplyRefund || f.VariablesJsonObj.IsCustomApplyExchange)).map(m => {
-    //   const res = {
-    //     ...m,
-    //     VariablesJsonObj: {
-    //       ...m.VariablesJsonObj,
-    //       OriginalTicketId: m.Id,
-    //       selfId: m.Id,
-    //     },
-    //     Id: AppHelper.uuid()
-    //   } as OrderFlightTicketEntity;
-    //   res.StatusName= m.VariablesJsonObj.IsCustomApplyRefund ? "退票申请中" :m.VariablesJsonObj.IsCustomApplyExchange? "改签申请中":m.StatusName
-    //   const one = this.orderDetail.Order.OrderFlightTickets.find(it => it.Id == res.VariablesJsonObj.selfId);
-    //   if (one) {
-    //     one.VariablesJsonObj.isShow = false;
-    //     // res.Id=one.Id
-    //   }
-    //   return res;
-    // })
-    // this.orderDetail.Order.OrderFlightTickets = [...this.orderDetail.Order.OrderFlightTickets, ...ob]
-
     this.orderDetail.Order.OrderFlightTickets.forEach((t) => {
       if (!this.tikectId2OriginalTickets[t.Id]) {
         const res: OrderFlightTicketEntity[] = [];
@@ -696,7 +670,11 @@ export class OrderFlightDetailDfPage
           return h;
         });
       }
-      if(this.orderDetail&&this.orderDetail.Order&&this.orderDetail.Order.OrderFlightTickets){
+      if (
+        this.orderDetail &&
+        this.orderDetail.Order &&
+        this.orderDetail.Order.OrderFlightTickets
+      ) {
         this.onSelectTicket(this.orderDetail.Order.OrderFlightTickets[0]);
       }
       console.log("orderDetail ", this.orderDetail);
