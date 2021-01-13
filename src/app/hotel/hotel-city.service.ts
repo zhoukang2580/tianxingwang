@@ -445,14 +445,20 @@ function CityPage(domesticCities, interCities, lang = "cn") {
         }
         const items = wrapper.querySelectorAll(".b-item");
         const list = wrapper.querySelector(".list");
-        let histories = that.histories;
+        let histories: any[] = that.histories;
         if (!histories || !histories.length) {
           histories = [c];
           that.histories = histories;
         }
         if (histories.length >= 12) {
-          histories.unshift(c);
-          histories.pop();
+          const hc = histories.find((it) => it.Code == c.Code);
+          if (!hc) {
+            histories.unshift(c);
+            histories.pop();
+          } else {
+            histories.splice(histories.indexOf(hc), 1);
+            histories.unshift(c);
+          }
         } else if (!histories.find((it) => it.Code == c.Code)) {
           histories.unshift(c);
         }

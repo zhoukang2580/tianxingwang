@@ -328,3 +328,6 @@ ion-modal.offset-top-40 {
     border-top-right-radius: 0.5rem;
   }
 }
+iframe[width='0'][height='0']{
+  display: none;
+}
