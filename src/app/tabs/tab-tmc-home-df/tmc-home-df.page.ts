@@ -70,8 +70,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild("taskEle", { static: true }) taskEle: ElementRef<HTMLElement>;
   @ViewChild("tripEle", { static: true }) tripEle: ElementRef<HTMLElement>;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
-  private swiper: any;
-  private hotels: any;
+  private bannersSwiper: any;
+  private hotelsSwiper: any;
   private announcementElSwiper: any;
   private taskEleSwiper: any;
   private tripEleSwiper: any;
@@ -119,13 +119,12 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   integralRegion: {
     Tag: string;
     PageSize: number;
-  }
+  };
 
   sign: {
     Amount: number;
     Name: string;
   };
-
 
   signList: any;
 
@@ -150,8 +149,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     PassagerName: String;
     FromCityName: String;
   }[];
-
-
 
   tasklist: {
     Name: String;
@@ -184,9 +181,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private configService: ConfigService,
     private loginService: LoginService,
-    private langService: LangService,
-    // private appHelper:AppHelper
-  ) {
+    private langService: LangService
+  ) // private appHelper:AppHelper
+  {
     this.staff = null;
     route.queryParamMap.subscribe(async (p) => {
       // this.updateSwiper();
@@ -267,7 +264,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         .catch(() => null)
         .then((res) => {
           this.boutiqueHotel = res;
-          this.updateSwiper();
+          setTimeout(() => {
+            if(this.hotelsSwiper){
+              this.hotelsSwiper.update();
+            }
+          }, 200);
         })
         .finally(() => {
           this.isLoadingHotHotels = false;
@@ -284,10 +285,12 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private async integral() {
     try {
       this.integralRegion = {
-        Tag: '热卖',
+        Tag: "热卖",
         PageSize: 20,
-      }
-      this.exchangeList = await this.tmcService.getIntegral(this.integralRegion);
+      };
+      this.exchangeList = await this.tmcService.getIntegral(
+        this.integralRegion
+      );
     } catch (e) {
       console.error(e);
     }
@@ -297,25 +300,23 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.getLogin();
   }
 
-
-  async OnSignIn(){
+  async OnSignIn() {
     try {
       this.sign = {
-        Amount:1,
-        Name:"手机",
+        Amount: 1,
+        Name: "手机",
       };
-       this.signList = await this.tmcService.getSign(this.sign);
+      this.signList = await this.tmcService.getSign(this.sign);
     } catch (e) {
       console.log(e);
     }
   }
 
-
   private async getLogin() {
     try {
       const url = await this.tmcService.getLogin();
 
-      console.log(url, 'url');
+      console.log(url, "url");
       AppHelper.jump(this.router, url, null);
     } catch (e) {
       console.log(e);
@@ -333,7 +334,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       console.log(e);
     }
   }
-
 
   async onTaskDetail(task) {
     const url = await this.getTaskHandleUrl(task);
@@ -368,11 +368,13 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url?.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}&taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}?taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     }
     return url;
   }
@@ -387,8 +389,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }, 200);
   }
   private destroySwiper() {
-    if (this.swiper) {
-      this.swiper.destroy();
+    if (this.bannersSwiper) {
+      this.bannersSwiper.destroy();
     }
   }
   private clearIntervalIds() {
@@ -413,7 +415,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) { }
+    } catch (e) {}
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
@@ -423,7 +425,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
 
   private initSwiperhotels() {
     if (this.hothotelEl && this.hothotelEl.nativeElement) {
-      this.hotels = new Swiper(this.hothotelEl.nativeElement, {
+      this.hotelsSwiper = new Swiper(this.hothotelEl.nativeElement, {
         loop: true,
         autoplay: {
           delay: 3000,
@@ -431,11 +433,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           disableOnInteraction: true,
         },
       });
-      this.hotels.on("touchEnd", () => {
+      this.hotelsSwiper.on("touchEnd", () => {
         this.onTouchEnd();
       });
       const that = this;
-      this.hotels.on("transitionEnd", function () {
+      this.hotelsSwiper.on("transitionEnd", function () {
         that.onTouchEnd();
         that.hotIndex = this.activeIndex;
       });
@@ -444,7 +446,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
 
   private initSwiper() {
     if (this.containerEl && this.containerEl.nativeElement) {
-      this.swiper = new Swiper(this.containerEl.nativeElement, {
+      this.bannersSwiper = new Swiper(this.containerEl.nativeElement, {
         loop: true,
         autoplay: {
           delay: 3000,
@@ -452,11 +454,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           disableOnInteraction: true,
         },
       });
-      this.swiper.on("touchEnd", () => {
+      this.bannersSwiper.on("touchEnd", () => {
         this.onTouchEnd();
       });
       const that = this;
-      this.swiper.on("transitionEnd", function () {
+      this.bannersSwiper.on("transitionEnd", function () {
         that.onTouchEnd();
         that.curIndex = this.activeIndex;
       });
@@ -537,7 +539,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   async ngOnInit() {
-
     this.identityService.getIdentitySource().subscribe((id) => {
       this.canSelectCompany = id && id.Numbers && !!id.Numbers.AgentId;
     });
@@ -595,8 +596,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }, 2000);
   }
   private startAutoPlay() {
-    if (this.swiper && this.swiper.autoplay && this.swiper.autoplay.start) {
-      this.swiper.autoplay.start();
+    if (this.bannersSwiper && this.bannersSwiper.autoplay && this.bannersSwiper.autoplay.start) {
+      this.bannersSwiper.autoplay.start();
     }
     if (
       this.announcementElSwiper &&
@@ -712,10 +713,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     return this.identity && !!this.identity.Ticket;
   }
   private updateSwiper() {
-    if (this.swiper) {
+    if (this.bannersSwiper) {
       setTimeout(() => {
-        this.swiper.update();
-        this.hotels.update();
+        this.bannersSwiper.update();
         this.startAutoPlay();
       }, 200);
     }
@@ -738,7 +738,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
             if (e.Name) {
               const arr = e.Name.split("(");
               if (arr.length > 1) {
-                e.Name = arr[0].replace("发起", "")
+                e.Name = arr[0].replace("发起", "");
                 e.saName = arr[1].replace(")", "");
               }
               try {

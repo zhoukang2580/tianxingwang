@@ -1161,9 +1161,11 @@ export class FlightBookDfPage
         }
       }
       if (!p.Mobile) {
-        const ele: HTMLElement = this.getEleByAttr("othermobileid", combindInfo.id);
         combindInfo.isShowCredentialDetail=true;
-        showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
+        setTimeout(() => {
+          const ele: HTMLElement = this.getEleByAttr("othermobileid", combindInfo.id);
+          showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
+        }, 200);
         return false;
       }
       p.CostCenterCode =
