@@ -276,14 +276,14 @@ export class TmcService {
       return null;
     });
   }
-  async getSign(d: { Amount: number; Name: string }) {
+   getSign(d: { Amount: number; Name: string }) {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Sign";
     req.Data = {
       Amount: d.Amount,
       Name: d.Name,
     };
-    return this.apiService.getPromiseData<any>(req);
+    return this.apiService.getResponse<any>(req);
   }
 
   async getLogin() {
