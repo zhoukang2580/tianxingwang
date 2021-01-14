@@ -188,7 +188,7 @@ ion-header ion-title {
     align-items: center;
     flex-flow: column nowrap;
     padding: 0 1em;
-    .imgs{
+    .imgs {
       width: 17px;
     }
   }
@@ -219,8 +219,6 @@ ion-header ion-title {
     }
   }
 
-  
-
   .it-list {
     display: flex;
     line-height: 2;
@@ -229,6 +227,7 @@ ion-header ion-title {
   .swiper-slide {
     display: flex;
     line-height: 2;
+    font-size: 12px;
   }
 
   .not-item-u {
@@ -343,34 +342,36 @@ ion-header ion-title {
     .left {
       display: grid;
       margin-left: 12px;
-      .item-name{
+      .item-name {
         display: flex;
         align-items: center;
         max-width: 6em;
         font-size: 14px;
         color: #934aca;
       }
-      .item-sign{
+      .item-sign {
         display: flex;
         align-items: center;
         font-size: 16px;
-        color: #FB9307;
+        color: #fb9307;
       }
-      .jf,.jd{
+      .jf,
+      .jd {
         font-size: 12px;
       }
-      .btn1,.btn2 {
+      .btn1,
+      .btn2 {
         font-size: 12px;
         color: #fff;
         height: 18px;
         width: 64px;
         border-radius: 5px;
       }
-      .btn1{
+      .btn1 {
         background: #934aca;
       }
-      .btn2{
-        background-color: #FB9307;
+      .btn2 {
+        background-color: #fb9307;
       }
     }
     .right {
@@ -387,15 +388,15 @@ ion-header ion-title {
   }
 }
 
-.warpper-a{
+.warpper-a {
   height: 21px;
   font-size: 12px;
   margin: 20px;
   margin-top: 24px;
-  .swiper{
+  .swiper {
     display: flex;
   }
-  img{    
+  img {
     height: 18px;
     margin-top: 3px;
   }
@@ -404,6 +405,9 @@ ion-header ion-title {
     .not-name {
       margin-left: 15px;
       padding-right: 15px;
+    }
+    .not-approvd {
+      margin: 0;
     }
   }
 }

@@ -128,7 +128,11 @@
             <img src="assets/home/home-text.png" alt="" />
             <div class="not-jj" (click)="onTaskDetail(task)">
               <div class="not-name">{{task.Name}}</div>
-              <div calss="not-approvd">
+              <div calss="not-approvd" style="
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              max-width: 9em;">
                 <span style="color: crimson">{{task.saName}}</span
                 ><span
                   >{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span
