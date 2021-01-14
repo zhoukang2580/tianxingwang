@@ -141,7 +141,12 @@ export class TmcService {
       });
   }
 
-  async getRecommendHotel(d: { PageIndex: number, PageSize: number, CityCode: string, SearchDate: string }) {
+  async getRecommendHotel(d: {
+    PageIndex: number;
+    PageSize: number;
+    CityCode: string;
+    SearchDate: string;
+  }) {
     const req = new RequestEntity();
     req.Method = "TmcApiHotelUrl-Home-RecommendHotel";
     req.IsRedirctNoAuthorize = false;
@@ -150,50 +155,120 @@ export class TmcService {
       PageIndex: 0,
       PageSize: d.PageSize,
       CityCode: d.CityCode,
-      SearchDate: d.SearchDate
-    }
-    return this.apiService
-      .getPromiseData<{
-        DataCount: string; HotelDefaultImg: string; HotelDayPrices: {
-          Id: string;
-          HotelName: string;
-          HotelAddress: string;
-          HotelCategory: string;
-          HotelFileName: string;
-        }[]
-      }>(req)
+      SearchDate: d.SearchDate,
+    };
+    return this.apiService.getPromiseData<{
+      DataCount: string;
+      HotelDefaultImg: string;
+      HotelDayPrices: {
+        Id: string;
+        HotelName: string;
+        HotelAddress: string;
+        HotelCategory: string;
+        HotelFileName: string;
+      }[];
+    }>(req);
   }
 
   async getTaskReviewed() {
     const req = new RequestEntity();
-    req.Method = "TmcApiHomeUrl-Home-TaskReviewed"
-    req.Data = {
-
-    };
+    req.Method = "TmcApiHomeUrl-Home-TaskReviewed";
+    req.Data = {};
     return this.apiService.getPromiseData<any[]>(req);
   }
+  async hasBookRight(
+    name:
+      | "flight"
+      | "international-flight"
+      | "hotel"
+      | "international-hotel"
+      | "train"
+      | "rentalCar"
+      | "bulletin"
+  ) {
+    if (name) {
+      const tmc = await this.getTmc();
+      const msg = "您没有预订权限";
+      if (!tmc || !tmc.RegionTypeValue) {
+        AppHelper.alert(msg);
+        return false;
+      }
+      let route = "";
 
+      const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+      if (name == "international-flight") {
+        route = "search-international-flight";
+        if (tmcRegionTypeValue.search("internationalflight") < 0) {
+          AppHelper.alert(msg);
+          return false;
+        }
+        return true;
+      }
+      if (name == "international-hotel") {
+        route = "search-international-hotel";
+        if (tmcRegionTypeValue.search("internationalhot") < 0) {
+          AppHelper.alert(msg);
+          return false;
+        }
+        return true;
+      }
+      if (name == "hotel") {
+        route = "search-hotel";
+        if (tmcRegionTypeValue.search("hotel") < 0) {
+          AppHelper.alert(msg);
+          return false;
+        }
+        return true;
+      }
+      if (name == "train") {
+        route = "search-train";
+        if (tmcRegionTypeValue.search("train") < 0) {
+          AppHelper.alert(msg);
+          return false;
+        }
+        return true;
+      }
+      if (name == "flight") {
+        route = "search-flight";
+        if (tmcRegionTypeValue.search("flight") < 0) {
+          AppHelper.alert(msg);
+          return false;
+        }
+        return true;
+      }
+      if (name == "rentalCar") {
+        route = "rental-car";
+        if (tmcRegionTypeValue.search("car") < 0) {
+          AppHelper.alert(msg);
+          return false;
+        }
+        return true;
+      }
+      if (name == "bulletin") {
+        route = "bulletin-list";
+      }
+    }
+    return false;
+  }
   async getMyItinerary() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TripList";
-    req.Data = {
-
-    };
+    req.Data = {};
     return this.apiService.getPromiseData<any[]>(req);
   }
 
-  async getIntegral(d: { Tag: string, PageSize: number}) {
+  async getIntegral(d: { Tag: string; PageSize: number }) {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Exchange";
     req.Data = {
-      Tag:d.Tag,
-      PageSize:d.PageSize,
+      Tag: d.Tag,
+      PageSize: d.PageSize,
     };
-    return this.apiService.getPromiseData<any>(req).then(it=>{
-      if(it){
-        try{
+    return this.apiService.getPromiseData<any>(req).then((it) => {
+      if (it) {
+        try {
           return JSON.parse(it);
-        }catch(e){
+        } catch (e) {
           console.log(e);
           return null;
         }
@@ -201,22 +276,20 @@ export class TmcService {
       return null;
     });
   }
-  async getSign(d:{Amount:number,Name:string}) {
+  async getSign(d: { Amount: number; Name: string }) {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Sign";
     req.Data = {
-      Amount:d.Amount,
-      Name:d.Name
+      Amount: d.Amount,
+      Name: d.Name,
     };
     return this.apiService.getPromiseData<any>(req);
   }
-  
+
   async getLogin() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Login";
-    req.Data = {
-
-    };
+    req.Data = {};
     return this.apiService.getPromiseData<any>(req);
   }
 
@@ -714,12 +787,12 @@ export class TmcService {
       }>(req)
       .catch(
         (_) =>
-        ({
-          Trafficlines: [],
-        } as {
-          HotelCities: any[];
-          Trafficlines: TrafficlineEntity[];
-        })
+          ({
+            Trafficlines: [],
+          } as {
+            HotelCities: any[];
+            Trafficlines: TrafficlineEntity[];
+          })
       );
     const local = this.localDomesticAirports;
     if (r.Trafficlines && r.Trafficlines.length) {

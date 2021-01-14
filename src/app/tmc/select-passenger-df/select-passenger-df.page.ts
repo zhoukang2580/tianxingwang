@@ -645,7 +645,7 @@ export class SelectPassengerDfPage
     }
     const isNotWhitelist =
       this.selectedPassenger.isNotWhiteList || !this.selectedPassenger.Policy;
-    if (isNotWhitelist) {
+    if (!selectedCredential.HideNumber) {
       selectedCredential.HideNumber = selectedCredential.Number;
     }
     const passengerBookInfo: PassengerBookInfo<any> = {
