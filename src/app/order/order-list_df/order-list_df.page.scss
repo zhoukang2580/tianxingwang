@@ -11,6 +11,8 @@ ion-list {
   background: transparent;
   ion-item {
     margin-bottom: 0.5em;
+    --padding-start: 0;
+    --padding-end: 0;
   }
 }
 ion-footer ion-row ion-col {

@@ -626,12 +626,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         ? `${(item.credentialStaff && item.credentialStaff.Name) ||
         (item.credential &&
           item.credential.Surname + item.credential.Givenname)
-        } 【${item.credential && item.credential.Number
+        } 【${item.credential && item.credential.HideNumber
         }】 ${msg} 信息不能为空`
         : `${(item.credentialStaff && item.credentialStaff.Name) ||
         (item.credential &&
           item.credential.Surname + item.credential.Givenname)
-        } 【${item.credential && item.credential.Number
+        } 【${item.credential && item.credential.HideNumber
         }】 ${msg} Information cannot be empty`
     );
     this.moveRequiredEleToViewPort(ele);
@@ -1587,6 +1587,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           // );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
+          let checkPayFaild=false;
           if (!isSave) {
             let canPay = res.IsCheckPay;
             if (res.IsCheckPay) {
@@ -1604,10 +1605,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
-              // await AppHelper.alert(
-              //   LanguageHelper.Order.getBookTicketWaitingTip(),
-              //   true
-              // );
+              await AppHelper.alert(
+                LanguageHelper.Order.getBookTicketWaitingTip(),
+                true
+              );
             }
           } else {
             if (isSave) {

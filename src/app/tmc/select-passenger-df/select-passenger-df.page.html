@@ -4,19 +4,17 @@
       <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-toolbar #toolbar class="search">
-      <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" style='padding:0;' animated
-        placeholder="请输入员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
+      <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" mode='ios' animated placeholder="请输入员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
       </ion-searchbar>
     </ion-toolbar>
-    <!-- <ion-title >{{title}}</ion-title>
     <ion-buttons slot='end' *ngIf='bookInfos$'>
       <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
-        已选旅客
+        已选
         <ion-badge color='danger'>
           <ion-text color='light'>{{(bookInfos$|async).length}}</ion-text>
         </ion-badge>
       </ion-button>
-    </ion-buttons> -->
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -36,16 +34,15 @@
         <ion-item *ngFor='let item of vmStaffs' @flyInOut detail (click)='onSelect(item)'>
           <ion-label color='medium' *ngIf='forType != FlightHotelTrainType.InternationalFlight'>
             <ion-text color='dark' notranslate>{{item?.Name}}</ion-text>
-            <ng-container *ngIf='!item.CredentialsInfo' >
+            <ng-container *ngIf='!item.CredentialsInfo'>
               {{item.Number}}
             </ng-container>
             <span *ngIf='item.CredentialsInfo' class="span">
               {{item?.CredentialsInfo}}
             </span>
           </ion-label>
-          <ion-label  color='{{selectedPassengerPolicy?.Id==item.Policy?.Id?"secondary":"medium"}}' class='ion-text-wrap'
-            *ngIf='forType == FlightHotelTrainType.InternationalFlight'>
-            <ion-text  color='{{selectedPassengerPolicy?.Id==item.Policy?.Id?"secondary":"dark"}}'>{{item?.Name}}
+          <ion-label color='{{selectedPassengerPolicy?.Id==item.Policy?.Id?"secondary":"medium"}}' class='ion-text-wrap' *ngIf='forType == FlightHotelTrainType.InternationalFlight'>
+            <ion-text color='{{selectedPassengerPolicy?.Id==item.Policy?.Id?"secondary":"dark"}}'>{{item?.Name}}
             </ion-text>
             {{item?.CredentialsInfo}}
           </ion-label>
@@ -68,60 +65,58 @@
       <ion-list class="con-list">
         <ng-container *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
           <ng-container *ngIf='item!=vmNewCredential'>
-            <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'
-              class="item-divider">
+            <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)' class="item-divider">
               <div class="con-big">
                 <div>
-                  <ion-text color='medium' >
+                  <ion-text color='medium'>
                     <span class="sfz">{{item.Type|credential}}</span>
                   </ion-text>
                 </div>
                 <div>
-                  <ion-text color='medium' >
-                    <span class="name-id" >{{item.Name}}</span>
+                  <ion-text color='medium'>
+                    <span class="name-id">{{item.Name}}</span>
                   </ion-text>
                 </div>
                 <div>
-                  <ion-text color='medium' >
-                    <span class="name-id" >{{item.HideNumber}}</span>
+                  <ion-text color='medium'>
+                    <span class="name-id">{{item.HideNumber}}</span>
                   </ion-text>
                 </div>
               </div>
               <!-- <div style="flex: 1;font-size: 0.6rem;padding: .5em;">
                 
               </div> -->
-              <ion-radio slot='end' name='credentialType' disabled="disabled" style="opacity:1" mode='md'
-                class="ion-margin-end" value="{{item.Id}}">
+              <ion-radio slot='end' name='credentialType' disabled="disabled" style="opacity:1" mode='md' class="ion-margin-end" value="{{item.Id}}">
               </ion-radio>
             </ion-item-divider>
             <ion-item lines='none' [@flyInOut] *ngIf='selectedCredentialId ==item.Id'>
               <div class='credential-item'>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     证件号:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.HideNumber}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     姓名:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.Surname}}{{item?.Givenname}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     国籍:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.Country}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     出生年月:
                   </ion-col>
                   <ion-col>
@@ -129,18 +124,18 @@
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     到期日期:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.ExpirationDate}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     性别:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
                   </ion-col>
                 </ion-row>
@@ -151,29 +146,25 @@
         <ng-container *ngIf='isShowNewCredential'>
           <ion-item-divider color='primary' (click)='onSelectCredential(vmNewCredential?.Id)'>
             <ion-label>
-              <ion-text *ngIf='!vmNewCredential?.isNotWhiteList' >此人其他证件：</ion-text>
+              <ion-text *ngIf='!vmNewCredential?.isNotWhiteList'>此人其他证件：</ion-text>
               <ion-text *ngIf='vmNewCredential?.isNotWhiteList'>证件：</ion-text>
             </ion-label>
-            <ion-radio slot='end' class="ion-margin-end" disabled="disabled" style="opacity:1" mode='md'
-              name='credentialType' value="{{vmNewCredential?.Id}}" >
+            <ion-radio slot='end' class="ion-margin-end" disabled="disabled" style="opacity:1" mode='md' name='credentialType' value="{{vmNewCredential?.Id}}">
             </ion-radio>
           </ion-item-divider>
           <ion-grid #addForm [@flyInOut] *ngIf='selectedCredentialId ==vmNewCredential.Id'>
             <app-credentials-comp [(credential)]='vmNewCredential' [filteredCredentialsTypes]='filteredCredentialsTypes'></app-credentials-comp>
             <ion-row>
               <ion-col size='12'>
-                <ion-item class='ion-no-margin ion-no-padding' lines='none' >
+                <ion-item class='ion-no-margin ion-no-padding' lines='none'>
                   旅客类别：
                 </ion-item>
               </ion-col>
               <ion-col size='12'>
-                <ion-radio-group class='credentials-remark ion-no-margin ion-no-padding'
-                  [(ngModel)]='vmNewCredential.CredentialsRemark' name='CredentialsRemark'>
-                  <ion-item *ngFor='let r of credentialsRemarks'
-                    [style.opacity]='vmNewCredential?.Id !=selectedCredentialId?0.7:1'
-                    [disabled]='vmNewCredential?.Id !=selectedCredentialId'>
-                    <ion-label >{{r.value}}</ion-label>
-                    <ion-radio value="{{r.value}}" ></ion-radio>
+                <ion-radio-group class='credentials-remark ion-no-margin ion-no-padding' [(ngModel)]='vmNewCredential.CredentialsRemark' name='CredentialsRemark'>
+                  <ion-item *ngFor='let r of credentialsRemarks' [style.opacity]='vmNewCredential?.Id !=selectedCredentialId?0.7:1' [disabled]='vmNewCredential?.Id !=selectedCredentialId'>
+                    <ion-label>{{r.value}}</ion-label>
+                    <ion-radio value="{{r.value}}"></ion-radio>
                   </ion-item>
                 </ion-radio-group>
               </ion-col>
@@ -182,73 +173,72 @@
         </ng-container>
         <ng-container *ngIf='frqPassengerCredentials?.length'>
           <ion-item-divider color='primary' class='ion-margin-top'>
-            <ion-text color='secondary' >常旅客</ion-text>
+            <ion-text color='secondary'>常旅客</ion-text>
           </ion-item-divider>
           <ng-container *ngFor='let item of frqPassengerCredentials'>
             <ion-item-divider color='primary' (click)='onSelectCredential(item.Id)'>
-              <ion-label >
+              <ion-label>
                 <!-- {{item.Type|credential}} -->
                 {{item?.Surname}}{{item?.Givenname}}
               </ion-label>
-              <ion-radio slot='end' name='credentialType' disabled="disabled" style="opacity:1" mode='md'
-                class="ion-margin-end" value="{{item.Id}}" >
+              <ion-radio slot='end' name='credentialType' disabled="disabled" style="opacity:1" mode='md' class="ion-margin-end" value="{{item.Id}}">
               </ion-radio>
             </ion-item-divider>
             <ion-item lines='none' [@flyInOut] *ngIf='selectedCredentialId ==item.Id'>
               <div class='credential-item'>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     证件号:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.HideNumber}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     证件姓名:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.Surname}}{{item?.Givenname}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     登机名:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.Name}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     国籍:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.Country}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     出生年月:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.Birthday}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     到期日期:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.ExpirationDate}}
                   </ion-col>
                 </ion-row>
                 <ion-row>
-                  <ion-col >
+                  <ion-col>
                     性别:
                   </ion-col>
-                  <ion-col >
+                  <ion-col>
                     {{item?.Gender=="F"?"女":item?.Gender=="M"?"男":"未知"}}
                   </ion-col>
                 </ion-row>
@@ -260,7 +250,7 @@
     </ion-radio-group>
   </ng-template>
   <ion-infinite-scroll (ionInfinite)="loadMore()">
-    <ion-infinite-scroll-content >
+    <ion-infinite-scroll-content>
       正在加载...
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
@@ -274,7 +264,7 @@
     </ion-buttons> -->
     <div class="btn_container">
       <ion-button class='ion-margin-top' fill='solid' (click)='onAddPassenger()' color="secondary" [disabled]='!selectedPassenger' expand="block">
-        <ion-text class="text_search">确   定</ion-text>
+        <ion-text class="text_search">确 定</ion-text>
       </ion-button>
     </div>
   </ion-toolbar>
