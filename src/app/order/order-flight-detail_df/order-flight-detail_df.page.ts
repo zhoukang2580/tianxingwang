@@ -69,6 +69,9 @@ export class OrderFlightDetailDfPage
   implements OnInit, AfterViewInit, OnDestroy {
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
+  private tikectId2OriginalTickets: {
+    [ticketId: string]: OrderFlightTicketEntity[];
+  } = {};
   tmc: TmcEntity;
   TaskStatusType = TaskStatusType;
   ProductItemType = ProductItemType;
@@ -93,9 +96,6 @@ export class OrderFlightDetailDfPage
   filterCondition: FilterConditionModel;
   // flightTickect: { [tickectId: string]: OrderFlightTicketEntity[] };
   tikect2Insurance: { [tikectKey: string]: OrderInsuranceEntity[] } = {};
-  tikectId2OriginalTickets: {
-    [ticketId: string]: OrderFlightTicketEntity[];
-  } = {};
   orderFlightTicketsTabs: OrderFlightTicketEntity[];
   OrderFlightTicketStatusType = OrderFlightTicketStatusType;
   constructor(
@@ -562,7 +562,15 @@ export class OrderFlightDetailDfPage
         );
       }
     });
-    console.log(this.tikectId2OriginalTickets);
+    console.log("tikectId2OriginalTickets", this.tikectId2OriginalTickets);
+  }
+  isOriginalTicket(tid: string) {
+    return (
+      this.tikectId2OriginalTickets &&
+      Object.keys(this.tikectId2OriginalTickets).some((k) =>
+        this.tikectId2OriginalTickets[k].some((it) => it.Id == tid)
+      )
+    );
   }
   private initTicketsTripsInsurance() {
     if (
@@ -636,13 +644,13 @@ export class OrderFlightDetailDfPage
     this.orderDetail = await this.orderService
       .getOrderDetailAsync(orderId)
       .catch((_) => null);
-    this.sortFlightTicket();
     this.initOriginalTickets();
     this.initTicketExpenseType();
     this.initTicketsTripsInsurance();
     this.initTikectsInsurances();
     this.isLoading = false;
     this.initTabs();
+    this.sortTabs();
     if (!this.tmc) {
       this.tmc = await this.tmcService.getTmc(true);
     }
@@ -831,18 +839,12 @@ export class OrderFlightDetailDfPage
       ).length > 0
     );
   }
-  private sortFlightTicket() {
-    const trips: OrderFlightTripEntity[] = [];
-    if (
-      this.orderDetail &&
-      this.orderDetail.Order &&
-      this.orderDetail.Order.OrderFlightTickets
-    ) {
-      this.orderDetail.Order.OrderFlightTickets.sort(
-        (t1, t2) => +t2.Id - +t1.Id
-      );
+  private sortTabs() {
+    if (this.orderFlightTicketsTabs) {
+      this.orderFlightTicketsTabs.sort((t1, t2) => {
+        return +t2.Id - +t1.Id;
+      });
     }
-    return trips;
   }
   onShowFlightTicket(
     t: OrderFlightTicketEntity,
