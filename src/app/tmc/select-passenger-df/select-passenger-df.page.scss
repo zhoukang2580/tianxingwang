@@ -5,6 +5,13 @@
   position: sticky;
   top: 0;
 }
+ion-searchbar {
+  padding-bottom: 0;
+  font-size: 14px;
+  input::placeholder{
+    font-size: 14px;
+  }
+}
 ion-select.select-disabled {
   opacity: 0.7;
 }
@@ -51,11 +58,10 @@ form {
 ion-item .credential-item {
   width: 100%;
   font-size: 14px;
-  ion-row :first-child{
+  ion-row :first-child {
     max-width: 7em;
   }
 }
-
 
 ion-item-group ion-item-divider:first-of-type {
   border-left: 4px solid var(--ion-color-secondary);
@@ -107,10 +113,10 @@ ion-toolbar.ios.search {
     flex-wrap: wrap;
   }
 
-  .sfz{
+  .sfz {
     font-size: 15px;
   }
-  .name-id{
+  .name-id {
     margin-left: 1em;
     font-size: 14px;
   }

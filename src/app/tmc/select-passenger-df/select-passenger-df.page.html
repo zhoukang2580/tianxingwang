@@ -4,7 +4,7 @@
       <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-toolbar #toolbar class="search">
-      <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" mode='ios' animated placeholder="请输入员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
+      <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" mode='ios'  placeholder="请输入员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
       </ion-searchbar>
     </ion-toolbar>
     <ion-buttons slot='end' *ngIf='bookInfos$'>
