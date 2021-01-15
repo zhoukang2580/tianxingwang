@@ -52,7 +52,7 @@ export class OrderService {
     private apiService: ApiService,
     private modalCtrl: ModalController,
     private calendarService: CalendarService
-  ) { }
+  ) {}
   getOrderList(searchCondition: OrderModel) {
     const req = new RequestEntity();
     // req.IsShowLoading = true;
@@ -81,22 +81,26 @@ export class OrderService {
     };
     return new Promise<OrderDetailModel>((rsv, rej) => {
       const sub = this.getOrderDetail(id)
-        .pipe(finalize(() => {
-          setTimeout(() => {
-            sub.unsubscribe();
-          }, 200);
-        }))
-        .subscribe(r => {
-          if (r && r.Status) {
-            rsv(r && r.Data)
-          } else {
-            rej(r && r.Message)
+        .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              sub.unsubscribe();
+            }, 200);
+          })
+        )
+        .subscribe(
+          (r) => {
+            if (r && r.Status) {
+              rsv(r && r.Data);
+            } else {
+              rej(r && r.Message);
+            }
+          },
+          (e) => {
+            rej(e);
           }
-        }, (e) => {
-          rej(e)
-        })
+        );
     });
-
   }
   getOrderTotalAmount(order: OrderEntity, tmc: TmcEntity) {
     let amount = 0;
@@ -129,13 +133,14 @@ export class OrderService {
     req.Data = {
       Id: id,
     };
-    return this.apiService.getResponse<OrderDetailModel>(req)
-      .pipe(map(it => {
+    return this.apiService.getResponse<OrderDetailModel>(req).pipe(
+      map((it) => {
         if (it.Data && it.Data.Order) {
           it.Data.Order.OrderPassengers = it.Data.OrderPassengers;
         }
         return it;
-      }));
+      })
+    );
   }
   getOrderTasks(
     data: TaskModel,
@@ -169,7 +174,7 @@ export class OrderService {
       (order.GetVariable<number>("TravelPayType") ==
         OrderTravelPayType.Credit ||
         order.GetVariable<number>("TravelPayType") ==
-        OrderTravelPayType.Person) &&
+          OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;
@@ -201,7 +206,20 @@ export class OrderService {
     if (data.Type) {
       req["Type"] = data.Type;
     }
-    const result = this.apiService.getResponse<TravelModel>(req);
+    const result = this.apiService.getResponse<TravelModel>(req).pipe(
+      map((it) => {
+        if (it && it.Data && it.Data.Trips && it.Data.Trips.length) {
+          it.Data.Trips.forEach((t) => {
+            if (t.Passenger && t.HideCredentialsNumber) {
+              if (!t.Passenger.HideCredentialsNumber) {
+                t.Passenger.HideCredentialsNumber = t.HideCredentialsNumber;
+              }
+            }
+          });
+        }
+        return it;
+      })
+    );
     return result;
   }
   refundFlightTicket(data: {

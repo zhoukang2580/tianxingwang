@@ -33,7 +33,7 @@
         起飞日期：{{startDate}}
       </div>
       <div class="passenger" *ngIf='trip.Passenger'>
-        <span>{{trip.Passenger.Name}}</span>：{{trip.Passenger.CredentialsNumber}}
+        <span>{{trip.Passenger.Name}}</span>：{{trip.Passenger.HideCredentialsNumber}}
       </div>
       <div class="orderno">
         <span>订单编号：</span>{{trip.OrderId}}

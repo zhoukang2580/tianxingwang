@@ -32,7 +32,7 @@
       发车时间：{{trip&&trip['goDate']}}
     </div>
     <div class="passenger" *ngIf='trip?.Passenger'>
-      {{trip.Passenger.Name}}：<span>{{trip.Passenger.CredentialsNumber}}</span>
+      {{trip.Passenger.Name}}：<span>{{trip.Passenger.HideCredentialsNumber}}</span>
     </div>
     <div class="orderno">
       订单编号：<span>{{trip?.OrderId}}</span>

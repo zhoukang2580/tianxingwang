@@ -253,6 +253,7 @@ export class OrderListDfPage
               });
               this.condition.pageIndex++;
             }
+            
           }
         },
         (err) => {
@@ -264,10 +265,15 @@ export class OrderListDfPage
     this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
   }
   private getVariablesJsonObj(trip: OrderTripModel) {
-    if (!trip) {
-      return trip;
+    try {
+      if (!trip) {
+        return trip;
+      }
+      trip.VariablesJsonObj =
+        trip.VariablesJsonObj || JSON.parse(trip.Variables);
+    } catch (e) {
+      console.error(e);
     }
-    trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables);
     return trip;
   }
   async openSearchModal() {
