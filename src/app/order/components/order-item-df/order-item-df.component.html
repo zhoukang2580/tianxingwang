@@ -88,8 +88,8 @@
   </ng-container>
   <!-- 火车 -->
   <ng-container *ngIf='order.OrderTrainTickets?.length'>
-    <ng-container *ngIf='order.OrderTrainTickets?.length'>
-      <ion-grid class="train" *ngFor='let orderTrainTicket of order.OrderTrainTickets'>
+    <ng-container *ngFor='let orderTrainTicket of order.OrderTrainTickets'>
+      <ion-grid class="train" *ngIf='orderTrainTicket.VariablesJsonObj.isShow'>
         <ion-row class="frist-ion">
           <ion-col size='2.5'>
             <ion-text color="medium">订单编号</ion-text>

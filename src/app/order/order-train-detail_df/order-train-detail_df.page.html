@@ -24,14 +24,14 @@
       <div class="tab" #tabEl (click)='onSelectTicket(t,tabsEl,tabEl)' [ngClass]='{
         active:t.Id==selectedTicket?.Id,
         hasMore:tabs.length>1}' *ngFor='let t of tabs;let idx=index;'>
-        {{tikectId2OriginalTickets&&tikectId2OriginalTickets[t.Id]?.length>0?"原始车票信息"+t.Id:t.Id}}
+        {{isOriginalTicket(t.Id)?"原始车票信息"+t.Id:t.Id}}
       </div>
     </div>
     <div class="" #slide>
       <!-- 订单信息 -->
       <div class="container">
         <div *ngIf="selectedTicket as ticket">
-          <div class="swiper-slide" #slide >
+          <div class="swiper-slide" #slide>
             <div class="container-div">
               <div class="getHeight">
                 <ng-container>

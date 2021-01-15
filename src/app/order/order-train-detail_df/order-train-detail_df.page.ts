@@ -446,6 +446,21 @@ export class OrderTrainDetailDfPage
   //   const p = (this.orderDetail.Order && this.orderDetail.Order.OrderPassengers) || [];
   //   return p.find(it => it.Id == (ticket.Passenger && ticket.Passenger.Id));
   // }
+  private sortTabs() {
+    if (this.tabs) {
+      this.tabs.sort((t1, t2) => {
+        return +t2.Id - +t1.Id;
+      });
+    }
+  }
+  isOriginalTicket(tid: string) {
+    return (
+      this.tikectId2OriginalTickets &&
+      Object.keys(this.tikectId2OriginalTickets).some((k) =>
+        this.tikectId2OriginalTickets[k].some((it) => it.Id == tid)
+      )
+    );
+  }
   private initOriginalTickets() {
     this.tikectId2OriginalTickets = {};
     if (
@@ -531,6 +546,7 @@ export class OrderTrainDetailDfPage
     this.initTikectsInsurances();
     this.isLoading = false;
     this.initTabs();
+    this.sortTabs();
     if (!this.tmc) {
       this.tmc = await this.tmcService.getTmc(true);
     }
@@ -564,8 +580,8 @@ export class OrderTrainDetailDfPage
           return h;
         });
       }
-      if(this.tabs){
-        this.onSelectTicket(this.tabs[0])
+      if (this.tabs) {
+        this.onSelectTicket(this.tabs[0]);
       }
     }
   }
