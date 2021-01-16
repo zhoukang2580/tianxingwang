@@ -3,12 +3,12 @@
     <ion-buttons slot='start'>
       <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
-    <ion-title class='sm-font-size' [class.ion-text-start]='(isShowAddPassenger$|async)'
+    <ion-title class='sm-font-size title' [class.ion-text-start]='(isShowAddPassenger$|async)'
       [class.ion-text-center]='!(isShowAddPassenger$|async)'>
       <ion-text (click)='onSelectStation(true)' color='{{ !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked?"secondary":"medium"}}'
         class='from-station'>
         <span class="city-name">
-          {{vmFromCity?.Name}}
+          {{vmFromCity?.CityName}}
         </span>
         <!-- <ion-icon name='caret-down-outline' *ngIf=' !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked'></ion-icon> -->
       </ion-text>
@@ -18,7 +18,7 @@
         <!-- </div> -->
       </ion-text>
       <ion-text (click)='onSelectStation(false)' class='to-station' color='{{searchTrainModel?.isExchange||!searchTrainModel?.isLocked?"secondary":"medium"}}'>
-        <span class="city-name">{{vmToCity?.Name}}</span>
+        <span class="city-name">{{vmToCity?.CityName}}</span>
         <!-- <ion-icon name='caret-down-outline' *ngIf='searchTrainModel?.isExchange||!searchTrainModel?.isLocked'></ion-icon> -->
       </ion-text>
     </ion-title>
@@ -28,7 +28,7 @@
       </ion-button>
       <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)&& !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked' color='secondary'
         size='small' (click)='onSelectPassenger()'>
-        <ion-text class='sm-font-size'>添加旅客</ion-text>
+        <ion-icon color='secondary' name="person-add-outline"></ion-icon>
         <ion-badge color='danger' *ngIf='selectedPassengersNumbers$|async as n'>
           <ion-text color='light' class='xs-font-size'>{{n}}</ion-text>
         </ion-badge>

@@ -48,7 +48,7 @@ ion-toolbar{
   margin-top: -8px;
 }
 
-ion-title {
+.title {
   font-size: 0.9rem;
   &.text-start {
     text-align: start;
@@ -117,12 +117,12 @@ ion-list{
 }
 
 img{
-  width: 18px;
-  margin: 0px 20px -4px;
+  width: 14px;
+  margin: 0px 7px -4px;
 }
 
 .city-name{
-  font-size: 1.3em;
+  font-size: 14px;
   color: #000;
 }
 

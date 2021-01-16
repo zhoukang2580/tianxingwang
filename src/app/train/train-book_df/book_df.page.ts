@@ -1149,13 +1149,13 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           (item.bookInfo.credential &&
             item.bookInfo.credential.Surname +
             item.bookInfo.credential.Givenname)
-          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
+          } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
           }】 ${msg} 信息不能为空`
           : `${(item.credentialStaff && item.credentialStaff.Name) ||
           (item.bookInfo.credential &&
             item.bookInfo.credential.Surname +
             item.bookInfo.credential.Givenname)
-          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
+          } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
           }】 ${msg} ${this.langService.isEn
             ? "Information cannot be empty"
             : "信息不能为空"
