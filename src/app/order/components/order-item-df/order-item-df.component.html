@@ -147,7 +147,7 @@
             </ion-text>
           </ion-col>
         </ion-row>
-        <ion-row [class.btn-show-margin]="order.VariablesJsonObj.isPay" style="align-items: center;">
+        <ion-row [class.btn-show-margin]="order.VariablesJsonObj?.isPay" style="align-items: center;">
           <ion-col>
             <div style="display: flex;align-items: center;">
               <ion-text color="medium">应付金额</ion-text>
@@ -157,11 +157,9 @@
                   (含保险)
                 </span>
               </ion-text>
-              <ng-container class='ion-text-end' *ngIf='check(orderTrainTicket)' size='3'>
-                <ng-container *ngIf='order["checkPay"]'>
-                  <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
-                  </ion-button>
-                </ng-container>
+              <ng-container class='ion-text-end' *ngIf='order.VariablesJsonObj?.isPay' size='3'>
+                <ion-button (click)='onPay($event)' size='small' color='secondary'>去支付
+                </ion-button>
               </ng-container>
               <ng-container *ngIf='orderTrainTicket.VariablesJsonObj.isShowRefundOrExchangeBtn'>
                 <ion-button (click)='onExchangeTrainTicket($event,orderTrainTicket)' color='secondary' *ngIf='orderTrainTicket.VariablesJsonObj.isShowExchangeButton'>

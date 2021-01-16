@@ -239,19 +239,6 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   //     });
   //   }
   // }
-  check(orderTrainTicket: OrderTrainTicketEntity) {
-    return (
-      orderTrainTicket &&
-      orderTrainTicket.OrderTrainTrips &&
-      orderTrainTicket.OrderTrainTrips.length == 1 &&
-      +this.calendarService.getMoment(
-        0,
-        orderTrainTicket.OrderTrainTrips[0].StartTime
-      ) -
-        +this.calendarService.getMoment(0) >
-        0
-    );
-  }
   async onExchangeTrainTicket(
     evt: CustomEvent,
     orderTrainTicket: OrderTrainTicketEntity
