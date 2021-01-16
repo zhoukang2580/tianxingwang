@@ -14,6 +14,7 @@ import { CalendarService } from '../calendar.service';
   styleUrls: ['./checkout-success.page.scss'],
 })
 export class CheckoutSuccessPage implements OnInit {
+  private date;
   boutiqueHotel: {
     HotelDayPrices: {
       HotelFileName: string,
@@ -32,10 +33,10 @@ export class CheckoutSuccessPage implements OnInit {
     SearchDate: string
   };
   city: TrafficlineEntity;
-  private date;
   tabId;
   isApproval: boolean;
   isShow = true;
+  payResult = false;
   constructor(
     private hotelService: HotelService,
     private router: Router,
@@ -48,11 +49,13 @@ export class CheckoutSuccessPage implements OnInit {
   }
 
   ngOnInit() {
-    this.route.queryParamMap.subscribe(q => {
+    this.route.queryParamMap.subscribe(async q => {
       this.tabId = q.get("tabId");
       if (q.get("cityCode")) {
         this.city = {} as any;
         this.city.CityCode = q.get("cityCode");
+        this.isApproval= q.get("isApproval")=='true';
+        this.payResult= q.get("payResult")=='true';
         this.city.Code = q.get("cityCode");
         this.city.CityName = q.get("cityName");
         this.city.Name = q.get("cityName");
@@ -66,7 +69,10 @@ export class CheckoutSuccessPage implements OnInit {
           CityCode: this.city && this.city.CityCode,
           SearchDate: this.date
         };
-        this.getRecommendHotel();
+        const hasRight = await this.tmcService.checkHasHotelBookRight();
+        if (hasRight) {
+          this.getRecommendHotel();
+        }
       }
       this.isApproval = !!q.get("isApproval");
     })

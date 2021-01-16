@@ -401,14 +401,7 @@ export class TmcService {
     return payResult;
   }
   async checkHasHotelBookRight() {
-    if (!this.tmc) {
-      await this.getTmc();
-    }
-    return (
-      this.tmc &&
-      this.tmc.RegionTypeValue &&
-      this.tmc.RegionTypeValue.toLowerCase().includes("hotel")
-    );
+    return this.hasBookRight("hotel");
   }
   private async wechatPay(
     tradeNo: string,

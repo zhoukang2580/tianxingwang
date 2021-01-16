@@ -684,15 +684,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           //     : "下单成功!"
           // );
           this.isSubmitDisabled = true;
-          const isSelf = await this.staffService.isSelfBookType();
+          this.isSubmitDisabled = true;
+          let isHasTask = res.HasTasks;
+          let payResult = false;
           if (!isSave) {
-            let canPay = res.IsCheckPay;
+            let checkPayResult = false;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;
-              canPay = await this.checkPay(res.TradeNo);
+              checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
             }
-            if (canPay) {
+            if (checkPayResult) {
               if (res.HasTasks) {
                 await AppHelper.alert(
                   exchangeInfo && exchangeInfo.exchangeInfo
@@ -701,15 +703,13 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                   true
                 );
               } else {
-                await this.tmcService.payOrder(res.TradeNo);
+                payResult = await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
-              // if(res.IsCheckPay){
-              //   await AppHelper.alert(
-              //     LanguageHelper.Order.getBookTicketWaitingTip(),
-              //     true
-              //   );
-              // }
+              await AppHelper.alert(
+                LanguageHelper.Order.getBookTicketWaitingTip(),
+                true
+              );
             }
           } else {
             if (isSave) {
@@ -737,7 +737,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           });
           const isExchange = exchangeInfo && !!exchangeInfo.exchangeInfo;
           // const isApproval = 
-          this.goToMyOrders(isExchange);
+          this.goToMyOrders({isExchange,payResult,isHasTask});
         }
       }
     }
@@ -851,22 +851,21 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.timeEnd("总计");
   }
-  private async goToMyOrders(isExchange = false,isApproval = true) {
+  private async goToMyOrders(data: { isHasTask: boolean;  payResult: boolean;isExchange:boolean;}) {
     try {
       const m = this.trainService.getSearchTrainModel();
       const cities = await this.trainService.getStationsAsync();
       const city = m.toCity;
       const c = cities.find(it => it.Code == (city && city.Code));
-      if(this.viewModel.orderTravelPayType == 3){
-        isApproval = false;
-      }
       this.router.navigate(["checkout-success"], {
         queryParams: {
           tabId: ProductItemType.train,
           cityCode: c && c.CityCode,
           cityName: c && c.CityName,
           date: m.Date,
-          doRefresh: isExchange
+          doRefresh: data.isExchange,
+          payResult: data.payResult,
+          isApproval:data.isHasTask
         },
       });
     } catch (e) {

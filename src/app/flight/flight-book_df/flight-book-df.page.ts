@@ -211,7 +211,7 @@ export class FlightBookDfPage
             }
           }
         }
-      } catch {}
+      } catch { }
       setTimeout(() => {
         if (!this.isShowInsuranceBack || this.isManagentCredentails) {
           this.refresh(false);
@@ -750,11 +750,10 @@ export class FlightBookDfPage
     if (!info) {
       return "";
     }
-    return `[${
-      info.tripType == TripType.departureTrip
-        ? LanguageHelper.getDepartureTip()
-        : LanguageHelper.getReturnTripTip()
-    }]`;
+    return `[${info.tripType == TripType.departureTrip
+      ? LanguageHelper.getDepartureTip()
+      : LanguageHelper.getReturnTripTip()
+      }]`;
   }
   back() {
     this.natCtrl.back();
@@ -847,31 +846,33 @@ export class FlightBookDfPage
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast("下单成功!", 1400, "top");
+          // AppHelper.toast("下单成功!", 1400, "top");
           this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
+          let isHasTask = res.HasTasks;
+          let payResult = false;
           this.flightService.removeAllBookInfos();
           if (!isSave) {
-            let canPay = res.IsCheckPay;
+            let checkPayResult = false;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;
-              canPay = await this.checkPay(res.TradeNo);
+              checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
             }
-            if (canPay) {
+            if (checkPayResult) {
               if (res.HasTasks) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
-                await this.tmcService.payOrder(res.TradeNo);
+                payResult = await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
-              // await AppHelper.alert(
-              //   LanguageHelper.Order.getBookTicketWaitingTip(),
-              //   true
-              // );
+              await AppHelper.alert(
+                LanguageHelper.Order.getBookTicketWaitingTip(),
+                true
+              );
             }
           } else {
             if (isSave) {
@@ -880,29 +881,15 @@ export class FlightBookDfPage
               // await AppHelper.alert("下单成功!");
             }
           }
-          const hasRight = await this.tmcService.checkHasHotelBookRight();
-          // if (hasRight) {
-          //   const ok = await AppHelper.alert(
-          //     "您的预订已完成，是否继续预订酒店？",
-          //     true,
-          //     "是",
-          //     "否"
-          //   );
-          //   if (ok) {
-          //     this.router.navigate([AppHelper.getRoutePath("search-hotel")], {
-          //       queryParams: {
-          //         fromRoute: "bookflight",
-          //       },
-          //     });
-          //     return;
-          //   }
-          // }
-          this.goToMyOrders(ProductItemType.plane);
+          this.goToMyOrders({
+            isHasTask,
+            payResult
+          });
         }
       }
     }
   }
-  private goToMyOrders(tab: ProductItemType) {
+  private goToMyOrders(data: { isHasTask: boolean;  payResult: boolean; }) {
     // this.router.navigate(["order-list"], {
     //   // isbackhome:true，是防止 android 通过物理返回键返回当前页面
     //   queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
@@ -916,10 +903,10 @@ export class FlightBookDfPage
       this.router.navigate(["checkout-success"], {
         queryParams: {
           tabId: ProductItemType.plane,
-          // cityCode: c && c.CityCode,
-          // cityName: c && c.CityName,
           cityCode: cities && cities.CityCode,
           cityName: cities && cities.CityName,
+          isApproval:data.isHasTask,
+          payResult:data.payResult,
           date: m.Date
         },
       });
@@ -1016,8 +1003,7 @@ export class FlightBookDfPage
         item.isShowDetail = true;
       }
       await AppHelper.alert(
-        `${item.vmCredential && item.vmCredential.Name} 【${
-          item.vmCredential && item.vmCredential.HideNumber
+        `${item.vmCredential && item.vmCredential.Name} 【${item.vmCredential && item.vmCredential.HideNumber
         }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
@@ -1100,11 +1086,10 @@ export class FlightBookDfPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
-            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-            : combindInfo.credentialStaffOtherMobile
-        }`;
+        p.Mobile = `${p.Mobile
+          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+          : combindInfo.credentialStaffOtherMobile
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1114,11 +1099,10 @@ export class FlightBookDfPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
-            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-            : combindInfo.credentialStaffOtherEmail
-        }`;
+        p.Email = `${p.Email
+          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+          : combindInfo.credentialStaffOtherEmail
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1161,7 +1145,7 @@ export class FlightBookDfPage
         }
       }
       if (!p.Mobile) {
-        combindInfo.isShowCredentialDetail=true;
+        combindInfo.isShowCredentialDetail = true;
         setTimeout(() => {
           const ele: HTMLElement = this.getEleByAttr("othermobileid", combindInfo.id);
           showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
@@ -1597,28 +1581,28 @@ export class FlightBookDfPage
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
-            item.bookInfo.flightSegment &&
-            item.bookInfo.flightSegment.TakeoffTime
+          item.bookInfo.flightSegment &&
+          item.bookInfo.flightSegment.TakeoffTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
