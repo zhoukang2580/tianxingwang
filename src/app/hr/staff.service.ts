@@ -484,6 +484,7 @@ export class StaffEntity {
   CostCenterCode: string; // String 成本中心代码
   CostCenterName: string; // String 成本中心名称
   CredentialsInfo: string; // String 证件信息
+  HideCredentialsNumber: string; // String 证件信息
   IsUsed: boolean; // 是否启用
   BookType: StaffBookType; // int 预订类型
   BookCodes: string; // String 预订代码

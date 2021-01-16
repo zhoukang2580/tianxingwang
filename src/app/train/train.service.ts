@@ -1052,6 +1052,7 @@ export class TrainService {
         Id: string;
         Name: string;
         CredentialsNumber: string;
+        HideCredentialsNumber: string;
         StartTime: string;
         ArrivalTime: string;
         FromStationName: string;
