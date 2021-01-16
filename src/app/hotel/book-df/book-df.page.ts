@@ -1587,21 +1587,20 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           // );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
-          let checkPayFaild=false;
+          let checkPayResult=false;
           if (!isSave) {
-            let canPay = res.IsCheckPay;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;
-              canPay = await this.checkPay(res.TradeNo);
+              checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
             }
-            if (canPay) {
+            if (checkPayResult) {
               if (res.HasTasks) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
-              } else {
+              }else{
                 await this.tmcService.payOrder(res.TradeNo);
               }
             } else {

@@ -405,7 +405,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
     if (
       Tmc.InternationalHotelApprovalType ==
-        TmcApprovalType.ExceedPolicyApprover &&
+      TmcApprovalType.ExceedPolicyApprover &&
       this.getRuleMessage(item.bookInfo.bookInfo.roomPlan)
     ) {
       return true;
@@ -498,20 +498,16 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     await AppHelper.alert(
       this.langService.isCn
-        ? `${
-            (item.credentialStaff && item.credentialStaff.Name) ||
-            (item.credential &&
-              item.credential.Surname + item.credential.Givenname)
-          } 【${
-            item.credential && item.credential.Number
-          }】 ${msg} 信息不能为空`
-        : `${
-            (item.credentialStaff && item.credentialStaff.Name) ||
-            (item.credential &&
-              item.credential.Surname + item.credential.Givenname)
-          } 【${
-            item.credential && item.credential.Number
-          }】 ${msg} Information cannot be empty`
+        ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.Surname + item.credential.Givenname)
+        } 【${item.credential && item.credential.Number
+        }】 ${msg} 信息不能为空`
+        : `${(item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.Surname + item.credential.Givenname)
+        } 【${item.credential && item.credential.Number
+        }】 ${msg} Information cannot be empty`
     );
     this.moveRequiredEleToViewPort(ele);
   }
@@ -679,17 +675,17 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.name
+          combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialNumber
+          combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialType
+          combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -812,11 +808,10 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
-            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-            : combindInfo.credentialStaffOtherMobile
-        }`;
+        p.Mobile = `${p.Mobile
+          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+          : combindInfo.credentialStaffOtherMobile
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -826,11 +821,10 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
-            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-            : combindInfo.credentialStaffOtherEmail
-        }`;
+        p.Email = `${p.Email
+          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+          : combindInfo.credentialStaffOtherEmail
+          }`;
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
@@ -1100,20 +1094,20 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1444,19 +1438,14 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
           // );
           this.isSubmitDisabled = true;
           this.isPlaceOrderOk = true;
-          if (
-            !isSave &&
-            isSelf &&
-            (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            let canPay = true;
+          if (!isSave) {
+            let checkPayResult = false;
             if (res.IsCheckPay) {
               this.isCheckingPay = true;
-              canPay = await this.checkPay(res.TradeNo);
+              checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
             }
-            if (canPay) {
+            if (checkPayResult) {
               if (res.HasTasks) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
@@ -1773,9 +1762,9 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   getCredentialTypeName(item: IPassengerHotelBookInfo) {
     switch (
-      item &&
-      item.creditCardPersionInfo &&
-      item.creditCardPersionInfo.credentialType
+    item &&
+    item.creditCardPersionInfo &&
+    item.creditCardPersionInfo.credentialType
     ) {
       case `${CredentialsType.IdCard}`:
         return "身份证";
