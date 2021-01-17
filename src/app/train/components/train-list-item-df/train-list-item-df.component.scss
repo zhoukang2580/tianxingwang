@@ -1,6 +1,9 @@
 .price {
   color: var(--ion-color-danger);
   align-self: flex-start;
+  display: flex;
+  flex-flow: nowrap;
+  align-items: center;
 }
 .time,
 .station,

@@ -2,6 +2,12 @@
   <ion-title>筛选</ion-title>
 </ion-header>
 <ion-content style="--background: #fff">
+  <ion-list>
+    <ion-item>
+      <ion-label>只看有票</ion-label>
+      <ion-checkbox [(ngModel)]='filterCondition&&filterCondition.isOnlyHasSeat'></ion-checkbox>
+    </ion-item>
+  </ion-list>
   <ion-list lines="none">
     <ion-list-header>车次类型</ion-list-header>
     <ion-row>

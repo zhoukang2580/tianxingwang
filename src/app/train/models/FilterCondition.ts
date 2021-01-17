@@ -1,4 +1,5 @@
 export class FilterTrainCondition {
+  isOnlyHasSeat:boolean;
   trainTypes: TrainFilterItemModel[];
   departureStations: TrainFilterItemModel[];
   arrivalStations:TrainFilterItemModel[];

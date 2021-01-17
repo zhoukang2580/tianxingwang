@@ -26,10 +26,11 @@ export class TrainFilterComponent implements OnInit {
   depatureStations: TrainFilterItemModel[];
   arrivalStations: TrainFilterItemModel[];
   @ViewChild(TimeSpanComponent) timeSpanComp: TimeSpanComponent;
-  filterCondition: FilterTrainCondition;
+  @Input() filterCondition: FilterTrainCondition;
   constructor(private modalCtrl: ModalController) {
     this.filterConditionChange = new EventEmitter();
-    this.filterCondition = FilterTrainCondition.init();
+
+    // this.filterCondition = FilterTrainCondition.init();
   }
   reset() {
     this.init();
@@ -60,6 +61,7 @@ export class TrainFilterComponent implements OnInit {
     this.initTrainTypes();
     this.initTimeSpan();
     this.initStations();
+    this.filterCondition.isOnlyHasSeat=false;
   }
   private initTimeSpan() {}
   private initStations() {

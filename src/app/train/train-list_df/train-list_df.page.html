@@ -45,7 +45,7 @@
       </ion-toolbar>
     </div>
   </ion-list>
-  <app-refresher slot="fixed" (ionRefresh)="doRefresh(true,false)">
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh(true,true)">
     <ion-refresher-content>正在刷新...</ion-refresher-content>
   </app-refresher>
   <app-or-comp *ngIf='isLoading'>

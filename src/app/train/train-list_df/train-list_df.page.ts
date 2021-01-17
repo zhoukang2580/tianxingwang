@@ -86,8 +86,9 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   get isFiltered() {
     return (
       this.filterCondition &&
-      ((this.filterCondition.arrivalStations &&
-        this.filterCondition.arrivalStations.length) ||
+      (this.filterCondition.isOnlyHasSeat ||
+        (this.filterCondition.arrivalStations &&
+          this.filterCondition.arrivalStations.length) ||
         (this.filterCondition.departureStations &&
           this.filterCondition.departureStations.length) ||
         (this.filterCondition.trainTypes &&
@@ -135,7 +136,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.searchModalSubscription.unsubscribe();
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async (_) => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
@@ -146,7 +147,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (this.currentSelectedPassengerIds && this.lastSelectedPassengerIds) {
         if (
           this.currentSelectedPassengerIds.length !=
-            this.lastSelectedPassengerIds.length ||
+          this.lastSelectedPassengerIds.length ||
           !this.currentSelectedPassengerIds.some(
             (it) => !!this.lastSelectedPassengerIds.find((id) => id == it)
           ) ||
@@ -233,7 +234,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     });
     m.present();
   }
-  trackBy(idx: number, train: TrainEntity){
+  trackBy(idx: number, train: TrainEntity) {
     return train && train.TrainCode;
   }
   async onSelectStation(isFrom: boolean) {
@@ -298,26 +299,26 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (!d.data) {
         return;
       }
-      let data:TrainEntity[]=[];
+      let data: TrainEntity[] = [];
       if (d.data == "isUnFilterPolicy") {
         data = this.filterPassengerPolicyTrains(null);
       } else {
         data = this.filterPassengerPolicyTrains(d.data);
       }
       data = this.filterTrains(data);
-      console.log(data,'data');
+      console.log(data, 'data');
 
       this.vmTrains.forEach(element => {
-        if(element.isShowSeats){
+        if (element.isShowSeats) {
           this.trainCodes.push(element.TrainCode);
         }
       });
-      console.log("TrainCodes ",this.trainCodes);
-      data.forEach(t=>{
-        t.isShowSeats = this.trainCodes.find(it=>it==t.TrainCode);
+      console.log("TrainCodes ", this.trainCodes);
+      data.forEach(t => {
+        t.isShowSeats = this.trainCodes.find(it => it == t.TrainCode);
       })
       this.vmTrains = data;
-      
+
       this.isLoading = false;
     } catch (e) {
       console.error(e);
@@ -346,6 +347,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     const m = await this.modalCtrl.create({
       component: TrainFilterComponent,
       componentProps: {
+        filterCondition: this.filterCondition,
         trains: JSON.parse(JSON.stringify(this.trains)),
       },
       cssClass: "offset-top-40 top-radius-8",
@@ -401,6 +403,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
+    keepSearchCondition = true;
     this.trainsForRender = [];
     this.trainCodes = [];
     this.trainsCount = 0;
@@ -427,6 +430,11 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
         this.filterCondition = FilterTrainCondition.init();
         setTimeout(() => {
           this.activeTab = "none";
+        }, 0);
+      }
+      if (this.isFiltered) {
+        setTimeout(() => {
+          this.activeTab = "filter";
         }, 0);
       }
       this.isLoading = true;
@@ -542,6 +550,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     result = this.filterByDepartureTimespan(result);
     result = this.filterByDepartureStations(result);
     result = this.filterByArrivalStations(result);
+    result = this.filterByIsOnlyHasSeat(result);
     return result;
   }
   onScrollToTop() {
@@ -562,6 +571,18 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
           (h < this.filterCondition.departureTimeSpan.upper ||
             (h == this.filterCondition.departureTimeSpan.upper && m <= 0))
         );
+      });
+    }
+    return trains;
+  }
+  private filterByIsOnlyHasSeat(trains: TrainEntity[]) {
+    if (
+      trains &&
+      this.filterCondition &&
+      this.filterCondition.isOnlyHasSeat
+    ) {
+      return trains.filter((train) => {
+        return train.Seats && train.Seats.some(s => +s.Count > 0);
       });
     }
     return trains;
