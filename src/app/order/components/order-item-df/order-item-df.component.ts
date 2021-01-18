@@ -195,7 +195,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
                 t.OrderTrainTrips = t.OrderTrainTrips.map((trip) => {
                   if (trip.StartTime) {
                     trip["StartTimeGetHHmm"] = this.getHHmm(trip.StartTime);
-                    trip.StartTime = trip.StartTime.substr(0, 10);
+                    // trip.StartTime = trip.StartTime.substr(0, 10);
                   }
                   return trip;
                 });

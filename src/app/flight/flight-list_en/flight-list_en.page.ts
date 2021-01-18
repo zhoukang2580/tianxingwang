@@ -451,7 +451,10 @@ export class FlightListEnPage
       this.isLoading = true;
       this.currentProcessStatus = "正在获取航班列表";
       this.apiService.showLoadingView({ msg: this.currentProcessStatus });
-      this.oldSearchCities.fromCityCode = this.searchFlightModel.fromCity.Code;
+      this.oldSearchCities.fromCityCode =
+        this.searchFlightModel &&
+        this.searchFlightModel.fromCity &&
+        this.searchFlightModel.fromCity.Code;
       this.oldSearchCities.toCityCode = this.searchFlightModel.toCity.Code;
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
         loadDataFromServer
@@ -636,7 +639,7 @@ export class FlightListEnPage
       return;
     }
     this.isCanLeave = true;
-    const rs = await this.flightCityService.onSelectCity(true,isFrom);
+    const rs = await this.flightCityService.onSelectCity(true, isFrom);
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {
@@ -651,8 +654,8 @@ export class FlightListEnPage
           FromAsAirport: s.ToAsAirport,
           ToAsAirport: s.FromAsAirport,
         });
-        if(this.checkIfCityChanged()){
-          this.doRefresh(true,false);
+        if (this.checkIfCityChanged()) {
+          this.doRefresh(true, false);
         }
       } else {
       }
@@ -930,7 +933,7 @@ export class FlightListEnPage
   }
   canDeactivate() {
     if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity(false,false);
+      this.flightCityService.onSelectCity(false, false);
       return false;
     }
     const s = this.flightService.getSearchFlightModel();

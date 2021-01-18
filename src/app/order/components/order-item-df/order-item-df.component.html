@@ -33,7 +33,7 @@
               <div class="item">
                 <div>起飞时间</div>
                 <div>
-                  <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime}}</span>
+                  <span *ngIf='trip.TakeoffTime'>{{trip.TakeoffTime.replace("T"," ")}}</span>
                 </div>
               </div>
               <div class="item" style='align-items: center;' *ngIf='(ticket.TicketType==OrderFlightTicketType.International?first:true)'>
@@ -100,43 +100,34 @@
           <ion-col style="text-align: end;" class='dark'>
             <strong class="strong">{{order.StatusName}}</strong>
           </ion-col>
-          <!-- <ion-text color='medium'>
-            （{{order.StatusName}}）
-          </ion-text> -->
-          <!-- <ion-col>
-            <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime}}</span>
-          </ion-col> -->
         </ion-row>
-        <ion-row class="ion-img">
-          <ion-col size='1.2'>
-            <ion-text color="medium"><img src="assets/images/3.png" alt=""></ion-text>
-          </ion-col>
-          <!-- <ion-col class='select-text' class='dark'>
-            <strong>
-              {{orderHotel.HotelName}}
-            </strong>
-          </ion-col> -->
-          <ion-col class='select-text' class='dark' *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
-            <strong>
-              <ion-text>{{orderTrainTrip.TrainCode}}</ion-text>&nbsp;&nbsp;
-              <ion-text *ngFor='let train of orderTrainTicket.OrderTrainTrips'>
-                <ion-text class='from-station-name'>{{train?.FromStationName}} </ion-text>
-                —
-                <ion-text class='to-station-name'> {{train?.ToStationName}}</ion-text>
+        <ng-container *ngFor='let orderTrainTrip of orderTrainTicket.OrderTrainTrips'>
+          <ion-row class="ion-img">
+            <ion-col size='1.2'>
+              <ion-text color="medium"><img src="assets/images/3.png" alt=""></ion-text>
+            </ion-col>
+            <ion-col class='select-text' class='dark'>
+              <strong>
+                <ion-text>{{orderTrainTrip.TrainCode}}</ion-text>&nbsp;&nbsp;
+                <ion-text>
+                  <ion-text class='from-station-name'>{{orderTrainTrip?.FromStationName}} </ion-text>
+                  —
+                  <ion-text class='to-station-name'> {{orderTrainTrip?.ToStationName}}</ion-text>
+                </ion-text>
+              </strong>
+            </ion-col>
+          </ion-row>
+          <ion-row class="train_ion">
+            <ion-col size='2.5'>
+              <ion-text color="medium">发车时间</ion-text>
+            </ion-col>
+            <ion-col>
+              <ion-text color='medium'>
+                <span *ngIf='orderTrainTrip?.StartTime'>{{orderTrainTrip.StartTime.replace("T"," ")}}</span>
               </ion-text>
-            </strong>
-          </ion-col>
-        </ion-row>
-        <ion-row class="train_ion">
-          <ion-col size='2.5'>
-            <ion-text color="medium">发车时间</ion-text>
-          </ion-col>
-          <ion-col>
-            <ion-text color='medium'>
-              <span *ngIf='order.InsertDateTime'>{{order.InsertDateTime}}</span>
-            </ion-text>
-          </ion-col>
-        </ion-row>
+            </ion-col>
+          </ion-row>
+        </ng-container>
         <ion-row class="train_ion" [class.btn-show-margin]="order.VariablesJsonObj.isPay">
           <ion-col size='2.5'>
             <ion-text color="medium"> 旅客姓名</ion-text>

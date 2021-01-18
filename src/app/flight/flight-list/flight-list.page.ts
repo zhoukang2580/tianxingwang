@@ -148,7 +148,7 @@ export class FlightListPage
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
     private storage: Storage,
-    private flightCityService:FlightCityService,
+    private flightCityService: FlightCityService,
     private tmcService: TmcService
   ) {
     this.subscriptions.push(
@@ -430,7 +430,10 @@ export class FlightListPage
       this.isLoading = true;
       this.currentProcessStatus = "正在获取航班列表";
       this.apiService.showLoadingView({ msg: this.currentProcessStatus });
-      this.oldSearchCities.fromCityCode = this.searchFlightModel.fromCity.Code;
+      this.oldSearchCities.fromCityCode =
+        this.searchFlightModel &&
+        this.searchFlightModel.fromCity &&
+        this.searchFlightModel.fromCity.Code;
       this.oldSearchCities.toCityCode = this.searchFlightModel.toCity.Code;
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
         loadDataFromServer
@@ -617,7 +620,7 @@ export class FlightListPage
     }
     this.isCanLeave = true;
     // this.flightService.onSelectCity(isFrom);
-    const rs = await this.flightCityService.onSelectCity(true,isFrom);
+    const rs = await this.flightCityService.onSelectCity(true, isFrom);
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {
@@ -632,12 +635,11 @@ export class FlightListPage
           FromAsAirport: s.ToAsAirport,
           ToAsAirport: s.FromAsAirport,
         });
-        if(this.checkIfCityChanged()){
-          this.doRefresh(true,false);
+        if (this.checkIfCityChanged()) {
+          this.doRefresh(true, false);
         }
       } else {
       }
-
     }
   }
   private async initSearchModelParams() {
@@ -909,7 +911,7 @@ export class FlightListPage
   }
   canDeactivate() {
     if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity(false,false);
+      this.flightCityService.onSelectCity(false, false);
       return false;
     }
     const s = this.flightService.getSearchFlightModel();

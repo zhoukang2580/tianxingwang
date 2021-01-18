@@ -31,7 +31,7 @@
                     <ion-label color='medium' *ngIf='forType != FlightHotelTrainType.InternationalFlight'>
                         <ion-text color='dark' notranslate>{{item?.Name}}</ion-text>
                         <ng-container *ngIf='!item.CredentialsInfo'>
-                            {{item.Number}}
+                            {{item.HideNumber}}
                         </ng-container>
                         <span *ngIf='item.CredentialsInfo'>
               {{item?.CredentialsInfo}}
@@ -86,7 +86,7 @@
                                         ID No.:
                                     </ion-col>
                                     <ion-col>
-                                        {{item?.Number}}
+                                        {{item?.HideNumber}}
                                     </ion-col>
                                 </ion-row>
                                 <ion-row>
@@ -181,7 +181,7 @@
                                         ID No.:
                                     </ion-col>
                                     <ion-col>
-                                        {{item?.Number}}
+                                        {{item?.HideNumber}}
                                     </ion-col>
                                 </ion-row>
                                 <ion-row>
