@@ -382,18 +382,27 @@ export class OrderListEnPage
         !res ||
         !res.trip ||
         !res.order ||
-        !res.order.OrderPassengers ||
-        !res.order.OrderPassengers.length
+        !res.order.OrderFlightTickets ||
+        !res.order.OrderFlightTickets.length
       ) {
         AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
-      const orderPassenger = res.order.OrderPassengers[0];
+      const ticket = res.order.OrderFlightTickets.find(
+        (it) => it.Id == data.ticketId
+      );
+      if (!ticket) {
+        AppHelper.alert("改签失败，请联系客服人员");
+        return;
+      }
+      const orderPassenger = ticket.Passenger;
+      const credentails = res.credentails || [];
+      const hideCredential = credentails.find(it => it.CredentialsNumber == orderPassenger.CredentialsNumber)
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
       await this.flightService.initSelfBookTypeBookInfos();
       const isSelf = await this.staffService.isSelfBookType();
-      const bookInfos = this.flightService.getPassengerBookInfos();
+      let bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
         if (isSelf) {
           await AppHelper.alert("改签失败，请联系客服人员");
@@ -408,6 +417,7 @@ export class OrderListEnPage
             } as StaffEntity,
             credential: {
               Number: orderPassenger.CredentialsNumber,
+              HideNumber: hideCredential && hideCredential.HideCredentialsNumber,
               Type: orderPassenger.CredentialsType,
               TypeName: orderPassenger.CredentialsTypeName,
               Name: orderPassenger.Name,
@@ -417,12 +427,6 @@ export class OrderListEnPage
         }
       }
       let passenger: StaffEntity = bookInfos[0].passenger;
-      if (res.staff) {
-        passenger = {
-          ...passenger,
-          ...res.staff,
-        };
-      }
       let credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
@@ -430,11 +434,8 @@ export class OrderListEnPage
         isFilterPolicy: false,
         isNotWhitelist: !isSelf,
       };
-      this.flightService.addPassengerBookInfo(info);
-      if (!bookInfos.length) {
-        AppHelper.alert("改签失败，请联系客服人员");
-        return;
-      }
+      // this.flightService.addPassengerBookInfo(info);
+      bookInfos = [info];
       bookInfos[0].exchangeInfo = {
         order: { Id: data.orderId } as any,
         ticket: { Id: data.ticketId } as any,
@@ -454,6 +455,7 @@ export class OrderListEnPage
         Date: date.substr(0, 10),
       });
       this.isGoDetail = true;
+      this.flightService.setPassengerBookInfosSource(bookInfos);
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true },
       });

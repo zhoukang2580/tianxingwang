@@ -95,7 +95,7 @@ export class OrderListDfPage
     private cdref: ChangeDetectorRef,
     private langService: LangService,
     private staffService: StaffService
-  ) {}
+  ) { }
   canDeactivate() {
     console.log("canDeactivate isbackhome=", this.isBackHome);
     if (this.isBackHome && !this.isGoDetail) {
@@ -219,8 +219,8 @@ export class OrderListDfPage
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-        ? "Hotel"
-        : "Train";
+          ? "Hotel"
+          : "Train";
     this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
@@ -337,10 +337,9 @@ export class OrderListDfPage
           text: "确定",
           handler: (data: { year: TV; month: TV; day: TV }) => {
             this.selectDateChange.emit(
-              `${data.year.value}-${
-                +data.month.value < 10
-                  ? "0" + data.month.value
-                  : data.month.value
+              `${data.year.value}-${+data.month.value < 10
+                ? "0" + data.month.value
+                : data.month.value
               }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
             );
           },
@@ -400,6 +399,8 @@ export class OrderListDfPage
         return;
       }
       const orderPassenger = ticket.Passenger;
+      const credentails = res.credentails || [];
+      const hideCredential = credentails.find(it => it.CredentialsNumber == orderPassenger.CredentialsNumber)
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
       await this.flightService.initSelfBookTypeBookInfos();
@@ -419,6 +420,7 @@ export class OrderListDfPage
             } as StaffEntity,
             credential: {
               Number: orderPassenger.CredentialsNumber,
+              HideNumber: hideCredential && hideCredential.HideCredentialsNumber,
               Type: orderPassenger.CredentialsType,
               TypeName: orderPassenger.CredentialsTypeName,
               Name: orderPassenger.Name,
@@ -428,12 +430,6 @@ export class OrderListDfPage
         }
       }
       let passenger: StaffEntity = bookInfos[0].passenger;
-      if (res.staff) {
-        passenger = {
-          ...passenger,
-          ...res.staff,
-        };
-      }
       let credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
@@ -631,10 +627,10 @@ export class OrderListDfPage
           this.activeTab.value == ProductItemType.plane
             ? "Flight"
             : this.activeTab.value == ProductItemType.train
-            ? "Train"
-            : this.activeTab.value == ProductItemType.car
-            ? "Car"
-            : "Hotel";
+              ? "Train"
+              : this.activeTab.value == ProductItemType.car
+                ? "Car"
+                : "Hotel";
       }
       this.orderModel.Type = m.Type;
       if (
@@ -698,13 +694,11 @@ export class OrderListDfPage
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }`;
+      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }`;
+      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }`;
     }
     return url;
   }
@@ -931,7 +925,7 @@ export class OrderListDfPage
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-          OrderTravelPayType.Person) &&
+        OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;

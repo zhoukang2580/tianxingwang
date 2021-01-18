@@ -52,7 +52,7 @@ export class OrderService {
     private apiService: ApiService,
     private modalCtrl: ModalController,
     private calendarService: CalendarService
-  ) {}
+  ) { }
   getOrderList(searchCondition: OrderModel) {
     const req = new RequestEntity();
     // req.IsShowLoading = true;
@@ -174,7 +174,7 @@ export class OrderService {
       (order.GetVariable<number>("TravelPayType") ==
         OrderTravelPayType.Credit ||
         order.GetVariable<number>("TravelPayType") ==
-          OrderTravelPayType.Person) &&
+        OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;
@@ -288,7 +288,7 @@ export class OrderService {
       fromCity: TrafficlineEntity;
       toCity: TrafficlineEntity;
       order: OrderEntity;
-      staff: StaffEntity;
+      credentails: { CredentialsNumber:string;HideCredentialsNumber:string; }[]
     }>(req);
   }
 
