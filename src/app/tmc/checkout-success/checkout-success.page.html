@@ -25,14 +25,14 @@
       </div>
     </div>
   </div>
-  <div class="integral" *ngIf="tabId==3">
+  <!-- <div class="integral" *ngIf="tabId==3">
     <div class="img">
       <div class="inside">
         <div class="right">+200<span>积分</span></div>
         <div class="center">恭喜您!获得200积分</div>
       </div>
     </div>
-  </div>
+  </div> -->
   <div class="hotel-item" *ngIf="boutiqueHotel?.HotelDayPrices?.length">
     <div class="boutique">{{city?.CityName}}精品酒店推荐</div>
     <div class="list" *ngFor="let item of boutiqueHotel?.HotelDayPrices" (click)="goToDetail(item.Id)">
