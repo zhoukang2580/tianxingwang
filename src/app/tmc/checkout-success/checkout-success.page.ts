@@ -74,7 +74,6 @@ export class CheckoutSuccessPage implements OnInit {
           this.getRecommendHotel();
         }
       }
-      this.isApproval = !!q.get("isApproval");
     })
   }
 
