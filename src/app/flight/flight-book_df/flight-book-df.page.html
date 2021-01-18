@@ -214,7 +214,7 @@
                         <div class="row" *ngIf='isAllowSelectApprove(combindInfo)' [attr.approverid]='combindInfo.id' (click)='openApproverModal(combindInfo)'>
                             <span class="label">审批人</span>
                             <ion-text class='value' *ngIf='combindInfo?.appovalStaff'>
-                                {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
+                                {{combindInfo?.appovalStaff?.Name}}
                             </ion-text>
                             <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                         </div>

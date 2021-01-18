@@ -211,7 +211,7 @@ export class FlightBookDfPage
             }
           }
         }
-      } catch { }
+      } catch {}
       setTimeout(() => {
         if (!this.isShowInsuranceBack || this.isManagentCredentails) {
           this.refresh(false);
@@ -750,10 +750,11 @@ export class FlightBookDfPage
     if (!info) {
       return "";
     }
-    return `[${info.tripType == TripType.departureTrip
-      ? LanguageHelper.getDepartureTip()
-      : LanguageHelper.getReturnTripTip()
-      }]`;
+    return `[${
+      info.tripType == TripType.departureTrip
+        ? LanguageHelper.getDepartureTip()
+        : LanguageHelper.getReturnTripTip()
+    }]`;
   }
   back() {
     this.natCtrl.back();
@@ -858,9 +859,11 @@ export class FlightBookDfPage
               this.isCheckingPay = true;
               checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
+            } else {
+              payResult = true;
             }
             if (checkPayResult) {
-              if (res.HasTasks) {
+              if (this.isself) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
@@ -869,10 +872,12 @@ export class FlightBookDfPage
                 payResult = await this.tmcService.payOrder(res.TradeNo);
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              if (this.isself) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingTip(),
+                  true
+                );
+              }
             }
           } else {
             if (isSave) {
@@ -882,14 +887,14 @@ export class FlightBookDfPage
             }
           }
           this.goToMyOrders({
-            isHasTask,
-            payResult
+            isHasTask: isHasTask && this.isself,
+            payResult,
           });
         }
       }
     }
   }
-  private goToMyOrders(data: { isHasTask: boolean;  payResult: boolean; }) {
+  private goToMyOrders(data: { isHasTask: boolean; payResult: boolean }) {
     // this.router.navigate(["order-list"], {
     //   // isbackhome:true，是防止 android 通过物理返回键返回当前页面
     //   queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
@@ -905,14 +910,13 @@ export class FlightBookDfPage
           tabId: ProductItemType.plane,
           cityCode: cities && cities.CityCode,
           cityName: cities && cities.CityName,
-          isApproval:data.isHasTask,
-          payResult:data.payResult,
-          date: m.Date
+          isApproval: data.isHasTask,
+          payResult: data.payResult,
+          date: m.Date,
         },
       });
     } catch (e) {
       console.error(e);
-
     }
   }
   private async checkPay(tradeNo: string) {
@@ -1003,7 +1007,8 @@ export class FlightBookDfPage
         item.isShowDetail = true;
       }
       await AppHelper.alert(
-        `${item.vmCredential && item.vmCredential.Name} 【${item.vmCredential && item.vmCredential.HideNumber
+        `${item.vmCredential && item.vmCredential.Name} 【${
+          item.vmCredential && item.vmCredential.HideNumber
         }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
@@ -1086,10 +1091,11 @@ export class FlightBookDfPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${p.Mobile
-          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-          : combindInfo.credentialStaffOtherMobile
-          }`;
+        p.Mobile = `${
+          p.Mobile
+            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+            : combindInfo.credentialStaffOtherMobile
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1099,10 +1105,11 @@ export class FlightBookDfPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${p.Email
-          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-          : combindInfo.credentialStaffOtherEmail
-          }`;
+        p.Email = `${
+          p.Email
+            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+            : combindInfo.credentialStaffOtherEmail
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1147,7 +1154,10 @@ export class FlightBookDfPage
       if (!p.Mobile) {
         combindInfo.isShowCredentialDetail = true;
         setTimeout(() => {
-          const ele: HTMLElement = this.getEleByAttr("othermobileid", combindInfo.id);
+          const ele: HTMLElement = this.getEleByAttr(
+            "othermobileid",
+            combindInfo.id
+          );
           showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
         }, 200);
         return false;
@@ -1581,28 +1591,28 @@ export class FlightBookDfPage
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
-          item.bookInfo.flightSegment &&
-          item.bookInfo.flightSegment.TakeoffTime
+            item.bookInfo.flightSegment &&
+            item.bookInfo.flightSegment.TakeoffTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
