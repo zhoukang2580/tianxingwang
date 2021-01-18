@@ -324,7 +324,10 @@ export class FlightListPage
       .catch((_) => null);
     this.showAddPassenger =
       (identity && identity.Numbers && identity.Numbers.AgentId) ||
-      !(await this.staffService.isSelfBookType());
+      (!(await this.staffService.isSelfBookType()) &&
+        !this.flightService
+          .getPassengerBookInfos()
+          .every((it) => it.exchangeInfo));
     return this.showAddPassenger;
   }
   async onCalenderClick() {

@@ -253,7 +253,6 @@ export class OrderListDfPage
               });
               this.condition.pageIndex++;
             }
-            
           }
         },
         (err) => {
@@ -387,18 +386,25 @@ export class OrderListDfPage
         !res ||
         !res.trip ||
         !res.order ||
-        !res.order.OrderPassengers ||
-        !res.order.OrderPassengers.length
+        !res.order.OrderFlightTickets ||
+        !res.order.OrderFlightTickets.length
       ) {
         AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
-      const orderPassenger = res.order.OrderPassengers[0];
+      const ticket = res.order.OrderFlightTickets.find(
+        (it) => it.Id == data.ticketId
+      );
+      if (!ticket) {
+        AppHelper.alert("改签失败，请联系客服人员");
+        return;
+      }
+      const orderPassenger = ticket.Passenger;
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
       await this.flightService.initSelfBookTypeBookInfos();
       const isSelf = await this.staffService.isSelfBookType();
-      const bookInfos = this.flightService.getPassengerBookInfos();
+      let bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
         if (isSelf) {
           await AppHelper.alert("改签失败，请联系客服人员");
@@ -435,11 +441,8 @@ export class OrderListDfPage
         isFilterPolicy: false,
         isNotWhitelist: !isSelf,
       };
-      this.flightService.addPassengerBookInfo(info);
-      if (!bookInfos.length) {
-        AppHelper.alert("改签失败，请联系客服人员");
-        return;
-      }
+      // this.flightService.addPassengerBookInfo(info);
+      bookInfos = [info];
       bookInfos[0].exchangeInfo = {
         order: { Id: data.orderId } as any,
         ticket: { Id: data.ticketId } as any,
@@ -459,6 +462,7 @@ export class OrderListDfPage
         Date: date.substr(0, 10),
       });
       this.isGoDetail = true;
+      this.flightService.setPassengerBookInfosSource(bookInfos);
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true },
       });

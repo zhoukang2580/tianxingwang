@@ -202,6 +202,7 @@ export class SearchTrainDfPage
       this.searchTrainModel.isExchange &&
       this.searchTrainModel.isLockedDestination
     ) {
+      AppHelper.alert("距离出发时间48小时内，不得更改达到城市");
       return;
     }
     this.trainService.onSwapCity();
