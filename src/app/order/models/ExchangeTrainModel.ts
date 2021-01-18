@@ -47,6 +47,7 @@ export class ExchangeTrainModel {
     /// 是否回城
     /// </summary>
     IsBack: boolean;
+    isLockedDestination: boolean;
     /// <summary>
     /// 乘客
     /// </summary>

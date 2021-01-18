@@ -44,6 +44,7 @@ export class SearchTrainModel {
   ToStation: string;
   TrainNo: string;
   isLocked?: boolean;
+  isLockedDestination?: boolean;
   tripType: TripType;
   isRoundTrip?: boolean; // 是否是往返
   isExchange?: boolean; // 是否是改签
@@ -521,7 +522,6 @@ export class TrainService {
           }
         }
       }
-      
     }
   }
   private async selectAndReplaceBookInfos(
@@ -570,7 +570,7 @@ export class TrainService {
         }
       }
     }
-    
+
     bookInfos = bookInfos.map((it) => {
       const item = data.find((d) => d.id == it.id);
       if (item) {
@@ -838,8 +838,10 @@ export class TrainService {
   setBookInfoSource(infos: PassengerBookInfo<ITrainInfo>[]) {
     console.log("setBookInfoSource", infos);
     var obj = {};
-    infos = infos.reduce(function(item, next) {
-      obj[next?.credential?.Id] ? '' : obj[next?.credential?.Id] = true && item.push(next);
+    infos = infos.reduce(function (item, next) {
+      obj[next?.credential?.Id]
+        ? ""
+        : (obj[next?.credential?.Id] = true && item.push(next));
       return item;
     }, []);
     this.bookInfos = infos || [];
@@ -1018,7 +1020,19 @@ export class TrainService {
       TicketId: ticketId,
     };
     return this.apiService
-      .getPromiseData<ExchangeTrainModel>(req)
+      .getPromiseData<{
+        model: ExchangeTrainModel;
+        isLockedDestination: boolean;
+      }>(req)
+      .then((it) => {
+        if (it) {
+          return {
+            ...it.model,
+            isLockedDestination: it.isLockedDestination,
+          };
+        }
+        return it;
+      })
       .catch((_) => {
         AppHelper.alert(_.Message || _);
         return null;
@@ -1095,6 +1109,7 @@ export class TrainService {
       const trainStations = await this.getStationsAsync();
       // .catch(_=>[]);
       if (!info || !info.OrderTrainTicket) {
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       let books = this.getBookInfos();
@@ -1140,6 +1155,7 @@ export class TrainService {
       this.setSearchTrainModelSource({
         ...this.getSearchTrainModel(),
         isLocked: true,
+        isLockedDestination:info.isLockedDestination,
         isExchange: true,
         isRoundTrip: false,
         fromCity,

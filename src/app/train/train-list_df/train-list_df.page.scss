@@ -1,4 +1,4 @@
-.ion-toolbar{
+.ion-toolbar {
   height: 55px;
   display: flex;
   align-items: center;
@@ -44,7 +44,7 @@ ion-content {
   }
 }
 
-ion-toolbar{
+ion-toolbar {
   margin-top: -8px;
 }
 
@@ -108,7 +108,7 @@ ion-toolbar{
 ion-list.fakelist {
   margin-top: 0;
 }
-ion-list{
+ion-list {
   background: #f6f6f6;
   margin-bottom: -15px;
 }
@@ -116,13 +116,15 @@ ion-list{
   margin: 0 1em;
 }
 
-img{
+img {
   width: 14px;
   margin: 0px 7px -4px;
 }
 
-.city-name{
+.city-name {
   font-size: 14px;
   color: #000;
 }
-
+[color="medium"] .city-name {
+  color: var(--ion-color-medium);
+}

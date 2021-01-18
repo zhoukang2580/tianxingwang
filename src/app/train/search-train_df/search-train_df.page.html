@@ -25,15 +25,16 @@
       <ion-text color='danger' style="opacity: 0.7;font-size: 0.7rem;" *ngIf='searchTrainModel?.isExchange'>正在改签
       </ion-text>
       <ion-buttons class="ion-justify-content-between">
-        <ion-text style="font-size: 1.5em;" class="ion-text-wrap city-name ion-text-start" [class.disabled]='searchTrainModel?.isLocked && searchTrainModel?.isExchange' (click)='onSelectCity(true)'
+        <ion-text style="font-size: 1.5em;" class="ion-text-wrap city-name ion-text-start" [class.disabled]='searchTrainModel?.isLocked || searchTrainModel?.isExchange' (click)='onSelectCity(true)'
           color='{{searchTrainModel?.isLocked && searchTrainModel?.isExchange?"medium":"dark"}}'>
           {{searchTrainModel?.fromCity?.Nickname}}</ion-text>
         <ion-button color='{{searchTrainModel?.isLocked&&searchTrainModel?.isExchange?"medium":"secondary"}}' [disabled]='searchTrainModel?.isLocked&&searchTrainModel?.isExchange'
           (click)='onSwapCity()'>
           <img src="assets/images/qiehuan.png" style="width: 35px;" alt="">
         </ion-button>
-        <ion-text style="font-size: 1.5em;" class="ion-text-wrap city-name ion-text-end" [class.disabled]='searchTrainModel?.isLocked && !searchTrainModel?.isExchange' (click)='onSelectCity(false)'
-          color='{{searchTrainModel?.isLocked&&!searchTrainModel?.isExchange?"medium":"dark"}}'>
+        <ion-text style="font-size: 1.5em;" class="ion-text-wrap city-name ion-text-end"
+          [class.disabled]='searchTrainModel?.isLocked || (!searchTrainModel?.isExchange && searchTrainModel?.isLockedDestination)' (click)='onSelectCity(false)'
+          color='{{searchTrainModel?.isLocked && !searchTrainModel?.isExchange && !searchTrainModel?.isLockedDestination?"medium":"dark"}}'>
           {{searchTrainModel?.toCity?.Nickname}}</ion-text>
       </ion-buttons>
       <section class="flight-date">
@@ -41,7 +42,7 @@
         </app-search-day-comp>
       </section>
       <ion-button class='ion-margin-top' style='width: 100%;' (click)="searchTrain()" *ngIf='!(canAddPassengers&& selectedPassengers==0)' color="secondary" expand="block">
-        <ion-text class="text_search">查   询</ion-text>
+        <ion-text class="text_search">查 询</ion-text>
       </ion-button>
       <ng-container *ngIf='!searchTrainModel?.isExchange'>
         <ion-button class='ion-margin-top' style='width: 100%' (click)="onSelectPassenger()" *ngIf='canAddPassengers&& selectedPassengers==0' color="secondary" expand="block">

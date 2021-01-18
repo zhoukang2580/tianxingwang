@@ -48,7 +48,7 @@ import { map, tap, switchMap } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
 import { trigger, transition, style, animate } from "@angular/animations";
 import { SelectedTrainSegmentInfoEnComponent } from "../components/selected-train-segment-info_en/selected-train-segment-info_en.component";
-import { SelectedTrainSegmentInfoDfComponent } from '../components/selected-train-segment-info-df/selected-train-segment-info-df.component';
+import { SelectedTrainSegmentInfoDfComponent } from "../components/selected-train-segment-info-df/selected-train-segment-info-df.component";
 @Component({
   selector: "app-train-list-df",
   templateUrl: "./train-list_df.page.html",
@@ -136,7 +136,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.searchModalSubscription.unsubscribe();
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
   ngOnInit() {
     this.route.queryParamMap.subscribe(async (_) => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
@@ -147,7 +147,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (this.currentSelectedPassengerIds && this.lastSelectedPassengerIds) {
         if (
           this.currentSelectedPassengerIds.length !=
-          this.lastSelectedPassengerIds.length ||
+            this.lastSelectedPassengerIds.length ||
           !this.currentSelectedPassengerIds.some(
             (it) => !!this.lastSelectedPassengerIds.find((id) => id == it)
           ) ||
@@ -241,15 +241,21 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.scrollToTop();
     if (this.searchTrainModel) {
       if (
+        this.searchTrainModel.isExchange &&
+        this.searchTrainModel.isLockedDestination
+      ) {
+        return;
+      }
+      if (
         isFrom &&
-        !this.searchTrainModel?.isExchange &&
-        !this.searchTrainModel?.isLocked
+        !this.searchTrainModel.isExchange &&
+        !this.searchTrainModel.isLocked
       ) {
         this.trainService.onSelectCity(isFrom);
       }
       if (
         !isFrom &&
-        (this.searchTrainModel?.isExchange || !this.searchTrainModel?.isLocked)
+        (this.searchTrainModel.isExchange || !this.searchTrainModel.isLocked)
       ) {
         this.trainService.onSelectCity(isFrom);
       }
@@ -306,17 +312,17 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
         data = this.filterPassengerPolicyTrains(d.data);
       }
       data = this.filterTrains(data);
-      console.log(data, 'data');
+      console.log(data, "data");
 
-      this.vmTrains.forEach(element => {
+      this.vmTrains.forEach((element) => {
         if (element.isShowSeats) {
           this.trainCodes.push(element.TrainCode);
         }
       });
       console.log("TrainCodes ", this.trainCodes);
-      data.forEach(t => {
-        t.isShowSeats = this.trainCodes.find(it => it == t.TrainCode);
-      })
+      data.forEach((t) => {
+        t.isShowSeats = this.trainCodes.find((it) => it == t.TrainCode);
+      });
       this.vmTrains = data;
 
       this.isLoading = false;
@@ -576,13 +582,9 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     return trains;
   }
   private filterByIsOnlyHasSeat(trains: TrainEntity[]) {
-    if (
-      trains &&
-      this.filterCondition &&
-      this.filterCondition.isOnlyHasSeat
-    ) {
+    if (trains && this.filterCondition && this.filterCondition.isOnlyHasSeat) {
       return trains.filter((train) => {
-        return train.Seats && train.Seats.some(s => +s.Count > 0);
+        return train.Seats && train.Seats.some((s) => +s.Count > 0);
       });
     }
     return trains;

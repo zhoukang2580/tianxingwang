@@ -14,17 +14,14 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription, of } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
-import {
-  ModalController,
-  PopoverController,
-} from "@ionic/angular";
+import { ModalController, PopoverController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { map } from "rxjs/operators";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
-import { LangService } from 'src/app/services/lang.service';
-import { SelectedTrainSegmentInfoDfComponent } from '../components/selected-train-segment-info-df/selected-train-segment-info-df.component';
+import { LangService } from "src/app/services/lang.service";
+import { SelectedTrainSegmentInfoDfComponent } from "../components/selected-train-segment-info-df/selected-train-segment-info-df.component";
 @Component({
   selector: "app-search-train-df",
   templateUrl: "./search-train_df.page.html",
@@ -55,7 +52,8 @@ export class SearchTrainDfPage
     private trainService: TrainService,
     private calendarService: CalendarService,
     private modalCtrl: ModalController,
-    private popoverCtrl: PopoverController  ) {}
+    private popoverCtrl: PopoverController
+  ) {}
   async onShowSelectedBookInfos() {
     let c = SelectedTrainSegmentInfoDfComponent;
     const m = await this.modalCtrl.create({
@@ -77,7 +75,7 @@ export class SearchTrainDfPage
   ngAfterViewInit(): void {
     console.log("ngAfterViewInit");
   }
-  onToggleDomestic(isDomestic){
+  onToggleDomestic(isDomestic) {
     this.isDomestic = isDomestic;
   }
   onSegmentChanged(evt: CustomEvent) {
@@ -101,7 +99,7 @@ export class SearchTrainDfPage
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
-      mode:"md",
+      mode: "md",
       componentProps: {
         details: s.Policy.TrainDescription.split("。"),
       },
@@ -185,6 +183,11 @@ export class SearchTrainDfPage
         return;
       }
     }
+    if (!isFrom) {
+      if (this.searchTrainModel.isLockedDestination) {
+        return;
+      }
+    }
     this.isCanLeave = true;
     this.trainService.onSelectCity(isFrom);
   }
@@ -193,6 +196,12 @@ export class SearchTrainDfPage
       return;
     }
     if (this.searchTrainModel.isExchange || this.searchTrainModel.isLocked) {
+      return;
+    }
+    if (
+      this.searchTrainModel.isExchange &&
+      this.searchTrainModel.isLockedDestination
+    ) {
       return;
     }
     this.trainService.onSwapCity();
