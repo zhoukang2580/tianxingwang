@@ -36,6 +36,7 @@ export class CheckoutSuccessPage implements OnInit {
   tabId;
   isApproval: boolean;
   isShow = true;
+  isCheckPay = true;
   payResult = false;
   constructor(
     private hotelService: HotelService,
@@ -55,6 +56,7 @@ export class CheckoutSuccessPage implements OnInit {
         this.city = {} as any;
         this.city.CityCode = q.get("cityCode");
         this.isApproval= q.get("isApproval")=='true';
+        this.isCheckPay= q.get("isCheckPay")=='true';
         this.payResult= q.get("payResult")=='true';
         this.city.Code = q.get("cityCode");
         this.city.CityName = q.get("cityName");

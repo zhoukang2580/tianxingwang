@@ -821,6 +821,7 @@ export class FlightBookPage
     let canBook = false;
     let canBook2 = false;
     const isSelf = await this.staffService.isSelfBookType();
+    this.isself=isSelf;
     const arr = this.fillGroupConbindInfoApprovalInfo(this.vmCombindInfos);
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto, arr);
@@ -844,71 +845,86 @@ export class FlightBookPage
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast("下单成功!", 1400, "top");
+          // AppHelper.toast("下单成功!", 1400, "top");
           this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
+          let isHasTask = res.HasTasks;
+          let payResult = false;
           this.flightService.removeAllBookInfos();
-          if (
-            !isSave &&
-            isSelf &&
-            (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            let canPay = true;
-            if (res.IsCheckPay) {
+          let checkPayResult = false;
+          const isCheckPay = res.IsCheckPay;
+          if (!isSave) {
+            if (isCheckPay) {
               this.isCheckingPay = true;
-              canPay = await this.checkPay(res.TradeNo);
+              checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
+            } else {
+              payResult = true;
             }
-            if (canPay) {
-              if (res.HasTasks) {
+            if (checkPayResult) {
+              if (this.isself && isHasTask) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
-                await this.tmcService.payOrder(res.TradeNo);
+                if (isCheckPay) {
+                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                }
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              if (this.isself) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                  true
+                );
+              }
             }
           } else {
             if (isSave) {
               await AppHelper.alert("订单已保存!");
             } else {
-              await AppHelper.alert("下单成功!");
+              // await AppHelper.alert("下单成功!");
             }
           }
-          const hasRight = await this.tmcService.checkHasHotelBookRight();
-          if (hasRight) {
-            const ok = await AppHelper.alert(
-              "您的预订已完成，是否继续预订酒店？",
-              true,
-              "是",
-              "否"
-            );
-            if (ok) {
-              this.router.navigate([AppHelper.getRoutePath("search-hotel")], {
-                queryParams: {
-                  fromRoute: "bookflight",
-                },
-              });
-              return;
-            }
-          }
-          this.goToMyOrders(ProductItemType.plane);
+          this.goToMyOrders({
+            isHasTask: isHasTask && this.isself,
+            payResult,
+            isCheckPay,
+          });
         }
       }
     }
   }
-  private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["order-list"], {
-      // isbackhome:true，是防止 android 通过物理返回键返回当前页面
-      queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
-    });
+  private goToMyOrders(data: {
+    isHasTask: boolean;
+    payResult: boolean;
+    isCheckPay: boolean;
+  }) {
+    // this.router.navigate(["order-list"], {
+    //   // isbackhome:true，是防止 android 通过物理返回键返回当前页面
+    //   queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
+    // });
+    try {
+      const m = this.flightService.getSearchFlightModel();
+      // const cities = await this.flightService.getStationsAsync();
+      // const city = m.toCity;
+      const cities = this.flightService.getSearchFlightModel().toCity;
+      // const c = cities.find(it => it.Code == (city && city.Code));
+      this.router.navigate(["checkout-success"], {
+        queryParams: {
+          tabId: ProductItemType.plane,
+          cityCode: cities && cities.CityCode,
+          cityName: cities && cities.CityName,
+          isApproval: data.isHasTask,
+          payResult: data.payResult,
+          isCheckPay: data.isCheckPay,
+          date: m.Date,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {

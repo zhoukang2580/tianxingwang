@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import {
   Component,
   OnInit,
@@ -85,8 +85,7 @@ import { SearchModel } from "src/app/travel-application/travel.service";
   templateUrl: "./book-df.page.html",
   styleUrls: ["./book-df.page.scss"],
 })
-export class FlightBookDfPage
-  implements OnInit, OnDestroy, AfterViewInit {
+export class FlightBookDfPage implements OnInit, OnDestroy, AfterViewInit {
   private subscriptions: Subscription[] = [];
   private subscription = Subscription.EMPTY;
   private checkPayCount = 5;
@@ -94,6 +93,7 @@ export class FlightBookDfPage
   private checkPayCountIntervalId: any;
 
   isNotWihte = true;
+  isPlaceOrderOk = true;
   FlightVoyageType = FlightVoyageType;
   searchModel: IInternationalFlightSearchModel;
   travelForm: TravelFormEntity;
@@ -123,6 +123,7 @@ export class FlightBookDfPage
   tmc: TmcEntity;
   isDingTalk = AppHelper.isDingtalkH5();
   isRoundTrip = false;
+  isself = false;
   expenseTypes: any[];
   OrderTravelType = OrderTravelType;
   constructor(
@@ -653,6 +654,7 @@ export class FlightBookDfPage
     let canBook = false;
     let canBook2 = false;
     const isSelf = await this.staffService.isSelfBookType();
+    this.isself = isSelf;
     const arr = this.fillGroupConbindInfoApprovalInfo(this.vmCombindInfos);
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = await this.fillBookPassengers(bookDto, arr);
@@ -676,41 +678,49 @@ export class FlightBookDfPage
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(this.langService.isCn ? "下单成功!" : "Checkout success", 1400, "top");
+          // AppHelper.toast("下单成功!", 1400, "top");
+          this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
+          let isHasTask = res.HasTasks;
+          let payResult = false;
           this.flightService.removeAllBookInfos();
-          if (
-            !isSave &&
-            isSelf &&
-            (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            this.isCheckingPay = true;
-            const canPay = await this.checkPay(res.TradeNo);
-            this.isCheckingPay = false;
-            if (canPay) {
-              if (res.HasTasks) {
+          let checkPayResult = false;
+          const isCheckPay = res.IsCheckPay;
+          if (!isSave) {
+            if (isCheckPay) {
+              this.isCheckingPay = true;
+              checkPayResult = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            } else {
+              payResult = true;
+            }
+            if (checkPayResult) {
+              if (this.isself && isHasTask) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
-                await this.tmcService.payOrder(res.TradeNo);
+                if (isCheckPay) {
+                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                }
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              if (this.isself) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                  true
+                );
+              }
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(this.langService.isCn ? "订单已保存" : "Order saved");
+              await AppHelper.alert("订单已保存!");
             } else {
-              await AppHelper.alert(this.langService.isCn ? "下单成功!" : "Checkout success");
+              // await AppHelper.alert("下单成功!");
             }
           }
-          this.goToMyOrders(ProductItemType.plane);
+          this.goToMyOrders();
         }
       }
     }
@@ -733,16 +743,10 @@ export class FlightBookDfPage
       };
     });
   }
-  private goToMyOrders(tab: ProductItemType) {
-    if(this.langService.isCn){
-      this.router.navigate(["order-list"], {
-        queryParams: { tabId: tab },
-      });
-    } else {
-        this.router.navigate(["order-list_en"], {
-          queryParams: { tabId: tab },
-        });
-    }
+  private goToMyOrders() {
+    this.router.navigate(["order-list"], {
+      queryParams: { tabId: ProductItemType.plane },
+    });
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {
@@ -835,23 +839,23 @@ export class FlightBookDfPage
       ele: HTMLElement
     ) => {
       await AppHelper.alert(
-        !this.langService.isCn ?
-        `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-              item.bookInfo.credential.Givenname)
-        } 【${
-          item.bookInfo.credential && item.bookInfo.credential.Number
-        }】 ${msg} Information cannot be empty` :
-        `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-              item.bookInfo.credential.Givenname)
-        } 【${
-          item.bookInfo.credential && item.bookInfo.credential.Number
-        }】 ${msg} 信息不能为空`
+        !this.langService.isCn
+          ? `${
+              (item.credentialStaff && item.credentialStaff.Name) ||
+              (item.bookInfo.credential &&
+                item.bookInfo.credential.Surname +
+                  item.bookInfo.credential.Givenname)
+            } 【${
+              item.bookInfo.credential && item.bookInfo.credential.Number
+            }】 ${msg} Information cannot be empty`
+          : `${
+              (item.credentialStaff && item.credentialStaff.Name) ||
+              (item.bookInfo.credential &&
+                item.bookInfo.credential.Surname +
+                  item.bookInfo.credential.Givenname)
+            } 【${
+              item.bookInfo.credential && item.bookInfo.credential.Number
+            }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
     };
@@ -1104,7 +1108,11 @@ export class FlightBookDfPage
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumber", combindInfo.id);
-              showErrorMsg(it.label + this.langService.isCn ? "必填" : " Required ", combindInfo, el);
+              showErrorMsg(
+                it.label + this.langService.isCn ? "必填" : " Required ",
+                combindInfo,
+                el
+              );
               return;
             }
             if (it.value) {
@@ -1221,9 +1229,7 @@ export class FlightBookDfPage
           }
         }
         if (!hasHKMO) {
-          credentials = credentials.filter(
-            (t) => t
-          );  
+          credentials = credentials.filter((t) => t);
         }
 
         if (!hasTW) {

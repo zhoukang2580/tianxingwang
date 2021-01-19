@@ -33,8 +33,8 @@
           <img src="assets/images/qiehuan.png" style="width: 35px;" alt="">
         </ion-button>
         <ion-text style="font-size: 1.5em;" class="ion-text-wrap city-name ion-text-end"
-          [class.disabled]='searchTrainModel?.isLocked || (!searchTrainModel?.isExchange && searchTrainModel?.isLockedDestination)' (click)='onSelectCity(false)'
-          color='{{searchTrainModel?.isLocked && !searchTrainModel?.isExchange && !searchTrainModel?.isLockedDestination?"medium":"dark"}}'>
+          [class.disabled]='(searchTrainModel?.isLocked && !searchTrainModel?.isExchange )|| searchTrainModel?.isLockedDestination' (click)='onSelectCity(false)'
+          color='{{(searchTrainModel?.isLocked && !searchTrainModel?.isExchange )|| searchTrainModel?.isLockedDestination?"medium":"dark"}}'>
           {{searchTrainModel?.toCity?.Nickname}}</ion-text>
       </ion-buttons>
       <section class="flight-date">

@@ -824,6 +824,7 @@ export class FlightBookDfPage
     let canBook = false;
     let canBook2 = false;
     const isSelf = await this.staffService.isSelfBookType();
+    this.isself=isSelf;
     const arr = this.fillGroupConbindInfoApprovalInfo(this.vmCombindInfos);
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto, arr);
@@ -853,9 +854,10 @@ export class FlightBookDfPage
           let isHasTask = res.HasTasks;
           let payResult = false;
           this.flightService.removeAllBookInfos();
+          let checkPayResult = false;
+          const isCheckPay = res.IsCheckPay;
           if (!isSave) {
-            let checkPayResult = false;
-            if (res.IsCheckPay) {
+            if (isCheckPay) {
               this.isCheckingPay = true;
               checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
@@ -863,18 +865,20 @@ export class FlightBookDfPage
               payResult = true;
             }
             if (checkPayResult) {
-              if (this.isself) {
+              if (this.isself && isHasTask) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
-                payResult = await this.tmcService.payOrder(res.TradeNo);
+                if (isCheckPay) {
+                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                }
               }
             } else {
               if (this.isself) {
                 await AppHelper.alert(
-                  LanguageHelper.Order.getBookTicketWaitingTip(),
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
                   true
                 );
               }
@@ -889,12 +893,17 @@ export class FlightBookDfPage
           this.goToMyOrders({
             isHasTask: isHasTask && this.isself,
             payResult,
+            isCheckPay,
           });
         }
       }
     }
   }
-  private goToMyOrders(data: { isHasTask: boolean; payResult: boolean }) {
+  private goToMyOrders(data: {
+    isHasTask: boolean;
+    payResult: boolean;
+    isCheckPay: boolean;
+  }) {
     // this.router.navigate(["order-list"], {
     //   // isbackhome:true，是防止 android 通过物理返回键返回当前页面
     //   queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
@@ -912,6 +921,7 @@ export class FlightBookDfPage
           cityName: cities && cities.CityName,
           isApproval: data.isHasTask,
           payResult: data.payResult,
+          isCheckPay: data.isCheckPay,
           date: m.Date,
         },
       });

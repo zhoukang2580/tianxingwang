@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import {
   Component,
   OnInit,
@@ -106,6 +106,7 @@ export class FlightTicketReservePage
   errors: any;
   isCheckingPay = false;
   isCanSave = false;
+  isPlaceOrderOk = false;
   isSubmitDisabled = false;
   isManagementCredential = false;
   isCanSkipApproval$: Observable<boolean>;
@@ -676,41 +677,49 @@ export class FlightTicketReservePage
         });
       if (res) {
         if (res.TradeNo) {
-          AppHelper.toast(this.langService.isCn ? "下单成功!" : "Checkout success", 1400, "top");
+          // AppHelper.toast("下单成功!", 1400, "top");
+          this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
+          let isHasTask = res.HasTasks;
+          let payResult = false;
           this.flightService.removeAllBookInfos();
-          if (
-            !isSave &&
-            isSelf &&
-            (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            this.isCheckingPay = true;
-            const canPay = await this.checkPay(res.TradeNo);
-            this.isCheckingPay = false;
-            if (canPay) {
-              if (res.HasTasks) {
+          let checkPayResult = false;
+          const isCheckPay = res.IsCheckPay;
+          if (!isSave) {
+            if (isCheckPay) {
+              this.isCheckingPay = true;
+              checkPayResult = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            } else {
+              payResult = true;
+            }
+            if (checkPayResult) {
+              if (isSelf && isHasTask) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
-                await this.tmcService.payOrder(res.TradeNo);
+                if (isCheckPay) {
+                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                }
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              if (isSelf) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                  true
+                );
+              }
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(this.langService.isCn ? "订单已保存" : "Order saved");
+              await AppHelper.alert("订单已保存!");
             } else {
-              await AppHelper.alert(this.langService.isCn ? "下单成功!" : "Checkout success");
+              // await AppHelper.alert("下单成功!");
             }
           }
-          this.goToMyOrders(ProductItemType.plane);
+          this.goToMyOrders();
         }
       }
     }
@@ -733,16 +742,10 @@ export class FlightTicketReservePage
       };
     });
   }
-  private goToMyOrders(tab: ProductItemType) {
-    if(this.langService.isCn){
-      this.router.navigate(["order-list"], {
-        queryParams: { tabId: tab },
-      });
-    } else {
-        this.router.navigate(["order-list_en"], {
-          queryParams: { tabId: tab },
-        });
-    }
+  private goToMyOrders() {
+    this.router.navigate(["order-list"], {
+      queryParams: { tabId: ProductItemType.plane },
+    });
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {
@@ -835,23 +838,23 @@ export class FlightTicketReservePage
       ele: HTMLElement
     ) => {
       await AppHelper.alert(
-        !this.langService.isCn ?
-        `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-              item.bookInfo.credential.Givenname)
-        } 【${
-          item.bookInfo.credential && item.bookInfo.credential.Number
-        }】 ${msg} Information cannot be empty` :
-        `${
-          (item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-              item.bookInfo.credential.Givenname)
-        } 【${
-          item.bookInfo.credential && item.bookInfo.credential.Number
-        }】 ${msg} 信息不能为空`
+        !this.langService.isCn
+          ? `${
+              (item.credentialStaff && item.credentialStaff.Name) ||
+              (item.bookInfo.credential &&
+                item.bookInfo.credential.Surname +
+                  item.bookInfo.credential.Givenname)
+            } 【${
+              item.bookInfo.credential && item.bookInfo.credential.Number
+            }】 ${msg} Information cannot be empty`
+          : `${
+              (item.credentialStaff && item.credentialStaff.Name) ||
+              (item.bookInfo.credential &&
+                item.bookInfo.credential.Surname +
+                  item.bookInfo.credential.Givenname)
+            } 【${
+              item.bookInfo.credential && item.bookInfo.credential.Number
+            }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
     };
@@ -1104,7 +1107,11 @@ export class FlightTicketReservePage
           for (const it of combindInfo.tmcOutNumberInfos) {
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumber", combindInfo.id);
-              showErrorMsg(it.label + this.langService.isCn ? "必填" : " Required ", combindInfo, el);
+              showErrorMsg(
+                it.label + this.langService.isCn ? "必填" : " Required ",
+                combindInfo,
+                el
+              );
               return;
             }
             if (it.value) {
@@ -1221,9 +1228,7 @@ export class FlightTicketReservePage
           }
         }
         if (!hasHKMO) {
-          credentials = credentials.filter(
-            (t) => t
-          );  
+          credentials = credentials.filter((t) => t);
         }
 
         if (!hasTW) {

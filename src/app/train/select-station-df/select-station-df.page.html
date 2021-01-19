@@ -4,8 +4,7 @@
       <ion-buttons>
         <app-back-button>
         </app-back-button>
-        <ion-searchbar name='searchbar' style='padding:0' debounce="300" animated placeholder="中文/拼音/首字母/城市" (ionChange)='doSearch()'
-          [(ngModel)]='vmKeyword'>
+        <ion-searchbar name='searchbar' mode='ios' style='padding:0;margin-right: 1em;' debounce="300" animated placeholder="中文/拼音/首字母/城市" (ionChange)='doSearch()' [(ngModel)]='vmKeyword'>
         </ion-searchbar>
       </ion-buttons>
     </form>
@@ -20,8 +19,7 @@
         <ion-item *ngFor='let s of vmStations' (click)='onSelectStation(s)'>
           <ion-label>
             <ion-text style="position: relative;padding-left: 1em;" [color]="s?.Selected?'secondary':'dark'">
-              <ion-icon *ngIf='s.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;"
-                name="flame-outline"></ion-icon>
+              <ion-icon *ngIf='s.IsHot' color='danger' style="font-size: 0.8rem;position: absolute;left: 0;top: 0;" name="flame-outline"></ion-icon>
               {{s?.Name}}
             </ion-text>
             <ion-text *ngIf='s.CityName as n' color='medium'>({{n}})</ion-text>

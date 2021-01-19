@@ -1391,7 +1391,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
               }
             } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
+                LanguageHelper.Order.getBookTicketWaitingTip(res.IsCheckPay),
                 true
               );
             }

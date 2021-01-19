@@ -16,11 +16,11 @@
     <div class="down">
       <div class="success">下单成功</div>
       <div class="active" *ngIf="isApproval">
-        您的订单需要审批、请于审批完成后到订单列进行支付
+        您的订单需要审批{{isCheckPay?"、请于审批完成后到订单列表进行支付":""}}
       </div>
-      <div class="active" *ngIf="!payResult">
+      <div class="active" *ngIf="!payResult&&isCheckPay">
         <ion-text color='danger'>
-          您的订单尚未支付，请您稍后到订单列进行支付
+          您的订单尚未支付，请您稍后到订单列表进行支付
         </ion-text>
       </div>
     </div>

@@ -9,7 +9,7 @@
             <span>{{order.Id}}</span>
           </div>
         </div>
-        <div class="status">
+        <div class="status ion-text-nowrap">
           <span>{{order.StatusName}}</span>
         </div>
       </div>
@@ -174,14 +174,17 @@
     <ng-container *ngFor='let  orderHotel of order.OrderHotels'>
       <ion-grid class="hotel">
         <ion-row class="frist-ion">
-          <ion-col size='2.5'>
-            <ion-text color="medium">订单编号</ion-text>
-          </ion-col>
-          <ion-col class='select-text' class='dark'>
-            <strong class="strong">{{order.Id}}</strong>
-          </ion-col>
-          <ion-col style="text-align:end" class='dark'>
-            <strong class="strong">{{order.StatusName}}</strong>
+          <ion-col>
+            <div class="flex">
+              <span *ngIf='order.VariablesJsonObj?.SelfPayAmount>0' class="free-book-tag">随心住</span>
+              <ion-text color="medium">订单编号</ion-text>
+              <span class='select-text orderid' class='dark'>
+                <strong class="strong">{{order.Id}}</strong>
+              </span>
+              <div  class='status-name'>
+                <strong class="strong">{{order.StatusName}}</strong>
+              </div>
+            </div>
           </ion-col>
         </ion-row>
         <ion-row class="ion-img">

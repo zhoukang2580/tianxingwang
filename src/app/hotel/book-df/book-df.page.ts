@@ -1580,59 +1580,56 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
-          // AppHelper.toast(
-          //   this.langService.isCn ? "下单成功!" : "Checkout success",
-          //   1400,
-          //   "top"
-          // );
-          this.isSubmitDisabled = true;
+          // AppHelper.toast("下单成功!", 1400, "top");
           this.isPlaceOrderOk = true;
-          let checkPayResult=false;
+          this.isSubmitDisabled = true;
+          let isHasTask = res.HasTasks;
+          let payResult = false;
+          this.hotelService.removeAllBookInfos();
+          let checkPayResult = false;
+          const isCheckPay = res.IsCheckPay;
           if (!isSave) {
-            if (res.IsCheckPay) {
+            if (isCheckPay) {
               this.isCheckingPay = true;
               checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
+            } else {
+              payResult = true;
             }
             if (checkPayResult) {
-              if (res.HasTasks) {
+              if (isSelf && isHasTask) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
-              }else{
-                await this.tmcService.payOrder(res.TradeNo);
+              } else {
+                if (isCheckPay) {
+                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                }
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              if (isSelf) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                  true
+                );
+              }
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(
-                "订单已保存",
-                true,
-                LanguageHelper.getConfirmTip()
-              );
+              await AppHelper.alert("订单已保存!");
             } else {
-              // await AppHelper.alert(
-              //   this.langService.isCn ? "下单成功!" : "Checkout success"
-              // );
+              // await AppHelper.alert("下单成功!");
             }
           }
-          this.hotelService.removeAllBookInfos();
-          this.combindInfos = [];
-          this.hotelService.dismissAllTopOverlays();
-          this.goToMyOrders(ProductItemType.hotel);
+          this.goToMyOrders();
         }
       }
     }
   }
-  private goToMyOrders(tab: ProductItemType) {
+  private goToMyOrders() {
     const m = this.hotelService.getSearchHotelModel();
-    const city = m.destinationCity;
+    // const city = m.destinationCity;
     // this.router.navigate(["checkout-success"], {
     //   queryParams: {
     //     tabId: ProductItemType.hotel,
