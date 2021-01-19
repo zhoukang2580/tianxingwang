@@ -52,6 +52,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
 import { LangService } from "src/app/services/lang.service";
 import { SelectPassengerEnPage } from "src/app/tmc/select-passenger_en/select-passenger_en.page";
+import { HotelDetailEntity } from "src/app/hotel/models/HotelDetailEntity";
 
 @Component({
   selector: "app-international-hotel-detail-df",
@@ -369,57 +370,98 @@ export class InternationalHotelDetailDfPage
     this.hotelService.viewHotel = null;
     this.subscription.unsubscribe();
   }
+  // private initHotelDetailInfos() {
+  //   if (this.hotel && this.hotel.HotelDetails) {
+  //     const temp: {
+  //       [tag: string]: HotelDetailEntity[];
+  //     } = {};
+  //     this.hotel.HotelDetails.forEach((d) => {
+  //       if (temp[d.Tag]) {
+  //         temp[d.Tag].push(d);
+  //       } else {
+  //         temp[d.Tag] = [d];
+  //       }
+  //     });
+  //     this.hotelDetails = [];
+  //     const showOpen = `<span class='open-close-arrow'></span>`;
+  //     Object.keys(temp).forEach((tag) => {
+  //       const sep = tag.toLowerCase().includes("facilit")
+  //         ? `<span class='line'>|</span>`
+  //         : ",";
+  //       if (temp[tag] && temp[tag].length) {
+  //         const description = temp[tag].map((it) => it.Description).join(sep);
+  //         let overviewDesc = description;
+  //         const len = 21 * 2;
+  //         const res = description.match(/<\s*(\w+)\s*>.*?<\/\s*\1\s*>/i);
+  //         const el = res && res[1];
+  //         const index = res && res.index;
+  //         if (index && el) {
+  //           if (index >= len) {
+  //             const str1 = description.substring(0, len);
+  //             overviewDesc = `${str1}...${showOpen}</${el}>`;
+  //           } else {
+  //             const str1 = description.substring(0, len);
+  //             overviewDesc = `${str1}...${showOpen}</${el}>`;
+  //           }
+  //         } else {
+  //           if (description.length > len) {
+  //             const str1 = description.substring(0, len);
+  //             overviewDesc = `${str1}...${showOpen}</${el}>`;
+  //           }
+  //         }
+  //         const tempDescription = description;
+  //         const mat = tempDescription.match(/.+<\s*(?!\/\w+)\s*>/gi);
+  //         // console.log("tempDescription", tempDescription, mat);
+  //         this.hotelDetails.push({
+  //           Tag: tag,
+  //           Name: temp[tag][0].Name,
+  //           Description: description,
+  //           OverviewDesc: overviewDesc,
+  //         });
+  //       }
+  //     });
+  //     // console.log(temp, this.hotelDetailsOtherThanFacilities);
+  //   }
+  // }
   private initHotelDetailInfos() {
     if (this.hotel && this.hotel.HotelDetails) {
-      const temp: {
-        [tag: string]: any[];
-      } = {};
-      this.hotel.HotelDetails.forEach((d) => {
-        if (temp[d.Tag]) {
-          temp[d.Tag].push(d);
+      const obj = this.hotel.HotelDetails.reduce((acc, it) => {
+        if (acc[it.Tag]) {
+          acc[it.Tag].push(it);
         } else {
-          temp[d.Tag] = [d];
+          acc[it.Tag] = [it];
         }
-      });
-      this.hotelDetails = [];
-      const showOpen = `<span class='open-close-arrow'></span>`;
-      Object.keys(temp).forEach((tag) => {
-        const sep = tag.toLowerCase().includes("facilit")
-          ? `<span class='line'>|</span>`
-          : ",";
-        if (temp[tag] && temp[tag].length) {
-          const description = temp[tag].map((it) => it.Description).join(sep);
-          let overviewDesc = description;
-          const len = 21 * 2;
-          const res = description.match(/<\s*(\w+)\s*>.*?<\/\s*\1\s*>/i);
-          const el = res && res[1];
-          const index = res && res.index;
-          if (index && el) {
-            if (index >= len) {
-              const str1 = description.substring(0, len);
-              overviewDesc = `${str1}...${showOpen}</${el}>`;
-            } else {
-              const str1 = description.substring(0, len);
-              overviewDesc = `${str1}...${showOpen}</${el}>`;
+        return acc;
+      }, {} as { [tag: string]: HotelDetailEntity[] });
+      this.hotel.HotelDetails = Object.keys(obj)
+        .map((tag) => {
+          if (obj[tag] && obj[tag].length) {
+            const it = new HotelDetailEntity();
+            const first = obj[tag][0];
+            it.Tag = first.Tag;
+            it.Name = first.Name;
+            const arr = obj[tag];
+            let tmp: string[] = [];
+            for (const d of arr) {
+              if (
+                !tmp.find(
+                  (desc) =>
+                    (desc || "").toLowerCase() ==
+                    (d.Description || "").toLowerCase()
+                )
+              ) {
+                tmp.push(d.Description);
+              }
             }
-          } else {
-            if (description.length > len) {
-              const str1 = description.substring(0, len);
-              overviewDesc = `${str1}...${showOpen}</${el}>`;
-            }
+            it.Description = tmp.join(`<span class='line'>|</span>`);
+            return it;
           }
-          const tempDescription = description;
-          const mat = tempDescription.match(/.+<\s*(?!\/\w+)\s*>/gi);
-          // console.log("tempDescription", tempDescription, mat);
-          this.hotelDetails.push({
-            Tag: tag,
-            Name: temp[tag][0].Name,
-            Description: description,
-            OverviewDesc: overviewDesc,
-          });
-        }
+          return null;
+        })
+        .filter((it) => !!it);
+      this.hotel.HotelDetails.forEach((it) => {
+        it["isHtmlDescription"] = this.checkHtml(it.Description);
       });
-      // console.log(temp, this.hotelDetailsOtherThanFacilities);
     }
   }
   async onShowRoomDetails(room: RoomEntity) {
@@ -860,12 +902,12 @@ export class InternationalHotelDetailDfPage
     //     }, 100);
     //   }
     // }
-    this.router.navigate(["inter-hotel-map"],{
+    this.router.navigate(["inter-hotel-map"], {
       queryParams: {
         name: this.hotel && this.hotel.Name,
         lat: this.hotel && this.hotel.Lat,
         lng: this.hotel && this.hotel.Lng,
-      }
+      },
     });
   }
   getWeekName(date: string) {

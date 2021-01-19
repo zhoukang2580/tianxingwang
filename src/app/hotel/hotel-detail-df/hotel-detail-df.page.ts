@@ -57,6 +57,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import { DayModel } from "src/app/tmc/models/DayModel";
+import { HotelDetailEntity } from "../models/HotelDetailEntity";
 type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 
 @Component({
@@ -325,7 +326,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
           console.log(r);
         })
       )
-      .pipe(finalize(() => { }))
+      .pipe(finalize(() => {}))
       .subscribe(
         async (hotel) => {
           if (hotel) {
@@ -336,7 +337,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
               this.content.scrollToTop();
               this.initFilterPolicy();
               this.checkIfBookedRoomPlan();
-              this.initHotelDetails();
+              this.initHotelDetailInfos();
               setTimeout(() => {
                 this.initRects();
               }, 1000);
@@ -349,8 +350,42 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       );
   }
-  private initHotelDetails() {
+  private initHotelDetailInfos() {
     if (this.hotel && this.hotel.HotelDetails) {
+      const obj = this.hotel.HotelDetails.reduce((acc, it) => {
+        if (acc[it.Tag]) {
+          acc[it.Tag].push(it);
+        } else {
+          acc[it.Tag] = [it];
+        }
+        return acc;
+      }, {} as { [tag: string]: HotelDetailEntity[] });
+      this.hotel.HotelDetails = Object.keys(obj)
+        .map((tag) => {
+          if (obj[tag] && obj[tag].length) {
+            const it = new HotelDetailEntity();
+            const first = obj[tag][0];
+            it.Tag = first.Tag;
+            it.Name = first.Name;
+            const arr = obj[tag];
+            let tmp: string[] = [];
+            for (const d of arr) {
+              if (
+                !tmp.find(
+                  (desc) =>
+                    (desc || "").toLowerCase() ==
+                    (d.Description || "").toLowerCase()
+                )
+              ) {
+                tmp.push(d.Description);
+              }
+            }
+            it.Description = tmp.join(`<span class='line'>|</span>`);
+            return it;
+          }
+          return null;
+        })
+        .filter((it) => !!it);
       this.hotel.HotelDetails.forEach((it) => {
         it["isHtmlDescription"] = this.checkHtml(it.Description);
       });
@@ -838,12 +873,12 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     });
   }
   onOpenMap() {
-    this.router.navigate(["hotel-map"],{
+    this.router.navigate(["hotel-map"], {
       queryParams: {
         name: this.hotel && this.hotel.Name,
         lat: this.hotel && this.hotel.Lat,
         lng: this.hotel && this.hotel.Lng,
-      }
+      },
     });
   }
   async ngAfterViewInit() {

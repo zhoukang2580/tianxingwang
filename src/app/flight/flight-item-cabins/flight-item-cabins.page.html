@@ -19,7 +19,7 @@
         </ion-badge>
       </ion-button>
     </ion-buttons>
-    <ion-buttons slot='end' *ngIf='!isSelf'>
+    <ion-buttons slot='end' *ngIf='!isSelf&&!isExchange'>
       <ion-button fill='clear' color='secondary' (click)='filterPolicyFlights()' size='small'>
         <ion-text class='xs-font-size'>过滤差标</ion-text>
       </ion-button>
