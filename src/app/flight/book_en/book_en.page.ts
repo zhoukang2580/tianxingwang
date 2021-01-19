@@ -794,7 +794,7 @@ export class BookEnPage
               }
             }
             this.goToMyOrders({
-              isHasTask: isHasTask && this.isself,
+              isHasTask: isHasTask ,
               payResult,
               isCheckPay,
             });

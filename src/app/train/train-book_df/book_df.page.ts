@@ -786,7 +786,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             }
           }
           this.goToMyOrders({
-            isHasTask: isHasTask && isSelf,
+            isHasTask: isHasTask ,
             payResult,
             isCheckPay,
           });

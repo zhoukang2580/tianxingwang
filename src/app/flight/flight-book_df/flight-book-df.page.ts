@@ -891,7 +891,7 @@ export class FlightBookDfPage
             }
           }
           this.goToMyOrders({
-            isHasTask: isHasTask && this.isself,
+            isHasTask: isHasTask ,
             payResult,
             isCheckPay,
           });
