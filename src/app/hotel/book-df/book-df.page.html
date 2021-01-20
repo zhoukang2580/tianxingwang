@@ -204,10 +204,10 @@
             <div class="title ion-padding-vertical">出差信息</div>
             <div class="illegal" [attr.illegalReasonsid]="combindInfo.id" *ngIf="combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist">
               <div class="line"></div>
-              <div class="flex padding-v" *ngIf="!isRoomPlanFreeBook(combindInfo)">
+              <div class="flex padding-v" *ngIf="!isRoomPlanFreeBook(combindInfo)" (click)="onSelectIllegalReason(combindInfo)">
                 <span class="label">超标原因：</span>{{combindInfo?.illegalReason}}
-                <ion-icon *ngIf="!isRoomPlanFreeBook(combindInfo)" name="caret-down-outline" class="down" (click)="onSelectIllegalReason(combindInfo)"></ion-icon>
-                <ion-input [(ngModel)]="combindInfo.illegalReason" *ngIf="!isRoomPlanFreeBook(combindInfo)" placeholder="请输入原因"></ion-input>
+                <ion-icon name="caret-down-outline" class="down"></ion-icon>
+                <!-- <ion-input [(ngModel)]="combindInfo.illegalReason" *ngIf="isRoomPlanFreeBook(combindInfo)" placeholder="请输入原因"></ion-input> -->
               </div>
               <div class="line" *ngIf="tmc?.IsAllowCustomReason&&!isRoomPlanFreeBook(combindInfo)"></div>
               <div class="flex padding-v" *ngIf="tmc?.IsAllowCustomReason&&!isRoomPlanFreeBook(combindInfo)">
