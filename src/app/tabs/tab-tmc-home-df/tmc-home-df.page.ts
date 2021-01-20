@@ -477,6 +477,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initTaskSpwiper() {
     const mySwiper: any = {
       loop: true,
+      circular:true,
       autoplay: {
         delay: 3000,
         stopOnLastSlide: false,
@@ -497,6 +498,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initTripSpwiper() {
     const mySwiper: any = {
       loop: true,
+      circular:true,
       autoplay: {
         delay: 3000,
         stopOnLastSlide: false,
@@ -589,7 +591,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private onTouchEnd() {
-    // console.log("touchEnd");
     setTimeout(() => {
       this.startAutoPlay();
     }, 2000);

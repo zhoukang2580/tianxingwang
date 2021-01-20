@@ -442,10 +442,7 @@ export class OrderTrainDetailDfPage
     }
     return amount;
   }
-  // private getTicketPassenger(p: OrderPassengerEntity ) {
-  //   const p = (this.orderDetail.Order && this.orderDetail.Order.OrderPassengers) || [];
-  //   return p.find(it => it.Id == (ticket.Passenger && ticket.Passenger.Id));
-  // }
+
   private sortTabs() {
     if (this.tabs) {
       this.tabs.sort((t1, t2) => {
