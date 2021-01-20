@@ -15,6 +15,9 @@ ion-searchbar {
 ion-select.select-disabled {
   opacity: 0.7;
 }
+ion-buttons{
+  height: 55px;
+}
 ion-row ion-col {
   &.arrow-forward {
     display: flex;
