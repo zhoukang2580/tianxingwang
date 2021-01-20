@@ -82,7 +82,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   identity: IdentityEntity;
   isLoadingNotice = false;
   isAgent = false;
-  isCanDailySigned = false;
+  isCanDailySigned = true;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
   selectedCompany: string;
@@ -298,7 +298,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.getLogin();
   }
 
-  async OnSignIn() {
+  async onSignIn() {
     if (!this.isCanDailySigned) {
       return;
     }
@@ -306,17 +306,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       Amount: 20,
       Name: "手机",
     };
-    // this.isCanDailySigned = await this.tmcService
-    //   .checkIfCanDailySigned(true)
-    //   .catch((e) => {
-    //     if (e) {
-    //       AppHelper.alert(e);
-    //     }
-    //     return false;
-    //   });
-    // if (!this.isCanDailySigned) {
-    //   return;
-    // }
     const sub = this.tmcService
       .getSign(this.sign)
       .pipe(
@@ -331,7 +320,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           if (r.Status) {
             this.isCanDailySigned = !r.Data;
             if (r.Message) {
-              AppHelper.toast(r.Message, 2000, "middle");
+              if(r.Data){
+                AppHelper.toast(r.Message, 2000, "middle");
+              }else{
+                AppHelper.alert(r.Message);
+              }
             }
           } else {
             if (r.Message) {

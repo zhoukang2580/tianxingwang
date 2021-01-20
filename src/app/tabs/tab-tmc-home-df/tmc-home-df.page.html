@@ -176,7 +176,7 @@
         <div class="left">
           <div class="item-sign">签到有奖</div>
           <div class="jd">20积分</div>
-          <button class="btn2" (click)="OnSignIn()" [class.disabled]='!isCanDailySigned'>
+          <button class="btn2" (click)="onSignIn()" [class.disabled]='!isCanDailySigned'>
             <span *ngIf='!isCanDailySigned'>今日已签到</span>
             <span *ngIf='isCanDailySigned'>立即签到</span>
           </button>
