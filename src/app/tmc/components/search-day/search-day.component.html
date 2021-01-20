@@ -3,7 +3,7 @@
     <i class="icon icon-calendar"></i>
   </ion-text>
   <ion-label class='day'>{{dayNumber}}</ion-label>
-  <ion-label [class.start]='isCheckIn||isCheckOut' class="date">
+  <ion-label [class.start]='isCheckIn||isCheckOut' class="date ion-text-nowrap">
     <h5><ng-container *ngIf='langOpt.isShowDayDesc'>{{dayDesc}}</ng-container>
       <ng-container *ngIf='isCheckIn'>{{langOpt.checkin}}</ng-container>
       <ng-container *ngIf='isCheckOut'>{{langOpt.checkout}}</ng-container>
