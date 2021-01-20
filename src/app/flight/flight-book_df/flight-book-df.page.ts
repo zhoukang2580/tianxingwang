@@ -824,7 +824,7 @@ export class FlightBookDfPage
     let canBook = false;
     let canBook2 = false;
     const isSelf = await this.staffService.isSelfBookType();
-    this.isself=isSelf;
+    this.isself = isSelf;
     const arr = this.fillGroupConbindInfoApprovalInfo(this.vmCombindInfos);
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto, arr);
@@ -891,9 +891,12 @@ export class FlightBookDfPage
             }
           }
           this.goToMyOrders({
-            isHasTask: isHasTask ,
+            isHasTask: isHasTask,
             payResult,
-            isCheckPay,
+            isCheckPay:
+              isCheckPay ||
+              this.orderTravelPayType == OrderTravelPayType.Person ||
+              this.orderTravelPayType == OrderTravelPayType.Credit,
           });
         }
       }

@@ -181,9 +181,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private configService: ConfigService,
     private loginService: LoginService,
-    private langService: LangService
-  ) // private appHelper:AppHelper
-  {
+    private langService: LangService // private appHelper:AppHelper
+  ) {
     this.staff = null;
     route.queryParamMap.subscribe(async (p) => {
       // this.updateSwiper();
@@ -265,7 +264,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         .then((res) => {
           this.boutiqueHotel = res;
           setTimeout(() => {
-            if(this.hotelsSwiper){
+            if (this.hotelsSwiper) {
               this.hotelsSwiper.update();
             }
           }, 200);
@@ -596,7 +595,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }, 2000);
   }
   private startAutoPlay() {
-    if (this.bannersSwiper && this.bannersSwiper.autoplay && this.bannersSwiper.autoplay.start) {
+    if (
+      this.bannersSwiper &&
+      this.bannersSwiper.autoplay &&
+      this.bannersSwiper.autoplay.start
+    ) {
       this.bannersSwiper.autoplay.start();
     }
     if (
@@ -638,66 +641,118 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       };
     });
   }
-
-  async goToPage(name: string, params?: any) {
-    const tmc = await this.tmcService.getTmc();
+  async goToPage(
+    entry: "flight" | "hotel" | "train" | "rentalCar",
+    queryParams?: any
+  ) {
     const msg = "您没有预订权限";
-    if (!tmc || !tmc.RegionTypeValue) {
-      AppHelper.alert(msg);
-      return;
-    }
     let route = "";
-
-    const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
-    if (name == "international-flight") {
-      route = "search-international-flight";
-      if (tmcRegionTypeValue.search("internationalflight") < 0) {
+    let ok = false;
+    if (entry == "flight") {
+      ok =
+        (await this.tmcService.hasBookRight("flight")) ||
+        (await this.tmcService.hasBookRight("international-flight"));
+      if (!ok) {
         AppHelper.alert(msg);
         return;
       }
-    }
-    if (name == "international-hotel") {
-      route = "search-international-hotel";
-      if (tmcRegionTypeValue.search("internationalhot") < 0) {
-        AppHelper.alert(msg);
-        return;
-      }
-    }
-    if (name == "hotel") {
-      route = "search-hotel";
-      if (tmcRegionTypeValue.search("hotel") < 0) {
-        AppHelper.alert(msg);
-        return;
-      }
-    }
-    if (name == "train") {
-      route = "search-train";
-      if (tmcRegionTypeValue.search("train") < 0) {
-        AppHelper.alert(msg);
-        return;
-      }
-    }
-    if (name == "flight") {
       route = "search-flight";
-      if (tmcRegionTypeValue.search("flight") < 0) {
+    }
+    if (entry == "hotel") {
+      ok =
+        (await this.tmcService.hasBookRight("hotel")) ||
+        (await this.tmcService.hasBookRight("international-hotel"));
+      if (!ok) {
         AppHelper.alert(msg);
         return;
       }
+      route = "search-hotel";
     }
-    if (name == "rentalCar") {
+    if (entry == "train") {
+      ok = await this.tmcService.hasBookRight("train");
+      if (!ok) {
+        AppHelper.alert(msg);
+        return;
+      }
+      route = "search-train";
+    }
+    if (entry == "rentalCar") {
+      ok = await this.tmcService.hasBookRight("rentalCar");
+      if (!ok) {
+        AppHelper.alert(msg);
+        return;
+      }
       route = "rental-car";
-      if (tmcRegionTypeValue.search("car") < 0) {
-        AppHelper.alert(msg);
-        return;
+    }
+    if (route) {
+      if (queryParams) {
+        this.router.navigate([AppHelper.getRoutePath(route)], {
+          queryParams,
+        });
+      } else {
+        this.router.navigate([AppHelper.getRoutePath(route)]);
       }
     }
-    if (name == "bulletin") {
-      route = "bulletin-list";
-    }
-    this.router.navigate([AppHelper.getRoutePath(route)], {
-      queryParams: { bulletinType: params },
-    });
   }
+  // async goToPage(name: string, params?: any) {
+  //   const tmc = await this.tmcService.getTmc();
+  //   const msg = "您没有预订权限";
+  //   if (!tmc || !tmc.RegionTypeValue) {
+  //     AppHelper.alert(msg);
+  //     return;
+  //   }
+  //   let route = "";
+
+  //   const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+  //   if (name == "international-flight") {
+  //     route = "search-international-flight";
+  //     if (tmcRegionTypeValue.search("internationalflight") < 0) {
+  //       AppHelper.alert(msg);
+  //       return;
+  //     }
+  //   }
+  //   if (name == "international-hotel") {
+  //     route = "search-international-hotel";
+  //     if (tmcRegionTypeValue.search("internationalhot") < 0) {
+  //       AppHelper.alert(msg);
+  //       return;
+  //     }
+  //   }
+  //   if (name == "hotel") {
+  //     route = "search-hotel";
+  //     if (tmcRegionTypeValue.search("hotel") < 0) {
+  //       AppHelper.alert(msg);
+  //       return;
+  //     }
+  //   }
+  //   if (name == "train") {
+  //     route = "search-train";
+  //     if (tmcRegionTypeValue.search("train") < 0) {
+  //       AppHelper.alert(msg);
+  //       return;
+  //     }
+  //   }
+  //   if (name == "flight") {
+  //     route = "search-flight";
+  //     if (tmcRegionTypeValue.search("flight") < 0) {
+  //       AppHelper.alert(msg);
+  //       return;
+  //     }
+  //   }
+  //   if (name == "rentalCar") {
+  //     route = "rental-car";
+  //     if (tmcRegionTypeValue.search("car") < 0) {
+  //       AppHelper.alert(msg);
+  //       return;
+  //     }
+  //   }
+  //   if (name == "bulletin") {
+  //     route = "bulletin-list";
+  //   }
+  //   this.router.navigate([AppHelper.getRoutePath(route)], {
+  //     queryParams: { bulletinType: params },
+  //   });
+  // }
   private async clearBookInfos() {
     this.tmcService.clearTravelFormNumber();
     if (await this.hasTicket()) {

@@ -683,7 +683,9 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           this.goToMyOrders({
             isHasTask: isHasTask ,
             payResult,
-            isCheckPay,
+            isCheckPay: isCheckPay ||
+            this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
+            this.viewModel.orderTravelPayType == OrderTravelPayType.Credit,
           });
         }
       }

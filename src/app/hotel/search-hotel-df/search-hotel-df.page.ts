@@ -198,6 +198,7 @@ export class SearchHotelDfPage
   async onToggleDomestic(isDomestic) {
     const ok = await this.hotelService.checkHasAuth(isDomestic);
     if (!ok) {
+      AppHelper.alert("您没有权限");
       return;
     }
     this.isDomestic = isDomestic;

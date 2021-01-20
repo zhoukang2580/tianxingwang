@@ -35,6 +35,7 @@ import {
   ITripInfo,
 } from "src/app/flight-international/international-flight.service";
 import { FlightCityService } from "../flight-city.service";
+import { CONFIG } from "src/app/config";
 @Component({
   selector: "app-search-flight-df",
   templateUrl: "./search-flight-df.page.html",
@@ -160,7 +161,18 @@ export class SearchFlightDfPage
       this.internationalFlightService.initMultiTripSearchModel();
     }
   }
-  onToggleDomestic(segv) {
+  async onToggleDomestic(segv: "international" | "domestic") {
+    if (segv == "international") {
+      const ok = await this.tmcService.hasBookRight("international-flight");
+      if (!ok) {
+        AppHelper.alert("您没有权限");
+        return;
+      }
+      if (!CONFIG.mockProBuild) {
+        AppHelper.alert("该功能即将上线");
+        return;
+      }
+    }
     this.domestic = segv;
   }
   private checkBackDateIsAfterflyDate() {

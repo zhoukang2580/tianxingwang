@@ -796,7 +796,9 @@ export class BookEnPage
             this.goToMyOrders({
               isHasTask: isHasTask ,
               payResult,
-              isCheckPay,
+              isCheckPay: isCheckPay ||
+              this.orderTravelPayType == OrderTravelPayType.Person ||
+              this.orderTravelPayType == OrderTravelPayType.Credit,
             });
           }
         }
