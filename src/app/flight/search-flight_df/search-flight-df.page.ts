@@ -161,6 +161,7 @@ export class SearchFlightDfPage
       this.internationalFlightService.initMultiTripSearchModel();
     }
   }
+
   async onToggleDomestic(segv: "international" | "domestic") {
     if (segv == "international") {
       const ok = await this.tmcService.hasBookRight("international-flight");
@@ -168,8 +169,10 @@ export class SearchFlightDfPage
         AppHelper.alert("您没有权限");
         return;
       }
-      if (!CONFIG.mockProBuild) {
-        AppHelper.alert("该功能即将上线");
+    } else {
+      const ok = await this.tmcService.hasBookRight("flight");
+      if (!ok) {
+        AppHelper.alert("您没有权限");
         return;
       }
     }
@@ -305,6 +308,11 @@ export class SearchFlightDfPage
     return this.staffService.isSelfBookType();
   }
   async ngOnInit() {
+    this.tmcService.hasBookRight("flight").then((ok) => {
+      if (!ok) {
+        this.domestic = "international";
+      }
+    });
     this.subscriptions.push(
       this.internationalFlightService.getBookInfoSource().subscribe((infos) => {
         this.selectedInterPassengers = infos;

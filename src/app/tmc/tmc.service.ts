@@ -35,6 +35,7 @@ import {
   ApprovalStatusType,
   TravelFormDetailEntity,
 } from "../travel-application/travel.service";
+import { CONFIG } from "../config";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -188,58 +189,53 @@ export class TmcService {
   ) {
     if (name) {
       const tmc = await this.getTmc();
-      const msg = "您没有预订权限";
       if (!tmc || !tmc.RegionTypeValue) {
-        AppHelper.alert(msg);
         return false;
       }
       let route = "";
 
-      const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
+      const tmcRegionTypeValues = tmc.RegionTypeValue.toLowerCase().split(",");
       if (name == "international-flight") {
+        if (!CONFIG.mockProBuild) {
+          return false;
+        }
         route = "search-international-flight";
-        if (tmcRegionTypeValue.search("internationalflight") < 0) {
-          AppHelper.alert(msg);
+        if (!tmcRegionTypeValues.find((it) => it == "internationalflight")) {
           return false;
         }
         return true;
       }
       if (name == "international-hotel") {
         route = "search-international-hotel";
-        if (tmcRegionTypeValue.search("internationalhot") < 0) {
-          AppHelper.alert(msg);
+        if (!tmcRegionTypeValues.find((it) => it == "internationalhot")) {
           return false;
         }
         return true;
       }
       if (name == "hotel") {
         route = "search-hotel";
-        if (tmcRegionTypeValue.search("hotel") < 0) {
-          AppHelper.alert(msg);
+        if (!tmcRegionTypeValues.find((it) => it == "hotel")) {
           return false;
         }
         return true;
       }
       if (name == "train") {
         route = "search-train";
-        if (tmcRegionTypeValue.search("train") < 0) {
-          AppHelper.alert(msg);
+        if (tmcRegionTypeValues.find((it) => it == "train")) {
           return false;
         }
         return true;
       }
       if (name == "flight") {
         route = "search-flight";
-        if (tmcRegionTypeValue.search("flight") < 0) {
-          AppHelper.alert(msg);
+        if (!tmcRegionTypeValues.find((it) => it == "flight")) {
           return false;
         }
         return true;
       }
       if (name == "rentalCar") {
         route = "rental-car";
-        if (tmcRegionTypeValue.search("car") < 0) {
-          AppHelper.alert(msg);
+        if (!tmcRegionTypeValues.find((it) => it == "car")) {
           return false;
         }
         return true;
@@ -283,7 +279,7 @@ export class TmcService {
       Amount: d.Amount,
       Name: d.Name,
     };
-    req.IsShowLoading=true;
+    req.IsShowLoading = true;
     return this.apiService.getResponse<any>(req);
   }
   checkIfCanDailySigned(showLoading = false) {
