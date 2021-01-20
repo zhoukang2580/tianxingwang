@@ -198,7 +198,7 @@ export class SearchHotelDfPage
   async onToggleDomestic(isDomestic) {
     const ok = await this.hotelService.checkHasAuth(isDomestic);
     if (!ok) {
-      AppHelper.alert("您没有权限");
+      AppHelper.alert("您没有预定权限");
       return;
     }
     this.isDomestic = isDomestic;
@@ -253,6 +253,16 @@ export class SearchHotelDfPage
   ngOnInit() {
     this.observeSearchCondition();
     this.onPosition();
+    this.initSegment();
+  }
+  private async initSegment() {
+    if (this.isDomestic) {
+      const ok = await this.hotelService.checkHasAuth(this.isDomestic);
+      if (!ok) {
+        this.isDomestic = false;
+        return;
+      }
+    }
   }
   async onSearchCity() {
     if (this.isDomestic) {
