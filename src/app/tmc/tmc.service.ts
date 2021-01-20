@@ -276,14 +276,21 @@ export class TmcService {
       return null;
     });
   }
-   getSign(d: { Amount: number; Name: string }) {
+  getSign(d: { Amount: number; Name: string }) {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Sign";
     req.Data = {
       Amount: d.Amount,
       Name: d.Name,
     };
+    req.IsShowLoading=true;
     return this.apiService.getResponse<any>(req);
+  }
+  checkIfCanDailySigned(showLoading = false) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-Initialization";
+    req.IsShowLoading = showLoading;
+    return this.apiService.getPromiseData<any>(req);
   }
 
   async getLogin() {

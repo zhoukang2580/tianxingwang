@@ -1,16 +1,8 @@
 <ion-content class="home">
   <div class="info">
     <div class="name" (click)="onSwitchCustomer()">
-      <ion-text notranslate
-        >{{selectedCompany||identity?.Name}}<span class="margin-l"
-          >欢迎您</span
-        ></ion-text
-      >
-      <ion-icon
-        class="caret-down"
-        name="caret-down-outline"
-        *ngIf="canSelectCompany"
-      ></ion-icon>
+      <ion-text notranslate>{{selectedCompany||identity?.Name}}<span class="margin-l">欢迎您</span></ion-text>
+      <ion-icon class="caret-down" name="caret-down-outline" *ngIf="canSelectCompany"></ion-icon>
     </div>
     <div class="scan-pic" *ngIf="canShow">
       <app-scan-comp>
@@ -24,41 +16,25 @@
         <ng-container *ngIf="banners?.length else deftpl">
           <div class="swiper-slide" *ngFor="let pic of banners">
             <div class="inner">
-              <img
-                [lazyLoad]="pic.ImageUrl"
-                [defaultImage]="config?.DefaultImageUrl"
-                [loadingImage]="config?.PrerenderImageUrl"
-              />
+              <img [lazyLoad]="pic.ImageUrl" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
             </div>
           </div>
         </ng-container>
         <ng-template #deftpl>
           <div class="swiper-slide">
             <div class="inner">
-              <img
-                [lazyLoad]="config?.DefaultImageUrl"
-                [defaultImage]="config?.DefaultImageUrl"
-                [loadingImage]="config?.PrerenderImageUrl"
-              />
+              <img [lazyLoad]="config?.DefaultImageUrl" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
             </div>
           </div>
         </ng-template>
       </div>
     </div>
     <div class="dots" *ngIf="banners?.length">
-      <div
-        class="dot"
-        *ngFor="let d of banners;let idx=index;"
-        [class.active]="idx==curIndex"
-      ></div>
+      <div class="dot" *ngFor="let d of banners;let idx=index;" [class.active]="idx==curIndex"></div>
     </div>
   </div>
   <div class="round-wrapper">
-    <div
-      class="annoucement-container"
-      [class.hidden]="!agentNotices?.length"
-      (click)='goToBulletinList("agentNotice")'
-    >
+    <div class="annoucement-container" [class.hidden]="!agentNotices?.length" (click)='goToBulletinList("agentNotice")'>
       <div class="swiper-container" #announcementEl>
         <div class="swiper-wrapper">
           <ng-container *ngIf="agentNotices?.length">
@@ -66,10 +42,7 @@
               <div class="announcement">
                 <img src="assets/home/home-tip.png" class="tip" alt="" />
                 <div class="text">{{n.text}}</div>
-                <ion-icon
-                  name="chevron-forward-outline"
-                  class="icon-right"
-                ></ion-icon>
+                <ion-icon name="chevron-forward-outline" class="icon-right"></ion-icon>
               </div>
             </div>
           </ng-container>
@@ -89,21 +62,13 @@
         <img src="assets/home/home-train.png" alt="" />
         <span class="txt">火车票</span>
       </div>
-      <div
-        class="car"
-        (click)='goToPage("rentalCar")'
-        *ngIf="isShowRentalCar&&(!identity?.Numbers?.AgentId)"
-      >
+      <div class="car" (click)='goToPage("rentalCar")' *ngIf="isShowRentalCar&&(!identity?.Numbers?.AgentId)">
         <img src="assets/home/home-car.png" alt="" />
         <span class="txt">用车</span>
       </div>
     </div>
     <div class="entries">
-      <div
-        class="item"
-        *ngIf="!isAgent&&staff?.StaffNumber"
-        (click)="goBusiness()"
-      >
+      <div class="item" *ngIf="!isAgent&&staff?.StaffNumber" (click)="goBusiness()">
         <img src="assets/home/home-travel.png" alt="" />
         <div class="txt">出差申请</div>
       </div>
@@ -118,11 +83,7 @@
     </div>
 
     <div class="notice">
-      <div
-        class="swiper-container warpper-a"
-        [class.hidden]="!tasklist || !tasklist.length"
-        #taskEle
-      >
+      <div class="swiper-container warpper-a" [class.hidden]="!tasklist || !tasklist.length" #taskEle>
         <div class="swiper-wrapper">
           <div class="swiper-slide swiper" *ngFor="let task of tasklist">
             <img src="assets/home/home-text.png" alt="" />
@@ -133,21 +94,14 @@
               text-overflow: ellipsis;
               overflow: hidden;
               max-width: 9em;">
-                <span style="color: crimson">{{task.saName}}</span
-                ><span
-                  >{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span
-                >
+                <span style="color: crimson">{{task.saName}}</span><span>{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span>
               </div>
               <div class="view-now" (click)="onTaskDetail(task)">立即查看</div>
             </div>
           </div>
         </div>
       </div>
-      <div
-        class="swiper-container not-item-u"
-        [class.hidden]="!itineraryList ||! itineraryList.length"
-        #tripEle
-      >
+      <div class="swiper-container not-item-u" [class.hidden]="!itineraryList ||! itineraryList.length" #tripEle>
         <div class="swiper-wrapper" style="height: 51px">
           <div class="swiper-slide it-list" *ngFor="let trip of itineraryList;">
             <img src="assets/home/home-trip.png" alt="" />
@@ -185,39 +139,23 @@
     <div class="swiper-container" #hothotel>
       <div class="swiper-wrapper">
         <ng-container *ngIf="boutiqueHotel?.HotelDayPrices?.length else deftpl">
-          <div
-            class="swiper-slide"
-            *ngFor="let pic of boutiqueHotel.HotelDayPrices"
-            (click)="goToDetail(pic.Id)"
-          >
+          <div class="swiper-slide" *ngFor="let pic of boutiqueHotel.HotelDayPrices" (click)="goToDetail(pic.Id)">
             <div class="inner">
-              <img
-                [lazyLoad]="pic.HotelFileName"
-                [defaultImage]="config?.DefaultImageUrl"
-                [loadingImage]="config?.PrerenderImageUrl"
-              />
+              <img [lazyLoad]="pic.HotelFileName" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
             </div>
           </div>
         </ng-container>
         <ng-template #deftpl>
           <div class="swiper-slide" *ngFor="let bot of boutiqueHotel">
             <div class="inner">
-              <img
-                [lazyLoad]="bot?.HotelDefaultImg"
-                [defaultImage]="config?.DefaultImageUrl"
-                [loadingImage]="config?.PrerenderImageUrl"
-              />
+              <img [lazyLoad]="bot?.HotelDefaultImg" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
             </div>
           </div>
         </ng-template>
       </div>
     </div>
     <div class="dots-up" *ngIf="boutiqueHotel?.HotelDayPrices?.length">
-      <div
-        class="dot"
-        *ngFor="let d of boutiqueHotel?.HotelDayPrices;let ind=index;"
-        [class.active]="ind==hotIndex"
-      ></div>
+      <div class="dot" *ngFor="let d of boutiqueHotel?.HotelDayPrices;let ind=index;" [class.active]="ind==hotIndex"></div>
     </div>
   </div>
 
@@ -234,14 +172,14 @@
           <img [lazyLoad]="item.ImageUrl" alt="" />
         </div>
       </div>
-      <div
-        class="list"
-        style="background: linear-gradient(90deg, #fbddb1 0%, #fbc696 100%)"
-      >
+      <div class="list" style="background: linear-gradient(90deg, #fbddb1 0%, #fbc696 100%)">
         <div class="left">
           <div class="item-sign">签到有奖</div>
           <div class="jd">20积分</div>
-          <button class="btn2" (click)="onSignIn()">立即签到</button>
+          <button class="btn2" (click)="OnSignIn()" [class.disabled]='!isCanDailySigned'>
+            <span *ngIf='!isCanDailySigned'>今日已签到</span>
+            <span *ngIf='isCanDailySigned'>立即签到</span>
+          </button>
         </div>
         <div class="right">
           <img src="assets/home/mobile.png" alt="" />

@@ -34,7 +34,7 @@ import {
 import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
-import { tap, shareReplay, map } from "rxjs/operators";
+import { tap, shareReplay, map, finalize } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
 import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
@@ -82,6 +82,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   identity: IdentityEntity;
   isLoadingNotice = false;
   isAgent = false;
+  isCanDailySigned = false;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
   selectedCompany: string;
@@ -125,8 +126,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     Amount: number;
     Name: string;
   };
-
-  signList: any;
 
   exchangeList: {
     Id: string;
@@ -300,15 +299,47 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async OnSignIn() {
-    try {
-      this.sign = {
-        Amount: 1,
-        Name: "手机",
-      };
-      this.signList = await this.tmcService.getSign(this.sign);
-    } catch (e) {
-      console.log(e);
+    if (!this.isCanDailySigned) {
+      return;
     }
+    this.sign = {
+      Amount: 20,
+      Name: "手机",
+    };
+    // this.isCanDailySigned = await this.tmcService
+    //   .checkIfCanDailySigned(true)
+    //   .catch((e) => {
+    //     if (e) {
+    //       AppHelper.alert(e);
+    //     }
+    //     return false;
+    //   });
+    // if (!this.isCanDailySigned) {
+    //   return;
+    // }
+    const sub = this.tmcService
+      .getSign(this.sign)
+      .pipe(
+        finalize(() => {
+          setTimeout(() => {
+            sub.unsubscribe();
+          }, 200);
+        })
+      )
+      .subscribe((r) => {
+        if (r) {
+          if (r.Status) {
+            this.isCanDailySigned = false;
+            if (r.Message) {
+              AppHelper.toast(r.Message, 2000, "middle");
+            }
+          } else {
+            if (r.Message) {
+              AppHelper.alert(r.Message);
+            }
+          }
+        }
+      });
   }
 
   private async getLogin() {
@@ -317,18 +348,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
 
       console.log(url, "url");
       AppHelper.jump(this.router, url, null);
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  async onSignIn() {
-    try {
-      this.sign = {
-        Amount: 20,
-        Name: "手机",
-      };
-      this.signList = await this.tmcService.getSign(this.sign);
     } catch (e) {
       console.log(e);
     }
@@ -477,7 +496,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initTaskSpwiper() {
     const mySwiper: any = {
       loop: true,
-      circular:true,
+      circular: true,
       autoplay: {
         delay: 3000,
         stopOnLastSlide: false,
@@ -498,7 +517,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initTripSpwiper() {
     const mySwiper: any = {
       loop: true,
-      circular:true,
+      circular: true,
       autoplay: {
         delay: 3000,
         stopOnLastSlide: false,
@@ -552,6 +571,12 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .getIdentitySource()
       .subscribe(async (_) => {
         try {
+          this.tmcService
+            .checkIfCanDailySigned()
+            .catch(() => false)
+            .then((r) => {
+              this.isCanDailySigned = r;
+            });
           this.configService.getConfigAsync().then((c) => {
             this.config = c;
           });
@@ -571,6 +596,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           // this.getSignIn();
           this.loadReviewedTask();
           this.loadMyItinerary();
+          
         } catch (e) {
           console.error(e);
         }
