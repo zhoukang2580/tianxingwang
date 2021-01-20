@@ -15,6 +15,7 @@ ion-header ion-title {
   --border-width: 0;
   position: relative;
   width: 100vw;
+  min-height: 138px;
   .title {
     font-size: 18px;
     margin-left: 20px;
@@ -24,6 +25,7 @@ ion-header ion-title {
   .inner {
     padding: 20px;
     height: 138px;
+    min-height: 138px;
     position: relative;
     img {
       width: 100%;
