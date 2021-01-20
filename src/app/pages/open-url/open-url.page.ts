@@ -11,6 +11,7 @@ import {
   AfterViewInit,
   ViewChild,
   OnDestroy,
+  Renderer2,
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import {
@@ -32,6 +33,8 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
   isHideTitle = false;
   isShowFabButton = false;
   isIframeOpen = true;
+  vertical = "top";
+  horizontal = "start";
   private isOpenInAppBrowser = false;
   private isback = false;
   private goPath = "";
@@ -47,10 +50,17 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
     private navCtrl: NavController,
     private iab: InAppBrowser,
     private plt: Platform,
-    private router: Router
+    private router: Router,
+    private render: Renderer2
   ) {
     this.url$ = new BehaviorSubject(null);
     this.subscription = activatedRoute.queryParamMap.subscribe((p) => {
+      if (p.get("vertical")) {
+        this.vertical = p.get("vertical");
+      }
+      if (p.get("horizontal")) {
+        this.horizontal = p.get("horizontal");
+      }
       let url = decodeURIComponent(p.get("url"));
       if (url) {
         if (this.plt.is("ios") && !url.includes("isIos")) {
@@ -60,7 +70,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
             url += "?isIos=true";
           }
         }
-        if(!url.includes("lang")){
+        if (!url.includes("lang")) {
           if (url.includes("?")) {
             url += `&lang=${AppHelper.getLanguage()}`;
           } else {
@@ -93,6 +103,23 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       this.isShowFabButton = p.get("isShowFabButton") == "true";
       this.isHideTitle = h == "true";
     });
+  }
+  onTouchMove(el: HTMLElement, evt: TouchEvent) {
+    try {
+      if (el) {
+        const t = evt.touches[0];
+        const h = el.clientHeight / 2;
+        const w = el.clientWidth / 2;
+        this.render.setStyle(
+          el,
+          "transform",
+          `translate3d(${t.pageX - w}px,${t.pageY - h}px,0)`
+        );
+      }
+      // console.log("evt", evt);
+    } catch (e) {
+      console.error(e);
+    }
   }
   private openInAppBrowser(url: string) {
     if (this.browser) {
