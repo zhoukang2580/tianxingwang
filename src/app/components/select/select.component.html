@@ -7,7 +7,7 @@
 </ion-header>
 <div class="wrapper">
   <ion-list>
-    <ion-radio-group [value]="value" (ionChange)='onChange()'>
+    <ion-radio-group [value]="value" mode='md' (ionChange)='onChange()'>
       <div class='groups-item' *ngFor='let r of data' (click)='value=r.value'>
         <ion-radio slot="start" [value]="r.value"></ion-radio>
         <ion-label>{{r.label}}</ion-label>

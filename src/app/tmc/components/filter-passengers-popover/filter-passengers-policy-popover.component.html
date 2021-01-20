@@ -1,4 +1,4 @@
-<ion-radio-group class='credentials-remark ion-no-margin ion-no-padding'  (ionChange)='onSelectItem($event)'
+<ion-radio-group class='credentials-remark ion-no-margin ion-no-padding' mode='md' (ionChange)='onSelectItem($event)'
   name='CredentialsRemark'>
   <ion-item *ngFor='let info of bookInfos'>
     <ion-label class='sm-font-size' *ngIf='info?.credential?.Name'>

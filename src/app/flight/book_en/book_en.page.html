@@ -189,7 +189,7 @@
                     <ion-item *ngIf='false'>
                         <div class='travel-type ion-margin-top'>
                             Travel Type:
-                            <ion-radio-group [(ngModel)]='combindInfo.travelType' name='travelType'>
+                            <ion-radio-group mode='md' [(ngModel)]='combindInfo.travelType' name='travelType'>
                                 <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Business)'>
                                     <ion-label notranslate>因公</ion-label>
                                     <ion-radio notranslate [value]="OrderTravelType.Business"></ion-radio>
@@ -254,7 +254,7 @@
                 </ion-item-divider>
                 <ion-item>
                     <div style='width: 100%'>
-                        <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
+                        <ion-radio-group mode='md' [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
                             <ion-item *ngFor='let pt of orderTravelPayTypes'>
                                 <ion-label>{{pt.label.replace('公付','Company')}}
                                     <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>

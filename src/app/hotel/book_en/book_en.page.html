@@ -236,7 +236,7 @@
         <ion-list-header>
           <strong>Payment method</strong>
         </ion-list-header>
-        <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='onOrderTravelPayTypeSelect()'>
+        <ion-radio-group [(ngModel)]='orderTravelPayType' mode='md' name='travelPayType' (ionChange)='onOrderTravelPayTypeSelect()'>
           <!-- 酒店预付月结 -->
           <ng-container *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
             <ng-container *ngFor='let pt of orderTravelPayTypes'>

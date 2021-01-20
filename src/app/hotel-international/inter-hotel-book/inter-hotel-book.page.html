@@ -257,7 +257,7 @@
         </ion-list-header>
         <ng-container
           *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
-          <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType'>
+          <ion-radio-group [(ngModel)]='orderTravelPayType' mode='md' name='travelPayType'>
             <ng-container *ngFor='let pt of orderTravelPayTypes'>
               <ion-item
                 *ngIf='checkOrderTravelPayType(pt.value)||(pt.value == OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>
@@ -279,7 +279,7 @@
         <ng-template #zhifu3>
           <ion-item>
             <div style='width: 100%'>
-              <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' value="{{tmc?.HotelPayType}}">
+              <ion-radio-group [(ngModel)]='orderTravelPayType' mode='md' name='travelPayType' value="{{tmc?.HotelPayType}}">
                 <ng-container *ngFor='let pt of orderTravelPayTypes'>
                   <ion-item
                     *ngIf='checkOrderTravelPayType(pt.value)||(pt.value==OrderTravelPayType.Credit&&identity?.Numbers?.AgentId)'>

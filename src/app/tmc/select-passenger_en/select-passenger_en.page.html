@@ -57,7 +57,7 @@
         </ng-template>
     </ng-container>
     <ng-template #addTempl>
-        <ion-radio-group value="{{selectedCredentialId}}" [allowEmptySelection]="true">
+        <ion-radio-group value="{{selectedCredentialId}}" mode='md' [allowEmptySelection]="true">
             <ion-list>
                 <ng-container *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
                     <ng-container *ngIf='item!=vmNewCredential'>
@@ -151,7 +151,7 @@
                                 </ion-item>
                             </ion-col>
                             <ion-col size='12'>
-                                <ion-radio-group class='credentials-remark ion-no-margin ion-no-padding' [(ngModel)]='vmNewCredential.CredentialsRemark' name='CredentialsRemark'>
+                                <ion-radio-group class='credentials-remark ion-no-margin ion-no-padding' mode='md' [(ngModel)]='vmNewCredential.CredentialsRemark' name='CredentialsRemark'>
                                     <ion-item *ngFor='let r of credentialsRemarks' [style.opacity]='vmNewCredential?.Id !=selectedCredentialId?0.7:1' [disabled]='vmNewCredential?.Id !=selectedCredentialId'>
                                         <ion-label>{{r.value}}</ion-label>
                                         <ion-radio value="{{r.value}}"></ion-radio>
