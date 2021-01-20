@@ -1067,7 +1067,8 @@ export class AppHelper {
     ) {
       queryParams.url = url;
       queryParams.isOpenInAppBrowser = AppHelper.isApp();
-      queryParams.isHideTitle = true;
+      queryParams.isHideTitle =
+        queryParams.isHideTitle != undefined ? queryParams.isHideTitle : true;
       router.navigate(["open-url"], {
         queryParams: queryParams,
       });

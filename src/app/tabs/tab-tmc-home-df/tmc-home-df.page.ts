@@ -329,7 +329,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((r) => {
         if (r) {
           if (r.Status) {
-            this.isCanDailySigned = false;
+            this.isCanDailySigned = !r.Data;
             if (r.Message) {
               AppHelper.toast(r.Message, 2000, "middle");
             }
@@ -347,7 +347,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       const url = await this.tmcService.getLogin();
 
       console.log(url, "url");
-      AppHelper.jump(this.router, url, null);
+      AppHelper.jump(this.router, url, {
+        isShowFabButton: !AppHelper.isApp(),
+        isHideTitle: !AppHelper.isApp(),
+      });
     } catch (e) {
       console.log(e);
     }
@@ -573,7 +576,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         try {
           this.tmcService
             .checkIfCanDailySigned()
-            .catch(() => false)
+            .catch(() => true)
             .then((r) => {
               this.isCanDailySigned = r;
             });
@@ -596,7 +599,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           // this.getSignIn();
           this.loadReviewedTask();
           this.loadMyItinerary();
-          
         } catch (e) {
           console.error(e);
         }
