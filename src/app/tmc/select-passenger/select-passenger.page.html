@@ -22,7 +22,7 @@
     </ion-refresher-content>
   </app-refresher>
   <ion-toolbar #toolbar class="search">
-    <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" style='padding:0' animated
+    <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding" style='padding:0'
       placeholder="员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
     </ion-searchbar>
   </ion-toolbar>
@@ -60,7 +60,7 @@
     </ng-template>
   </ng-container>
   <ng-template #addTempl>
-    <ion-radio-group value="{{selectedCredentialId}}" [allowEmptySelection]="true">
+    <ion-radio-group mode='md' value="{{selectedCredentialId}}" [allowEmptySelection]="true">
       <ion-list>
         <ng-container *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
           <ng-container *ngIf='item!=vmNewCredential'>

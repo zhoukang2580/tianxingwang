@@ -187,7 +187,7 @@
                     <ion-item *ngIf='false'>
                         <div class='travel-type ion-margin-top'>
                             差旅类型:
-                            <ion-radio-group [(ngModel)]='combindInfo.travelType' name='travelType'>
+                            <ion-radio-group mode='md' [(ngModel)]='combindInfo.travelType' name='travelType'>
                                 <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Business)'>
                                     <ion-label>因公</ion-label>
                                     <ion-radio [value]="OrderTravelType.Business"></ion-radio>

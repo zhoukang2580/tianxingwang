@@ -1,5 +1,5 @@
 <ion-list lines='none'>
-  <ion-radio-group  [value]='filterCondition?.userOps?.airTypeOp?"":"unlimit"'>
+  <ion-radio-group mode='md' [value]='filterCondition?.userOps?.airTypeOp?"":"unlimit"'>
     <ion-item (click)='onReset()'>
       <ion-label>{{langOpt.any}}</ion-label>
       <ion-radio value='unlimit'></ion-radio>

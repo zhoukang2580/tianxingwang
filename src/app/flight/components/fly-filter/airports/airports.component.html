@@ -3,13 +3,13 @@
     <ion-label *ngIf='isFromAirports'>{{filterCondition.fromCity?.CityName}}{{langOpt.takeoff}}</ion-label>
     <ion-label *ngIf='!isFromAirports'>{{filterCondition.toCity?.CityName}}{{langOpt.land}}</ion-label>
   </ion-list-header>
-  <ion-radio-group *ngIf='!isFromAirports' [value]="filterCondition.userOps?.toAirportOp?'':'unlimit'">
+  <ion-radio-group mode='md' *ngIf='!isFromAirports' [value]="filterCondition.userOps?.toAirportOp?'':'unlimit'">
     <ion-item  (click)='onReset()'>
       <ion-label>{{langOpt.any}}</ion-label>
       <ion-radio value='unlimit'></ion-radio>
     </ion-item>
   </ion-radio-group>
-  <ion-radio-group *ngIf='isFromAirports' [value]="filterCondition.userOps?.fromAirportOp?'':'unlimit'">
+  <ion-radio-group mode='md' *ngIf='isFromAirports' [value]="filterCondition.userOps?.fromAirportOp?'':'unlimit'">
     <ion-item  (click)='onReset()'>
       <ion-label>{{langOpt.any}}</ion-label>
       <ion-radio value='unlimit'></ion-radio>

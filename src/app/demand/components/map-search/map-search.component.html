@@ -4,7 +4,7 @@
       <ion-buttons>
         <app-back-button [backFn]='back.bind(this)'>
         </app-back-button>
-        <ion-searchbar name='searchbar' mode='ios' style='padding:0' debounce="300" animated placeholder='请输入关键字' (ionChange)='onSearch()' [(ngModel)]='kw'>
+        <ion-searchbar name='searchbar' mode='ios' style='padding:0' debounce="300" placeholder='请输入关键字' (ionChange)='onSearch()' [(ngModel)]='kw'>
         </ion-searchbar>
       </ion-buttons>
     </form>

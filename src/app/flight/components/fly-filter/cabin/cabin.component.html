@@ -1,5 +1,5 @@
 <ng-container *ngIf='isSelf else normal'>
-    <ion-radio-group [value]='selectItem' (ionChange)='onionChange($event)'>
+    <ion-radio-group mode='md' [value]='selectItem' (ionChange)='onionChange($event)'>
         <ion-item class="cabin">
             <ion-label>{{langOpt.any}}</ion-label>
             <ion-radio value='unlimit'></ion-radio>
@@ -12,7 +12,7 @@
 </ng-container>
 <ng-template #normal>
     <ion-list lines='none'>
-        <ion-radio-group [value]='selectItem' (ionChange)='onionChange($event)'>
+        <ion-radio-group mode='md' [value]='selectItem' (ionChange)='onionChange($event)'>
             <ion-item>
                 <ion-label>{{langOpt.any}}</ion-label>
                 <ion-radio value='unlimit'></ion-radio>
