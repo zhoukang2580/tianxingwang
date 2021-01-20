@@ -33,7 +33,7 @@
               房型名称
             </ion-col>
             <ion-col>
-              {{orderHotel.RoomName}} <span class="ion-margin-start">{{orderHotel.Breakfast}}份早餐</span>
+              {{orderHotel.RoomName}} <span class="ion-margin-start">{{orderHotel.Breakfast>"0"?orderHotel.Breakfast+"份":"无"}}早餐</span>
             </ion-col>
           </ion-row>
           <ion-row>

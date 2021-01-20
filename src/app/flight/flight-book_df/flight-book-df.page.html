@@ -275,7 +275,7 @@
                     </div>
                 </div>
                 <div class="info">
-                    <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
+                    <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' mode='md' (ionChange)='calcTotalPrice()'>
                         <ion-item *ngFor='let pt of orderTravelPayTypes'>
                             <ion-label>{{pt.label}}
                                 <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>

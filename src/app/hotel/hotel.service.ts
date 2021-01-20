@@ -293,7 +293,7 @@ export class HotelService {
   }
   async checkHasAuth(isDomestic = true) {
     try {
-      const msg = "您没有预定权限";
+      // const msg = "您没有预定权限";
       const Tmc = await this.tmcService.getTmc();
       const tmcRegionTypeValues = Tmc.RegionTypeValue.split(",");
       const Agent = await this.tmcService.getAgent();
@@ -311,7 +311,7 @@ export class HotelService {
           ) ||
           !pass
         ) {
-          AppHelper.alert(msg);
+          // AppHelper.alert(msg);
           return false;
         }
       }
@@ -327,7 +327,6 @@ export class HotelService {
           !tmcRegionTypeValues.find((it) => it.toLowerCase() == "hotel") ||
           !pass
         ) {
-          AppHelper.alert(msg);
           return false;
         }
       }
