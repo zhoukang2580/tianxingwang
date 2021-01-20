@@ -19,7 +19,7 @@
   align-items: flex-start;
   font-size: 12px;
   .id {
-    min-width: 4.5em;
+    min-width: 5.9em;
   }
   .left {
     flex: 80%;
@@ -29,7 +29,7 @@
     color: #666666;
   }
   & > *:first-child {
-    min-width: 3rem;
+    min-width: 4rem;
     margin-right: 0.5em;
     color: var(--ion-color-medium);
   }

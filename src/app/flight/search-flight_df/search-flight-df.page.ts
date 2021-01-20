@@ -445,8 +445,18 @@ export class SearchFlightDfPage
     });
   }
   async searchFlight(isDomestic = true) {
+    let ok = await this.tmcService.hasBookRight("flight");
     if (!isDomestic) {
+      ok = await this.tmcService.hasBookRight("international-flight");
+      if (!ok) {
+        AppHelper.alert("您没有预订权限");
+        return;
+      }
       this.searchInterFlight();
+      return;
+    }
+    if (!ok) {
+      AppHelper.alert("您没有预订权限");
       return;
     }
     this.isCanleave = true;
