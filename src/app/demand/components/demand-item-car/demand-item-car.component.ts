@@ -249,7 +249,6 @@ export class DemandItemCarComponent implements OnInit {
         if(!this.demandPickUpTrainModel.CityName ||
           !this.demandPickUpTrainModel.PickUpUseCarDate ||
           !this.demandPickUpTrainModel.TrainStationName ||
-          !this.demandPickUpTrainModel.Remarks||
           !this.demandPickUpTrainModel.Address||
           !this.demandPickUpTrainModel.PickUpUseCarTime){
           AppHelper.alert("请完善信息");
@@ -275,7 +274,6 @@ export class DemandItemCarComponent implements OnInit {
         if(!this.demandDeliverTrainModel.CityName ||
           !this.demandDeliverTrainModel.DeliverUseCarDate ||
           !this.demandDeliverTrainModel.TrainStationName ||
-          !this.demandDeliverTrainModel.Remarks||
           !this.demandDeliverTrainModel.Address||
           !this.demandDeliverTrainModel.DeliverUseCarTime){
           AppHelper.alert("请完善信息");
@@ -301,7 +299,6 @@ export class DemandItemCarComponent implements OnInit {
         if(!this.demandCharterCarModel.CharterCarDate ||
           !this.demandCharterCarModel.CharterCarDays ||
           !this.demandCharterCarModel.CharterCarType ||
-          !this.demandCharterCarModel.Remarks||
           !this.demandCharterCarModel.ServiceEndCity||
           !this.demandCharterCarModel.ServiceStartCity){
           AppHelper.alert("请完善信息");

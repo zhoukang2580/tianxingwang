@@ -55,17 +55,4 @@ export class DemandAirportServicesComponent implements OnInit {
     }
   }
 
-  async onOpenDate() {
-    const r = await this.calendarService.openCalendar({
-      goArrivalTime: "",
-      isMulti: false,
-      forType: null,
-      beginDate: "",
-      endDate: "",
-    });
-    if (r && r.length) {
-      this.demandAirportModel.DepartureDateDay = r[0].date;
-    }
-  }
-
 }

@@ -32,6 +32,14 @@
       ion-text {
         margin-right: 40px;
       }
+      ion-datetime {
+        --padding-top: 0px;
+        --padding-end: 0px;
+        --padding-bottom: 0px;
+        --padding-start: 0px;
+        max-width: initial;
+        margin-right: 24px;
+      }
     }
 
     .main {

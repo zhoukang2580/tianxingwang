@@ -46,7 +46,7 @@
         </div>
         <div class="item">
           <div class="date">起飞日期</div>
-          <ion-datetime style="flex: 3;" displayFormat="YYYY-MM-DD" [(ngModel)]="demandPickUpFlightModel.FilghtDepartureDate" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" style="flex: 3;" displayFormat="YYYY-MM-DD" [(ngModel)]="demandPickUpFlightModel.FilghtDepartureDate" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
         <div class="item">
@@ -62,7 +62,7 @@
         </div>
         <div class="item">
           <div class="date">机场名称</div>
-          <div class="main" (click)="onSelectFromCity()">
+          <div class="main">
             <ion-input placeholder="请输入机场名称" [(ngModel)]="demandPickUpFlightModel.AirportName"></ion-input>
           </div>
         </div>
@@ -99,9 +99,9 @@
         
         <div class="item">
           <div class="date">起飞日期</div>
-          <ion-datetime style="flex: 3;" displayFormat="YYYY-MM-DD" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureDate" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" style="flex: 3;" displayFormat="YYYY-MM-DD" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureDate" doneText="确定" cancelText="取消">
           </ion-datetime>
-          <ion-datetime style="max-width: initial;flex: 3;" displayFormat="HH:mm" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureTime" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" style="max-width: initial;flex: 3;" displayFormat="HH:mm" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureTime" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
         <!-- <div class="item">
@@ -156,9 +156,9 @@
         </div>
         <div class="item">
           <div class="date">用车时间</div>
-          <ion-datetime  displayFormat="YYYY-MM-DD" [(ngModel)]="demandPickUpTrainModel.PickUpUseCarDate" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" displayFormat="YYYY-MM-DD" [(ngModel)]="demandPickUpTrainModel.PickUpUseCarDate" doneText="确定" cancelText="取消">
           </ion-datetime>
-          <ion-datetime style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandPickUpTrainModel.PickUpUseCarTime" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandPickUpTrainModel.PickUpUseCarTime" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
         <div class="item">
@@ -208,9 +208,9 @@
         </div>
         <div class="item">
           <div class="date">用车时间</div>
-          <ion-datetime  displayFormat="YYYY-MM-DD" [(ngModel)]="demandDeliverTrainModel.DeliverUseCarDate" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" displayFormat="YYYY-MM-DD" [(ngModel)]="demandDeliverTrainModel.DeliverUseCarDate" doneText="确定" cancelText="取消">
           </ion-datetime>
-          <ion-datetime style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandDeliverTrainModel.DeliverUseCarTime" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandDeliverTrainModel.DeliverUseCarTime" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
         <div class="item">
@@ -260,9 +260,9 @@
         </div>
         <div class="item">
           <div class="date">用车时间</div>
-          <ion-datetime  displayFormat="YYYY-MM-DD" [(ngModel)]="demandCharterCarModel.CharterCarDate" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" displayFormat="YYYY-MM-DD" [(ngModel)]="demandCharterCarModel.CharterCarDate" doneText="确定" cancelText="取消">
           </ion-datetime>
-          <ion-datetime style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandCharterCarModel.CharterCarTime" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandCharterCarModel.CharterCarTime" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
         <div class="item">
