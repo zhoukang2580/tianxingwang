@@ -37,8 +37,8 @@
 
     .main {
       display: flex;
-      align-items: center;
-      justify-content: flex-end;
+      align-items: center;    
+      justify-content: space-between;
       width: 100%;
       ion-input {
         font-size: 15px;

@@ -131,6 +131,8 @@ export class DemandListPage implements OnInit {
         this.teams.Demand = data.demandCharterCar;
       }
       this.apiservice.saveDemand(this.teams);
+      AppHelper.alert('添加成功');
+      this.onReset();
     } catch (e) {
       AppHelper.alert(e)
     }

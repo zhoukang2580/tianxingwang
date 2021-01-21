@@ -58,6 +58,20 @@ export class DemandItemTeamComponent implements OnInit {
   onSubmit() {
     try {
       if (this.demandTeamModel) {
+        if (this.demandTeamModel.DepartureDate) {
+          this.demandTeamModel.DepartureDate = this.demandTeamModel.DepartureDate.replace("T", " ").substring(
+            0,
+            10
+          );
+        }
+        if (this.demandTeamModel.ReturnDate) {
+          this.demandTeamModel.ReturnDate = this.demandTeamModel.ReturnDate.replace("T", " ").substring(
+            0,
+            10
+          );
+        }
+      }
+      if (this.demandTeamModel) {
         if (!this.demandTeamModel.LiaisonName) {
           AppHelper.alert("姓名不能为空");
           return;
@@ -76,17 +90,19 @@ export class DemandItemTeamComponent implements OnInit {
           return;
         }
 
-        if (!this.demandTeamModel.ProductType || 
-          !this.demandTeamModel.FromAddress || 
-          !this.demandTeamModel.ToAddress || 
-          !this.demandTeamModel.DepartureDate || 
-          !this.demandTeamModel.ReturnDate || 
-          !this.demandTeamModel.PersonCount || 
-          !this.demandTeamModel.PersonBudget || 
-          !this.demandTeamModel.TravelType ){
-            AppHelper.alert("请完善信息");
-            return;
-          }
+        const reg1 = /^(\w){}$/;
+
+        if (!this.demandTeamModel.ProductType ||
+          !this.demandTeamModel.FromAddress ||
+          !this.demandTeamModel.ToAddress ||
+          !this.demandTeamModel.DepartureDate ||
+          !this.demandTeamModel.ReturnDate ||
+          !this.demandTeamModel.PersonCount ||
+          !this.demandTeamModel.PersonBudget ||
+          !this.demandTeamModel.TravelType) {
+          AppHelper.alert("请完善信息");
+          return;
+        }
       }
       this.demandTeam.emit({ demandTeamModel: this.demandTeamModel });
     } catch (e) {
