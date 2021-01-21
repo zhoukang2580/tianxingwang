@@ -38,22 +38,6 @@ export class DemandItemTeamComponent implements OnInit {
   }
   onReset() {
     this.demandTeamModel = {} as any;
-    // this.mapService
-    //   .getCurMapPoint()
-    //   .then((c) => {
-    //     this.curPos = {
-    //       ...c,
-    //     };
-    //     if (c && c.address) {
-    //       this.demandTeamModel.FromAddress = `${c.address.province || ""}${c.address.city || ""
-    //         }${c.address.district || ""}${c.address.street}`;
-    //       this.demandTeamModel.ToAddress = `${c.address.province || ""}${c.address.city || ""
-    //         }${c.address.district || ""}${c.address.street}`;
-    //     }
-    //   })
-    //   .catch((e) => {
-    //     console.error(e);
-    //   });
   }
   onSubmit() {
     try {

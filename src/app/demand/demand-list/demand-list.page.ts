@@ -106,7 +106,7 @@ export class DemandListPage implements OnInit {
       AppHelper.alert("添加成功");
       this.onReset();
     } catch (e) {
-      AppHelper.alert("添加失败" + e);
+      AppHelper.alert(e);
     }
   }
 
@@ -117,7 +117,7 @@ export class DemandListPage implements OnInit {
       AppHelper.alert("添加成功");
       this.onReset();
     } catch (e) {
-      AppHelper.alert("添加失败" + e);
+      AppHelper.alert(e);
     }
   }
   async onVisaSubmit(obj) {
@@ -127,7 +127,7 @@ export class DemandListPage implements OnInit {
       AppHelper.alert("添加成功");
       this.onReset();
     } catch (e) {
-      AppHelper.alert("添加失败" + e);
+      AppHelper.alert(e);
     }
   }
 
@@ -138,7 +138,7 @@ export class DemandListPage implements OnInit {
       AppHelper.alert("添加成功");
       this.onReset();
     } catch (e) {
-      AppHelper.alert("添加失败" + e);
+      AppHelper.alert(e);
     }
   }
   async onCarSubmit(obj) {
