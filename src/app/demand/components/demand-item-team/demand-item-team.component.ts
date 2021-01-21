@@ -85,12 +85,17 @@ export class DemandItemTeamComponent implements OnInit {
           AppHelper.alert("电话格式不正确");
           return;
         }
+
         if (!this.demandTeamModel.LiaisonEmail) {
           AppHelper.alert("邮箱不能为空");
           return;
         }
 
-        const reg1 = /^(\w){}$/;
+        const reg1 = /^\w+@[a-z0-9]+(\.[a-z]+){1,3}$/g;
+        if (!(reg1.test(this.demandTeamModel.LiaisonEmail))) {
+          AppHelper.alert("邮箱格式不正确");
+          return;
+        }
 
         if (!this.demandTeamModel.ProductType ||
           !this.demandTeamModel.FromAddress ||

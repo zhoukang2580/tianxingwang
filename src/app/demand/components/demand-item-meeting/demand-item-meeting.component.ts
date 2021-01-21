@@ -50,6 +50,13 @@ export class DemandItemMeetingComponent implements OnInit {
           AppHelper.alert("请输入公司邮箱");
           return;
         }
+
+        const reg1 = /^\w+@[a-z0-9]+(\.[a-z]+){1,3}$/g;
+        if (!(reg1.test(this.demandTourModel.CompanyEmail))) {
+          AppHelper.alert("邮箱格式不正确");
+          return;
+        }
+
         if(!this.demandTourModel.Remarks){
           AppHelper.alert("请输入备注");
           return;

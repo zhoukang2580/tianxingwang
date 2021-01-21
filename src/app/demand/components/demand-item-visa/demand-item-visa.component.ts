@@ -52,6 +52,13 @@ export class DemandItemVisaComponent implements OnInit {
         AppHelper.alert("请输入邮箱");
         return;
         }
+
+        const reg1 = /^\w+@[a-z0-9]+(\.[a-z]+){1,3}$/g;
+        if (!(reg1.test(this.demandVisaModel.Email))) {
+          AppHelper.alert("邮箱格式不正确");
+          return;
+        }
+        
         if(!this.demandVisaModel.Destination){
         AppHelper.alert("请输入国家地区");
         return;

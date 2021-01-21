@@ -338,7 +338,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private async getLogin() {
     try {
       const url = await this.tmcService.getLogin();
-
       console.log(url, "url");
       AppHelper.jump(this.router, url, {
         isShowFabButton: !AppHelper.isApp(),
