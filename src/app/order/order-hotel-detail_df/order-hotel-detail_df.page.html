@@ -45,7 +45,7 @@
                 {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}
                 &nbsp;至&nbsp;
                 {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
-                &nbsp;{{orderHotel.countDay}}晚
+                &nbsp;{{orderHotel?.countDay}}晚
               </ion-text>
             </ion-col>
           </ion-row>
@@ -93,12 +93,12 @@
               {{orderHotel.HotelContact}}
             </ion-col>
           </ion-row>
-          <ion-row *ngIf='getVariable(orderHotel,"ExceptionMessage") as ExceptionMessage'>
+          <!-- <ion-row *ngIf='getVariable(orderHotel,"ExceptionMessage") as ExceptionMessage'>
             <ion-col size='3'>异常消息</ion-col>
             <ion-col>
               <div>{{ExceptionMessage}}</div>
             </ion-col>
-          </ion-row>
+          </ion-row> -->
           <ion-row>
             <ion-col>
               <div class='clip-text' (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]' [class.show]='orderHotel["isShowDetail"]'>

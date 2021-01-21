@@ -37,25 +37,37 @@
       </ion-list>
       <div class="plane">
         <div class="item">
+          <div class="date">联系人</div>
           <ion-input placeholder="请输入联系人" [(ngModel)]="demandPickUpFlightModel.LiaisonName"></ion-input>
         </div>
         <div class="item">
+          <div class="date">手机号</div>
           <ion-input placeholder="请输入手机号" [(ngModel)]="demandPickUpFlightModel.LiaisonPhone"></ion-input>
         </div>
         <div class="item">
           <div class="date">起飞日期</div>
-          <ion-datetime style="flex: 3;" displayFormat="YYYY-DD-MM" [(ngModel)]="demandPickUpFlightModel.FilghtDepartureDate" doneText="确定" cancelText="取消">
+          <ion-datetime style="flex: 3;" displayFormat="YYYY-MM-DD" [(ngModel)]="demandPickUpFlightModel.FilghtDepartureDate" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
         <div class="item">
+          <div class="date">航班号</div>
           <ion-input placeholder="请输入航班号" [(ngModel)]="demandPickUpFlightModel.FlightNumber"></ion-input>
         </div>
         <div class="item">
+          <div class="date">接机地址</div>
           <div class="main" (click)="onSelectFromCity()">
             <ion-text size="2">{{demandPickUpFlightModel.CityName}}</ion-text>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
           </div>
         </div>
         <div class="item">
+          <div class="date">机场名称</div>
+          <div class="main" (click)="onSelectFromCity()">
+            <ion-input placeholder="请输入机场名称" [(ngModel)]="demandPickUpFlightModel.AirportName"></ion-input>
+          </div>
+        </div>
+        <div class="item">
+          <div class="date">备注</div>
           <div class="main">
             <ion-input size="2" placeholder="请输入备注" [(ngModel)]="demandPickUpFlightModel.Remarks"></ion-input>
           </div>
@@ -77,15 +89,17 @@
       </ion-list>
       <div class="plane">
         <div class="item">
+          <div class="date">联系人</div>
           <ion-input placeholder="请输入联系人" [(ngModel)]="demandDeliverFlightModel.LiaisonName"></ion-input>
         </div>
         <div class="item">
+          <div class="date">手机号</div>
           <ion-input placeholder="请输入手机号" [(ngModel)]="demandDeliverFlightModel.LiaisonPhone"></ion-input>
         </div>
         
         <div class="item">
           <div class="date">起飞日期</div>
-          <ion-datetime style="flex: 3;" displayFormat="YYYY-DD-MM" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureDate" doneText="确定" cancelText="取消">
+          <ion-datetime style="flex: 3;" displayFormat="YYYY-MM-DD" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureDate" doneText="确定" cancelText="取消">
           </ion-datetime>
           <ion-datetime style="max-width: initial;flex: 3;" displayFormat="HH:mm" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureTime" doneText="确定" cancelText="取消">
           </ion-datetime>
@@ -96,9 +110,11 @@
           </ion-text>
         </div> -->
         <div class="item">
+          <div class="date">航班号</div>
           <ion-input placeholder="请输入航班号" [(ngModel)]="demandDeliverFlightModel.FlightNumber"></ion-input>
         </div>
         <div class="item">
+          <div class="date">城市</div>
           <ion-input placeholder="请输入城市" value='上海市' [(ngModel)]="demandDeliverFlightModel.CityName"></ion-input>
         </div>
         <div class="item">
@@ -109,6 +125,7 @@
           </div>
         </div>
         <div class="item">
+          <div class="date">备注</div>
           <div class="main">
             <ion-input size="2" [(ngModel)]="demandDeliverFlightModel.Remarks" placeholder="请输入备注"></ion-input>
           </div>
@@ -130,31 +147,37 @@
       </ion-list>
       <div class="train">
         <div class="item">
+          <div class="date">联系人</div>
           <ion-input placeholder="请输入联系人" [(ngModel)]="demandPickUpTrainModel.LiaisonName"></ion-input>
         </div>
         <div class="item">
+          <div class="date">手机号</div>
           <ion-input placeholder="请输入手机号" [(ngModel)]="demandPickUpTrainModel.LiaisonPhone"></ion-input>
         </div>
         <div class="item">
           <div class="date">用车时间</div>
-          <ion-datetime  displayFormat="YYYY-DD-MM" [(ngModel)]="demandPickUpTrainModel.PickUpUseCarDate" doneText="确定" cancelText="取消">
+          <ion-datetime  displayFormat="YYYY-MM-DD" [(ngModel)]="demandPickUpTrainModel.PickUpUseCarDate" doneText="确定" cancelText="取消">
           </ion-datetime>
           <ion-datetime style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandPickUpTrainModel.PickUpUseCarTime" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
         <div class="item">
+          <div class="date">火车站</div>
           <ion-input placeholder="请输入火车站" [(ngModel)]="demandPickUpTrainModel.TrainStationName"></ion-input>
         </div> 
         <div class="item">
+          <div class="date">城市</div>
           <ion-input placeholder="请输入城市" value='上海市' [(ngModel)]="demandPickUpTrainModel.CityName"></ion-input>
         </div>
         <div class="item">
           <div class='address'>详细地址</div>
           <div class="main" (click)="onSelectPickUpCity()">
             <ion-text>{{demandPickUpTrainModel.Address}}</ion-text>
+            <ion-icon name="chevron-forward-outline"></ion-icon>
           </div>
         </div>
         <div class="item">
+          <div class="date">备注</div>
           <div class="main">
             <ion-input size="2" [(ngModel)]="demandPickUpTrainModel.Remarks" placeholder="请输入备注"></ion-input>
           </div>
@@ -176,32 +199,37 @@
       </ion-list>
       <div class="train">
         <div class="item">
+          <div class="date">联系人</div>
           <ion-input placeholder="请输入联系人" [(ngModel)]="demandDeliverTrainModel.LiaisonName"></ion-input>
         </div>
         <div class="item">
+          <div class="date">手机号</div>
           <ion-input placeholder="请输入手机号" [(ngModel)]="demandDeliverTrainModel.LiaisonPhone"></ion-input>
         </div>
         <div class="item">
           <div class="date">用车时间</div>
-          <ion-datetime  displayFormat="YYYY-DD-MM" [(ngModel)]="demandDeliverTrainModel.DeliverUseCarDate" doneText="确定" cancelText="取消">
+          <ion-datetime  displayFormat="YYYY-MM-DD" [(ngModel)]="demandDeliverTrainModel.DeliverUseCarDate" doneText="确定" cancelText="取消">
           </ion-datetime>
           <ion-datetime style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandDeliverTrainModel.DeliverUseCarTime" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
         <div class="item">
+          <div class="date">火车站</div>
           <ion-input placeholder="请输入火车站" [(ngModel)]="demandDeliverTrainModel.TrainStationName"></ion-input>
         </div>
         <div class="item">
+          <div class="date">城市</div>
           <ion-input placeholder="请输入城市" value='上海市' [(ngModel)]="demandDeliverTrainModel.CityName"></ion-input>
         </div>
         <div class="item">
           <div class='address'>详细地址</div>
           <div class="main" (click)="onSelectDeliverCity()">
             <ion-text>{{demandDeliverTrainModel.Address}}</ion-text>
-            <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
+            <ion-icon name="chevron-forward-outline"></ion-icon>
           </div>
         </div>
         <div class="item">
+          <div class="date">备注</div>
           <div class="main">
             <ion-input size="2" placeholder="请输入备注" [(ngModel)]="demandDeliverTrainModel.Remarks"></ion-input>
           </div>
@@ -223,14 +251,16 @@
       </ion-list>
       <div class="department">
         <div class="item">
+          <div class="date">联系人</div>
           <ion-input placeholder="请输入联系人" [(ngModel)]="demandCharterCarModel.LiaisonName"></ion-input>
         </div>
         <div class="item">
+          <div class="date">手机号</div>
           <ion-input placeholder="请输入手机号" [(ngModel)]="demandCharterCarModel.LiaisonPhone"></ion-input>
         </div>
         <div class="item">
           <div class="date">用车时间</div>
-          <ion-datetime  displayFormat="YYYY-DD-MM" [(ngModel)]="demandCharterCarModel.CharterCarDate" doneText="确定" cancelText="取消">
+          <ion-datetime  displayFormat="YYYY-MM-DD" [(ngModel)]="demandCharterCarModel.CharterCarDate" doneText="确定" cancelText="取消">
           </ion-datetime>
           <ion-datetime style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandCharterCarModel.CharterCarTime" doneText="确定" cancelText="取消">
           </ion-datetime>
@@ -286,6 +316,7 @@
           </div>
         </div>
         <div class="item">
+          <div class="date">备注</div>
           <div class="main">
             <ion-input size="2" [(ngModel)]="demandCharterCarModel.Remarks" placeholder="请输入备注"></ion-input>
           </div>

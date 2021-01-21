@@ -12,7 +12,7 @@
       </div>
       <div class="item">
         <div class="label">电子邮箱</div>
-        <ion-input placeholder="请输入姓名" [(ngModel)]='demandTeamModel.LiaisonEmail'></ion-input>
+        <ion-input placeholder="请输入电子邮箱" [(ngModel)]='demandTeamModel.LiaisonEmail'></ion-input>
       </div>
     </div>
     <div class="item">
@@ -50,19 +50,17 @@
     </div>
     <div class="item">
       <div class="label">出发时间</div>
-      <div class="main" (click)="onOpenDate()">
-        <ion-text>
-          {{demandTeamModel.DepartureDate}}
-        </ion-text>
+      <div class="main">
+        <ion-datetime displayFormat="YYYY-MM-DD" [(ngModel)]="demandTeamModel.DepartureDate" doneText="确定" cancelText="取消">
+        </ion-datetime>
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>
     </div>
     <div class="item">
       <div class="label">往返时间</div>
-      <div class="main" (click)="onOpenDate()">
-        <ion-text>
-          {{demandTeamModel.ReturnDate}}
-        </ion-text>
+      <div class="main">
+        <ion-datetime displayFormat="YYYY-MM-DD" [(ngModel)]="demandTeamModel.ReturnDate" doneText="确定" cancelText="取消">
+        </ion-datetime>
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>
     </div>

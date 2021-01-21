@@ -38,8 +38,16 @@
     .main {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       width: 100%;
       line-height: 1.5;
+      ion-datetime{
+        width: 100%;
+        --padding-bottom: 0;
+        --padding-end: 0;
+        --padding-start: 0;
+        --padding-top: 0;
+      }
       ion-input {
         font-size: 15px;
         max-width: 13.5em;

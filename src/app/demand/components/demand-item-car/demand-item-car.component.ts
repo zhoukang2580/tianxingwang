@@ -47,21 +47,14 @@ export class DemandItemCarComponent implements OnInit {
 
     let date = new Date();
     this.demandPickUpFlightModel.FilghtDepartureDate = date.toLocaleDateString();
-    this.demandPickUpFlightModel.CityName = '上海市';
-    this.demandDeliverFlightModel.DeliverFilghtDepartureDate = 'MU006'
     this.demandDeliverFlightModel.DeliverFilghtDepartureDate = date.toLocaleDateString();
     this.demandDeliverFlightModel.DeliverFilghtDepartureTime = '12:30';
-    this.demandDeliverFlightModel.Address = '上海市';
     this.demandPickUpTrainModel.PickUpUseCarDate = date.toLocaleDateString();
     this.demandPickUpTrainModel.PickUpUseCarTime = '12:30';
-    this.demandPickUpTrainModel.Address = '上海市';
     this.demandDeliverTrainModel.DeliverUseCarDate = date.toLocaleDateString();
     this.demandDeliverTrainModel.DeliverUseCarTime = '12:30';
-    this.demandDeliverTrainModel.Address = '上海市';
     this.demandCharterCarModel.CharterCarDate = date.toLocaleDateString();
     this.demandCharterCarModel.CharterCarTime = '12:30';
-    this.demandCharterCarModel.ServiceStartCity = '上海市徐汇区肇嘉浜路376号';
-    this.demandCharterCarModel.ServiceEndCity = '上海市徐汇区肇嘉浜路376号';
 
     this.mapService
       .getCurMapPoint()
@@ -191,14 +184,130 @@ export class DemandItemCarComponent implements OnInit {
   onSubmit() {
     let type: CarType;
     if (this.demandCarType == CarType.PickUpFlight) {
+      if(this.demandPickUpFlightModel){
+        if(!this.demandPickUpFlightModel.LiaisonName){
+          AppHelper.alert("请输入联系人");
+          return;
+        }
+        if(!this.demandPickUpFlightModel.LiaisonPhone){
+          AppHelper.alert("请输入手机号");
+          return;
+        }
+        const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
+        if (!(reg.test(this.demandPickUpFlightModel.LiaisonPhone))) {
+          AppHelper.alert("电话格式不正确");
+          return;
+        }
+        if(!this.demandPickUpFlightModel.CityName ||
+          !this.demandPickUpFlightModel.FilghtDepartureDate ||
+          !this.demandPickUpFlightModel.FlightNumber ||
+          !this.demandPickUpFlightModel.Remarks){
+          AppHelper.alert("请完善信息");
+          return;
+        }
+      }
       type = CarType.PickUpFlight;
     } else if (this.demandCarType == CarType.DeliverFlight) {
+      if(this.demandDeliverFlightModel){
+        if(!this.demandDeliverFlightModel.LiaisonName){
+          AppHelper.alert("请输入联系人");
+          return;
+        }
+        if(!this.demandDeliverFlightModel.LiaisonPhone){
+          AppHelper.alert("请输入手机号");
+          return;
+        }
+        const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
+        if (!(reg.test(this.demandDeliverFlightModel.LiaisonPhone))) {
+          AppHelper.alert("电话格式不正确");
+          return;
+        }
+        if(!this.demandDeliverFlightModel.CityName ||
+          !this.demandDeliverFlightModel.DeliverFilghtDepartureDate ||
+          !this.demandDeliverFlightModel.FlightNumber ||
+          !this.demandDeliverFlightModel.Remarks){
+          AppHelper.alert("请完善信息");
+          return;
+        }
+      }
       type = CarType.DeliverFlight;
     } else if (this.demandCarType == CarType.PickUpTrain) {
+      if(this.demandPickUpTrainModel){
+        if(!this.demandPickUpTrainModel.LiaisonName){
+          AppHelper.alert("请输入联系人");
+          return;
+        }
+        if(!this.demandPickUpTrainModel.LiaisonPhone){
+          AppHelper.alert("请输入手机号");
+          return;
+        }
+        const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
+        if (!(reg.test(this.demandPickUpTrainModel.LiaisonPhone))) {
+          AppHelper.alert("电话格式不正确");
+          return;
+        }
+        if(!this.demandPickUpTrainModel.CityName ||
+          !this.demandPickUpTrainModel.PickUpUseCarDate ||
+          !this.demandPickUpTrainModel.TrainStationName ||
+          !this.demandPickUpTrainModel.Remarks||
+          !this.demandPickUpTrainModel.Address||
+          !this.demandPickUpTrainModel.PickUpUseCarTime){
+          AppHelper.alert("请完善信息");
+          return;
+        }
+      }
       type = CarType.PickUpTrain;
     } else if (this.demandCarType == CarType.DeliverTrain) {
+      if(this.demandPickUpTrainModel){
+        if(!this.demandDeliverTrainModel.LiaisonName){
+          AppHelper.alert("请输入联系人");
+          return;
+        }
+        if(!this.demandDeliverTrainModel.LiaisonPhone){
+          AppHelper.alert("请输入手机号");
+          return;
+        }
+        const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
+        if (!(reg.test(this.demandDeliverTrainModel.LiaisonPhone))) {
+          AppHelper.alert("电话格式不正确");
+          return;
+        }
+        if(!this.demandDeliverTrainModel.CityName ||
+          !this.demandDeliverTrainModel.DeliverUseCarDate ||
+          !this.demandDeliverTrainModel.TrainStationName ||
+          !this.demandDeliverTrainModel.Remarks||
+          !this.demandDeliverTrainModel.Address||
+          !this.demandDeliverTrainModel.DeliverUseCarTime){
+          AppHelper.alert("请完善信息");
+          return;
+        }
+      }
       type = CarType.DeliverTrain;
     } else if (this.demandCarType == CarType.CharterCar) {
+      if(this.demandCharterCarModel){
+        if(!this.demandCharterCarModel.LiaisonName){
+          AppHelper.alert("请输入联系人");
+          return;
+        }
+        if(!this.demandCharterCarModel.LiaisonPhone){
+          AppHelper.alert("请输入手机号");
+          return;
+        }
+        const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
+        if (!(reg.test(this.demandCharterCarModel.LiaisonPhone))) {
+          AppHelper.alert("电话格式不正确");
+          return;
+        }
+        if(!this.demandCharterCarModel.CharterCarDate ||
+          !this.demandCharterCarModel.CharterCarDays ||
+          !this.demandCharterCarModel.CharterCarType ||
+          !this.demandCharterCarModel.Remarks||
+          !this.demandCharterCarModel.ServiceEndCity||
+          !this.demandCharterCarModel.ServiceStartCity){
+          AppHelper.alert("请完善信息");
+          return;
+        }
+      }
       type = CarType.CharterCar
     }
     this.demandCar.emit({ data: this.otherDemandModel, type });

@@ -34,15 +34,10 @@ export class DemandItemTeamComponent implements OnInit {
   }
 
   ngOnInit() {
-   this.onReset();
-    // this.onSubmit();
+    this.onReset();
   }
-  onReset(){
+  onReset() {
     this.demandTeamModel = {} as any;
-    let date = new Date();
-    console.log(date.toLocaleTimeString());
-    this.demandTeamModel.ReturnDate = date.toLocaleDateString();
-    this.demandTeamModel.FromAddress = "上海市";
     this.mapService
       .getCurMapPoint()
       .then((c) => {
@@ -50,12 +45,10 @@ export class DemandItemTeamComponent implements OnInit {
           ...c,
         };
         if (c && c.address) {
-          this.demandTeamModel.FromAddress = `${c.address.province || ""}${
-            c.address.city || ""
-          }${c.address.district || ""}${c.address.street}`;
-          this.demandTeamModel.ToAddress = `${c.address.province || ""}${
-            c.address.city || ""
-          }${c.address.district || ""}${c.address.street}`;
+          this.demandTeamModel.FromAddress = `${c.address.province || ""}${c.address.city || ""
+            }${c.address.district || ""}${c.address.street}`;
+          this.demandTeamModel.ToAddress = `${c.address.province || ""}${c.address.city || ""
+            }${c.address.district || ""}${c.address.street}`;
         }
       })
       .catch((e) => {
@@ -63,7 +56,42 @@ export class DemandItemTeamComponent implements OnInit {
       });
   }
   onSubmit() {
-    this.demandTeam.emit({ demandTeamModel: this.demandTeamModel });
+    try {
+      if (this.demandTeamModel) {
+        if (!this.demandTeamModel.LiaisonName) {
+          AppHelper.alert("姓名不能为空");
+          return;
+        }
+        if (!this.demandTeamModel.LiaisonPhone) {
+          AppHelper.alert("电话不能为空");
+          return;
+        }
+        const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
+        if (!(reg.test(this.demandTeamModel.LiaisonPhone))) {
+          AppHelper.alert("电话格式不正确");
+          return;
+        }
+        if (!this.demandTeamModel.LiaisonEmail) {
+          AppHelper.alert("邮箱不能为空");
+          return;
+        }
+
+        if (!this.demandTeamModel.ProductType || 
+          !this.demandTeamModel.FromAddress || 
+          !this.demandTeamModel.ToAddress || 
+          !this.demandTeamModel.DepartureDate || 
+          !this.demandTeamModel.ReturnDate || 
+          !this.demandTeamModel.PersonCount || 
+          !this.demandTeamModel.PersonBudget || 
+          !this.demandTeamModel.TravelType ){
+            AppHelper.alert("请完善信息");
+            return;
+          }
+      }
+      this.demandTeam.emit({ demandTeamModel: this.demandTeamModel });
+    } catch (e) {
+      AppHelper.alert(e);
+    }
   }
 
   async onSelectFromCity() {
@@ -75,9 +103,8 @@ export class DemandItemTeamComponent implements OnInit {
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      this.demandTeamModel.FromAddress = `${c.address.province || ""}${
-        c.address.city || ""
-      }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      this.demandTeamModel.FromAddress = `${c.address.province || ""}${c.address.city || ""
+        }${c.address.district || ""}${c.address.street || c.address || ""}`;
     }
   }
 
@@ -90,25 +117,8 @@ export class DemandItemTeamComponent implements OnInit {
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      this.demandTeamModel.ToAddress = `${c.address.province || ""}${
-        c.address.city || ""
-      }${c.address.district || ""}${c.address.street || c.address || ""}`;
-    }
-  }
-
-
-
-  async onOpenDate() {
-    const r = await this.calendarService.openCalendar({
-      goArrivalTime: "",
-      isMulti: false,
-      forType: null,
-      beginDate: "",
-      endDate: "",
-    });
-    if (r && r.length) {
-      this.demandTeamModel.ReturnDate = r[0].date;
-
+      this.demandTeamModel.ToAddress = `${c.address.province || ""}${c.address.city || ""
+        }${c.address.district || ""}${c.address.street || c.address || ""}`;
     }
   }
 }

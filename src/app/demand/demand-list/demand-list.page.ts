@@ -60,7 +60,7 @@ export class DemandListPage implements OnInit {
     if(this.tcomp){
       this.tcomp.onReset();
     }else if(this.tcomp2){
-      this.tcomp2.ngOnInit();
+      this.tcomp2.onReset();
     }else if(this.tcomp3){
       this.tcomp3.ngOnInit();
     }else if(this.tcomp4){
@@ -79,7 +79,7 @@ export class DemandListPage implements OnInit {
       AppHelper.alert('添加成功');
       this.onReset();
     } catch (e) {
-      AppHelper.alert(e)
+      AppHelper.alert('添加失败'+e)
     }
   }
 
@@ -87,16 +87,20 @@ export class DemandListPage implements OnInit {
     try {
       this.teams.Demand = obj.demandTourModel;
       this.apiservice.saveDemand(this.teams);
+      AppHelper.alert('添加成功');
+      this.onReset();
     } catch (e) {
-      AppHelper.alert(e);
+      AppHelper.alert('添加失败'+e);
     }
   }
   async onVisaSubmit(obj) {
     try {
       this.teams.Demand = obj.demandVisaModel;
       this.apiservice.saveDemand(this.teams);
+      AppHelper.alert('添加成功');
+      this.onReset();
     } catch (e) {
-      AppHelper.alert(e);
+      AppHelper.alert('添加失败'+e);
     }
   }
 
@@ -104,8 +108,10 @@ export class DemandListPage implements OnInit {
     try {
       this.teams.Demand = obj.DemandAirportServiceModel;
       this.apiservice.saveDemand(this.teams);
+      AppHelper.alert('添加成功');
+      this.onReset();
     } catch (e) {
-      AppHelper.alert(e);
+      AppHelper.alert('添加失败'+e);
     }
   }
   async onCarSubmit(obj) {
