@@ -114,6 +114,7 @@ export class DemandItemCarComponent implements OnInit {
       const c = d.data;
       let temStr = `${c.Name}`;
       this.demandPickUpFlightModel.CityName = temStr;
+      this.demandPickUpFlightModel.CityCode = c.Code;
       await this.initAirports(true, c);
     }
   }
@@ -126,6 +127,7 @@ export class DemandItemCarComponent implements OnInit {
       } else {
         this.toAirports = arr;
       }
+      this.demandPickUpFlightModel.AirportName = null;
     }
   }
   async onSelectDetailCity() {
@@ -139,7 +141,8 @@ export class DemandItemCarComponent implements OnInit {
     if (d && d.data) {
       const c = d.data;
       let temStr = `${c.Name}`;
-      this.demandDeliverFlightModel.Address = temStr;
+      this.demandDeliverFlightModel.CityName = temStr;
+      this.demandDeliverFlightModel.CityCode = c.Code;
       await this.initAirports(true, c);
     }
   }
@@ -155,7 +158,8 @@ export class DemandItemCarComponent implements OnInit {
     if (d && d.data) {
       const c = d.data;
       let temStr = `${c.Name}`;
-      this.demandPickUpTrainModel.Address = temStr;
+      this.demandPickUpTrainModel.CityName = temStr;
+      this.demandPickUpTrainModel.CityCode = c.Code;
       this.initStations(c, true);
     }
   }
@@ -181,7 +185,8 @@ export class DemandItemCarComponent implements OnInit {
     if (d && d.data) {
       const c = d.data;
       let temStr = `${c.Name}`;
-      this.demandDeliverTrainModel.Address = temStr;
+      this.demandDeliverTrainModel.CityName = temStr;
+      this.demandDeliverTrainModel.CityCode = c.Code;
       this.initStations(c, false);
     }
   }
