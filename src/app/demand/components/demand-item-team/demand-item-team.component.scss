@@ -11,11 +11,13 @@
     font-weight: bold;
     color: #333333;
   }
+  .footer{
+    line-height: 2;
+  }
   .item {
     display: flex;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
-    height: 50px;
     .label {
       font-size: 15px;
       font-family: PingFang SC;
@@ -24,9 +26,6 @@
       min-width: 5em;
     }
 
-    .type{
-      min-width: 4em;
-    }
     label {
       font-size: 15px;
       display: flex;
@@ -40,10 +39,14 @@
       display: flex;
       align-items: center;
       width: 100%;
+      line-height: 1.5;
       ion-input {
         font-size: 15px;
-        height: 40px;
         max-width: 13.5em;
+      }
+      ion-select{
+        --padding-bottom: 0px;
+        --padding-top: 0px;
       }
     }
 

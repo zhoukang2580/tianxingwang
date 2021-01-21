@@ -49,12 +49,19 @@
       </div>
     </div>
     <div class="item">
+      <div class="label">出发时间</div>
+      <div class="main" (click)="onOpenDate()">
+        <ion-text>
+          {{demandTeamModel.DepartureDate}}
+        </ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="item">
       <div class="label">往返时间</div>
       <div class="main" (click)="onOpenDate()">
         <ion-text>
           {{demandTeamModel.ReturnDate}}
-          <!-- <app-search-day-comp [day]='goDate' (click)="onSelecDate(true)" [disabled]='searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'>
-        </app-search-day-comp> -->
         </ion-text>
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>

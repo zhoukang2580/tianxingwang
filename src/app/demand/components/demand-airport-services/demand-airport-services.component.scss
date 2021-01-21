@@ -9,7 +9,6 @@
     display: flex;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
-    height: 50px;
     .label {
       font-size: 15px;
       font-family: PingFang SC;
@@ -32,13 +31,17 @@
       align-items: center;
       justify-content: flex-end;
       width: 100%;
+      line-height: 1.5;
       ion-input {
         font-size: 15px;
-        height: 40px;
       }
       ion-text {
         min-width: 13.5em;
         font-size: 15px;
+      }
+      ion-select{
+        --padding-top: 0px;
+        --padding-bottom: 0px;
       }
     }
     ion-icon {

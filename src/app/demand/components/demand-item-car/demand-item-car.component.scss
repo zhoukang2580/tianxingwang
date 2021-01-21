@@ -1,19 +1,29 @@
 .list {
   margin: 10px;
   border-radius: 10px;
-  .container {
-    line-height: 3.3;
+  ion-list{
+    border-bottom: 1px solid #e0e0e0;
+    margin-left: 24px;
   }
   .item {
     display: flex;
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
     margin-left: 1.5em;
-    // line-height: 3.3;
-    height: 50px;
+    line-height: 3;
     ion-input {
-      height: 52px;
       font-size: 15px;
+      --padding-top: 0;
+      --padding-end: 0;
+      --padding-bottom: 0;
+    }
+    ion-datetime {
+      --padding-top: 0px;
+      --padding-end: 0px;
+      --padding-bottom: 0px;
+      --padding-start: 0px;
+      max-width: initial;
+      margin-right: 24px;
     }
     .label {
       font-size: 15px;
@@ -38,7 +48,9 @@
       width: 100%;
       ion-input {
         font-size: 15px;
-        height: 52px;
+        --padding-top: 0;
+        --padding-end: 0;
+        --padding-bottom: 0;
       }
     }
     ion-icon {
@@ -50,8 +62,7 @@
       font-size: 12px;
     }
 
-    .left {    
-      height: 50px;
+    .left {
       .label {
         font-size: 11px;
         font-family: PingFang SC;
@@ -64,7 +75,7 @@
       }
       .address {
         display: flex;
-        min-width: 36vh;    
+        min-width: 36vh;
         margin-top: -16px;
       }
       .yellow,
@@ -132,6 +143,7 @@
   height: 3.4em;
 }
 
-.date,.address {
+.date,
+.address {
   min-width: 6.5em;
 }

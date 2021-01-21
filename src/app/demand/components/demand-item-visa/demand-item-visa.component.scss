@@ -29,9 +29,9 @@
       display: flex;
       align-items: center;
       width: 100%;
+      line-height: 1.5;
       ion-input {
         font-size: 15px;
-        height: 40px;
       }
     }
 
@@ -54,7 +54,6 @@
 
 .group{
   display: flex;
-  height: 3em;
   ion-radio{
     margin: 0 10px 0 0;
   }
