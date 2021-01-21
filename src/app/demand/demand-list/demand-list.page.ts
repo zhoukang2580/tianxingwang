@@ -133,7 +133,7 @@ export class DemandListPage implements OnInit {
 
   async onAirportSubmit(obj) {
     try {
-      this.teams.Demand = obj.DemandAirportServiceModel;
+      this.teams.Demand = obj.demandAirportModel;
       this.apiservice.saveDemand(this.teams);
       AppHelper.alert("添加成功");
       this.onReset();

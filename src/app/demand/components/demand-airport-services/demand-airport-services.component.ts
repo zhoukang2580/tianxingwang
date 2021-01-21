@@ -27,6 +27,14 @@ export class DemandAirportServicesComponent implements OnInit {
   onSubmit(){
     try {
       if(this.demandAirportModel){
+        if(this.demandAirportModel.DepartureDateDay){
+          this.demandAirportModel.DepartureDateDay = this.demandAirportModel.DepartureDateDay.replace("T", " ").substring(
+            0,
+            10
+          );
+        }
+      }
+      if(this.demandAirportModel){
         if(!this.demandAirportModel.LiaisonName){
           AppHelper.alert("请输入联系人");
         }
