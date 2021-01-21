@@ -320,9 +320,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           if (r.Status) {
             this.isCanDailySigned = !r.Data;
             if (r.Message) {
-              if(r.Data){
+              if (r.Data) {
                 AppHelper.toast(r.Message, 2000, "middle");
-              }else{
+              } else {
                 AppHelper.alert(r.Message);
               }
             }

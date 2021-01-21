@@ -695,7 +695,7 @@ export class FlightService {
               if (item.credential) {
                 name = `${item.credential.Surname}${
                   item.credential.Givenname
-                }(${(item.credential.Number || "").substr(0, 6)}...)`;
+                }(${(item.credential.HideNumber || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
               // item.bookInfo = null;

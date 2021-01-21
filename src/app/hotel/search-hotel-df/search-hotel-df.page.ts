@@ -114,6 +114,7 @@ export class SearchHotelDfPage
     private staffService: StaffService,
     private calendarService: CalendarService,
     plt: Platform,
+    private tmcService: TmcService,
     private popoverCtrl: PopoverController,
     private internationalHotelService: InternationalHotelService
   ) {
@@ -196,7 +197,7 @@ export class SearchHotelDfPage
     // }
   }
   async onToggleDomestic(isDomestic) {
-    const ok = await this.hotelService.checkHasAuth(isDomestic);
+    const ok = await this.checkHasAuth(isDomestic);
     if (!ok) {
       AppHelper.alert("您没有预定权限");
       return;
@@ -255,9 +256,14 @@ export class SearchHotelDfPage
     this.onPosition();
     this.initSegment();
   }
+  private async checkHasAuth(isDomestic = true) {
+    return this.tmcService.hasBookRight(
+      isDomestic ? "hotel" : "international-hotel"
+    );
+  }
   private async initSegment() {
     if (this.isDomestic) {
-      const ok = await this.hotelService.checkHasAuth(this.isDomestic);
+      const ok = await this.checkHasAuth(this.isDomestic);
       if (!ok) {
         this.isDomestic = false;
         return;
@@ -395,7 +401,9 @@ export class SearchHotelDfPage
     }
   }
   async onSearchHotel() {
-    const ok = await this.hotelService.checkHasAuth(this.isDomestic);
+    const ok = await this.tmcService.hasBookRight(
+      this.isDomestic ? "hotel" : "international-hotel"
+    );
     if (!ok) {
       return;
     }

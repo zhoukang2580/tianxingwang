@@ -36,6 +36,7 @@ import {
   TravelFormDetailEntity,
 } from "../travel-application/travel.service";
 import { CONFIG } from "../config";
+import { AgentRegionType } from "./models/AgentRegionType";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -177,6 +178,51 @@ export class TmcService {
     req.Data = {};
     return this.apiService.getPromiseData<any[]>(req);
   }
+  private async checkHasAuth(isDomestic = true) {
+    try {
+      // const msg = "您没有预定权限";
+      const Tmc = await this.getTmc();
+      const tmcRegionTypeValues = Tmc.RegionTypeValue.split(",");
+      const Agent = await this.getAgent();
+      if (!isDomestic) {
+        const pass =
+          Tmc &&
+          // tslint:disable-next-line: no-bitwise
+          (Tmc.RegionType & AgentRegionType.InternationalHotel) > 0 &&
+          Agent &&
+          // tslint:disable-next-line: no-bitwise
+          (Agent.RegionType & AgentRegionType.InternationalHotel) > 0;
+        if (
+          !tmcRegionTypeValues.find(
+            (it) => it.toLowerCase() == "internationalhotel"
+          ) ||
+          !pass
+        ) {
+          // AppHelper.alert(msg);
+          return false;
+        }
+      }
+      if (isDomestic) {
+        const pass =
+          Tmc &&
+          // tslint:disable-next-line: no-bitwise
+          (Tmc.RegionType & AgentRegionType.Hotel) > 0 &&
+          Agent != null &&
+          // tslint:disable-next-line: no-bitwise
+          (Agent.RegionType & AgentRegionType.Hotel) > 0;
+        if (
+          !tmcRegionTypeValues.find((it) => it.toLowerCase() == "hotel") ||
+          !pass
+        ) {
+          return false;
+        }
+      }
+    } catch (e) {
+      return false;
+    }
+
+    return true;
+  }
   async hasBookRight(
     name:
       | "flight"
@@ -207,21 +253,15 @@ export class TmcService {
       }
       if (name == "international-hotel") {
         route = "search-international-hotel";
-        if (!tmcRegionTypeValues.find((it) => it == "internationalhot")) {
-          return false;
-        }
-        return true;
+        return this.checkHasAuth(false);
       }
       if (name == "hotel") {
         route = "search-hotel";
-        if (!tmcRegionTypeValues.find((it) => it == "hotel")) {
-          return false;
-        }
-        return true;
+        return this.checkHasAuth(true);
       }
       if (name == "train") {
         route = "search-train";
-        if (tmcRegionTypeValues.find((it) => it == "train")) {
+        if (!tmcRegionTypeValues.find((it) => it == "train")) {
           return false;
         }
         return true;
