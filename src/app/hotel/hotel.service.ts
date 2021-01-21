@@ -549,10 +549,10 @@ export class HotelService {
         this.localHotelCities &&
         this.localHotelCities.length
       ) {
-        console.log(
-          "locals 广元",
-          this.localHotelCities.find((it) => it.Name == "广元")
-        );
+        // console.log(
+        //   "locals 广元",
+        //   this.localHotelCities.find((it) => it.Name == "广元")
+        // );
         return this.localHotelCities;
       }
       this.localHotelCities = this.localHotelCities || [];

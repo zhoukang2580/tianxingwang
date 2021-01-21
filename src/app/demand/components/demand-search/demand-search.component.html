@@ -15,10 +15,14 @@
   <ion-list>
     <ion-item *ngFor='let p of posList' (click)='onSelect(p)'>
       <ion-label>
-        <p>{{p.city}}</p>
-        <h2>{{p.address}}</h2>
-        <p>{{p.tags?.join(',')}}</p>
+        <h2>{{p.Name}}</h2>
+        <!--<p>{{p.Name}}</p>
+         <h2>{{p.address}}</h2>
+        <p>{{p.tags?.join(',')}}</p> -->
       </ion-label>
     </ion-item>
   </ion-list>
+  <ion-infinite-scroll (ionInfinite)='loadMore()'>
+    <ion-infinite-scroll-content>正在加载...</ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

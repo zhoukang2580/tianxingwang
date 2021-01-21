@@ -1,11 +1,6 @@
 <div class="list">
   <div class="container">
-    <ion-segment
-      scrollable
-      (ionChange)="segmentChanged($event)"
-      mode="md"
-      value="{{demandCarType}}"
-      color="secondary">
+    <ion-segment scrollable (ionChange)="segmentChanged($event)" mode="md" value="{{demandCarType}}" color="secondary">
       <ion-segment-button value="{{CarType.PickUpFlight}}">
         <ion-label>接机</ion-label>
       </ion-segment-button>
@@ -53,9 +48,9 @@
           <div class="date">航班号</div>
           <ion-input placeholder="请输入航班号" [(ngModel)]="demandPickUpFlightModel.FlightNumber"></ion-input>
         </div>
-        <div class="item">
+        <div class="item" (click)="onSelectFromCity()">
           <div class="date">接机地址</div>
-          <div class="main" (click)="onSelectFromCity()">
+          <div class="main">
             <ion-text size="2">{{demandPickUpFlightModel.CityName}}</ion-text>
             <ion-icon name="chevron-forward-outline"></ion-icon>
           </div>
@@ -63,7 +58,14 @@
         <div class="item">
           <div class="date">机场名称</div>
           <div class="main">
-            <ion-input placeholder="请输入机场名称" [(ngModel)]="demandPickUpFlightModel.AirportName"></ion-input>
+            <ng-container *ngIf='fromAirports?.length else fromAirInputTpl'>
+              <ion-select [(ngModel)]="demandPickUpFlightModel.AirportName" [cancelText]="'取消'" [okText]='"确定"'>
+                <ion-select-option *ngFor='let air of fromAirports' [value]='air.Name'>{{air.Name}}</ion-select-option>
+              </ion-select>
+            </ng-container>
+            <ng-template #fromAirInputTpl>
+              <ion-input placeholder="请输入机场名称" [(ngModel)]="demandPickUpFlightModel.AirportName"></ion-input>
+            </ng-template>
           </div>
         </div>
         <div class="item">
@@ -94,14 +96,15 @@
         </div>
         <div class="item">
           <div class="date">手机号</div>
-          <ion-input placeholder="请输入手机号" [(ngModel)]="demandDeliverFlightModel.LiaisonPhone"></ion-input>
+          <ion-input placeholder="请输入手机号" type='tel' [(ngModel)]="demandDeliverFlightModel.LiaisonPhone"></ion-input>
         </div>
-        
+
         <div class="item">
           <div class="date">起飞日期</div>
           <ion-datetime min="2010-03-14" max="2050-12-09" style="flex: 3;" displayFormat="YYYY-MM-DD" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureDate" doneText="确定" cancelText="取消">
           </ion-datetime>
-          <ion-datetime min="2010-03-14" max="2050-12-09" style="max-width: initial;flex: 3;" displayFormat="HH:mm" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureTime" doneText="确定" cancelText="取消">
+          <ion-datetime min="2010-03-14" max="2050-12-09" style="max-width: initial;flex: 3;" displayFormat="HH:mm" [(ngModel)]="demandDeliverFlightModel.DeliverFilghtDepartureTime" doneText="确定"
+            cancelText="取消">
           </ion-datetime>
         </div>
         <!-- <div class="item">
@@ -113,15 +116,15 @@
           <div class="date">航班号</div>
           <ion-input placeholder="请输入航班号" [(ngModel)]="demandDeliverFlightModel.FlightNumber"></ion-input>
         </div>
-        <div class="item">
+        <div class="item" (click)="onSelectDetailCity()">
           <div class="date">城市</div>
-          <ion-input placeholder="请输入城市" value='上海市' [(ngModel)]="demandDeliverFlightModel.CityName"></ion-input>
+          <ion-text>{{demandDeliverFlightModel.CityName}}</ion-text>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
         </div>
         <div class="item">
           <div class='address'>详细地址</div>
-          <div class="main" (click)="onSelectDetailCity()">
-            <ion-text>{{demandDeliverFlightModel.Address}}</ion-text>
-            <ion-icon name="chevron-forward-outline"></ion-icon>
+          <div class="main">
+            <ion-input placeholder="请输入详细地址" [(ngModel)]="demandDeliverFlightModel.Address"></ion-input>
           </div>
         </div>
         <div class="item">
@@ -161,20 +164,27 @@
           <ion-datetime min="2010-03-14" max="2050-12-09" style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandPickUpTrainModel.PickUpUseCarTime" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
-        <div class="item">
-          <div class="date">火车站</div>
-          <ion-input placeholder="请输入火车站" [(ngModel)]="demandPickUpTrainModel.TrainStationName"></ion-input>
-        </div> 
-        <div class="item">
+        <div class="item" (click)="onSelectPickUpCity()">
           <div class="date">城市</div>
-          <ion-input placeholder="请输入城市" value='上海市' [(ngModel)]="demandPickUpTrainModel.CityName"></ion-input>
+          <ion-text>{{demandPickUpTrainModel.CityName}}</ion-text>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
         </div>
         <div class="item">
           <div class='address'>详细地址</div>
-          <div class="main" (click)="onSelectPickUpCity()">
-            <ion-text>{{demandPickUpTrainModel.Address}}</ion-text>
-            <ion-icon name="chevron-forward-outline"></ion-icon>
+          <div class="main">
+            <ion-input placeholder="请输入详细地址" [(ngModel)]="demandPickUpTrainModel.Address"></ion-input>
           </div>
+        </div>
+        <div class="item">
+          <div class="date">火车站</div>
+          <ng-container *ngIf='fromStations?.length else fromStationInputTpl'>
+            <ion-select [(ngModel)]="demandPickUpTrainModel.TrainStationName" [cancelText]="'取消'" [okText]='"确定"'>
+              <ion-select-option *ngFor='let air of fromStations' [value]='air.Name'>{{air.Name}}</ion-select-option>
+            </ion-select>
+          </ng-container>
+          <ng-template #fromStationInputTpl>
+            <ion-input placeholder="请输入火车站" [(ngModel)]="demandPickUpTrainModel.TrainStationName"></ion-input>
+          </ng-template>
         </div>
         <div class="item">
           <div class="date">备注</div>
@@ -186,7 +196,7 @@
     </ng-container>
     <ng-container *ngIf="demandCarType == CarType.DeliverTrain">
       <ion-list lines="none">
-        <ion-radio-group value="biff" class="group" mode="md" >
+        <ion-radio-group value="biff" class="group" mode="md">
           <ion-item style="border-bottom: 0">
             <ion-label>国内</ion-label>
             <ion-radio slot="start" value="biff"></ion-radio>
@@ -213,20 +223,27 @@
           <ion-datetime min="2010-03-14" max="2050-12-09" style="max-width: initial;" displayFormat="HH:mm" [(ngModel)]="demandDeliverTrainModel.DeliverUseCarTime" doneText="确定" cancelText="取消">
           </ion-datetime>
         </div>
-        <div class="item">
-          <div class="date">火车站</div>
-          <ion-input placeholder="请输入火车站" [(ngModel)]="demandDeliverTrainModel.TrainStationName"></ion-input>
-        </div>
-        <div class="item">
+        <div class="item" (click)="onSelectDeliverCity()">
           <div class="date">城市</div>
-          <ion-input placeholder="请输入城市" value='上海市' [(ngModel)]="demandDeliverTrainModel.CityName"></ion-input>
+          <ion-text>{{demandDeliverTrainModel.CityName}}</ion-text>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
         </div>
         <div class="item">
           <div class='address'>详细地址</div>
-          <div class="main" (click)="onSelectDeliverCity()">
-            <ion-text>{{demandDeliverTrainModel.Address}}</ion-text>
-            <ion-icon name="chevron-forward-outline"></ion-icon>
+          <div class="main">
+            <ion-input placeholder="请输入详细地址" [(ngModel)]="demandDeliverTrainModel.Address"></ion-input>
           </div>
+        </div>
+        <div class="item">
+          <div class="date">火车站</div>
+          <ng-container *ngIf='toStations?.length else toStationInputTpl'>
+            <ion-select [(ngModel)]="demandDeliverTrainModel.TrainStationName" [cancelText]="'取消'" [okText]='"确定"'>
+              <ion-select-option *ngFor='let air of toStations' [value]='air.Name'>{{air.Name}}</ion-select-option>
+            </ion-select>
+          </ng-container>
+          <ng-template #toStationInputTpl>
+            <ion-input placeholder="请输入火车站" [(ngModel)]="demandDeliverTrainModel.TrainStationName"></ion-input>
+          </ng-template>
         </div>
         <div class="item">
           <div class="date">备注</div>
@@ -290,7 +307,7 @@
               开始地点
             </div>
             <div class="address">
-              <div class="detailed" >
+              <div class="detailed">
                 <ion-text>{{demandCharterCarModel.ServiceStartCity}}</ion-text>
               </div>
             </div>
@@ -306,9 +323,9 @@
               结束地点
             </div>
             <div class="address">
-                <div class="detailed" >
-                  <ion-text>{{demandCharterCarModel.ServiceEndCity}}</ion-text>
-                </div>
+              <div class="detailed">
+                <ion-text>{{demandCharterCarModel.ServiceEndCity}}</ion-text>
+              </div>
             </div>
           </div>
           <div class="right">

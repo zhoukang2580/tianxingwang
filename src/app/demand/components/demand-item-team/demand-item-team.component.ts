@@ -13,7 +13,7 @@ import {
   DemandTeamModel,
   FlightType,
 } from "../../demand.service";
-import { MapSearchComponent } from "../map-search/map-search.component";
+import { DemandSearchComponent } from "../demand-search/demand-search.component";
 
 @Component({
   selector: "app-demand-item-team",
@@ -22,14 +22,14 @@ import { MapSearchComponent } from "../map-search/map-search.component";
 })
 export class DemandItemTeamComponent implements OnInit {
   searchFlightModel: SearchFlightModel;
-  private curPos;
   @Input() demandTeamModel: DemandTeamModel;
   @Output() demandTeam: EventEmitter<any>;
   constructor(
     private apiservice: DemandService,
     private calendarService: CalendarService,
-    private mapService: MapService
-  ) {
+    private demandService: DemandService
+  ) // private mapService: MapService
+  {
     this.demandTeam = new EventEmitter();
   }
 
@@ -38,37 +38,37 @@ export class DemandItemTeamComponent implements OnInit {
   }
   onReset() {
     this.demandTeamModel = {} as any;
-    this.mapService
-      .getCurMapPoint()
-      .then((c) => {
-        this.curPos = {
-          ...c,
-        };
-        if (c && c.address) {
-          this.demandTeamModel.FromAddress = `${c.address.province || ""}${c.address.city || ""
-            }${c.address.district || ""}${c.address.street}`;
-          this.demandTeamModel.ToAddress = `${c.address.province || ""}${c.address.city || ""
-            }${c.address.district || ""}${c.address.street}`;
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    // this.mapService
+    //   .getCurMapPoint()
+    //   .then((c) => {
+    //     this.curPos = {
+    //       ...c,
+    //     };
+    //     if (c && c.address) {
+    //       this.demandTeamModel.FromAddress = `${c.address.province || ""}${c.address.city || ""
+    //         }${c.address.district || ""}${c.address.street}`;
+    //       this.demandTeamModel.ToAddress = `${c.address.province || ""}${c.address.city || ""
+    //         }${c.address.district || ""}${c.address.street}`;
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     console.error(e);
+    //   });
   }
   onSubmit() {
     try {
       if (this.demandTeamModel) {
         if (this.demandTeamModel.DepartureDate) {
-          this.demandTeamModel.DepartureDate = this.demandTeamModel.DepartureDate.replace("T", " ").substring(
-            0,
-            10
-          );
+          this.demandTeamModel.DepartureDate = this.demandTeamModel.DepartureDate.replace(
+            "T",
+            " "
+          ).substring(0, 10);
         }
         if (this.demandTeamModel.ReturnDate) {
-          this.demandTeamModel.ReturnDate = this.demandTeamModel.ReturnDate.replace("T", " ").substring(
-            0,
-            10
-          );
+          this.demandTeamModel.ReturnDate = this.demandTeamModel.ReturnDate.replace(
+            "T",
+            " "
+          ).substring(0, 10);
         }
       }
       if (this.demandTeamModel) {
@@ -81,7 +81,7 @@ export class DemandItemTeamComponent implements OnInit {
           return;
         }
         const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
-        if (!(reg.test(this.demandTeamModel.LiaisonPhone))) {
+        if (!reg.test(this.demandTeamModel.LiaisonPhone)) {
           AppHelper.alert("电话格式不正确");
           return;
         }
@@ -97,14 +97,16 @@ export class DemandItemTeamComponent implements OnInit {
           return;
         }
 
-        if (!this.demandTeamModel.ProductType ||
+        if (
+          !this.demandTeamModel.ProductType ||
           !this.demandTeamModel.FromAddress ||
           !this.demandTeamModel.ToAddress ||
           !this.demandTeamModel.DepartureDate ||
           !this.demandTeamModel.ReturnDate ||
           !this.demandTeamModel.PersonCount ||
           !this.demandTeamModel.PersonBudget ||
-          !this.demandTeamModel.TravelType) {
+          !this.demandTeamModel.TravelType
+        ) {
           AppHelper.alert("请完善信息");
           return;
         }
@@ -116,30 +118,30 @@ export class DemandItemTeamComponent implements OnInit {
   }
 
   async onSelectFromCity() {
+    const cities = await this.demandService.getCities();
     const m = await AppHelper.modalController.create({
-      component: MapSearchComponent,
-      componentProps: { curPos: this.curPos },
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
     });
     m.present();
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      this.demandTeamModel.FromAddress = `${c.address.province || ""}${c.address.city || ""
-        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      this.demandTeamModel.FromAddress = `${c.Name}`;
     }
   }
 
   async onSelectToCity() {
+    const cities = await this.demandService.getCities();
     const m = await AppHelper.modalController.create({
-      component: MapSearchComponent,
-      componentProps: { curPos: this.curPos },
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
     });
     m.present();
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      this.demandTeamModel.ToAddress = `${c.address.province || ""}${c.address.city || ""
-        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      this.demandTeamModel.ToAddress = `${c.Name}`;
     }
   }
 }

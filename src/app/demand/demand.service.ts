@@ -1,14 +1,23 @@
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { AppHelper } from "../appHelper";
+import { HotelService } from "../hotel/hotel.service";
 import { ApiService } from "../services/api/api.service";
 import { RequestEntity } from "../services/api/Request.entity";
+import { TmcService } from "../tmc/tmc.service";
+import { TrainService } from "../train/train.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class DemandService {
-  constructor(private apiService: ApiService, private router: Router) { }
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private tmcService: TmcService,
+    private hotelService: HotelService,
+    private trainService: TrainService
+  ) {}
 
   saveDemand(d: { Tag: String; DemandType: Number; Demand: any }) {
     const req = new RequestEntity();
@@ -30,8 +39,19 @@ export class DemandService {
   //   };
   //   return this.apiService.getPromiseData<any[]>(req);
   // }
-
-  onSelectCity(isFrom: boolean) {
+  getStations() {
+    return this.trainService.getStationsAsync();
+  }
+  getCities() {
+    return this.hotelService.getHotelCityAsync();
+  }
+  getAirports() {
+    return this.tmcService.getDomesticAirports();
+  }
+  getCountries() {
+    return this.tmcService.getCountries();
+  }
+  onSelectTrainStation(isFrom: boolean) {
     this.router.navigate([AppHelper.getRoutePath("select-station")], {
       queryParams: { requestCode: isFrom ? "from_station" : "to_station" },
     });
@@ -116,12 +136,12 @@ export enum FlightType {
 }
 
 // export type CarType ='PickUpFlight' | '' | '' | '' | '';
-export enum CarType{
-  PickUpFlight="PickUpFlight",
-  DeliverFlight="DeliverFlight",
-  PickUpTrain="PickUpTrain",
-  DeliverTrain="DeliverTrain",
-  CharterCar="CharterCar",
+export enum CarType {
+  PickUpFlight = "PickUpFlight",
+  DeliverFlight = "DeliverFlight",
+  PickUpTrain = "PickUpTrain",
+  DeliverTrain = "DeliverTrain",
+  CharterCar = "CharterCar",
 }
 export class DemandTeamModel {
   TravelType: string;

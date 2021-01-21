@@ -11,8 +11,14 @@
     font-weight: bold;
     color: #333333;
   }
-  .footer{
+  .footer {
     line-height: 2;
+  }
+  ion-item {
+    --padding-start: 0;
+    ion-radio {
+      margin: 0;
+    }
   }
   .item {
     display: flex;
@@ -41,7 +47,7 @@
       justify-content: space-between;
       width: 100%;
       line-height: 1.5;
-      ion-datetime{
+      ion-datetime {
         width: 100%;
         --padding-bottom: 0;
         --padding-end: 0;
@@ -52,9 +58,10 @@
         font-size: 15px;
         max-width: 13.5em;
       }
-      ion-select{
-        --padding-bottom: 0px;
-        --padding-top: 0px;
+      ion-select {
+        --padding-bottom: 0;
+        --padding-top: 0;
+        --padding-start: 0;
       }
     }
 
@@ -74,8 +81,12 @@
     }
   }
 }
-
-.group{
+ion-select {
+  --padding-bottom: 0;
+  --padding-top: 0;
+  --padding-start: 0;
+}
+.group {
   display: flex;
   height: 3em;
 }

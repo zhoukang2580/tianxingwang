@@ -1,16 +1,25 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AppHelper } from 'src/app/appHelper';
-import { MapService } from 'src/app/services/map/map.service';
-import { CarType, DemandCharterCarModel, DemandDeliverFlightModel, DemandDeliverTrainModel, DemandPickUpFlightModel, DemandPickUpTrainModel, OtherDemandModel } from '../../demand.service';
-import { MapSearchComponent } from '../map-search/map-search.component';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { AppHelper } from "src/app/appHelper";
+import { MapService } from "src/app/services/map/map.service";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
+import {
+  CarType,
+  DemandCharterCarModel,
+  DemandDeliverFlightModel,
+  DemandDeliverTrainModel,
+  DemandPickUpFlightModel,
+  DemandPickUpTrainModel,
+  DemandService,
+  OtherDemandModel,
+} from "../../demand.service";
+import { DemandSearchComponent } from "../demand-search/demand-search.component";
 
 @Component({
-  selector: 'app-demand-item-car',
-  templateUrl: './demand-item-car.component.html',
-  styleUrls: ['./demand-item-car.component.scss'],
+  selector: "app-demand-item-car",
+  templateUrl: "./demand-item-car.component.html",
+  styleUrls: ["./demand-item-car.component.scss"],
 })
 export class DemandItemCarComponent implements OnInit {
-
   // carType = 'PickUpFlight' || 'DeliverFlight' || 'PickUpTrain' || 'DeliverTrain' || 'CharterCar';
   demandPickUpFlightModel: DemandPickUpFlightModel;
   demandDeliverFlightModel: DemandDeliverFlightModel;
@@ -19,10 +28,14 @@ export class DemandItemCarComponent implements OnInit {
   demandCharterCarModel: DemandCharterCarModel;
   otherDemandModel: OtherDemandModel;
   @Output() demandCar: EventEmitter<any>;
-  private curPos;
+  fromAirports: any[];
+  toAirports: any[];
+  fromStations: any[];
+  toStations: any[];
   CarType = CarType;
   demandCarType: CarType;
   constructor(
+    private demandService: DemandService,
     private mapService: MapService
   ) {
     this.demandCar = new EventEmitter();
@@ -41,29 +54,27 @@ export class DemandItemCarComponent implements OnInit {
       demandDeliverFlight: this.demandDeliverFlightModel,
       demandPickUpTrain: this.demandPickUpTrainModel,
       demandDeliverTrain: this.demandDeliverTrainModel,
-      demandCharterCar: this.demandCharterCarModel
+      demandCharterCar: this.demandCharterCarModel,
     } as any;
     this.demandCarType = CarType.PickUpFlight;
 
     let date = new Date();
     this.demandPickUpFlightModel.FilghtDepartureDate = date.toLocaleDateString();
     this.demandDeliverFlightModel.DeliverFilghtDepartureDate = date.toLocaleDateString();
-    this.demandDeliverFlightModel.DeliverFilghtDepartureTime = '12:30';
+    this.demandDeliverFlightModel.DeliverFilghtDepartureTime = "12:30";
     this.demandPickUpTrainModel.PickUpUseCarDate = date.toLocaleDateString();
-    this.demandPickUpTrainModel.PickUpUseCarTime = '12:30';
+    this.demandPickUpTrainModel.PickUpUseCarTime = "12:30";
     this.demandDeliverTrainModel.DeliverUseCarDate = date.toLocaleDateString();
-    this.demandDeliverTrainModel.DeliverUseCarTime = '12:30';
+    this.demandDeliverTrainModel.DeliverUseCarTime = "12:30";
     this.demandCharterCarModel.CharterCarDate = date.toLocaleDateString();
-    this.demandCharterCarModel.CharterCarTime = '12:30';
+    this.demandCharterCarModel.CharterCarTime = "12:30";
 
     this.mapService
       .getCurMapPoint()
       .then((c) => {
-        let temStr = `${c.address.province || ""}${c.address.city || ""
-          }${c.address.district || ""}${c.address.street}`;
-        this.curPos = {
-          ...c,
-        };
+        let temStr = `${c.address.province || ""}${c.address.city || ""}${
+          c.address.district || ""
+        }${c.address.street}`;
         if (c && c.address) {
           this.demandPickUpFlightModel.CityName = temStr;
 
@@ -92,220 +103,252 @@ export class DemandItemCarComponent implements OnInit {
   }
 
   async onSelectFromCity() {
+    const cities = await this.demandService.getCities();
     const m = await AppHelper.modalController.create({
-      component: MapSearchComponent,
-      componentProps: { curPos: this.curPos },
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
     });
     m.present();
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      let temStr = `${c.address.province || ""}${c.address.city || ""
-        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      let temStr = `${c.Name}`;
       this.demandPickUpFlightModel.CityName = temStr;
+      await this.initAirports(true, c);
+    }
+  }
+  private async initAirports(isFrom = true, c: TrafficlineEntity) {
+    const airports = await this.demandService.getAirports();
+    if (airports) {
+      const arr = airports.filter((it) => it.CityCode == c.Code);
+      if (isFrom) {
+        this.fromAirports = arr;
+      } else {
+        this.toAirports = arr;
+      }
+    }
+  }
+  async onSelectDetailCity() {
+    const cities = await this.demandService.getCities();
+    const m = await AppHelper.modalController.create({
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      const c = d.data;
+      let temStr = `${c.Name}`;
+      this.demandDeliverFlightModel.Address = temStr;
+      await this.initAirports(true, c);
     }
   }
 
-  async onSelectDetailCity(){
+  async onSelectPickUpCity() {
+    const cities = await this.demandService.getCities();
     const m = await AppHelper.modalController.create({
-      component: MapSearchComponent,
-      componentProps: { curPos: this.curPos },
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
     });
     m.present();
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      let temStr = `${c.address.province || ""}${c.address.city || ""
-        }${c.address.district || ""}${c.address.street || c.address || ""}`;
-      this.demandDeliverFlightModel.Address = temStr;
-      }
-  }
-  
-  async onSelectPickUpCity(){
-    const m = await AppHelper.modalController.create({
-      component: MapSearchComponent,
-      componentProps: { curPos: this.curPos },
-    });
-    m.present();
-    const d = await m.onDidDismiss();
-    if (d && d.data) {
-      const c = d.data;
-      let temStr = `${c.address.province || ""}${c.address.city || ""
-        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      let temStr = `${c.Name}`;
       this.demandPickUpTrainModel.Address = temStr;
-      }
+      this.initStations(c, true);
+    }
   }
-
-  async onSelectDeliverCity(){
+  private async initStations(c: TrafficlineEntity, isFrom = true) {
+    const stations = await this.demandService.getStations();
+    if (stations) {
+      const arr = stations.filter((it) => it.CityCode == c.Code);
+      if (isFrom) {
+        this.fromStations = arr;
+      } else {
+        this.toStations = arr;
+      }
+    }
+  }
+  async onSelectDeliverCity() {
+    const cities = await this.demandService.getCities();
     const m = await AppHelper.modalController.create({
-      component: MapSearchComponent,
-      componentProps: { curPos: this.curPos },
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
     });
     m.present();
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      let temStr = `${c.address.province || ""}${c.address.city || ""
-        }${c.address.district || ""}${c.address.street || c.address || ""}`;
+      let temStr = `${c.Name}`;
       this.demandDeliverTrainModel.Address = temStr;
-      }
+      this.initStations(c, false);
+    }
   }
-  async onSelectStartCity(){
+  async onSelectStartCity() {
+    const cities = await this.demandService.getCities();
     const m = await AppHelper.modalController.create({
-      component: MapSearchComponent,
-      componentProps: { curPos: this.curPos },
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
     });
     m.present();
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      let temStr = `${c.address.province || ""}${c.address.city || ""
-        }${c.address.district || ""}${c.address.street || c.address || ""}`;
-        this.demandCharterCarModel.ServiceStartCity = temStr;
-      }
+      let temStr = `${c.Name}`;
+      this.demandCharterCarModel.ServiceStartCity = temStr;
+    }
   }
-  async onSelectEndCity(){
+  async onSelectEndCity() {
+    const cities = await this.demandService.getCities();
     const m = await AppHelper.modalController.create({
-      component: MapSearchComponent,
-      componentProps: { curPos: this.curPos },
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
     });
     m.present();
     const d = await m.onDidDismiss();
     if (d && d.data) {
       const c = d.data;
-      let temStr = `${c.address.province || ""}${c.address.city || ""
-        }${c.address.district || ""}${c.address.street || c.address || ""}`;
-        this.demandCharterCarModel.ServiceEndCity = temStr;
-      }
+      let temStr = `${c.Name}`;
+      this.demandCharterCarModel.ServiceEndCity = temStr;
+    }
   }
-
-  
 
   onSubmit() {
     let type: CarType;
     if (this.demandCarType == CarType.PickUpFlight) {
-      if(this.demandPickUpFlightModel){
-        if(!this.demandPickUpFlightModel.LiaisonName){
+      if (this.demandPickUpFlightModel) {
+        if (!this.demandPickUpFlightModel.LiaisonName) {
           AppHelper.alert("请输入联系人");
           return;
         }
-        if(!this.demandPickUpFlightModel.LiaisonPhone){
+        if (!this.demandPickUpFlightModel.LiaisonPhone) {
           AppHelper.alert("请输入手机号");
           return;
         }
         const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
-        if (!(reg.test(this.demandPickUpFlightModel.LiaisonPhone))) {
+        if (!reg.test(this.demandPickUpFlightModel.LiaisonPhone)) {
           AppHelper.alert("电话格式不正确");
           return;
         }
-        if(!this.demandPickUpFlightModel.CityName ||
+        if (
+          !this.demandPickUpFlightModel.CityName ||
           !this.demandPickUpFlightModel.FilghtDepartureDate ||
           !this.demandPickUpFlightModel.FlightNumber ||
-          !this.demandPickUpFlightModel.Remarks){
+          !this.demandPickUpFlightModel.Remarks
+        ) {
           AppHelper.alert("请完善信息");
           return;
         }
       }
       type = CarType.PickUpFlight;
     } else if (this.demandCarType == CarType.DeliverFlight) {
-      if(this.demandDeliverFlightModel){
-        if(!this.demandDeliverFlightModel.LiaisonName){
+      if (this.demandDeliverFlightModel) {
+        if (!this.demandDeliverFlightModel.LiaisonName) {
           AppHelper.alert("请输入联系人");
           return;
         }
-        if(!this.demandDeliverFlightModel.LiaisonPhone){
+        if (!this.demandDeliverFlightModel.LiaisonPhone) {
           AppHelper.alert("请输入手机号");
           return;
         }
         const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
-        if (!(reg.test(this.demandDeliverFlightModel.LiaisonPhone))) {
+        if (!reg.test(this.demandDeliverFlightModel.LiaisonPhone)) {
           AppHelper.alert("电话格式不正确");
           return;
         }
-        if(!this.demandDeliverFlightModel.CityName ||
+        if (
+          !this.demandDeliverFlightModel.CityName ||
           !this.demandDeliverFlightModel.DeliverFilghtDepartureDate ||
           !this.demandDeliverFlightModel.FlightNumber ||
-          !this.demandDeliverFlightModel.Remarks){
+          !this.demandDeliverFlightModel.Remarks
+        ) {
           AppHelper.alert("请完善信息");
           return;
         }
       }
       type = CarType.DeliverFlight;
     } else if (this.demandCarType == CarType.PickUpTrain) {
-      if(this.demandPickUpTrainModel){
-        if(!this.demandPickUpTrainModel.LiaisonName){
+      if (this.demandPickUpTrainModel) {
+        if (!this.demandPickUpTrainModel.LiaisonName) {
           AppHelper.alert("请输入联系人");
           return;
         }
-        if(!this.demandPickUpTrainModel.LiaisonPhone){
+        if (!this.demandPickUpTrainModel.LiaisonPhone) {
           AppHelper.alert("请输入手机号");
           return;
         }
         const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
-        if (!(reg.test(this.demandPickUpTrainModel.LiaisonPhone))) {
+        if (!reg.test(this.demandPickUpTrainModel.LiaisonPhone)) {
           AppHelper.alert("电话格式不正确");
           return;
         }
-        if(!this.demandPickUpTrainModel.CityName ||
+        if (
+          !this.demandPickUpTrainModel.CityName ||
           !this.demandPickUpTrainModel.PickUpUseCarDate ||
           !this.demandPickUpTrainModel.TrainStationName ||
-          !this.demandPickUpTrainModel.Address||
-          !this.demandPickUpTrainModel.PickUpUseCarTime){
+          !this.demandPickUpTrainModel.Address ||
+          !this.demandPickUpTrainModel.PickUpUseCarTime
+        ) {
           AppHelper.alert("请完善信息");
           return;
         }
       }
       type = CarType.PickUpTrain;
     } else if (this.demandCarType == CarType.DeliverTrain) {
-      if(this.demandPickUpTrainModel){
-        if(!this.demandDeliverTrainModel.LiaisonName){
+      if (this.demandPickUpTrainModel) {
+        if (!this.demandDeliverTrainModel.LiaisonName) {
           AppHelper.alert("请输入联系人");
           return;
         }
-        if(!this.demandDeliverTrainModel.LiaisonPhone){
+        if (!this.demandDeliverTrainModel.LiaisonPhone) {
           AppHelper.alert("请输入手机号");
           return;
         }
         const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
-        if (!(reg.test(this.demandDeliverTrainModel.LiaisonPhone))) {
+        if (!reg.test(this.demandDeliverTrainModel.LiaisonPhone)) {
           AppHelper.alert("电话格式不正确");
           return;
         }
-        if(!this.demandDeliverTrainModel.CityName ||
+        if (
+          !this.demandDeliverTrainModel.CityName ||
           !this.demandDeliverTrainModel.DeliverUseCarDate ||
           !this.demandDeliverTrainModel.TrainStationName ||
-          !this.demandDeliverTrainModel.Address||
-          !this.demandDeliverTrainModel.DeliverUseCarTime){
+          !this.demandDeliverTrainModel.Address ||
+          !this.demandDeliverTrainModel.DeliverUseCarTime
+        ) {
           AppHelper.alert("请完善信息");
           return;
         }
       }
       type = CarType.DeliverTrain;
     } else if (this.demandCarType == CarType.CharterCar) {
-      if(this.demandCharterCarModel){
-        if(!this.demandCharterCarModel.LiaisonName){
+      if (this.demandCharterCarModel) {
+        if (!this.demandCharterCarModel.LiaisonName) {
           AppHelper.alert("请输入联系人");
           return;
         }
-        if(!this.demandCharterCarModel.LiaisonPhone){
+        if (!this.demandCharterCarModel.LiaisonPhone) {
           AppHelper.alert("请输入手机号");
           return;
         }
         const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
-        if (!(reg.test(this.demandCharterCarModel.LiaisonPhone))) {
+        if (!reg.test(this.demandCharterCarModel.LiaisonPhone)) {
           AppHelper.alert("电话格式不正确");
           return;
         }
-        if(!this.demandCharterCarModel.CharterCarDate ||
+        if (
+          !this.demandCharterCarModel.CharterCarDate ||
           !this.demandCharterCarModel.CharterCarDays ||
           !this.demandCharterCarModel.CharterCarType ||
-          !this.demandCharterCarModel.ServiceEndCity||
-          !this.demandCharterCarModel.ServiceStartCity){
+          !this.demandCharterCarModel.ServiceEndCity ||
+          !this.demandCharterCarModel.ServiceStartCity
+        ) {
           AppHelper.alert("请完善信息");
           return;
         }
       }
-      type = CarType.CharterCar
+      type = CarType.CharterCar;
     }
     this.demandCar.emit({ data: this.otherDemandModel, type });
   }

@@ -7,7 +7,7 @@ import { DemandItemCarComponent } from "./demand-item-car/demand-item-car.compon
 import { DemandItemMeetingComponent } from "./demand-item-meeting/demand-item-meeting.component";
 import { DemandItemTeamComponent } from "./demand-item-team/demand-item-team.component";
 import { DemandItemVisaComponent } from "./demand-item-visa/demand-item-visa.component";
-import { MapSearchComponent } from "./map-search/map-search.component";
+import { DemandSearchComponent } from "./demand-search/demand-search.component";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 
 @NgModule({
@@ -17,11 +17,11 @@ import { AppComponentsModule } from "src/app/components/appcomponents.module";
     DemandItemMeetingComponent,
     DemandItemCarComponent,
     DemandItemVisaComponent,
-    MapSearchComponent,
+    DemandSearchComponent,
   ],
   imports: [CommonModule, FormsModule, IonicModule, AppComponentsModule],
   exports: [
-    MapSearchComponent,
+    DemandSearchComponent,
     DemandAirportServicesComponent,
     DemandItemTeamComponent,
     DemandItemMeetingComponent,
