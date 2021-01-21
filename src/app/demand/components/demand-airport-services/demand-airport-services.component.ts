@@ -37,9 +37,11 @@ export class DemandAirportServicesComponent implements OnInit {
       if(this.demandAirportModel){
         if(!this.demandAirportModel.LiaisonName){
           AppHelper.alert("请输入联系人");
+          return;
         }
         if(!this.demandAirportModel.LiaisonPhone){
           AppHelper.alert("请输入联系电话");
+          return;
         }
         const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
         if (!(reg.test(this.demandAirportModel.LiaisonPhone))) {
@@ -55,6 +57,7 @@ export class DemandAirportServicesComponent implements OnInit {
           !this.demandAirportModel.DepartureDateHour
           ){
           AppHelper.alert("请完善信息");
+          return;
         }
       }
       this.demandAirport.emit({demandAirportModel:this.demandAirportModel})
