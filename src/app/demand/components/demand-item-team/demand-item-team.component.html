@@ -21,11 +21,11 @@
         <ion-radio-group value="因公" class="group" mode="md" [(ngModel)]="demandTeamModel.TravelType">
           <ion-item style="border-bottom: 0">
             <ion-label>因公</ion-label>
-            <ion-radio slot="start" value="因公"></ion-radio>
+            <ion-radio slot="start" value="Company"></ion-radio>
           </ion-item>
           <ion-item style="border-bottom: 0">
             <ion-label>因私</ion-label>
-            <ion-radio slot="start" value="因私"></ion-radio>
+            <ion-radio slot="start" value="Person"></ion-radio>
           </ion-item>
         </ion-radio-group>
       </ion-list>
@@ -94,10 +94,10 @@
       <div class="label type">产品类型</div>
       <div class="main more">
         <ion-select class="custom-options" cancelText="取消" okText="确定" multiple="true" [(ngModel)]="demandTeamModel.ProductType">
-          <ion-select-option value="hotel">酒店</ion-select-option>
-          <ion-select-option value="domestic">国内机票</ion-select-option>
-          <ion-select-option value="international">国际机票</ion-select-option>
-          <ion-select-option value="car">包车</ion-select-option>
+          <ion-select-option value="Hotel">酒店</ion-select-option>
+          <ion-select-option value="Flight">国内机票</ion-select-option>
+          <ion-select-option value="InternationalFlight">国际机票</ion-select-option>
+          <ion-select-option value="Car">包车</ion-select-option>
         </ion-select>
         <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
       </div>
