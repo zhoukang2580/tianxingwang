@@ -162,14 +162,14 @@
   <div class="points-mall">
     <div class="title">积分商城</div>
     <div class="commodity">
-      <div class="list" *ngFor="let item of exchangeList">
+      <div class="list" *ngFor="let item of exchangeList" (click)="onRedeemNow(item)">
         <div class="left">
           <div class="item-name">{{item.Name}}</div>
           <div class="jf">{{item.Count}}积分</div>
-          <button class="btn1" (click)="onRedeemNow(item)">立即兑换</button>
+          <button class="btn1">立即兑换</button>
         </div>
         <div class="right">
-          <img [lazyLoad]="item.ImageUrl" alt="" />
+          <img [lazyLoad]="item.ImageUrl" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" alt="" />
         </div>
       </div>
       <div class="list" style="background: linear-gradient(90deg, #fbddb1 0%, #fbc696 100%)">

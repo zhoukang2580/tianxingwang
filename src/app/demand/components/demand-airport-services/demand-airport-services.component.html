@@ -93,9 +93,9 @@
         <div class="main">
           <ion-radio-group [(ngModel)]="demandAirportModel.NumberOfPeople">
             <div class="radios">
-              <ion-item *ngFor='let i of [1,2,3,4,5,6,7,8,9,10,"more"]'>
-                <ion-radio mode='md' value="{{i-1}}"></ion-radio>
-                <ion-label>{{i!='more'?i:"更多"}}人</ion-label>
+              <ion-item *ngFor='let i of [0,1,2,3,4,5,6,7,8,9,"more"]'>
+                <ion-radio mode='md' value="{{i}}"></ion-radio>
+                <ion-label>{{i!='more'?i+1:"更多"}}人</ion-label>
               </ion-item>
             </div>
           </ion-radio-group>

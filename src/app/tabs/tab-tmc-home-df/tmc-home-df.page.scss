@@ -335,7 +335,7 @@ ion-header ion-title {
   }
   .list {
     width: 156px;
-    height: 87px;
+    min-height: 87px;
     background: linear-gradient(90deg, #dec6fd 0%, #d1b7ff 100%);
     opacity: 0.8;
     border-radius: 10px;
