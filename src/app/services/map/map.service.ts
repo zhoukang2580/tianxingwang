@@ -4,8 +4,10 @@ import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { WechatHelper } from "src/app/wechatHelper";
 import { BehaviorSubject, Subject } from "rxjs";
+import { Storage } from "@ionic/storage";
 export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
 export const GaodeMapKey = `42acb0dcc0c0541c738f8842ffb360ce`;
+const _KEY_GET_LATEST_LOCATE_POS = `_key_get_latest_locate_pos`;
 export interface MapPoint {
   lng: string;
   lat: string;
@@ -32,7 +34,10 @@ export class MapService {
   private isInitBMap = false;
   private bMapLocalSearchObj;
   private bMapLocalSearchSources: Subject<any[]>;
-  constructor(private apiService: ApiService) {
+  private latestLocatePos: {
+    [time: number]: { point: MapPoint; city: TrafficlineEntity; position: any };
+  };
+  constructor(private apiService: ApiService, private storage: Storage) {
     this.querys = AppHelper.getQueryParamers();
     this.bMapLocalSearchSources = new BehaviorSubject([]);
     console.log("MapService,tree", this.querys);
@@ -539,7 +544,24 @@ export class MapService {
       ? result
       : null;
   }
-  async getCurrentCityPosition(): Promise<{
+  private async getLatestLocatePos() {
+    if (!this.latestLocatePos) {
+      const local = await this.storage.get(_KEY_GET_LATEST_LOCATE_POS);
+      if (local) {
+        this.latestLocatePos = local;
+      }
+    }
+    if (this.latestLocatePos && Object.keys(this.latestLocatePos).length) {
+      const t = Object.keys(this.latestLocatePos)
+        .map((k) => +k)
+        .sort((t1, t2) => t2 - t1)[0];
+      if (Date.now() - t < 3600 * 1000) {
+        return this.latestLocatePos[t];
+      }
+    }
+    return null;
+  }
+  private async getPosResult(): Promise<{
     city: TrafficlineEntity;
     position: any;
   }> {
@@ -547,7 +569,6 @@ export class MapService {
       city: TrafficlineEntity;
       position: any;
     };
-
     const isMini =
       (await AppHelper.isWechatMiniAsync()) || AppHelper.isWechatMini();
     if (isMini) {
@@ -568,14 +589,6 @@ export class MapService {
         position: latLng,
       };
     }
-    // if (!latLng) {
-    //   latLng = await this.getCurrentPostionByNavigator().catch(_ => {
-    //     console.error("getCurrentPostionByNavigator", _);
-    //     return null;
-    //   });
-    //   console.log("getCurrentPostionByNavigator", latLng);
-    // }
-    console.log("getCurrentCityPosition after", latLng);
     if (latLng) {
       const city = await this.getCityByMap(latLng).catch((_) => {
         console.error("getCityByMap", _);
@@ -605,6 +618,34 @@ export class MapService {
         }
       }
     }
+    if (result && result.city && result.city.CityCode) {
+      this.latestLocatePos = {
+        [Date.now()]: {
+          city: result.city,
+          position: result.position,
+          point: latLng,
+        },
+      };
+      this.storage.set(_KEY_GET_LATEST_LOCATE_POS, this.latestLocatePos);
+    }
+    return result;
+  }
+  async getCurrentCityPosition(): Promise<{
+    city: TrafficlineEntity;
+    position: any;
+  }> {
+    let result: {
+      city: TrafficlineEntity;
+      position: any;
+    };
+    const latestLocatePos = await this.getLatestLocatePos();
+    if (latestLocatePos && latestLocatePos.city) {
+      result.city = latestLocatePos.city;
+      result.position = latestLocatePos.position;
+      this.getPosResult();
+      return result;
+    }
+    result = await this.getPosResult();
     return result;
   }
   private getPosByIp(): Promise<MapPoint> {
@@ -700,4 +741,7 @@ export interface AddressComponents {
   street: string;
   streetNumber: string;
 }
-interface TrafficlineEntity {}
+interface TrafficlineEntity {
+  CityCode: string;
+  CityName: string;
+}
