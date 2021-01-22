@@ -61,7 +61,6 @@ export class DemandListPage implements OnInit {
     setTimeout(() => {
       try {
         const el = container.querySelector(".segment-button-checked");
-        // console.log("el", el);
         if (el) {
           const rect = el.getBoundingClientRect();
           if (rect) {

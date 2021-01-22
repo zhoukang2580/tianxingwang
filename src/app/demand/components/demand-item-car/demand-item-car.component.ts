@@ -69,29 +69,29 @@ export class DemandItemCarComponent implements OnInit {
     this.demandCharterCarModel.CharterCarDate = date.toLocaleDateString();
     this.demandCharterCarModel.CharterCarTime = "12:30";
 
-    this.mapService
-      .getCurMapPoint()
-      .then((c) => {
-        let temStr = `${c.address.province || ""}${c.address.city || ""}${
-          c.address.district || ""
-        }${c.address.street}`;
-        if (c && c.address) {
-          this.demandPickUpFlightModel.CityName = temStr;
+    // this.mapService
+    //   .getCurMapPoint()
+    //   .then((c) => {
+    //     let temStr = `${c.address.province || ""}${c.address.city || ""}${
+    //       c.address.district || ""
+    //     }${c.address.street}`;
+    //     if (c && c.address) {
+    //       this.demandPickUpFlightModel.CityName = temStr;
 
-          this.demandDeliverFlightModel.Address = temStr;
+    //       this.demandDeliverFlightModel.Address = temStr;
 
-          this.demandPickUpTrainModel.Address = temStr;
+    //       this.demandPickUpTrainModel.Address = temStr;
 
-          this.demandDeliverTrainModel.Address = temStr;
+    //       this.demandDeliverTrainModel.Address = temStr;
 
-          this.demandCharterCarModel.ServiceStartCity = temStr;
+    //       this.demandCharterCarModel.ServiceStartCity = temStr;
 
-          this.demandCharterCarModel.ServiceEndCity = temStr;
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    //       this.demandCharterCarModel.ServiceEndCity = temStr;
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     console.error(e);
+    //   });
   }
 
   switchCarType(type: CarType) {
