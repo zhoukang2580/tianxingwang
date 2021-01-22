@@ -4,7 +4,6 @@
       <div class="label">联系人</div>
       <div class="main">
         <ion-input placeholder="请输入联系人" [(ngModel)]="demandAirportModel.LiaisonName"></ion-input>
-        <!-- <ion-text>高飞</ion-text> -->
       </div>
     </div>
     <div class="item">
@@ -66,7 +65,20 @@
     <div class="item">
       <div class="label">机场名称</div>
       <div class="main">
-        <ion-input placeholder="请输入机场名称" [(ngModel)]="demandAirportModel.AirportName"></ion-input>
+        <ng-container *ngIf='airports?.length else fromAirInputTpl'>
+          <ion-select [(ngModel)]="airport" [cancelText]="'取消'" [okText]='"确定"' [selectedText]='airport&&airport.Name'>
+            <ion-select-option *ngFor='let air of airports' [value]='air'>{{air.Name}}</ion-select-option>
+          </ion-select>
+        </ng-container>
+        <ng-template #fromAirInputTpl>
+          <ion-input placeholder="请输入机场名称" [(ngModel)]="airport&&airport.Name"></ion-input>
+        </ng-template>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">航站楼</div>
+      <div class="main">
+        <ion-input placeholder="请输入航站楼" [(ngModel)]="demandAirportModel.Terminal"></ion-input>
       </div>
     </div>
     <div class="item">
@@ -76,15 +88,6 @@
         </ion-datetime>
         <ion-datetime min="2010-03-14" max="2050-12-09" displayFormat="HH:mm" [(ngModel)]="demandAirportModel.DepartureDateHour" doneText="确定" cancelText="取消">
         </ion-datetime>
-        <!-- <ion-text (click)="onOpenDate()">{{demandAirportModel.DepartureDateDay}}</ion-text>
-        <ion-text>{{demandAirportModel.DepartureDateHour}}</ion-text> -->
-      </div>
-    </div>
-    <div class="item">
-      <div class="label">航站楼</div>
-      <div class="main">
-        <ion-input placeholder="请输入航站楼" [(ngModel)]="demandAirportModel.Terminal"></ion-input>
-        <!-- <ion-text>T2航站楼</ion-text> -->
       </div>
     </div>
     <div class="item">

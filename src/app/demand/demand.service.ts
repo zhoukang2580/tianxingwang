@@ -11,6 +11,9 @@ import { TrainService } from "../train/train.service";
   providedIn: "root",
 })
 export class DemandService {
+  private cities: any[];
+  private airports: any[];
+  private stations: any[];
   constructor(
     private apiService: ApiService,
     private router: Router,
@@ -39,18 +42,30 @@ export class DemandService {
   //   };
   //   return this.apiService.getPromiseData<any[]>(req);
   // }
-  getStations() {
-    return this.trainService.getStationsAsync();
+  async getStations() {
+    if (this.stations && this.stations.length) {
+      return this.stations;
+    }
+    this.stations = await this.trainService.getStationsAsync(true);
+    return this.stations;
   }
-  getCities() {
-    return this.hotelService.getHotelCityAsync();
+  async getCities() {
+    if (this.cities && this.cities.length) {
+      return this.cities;
+    }
+    this.cities = await this.hotelService.getHotelCityAsync(true);
+    return this.cities;
   }
-  getAirports() {
-    return this.tmcService.getDomesticAirports();
+  async getAirports() {
+    if (this.airports && this.airports.length) {
+      return this.airports;
+    }
+    this.airports = await this.tmcService.getDomesticAirports(true);
+    return this.airports;
   }
-  getCountries() {
-    return this.tmcService.getCountries();
-  }
+  // getCountries() {
+  //   return this.tmcService.getCountries();
+  // }
   onSelectTrainStation(isFrom: boolean) {
     this.router.navigate([AppHelper.getRoutePath("select-station")], {
       queryParams: { requestCode: isFrom ? "from_station" : "to_station" },
