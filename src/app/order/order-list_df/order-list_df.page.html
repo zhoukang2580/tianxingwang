@@ -18,6 +18,9 @@
   <ion-label class="ion-text-nowrap">{{it.label}}</ion-label>
 </ng-template>
 <ion-content>
+  <app-refresher (ionRefresh)='doRefresh()' slot='fixed'>
+    <ion-refresher-content>正在加载</ion-refresher-content>
+  </app-refresher>
   <ng-template #fakeList>
     <ion-list>
       <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>

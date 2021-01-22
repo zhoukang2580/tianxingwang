@@ -10,8 +10,12 @@
           <ion-text color='light'>{{selectedBookInfos}}</ion-text>
         </ion-badge>
       </ion-button>
-      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&(!searchTrainModel?.isExchange)'>添加乘客<ion-badge color='danger'>
-          <ion-text color='light'>{{selectedPassengers}}</ion-text>
+      <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&(!searchTrainModel?.isExchange)'>
+        <ion-icon name="person-add-outline"></ion-icon>
+        <ion-badge color='danger'>
+          <ion-text color='light'>
+            {{selectedPassengers}}
+          </ion-text>
         </ion-badge>
       </ion-button>
       <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>差旅标准
