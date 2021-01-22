@@ -28,7 +28,7 @@ export class DemandService {
       Demand: d.Demand,
     };
     req.IsShowLoading = true;
-    return this.apiService.getPromiseData<any[]>(req);
+    return this.apiService.getPromiseData<boolean>(req);
   }
 
   // getDemandTeam(DemandType: Number) {

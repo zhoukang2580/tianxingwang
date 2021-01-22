@@ -101,9 +101,7 @@ export class DemandListPage implements OnInit {
           ProductType: (obj.demandTeamModel.ProductType || []).join(","),
         },
       };
-      this.apiservice.saveDemand(teams);
-      AppHelper.alert("添加成功");
-      this.onReset();
+      this.saveDemand(teams);
     } catch (e) {
       AppHelper.alert(e);
     }
@@ -112,9 +110,7 @@ export class DemandListPage implements OnInit {
   async onTourSubmit(obj) {
     try {
       this.teams.Demand = obj.demandTourModel;
-      this.apiservice.saveDemand(this.teams);
-      AppHelper.alert("添加成功");
-      this.onReset();
+      this.saveDemand(this.teams);
     } catch (e) {
       AppHelper.alert(e);
     }
@@ -122,9 +118,7 @@ export class DemandListPage implements OnInit {
   async onVisaSubmit(obj) {
     try {
       this.teams.Demand = obj.demandVisaModel;
-      this.apiservice.saveDemand(this.teams);
-      AppHelper.alert("添加成功");
-      this.onReset();
+      this.saveDemand(this.teams);
     } catch (e) {
       AppHelper.alert(e);
     }
@@ -133,11 +127,16 @@ export class DemandListPage implements OnInit {
   async onAirportSubmit(obj) {
     try {
       this.teams.Demand = obj.demandAirportModel;
-      this.apiservice.saveDemand(this.teams);
-      AppHelper.alert("添加成功");
-      this.onReset();
+      this.saveDemand(this.teams);
     } catch (e) {
       AppHelper.alert(e);
+    }
+  }
+  private async saveDemand(obj) {
+    const res = await this.apiservice.saveDemand(obj);
+    if (res) {
+      AppHelper.alert("添加成功");
+      this.onReset();
     }
   }
   async onCarSubmit(obj) {
@@ -156,9 +155,7 @@ export class DemandListPage implements OnInit {
       } else if (type == this.CarType.CharterCar) {
         this.teams.Demand = data.demandCharterCar;
       }
-      this.apiservice.saveDemand(this.teams);
-      AppHelper.alert('添加成功');
-      this.onReset();
+      this.saveDemand(this.teams);
     } catch (e) {
       AppHelper.alert(e);
     }
