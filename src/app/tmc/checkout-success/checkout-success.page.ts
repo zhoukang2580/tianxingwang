@@ -52,12 +52,12 @@ export class CheckoutSuccessPage implements OnInit {
   ngOnInit() {
     this.route.queryParamMap.subscribe(async q => {
       this.tabId = q.get("tabId");
+      this.isApproval= q.get("isApproval")=='true';
+      this.isCheckPay= q.get("isCheckPay")=='true';
+      this.payResult= q.get("payResult")=='true';
       if (q.get("cityCode")) {
         this.city = {} as any;
         this.city.CityCode = q.get("cityCode");
-        this.isApproval= q.get("isApproval")=='true';
-        this.isCheckPay= q.get("isCheckPay")=='true';
-        this.payResult= q.get("payResult")=='true';
         this.city.Code = q.get("cityCode");
         this.city.CityName = q.get("cityName");
         this.city.Name = q.get("cityName");

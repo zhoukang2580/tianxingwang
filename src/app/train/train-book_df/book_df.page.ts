@@ -906,7 +906,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.timeEnd("总计");
   }
-  private goToMyOrders(data: {
+  private async goToMyOrders(data: {
     isHasTask: boolean;
     payResult: boolean;
     isCheckPay: boolean;
@@ -919,13 +919,20 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       const m = this.trainService.getSearchTrainModel();
       // const cities = await this.flightService.getStationsAsync();
       // const city = m.toCity;
-      const cities = this.trainService.getSearchTrainModel().toCity;
+      const toCity = this.trainService.getSearchTrainModel().toCity;
+      if (toCity && !toCity.CityCode) {
+        const cities = await this.trainService.getStationsAsync();
+        const c = cities.find((it) => it.Code == toCity.Code);
+        if (c) {
+          toCity.CityCode = c.CityCode;
+        }
+      }
       // const c = cities.find(it => it.Code == (city && city.Code));
       this.router.navigate(["checkout-success"], {
         queryParams: {
           tabId: ProductItemType.plane,
-          cityCode: cities && cities.CityCode,
-          cityName: cities && cities.CityName,
+          cityCode: toCity && toCity.CityCode,
+          cityName: toCity && toCity.CityName,
           isApproval: data.isHasTask,
           payResult: data.payResult,
           isCheckPay: data.isCheckPay,
