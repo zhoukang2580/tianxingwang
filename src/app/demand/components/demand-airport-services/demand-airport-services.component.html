@@ -57,16 +57,16 @@
       </div>
     </div>
     <div class="item">
-      <div class="label">机场信息</div>
-      <div class="main">
-        <ion-input placeholder="请输入机场信息" [(ngModel)]="demandAirportModel.AirportName"></ion-input>
-      </div>
-    </div>
-    <div class="item">
       <div class="label">城市</div>
       <div class="main" (click)="onSelectCitys()">
         <ion-text>{{demandAirportModel.City}}</ion-text>
         <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">机场信息</div>
+      <div class="main">
+        <ion-input placeholder="请输入机场名称" [(ngModel)]="demandAirportModel.AirportName"></ion-input>
       </div>
     </div>
     <div class="item">

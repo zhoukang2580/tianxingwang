@@ -73,6 +73,15 @@ export class DemandItemCarComponent implements OnInit {
     this.demandDeliverTrainModel.DeliverUseCarTime = "12:30";
     this.demandCharterCarModel.CharterCarDate = date.toLocaleDateString();
     this.demandCharterCarModel.CharterCarTime = "12:30";
+    if(this.demandPickUpFlightAirport){
+      this.demandPickUpFlightAirport.Name = null;
+    }
+    if(this.demandPickUpTrainModelAirport){
+      this.demandPickUpTrainModelAirport.Name = null;
+    }
+    if(this.demandPickUpTrainModelAirport){
+      this.demandPickUpTrainModelAirport.Name = null;
+    }
   }
 
   switchCarType(type: CarType) {
