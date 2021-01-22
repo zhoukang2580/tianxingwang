@@ -142,14 +142,14 @@
               <div class="flex padding-v mobiles" [class.multi]="combindInfo.credentialStaffMobiles?.length>1">
                 <span class="label">联系电话:</span>
                 <div *ngFor="let m of combindInfo.credentialStaffMobiles;" class="item">
-                  <ion-checkbox class='small' [(ngModel)]="m.checked" mode='md'></ion-checkbox><span (click)="m.checked=!m.checked">{{m.mobile}}</span>
+                  <ion-checkbox [(ngModel)]="m.checked" mode='md'></ion-checkbox><span (click)="m.checked=!m.checked">{{m.mobile}}</span>
                 </div>
               </div>
               <div class="line"></div>
               <div class="flex padding-v emails" [class.multi]="combindInfo.credentialStaffEmails?.length>1">
                 <span class="label">联系邮箱：</span>
                 <div *ngFor="let m of combindInfo.credentialStaffEmails;" class="item">
-                  <ion-checkbox class='small' [(ngModel)]="m.checked" mode='md'></ion-checkbox><span (click)="m.checked=!m.checked">{{m.email}}</span>
+                  <ion-checkbox  [(ngModel)]="m.checked" mode='md'></ion-checkbox><span (click)="m.checked=!m.checked">{{m.email}}</span>
                 </div>
               </div>
               <div class="line"></div>
