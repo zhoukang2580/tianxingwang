@@ -27,9 +27,8 @@ export class DemandItemTeamComponent implements OnInit {
   constructor(
     private apiservice: DemandService,
     private calendarService: CalendarService,
-    private demandService: DemandService
-  ) // private mapService: MapService
-  {
+    private demandService: DemandService // private mapService: MapService
+  ) {
     this.demandTeam = new EventEmitter();
   }
 
@@ -76,7 +75,7 @@ export class DemandItemTeamComponent implements OnInit {
         }
 
         const reg1 = /^\w+@[a-z0-9]+(\.[a-z]+){1,3}$/g;
-        if (!(reg1.test(this.demandTeamModel.LiaisonEmail))) {
+        if (!reg1.test(this.demandTeamModel.LiaisonEmail)) {
           AppHelper.alert("邮箱格式不正确");
           return;
         }
@@ -112,6 +111,7 @@ export class DemandItemTeamComponent implements OnInit {
     if (d && d.data) {
       const c = d.data;
       this.demandTeamModel.FromAddress = `${c.Name}`;
+      this.demandTeamModel.FromCityCode = `${c.Code}`;
     }
   }
 
@@ -126,6 +126,7 @@ export class DemandItemTeamComponent implements OnInit {
     if (d && d.data) {
       const c = d.data;
       this.demandTeamModel.ToAddress = `${c.Name}`;
+      this.demandTeamModel.ToCityCode = `${c.Code}`;
     }
   }
 }
