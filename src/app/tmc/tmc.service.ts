@@ -333,6 +333,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Login";
     req.Data = {};
+    req.IsShowLoading = true;
     return this.apiService.getPromiseData<any>(req);
   }
 
