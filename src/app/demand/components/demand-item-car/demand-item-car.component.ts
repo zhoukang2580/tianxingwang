@@ -103,8 +103,6 @@ export class DemandItemCarComponent implements OnInit {
     const airports = await this.demandService.getAirports();
     if (airports) {
       const arr = airports.filter((it) => it.CityCode == c.Code);
-      // const code = airports.filter((it) => it.AirportCityCode == c.Code);
-      
       console.log(arr,c.Code);
       
       if (isFrom) {
@@ -112,7 +110,7 @@ export class DemandItemCarComponent implements OnInit {
       } else {
         this.toAirports = arr;
       }
-      this.demandPickUpFlightModel.AirportName = null;
+      this.demandPickUpFlightAirport.Name = null;
       
     }
   }
@@ -158,6 +156,19 @@ export class DemandItemCarComponent implements OnInit {
       } else {
         this.toStations = arr;
       }
+      this.demandPickUpTrainModelAirport.Name = null;
+    }
+  }
+  private async initStation(c: TrafficlineEntity, isFrom = true) {
+    const stations = await this.demandService.getStations();
+    if (stations) {
+      const arr = stations.filter((it) => it.CityCode == c.Code);
+      if (isFrom) {
+        this.fromStations = arr;
+      } else {
+        this.toStations = arr;
+      }
+      this.demandDeliverTrainModelAirport.Name = null;
     }
   }
   async onSelectDeliverCity() {
@@ -173,7 +184,7 @@ export class DemandItemCarComponent implements OnInit {
       let temStr = `${c.Name}`;
       this.demandDeliverTrainModel.CityName = temStr;
       this.demandDeliverTrainModel.CityCode = c.Code;
-      this.initStations(c, false);
+      this.initStation(c, false);
     }
   }
   async onSelectStartCity() {
