@@ -314,6 +314,29 @@
             </ion-col>
           </ion-row>
         </div>
+        <ng-container *ngIf="orderDetail.Histories.length">
+          <div>
+              <div class="ion-item-divider">审批记录</div>
+          </div>
+          <div style="background-color: #fff;">
+              <div *ngFor='let history of orderDetail.Histories'>
+                  <div class='approval-info'>
+                      <ion-row>
+                          <ion-col size='4'>审批人:</ion-col>
+                          <ion-col>{{history.Account?.RealName}} <span *ngIf='history.StatusName'>({{history.StatusName}})</span></ion-col>
+                      </ion-row>
+                      <ion-row>
+                          <ion-col size='4'>发起审批时间:</ion-col>
+                          <ion-col>{{history?.InsertDateTime}}</ion-col>
+                      </ion-row>
+                      <ion-row>
+                          <ion-col size='4'>审批截止时间:</ion-col>
+                          <ion-col>{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col>
+                      </ion-row>
+                  </div>
+              </div>
+          </div>
+      </ng-container>
       </div>
     </div>
   </ng-container>
