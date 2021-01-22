@@ -231,7 +231,14 @@ export class DemandItemCarComponent implements OnInit {
 
   onSubmit() {
     let type: CarType;
-    
+    if (this.demandPickUpFlightModel) {
+      if (this.demandPickUpFlightModel.FilghtDepartureDate) {
+        this.demandPickUpFlightModel.FilghtDepartureDate = this.demandPickUpFlightModel.FilghtDepartureDate.replace(
+          "T",
+          " "
+        ).substring(0, 10);
+      }
+    }
     if (this.demandCarType == CarType.PickUpFlight) {
       if (this.demandPickUpFlightModel) {
         if (!this.demandPickUpFlightModel.LiaisonName) {
