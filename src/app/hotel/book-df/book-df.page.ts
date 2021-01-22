@@ -1591,7 +1591,6 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           this.isSubmitDisabled = true;
           let isHasTask = res.HasTasks;
           let payResult = false;
-          this.hotelService.removeAllBookInfos();
           let checkPayResult = false;
           const isCheckPay = res.IsCheckPay;
           if (!isSave) {
@@ -1644,9 +1643,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     //     date: m.checkInDate
     //   },
     // });
-    this.router.navigate(["order-list"], {
-      queryParams: { tabId: ProductItemType.hotel },
-    });
+    this.router
+      .navigate(["order-list"], {
+        queryParams: { tabId: ProductItemType.hotel },
+      })
+      .then(() => {
+        this.hotelService.removeAllBookInfos();
+      });
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {
