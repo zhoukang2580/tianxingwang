@@ -78,14 +78,14 @@
     </ng-container>
     <ng-container *ngIf="demandCarType == CarType.DeliverFlight">
       <ion-list lines="none">
-        <ion-radio-group value="biff" class="group" mode="md">
+        <ion-radio-group value="domestic" class="group" mode="md">
           <ion-item style="border-bottom: 0">
             <ion-label>国内</ion-label>
-            <ion-radio slot="start" value="biff"></ion-radio>
+            <ion-radio slot="start" value="domestic"></ion-radio>
           </ion-item>
           <ion-item style="border-bottom: 0">
             <ion-label>境外</ion-label>
-            <ion-radio slot="start" value="Griff"></ion-radio>
+            <ion-radio slot="start" value="abroad"></ion-radio>
           </ion-item>
         </ion-radio-group>
       </ion-list>
@@ -137,14 +137,14 @@
     </ng-container>
     <ng-container *ngIf="demandCarType == CarType.PickUpTrain">
       <ion-list lines="none">
-        <ion-radio-group value="biff" class="group" mode="md">
+        <ion-radio-group value="domestic" class="group" mode="md">
           <ion-item style="border-bottom: 0">
             <ion-label>国内</ion-label>
-            <ion-radio slot="start" value="biff"></ion-radio>
+            <ion-radio slot="start" value="domestic"></ion-radio>
           </ion-item>
           <ion-item style="border-bottom: 0">
             <ion-label>境外</ion-label>
-            <ion-radio slot="start" value="Griff"></ion-radio>
+            <ion-radio slot="start" value="abroad"></ion-radio>
           </ion-item>
         </ion-radio-group>
       </ion-list>
@@ -196,14 +196,14 @@
     </ng-container>
     <ng-container *ngIf="demandCarType == CarType.DeliverTrain">
       <ion-list lines="none">
-        <ion-radio-group value="biff" class="group" mode="md">
+        <ion-radio-group value="domestic" class="group" mode="md">
           <ion-item style="border-bottom: 0">
             <ion-label>国内</ion-label>
-            <ion-radio slot="start" value="biff"></ion-radio>
+            <ion-radio slot="start" value="domestic"></ion-radio>
           </ion-item>
           <ion-item style="border-bottom: 0">
             <ion-label>境外</ion-label>
-            <ion-radio slot="start" value="Griff"></ion-radio>
+            <ion-radio slot="start" value="abroad"></ion-radio>
           </ion-item>
         </ion-radio-group>
       </ion-list>
@@ -255,14 +255,14 @@
     </ng-container>
     <ng-container *ngIf="demandCarType == CarType.CharterCar">
       <ion-list lines="none">
-        <ion-radio-group value="市内" class="group" mode="md" [(ngModel)]="demandCharterCarModel.CharterCarType">
+        <ion-radio-group value="domestic" class="group" mode="md" [(ngModel)]="demandCharterCarModel.CharterCarType">
           <ion-item style="border-bottom: 0">
             <ion-label>市内</ion-label>
-            <ion-radio slot="start" value="市内"></ion-radio>
+            <ion-radio slot="start" value="domestic"></ion-radio>
           </ion-item>
           <ion-item style="border-bottom: 0">
             <ion-label>跨域</ion-label>
-            <ion-radio slot="start" value="跨域"></ion-radio>
+            <ion-radio slot="start" value="abroad"></ion-radio>
           </ion-item>
         </ion-radio-group>
       </ion-list>
@@ -286,17 +286,8 @@
           <div class="date">包车天数</div>
           <div class="main">
             <ion-select class="custom-options" cancelText="取消" okText="确定" value="1" [(ngModel)]="demandCharterCarModel.CharterCarDays">
-              <ion-select-option value="1天">1天</ion-select-option>
-              <ion-select-option value="2天">2天</ion-select-option>
-              <ion-select-option value="3天">3天</ion-select-option>
-              <ion-select-option value="4天">4天</ion-select-option>
-              <ion-select-option value="5天">5天</ion-select-option>
-              <ion-select-option value="6天">6天</ion-select-option>
-              <ion-select-option value="7天">7天</ion-select-option>
-              <ion-select-option value="8天">8天</ion-select-option>
-              <ion-select-option value="9天">9天</ion-select-option>
-              <ion-select-option value="10天">10天</ion-select-option>
-              <ion-select-option value="更多天数">更多天数</ion-select-option>
+              <ion-select-option value="{{i}}" *ngFor='let i of [0,1,2,3,4,5,6,7,8,9]'>{{i+1}}天</ion-select-option>
+              <ion-select-option value="more">更多天数</ion-select-option>
             </ion-select>
           </div>
         </div>

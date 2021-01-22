@@ -147,6 +147,9 @@ ion-segment {
 .group {
   display: flex;
   height: 3.4em;
+  ion-radio {
+    margin-right: 0.5em;
+  }
 }
 
 .date,
