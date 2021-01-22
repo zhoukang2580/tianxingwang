@@ -21,7 +21,7 @@
       --padding-top: 0px;
       --padding-end: 0px;
       --padding-bottom: 0px;
-      --padding-start: 10px;
+      --padding-start: 0px;
       max-width: initial;
       margin-right: 24px;
     }
@@ -57,9 +57,6 @@
       font-size: 18px;
       margin-left: auto;
       padding-right: 1em;
-    }
-    ion-text {
-      font-size: 12px;
     }
 
     .left {

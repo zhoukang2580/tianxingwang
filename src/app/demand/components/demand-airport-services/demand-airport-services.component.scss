@@ -44,8 +44,8 @@
 
     .main {
       display: flex;
-      align-items: center;
-      justify-content: flex-end;
+      align-items: center;    
+      justify-content: space-between;
       width: 100%;
       line-height: 2;
       ion-input {

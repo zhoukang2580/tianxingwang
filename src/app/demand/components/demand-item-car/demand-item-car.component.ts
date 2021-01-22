@@ -29,9 +29,14 @@ export class DemandItemCarComponent implements OnInit {
   otherDemandModel: OtherDemandModel;
   @Output() demandCar: EventEmitter<any>;
   fromAirports: any[];
+  fromAirportCode: any[];
   toAirports: any[];
+  toAirportCode: any[];
   fromStations: any[];
   toStations: any[];
+  demandPickUpFlightAirport:any;
+  demandPickUpTrainModelAirport:any;
+  demandDeliverTrainModelAirport:any;
   CarType = CarType;
   demandCarType: CarType;
   constructor(
@@ -68,30 +73,6 @@ export class DemandItemCarComponent implements OnInit {
     this.demandDeliverTrainModel.DeliverUseCarTime = "12:30";
     this.demandCharterCarModel.CharterCarDate = date.toLocaleDateString();
     this.demandCharterCarModel.CharterCarTime = "12:30";
-
-    // this.mapService
-    //   .getCurMapPoint()
-    //   .then((c) => {
-    //     let temStr = `${c.address.province || ""}${c.address.city || ""}${
-    //       c.address.district || ""
-    //     }${c.address.street}`;
-    //     if (c && c.address) {
-    //       this.demandPickUpFlightModel.CityName = temStr;
-
-    //       this.demandDeliverFlightModel.Address = temStr;
-
-    //       this.demandPickUpTrainModel.Address = temStr;
-
-    //       this.demandDeliverTrainModel.Address = temStr;
-
-    //       this.demandCharterCarModel.ServiceStartCity = temStr;
-
-    //       this.demandCharterCarModel.ServiceEndCity = temStr;
-    //     }
-    //   })
-    //   .catch((e) => {
-    //     console.error(e);
-    //   });
   }
 
   switchCarType(type: CarType) {
@@ -122,12 +103,17 @@ export class DemandItemCarComponent implements OnInit {
     const airports = await this.demandService.getAirports();
     if (airports) {
       const arr = airports.filter((it) => it.CityCode == c.Code);
+      // const code = airports.filter((it) => it.AirportCityCode == c.Code);
+      
+      console.log(arr,c.Code);
+      
       if (isFrom) {
         this.fromAirports = arr;
       } else {
         this.toAirports = arr;
       }
       this.demandPickUpFlightModel.AirportName = null;
+      
     }
   }
   async onSelectDetailCity() {
@@ -201,7 +187,9 @@ export class DemandItemCarComponent implements OnInit {
     if (d && d.data) {
       const c = d.data;
       let temStr = `${c.Name}`;
+      let temId = `${c.Id}`
       this.demandCharterCarModel.ServiceStartCity = temStr;
+      this.demandCharterCarModel.ServiceStartCityId = temId;
     }
   }
   async onSelectEndCity() {
@@ -215,12 +203,15 @@ export class DemandItemCarComponent implements OnInit {
     if (d && d.data) {
       const c = d.data;
       let temStr = `${c.Name}`;
+      let temId = `${c.Id}`
       this.demandCharterCarModel.ServiceEndCity = temStr;
+      this.demandCharterCarModel.ServiceEndCityId = temId;
     }
   }
 
   onSubmit() {
     let type: CarType;
+    
     if (this.demandCarType == CarType.PickUpFlight) {
       if (this.demandPickUpFlightModel) {
         if (!this.demandPickUpFlightModel.LiaisonName) {
@@ -240,12 +231,17 @@ export class DemandItemCarComponent implements OnInit {
           !this.demandPickUpFlightModel.CityName ||
           !this.demandPickUpFlightModel.FilghtDepartureDate ||
           !this.demandPickUpFlightModel.FlightNumber ||
-          !this.demandPickUpFlightModel.Remarks
+          !this.demandPickUpFlightModel.Remarks ||
+          !this.demandPickUpFlightAirport||
+          !this.demandPickUpFlightAirport.Name ||
+          !this.demandPickUpFlightAirport.Code
         ) {
           AppHelper.alert("请完善信息");
           return;
         }
       }
+      this.demandPickUpFlightModel.AirportName = this.demandPickUpFlightAirport.Name;
+      this.demandPickUpFlightModel.AirportCode = this.demandPickUpFlightAirport.Code;
       type = CarType.PickUpFlight;
     } else if (this.demandCarType == CarType.DeliverFlight) {
       if (this.demandDeliverFlightModel) {
@@ -291,13 +287,17 @@ export class DemandItemCarComponent implements OnInit {
         if (
           !this.demandPickUpTrainModel.CityName ||
           !this.demandPickUpTrainModel.PickUpUseCarDate ||
-          !this.demandPickUpTrainModel.TrainStationName ||
           !this.demandPickUpTrainModel.Address ||
-          !this.demandPickUpTrainModel.PickUpUseCarTime
+          !this.demandPickUpTrainModel.PickUpUseCarTime ||
+          !this.demandPickUpTrainModelAirport ||
+          !this.demandPickUpTrainModelAirport.Name ||
+          !this.demandPickUpTrainModelAirport.Code
         ) {
           AppHelper.alert("请完善信息");
           return;
         }
+        this.demandPickUpTrainModel.TrainStationName = this.demandPickUpTrainModelAirport.Name;
+        this.demandPickUpTrainModel.TrainStationCode = this.demandPickUpTrainModelAirport.Code;
       }
       type = CarType.PickUpTrain;
     } else if (this.demandCarType == CarType.DeliverTrain) {
@@ -318,13 +318,17 @@ export class DemandItemCarComponent implements OnInit {
         if (
           !this.demandDeliverTrainModel.CityName ||
           !this.demandDeliverTrainModel.DeliverUseCarDate ||
-          !this.demandDeliverTrainModel.TrainStationName ||
+          !this.demandDeliverTrainModel.DeliverUseCarTime ||
           !this.demandDeliverTrainModel.Address ||
-          !this.demandDeliverTrainModel.DeliverUseCarTime
+          !this.demandDeliverTrainModelAirport ||
+          !this.demandDeliverTrainModelAirport.Name ||
+          !this.demandDeliverTrainModelAirport.Code
         ) {
           AppHelper.alert("请完善信息");
           return;
         }
+        this.demandDeliverTrainModel.TrainStationName = this.demandDeliverTrainModelAirport.Name;
+        this.demandDeliverTrainModel.TrainStationCode = this.demandDeliverTrainModelAirport.Code;
       }
       type = CarType.DeliverTrain;
     } else if (this.demandCarType == CarType.CharterCar) {
@@ -355,6 +359,7 @@ export class DemandItemCarComponent implements OnInit {
       }
       type = CarType.CharterCar;
     }
+    
     this.demandCar.emit({ data: this.otherDemandModel, type });
   }
 }

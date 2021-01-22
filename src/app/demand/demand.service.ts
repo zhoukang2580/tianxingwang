@@ -185,6 +185,7 @@ export class DemandPickUpFlightModel {
   FlightNumber: string;
   CityName: string;
   AirportName: string;
+  Airport: any;
   Remarks: string;
   CityCode: string;
   AirportCode: string;

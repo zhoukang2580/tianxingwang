@@ -37,16 +37,15 @@
     <div class="item">
       <div class="label">目的地国家</div>
       <div class="main" (click)="onSelectCountry()">
-        <ion-text>{{demandVisaModel.Destination}}<span *ngIf="demandVisaModel.WorkPlaceCode">({{demandVisaModel.WorkPlaceCode}})</span></ion-text>
+        <ion-text>{{demandVisaModel.Destination}}<span *ngIf="demandVisaModel.DestinationCode">({{demandVisaModel.DestinationCode}})</span></ion-text>
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>
     </div>
     <div class="item">
       <div class="label">工作居住地</div>
-      <div class="main">
-        <ion-input [(ngModel)]="demandVisaModel.WorkPlace" placeholder="请输入工作居住地"></ion-input>
-        <!-- <ion-text>{{demandVisaModel.WorkPlace}}</ion-text> -->
-        <!-- <ion-icon name="chevron-forward-outline"></ion-icon> -->
+      <div class="main" (click)="onSelectCitys()">
+        <ion-text>{{demandVisaModel.WorkPlace}}</ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
       </div>
     </div>
     <div class="item">

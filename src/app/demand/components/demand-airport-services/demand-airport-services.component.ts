@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
 import { CalendarService } from 'src/app/tmc/calendar.service';
-import { DemandAirportServiceModel } from '../../demand.service';
+import { DemandAirportServiceModel, DemandService } from '../../demand.service';
+import { DemandSearchComponent } from '../demand-search/demand-search.component';
 
 @Component({
   selector: 'app-demand-airport-services',
@@ -12,7 +13,8 @@ export class DemandAirportServicesComponent implements OnInit {
   @Input() demandAirportModel:DemandAirportServiceModel;
   @Output() demandAirport: EventEmitter<any>;
   constructor(
-    private calendarService:CalendarService
+    private calendarService:CalendarService,
+    private demandService:DemandService
   ) {
     this.demandAirport = new EventEmitter();
    }
@@ -22,6 +24,20 @@ export class DemandAirportServicesComponent implements OnInit {
     let date = new Date();
     this.demandAirportModel.DepartureDateDay = date.toLocaleDateString();
     this.demandAirportModel.DepartureDateHour = '12:30';
+  }
+
+  async onSelectCitys() {
+    const cities = await this.demandService.getCities();
+    const m = await AppHelper.modalController.create({
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      const c = d.data;
+      this.demandAirportModel.City = `${c.Name}`;
+    }
   }
 
   onSubmit(){

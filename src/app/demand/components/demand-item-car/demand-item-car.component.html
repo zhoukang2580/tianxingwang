@@ -59,8 +59,8 @@
           <div class="date">机场名称</div>
           <div class="main">
             <ng-container *ngIf='fromAirports?.length else fromAirInputTpl'>
-              <ion-select [(ngModel)]="demandPickUpFlightModel.AirportName" [cancelText]="'取消'" [okText]='"确定"'>
-                <ion-select-option *ngFor='let air of fromAirports' [value]='air.Name'>{{air.Name}}</ion-select-option>
+              <ion-select [(ngModel)]="demandPickUpFlightAirport" [cancelText]="'取消'" [okText]='"确定"' [selectedText]='demandPickUpFlightAirport&&demandPickUpFlightAirport.Name'>
+                <ion-select-option *ngFor='let air of fromAirports' [value]='air'>{{air.Name}}</ion-select-option>
               </ion-select>
             </ng-container>
             <ng-template #fromAirInputTpl>
@@ -178,8 +178,8 @@
         <div class="item">
           <div class="date">火车站</div>
           <ng-container *ngIf='fromStations?.length else fromStationInputTpl'>
-            <ion-select [(ngModel)]="demandPickUpTrainModel.TrainStationName" [cancelText]="'取消'" [okText]='"确定"'>
-              <ion-select-option *ngFor='let air of fromStations' [value]='air.Name'>{{air.Name}}</ion-select-option>
+            <ion-select [(ngModel)]="demandPickUpTrainModelAirport" [selectedText]='demandPickUpTrainModelAirport&&demandPickUpTrainModelAirport.Name' [cancelText]="'取消'" [okText]='"确定"'>
+              <ion-select-option *ngFor='let air of fromStations' [value]='air'>{{air.Name}}</ion-select-option>
             </ion-select>
           </ng-container>
           <ng-template #fromStationInputTpl>
@@ -237,8 +237,8 @@
         <div class="item">
           <div class="date">火车站</div>
           <ng-container *ngIf='toStations?.length else toStationInputTpl'>
-            <ion-select [(ngModel)]="demandDeliverTrainModel.TrainStationName" [cancelText]="'取消'" [okText]='"确定"'>
-              <ion-select-option *ngFor='let air of toStations' [value]='air.Name'>{{air.Name}}</ion-select-option>
+            <ion-select [(ngModel)]="demandDeliverTrainModelAirport" [selectedText]='demandDeliverTrainModelAirport&&demandDeliverTrainModelAirport.Name' [cancelText]="'取消'" [okText]='"确定"'>
+              <ion-select-option *ngFor='let air of toStations' [value]='air'>{{air.Name}}</ion-select-option>
             </ion-select>
           </ng-container>
           <ng-template #toStationInputTpl>
@@ -255,14 +255,14 @@
     </ng-container>
     <ng-container *ngIf="demandCarType == CarType.CharterCar">
       <ion-list lines="none">
-        <ion-radio-group value="biff" class="group" mode="md" [(ngModel)]="demandCharterCarModel.CharterCarType">
+        <ion-radio-group value="市内" class="group" mode="md" [(ngModel)]="demandCharterCarModel.CharterCarType">
           <ion-item style="border-bottom: 0">
             <ion-label>市内</ion-label>
-            <ion-radio slot="start" value="biff"></ion-radio>
+            <ion-radio slot="start" value="市内"></ion-radio>
           </ion-item>
           <ion-item style="border-bottom: 0">
             <ion-label>跨域</ion-label>
-            <ion-radio slot="start" value="Griff"></ion-radio>
+            <ion-radio slot="start" value="跨域"></ion-radio>
           </ion-item>
         </ion-radio-group>
       </ion-list>

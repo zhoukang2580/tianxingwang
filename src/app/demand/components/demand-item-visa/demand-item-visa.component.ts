@@ -3,7 +3,8 @@ import { AppHelper } from 'src/app/appHelper';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { SelectCountryModalComponent } from 'src/app/tmc/components/select-country/select-countrymodal.component';
 import { CountryEntity } from 'src/app/tmc/models/CountryEntity';
-import { DemandVisaModel } from '../../demand.service';
+import { DemandService, DemandVisaModel } from '../../demand.service';
+import { DemandSearchComponent } from '../demand-search/demand-search.component';
 
 @Component({
   selector: 'app-demand-item-visa',
@@ -20,6 +21,7 @@ export class DemandItemVisaComponent implements OnInit {
   @Input() demandVisaModel:DemandVisaModel;
   @Output() demandVisa: EventEmitter<any>;
   constructor(
+    private demandService:DemandService
   ) { 
     this.demandVisa = new EventEmitter();
   }
@@ -94,9 +96,24 @@ export class DemandItemVisaComponent implements OnInit {
         selectedItem: CountryEntity;
       };
       if (data.selectedItem) {
-        this.demandVisaModel.WorkPlaceCode = data.selectedItem.Code
+        this.demandVisaModel.DestinationCode = data.selectedItem.Code
         this.demandVisaModel.Destination = data.selectedItem.Name;
       }
+    }
+  }
+
+  async onSelectCitys() {
+    const cities = await this.demandService.getCities();
+    const m = await AppHelper.modalController.create({
+      component: DemandSearchComponent,
+      componentProps: { dataSource: cities },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && d.data) {
+      const c = d.data;
+      this.demandVisaModel.WorkPlace = `${c.Name}`;
+      this.demandVisaModel.WorkPlaceCode = `${c.Code}`;
     }
   }
 }
