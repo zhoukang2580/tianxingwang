@@ -142,14 +142,14 @@
               <div class="flex padding-v mobiles" [class.multi]="combindInfo.credentialStaffMobiles?.length>1">
                 <span class="label">联系电话:</span>
                 <div *ngFor="let m of combindInfo.credentialStaffMobiles;" class="item">
-                  <ion-checkbox [(ngModel)]="m.checked"></ion-checkbox><span (click)="m.checked=!m.checked">{{m.mobile}}</span>
+                  <ion-checkbox class='small' [(ngModel)]="m.checked" mode='md'></ion-checkbox><span (click)="m.checked=!m.checked">{{m.mobile}}</span>
                 </div>
               </div>
               <div class="line"></div>
               <div class="flex padding-v emails" [class.multi]="combindInfo.credentialStaffEmails?.length>1">
                 <span class="label">联系邮箱：</span>
                 <div *ngFor="let m of combindInfo.credentialStaffEmails;" class="item">
-                  <ion-checkbox [(ngModel)]="m.checked"></ion-checkbox><span (click)="m.checked=!m.checked">{{m.email}}</span>
+                  <ion-checkbox class='small' [(ngModel)]="m.checked" mode='md'></ion-checkbox><span (click)="m.checked=!m.checked">{{m.email}}</span>
                 </div>
               </div>
               <div class="line"></div>
@@ -239,12 +239,12 @@
             </div>
           </div>
         </ion-list>
-        <ion-list class="section" *ngIf="isCanSkipApproval$|async">
+        <ion-list class="section" *ngIf="isCanSkipApproval$|async" (click)="combindInfo.isSkipApprove=!combindInfo.isSkipApprove">
           <div class="info">
-            <div class="skip-approval" (click)="combindInfo.isSkipApprove=!combindInfo.isSkipApprove">
+            <div class="skip-approval">
               <div class="flex padding-v">
                 <span class="label">跳过审批：</span>
-                <ion-checkbox class="ion-margin-end" color="secondary" [(ngModel)]="combindInfo.isSkipApprove">
+                <ion-checkbox class="ion-margin-end" color="secondary" mode='md' (click)="combindInfo.isSkipApprove=!combindInfo.isSkipApprove" [(ngModel)]="combindInfo.isSkipApprove">
                 </ion-checkbox>
               </div>
             </div>
@@ -373,7 +373,7 @@
             <ng-container *ngFor="let pt of orderTravelPayTypes">
               <ion-item>
                 <ion-label>{{pt.label}}</ion-label>
-                <ion-radio [value]="pt.value" [class.radio-checked]="orderTravelPayType==pt.value" mode="md">
+                <ion-radio [value]="pt.value" [class.radio-checked]="orderTravelPayType==pt.value">
                 </ion-radio>
               </ion-item>
               <div class="line"></div>
@@ -385,7 +385,7 @@
               <ng-container *ngIf="!serviceFee else zfTpl">
                 <ion-item>
                   <ion-label>前台现付</ion-label>
-                  <ion-radio [value]="OrderTravelPayType.Company" mode="md"></ion-radio>
+                  <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
                 </ion-item>
                 <div class="line"></div>
               </ng-container>
@@ -402,7 +402,7 @@
                   <ng-container *ngIf="tmc.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc.HotelPayType else configPayTpl">
                     <ion-item>
                       <ion-label>前台现付</ion-label>
-                      <ion-radio mode="md" [value]="OrderTravelPayType.Company"></ion-radio>
+                      <ion-radio [value]="OrderTravelPayType.Company"></ion-radio>
                     </ion-item>
                     <div class="line"></div>
                   </ng-container>
@@ -417,7 +417,7 @@
             <ng-container *ngFor="let pt of orderTravelPayTypes">
               <ion-item>
                 <ion-label>前台现付（服务费:{{pt.label}}）</ion-label>
-                <ion-radio [value]="pt.value" [class.radio-checked]="orderTravelPayType==pt.value" mode="md">
+                <ion-radio [value]="pt.value" [class.radio-checked]="orderTravelPayType==pt.value">
                 </ion-radio>
               </ion-item>
               <div class="line"></div>
