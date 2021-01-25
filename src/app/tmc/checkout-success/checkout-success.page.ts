@@ -118,18 +118,6 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
     });
   }
 
-  // private goToMyOrders(tab: ProductItemType) {
-  //   if (this.langService.isCn) {
-  //     this.router.navigate(["order-list"], {
-  //       queryParams: { tabId: tab },
-  //     });
-  //   } else {
-  //     this.router.navigate(["order-list_en"], {
-  //       queryParams: { tabId: tab },
-  //     });
-  //   }
-  // }
-
   onOrderList() {
     this.isCanBack = true;
     this.router.navigate(["order-list"], {

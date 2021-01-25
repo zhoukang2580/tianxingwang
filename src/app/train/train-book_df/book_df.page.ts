@@ -930,7 +930,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       // const c = cities.find(it => it.Code == (city && city.Code));
       this.router.navigate(["checkout-success"], {
         queryParams: {
-          tabId: ProductItemType.plane,
+          tabId: ProductItemType.train,
           cityCode: toCity && toCity.CityCode,
           cityName: toCity && toCity.CityName,
           isApproval: data.isHasTask,
