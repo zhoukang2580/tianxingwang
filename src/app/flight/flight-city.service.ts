@@ -788,7 +788,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
           const segs = page.querySelector(".segments");
           headerEle = h.clientHeight + segs.clientHeight || 97;
           let y = 0;
-          y = rect.top - headerEle;
+          y = rect.top - headerEle - (h.offsetTop || 0);
           const ul = getContainerEle();
           ul.scrollBy(0, y);
         } catch (e) {
