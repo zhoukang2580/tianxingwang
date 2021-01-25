@@ -41,7 +41,7 @@
             <div class="swiper-slide" *ngFor="let n of agentNotices">
               <div class="announcement">
                 <img src="assets/home/home-tip.png" class="tip" alt="" />
-                <div class="text">{{n.text}}</div>
+                <div class="text" notranslate>{{n.text}}</div>
                 <ion-icon name="chevron-forward-outline" class="icon-right"></ion-icon>
               </div>
             </div>
@@ -52,25 +52,25 @@
     <div class="products">
       <div class="plane" (click)='goToPage("flight")'>
         <img src="assets/home/home-plane.png" alt="" />
-        <span class="txt">机票</span>
+        <span class="txt" notranslate>机票</span>
       </div>
       <div class="hotel" (click)='goToPage("hotel")'>
         <img src="assets/home/home-hotel.png" alt="" />
-        <span class="txt">酒店</span>
+        <span class="txt" notranslate>酒店</span>
       </div>
       <div class="train" (click)='goToPage("train")'>
         <img src="assets/home/home-train.png" alt="" />
-        <span class="txt">火车票</span>
+        <span class="txt" notranslate>火车票</span>
       </div>
       <div class="car" (click)='goToPage("rentalCar")' *ngIf="isShowRentalCar&&(!identity?.Numbers?.AgentId)">
         <img src="assets/home/home-car.png" alt="" />
-        <span class="txt">用车</span>
+        <span class="txt" notranslate>用车</span>
       </div>
     </div>
     <div class="entries">
       <div class="item" *ngIf="!isAgent&&staff?.StaffNumber" (click)="goBusiness()">
         <img src="assets/home/home-travel.png" alt="" />
-        <div class="txt">出差申请</div>
+        <div class="txt" notranslate>出差申请</div>
       </div>
       <!-- <div class="item">
         <img src="assets/home/home-mms.png" alt="" />
@@ -78,7 +78,7 @@
       </div> -->
       <div class="item" (click)="onDemand()">
         <img class="imgs" src="assets/home/demand.png" alt="" />
-        <div class="txt">需求单</div>
+        <div class="txt" notranslate>需求单</div>
       </div>
     </div>
 
@@ -88,11 +88,11 @@
           <div class="swiper-slide swiper" *ngFor="let task of tasklist">
             <img src="assets/home/home-text.png" alt="" />
             <div class="not-jj" (click)="onTaskDetail(task)">
-              <div class="not-name">{{task.Name}}</div>
+              <div class="not-name" notranslate>{{task.Name}}</div>
               <div calss="not-approvd overflow">
-                <span style="color: crimson">{{task.saName}}</span><span>{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span>
+                <span style="color: crimson" notranslate>{{task.saName}}</span><span notranslate>{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span>
               </div>
-              <div class="view-now" (click)="onTaskDetail(task)">立即查看</div>
+              <div class="view-now" (click)="onTaskDetail(task)" notranslate>立即查看</div>
             </div>
           </div>
         </div>
@@ -102,26 +102,26 @@
           <div class="swiper-slide it-list" *ngFor="let trip of itineraryList;">
             <img src="assets/home/home-trip.png" alt="" />
             <div class="not-warp" (click)="goToDetailPage(trip.OrderId,trip.Type)">
-              <div class="not-name">{{trip.PassagerName}}</div>
-              <div class="wait-trip">您有<span>1张</span>待出行行程</div>
-              <div class="view-now">立即查看</div>
+              <div class="not-name" notranslate>{{trip.PassagerName}}</div>
+              <div class="wait-trip" notranslate>您有<span>1张</span>待出行行程</div>
+              <div class="view-now" notranslate>立即查看</div>
               <div *ngIf="trip.Type == 'Flight'" class="trips">
-                <div class="starting-city">{{trip?.FromCityName}}</div>
+                <div class="starting-city" notranslate>{{trip?.FromCityName}}</div>
                 <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
-                <div class="arriving-city"><span>{{trip?.ToName}}</span></div>
-                <div class="fly-time">
-                  <span ng>{{trip.Hour}}小时</span>后起飞
+                <div class="arriving-city"><span notranslate>{{trip?.ToName}}</span></div>
+                <div class="fly-time" notranslate>
+                  <span notranslate>{{trip.Hour}}小时</span>后起飞
                 </div>
               </div>
               <div *ngIf="trip.Type == 'Train'" class="trips">
-                <div class="starting-city">{{trip?.FromName}}</div>
+                <div class="starting-city" notranslate>{{trip?.FromName}}</div>
                 <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
-                <div class="arriving-city"><span>{{trip?.ToName}}</span></div>
-                <div class="fly-time"><span>{{trip.Hour}}小时</span>后出发</div>
+                <div class="arriving-city"><span notranslate>{{trip?.ToName}}</span></div>
+                <div class="fly-time" notranslate><span notranslate>{{trip.Hour}}小时</span>后出发</div>
               </div>
               <div *ngIf="trip.Type == 'Hotel'" class="trips">
-                <div class="starting-city">{{trip?.Name}}</div>
-                <div class="fly-time"><span>{{trip.Hour}}小时</span>前入住</div>
+                <div class="starting-city" notranslate>{{trip?.Name}}</div>
+                <div class="fly-time" notranslate><span notranslate>{{trip.Hour}}小时</span>前入住</div>
               </div>
             </div>
           </div>
@@ -131,7 +131,7 @@
   </div>
 
   <div class="hot-hotel">
-    <div class="title">热门酒店</div>
+    <div class="title" notranslate>热门酒店</div>
     <div class="swiper-container" #hothotel>
       <div class="swiper-wrapper">
         <ng-container *ngIf="boutiqueHotel?.HotelDayPrices?.length else deftpl">
@@ -156,13 +156,13 @@
   </div>
 
   <div class="points-mall">
-    <div class="title">积分商城</div>
+    <div class="title" notranslate>积分商城</div>
     <div class="commodity">
       <div class="list" *ngFor="let item of exchangeList" (click)="onRedeemNow(item)">
         <div class="left">
-          <div class="item-name">{{item.Name}}</div>
-          <div class="jf">{{item.Count}}积分</div>
-          <button class="btn1">立即兑换</button>
+          <div class="item-name" notranslate>{{item.Name}}</div>
+          <div class="jf" notranslate>{{item.Count}}积分</div>
+          <button class="btn1" notranslate>立即兑换</button>
         </div>
         <div class="right">
           <img [lazyLoad]="item.ImageUrl" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" alt="" />
@@ -170,11 +170,11 @@
       </div>
       <div class="list" style="background: linear-gradient(90deg, #fbddb1 0%, #fbc696 100%)">
         <div class="left">
-          <div class="item-sign">签到有奖</div>
-          <div class="jd">20积分</div>
+          <div class="item-sign" notranslate>签到有奖</div>
+          <div class="jd" notranslate>20积分</div>
           <button class="btn2" *ngIf="isRegister" (click)="onSignIn()" [class.disabled]='!isCanDailySigned'>
-            <span *ngIf='!isCanDailySigned'>今日已签到</span>
-            <span *ngIf='isCanDailySigned'>立即签到</span>
+            <span *ngIf='!isCanDailySigned' notranslate>今日已签到</span>
+            <span *ngIf='isCanDailySigned' notranslate>立即签到</span>
           </button>
         </div>
         <div class="right">
