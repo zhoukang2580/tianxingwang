@@ -85,7 +85,7 @@ ion-header ion-title {
   }
 }
 .inner {
-  height: 189px;
+  height: 204px;
   position: relative;
   img {
     width: 100%;
@@ -367,7 +367,7 @@ ion-header ion-title {
         font-size: 12px;
         color: #fff;
         height: 18px;
-        width: 80px;
+        min-width: 80px;
         border-radius: 5px;
       }
       .btn1 {

@@ -233,10 +233,34 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private async loadHotHotels() {
+  private async getRecommendHotel() {
     if (this.isLoadingHotHotels) {
       return;
     }
+    var myDate = new Date();
+    this.hothotels = {
+      PageIndex: 0,
+      PageSize: 20,
+      CityCode: (this.curCity && this.curCity.CityCode) || "3101",
+      SearchDate: myDate.toLocaleDateString(),
+    };
+    this.isLoadingHotHotels = true;
+    await this.tmcService
+      .getRecommendHotel(this.hothotels)
+      .catch(() => null)
+      .then((res) => {
+        this.boutiqueHotel = res;
+        setTimeout(() => {
+          if (this.hotelsSwiper) {
+            this.hotelsSwiper.update();
+          }
+        }, 200);
+      })
+      .finally(() => {
+        this.isLoadingHotHotels = false;
+      });
+  }
+  private async loadHotHotels() {
     if (
       !this.boutiqueHotel ||
       !this.boutiqueHotel.HotelDayPrices ||
@@ -246,32 +270,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
       if (!this.curCity) {
-        this.curCity = await this.mapService
-          .getCurrentCityPosition()
-          .catch(() => null);
-      }
-      var myDate = new Date();
-      this.hothotels = {
-        PageIndex: 0,
-        PageSize: 20,
-        CityCode: (this.curCity && this.curCity.CityCode) || "3101",
-        SearchDate: myDate.toLocaleDateString(),
-      };
-      this.isLoadingHotHotels = true;
-      await this.tmcService
-        .getRecommendHotel(this.hothotels)
-        .catch(() => null)
-        .then((res) => {
-          this.boutiqueHotel = res;
-          setTimeout(() => {
-            if (this.hotelsSwiper) {
-              this.hotelsSwiper.update();
-            }
-          }, 200);
-        })
-        .finally(() => {
-          this.isLoadingHotHotels = false;
+        this.mapService.getCurrentCityPosition().catch((curCity) => {
+          this.curCity = curCity;
+          if (this.curCity) {
+            this.getRecommendHotel();
+          }
         });
+      }
+      this.getRecommendHotel();
     }
   }
 
