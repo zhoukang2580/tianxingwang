@@ -78,6 +78,8 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   private trainsForRender: TrainEntity[] = [];
   private subscriptions: Subscription[] = [];
   private trainCodes: any[];
+  private lastSelectFromStation: TrafficlineEntity;
+  private lastSelectToStation: TrafficlineEntity;
   progressName = "";
   trainsCount = 0;
   vmTrains: TrainEntity[] = [];
@@ -140,7 +142,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.route.queryParamMap.subscribe(async (_) => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
-      let isDoRefresh = false;
+      let isDoRefresh = this.checkStationChanged();
       this.currentSelectedPassengerIds = this.trainService
         .getBookInfos()
         .map((it) => it.passenger && it.passenger.AccountId);
@@ -236,6 +238,16 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   trackBy(idx: number, train: TrainEntity) {
     return train && train.TrainCode;
+  }
+  private checkStationChanged() {
+    return (
+      this.lastSelectToStation &&
+      this.lastSelectFromStation &&
+      this.vmFromCity &&
+      this.vmToCity &&
+      (this.lastSelectFromStation.Code != this.vmFromCity.Code ||
+        this.lastSelectToStation.Code != this.vmToCity.Code)
+    );
   }
   async onSelectStation(isFrom: boolean) {
     this.scrollToTop();
@@ -448,6 +460,8 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (loadDataFromServer) {
         this.progressName = "正在获取火车票列表";
         // 强制从服务器端返回新数据
+        this.lastSelectToStation = this.vmToCity;
+        this.lastSelectFromStation = this.vmFromCity;
         data = await this.loadPolicyedTrainsAsync();
       }
       this.apiService.showLoadingView({ msg: this.progressName });
