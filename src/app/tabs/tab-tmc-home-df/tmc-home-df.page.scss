@@ -417,5 +417,11 @@ ion-header ion-title {
     .not-approvd {
       margin: 0;
     }
+    .overflow {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-width: 14em;
+    }
   }
 }

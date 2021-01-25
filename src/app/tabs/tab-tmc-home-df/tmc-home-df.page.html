@@ -89,11 +89,7 @@
             <img src="assets/home/home-text.png" alt="" />
             <div class="not-jj" (click)="onTaskDetail(task)">
               <div class="not-name">{{task.Name}}</div>
-              <div calss="not-approvd" style="
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              overflow: hidden;
-              max-width: 9em;">
+              <div calss="not-approvd overflow">
                 <span style="color: crimson">{{task.saName}}</span><span>{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span>
               </div>
               <div class="view-now" (click)="onTaskDetail(task)">立即查看</div>
