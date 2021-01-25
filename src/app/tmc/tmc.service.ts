@@ -65,6 +65,7 @@ export class TmcService {
   private companies: GroupCompanyEntity[];
   private banners: any[];
   private memberDetail: any;
+  private getRecommendHotelObj: { [key: string]: any } = {};
   // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
   private identity: IdentityEntity;
@@ -118,6 +119,7 @@ export class TmcService {
     this.tmc = null;
     this.agent = null;
     this.fetchingTmcPromise = null;
+    this.getRecommendHotelObj = {};
     this.setSelectedCompanySource("");
   }
   get isAgent() {
@@ -150,6 +152,14 @@ export class TmcService {
     SearchDate: string;
   }) {
     const req = new RequestEntity();
+    const id = await this.identityService.getIdentityAsync();
+    // .catch(e=>null);
+    if (!id || !id.Id) {
+      return null;
+    }
+    if (this.getRecommendHotelObj[`${id.Id}_${d.CityCode}_${d.PageIndex}`]) {
+      return this.getRecommendHotelObj[`${id.Id}_${d.CityCode}_${d.PageIndex}`];
+    }
     req.Method = "TmcApiHotelUrl-Home-RecommendHotel";
     req.IsRedirctNoAuthorize = false;
     req.IsRedirctLogin = false;
@@ -159,17 +169,26 @@ export class TmcService {
       CityCode: d.CityCode,
       SearchDate: d.SearchDate,
     };
-    return this.apiService.getPromiseData<{
-      DataCount: string;
-      HotelDefaultImg: string;
-      HotelDayPrices: {
-        Id: string;
-        HotelName: string;
-        HotelAddress: string;
-        HotelCategory: string;
-        HotelFileName: string;
-      }[];
-    }>(req);
+    return this.apiService
+      .getPromiseData<{
+        DataCount: string;
+        HotelDefaultImg: string;
+        HotelDayPrices: {
+          Id: string;
+          HotelName: string;
+          HotelAddress: string;
+          HotelCategory: string;
+          HotelFileName: string;
+        }[];
+      }>(req)
+      .then((r) => {
+        if (r && r.HotelDayPrices && r.HotelDayPrices.length) {
+          this.getRecommendHotelObj[
+            `${id.Id}_${d.CityCode}_${d.PageIndex}`
+          ] = r;
+        }
+        return r;
+      });
   }
 
   async getTaskReviewed() {
@@ -327,8 +346,8 @@ export class TmcService {
     req.Method = "TmcApiHomeUrl-Home-Initialization";
     req.IsShowLoading = showLoading;
     return this.apiService.getPromiseData<{
-      isRegister:boolean;
-      isCanSign:boolean;
+      isRegister: boolean;
+      isCanSign: boolean;
     }>(req);
   }
 
