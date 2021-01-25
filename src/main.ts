@@ -17,7 +17,11 @@ try {
   AppHelper.initlizeQueryParamers();
   if (CONFIG.mockProBuild) {
     const obj = AppHelper.getQueryParamers();
-    obj.style = "df";
+    obj.style =
+      obj.style ||
+      AppHelper.getStyle() ||
+      AppHelper.getLanguage() ||
+      CONFIG.defaultStyle;
     obj.language = "cn";
   }
   processPath();
@@ -44,7 +48,7 @@ try {
 }
 if (CONFIG.mockProBuild) {
   const obj = AppHelper.getQueryParamers();
-  obj.style = 'df';
+  obj.style = "df";
 }
 AppHelper.checkNetworkStatus();
 
