@@ -326,7 +326,10 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Initialization";
     req.IsShowLoading = showLoading;
-    return this.apiService.getPromiseData<any>(req);
+    return this.apiService.getPromiseData<{
+      isRegister:boolean;
+      isCanSign:boolean;
+    }>(req);
   }
 
   async getLogin() {

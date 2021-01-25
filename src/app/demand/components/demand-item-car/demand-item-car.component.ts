@@ -79,8 +79,8 @@ export class DemandItemCarComponent implements OnInit {
     if(this.demandPickUpTrainModelAirport){
       this.demandPickUpTrainModelAirport.Name = null;
     }
-    if(this.demandPickUpTrainModelAirport){
-      this.demandPickUpTrainModelAirport.Name = null;
+    if(this.demandDeliverTrainModelAirport){
+      this.demandDeliverTrainModelAirport.Name = null;
     }
   }
 
@@ -119,7 +119,9 @@ export class DemandItemCarComponent implements OnInit {
       } else {
         this.toAirports = arr;
       }
-      this.demandPickUpFlightAirport.Name = null;
+      if(this.demandPickUpFlightAirport){
+        this.demandPickUpFlightAirport.Name = null;
+      }
       
     }
   }
@@ -165,7 +167,9 @@ export class DemandItemCarComponent implements OnInit {
       } else {
         this.toStations = arr;
       }
-      this.demandPickUpTrainModelAirport.Name = null;
+      if(this.demandPickUpTrainModelAirport){
+        this.demandPickUpTrainModelAirport.Name = null;
+      }
     }
   }
   private async initStation(c: TrafficlineEntity, isFrom = true) {
@@ -177,7 +181,9 @@ export class DemandItemCarComponent implements OnInit {
       } else {
         this.toStations = arr;
       }
-      this.demandDeliverTrainModelAirport.Name = null;
+      if(this.demandDeliverTrainModelAirport){
+        this.demandDeliverTrainModelAirport.Name = null;
+      }
     }
   }
   async onSelectDeliverCity() {

@@ -83,6 +83,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   isLoadingNotice = false;
   isAgent = false;
   isCanDailySigned = true;
+  isRegister = true;
   aliPayResult$: Observable<any>;
   wxPayResult$: Observable<any>;
   selectedCompany: string;
@@ -335,6 +336,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
+
   private async getLogin() {
     try {
       const url = await this.tmcService.getLogin();
@@ -381,13 +383,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url?.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     }
     return url;
   }
@@ -428,7 +428,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) {}
+    } catch (e) { }
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
@@ -566,12 +566,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .getIdentitySource()
       .subscribe(async (_) => {
         try {
-          this.tmcService
-            .checkIfCanDailySigned()
-            .catch(() => true)
-            .then((r) => {
-              this.isCanDailySigned = r;
-            });
           this.configService.getConfigAsync().then((c) => {
             this.config = c;
           });
@@ -582,6 +576,18 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           if (!(await this.hasTicket())) {
             return;
           }
+          
+          this.tmcService
+            .checkIfCanDailySigned()
+            .then((r) => {
+              if(!r.isRegister){
+                this.isRegister = false;
+              }
+              this.isCanDailySigned = r && r.isRegister && r.isCanSign;
+            })
+            .catch((e) => {
+              AppHelper.alert(e)
+            })
           this.loadHotHotels();
           this.loadBanners();
           this.loadNotices();
