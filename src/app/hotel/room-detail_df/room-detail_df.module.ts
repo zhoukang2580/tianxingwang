@@ -5,6 +5,7 @@ import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { RoomDetailDfPage } from "./room-detail_df.page";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 @NgModule({
   declarations: [RoomDetailDfPage],
@@ -16,7 +17,8 @@ import { RoomDetailDfPage } from "./room-detail_df.page";
     RouterModule.forChild([
       {
         path: "",
-        component: RoomDetailDfPage
+        component: RoomDetailDfPage,
+        canActivate: [StylePageGuard]
       }
     ])
   ]

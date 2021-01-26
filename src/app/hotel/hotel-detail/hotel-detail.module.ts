@@ -10,11 +10,13 @@ import { IonicModule } from "@ionic/angular";
 
 import { HotelDetailPage } from "./hotel-detail.page";
 import { SelectPassengerPage } from "src/app/tmc/select-passenger/select-passenger.page";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
-    component: HotelDetailPage
+    component: HotelDetailPage,
+    canActivate: [StylePageGuard]
   }
 ];
 

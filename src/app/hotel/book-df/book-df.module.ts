@@ -11,12 +11,13 @@ import { BookDfPage } from "./book-df.page";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 import { MemberPipesModule } from 'src/app/member/pipe/pipe.module';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: BookDfPage,
-    canActivate: [ConfirmCredentialInfoGuard]
+    canActivate: [ConfirmCredentialInfoGuard,StylePageGuard]
   }
 ];
 

@@ -6,6 +6,7 @@ import { CommonModule } from "@angular/common";
 import { IonicModule } from "@ionic/angular";
 import { NgModule } from "@angular/core";
 import { HotelRoomBookedinfosPage } from "./hotel-room-bookedinfos.page";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 @NgModule({
   declarations: [HotelRoomBookedinfosPage],
@@ -18,7 +19,8 @@ import { HotelRoomBookedinfosPage } from "./hotel-room-bookedinfos.page";
     RouterModule.forChild([
       {
         path: "",
-        component: HotelRoomBookedinfosPage
+        component: HotelRoomBookedinfosPage,
+        canActivate: [StylePageGuard]
       }
     ])
   ]
