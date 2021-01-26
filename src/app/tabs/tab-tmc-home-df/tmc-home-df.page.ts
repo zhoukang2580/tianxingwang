@@ -1,5 +1,5 @@
 import { MemberService, MemberCredential } from "../../member/member.service";
-import { NavController, DomController, IonSlides } from "@ionic/angular";
+import { NavController, IonSlides } from "@ionic/angular";
 import { FlightService } from "src/app/flight/flight.service";
 import { HotelService } from "../../hotel/hotel.service";
 import { TrainService } from "src/app/train/train.service";
@@ -15,38 +15,28 @@ import {
   Component,
   OnInit,
   OnDestroy,
-  ViewChildren,
-  QueryList,
   ElementRef,
   ViewChild,
-  Renderer2,
   AfterViewInit,
 } from "@angular/core";
 import {
   Observable,
   Subject,
   BehaviorSubject,
-  from,
-  of,
   Subscription,
-  interval,
 } from "rxjs";
-import { ActivatedRoute, Router, NavigationEnd } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
-import { tap, shareReplay, map, finalize } from "rxjs/operators";
-import { environment } from "src/environments/environment";
+import { finalize } from "rxjs/operators";
 import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
 import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
-import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
 import { LoginService } from "src/app/services/login/login.service";
 import { CONFIG } from "src/app/config";
 import { LangService } from "src/app/services/lang.service";
 import { ProductItem } from "src/app/tmc/models/ProductItems";
-import { error } from "protractor";
-import { HotelDayPriceEntity } from "src/app/hotel/models/HotelDayPriceEntity";
 import { MapService } from "src/app/services/map/map.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 @Component({
@@ -69,7 +59,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   announcementEl: ElementRef<HTMLElement>;
   @ViewChild("taskEle", { static: true }) taskEle: ElementRef<HTMLElement>;
   @ViewChild("tripEle", { static: true }) tripEle: ElementRef<HTMLElement>;
-  private exitAppSub: Subject<number> = new BehaviorSubject(null);
   private bannersSwiper: any;
   private hotelsSwiper: any;
   private announcementElSwiper: any;
@@ -77,8 +66,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private tripEleSwiper: any;
   private isLoadingBanners = false;
   private isLoadingMyItinerary = false;
-  private isLoadingHotelBanners = false;
-  private isOpenUrl = false;
   identity: IdentityEntity;
   isLoadingNotice = false;
   isAgent = false;
@@ -172,7 +159,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     private cmsService: CmsService,
     private staffService: StaffService,
     private trainService: TrainService,
-    private navCtrl: NavController,
     private memberService: MemberService,
     private hotelService: HotelService,
     private interHotelService: InternationalHotelService,
@@ -301,7 +287,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onRedeemNow(item: any) {
+  onRedeemNow() {
     this.getLogin();
   }
 
@@ -372,7 +358,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           },
         })
         .then((_) => {
-          this.isOpenUrl = true;
         });
     }
   }
@@ -428,7 +413,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private async initializeSelfBookInfos() {
     try {
-      const staff = await this.staffService.getStaff(false);
       // if (staff) {
       //   await this.hotelService.initSelfBookTypeBookInfos(false);
       //   await this.flightService.initSelfBookTypeBookInfos(false);
