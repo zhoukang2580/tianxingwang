@@ -1,13 +1,15 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { NgModule } from "@angular/core";
+import { Routes, RouterModule } from "@angular/router";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
-import { FlightListPage } from './flight-list.page';
+import { FlightListPage } from "./flight-list.page";
 
 const routes: Routes = [
   {
-    path: '',
-    component: FlightListPage
-  }
+    path: "",
+    component: FlightListPage,
+    canActivate: [StylePageGuard],
+  },
 ];
 
 @NgModule({

@@ -21,7 +21,7 @@ const routes: Routes = [
   {
     path: "",
     component: SearchFlightEnPage,
-    canActivate: [AuthorityGuard, TmcGuard, ConfirmCredentialInfoGuard, StylePageGuard],
+    canActivate: [StylePageGuard,AuthorityGuard, TmcGuard, ConfirmCredentialInfoGuard],
     canDeactivate:[CandeactivateGuard]
   }
 ];

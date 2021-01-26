@@ -7,11 +7,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { InternationalHotelListEnPage } from './international-hotel-list_en.page';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: InternationalHotelListEnPage
+    component: InternationalHotelListEnPage,
+    canActivate:[StylePageGuard]
   }
 ];
 

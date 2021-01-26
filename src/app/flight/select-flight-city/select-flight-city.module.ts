@@ -5,6 +5,7 @@ import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { SelectFlightCityPage } from "./select-flight-city.page";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { SelectFlightCityPage } from "./select-flight-city.page";
     RouterModule.forChild([
       {
         path: "",
-        component: SelectFlightCityPage
+        component: SelectFlightCityPage,
+        canActivate:[StylePageGuard]
       }
     ])
   ],
