@@ -14,7 +14,7 @@
     <div class="swiper-container" #container>
       <div class="swiper-wrapper">
         <ng-container *ngIf="banners?.length else deftpl">
-          <div class="swiper-slide" *ngFor="let pic of banners">
+          <div class="swiper-slide" *ngFor="let pic of banners" (click)='onJump(pic)'>
             <div class="inner">
               <img [lazyLoad]="pic.ImageUrl" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
             </div>

@@ -19,12 +19,7 @@ import {
   ViewChild,
   AfterViewInit,
 } from "@angular/core";
-import {
-  Observable,
-  Subject,
-  BehaviorSubject,
-  Subscription,
-} from "rxjs";
+import { Observable, Subject, BehaviorSubject, Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
@@ -91,7 +86,13 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   };
   isShowRentalCar = !AppHelper.isWechatMini();
   isShowoverseaFlight = CONFIG.mockProBuild;
-  banners: { ImageUrl: string; Title: string; Id: string }[];
+  banners: {
+    ImageUrl: string;
+    Title: string;
+    Id: string;
+    Url: string;
+    Tag: string;
+  }[];
   boutiqueHotel: {
     HotelDayPrices: {
       HotelFileName: string;
@@ -196,6 +197,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
 
   onDemand() {
     this.router.navigate([AppHelper.getRoutePath("demand-list")]);
+  }
+  onJump(b: { Url: string }) {
+    if (b && b.Url) {
+      AppHelper.jump(this.router, b.Url, null);
+    }
   }
   private async loadBanners() {
     if (!this.banners || !this.banners.length) {
@@ -328,9 +334,12 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-
   private async getLogin() {
     try {
+      if (!CONFIG.mockProBuild) {
+        AppHelper.alert("即将上线");
+        return;
+      }
       const url = await this.tmcService.getLogin();
       console.log(url, "url");
       AppHelper.jump(this.router, url, {
@@ -357,8 +366,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
             goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
           },
         })
-        .then((_) => {
-        });
+        .then((_) => {});
     }
   }
 
@@ -374,11 +382,13 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url?.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}&taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}?taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     }
     return url;
   }
@@ -418,7 +428,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) { }
+    } catch (e) {}
   }
   onSlideTouchEnd() {
     if (this.slidesEle) {
@@ -566,18 +576,18 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           if (!(await this.hasTicket())) {
             return;
           }
-          
+
           this.tmcService
             .checkIfCanDailySigned()
             .then((r) => {
-              if(!r.isRegister){
+              if (!r.isRegister) {
                 this.isRegister = false;
               }
               this.isCanDailySigned = r && r.isRegister && r.isCanSign;
             })
             .catch((e) => {
-              AppHelper.alert(e)
-            })
+              AppHelper.alert(e);
+            });
           this.loadHotHotels();
           this.loadBanners();
           this.loadNotices();
