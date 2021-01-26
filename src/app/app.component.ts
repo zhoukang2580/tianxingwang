@@ -274,15 +274,15 @@ export class AppComponent
       this.apiService.hideLoadingView();
       if (
         curUrl == "/login" ||
-        curUrl == "/login_" + AppHelper.getStyle() ||
+        curUrl == AppHelper.getRoutePath("login") ||
         curUrl == "/tabs/tmc-home" ||
-        curUrl == "/tabs/tmc-home_" + AppHelper.getStyle() ||
-        curUrl == "/home_" + AppHelper.getStyle() ||
+        curUrl == AppHelper.getRoutePath("tabs/tmc-home") ||
+        curUrl == AppHelper.getRoutePath("home")  ||
         curUrl == "/home" ||
         curUrl == "/tabs/my" ||
-        curUrl == "/tabs/my_" + AppHelper.getStyle() ||
+        curUrl ==  AppHelper.getRoutePath("tabs/my") ||
         curUrl == "/tabs/trip" ||
-        curUrl == "/tabs/trip_" + AppHelper.getStyle()
+        curUrl ==  AppHelper.getRoutePath("tabs/trip")
       ) {
         // console.log("is exit app", Date.now() - this.lastClickTime);
         if (Date.now() - this.lastClickTime <= 2000) {
