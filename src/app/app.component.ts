@@ -299,7 +299,7 @@ export class AppComponent
         // }
         this.navCtrl.pop();
         count++;
-        console.log(`backbutton back count=${count}`);
+        console.log(`backbutton back count=${count},curUrl=${curUrl}, AppHelper.getRoutePath("tabs/trip")=${ AppHelper.getRoutePath("tabs/trip")}`);
         // window.history.back();
       }
     } catch (e) {
