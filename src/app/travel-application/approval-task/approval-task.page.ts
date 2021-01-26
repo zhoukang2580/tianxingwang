@@ -180,6 +180,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     this.isactivename = "待我审批";
     this.infiniteScroll.disabled = true;
     this.tasks = [];
+    this.loadDataSub.unsubscribe();
     this.doLoadMoreTasks();
     this.isStates = true;
   }
@@ -190,6 +191,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     this.curTaskPageIndex = 0;
     this.isactivename = "已审任务";
     this.tasks = [];
+    this.loadDataSub.unsubscribe();
     this.doLoadMoreTasks();
     this.isStates = false;
   }
@@ -197,6 +199,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     this.infiniteScroll.disabled = true;
     this.curTaskPageIndex = 0;
     this.tasks = [];
+    this.loadDataSub.unsubscribe();
     this.doLoadMoreTasks();
     this.refresher.complete();
   }
