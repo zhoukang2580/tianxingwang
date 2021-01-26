@@ -82,8 +82,7 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
     if (this.isCanBack) {
       return true;
     }
-    this.onOrderList();
-    this.isCanBack = true;
+    // this.onOrderList();
     return false;
   }
   onMore() {

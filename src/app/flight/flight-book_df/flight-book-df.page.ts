@@ -255,18 +255,18 @@ export class FlightBookDfPage
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ) {
-    if (this.isPlaceOrderOk) {
-      this.goToMyOrders({
-        isHasTask: this.isHasTask,
-        payResult: this.payResult,
-        isCheckPay:
-          this.isCheckPay ||
-          this.orderTravelPayType == OrderTravelPayType.Person ||
-          this.orderTravelPayType == OrderTravelPayType.Credit,
-      });
-      this.isPlaceOrderOk = false;
-      return false;
-    }
+    // if (this.isPlaceOrderOk) {
+    //   this.goToMyOrders({
+    //     isHasTask: this.isHasTask,
+    //     payResult: this.payResult,
+    //     isCheckPay:
+    //       this.isCheckPay ||
+    //       this.orderTravelPayType == OrderTravelPayType.Person ||
+    //       this.orderTravelPayType == OrderTravelPayType.Credit,
+    //   });
+    //   this.isPlaceOrderOk = false;
+    //   return false;
+    // }
     if (
       // this.isPlaceOrderOk &&
       nextState.url.includes("selected-flight-bookinfos")
