@@ -15,7 +15,7 @@ import {
   ElementRef,
   OnChanges,
   SimpleChanges,
-  OnDestroy
+  OnDestroy,
 } from "@angular/core";
 import { RoomEntity } from "../models/RoomEntity";
 import { DomController, ModalController } from "@ionic/angular";
@@ -29,7 +29,7 @@ import { map, tap } from "rxjs/operators";
 @Component({
   selector: "app-room-detail_df",
   templateUrl: "./room-detail_df.page.html",
-  styleUrls: ["./room-detail_df.page.scss"]
+  styleUrls: ["./room-detail_df.page.scss"],
 })
 export class RoomDetailDfPage
   implements OnInit, OnDestroy, AfterViewInit, OnChanges {
@@ -54,7 +54,7 @@ export class RoomDetailDfPage
   ) {
     this.close = new EventEmitter();
     this.bookRoom = new EventEmitter();
-    this.route.queryParamMap.subscribe(_ => {
+    this.route.queryParamMap.subscribe((_) => {
       this.init();
     });
   }
@@ -86,17 +86,22 @@ export class RoomDetailDfPage
       this.hotelName =
         this.hotelService.showRoomDetailInfo.hotel &&
         this.hotelService.showRoomDetailInfo.hotel.Name;
+      if (!this.roomImages || !this.roomImages.length) {
+        if (this.hotelService.RoomDefaultImg) {
+          this.roomImages = [this.hotelService.RoomDefaultImg];
+        }
+      }
       if (this.roomImages) {
-        this.images = this.roomImages.map(it => {
+        this.images = this.roomImages.map((it) => {
           return {
-            imageUrl: it
+            imageUrl: it,
           };
         });
       }
     }
   }
   back() {
-    this.modalCtrl.getTop().then(t => {
+    this.modalCtrl.getTop().then((t) => {
       if (t) {
         t.dismiss();
       }
@@ -116,12 +121,12 @@ export class RoomDetailDfPage
   onClose() {
     this.modalCtrl
       .getTop()
-      .then(t => {
+      .then((t) => {
         if (t) {
           t.dismiss();
         }
       })
-      .catch(_ => 0);
+      .catch((_) => 0);
     this.close.emit();
   }
 }

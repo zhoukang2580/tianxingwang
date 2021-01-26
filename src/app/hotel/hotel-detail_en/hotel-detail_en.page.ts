@@ -670,7 +670,9 @@ export class HotelDetailEnPage implements OnInit, AfterViewInit, OnDestroy {
     // this.curSelectedRoom.Hotel = this.curSelectedRoom.Hotel || this.hotel;
     let roomImages = this.getRoomImages(room);
     if (!roomImages || roomImages.length === 0) {
-      if (this.config && this.config.DefaultImageUrl) {
+      if (this.hotelService.RoomDefaultImg) {
+        roomImages = [this.hotelService.RoomDefaultImg];
+      } else if (this.config && this.config.DefaultImageUrl) {
         roomImages = [this.config.DefaultImageUrl];
       }
     }

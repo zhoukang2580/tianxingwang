@@ -102,6 +102,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   bookedRoomPlan: { roomPlan: RoomPlanEntity; room: RoomEntity; color: string };
   hotelImages: { imageUrl: string }[];
   roomDefaultImg: string;
+  hotelRoomImages: { [roomId: string]: any[] } = {};
   get totalNights() {
     return this.hotelService.calcTotalNights(
       this.queryModel.checkOutDate,
@@ -343,6 +344,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
               }, 1000);
             }
             this.initHotelImages();
+            this.initHotelRoomImages();
           }
         },
         (e) => {
@@ -400,6 +402,14 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       return { imageUrl: it };
     });
   }
+  private initHotelRoomImages() {
+    if (this.hotel && this.hotel.Rooms && this.hotel.HotelImages) {
+      this.hotelRoomImages = {};
+      this.hotel.Rooms.forEach((r) => {
+        this.hotelRoomImages[r.Id] = this.getRoomImages(r);
+      });
+    }
+  }
   private checkIfBookedRoomPlan() {
     if (
       this.bookedRoomPlan &&
@@ -422,7 +432,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-  getRoomImages(room: RoomEntity) {
+  private getRoomImages(room: RoomEntity) {
     const images = this.hotel && this.hotel.HotelImages;
     if (room && images) {
       const roomImages = images
@@ -817,7 +827,9 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     // this.curSelectedRoom.Hotel = this.curSelectedRoom.Hotel || this.hotel;
     let roomImages = this.getRoomImages(room);
     if (!roomImages || roomImages.length === 0) {
-      if (this.config && this.config.DefaultImageUrl) {
+      if (this.hotelService.RoomDefaultImg) {
+        roomImages = [this.hotelService.RoomDefaultImg];
+      } else if (this.config && this.config.DefaultImageUrl) {
         roomImages = [this.config.DefaultImageUrl];
       }
     }
@@ -848,12 +860,20 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     // }
   }
   onShowRoomImages(room: RoomEntity) {
-    this.hotelService.showImages = this.getRoomImages(room).map((it) => {
-      return {
-        url: it,
-        imageUrl: it,
-      };
-    });
+    let roomImages = this.getRoomImages(room);
+    if (!roomImages || !roomImages.length) {
+      if (this.hotelService.RoomDefaultImg) {
+        roomImages = [this.hotelService.RoomDefaultImg];
+      }
+    }
+    if (roomImages) {
+      this.hotelService.showImages = roomImages.map((it) => {
+        return {
+          url: it,
+          imageUrl: it,
+        };
+      });
+    }
     this.router.navigate(["hotel-show-images"], {
       queryParams: { hotelName: this.hotel && this.hotel.Name },
     });

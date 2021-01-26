@@ -108,7 +108,7 @@
         <div class='item-wrapper'>
           <div class='room-info'>
             <ion-thumbnail (click)='onShowRoomImages(room)'>
-              <ng-container *ngIf='getRoomImages(room) as images'>
+              <ng-container *ngIf='hotelRoomImages[room.Id] as images'>
                 <img class='img' [lazyLoad]='images[0]?.replace("Mobile640_960", "Hotel70_70")||(config?.DefaultImageUrl)' [defaultImage]='roomDefaultImg||config?.DefaultImageUrl'
                   [loadingImage]='config?.PrerenderImageUrl' />
                 <div class='images-nums' *ngIf='images.length as len'>{{len}}张</div>
@@ -143,7 +143,7 @@
                   <ion-icon name="chevron-up-circle-outline" *ngIf='room["isShowRoomPlans"]'></ion-icon>
                 </div>
               </h4>
-              
+
             </ion-label>
           </div>
           <div class='room-plans' *ngIf='room["isShowRoomPlans"]' @flyInOut>
