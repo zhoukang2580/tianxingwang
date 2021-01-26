@@ -11,12 +11,13 @@ import { AuthorityGuard } from "src/app/guards/authority.guard";
 import { MemberCredentialManagementPage } from "./member-credential-management.page";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
 import { MemberComponentsModule } from '../components/components.module';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: MemberCredentialManagementPage,
-    canActivate: [AuthorityGuard],
+    canActivate: [AuthorityGuard,StylePageGuard],
     canDeactivate: [CandeactivateGuard]
   }
 ];

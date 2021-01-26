@@ -7,11 +7,13 @@ import { IonicModule } from '@ionic/angular';
 
 import { SwitchCompanyPage } from './switch-company.page';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: SwitchCompanyPage
+    component: SwitchCompanyPage,
+    canActivate: [StylePageGuard]
   }
 ];
 
