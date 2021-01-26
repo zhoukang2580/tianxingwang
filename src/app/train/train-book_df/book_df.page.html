@@ -18,10 +18,10 @@
           <ion-item-group>
             <ion-item lines="none" style="display: none">
               <ion-label>选择证件</ion-label>
-              <ion-select #credentialSelect [(ngModel)]="combindInfo.vmCredential" name="Type" okText="确定" cancelText="取消" selectedText="{{combindInfo.vmCredential?.Type}}"
+              <ion-select #credentialSelect [(ngModel)]="combindInfo.vmCredential" name="Type" okText="确定" cancelText="取消" selectedText="{{combindInfo.vmCredential?.Type|credential}}"
                 [compareWith]="credentialCompareFn">
                 <ion-select-option [value]="opt" *ngFor="let opt of combindInfo?.credentials">
-                  {{(opt?.Type)}}{{opt?.HideNumber}}
+                  {{(opt?.Type|credential)}}{{opt?.HideNumber}}
                 </ion-select-option>
               </ion-select>
             </ion-item>
@@ -29,7 +29,7 @@
               <div style="width: 100%; padding: 1.6em 0.25em">
                 <div>
                   <span class="name">{{combindInfo?.vmCredential?.Name}}</span>&nbsp;&nbsp;
-                  <span class="idcode">身份证号: {{combindInfo?.vmCredential?.HideNumber}}</span>
+                  <span class="idcode">{{combindInfo?.vmCredential?.TypeName}}: {{combindInfo?.vmCredential?.HideNumber}}</span>
                   <img class="editicon" src="assets/images/editicon.png" alt="" (click)="onChangeCredential(credentialSelect,combindInfo)" />
                   <ion-text *ngIf="isSelfBookType" color="secondary" (click)="onManagementCredentials(combindInfo)">新增</ion-text>
                 </div>
