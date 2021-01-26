@@ -10,14 +10,14 @@
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
     .label {
-      font-size: 15px;
+      font-size: 14px;
       font-family: PingFang SC;
       font-weight: 500;
       color: #333333;
       min-width: 7em;
     }
     label {
-      font-size: 15px;
+      font-size: 14px;
       display: flex;
       align-items: center;
       input {
@@ -28,18 +28,18 @@
     .main {
       display: flex;
       align-items: center;
-      justify-content: space-between;  
+      justify-content: space-between;
       width: 100%;
       line-height: 1.5;
       ion-input {
-        font-size: 15px;
+        font-size: 14px;
       }
     }
 
     .more {
       justify-content: flex-end;
       margin-right: 1.7em;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     ion-icon {
@@ -48,14 +48,14 @@
     }
     ion-text {
       min-width: 13.5em;
-      font-size: 15px;
+      font-size: 14px;
     }
   }
 }
 
-.group{
+.group {
   display: flex;
-  ion-radio{
+  ion-radio {
     margin: 0 10px 0 0;
   }
 }

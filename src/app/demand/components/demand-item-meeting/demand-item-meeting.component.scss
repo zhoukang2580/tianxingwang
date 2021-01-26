@@ -24,6 +24,9 @@
         margin-right: 12px;
       }
     }
+    &.meeting-type .label {
+      font-size: 14px;
+    }
 
     .main {
       display: flex;
@@ -33,7 +36,6 @@
         font-size: 15px;
       }
     }
-
 
     ion-icon {
       font-size: 18px;
@@ -64,10 +66,10 @@
   }
 }
 
-.group{
+.group {
   display: flex;
 }
 
-ion-radio{
+ion-radio {
   margin: 0 10px 0 0;
 }
