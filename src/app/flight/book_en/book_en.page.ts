@@ -1144,8 +1144,13 @@ export class BookEnPage
         p.FlightCabin.InsuranceProducts = p.InsuranceProducts;
         p.InsuranceProducts = null;
         if (p.FlightSegment) {
+          if (!p.FlightSegment.CabinCode) {
+            p.FlightSegment.CabinCode =
+              p.FlightCabin.CabinCodes[p.FlightSegment.Number];
+          }
           if (p.FlightCabin.CabinCodes && !p.FlightCabin.Code) {
-            p.FlightCabin.Code = p.FlightCabin.CabinCodes[p.FlightSegment.Id];
+            p.FlightCabin.Code =
+              p.FlightCabin.CabinCodes[p.FlightSegment.Number];
           }
         }
       }

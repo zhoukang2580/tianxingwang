@@ -100,6 +100,9 @@ export class FlightBookDfPage
   implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
   private isShowInsuranceBack = false;
   private isPlaceOrderOk = false;
+  private isHasTask = false;
+  private payResult = false;
+  private isCheckPay = false;
   private isManagentCredentails = false;
   private subscriptions: Subscription[] = [];
   private totalPriceSource: Subject<number>;
@@ -252,6 +255,18 @@ export class FlightBookDfPage
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot
   ) {
+    if (this.isPlaceOrderOk) {
+      this.goToMyOrders({
+        isHasTask: this.isHasTask,
+        payResult: this.payResult,
+        isCheckPay:
+          this.isCheckPay ||
+          this.orderTravelPayType == OrderTravelPayType.Person ||
+          this.orderTravelPayType == OrderTravelPayType.Credit,
+      });
+      this.isPlaceOrderOk = false;
+      return false;
+    }
     if (
       // this.isPlaceOrderOk &&
       nextState.url.includes("selected-flight-bookinfos")
@@ -851,8 +866,8 @@ export class FlightBookDfPage
           // AppHelper.toast("下单成功!", 1400, "top");
           this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
-          let isHasTask = res.HasTasks;
-          let payResult = false;
+          this.isHasTask = res.HasTasks;
+          this.payResult = false;
           this.flightService.removeAllBookInfos();
           let checkPayResult = false;
           const isCheckPay = res.IsCheckPay;
@@ -862,17 +877,17 @@ export class FlightBookDfPage
               checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
             } else {
-              payResult = true;
+              this.payResult = true;
             }
             if (checkPayResult) {
-              if (this.isself && isHasTask) {
+              if (this.isself && this.isHasTask) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
                 if (isCheckPay) {
-                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                  this.payResult = await this.tmcService.payOrder(res.TradeNo);
                 }
               }
             } else {
@@ -891,8 +906,8 @@ export class FlightBookDfPage
             }
           }
           this.goToMyOrders({
-            isHasTask: isHasTask,
-            payResult,
+            isHasTask: this.isHasTask,
+            payResult: this.payResult,
             isCheckPay:
               isCheckPay ||
               this.orderTravelPayType == OrderTravelPayType.Person ||
@@ -1252,8 +1267,13 @@ export class FlightBookDfPage
         p.FlightCabin.InsuranceProducts = p.InsuranceProducts;
         p.InsuranceProducts = null;
         if (p.FlightSegment) {
+          if (!p.FlightSegment.CabinCode) {
+            p.FlightSegment.CabinCode =
+              p.FlightCabin.CabinCodes[p.FlightSegment.Number];
+          }
           if (p.FlightCabin.CabinCodes && !p.FlightCabin.Code) {
-            p.FlightCabin.Code = p.FlightCabin.CabinCodes[p.FlightSegment.Id];
+            p.FlightCabin.Code =
+              p.FlightCabin.CabinCodes[p.FlightSegment.Number];
           }
         }
       }

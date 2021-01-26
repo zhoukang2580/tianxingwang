@@ -47,7 +47,7 @@ import { Storage } from "@ionic/storage";
 import { ConfigService } from "src/app/services/config/config.service";
 import { RoomEntity } from "../models/RoomEntity";
 import { RoomPlanEntity } from "../models/RoomPlanEntity";
-import { StaffService } from "src/app/hr/staff.service";
+import { StaffEntity, StaffService } from "src/app/hr/staff.service";
 import {
   PassengerBookInfo,
   FlightHotelTrainType,
@@ -75,6 +75,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   private isAutoOpenHotelInfoDetails = true;
   private isAutoOpenMap = true;
   private headerHeight = 0;
+  private lastSelectPassengers: string[];
   @ViewChild(IonHeader) ionHeader: IonHeader;
   @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
   @ViewChild(IonContent) content: IonContent;
@@ -260,15 +261,28 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.route.queryParamMap.subscribe(async (q) => {
         this.hotelId = q.get("hotelId");
         const isSelf = await this.staffService.isSelfBookType();
-        if (!this.hotelPolicy || this.hotelPolicy.length == 0) {
-          this.hotelPolicy = await this.getPolicy();
+        const isReload = this.checkIfPassengerChanged();
+        if (!this.hotel || isReload) {
+          this.doRefresh();
         }
       })
     );
     this.configService.get().then((c) => {
       this.config = c;
     });
-    this.doRefresh();
+    // this.doRefresh();
+  }
+  private checkIfPassengerChanged() {
+    if (this.lastSelectPassengers) {
+      const pids = this.hotelService
+        .getBookInfos()
+        .map((it) => it.passenger && it.passenger.Id);
+      return (
+        this.lastSelectPassengers.length != pids.length ||
+        pids.join(",") != this.lastSelectPassengers.join(",")
+      );
+    }
+    return false;
   }
   private getHotelImageUrls() {
     let urls: string[] = [];
