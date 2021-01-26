@@ -275,14 +275,9 @@ export class AppComponent
       if (
         curUrl == "/login" ||
         curUrl == AppHelper.getRoutePath("login") ||
-        curUrl == "/tabs/tmc-home" ||
-        curUrl == AppHelper.getRoutePath("tabs/tmc-home") ||
-        curUrl == AppHelper.getRoutePath("home")  ||
-        curUrl == "/home" ||
-        curUrl == "/tabs/my" ||
-        curUrl ==  AppHelper.getRoutePath("tabs/my") ||
-        curUrl == "/tabs/trip" ||
-        curUrl ==  AppHelper.getRoutePath("tabs/trip")
+        curUrl.includes("home") ||
+        curUrl.includes("tabs/my") ||
+        curUrl.includes("/tabs/trip")
       ) {
         // console.log("is exit app", Date.now() - this.lastClickTime);
         if (Date.now() - this.lastClickTime <= 2000) {
@@ -299,7 +294,11 @@ export class AppComponent
         // }
         this.navCtrl.pop();
         count++;
-        console.log(`backbutton back count=${count},curUrl=${curUrl}, AppHelper.getRoutePath("tabs/trip")=${ AppHelper.getRoutePath("tabs/trip")}`);
+        console.log(
+          `backbutton back count=${count},curUrl=${curUrl}, AppHelper.getRoutePath("tabs/trip")=${AppHelper.getRoutePath(
+            "tabs/trip"
+          )}`
+        );
         // window.history.back();
       }
     } catch (e) {
