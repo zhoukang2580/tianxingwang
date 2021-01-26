@@ -10,11 +10,13 @@ import { TrainListDfPage } from "./train-list_df.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { TrainComponentsModule } from "../components/traincomponents.module";
 import { AppDirectivesModule } from 'src/app/directives/directives.module';
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
-    component: TrainListDfPage
+    component: TrainListDfPage,
+    canActivate:[StylePageGuard]
   }
 ];
 

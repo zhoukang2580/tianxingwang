@@ -6,6 +6,7 @@ import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { SelectTrainStationDfPage } from "./select-station-df.page";
 import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 @NgModule({
   imports: [
@@ -17,6 +18,7 @@ import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
       {
         path: "",
         component: SelectTrainStationDfPage,
+        canActivate:[StylePageGuard],
         canDeactivate: [CandeactivateGuard]
       }
     ])
