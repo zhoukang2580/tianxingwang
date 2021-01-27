@@ -300,6 +300,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async onSignIn() {
+    if (!CONFIG.mockProBuild) {
+      AppHelper.alert("即将上线");
+      return;
+    }
     if (!this.isCanDailySigned) {
       return;
     }
