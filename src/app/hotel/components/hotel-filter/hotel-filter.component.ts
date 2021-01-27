@@ -72,7 +72,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
       .getHotelQuerySource()
       .subscribe((q) => {
         this.hotelQuery = q;
-        if (  
+        if (
           !this.hotelQuery ||
           !this.hotelQuery.filters ||
           !this.hotelQuery.filters.length
@@ -104,6 +104,15 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
       this.hotelQuery.filters = this.hotelQuery.filters.map((it, idx) => {
         it.id = `${idx}`;
         it.hasFilterItem = false;
+        if (it.items) {
+          it.items.forEach((itm) => {
+            if (itm.items) {
+              itm.items.forEach((k) => {
+                k.IsSelected = false;
+              });
+            }
+          });
+        }
         return it;
       });
       if (this.hotelQuery.filters.length) {
@@ -114,7 +123,12 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
     }
   }
   private async resetTabBrand() {
-    if (!this.conditionModel || !this.conditionModel.Brands) {
+    if (
+      !this.conditionModel ||
+      !this.conditionModel.Brands ||
+      !this.hotelQuery ||
+      !this.hotelQuery.filters
+    ) {
       return;
     }
     const brands = this.conditionModel.Brands.slice(0, 8);
@@ -142,6 +156,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
           label: "热门品牌（可多选）",
           isMulti: true,
           items: brands.map((it) => {
+            it.IsSelected = false;
             return { ...it } as any;
           }),
         },
@@ -149,6 +164,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
           label: "经济（可多选）",
           isMulti: true,
           items: economy.map((it) => {
+            it.IsSelected = false;
             return { ...it } as any;
           }),
         },
@@ -156,6 +172,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
           label: "舒适（可多选）",
           isMulti: true,
           items: comfort.map((it) => {
+            it.IsSelected = false;
             return { ...it } as any;
           }),
         },
@@ -163,6 +180,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
           label: "高端（可多选）",
           isMulti: true,
           items: high.map((it) => {
+            it.IsSelected = false;
             return { ...it } as any;
           }),
         },
@@ -170,6 +188,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
           label: "豪华（可多选）",
           isMulti: true,
           items: luxury.map((it) => {
+            it.IsSelected = false;
             return { ...it } as any;
           }),
         },
@@ -250,36 +269,26 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
     it: BrandEntity | AmenityEntity,
     item: IFilterTabItem<BrandEntity | AmenityEntity>
   ) {
-    if (
-      item &&
-      item.items &&
-      item.items.filter((j) => j.IsSelected).length >= 3 
-    ) {
-      // if(item.items.find((it) => it.IsSelected = false)){
-        this.toastCtrl
-        .create({
-          message: `${item.label}不能超过3个`,
-          position: "middle",
-          duration: 1000,
-        })
-        .then((t) => t.present());
-        it.IsSelected = false;
-        return;
-      // }
-    }
     if (item.isMulti) {
       it.IsSelected = !it.IsSelected;
+      if (
+        item &&
+        item.items &&
+        item.items.filter((j) => j.IsSelected).length > 3
+      ) {
+        this.toastCtrl
+          .create({
+            message: `${item.label}不能超过3个`,
+            position: "middle",
+            duration: 1000,
+          })
+          .then((t) => t.present());
+        it.IsSelected = false;
+      }
     } else {
       item.items.forEach((i) => {
         i.IsSelected = i.Id == it.Id;
       });
-    }
-    if (it.IsSelected) {
-      // this.hotelQuery.filters.forEach(tab => {
-      //   if (tab.active) {
-      //     tab.hasFilterItem = item.items.some(j => j.IsSelected);
-      //   }
-      // });
     }
     this.resetHasFilterItem();
   }
@@ -299,9 +308,8 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
   onReset() {
     if (this.hotelQuery) {
       this.hotelQuery.searchGeoId = "";
-      this.hotelQuery.filters = null;
+      this.hotelQuery.filters = [];
     }
-    
     this.resetTabs();
   }
 }
