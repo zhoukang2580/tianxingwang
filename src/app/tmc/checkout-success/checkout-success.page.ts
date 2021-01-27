@@ -40,6 +40,7 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
   isCheckPay = true;
   payResult = false;
   private isCanBack = false;
+  private recommendHotelDefaultImg;
   constructor(
     private hotelService: HotelService,
     private router: Router,
@@ -102,6 +103,7 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
       .getRecommendHotel(this.hothotels)
       .catch(() => null)
       .then((res) => {
+        this.recommendHotelDefaultImg = res && res.HotelDefaultImg;
         this.boutiqueHotel = res;
       });
   }
@@ -115,6 +117,7 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
         .format("YYYY-MM-DD"),
     });
     this.isCanBack = true;
+    this.hotelService.RoomDefaultImg = this.recommendHotelDefaultImg;
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
       queryParams: { hotelId: id },
     });

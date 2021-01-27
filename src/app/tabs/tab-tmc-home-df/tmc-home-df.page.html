@@ -137,7 +137,7 @@
         <ng-container *ngIf="boutiqueHotel?.HotelDayPrices?.length else deftpl">
           <div class="swiper-slide" *ngFor="let pic of boutiqueHotel.HotelDayPrices" (click)="goToDetail(pic.Id)">
             <div class="inner">
-              <img [lazyLoad]="pic.HotelFileName" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
+              <img [lazyLoad]="pic.HotelFileName" [defaultImage]="recommendHotelDefaultImg||config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
             </div>
           </div>
         </ng-container>
