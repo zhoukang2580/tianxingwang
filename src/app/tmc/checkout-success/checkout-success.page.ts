@@ -55,6 +55,8 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
       this.isApproval = q.get("isApproval") == "true";
       this.isCheckPay = q.get("isCheckPay") == "true";
       this.payResult = q.get("payResult") == "true";
+      const hasRight = await this.tmcService.checkHasHotelBookRight();
+      console.log(q, "hasright", hasRight);
       if (q.get("cityCode")) {
         this.city = {} as any;
         this.city.CityCode = q.get("cityCode");
@@ -71,7 +73,6 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
           CityCode: this.city && this.city.CityCode,
           SearchDate: this.date,
         };
-        const hasRight = await this.tmcService.checkHasHotelBookRight();
         if (hasRight) {
           this.getRecommendHotel();
         }
@@ -113,6 +114,7 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
         .getMoment(1, this.date)
         .format("YYYY-MM-DD"),
     });
+    this.isCanBack = true;
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
       queryParams: { hotelId: id },
     });
