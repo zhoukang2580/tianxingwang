@@ -347,6 +347,9 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
           if (hotel) {
             this.hotel = hotel.Hotel;
             if (this.hotel) {
+              this.lastSelectPassengers = this.hotelService
+                .getBookInfos()
+                .map((it) => it.passenger && it.passenger.Id);
               this.hotelDayPrice = { Hotel: this.hotel } as any;
               this.hotelPolicy = await this.getPolicy();
               this.content.scrollToTop();

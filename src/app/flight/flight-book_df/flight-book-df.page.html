@@ -187,13 +187,11 @@
                                 <div class="vlaue">{{combindInfo?.illegalReason}}</div>
                                 <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                             </div>
-                            <div class="outnumbers" [attr.outnumberid]='combindInfo.id'>
-                                <app-flight-outnumber [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
-                                </app-flight-outnumber>
-                            </div>
-
-                            <!-- *ngIf='combindInfo.isShowGroupedInfo' -->
                         </ng-container>
+                        <div class="outnumbers" [attr.outnumberid]='combindInfo.id' *ngIf='combindInfo.isShowGroupedInfo'>
+                            <app-flight-outnumber [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+                            </app-flight-outnumber>
+                        </div>
                         <ion-item lines='none' style='display: none;'>
                             <ion-label>
                                 费用类别
