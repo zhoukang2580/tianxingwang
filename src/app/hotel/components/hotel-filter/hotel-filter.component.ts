@@ -72,7 +72,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
       .getHotelQuerySource()
       .subscribe((q) => {
         this.hotelQuery = q;
-        if (
+        if (  
           !this.hotelQuery ||
           !this.hotelQuery.filters ||
           !this.hotelQuery.filters.length
@@ -253,17 +253,19 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
     if (
       item &&
       item.items &&
-      item.items.filter((j) => j.IsSelected).length >= 3
+      item.items.filter((j) => j.IsSelected).length >= 3 
     ) {
-      this.toastCtrl
+      // if(item.items.find((it) => it.IsSelected = false)){
+        this.toastCtrl
         .create({
           message: `${item.label}不能超过3个`,
           position: "middle",
           duration: 1000,
         })
         .then((t) => t.present());
-      it.IsSelected = false;
-      return;
+        it.IsSelected = false;
+        return;
+      // }
     }
     if (item.isMulti) {
       it.IsSelected = !it.IsSelected;
@@ -299,6 +301,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
       this.hotelQuery.searchGeoId = "";
       this.hotelQuery.filters = null;
     }
+    
     this.resetTabs();
   }
 }

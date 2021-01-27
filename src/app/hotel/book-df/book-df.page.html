@@ -62,40 +62,11 @@
                     </div>
                   </span>
                 </ng-container>
-                <!-- <div>
-                  <ion-button
-                    fill="clear"
-                    style="margin-left: -1em; font-size: 11px"
-                    (click)='combindInfo["isShowRoomPlanRulesDesc"]=!combindInfo["isShowRoomPlanRulesDesc"]'
-                    color="secondary"
-                  >
-                    预订规则:
-                    <ion-icon
-                      style="font-size: 11px"
-                      name="caret-down-outline"
-                      *ngIf='combindInfo["isShowRoomPlanRulesDesc"]'
-                    ></ion-icon>
-                    <ion-icon
-                      style="font-size: 11px"
-                      name="caret-up-outline"
-                      *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'
-                    ></ion-icon>
-                  </ion-button>
-                </div> -->
               </div>
-              <!-- <ion-label
-                *ngIf='!combindInfo["isShowRoomPlanRulesDesc"]'
-                @flyInOut
-                class="ion-text-wrap"
-                color="danger"
-              >
-                {{getRoomPlanRulesDesc(combindInfo.bookInfo?.bookInfo?.roomPlan)}}2019年7月1日起，部分城市将不再主动提供牙刷等一次性日用品，建议自行准备。
-              </ion-label> -->
               <div lines="none" class="exceeding" *ngIf="getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg">
                 <ion-label class="ion-text-wrap" color="danger" *ngIf="!isRoomPlanFreeBook(combindInfo)">超标:{{msg}}
                   <!-- 违反提前3天以上预定航班的政策 -->
                 </ion-label>
-                <!-- <ion-text color="secondary" (click)='combindInfo["isExceeding"]=!combindInfo["isExceeding"]'>预付规则</ion-text> -->
               </div>
               <div (click)="onSelectDatetime(datetimeEl,combindInfo)" [attr.arrivalHoteltimeid]="combindInfo.id">
                 <div class="flex ion-padding-vertical b-top">

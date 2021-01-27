@@ -251,11 +251,6 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // onPay() {
-  //   this.combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]
-  //   this.isExceeding[] = true;
-  // }
-
   onOpenSelect(select: IonSelect) {
     if (select) {
       select.open();
