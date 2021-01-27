@@ -179,12 +179,12 @@ export class HotelStarPriceComponent
   }
   onItemClick(item: IStarPriceTabItem, tab: IStarPriceTab<IStarPriceTabItem>) {
     if (item) {
-      if (tab.items.filter(it => it.isSelected).length > 2) {
+      item.isSelected = !item.isSelected;
+      if (tab.items.filter(it => it.isSelected).length > 3) {
         item.isSelected = false;
         AppHelper.toast(`${tab.label}不能超过3个`, Infinity, "middle");
         return;
       }
-      item.isSelected = !item.isSelected;
       if (!item.isMulti && tab.items) {
         tab.items = tab.items.map(it => {
           it.isSelected = it.id == item.id && item.isSelected;
