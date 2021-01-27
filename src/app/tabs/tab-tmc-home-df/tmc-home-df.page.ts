@@ -74,6 +74,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   canSelectCompany = false;
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
+  recommendHotelDefaultImg: string;
   // options = {};
   swiperOption: {
     loop: true;
@@ -242,6 +243,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .catch(() => null)
       .then((res) => {
         this.boutiqueHotel = res;
+        this.recommendHotelDefaultImg = res && res.HotelDefaultImg;
         setTimeout(() => {
           if (this.hotelsSwiper) {
             this.hotelsSwiper.update();
@@ -371,6 +373,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   goToDetail(id) {
+    this.hotelService.RoomDefaultImg = this.recommendHotelDefaultImg;
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
       queryParams: { hotelId: id },
     });
