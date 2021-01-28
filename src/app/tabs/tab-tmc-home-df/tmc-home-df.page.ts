@@ -133,6 +133,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     Type: any;
     OrderId: String;
     Hour: Number;
+    HourName: string;
     Name: String;
     PassagerName: String;
     FromCityName: String;
