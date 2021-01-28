@@ -275,7 +275,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.getRecommendHotel();
     }
   }
-
   private async myItinerary() {
     if (!this.itineraryList || !this.itineraryList.length) {
       this.itineraryList = await this.tmcService.getMyItinerary();

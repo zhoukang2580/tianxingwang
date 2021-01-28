@@ -5,8 +5,14 @@ import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MyEnPage } from "./my_en.page";
 import { AppDirectivesModule } from "src/app/directives/directives.module";
-import { StylePageGuard } from 'src/app/guards/style-page.guard';
-const routes: Route[] = [{ path: "", component: MyEnPage ,canActivate:[StylePageGuard]}];
+import { StylePageGuard } from "src/app/guards/style-page.guard";
+const routes: Route[] = [
+  {
+    path: "",
+    component: MyEnPage,
+    canActivate: [StylePageGuard],
+  },
+];
 
 @NgModule({
   imports: [
@@ -16,8 +22,8 @@ const routes: Route[] = [{ path: "", component: MyEnPage ,canActivate:[StylePage
     ReactiveFormsModule,
     // TranslateModule.forChild(),
     RouterModule.forChild(routes),
-    AppDirectivesModule
+    AppDirectivesModule,
   ],
-  declarations: [MyEnPage]
+  declarations: [MyEnPage],
 })
 export class MyEnPageModule {}
