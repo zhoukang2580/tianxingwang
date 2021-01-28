@@ -567,7 +567,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.loadBanners();
           this.loadHotHotels();
           this.loadNotices();
-          this.myItinerary();
           this.integral();
           this.loadReviewedTask();
           this.loadMyItinerary();
