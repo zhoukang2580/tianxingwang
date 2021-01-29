@@ -240,11 +240,14 @@ ion-header ion-title {
     display: flex;
     line-height: 2;
     font-size: 12px;
+    padding-left: 10px;
   }
 
   .not-item-u {
     margin: 20px;
     // height: 44px;
+    border-radius: 6px;
+    box-shadow: 4px 1px 7px 6px #f5f5f5;
     img {
       height: 20px;
       margin-top: 4px;
@@ -410,6 +413,8 @@ ion-header ion-title {
   font-size: 12px;
   margin: 20px;
   margin-top: 24px;
+  border-radius: 4px;
+  box-shadow: 5px 2px 5px 5px #f7f7f7;
   .swiper {
     display: flex;
   }
