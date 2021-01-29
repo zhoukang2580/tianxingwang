@@ -46,7 +46,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private curCity: TrafficlineEntity;
   private isLoadingHotHotels = false;
   private isLoadingReviewedTask = false;
-  @ViewChild(IonSlides) slidesEle: IonSlides;
   @ViewChild("container", { static: true })
   containerEl: ElementRef<HTMLElement>;
   @ViewChild("hothotel", { static: true }) hothotelEl: ElementRef<HTMLElement>;
@@ -134,6 +133,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     Type: any;
     OrderId: String;
     Hour: Number;
+    HourName: string;
     Name: String;
     PassagerName: String;
     FromCityName: String;
@@ -173,7 +173,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     this.staff = null;
     route.queryParamMap.subscribe(async (p) => {
-      // this.updateSwiper();
       this.clearBookInfos();
       this.check();
       this.isAgent = this.tmcService.isAgent;
@@ -218,7 +217,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         .catch(() => [])
         .then((res) => {
           this.banners = res || [];
-          this.updateSwiper();
+          setTimeout(() => {
+            this.updateBannerSwiper();
+          }, 2000);
         })
         .finally(() => {
           this.isLoadingBanners = false;
@@ -248,7 +249,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           if (this.hotelsSwiper) {
             this.hotelsSwiper.update();
           }
-        }, 200);
+        }, 1000);
       })
       .finally(() => {
         this.isLoadingHotHotels = false;
@@ -274,7 +275,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.getRecommendHotel();
     }
   }
-
   private async myItinerary() {
     if (!this.itineraryList || !this.itineraryList.length) {
       this.itineraryList = await this.tmcService.getMyItinerary();
@@ -404,11 +404,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     return task && task.HandleUrl;
   }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.updateSwiper();
-    }, 200);
-  }
+  ngAfterViewInit() {}
   private destroySwiper() {
     if (this.bannersSwiper) {
       this.bannersSwiper.destroy();
@@ -437,73 +433,57 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       // }
     } catch (e) {}
   }
-  onSlideTouchEnd() {
-    if (this.slidesEle) {
-      this.slidesEle.startAutoplay();
-    }
-  }
 
   private initSwiperhotels() {
     if (this.hothotelEl && this.hothotelEl.nativeElement) {
       this.hotelsSwiper = new Swiper(this.hothotelEl.nativeElement, {
-        loop: true,
-        autoplay: {
-          delay: 3000,
-          stopOnLastSlide: false,
-          disableOnInteraction: true,
-        },
+        autoplay: true,
       });
       this.hotelsSwiper.on("touchEnd", () => {
-        this.onTouchEnd();
+        this.autoPlayHotelsSwiper();
       });
       const that = this;
       this.hotelsSwiper.on("transitionEnd", function () {
-        that.onTouchEnd();
+        that.autoPlayHotelsSwiper();
         that.hotIndex = this.activeIndex;
       });
     }
   }
-
+  private autoPlayHotelsSwiper() {
+    if (
+      this.hotelsSwiper &&
+      this.hotelsSwiper.autoplay &&
+      this.hotelsSwiper.autoplay.start
+    ) {
+      this.hotelsSwiper.autoplay.start();
+    }
+  }
   private initSwiper() {
+    this.initBannerSwiper();
+    this.initAnnouncementSwiper();
+    this.initTaskSpwiper();
+    this.initTripSpwiper();
+    this.initSwiperhotels();
+  }
+  private initBannerSwiper() {
     if (this.containerEl && this.containerEl.nativeElement) {
       this.bannersSwiper = new Swiper(this.containerEl.nativeElement, {
-        loop: true,
-        autoplay: {
-          delay: 3000,
-          stopOnLastSlide: false,
-          disableOnInteraction: true,
-        },
+        autoplay: true,
       });
       this.bannersSwiper.on("touchEnd", () => {
-        this.onTouchEnd();
+        this.startAutoPlayBannersSwiper();
       });
       const that = this;
       this.bannersSwiper.on("transitionEnd", function () {
-        that.onTouchEnd();
         that.curIndex = this.activeIndex;
+        that.startAutoPlayBannersSwiper();
       });
     }
-
-    if (this.announcementEl && this.announcementEl.nativeElement) {
-      this.initAnnouncementSwiper();
-    }
-    if (this.taskEle && this.taskEle.nativeElement) {
-      this.initTaskSpwiper();
-    }
-    if (this.tripEle && this.tripEle.nativeElement) {
-      this.initTripSpwiper();
-    }
   }
-
   private initTaskSpwiper() {
     const mySwiper: any = {
-      loop: true,
       circular: true,
-      autoplay: {
-        delay: 3000,
-        stopOnLastSlide: false,
-        disableOnInteraction: true,
-      },
+      autoplay: true,
       speed: 1000,
       direction: "vertical",
     };
@@ -511,20 +491,15 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       setTimeout(() => {
         this.taskEleSwiper = new Swiper(this.taskEle.nativeElement, mySwiper);
         this.taskEleSwiper.on("touchEnd", () => {
-          this.onTouchEnd();
+          this.startAutoPlayTaskEleSwiper();
         });
       }, 200);
     }
   }
   private initTripSpwiper() {
     const mySwiper: any = {
-      loop: true,
       circular: true,
-      autoplay: {
-        delay: 3000,
-        stopOnLastSlide: false,
-        disableOnInteraction: true,
-      },
+      autoplay: true,
       speed: 1000,
       direction: "vertical",
     };
@@ -532,7 +507,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       setTimeout(() => {
         this.tripEleSwiper = new Swiper(this.tripEle.nativeElement, mySwiper);
         this.tripEleSwiper.on("touchEnd", () => {
-          this.onTouchEnd();
+          this.startAutoPlayTripEleSwiper();
         });
       }, 200);
     }
@@ -540,12 +515,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
 
   private initAnnouncementSwiper() {
     const options: any = {
-      loop: true,
-      autoplay: {
-        delay: 3000,
-        stopOnLastSlide: false,
-        disableOnInteraction: true,
-      },
+      autoplay: true,
       speed: 1000,
       direction: "vertical",
       isShowText: true,
@@ -556,7 +526,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         options
       );
       this.announcementElSwiper.on("touchEnd", () => {
-        this.onTouchEnd();
+        this.startAutoPlayAnnouncementElSwiper();
       });
     }
   }
@@ -565,7 +535,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.canSelectCompany = id && id.Numbers && !!id.Numbers.AgentId;
     });
     this.initSwiper();
-    this.initSwiperhotels();
     this.tmcService.getSelectedCompanySource().subscribe((c) => {
       this.selectedCompany = c;
     });
@@ -595,13 +564,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
             .catch((e) => {
               AppHelper.alert(e);
             });
-          this.loadHotHotels();
           this.loadBanners();
+          this.loadHotHotels();
           this.loadNotices();
-          this.myItinerary();
           this.integral();
-          // this.getLogin();
-          // this.getSignIn();
           this.loadReviewedTask();
           this.loadMyItinerary();
         } catch (e) {
@@ -623,12 +589,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.initializeSelfBookInfos();
     }
   }
-  private onTouchEnd() {
-    setTimeout(() => {
-      this.startAutoPlay();
-    }, 2000);
-  }
-  private startAutoPlay() {
+  private startAutoPlayBannersSwiper() {
     if (
       this.bannersSwiper &&
       this.bannersSwiper.autoplay &&
@@ -636,27 +597,32 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     ) {
       this.bannersSwiper.autoplay.start();
     }
+  }
+  private startAutoPlayTripEleSwiper() {
     if (
-      this.announcementElSwiper &&
-      this.announcementElSwiper.autoplay &&
-      this.announcementElSwiper.autoplay.start
+      this.bannersSwiper &&
+      this.bannersSwiper.autoplay &&
+      this.bannersSwiper.autoplay.start
     ) {
-      this.announcementElSwiper.autoplay.start();
+      this.bannersSwiper.autoplay.start();
     }
-
-    if (
-      this.taskEleSwiper &&
-      this.taskEleSwiper.autoplay &&
-      this.taskEleSwiper.autoplay.start
-    ) {
-      this.taskEleSwiper.autoplay.start();
-    }
+  }
+  private startAutoPlayTaskEleSwiper() {
     if (
       this.tripEleSwiper &&
       this.tripEleSwiper.autoplay &&
       this.tripEleSwiper.autoplay.start
     ) {
       this.tripEleSwiper.autoplay.start();
+    }
+  }
+  private startAutoPlayAnnouncementElSwiper() {
+    if (
+      this.announcementElSwiper &&
+      this.announcementElSwiper.autoplay &&
+      this.announcementElSwiper.autoplay.start
+    ) {
+      this.announcementElSwiper.autoplay.start();
     }
   }
 
@@ -801,11 +767,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.identity = await this.identityService.getIdentityAsync();
     return this.identity && !!this.identity.Ticket;
   }
-  private updateSwiper() {
+  private updateBannerSwiper() {
     if (this.bannersSwiper) {
       setTimeout(() => {
         this.bannersSwiper.update();
-        this.startAutoPlay();
+        this.startAutoPlayBannersSwiper();
       }, 200);
     }
   }

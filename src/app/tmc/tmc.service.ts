@@ -309,7 +309,26 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TripList";
     req.Data = {};
-    return this.apiService.getPromiseData<any[]>(req);
+    return this.apiService.getPromiseData<any[]>(req).then((r) => {
+      if (r && r.length) {
+        r.forEach((it) => {
+          if (it.HourName == undefined) {
+            if (it.Hour) {
+              if (it.Hour > 0) {
+                if (it.Hour > 24) {
+                  const h=it.Hour%24;
+                  const d=it.Hour/24;
+                  it.HourName=`${d}天${h}小时`;
+                } else {
+                  it.HourName = `${it.Hour}小时`;
+                }
+              }
+            }
+          }
+        });
+      }
+      return r;
+    });
   }
 
   async getIntegral(d: { Tag: string; PageSize: number }) {

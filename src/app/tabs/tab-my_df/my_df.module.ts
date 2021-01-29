@@ -5,8 +5,14 @@ import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { MyDfPage } from "./my_df.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
-import { StylePageGuard } from 'src/app/guards/style-page.guard';
-let routes: Route[] = [{ path: "", component: MyDfPage,canActivate:[StylePageGuard] }];
+import { StylePageGuard } from "src/app/guards/style-page.guard";
+let routes: Route[] = [
+  {
+    path: "",
+    component: MyDfPage,
+    canActivate: [StylePageGuard],
+  },
+];
 
 @NgModule({
   imports: [

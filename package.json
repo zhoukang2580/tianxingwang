@@ -144,8 +144,8 @@
       "cordova-ali-plugin": {}
     },
     "platforms": [
-      "ios",
-      "android"
+      "android",
+      "ios"
     ]
   }
 }
