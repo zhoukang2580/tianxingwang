@@ -87,9 +87,15 @@ ion-header ion-title {
     }
   }
 }
+.banners .swiper-container{
+  height: 65vw;
+  .swiper-slide{
+    height: 100%;
+  }
+}
 .inner {
-  height: 204px;
   position: relative;
+  height: 100%;
   img {
     width: 100%;
     &.lazyloading {
@@ -238,7 +244,7 @@ ion-header ion-title {
 
   .not-item-u {
     margin: 20px;
-    height: 44px;
+    // height: 44px;
     img {
       height: 20px;
       margin-top: 4px;
