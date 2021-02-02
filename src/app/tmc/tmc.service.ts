@@ -316,15 +316,35 @@ export class TmcService {
             if (it.Hour) {
               if (it.Hour > 0) {
                 if (it.Hour > 24) {
-                  const h=it.Hour%24;
-                  const d=it.Hour/24;
-                  it.HourName=`${d}天${h}小时`;
+                  const d = Math.floor(it.Hour / 24);
+                  const h = it.Hour % 24;
+                  it.HourName = `${d}D${h}H`;
                 } else {
-                  it.HourName = `${it.Hour}小时`;
+                  it.HourName = `${it.Hour}H`;
                 }
               }
             }
           }
+          if (it.MinuteName == undefined) {
+            if (it.Minute) {
+              if (it.Minute > 0) {
+                if (it.Minute > 60) {
+                  const d = Math.floor(it.Minute / (60 * 24));
+                  const h = Math.floor(it.Minute / 60);
+                  const m = Math.floor(it.Minute % 60);
+                  it.MinuteName =
+                    d <= 0
+                      ? h <= 0
+                        ? `${m}M`
+                        : `${h}H${m}M`
+                      : `${d}D${h}H${m}M`;
+                } else {
+                  it.MinuteName = `${it.Minute}M`;
+                }
+              }
+            }
+          }
+          it.displayTimeName = it.MinuteName || it.HourName;
         });
       }
       return r;

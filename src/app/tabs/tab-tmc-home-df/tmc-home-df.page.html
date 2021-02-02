@@ -110,18 +110,18 @@
                 <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
                 <div class="arriving-city"><span notranslate>{{trip?.ToName}}</span></div>
                 <div class="fly-time" notranslate>
-                  <span notranslate class="hourname">{{trip.HourName}}</span>{{trip.HourName?"后起飞":""}}
+                  <span notranslate class="hourname">{{trip.displayTimeName}}</span>{{trip.displayTimeName?"后起飞":""}}
                 </div>
               </div>
               <div *ngIf="trip.Type == 'Train'" class="trips">
                 <div class="starting-city" notranslate>{{trip?.FromName}}</div>
                 <div class="jiantou"><img src="assets/home/jiantou.png" /></div>
                 <div class="arriving-city"><span notranslate>{{trip?.ToName}}</span></div>
-                <div class="fly-time" notranslate><span notranslate class="hourname">{{trip.HourName}}</span>{{trip.HourName?"后出发":""}}</div>
+                <div class="fly-time" notranslate><span notranslate class="hourname">{{trip.displayTimeName}}</span>{{trip.displayTimeName?"后出发":""}}</div>
               </div>
               <div *ngIf="trip.Type == 'Hotel'" class="trips">
                 <div class="starting-city" notranslate>{{trip?.Name}}</div>
-                <div class="fly-time" notranslate><span notranslate class="hourname">{{trip.HourName}}</span>{{trip.HourName?"前入住":""}}</div>
+                <div class="fly-time" notranslate><span notranslate class="hourname">{{trip.displayTimeName}}</span>{{trip.displayTimeName?"前入住":""}}</div>
               </div>
             </div>
           </div>
