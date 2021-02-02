@@ -1,0 +1,7 @@
+<!--index.wxml-->
+
+<view>
+<button type='primary' class="button"   bindtap="onJump">{{title}}</button>
+<button type='default' class="cancel"  bindtap="back">取消</button>
+</view>
+ 
