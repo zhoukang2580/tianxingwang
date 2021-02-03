@@ -38,7 +38,7 @@
   <ion-list>
     <div class="content-header">
       <ion-toolbar class="fly-days">
-        <app-days-calendar-df (itemSelected)="onChangedDay($event,true)" (calenderClick)="onCalenderClick()">
+        <app-days-calendar-df (itemSelected)="onChangedDay($event,true)" [disabled]='searchTrainModel?.isExchangeToDay' (calenderClick)="onCalenderClick()">
         </app-days-calendar-df>
       </ion-toolbar>
     </div>

@@ -652,6 +652,11 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (!byUser) {
       return;
     }
+    if(this.searchTrainModel){
+      if(this.searchTrainModel.isExchangeToDay){
+        return;
+      }
+    }
     if (!this.filterCondition) {
       this.filterCondition = FilterTrainCondition.init();
     }
@@ -676,6 +681,12 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.doRefresh(true, true);
   }
   async onCalenderClick() {
+    if(this.searchTrainModel){
+      // 火车已经发车的，不允许修改日期。
+      if(this.searchTrainModel.isExchangeToDay){
+        return;
+      }
+    }
     const days = await this.trainService.openCalendar(false);
     if (days && days.length) {
       this.searchTrainModel.Date = days[0].date;

@@ -1,6 +1,9 @@
 :host {
   display: flex;
   padding: 0 0 1em 0.5em;
+  &.disabled {
+    opacity: 0.3;
+  }
 }
 .days {
   overflow-x: auto;
@@ -55,6 +58,6 @@
     border: 0.6px solid rgba(var(--ion-color-dark-rgb), 0.6);
   }
 }
-strong{
+strong {
   font-weight: inherit;
 }

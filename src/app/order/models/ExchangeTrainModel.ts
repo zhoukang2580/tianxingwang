@@ -103,6 +103,7 @@ export class ExchangeTrainModel {
     /// </summary>
     Trafficlines: TrafficlineEntity[];
     IsAllowModify: boolean;
+    IsExchange: boolean;
     StaffBookType: StaffBookType;
     InsurnanceAmount: number;
 }

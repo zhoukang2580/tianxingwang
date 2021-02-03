@@ -48,6 +48,7 @@ export class SearchTrainModel {
   tripType: TripType;
   isRoundTrip?: boolean; // 是否是往返
   isExchange?: boolean; // 是否是改签
+  isExchangeToDay?: boolean; // 是否改签当日（火车已经开车后改签）
 }
 
 export interface ICurrentViewtTainItem {
@@ -1028,7 +1029,8 @@ export class TrainService {
         if (it) {
           return {
             ...it.model,
-            isLockedDestination: it.isLockedDestination,
+            isLockedDestination:
+              it.isLockedDestination || (it.model && it.model.IsExchange),
           };
         }
         return it;
@@ -1155,7 +1157,8 @@ export class TrainService {
       this.setSearchTrainModelSource({
         ...this.getSearchTrainModel(),
         isLocked: true,
-        isLockedDestination:info.isLockedDestination,
+        isLockedDestination: info.isLockedDestination,
+        isExchangeToDay: info.IsExchange,
         isExchange: true,
         isRoundTrip: false,
         fromCity,

@@ -276,6 +276,11 @@ export class SearchTrainDfPage
     return this.calendarService.getDescOfDay(d);
   }
   async onSelecDate(isGo: boolean) {
+    if (this.searchTrainModel) {
+      if (this.searchTrainModel.isExchangeToDay) {
+        return;
+      }
+    }
     const days = await this.trainService.openCalendar(false);
     // console.log("train openCalendar", days);
     if (days && days.length) {
@@ -320,6 +325,7 @@ export class SearchTrainDfPage
           isLocked: false,
         });
         this.trainService.removeAllBookInfos();
+        this.isCanLeave = true;
         return true;
       }
     }
