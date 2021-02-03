@@ -322,6 +322,8 @@ export class SearchTrainDfPage
         this.trainService.setSearchTrainModelSource({
           ...this.searchTrainModel,
           isExchange: false,
+          isExchangeToDay: false,
+          isLockedDestination: false,
           isLocked: false,
         });
         this.trainService.removeAllBookInfos();
