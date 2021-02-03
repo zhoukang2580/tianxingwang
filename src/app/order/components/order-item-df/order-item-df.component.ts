@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import { environment } from "./../../../../environments/environment";
 import { OrderFlightTripEntity } from "./../../models/OrderFlightTripEntity";
 import { TrainService } from "./../../../train/train.service";
@@ -40,7 +40,7 @@ import { OrderService } from "../../order.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { tick } from "@angular/core/testing";
-import { TrainSeatEntity } from 'src/app/train/models/TrainSeatEntity';
+import { TrainSeatEntity } from "src/app/train/models/TrainSeatEntity";
 @Component({
   selector: "app-order-item-df",
   templateUrl: "./order-item-df.component.html",
@@ -106,7 +106,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     if (evt) {
       evt.stopPropagation();
     }
-    if(this.LangService.isEn){
+    if (this.LangService.isEn) {
       AppHelper.alert("It takes 3-15 days for refund and 7-10 days for refund");
     }
     AppHelper.alert("退票操作需3-15个工作日，退款操作需7-10个工作日");
@@ -299,34 +299,18 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
       return false;
     }
     return (
-      [
-        OrderTrainTicketStatusType.Issued,
-        OrderTrainTicketStatusType.Exchanged,
-      ].includes(orderTrainTicket.Status) &&
-      orderTrainTicket.OrderTrainTrips.some((trip) => {
-        return (
-          AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
-          30 * 60 * 1000
-        );
-      })
+      orderTrainTicket.VariablesJsonObj &&
+      (orderTrainTicket.VariablesJsonObj.isShowExchangeButton ||
+        orderTrainTicket.VariablesJsonObj.isShowRefundButton)
     );
   }
   private isShowTrainCancelBtn(orderTrainTicket: OrderTrainTicketEntity) {
-    if (!orderTrainTicket || !orderTrainTicket.OrderTrainTrips) {
+    if (!orderTrainTicket) {
       return false;
     }
     return (
-      orderTrainTicket &&
-      [
-        OrderTrainTicketStatusType.Booked,
-        OrderTrainTicketStatusType.BookExchanged,
-      ].includes(orderTrainTicket.Status) &&
-      orderTrainTicket.OrderTrainTrips.some((trip) => {
-        return (
-          AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
-          30 * 60 * 1000
-        );
-      })
+      orderTrainTicket.VariablesJsonObj &&
+      orderTrainTicket.VariablesJsonObj.isShowCancelBtn
     );
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
@@ -503,7 +487,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     if (order.Status == OrderStatusType.WaitPay) {
       return true;
     }
-    let rev =order.VariablesJsonObj["isPay"]
+    let rev = order.VariablesJsonObj["isPay"];
     return rev;
   }
   // getTotalAmount(order: OrderEntity, key: string) {
