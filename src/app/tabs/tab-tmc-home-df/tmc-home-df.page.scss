@@ -345,24 +345,24 @@ ion-header ion-title {
   .commodity {
     display: flex;
     flex-wrap: wrap;
+    justify-content: space-between;
   }
   .list {
-    width: 156px;
-    min-height: 87px;
+    width: 41vw;  
+    min-height: 100px;
     background: linear-gradient(90deg, #dec6fd 0%, #d1b7ff 100%);
     opacity: 0.8;
     border-radius: 10px;
-    margin: 5px;
+    margin: 4px;
     display: flex;
-    flex: 0.5;
     .left {
       display: grid;
       margin-left: 12px;
       .item-name {
         display: flex;
         align-items: center;
-        max-width: 6em;
-        font-size: 14px;
+        max-width: 6.5em;
+        font-size: 12px;
         color: #934aca;
       }
       .item-sign {
