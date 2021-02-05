@@ -395,7 +395,7 @@ export class InternationalHotelService {
       map((res) => {
         if (res && res.Data) {
           this.RoomDefaultImg = res.Data.RoomDefaultImg;
-          this.HotelDefaultImg = res.Data.HotelDefaltImg;
+          this.HotelDefaultImg = res.Data.HotelDefaultImg;
         }
         if (res && res.Data && res.Data.HotelDayPrices) {
           res.Data.HotelDayPrices = res.Data.HotelDayPrices.map((it) => {
@@ -521,9 +521,9 @@ export class InternationalHotelService {
             credential: passportOrHmTwPass,
           };
           this.addBookInfo(i);
-          resolve();
+          resolve(true);
         } else {
-          resolve();
+          resolve(false);
         }
       }).finally(() => {
         this.isInitializingSelfBookInfos = null;
@@ -904,7 +904,7 @@ export interface ISearchInterHotelResult {
 }
 export interface IInterHotelSearchResult {
   RoomDefaultImg: string;
-  HotelDefaltImg: string;
+  HotelDefaultImg: string;
   CityCode: string;
   Hotel: HotelEntity;
   HotelQuery: any;

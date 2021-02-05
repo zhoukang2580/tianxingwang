@@ -37,7 +37,7 @@
     <ion-list>
       <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
         <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
-          <app-hotel-list-item [item]='item' [config]='{DefaultImageUrl:RoomDefaultImg||config?.DefaultImageUrl,PrerenderImageUrl:config?.PrerenderImageUrl}'></app-hotel-list-item>
+          <app-hotel-list-item [item]='item' [config]='{DefaultImageUrl:HotelDefaltImg||config?.DefaultImageUrl,PrerenderImageUrl:config?.PrerenderImageUrl}'></app-hotel-list-item>
         </li>
       </ul>
     </ion-list>

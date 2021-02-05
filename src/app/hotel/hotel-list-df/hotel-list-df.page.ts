@@ -249,7 +249,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       .pipe(
         finalize(() => {
           this.RoomDefaultImg = this.hotelService.RoomDefaultImg;
-          this.HotelDefaltImg = this.hotelService.HotelDefaltImg;
+          this.HotelDefaltImg = this.hotelService.HotelDefaultImg;
           setTimeout(() => {
             this.isLoadingHotels = false;
             this.isUseSearchText = false;

@@ -293,8 +293,8 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
         (it) => it.ImageUrl || it.FullFileName || it.FileName
       );
     if (!urls || urls.length == 0) {
-      if (this.hotelService.HotelDefaltImg) {
-        urls = [this.hotelService.HotelDefaltImg];
+      if (this.hotelService.HotelDefaultImg) {
+        urls = [this.hotelService.HotelDefaultImg];
       } else if (this.config && this.config.DefaultImageUrl) {
         urls = [this.config.DefaultImageUrl];
       }

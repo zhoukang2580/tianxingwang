@@ -74,7 +74,8 @@
     </ng-template>
     <ng-container *ngIf='hotels?.length else nodata'>
       <ion-list lines='full' *ngIf='hotels?.length else nodata'>
-        <app-hotel-list-item [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel' [defaultImage]='config?.DefaultImageUrl'>
+        <app-hotel-list-item [loadingImage]='config?.PrerenderImageUrl' *ngFor='let hotel of hotels' (click)='onViewHotel(hotel)' [hotel]='hotel'
+          [defaultImage]='HotelDefaultImg||config?.DefaultImageUrl'>
         </app-hotel-list-item>
       </ion-list>
     </ng-container>
@@ -97,6 +98,6 @@
 <app-inter-recommend-rank class='query-condition {{classMode}}' [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="rank"' (rank)='onRank($event)'
   (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'>
 </app-inter-recommend-rank>
-<app-inter-hotel-starprice class='query-condition {{classMode}}' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()' [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"'
-  (starPriceChange)='onStarPriceChange()'>
+<app-inter-hotel-starprice class='query-condition {{classMode}}' (@queryPanelShowHide.done)='onQueryPanelShowHideEnd()'
+  [@queryPanelShowHide]='filterTab&&filterTab.active&&filterTab.label=="starsAndPrice"' (starPriceChange)='onStarPriceChange()'>
 </app-inter-hotel-starprice>

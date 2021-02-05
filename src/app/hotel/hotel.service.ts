@@ -82,7 +82,7 @@ export class HotelService {
   private isInitializingSelfBookInfos = false;
   private conditionModel: HotelConditionModel;
   private isLoadingCondition = false;
-  HotelDefaltImg: string;
+  HotelDefaultImg: string;
   RoomDefaultImg: string;
   // private hotelPolicies: { [hotelId: string]: HotelPassengerModel[] };
   private hotelQueryModel: HotelQueryEntity;
@@ -743,7 +743,7 @@ export class HotelService {
       map((result) => {
         if (result && result.Data && result.Data.HotelDayPrices) {
           this.RoomDefaultImg = result.Data.RoomDefaultImg;
-          this.HotelDefaltImg = result.Data.HotelDefaltImg;
+          this.HotelDefaultImg = result.Data.HotelDefaultImg;
           result.Data.HotelDayPrices = result.Data.HotelDayPrices.map((it) => {
             if (it.Hotel) {
               if (it.Hotel.Variables) {

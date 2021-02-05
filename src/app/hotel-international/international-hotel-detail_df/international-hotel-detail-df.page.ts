@@ -86,6 +86,7 @@ export class InternationalHotelDetailDfPage
   hotel: HotelEntity;
   config: ConfigEntity;
   hotelImages: { imageUrl: string }[];
+  hotelRoomImages: { [roomId: string]: any[] } = {};
   isHeaderHide = true;
   queryModel: IInterHotelSearchCondition;
   totalNights: number;
@@ -145,6 +146,8 @@ export class InternationalHotelDetailDfPage
   ngOnInit() {
     this.colors = {};
     this.hotel = this.hotelService.viewHotel;
+    this.RoomDefaultImg = this.hotelService.RoomDefaultImg;
+    this.HotelDefaultImg = this.hotelService.HotelDefaultImg;
     this.initQueryModel();
     this.isShowAddPassenger$ = from(this.staffService.isSelfBookType()).pipe(
       map((isSelf) => !isSelf)
@@ -179,6 +182,14 @@ export class InternationalHotelDetailDfPage
       })
     );
     this.doRefresh();
+  }
+  private initHotelRoomImages() {
+    if (this.hotel && this.hotel.Rooms && this.hotel.HotelImages) {
+      this.hotelRoomImages = {};
+      this.hotel.Rooms.forEach((r) => {
+        this.hotelRoomImages[r.Id] = this.getRoomImages(r);
+      });
+    }
   }
   getRoomDescriptions(room: RoomEntity) {
     return this.hotelService.getRoomPlanDescriptions(room);
@@ -483,22 +494,37 @@ export class InternationalHotelDetailDfPage
     this.router.navigate(["international-room-detail"]);
   }
   async onShowRoomImages(room: RoomEntity) {
-    this.hotelService.showImages = this.getRoomImages(room).map((it) => {
+    let images = this.getRoomImages(room).map((it) => {
       return {
         url: it,
       };
     });
+    if (!images || !images.length) {
+      if (this.RoomDefaultImg) {
+        images = [
+          {
+            url: this.RoomDefaultImg,
+          },
+        ];
+      }
+    }
+    this.hotelService.showImages = images;
     this.router.navigate(["international-hotel-show-images"], {
       queryParams: { hotelName: this.hotel && this.hotel.Name },
     });
   }
-  getRoomImages(room: RoomEntity) {
-    const images = this.hotel && this.hotel.HotelImages;
+  private getRoomImages(room: RoomEntity) {
+    const images = (this.hotel && this.hotel.HotelImages) || [];
     if (room && images) {
       const roomImages = images
         .filter((it) => it.Room && it.Room.Id == room.Id)
         .map((it) => it.FullFileName && it.FullFileName);
-      return roomImages;
+      if (roomImages && roomImages.length) {
+        return roomImages;
+      }
+    }
+    if (this.RoomDefaultImg) {
+      return [this.RoomDefaultImg];
     }
   }
   onSlideChange(idx: number) {
@@ -588,6 +614,7 @@ export class InternationalHotelDetailDfPage
             this.initHotelImages();
             this.initFilterPolicy();
             this.initHotelDetails();
+            this.initHotelRoomImages();
           }
         });
     }

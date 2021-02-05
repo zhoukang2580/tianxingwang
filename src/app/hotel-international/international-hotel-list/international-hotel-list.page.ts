@@ -124,7 +124,7 @@ export class InternationalHotelListPage
   totalHotels = 0;
   config: ConfigEntity;
   isEn = false;
-  HotelDefaltImg: string;
+  HotelDefaultImg: string;
   RoomDefaultImg: string;
   constructor(
     public hotelService: InternationalHotelService,
@@ -385,7 +385,7 @@ export class InternationalHotelListPage
       .pipe(
         finalize(() => {
           this.RoomDefaultImg = this.hotelService.RoomDefaultImg;
-          this.HotelDefaltImg = this.hotelService.HotelDefaultImg;
+          this.HotelDefaultImg = this.hotelService.HotelDefaultImg;
           this.isLoading = false;
           this.isSearchByText = false;
           this.completeScroller();

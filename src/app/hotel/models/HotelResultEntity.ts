@@ -14,6 +14,6 @@ export class HotelResultEntity {
   /// 酒店城市代码
   /// </summary>
   CityCode: string;
-  HotelDefaltImg: string;
+  HotelDefaultImg: string;
   RoomDefaultImg: string;
 }
