@@ -1,24 +1,26 @@
-import { OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { Component, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Platform, ModalController } from '@ionic/angular';
+import { OnDestroy, ViewChild, ElementRef } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
+import { Subscription } from "rxjs";
+import { Platform, ModalController } from "@ionic/angular";
 import Cropper from "cropperjs";
 @Component({
-  selector: 'app-img-picker',
-  templateUrl: './img-picker.component.html',
-  styleUrls: ['./img-picker.component.scss'],
+  selector: "app-img-picker",
+  templateUrl: "./img-picker.component.html",
+  styleUrls: ["./img-picker.component.scss"],
 })
 export class ImgPickerComponent implements OnInit, OnDestroy {
-  @ViewChild('input', { static: true }) inputFile: ElementRef<HTMLInputElement>;
+  @ViewChild("input", { static: true }) inputFile: ElementRef<HTMLInputElement>;
   private subscription = Subscription.EMPTY;
-  private imgUrl = '';
-  @ViewChild('image', { static: true }) private croppedImage: ElementRef<HTMLImageElement>;
-  result: { name: string; fileValue: string; }
+  private imgUrl = "";
+  private minCropBoxWidthPercent = 0.7;
+  private maxCropWidth = 800;
+  private maxCropHeight = 800;
+  @ViewChild("image", { static: true })
+  private croppedImage: ElementRef<HTMLImageElement>;
+  result: { name: string; fileValue: string };
   cropper: Cropper;
-  constructor(private plt: Platform, private modalCtrl: ModalController) { }
-  ngOnDestroy() {
-
-  }
+  constructor(private plt: Platform, private modalCtrl: ModalController) {}
+  ngOnDestroy() {}
   ngOnInit() {
     this.result = {} as any;
     this.croppedImage.nativeElement.src = this.imgUrl;
@@ -38,8 +40,8 @@ export class ImgPickerComponent implements OnInit, OnDestroy {
       minCanvasHeight: this.plt.height(),
       minContainerHeight: this.plt.height(),
       minContainerWidth: this.plt.width(),
-      minCropBoxWidth: this.plt.width() * 0.7,
-      minCropBoxHeight: this.plt.width() * 0.7,
+      minCropBoxWidth: this.plt.width() * this.minCropBoxWidthPercent,
+      minCropBoxHeight: this.plt.width() * this.minCropBoxWidthPercent,
       responsive: true,
       // modal: true,
       aspectRatio: 1 / 1,
@@ -52,7 +54,7 @@ export class ImgPickerComponent implements OnInit, OnDestroy {
         // console.log(event.detail.rotate);
         // console.log(event.detail.scaleX);
         // console.log(event.detail.scaleY);
-      }
+      },
     });
   }
   rotate() {
@@ -63,23 +65,23 @@ export class ImgPickerComponent implements OnInit, OnDestroy {
   cancel() {
     // this.showCropBox = false;
     this.result = null;
-    this.back()
+    this.back();
   }
   back() {
-    this.modalCtrl.getTop().then(t => {
+    this.modalCtrl.getTop().then((t) => {
       if (t) {
-        t.dismiss(this.result)
+        t.dismiss(this.result);
       }
-    })
+    });
   }
   ok() {
     const avatar = this.cropper.getCroppedCanvas({
-      maxWidth: 800,
-      maxHeight: 800,
+      maxWidth: this.maxCropWidth,
+      maxHeight: this.maxCropHeight,
       minWidth: 800,
       minHeight: 800,
       // fillColor: '#fff',
-      imageSmoothingEnabled: false
+      imageSmoothingEnabled: false,
       // imageSmoothingQuality: 'medium' as any,
     });
     this.result.fileValue = avatar.toDataURL("image/jpeg", 0.8);

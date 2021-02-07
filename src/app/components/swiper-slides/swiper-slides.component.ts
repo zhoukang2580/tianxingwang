@@ -148,11 +148,11 @@ export class SwiperSlidesComponent
           this.swiper.slideTo(idx <= 0 ? 0 : idx, 0, () => {
             // console.log("成功切换到 " + idx);
             this.swiper.slideNext(300, () => {
-              resolve();
+              resolve(null);
             });
           });
         } else {
-          resolve();
+          resolve(null);
         }
       }
     });

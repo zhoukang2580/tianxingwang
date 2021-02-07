@@ -4,5 +4,13 @@
 </div>
 <input type="file" #input class="hidden">
 <div class="ion-page swipers" [class.show]='isViewImage' *ngIf='imageUrls?.length&&isViewImage' (click)='onHide()'>
-  <app-swiper-slides [defaultImage]='defaultImage' [options]='{imageStyle:{objectFit:"contain"}}' [loadingImage]='loadingImage' [items]='imageUrls' [initialPos]='pos'></app-swiper-slides>
+  <app-swiper-slides [defaultImage]='defaultImage' [options]='{slideTplRef:ref}' [loadingImage]='loadingImage' [items]='imageUrls' [initialPos]='pos'>
+  </app-swiper-slides>
 </div>
+<ng-template #ref let-it='slideItem'>
+  <div pinch-zoom>
+    <div class="imgwrapper">
+      <img [lazyLoad]='it.imageUrl' [class.show]='isViewImage' [ngStyle]='{objectFit:"contain"}' [loadingImage]='loadingImage' class="pic" [defaultImage]='defaultImage' alt="图片">
+    </div>
+  </div>
+</ng-template>

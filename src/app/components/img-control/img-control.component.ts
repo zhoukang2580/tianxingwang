@@ -29,6 +29,9 @@ export class ImgControlComponent implements OnInit, OnDestroy {
   isShowImage = false;
   showCropBox = false;
   uploaded = false;
+  @Input() maxCropHeight;
+  @Input() maxCropWidth;
+  @Input() minCropBoxWidthPercent;
   @Input() defaultImage: any;
   @Input() loadingImage: any;
   @Input() file: any;
@@ -134,11 +137,21 @@ export class ImgControlComponent implements OnInit, OnDestroy {
   }
 
   private async openCropper(src: string) {
+    const componentProps: any = {
+      imgUrl: src,
+    };
+    if (this.maxCropHeight) {
+      componentProps.maxCropHeight = this.maxCropHeight;
+    }
+    if (this.maxCropWidth) {
+      componentProps.maxCropWidth = this.maxCropWidth;
+    }
+    if (this.minCropBoxWidthPercent) {
+      componentProps.minCropBoxWidthPercent = this.minCropBoxWidthPercent;
+    }
     const m = await this.modalCtrl.create({
       component: ImgPickerComponent,
-      componentProps: {
-        imgUrl: src,
-      },
+      componentProps,
     });
     m.present();
     const result = await m.onDidDismiss();

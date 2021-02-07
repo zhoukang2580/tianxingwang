@@ -8,7 +8,9 @@
     </div>
   </ion-col>
   <ion-col>
-    <app-img-control *ngIf='!isMulti&& !images?.length' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
-    <app-img-control *ngIf='isMulti&&images?.length<maxCount' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
+    <app-img-control *ngIf='!isMulti&& !images?.length' [maxCropHeight]='maxCropHeight' [maxCropWidth]='maxCropWidth' [chooseScene]='chooseScene' [minCropBoxWidthPercent]='minCropBoxWidthPercent'
+      (fileChange)='onAddFile($event)'></app-img-control>
+    <app-img-control *ngIf='isMulti&&images?.length<maxCount' [maxCropHeight]='maxCropHeight' [maxCropWidth]='maxCropWidth' [chooseScene]='chooseScene' [minCropBoxWidthPercent]='minCropBoxWidthPercent'
+      (fileChange)='onAddFile($event)'></app-img-control>
   </ion-col>
 </ion-row>
