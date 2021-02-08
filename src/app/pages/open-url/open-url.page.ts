@@ -104,23 +104,6 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       this.isHideTitle = h == "true";
     });
   }
-  onTouchMove(el: HTMLElement, evt: TouchEvent) {
-    try {
-      if (el) {
-        const t = evt.touches[0];
-        const h = el.clientHeight / 2;
-        const w = el.clientWidth / 2;
-        this.render.setStyle(
-          el,
-          "transform",
-          `translate3d(${t.pageX - w}px,${t.pageY - h}px,0)`
-        );
-      }
-      // console.log("evt", evt);
-    } catch (e) {
-      console.error(e);
-    }
-  }
   private async openInAppBrowser(url: string) {
     if (this.browser) {
       this.browser.close();
@@ -145,9 +128,10 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
           sub.unsubscribe();
         }
       }, 100);
-      this.backButton.popToPrePage();
+      setTimeout(() => {
+        this.backButton.popToPrePage();
+      }, 200);
     });
-    this.backButton.popToPrePage();
   }
   private onMessage(evt: MessageEvent) {
     if (evt.data && evt.data.message) {

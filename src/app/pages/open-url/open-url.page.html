@@ -16,7 +16,7 @@
   <ng-template #anchorOpen>
     <a [href]='url' *ngIf='(url$|async) as url'></a>
   </ng-template>
-  <ion-fab *ngIf='isShowFabButton' vertical="{{vertical}}" (touchmove)='onTouchMove(ele["el"],$event)' #ele edge horizontal="{{horizontal}}" slot="fixed">
+  <ion-fab *ngIf='isShowFabButton' vertical="top" edge horizontal="start" slot="fixed" appDragelement>
     <ion-fab-button size="small" (click)='onBack($event)'>
       <ion-icon name="chevron-back-circle-outline" color='light'></ion-icon>
     </ion-fab-button>
