@@ -137,15 +137,16 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       navigationbuttoncolor: "#2596D9",
       // toolbarcolor:"#2596D90f"
     };
-    this.browser = this.iab.create(encodeURI(url), "_blank", options);
-    const sub = this.browser.on("exit").subscribe(() => {
-      setTimeout(() => {
-        if (sub) {
-          sub.unsubscribe();
-        }
-      }, 100);
-      this.backButton.popToPrePage();
-    });
+    // this.browser = this.iab.create(encodeURI(url), "_blank", options);
+    // const sub = this.browser.on("exit").subscribe(() => {
+    //   setTimeout(() => {
+    //     if (sub) {
+    //       sub.unsubscribe();
+    //     }
+    //   }, 100);
+    //   this.backButton.popToPrePage();
+    // });
+    AppHelper.payH5Url(url);
   }
   private onMessage(evt: MessageEvent) {
     if (evt.data && evt.data.message) {
