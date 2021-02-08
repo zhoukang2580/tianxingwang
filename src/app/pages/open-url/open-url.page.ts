@@ -104,24 +104,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       this.isHideTitle = h == "true";
     });
   }
-  onTouchMove(el: HTMLElement, evt: TouchEvent) {
-    try {
-      if (el) {
-        const t = evt.touches[0];
-        const h = el.clientHeight / 2;
-        const w = el.clientWidth / 2;
-        this.render.setStyle(
-          el,
-          "transform",
-          `translate3d(${t.pageX - w}px,${t.pageY - h}px,0)`
-        );
-      }
-      // console.log("evt", evt);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  private openInAppBrowser(url: string) {
+  private async openInAppBrowser(url: string) {
     if (this.browser) {
       this.browser.close();
     }
@@ -137,16 +120,18 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       navigationbuttoncolor: "#2596D9",
       // toolbarcolor:"#2596D90f"
     };
-    // this.browser = this.iab.create(encodeURI(url), "_blank", options);
-    // const sub = this.browser.on("exit").subscribe(() => {
-    //   setTimeout(() => {
-    //     if (sub) {
-    //       sub.unsubscribe();
-    //     }
-    //   }, 100);
-    //   this.backButton.popToPrePage();
-    // });
-    AppHelper.payH5Url(url);
+    this.browser = this.iab.create(encodeURI(url), "_blank", options);
+    const sub = this.browser.on("exit").subscribe(() => {
+      console.log("browser exit");
+      setTimeout(() => {
+        if (sub) {
+          sub.unsubscribe();
+        }
+      }, 100);
+      setTimeout(() => {
+        this.backButton.popToPrePage();
+      }, 200);
+    });
   }
   private onMessage(evt: MessageEvent) {
     if (evt.data && evt.data.message) {
