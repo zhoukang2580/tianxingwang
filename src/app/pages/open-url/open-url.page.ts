@@ -121,7 +121,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       console.error(e);
     }
   }
-  private openInAppBrowser(url: string) {
+  private async openInAppBrowser(url: string) {
     if (this.browser) {
       this.browser.close();
     }
@@ -137,16 +137,17 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       navigationbuttoncolor: "#2596D9",
       // toolbarcolor:"#2596D90f"
     };
-    // this.browser = this.iab.create(encodeURI(url), "_blank", options);
-    // const sub = this.browser.on("exit").subscribe(() => {
-    //   setTimeout(() => {
-    //     if (sub) {
-    //       sub.unsubscribe();
-    //     }
-    //   }, 100);
-    //   this.backButton.popToPrePage();
-    // });
-    AppHelper.payH5Url(url);
+    this.browser = this.iab.create(encodeURI(url), "_blank", options);
+    const sub = this.browser.on("exit").subscribe(() => {
+      console.log("browser exit");
+      setTimeout(() => {
+        if (sub) {
+          sub.unsubscribe();
+        }
+      }, 100);
+      this.backButton.popToPrePage();
+    });
+    this.backButton.popToPrePage();
   }
   private onMessage(evt: MessageEvent) {
     if (evt.data && evt.data.message) {
