@@ -331,6 +331,10 @@ export class LoginService {
       [AppHelper.getTicketName()]: ticket,
     });
     const url = await this.getUrl(req);
+    console.log("ApiHomeUrl-Identity-Check", url);
+    if (!url) {
+      return;
+    }
     const formObj = Object.keys(req)
       .map((k) => `${k}=${req[k]}`)
       .join("&");
@@ -360,20 +364,7 @@ export class LoginService {
       });
   }
   async getUrl(req: RequestEntity): Promise<string> {
-    const apiConfig = await this.storage.get(`KEY_API_CONFIG`);
-    let url: string;
-    if (req.Url) {
-      url = req.Url;
-      return url;
-    }
-    if (apiConfig && req.Method) {
-      const urls = req.Method.split("-");
-      url = apiConfig.Urls[urls[0]];
-      if (url) {
-        req.Url = url + "/" + urls[1] + "/" + urls[2];
-      }
-    }
-    return req.Url;
+    return this.apiService.getUrl(req);
   }
   async checkIdentity() {
     if (!this.identity) {
