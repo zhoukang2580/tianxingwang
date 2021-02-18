@@ -34,6 +34,7 @@ import { LangService } from "src/app/services/lang.service";
 import { ProductItem } from "src/app/tmc/models/ProductItems";
 import { MapService } from "src/app/services/map/map.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
+import { AgentEntity } from "src/app/tmc/models/AgentEntity";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home-df.page.html",
@@ -60,6 +61,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private tripEleSwiper: any;
   private isLoadingBanners = false;
   private isLoadingMyItinerary = false;
+  private isLoadingAgent = false;
+  agent: AgentEntity;
   identity: IdentityEntity;
   isLoadingNotice = false;
   isAgent = false;
@@ -194,7 +197,18 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   goBusiness() {
     this.router.navigate([AppHelper.getRoutePath("business-list")]);
   }
-
+  private async getAgentData() {
+    if (this.agent) {
+      return this.agent;
+    }
+    if (this.isLoadingAgent) {
+      return;
+    }
+    this.isLoadingAgent = true;
+    this.agent = await this.tmcService.getAgent().catch(() => null);
+    this.isLoadingAgent = false;
+    return this.agent;
+  }
   onDemand() {
     this.router.navigate([AppHelper.getRoutePath("demand-list")]);
   }
@@ -280,9 +294,16 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.itineraryList = await this.tmcService.getMyItinerary();
     }
   }
-
+  private async hasShop() {
+    const d = await this.getAgentData();
+    return d && d.HasShop;
+  }
   private async integral() {
     try {
+      const d = await this.hasShop();
+      if (!d) {
+        return;
+      }
       this.integralRegion = {
         Tag: "热卖",
         PageSize: 20,
@@ -300,6 +321,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async onSignIn() {
+    const d = await this.hasShop();
+    if (!d) {
+      return;
+    }
     if (!CONFIG.mockProBuild) {
       AppHelper.alert("即将上线");
       return;
@@ -545,6 +570,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.configService.getConfigAsync().then((c) => {
             this.config = c;
           });
+          this.agent = null;
           this.banners = [];
           this.itineraryList = [];
           this.tasklist = [];
@@ -553,17 +579,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
             return;
           }
 
-          this.tmcService
-            .checkIfCanDailySigned()
-            .then((r) => {
-              if (!r.isRegister) {
-                this.isRegister = false;
-              }
-              this.isCanDailySigned = r && r.isRegister && r.isCanSign;
-            })
-            .catch((e) => {
-              AppHelper.alert(e);
-            });
+          this.checkIfCanDailySigned();
           this.loadBanners();
           this.loadHotHotels();
           this.loadNotices();
@@ -588,6 +604,23 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (await this.hasTicket()) {
       this.initializeSelfBookInfos();
     }
+  }
+  private async checkIfCanDailySigned() {
+    const d = await this.hasShop();
+    if (!d) {
+      return;
+    }
+    this.tmcService
+      .checkIfCanDailySigned()
+      .then((r) => {
+        if (!r.isRegister) {
+          this.isRegister = false;
+        }
+        this.isCanDailySigned = r && r.isRegister && r.isCanSign;
+      })
+      .catch((e) => {
+        AppHelper.alert(e);
+      });
   }
   private startAutoPlayBannersSwiper() {
     if (

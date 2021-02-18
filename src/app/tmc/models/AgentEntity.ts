@@ -44,6 +44,7 @@ export class AgentEntity {
     /// 是否启用
     /// </summary>
     IsUsed: boolean;// 
+    HasShop: boolean;// 
     /// <summary>
     /// 是否启用
     /// </summary>

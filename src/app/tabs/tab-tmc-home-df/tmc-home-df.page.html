@@ -161,7 +161,7 @@
     </div>
   </div>
 
-  <div class="points-mall">
+  <div class="points-mall" [class.hidden]='!agent?.HasShop'>
     <div class="title" notranslate>积分商城</div>
     <div class="commodity">
       <div class="list" *ngFor="let item of exchangeList" (click)="onRedeemNow()">
