@@ -310,10 +310,11 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getHistoryOrHotItem(c, isHistory = false, lang = "cn") {
     const item = document.createElement("div");
     item.classList.add("city-item");
-    item.textContent = lang == "en" ? c.EnglishName : c.Name;
+    item.textContent =
+      lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
     item.setAttribute("Code", c.Code);
     const label = document.createElement("label");
-    label.textContent = c.Name;
+    label.textContent = c.IsHot ? c.CityName : c.Nickname;
     if (!label.textContent) {
       item.classList.add("empty");
     }
@@ -798,7 +799,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     });
     return divwrapper;
   }
-  function getItem(c) {
+  function getItem(c, lang) {
     const item = document.createElement("li");
     item.classList.add("item");
     item.onclick = (evt) => {
@@ -820,11 +821,14 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       }
     };
     const label = document.createElement("label");
-    label.textContent = c.Name;
+    label.textContent =
+      lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
+    label.classList.add("notranslate");
     if (c.CityName) {
       const sp = document.createElement("span");
       sp.textContent = `(${c.CityName})`;
       sp.classList.add("city-name");
+      sp.classList.add("notranslate");
       label.append(sp);
     }
     item.append(label);
@@ -874,7 +878,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
           const arr = cmap[l];
           if (arr) {
             arr.forEach((c) => {
-              const item = getItem(c);
+              const item = getItem(c, that.lang);
               list.append(item);
             });
           }

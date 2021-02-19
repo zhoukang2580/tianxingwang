@@ -43,12 +43,12 @@
       </div>
       <ion-buttons class="city">
         <ion-text class="ion-text-wrap city-name ion-text-start" [class.disabled]='disabled' (click)='onSelectCity(true)' color='{{disabled?"medium":"secondary"}}'>
-          {{isEn?searchFlightModel?.fromCity?.EnglishName|| searchFlightModel?.fromCity?.Name:searchFlightModel?.fromCity?.Name?.replace('国际','')?.replace('机场','')}}</ion-text>
+          {{isEn?searchFlightModel?.fromCity?.EnglishName|| searchFlightModel?.fromCity?.Nickname:searchFlightModel?.fromCity?.Nickname?.replace('国际','')?.replace('机场','')}}</ion-text>
         <ion-button color='{{disabled?"medium":"secondary"}}' [disabled]='disabled' (click)='onSwapCity()'>
           <img src='assets/images/flight-rotate.png' [class.rotate]='isSwapingCity' />
         </ion-button>
         <ion-text class="ion-text-wrap city-name ion-text-end" [class.disabled]='disabled' (click)='onSelectCity(false)' color='{{disabled?"medium":"secondary"}}'>
-          {{isEn?searchFlightModel?.toCity?.EnglishName|| searchFlightModel?.toCity?.Name:searchFlightModel?.toCity?.Name?.replace('国际','')?.replace('机场','')}}</ion-text>
+          {{isEn?searchFlightModel?.toCity?.EnglishName|| searchFlightModel?.toCity?.Nickname:searchFlightModel?.toCity?.Nickname?.replace('国际','')?.replace('机场','')}}</ion-text>
       </ion-buttons>
       <section class="flight-date">
         <app-search-day-comp [day]='goDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
