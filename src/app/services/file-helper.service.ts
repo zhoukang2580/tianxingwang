@@ -17,6 +17,7 @@ import { RequestEntity } from "./api/Request.entity";
 import { App } from "../app.component";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 const KEY_NEW_VERSION_PAGE_PATH = "key_newVersionPagePath";
+
 interface Hcp {
   getHash: (filePath: string) => Promise<string>;
   getUUID: () => Promise<string>;
@@ -40,6 +41,7 @@ interface IUpdateList {
   Version: string; // "2.0.0";
   Ignore: boolean;
   isShowVConsole: boolean;
+  IsShowThirdPartyLogin: boolean; // 为了ios 审核，第一次不显示第三方登录，审核通过后，再显示第三方登录
   EnabledHcpUpdate: boolean;
   EnabledAppUpdate: boolean;
   UpdateDescriptions?: string[];
@@ -331,6 +333,11 @@ export class FileHelperService {
           if (r.Status && r.Data) {
             try {
               const a: IUpdateList = JSON.parse(r.Data);
+              // 设置是否显示第三方登录
+              AppHelper.setStorage(
+                "IsShowThirdPartyLogin",
+                !!a.IsShowThirdPartyLogin
+              );
               if (a.isShowVConsole) {
                 if (window["vConsole"]) {
                   window["vConsole"].destroy();
