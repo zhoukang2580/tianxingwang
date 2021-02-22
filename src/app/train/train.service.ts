@@ -44,13 +44,11 @@ export class SearchTrainModel {
   ToStation: string;
   TrainNo: string;
   isLocked?: boolean;
-  isLockedDestination?: boolean;
+  IsRangeExchange?: boolean; // 48小时内改签
   tripType: TripType;
   isRoundTrip?: boolean; // 是否是往返
   isExchange?: boolean; // 是否是改签
-  isExchangeToDay?: boolean; // 是否改签当日（火车已经开车后改签）
 }
-
 export interface ICurrentViewtTainItem {
   selectedSeat: TrainSeatEntity;
   train: TrainEntity;
@@ -768,7 +766,7 @@ export class TrainService {
       this.setBookInfoSource(this.bookInfos);
     }
   }
-  openCalendar(isMulti: boolean) {
+  openCalendar(isMulti: boolean, endDate = "") {
     const goTrain = this.getBookInfos().find(
       (f) => f.bookInfo && f.bookInfo.tripType == TripType.departureTrip
     );
@@ -783,7 +781,7 @@ export class TrainService {
       isMulti,
       forType: FlightHotelTrainType.Train,
       beginDate: this.searchModel && this.searchModel.Date,
-      endDate: "",
+      endDate,
     });
   }
   async getStationsAsync(forceUpdate = false): Promise<TrafficlineEntity[]> {
@@ -1011,7 +1009,7 @@ export class TrainService {
     }
   }
 
-  getExchangeInfo(ticketId: string): Promise<ExchangeTrainModel> {
+  private getExchangeInfo(ticketId: string): Promise<ExchangeTrainModel> {
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-GetExchangeInfo`;
     req.IsShowLoading = true;
@@ -1020,25 +1018,7 @@ export class TrainService {
     req.Data = {
       TicketId: ticketId,
     };
-    return this.apiService
-      .getPromiseData<{
-        model: ExchangeTrainModel;
-        isLockedDestination: boolean;
-      }>(req)
-      .then((it) => {
-        if (it) {
-          return {
-            ...it.model,
-            isLockedDestination:
-              it.isLockedDestination || (it.model && it.model.IsExchange),
-          };
-        }
-        return it;
-      })
-      .catch((_) => {
-        AppHelper.alert(_.Message || _);
-        return null;
-      });
+    return this.apiService.getPromiseData<ExchangeTrainModel>(req);
   }
   private doRefund(
     ticketId: string
@@ -1157,8 +1137,7 @@ export class TrainService {
       this.setSearchTrainModelSource({
         ...this.getSearchTrainModel(),
         isLocked: true,
-        isLockedDestination: info.isLockedDestination,
-        isExchangeToDay: info.IsExchange,
+        IsRangeExchange: info.IsRangeExchange,
         isExchange: true,
         isRoundTrip: false,
         fromCity,

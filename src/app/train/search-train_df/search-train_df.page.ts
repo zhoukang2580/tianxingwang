@@ -184,7 +184,7 @@ export class SearchTrainDfPage
       }
     }
     if (!isFrom) {
-      if (this.searchTrainModel.isLockedDestination) {
+      if (this.searchTrainModel.IsRangeExchange) {
         return;
       }
     }
@@ -200,7 +200,7 @@ export class SearchTrainDfPage
     }
     if (
       this.searchTrainModel.isExchange &&
-      this.searchTrainModel.isLockedDestination
+      this.searchTrainModel.IsRangeExchange
     ) {
       AppHelper.alert("距离出发时间48小时内，不得更改达到城市");
       return;
@@ -276,12 +276,28 @@ export class SearchTrainDfPage
     return this.calendarService.getDescOfDay(d);
   }
   async onSelecDate(isGo: boolean) {
-    if (this.searchTrainModel) {
-      if (this.searchTrainModel.isExchangeToDay) {
+    if (!this.searchTrainModel) {
+      return;
+    }
+    const bk = this.trainService.getBookInfos()[0];
+    const ticket =
+      bk &&
+      bk.exchangeInfo &&
+      (bk.exchangeInfo.ticket as OrderTrainTicketEntity);
+    const trip = ticket && ticket.OrderTrainTrips && ticket.OrderTrainTrips[0];
+    const endDate = this.searchTrainModel.IsRangeExchange
+      ? (trip && trip.StartTime.substr(0, 10)) || ""
+      : "";
+    if (this.searchTrainModel.IsRangeExchange) {
+      if (
+        trip &&
+        trip.StartTime.substr(0, 10) ==
+          this.calendarService.getMoment(0).format("YYYY-MM-DD")
+      ) {
         return;
       }
     }
-    const days = await this.trainService.openCalendar(false);
+    const days = await this.trainService.openCalendar(false, endDate);
     // console.log("train openCalendar", days);
     if (days && days.length) {
       if (this.searchTrainModel) {
@@ -322,8 +338,7 @@ export class SearchTrainDfPage
         this.trainService.setSearchTrainModelSource({
           ...this.searchTrainModel,
           isExchange: false,
-          isExchangeToDay: false,
-          isLockedDestination: false,
+          IsRangeExchange: false,
           isLocked: false,
         });
         this.trainService.removeAllBookInfos();

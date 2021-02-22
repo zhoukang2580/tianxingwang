@@ -140,7 +140,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       begin = null;
     }
     let end = this.calendarService.generateDayModelByDate(this.endDate);
-    if (!this.endDate) {
+    if (!this.endDate || !this.isMulti) {
       end = null;
     }
     if (this.calendars) {
@@ -150,7 +150,8 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
             d.selected = false;
             d.topDesc = "";
             d.hasToolTip = false;
-            if (this.beginDate && this.endDate) {
+            d.lastSelected = false;
+            if (this.beginDate && this.beginDate) {
               if (d.date == this.beginDate) {
                 if (
                   this.forType == FlightHotelTrainType.Hotel ||
@@ -167,7 +168,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
                 d.firstSelected = true;
               }
-              if (d.date == this.endDate) {
+              if (d.date == this.endDate && this.isMulti) {
                 d.lastSelected = true;
                 if (
                   this.forType == FlightHotelTrainType.Hotel ||
@@ -190,8 +191,14 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
               }
             }
-            d.selected =
-              d.selected || d.date == this.beginDate || d.date == this.endDate;
+            if (this.isMulti) {
+              d.selected =
+                d.selected ||
+                d.date == this.beginDate ||
+                d.date == this.endDate;
+            } else {
+              d.selected = d.selected || d.date == this.beginDate;
+            }
             return d;
           });
         }
@@ -312,9 +319,14 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
         const today = this.calendarService.generateDayModel(
           this.calendarService.getMoment(0)
         );
-        const endDay = this.calendarService.generateDayModel(
-          this.calendarService.getMoment(30)
-        );
+        // 2021-10-22
+        const endDay = this.endDate
+          ? this.calendarService.generateDayModelByDate(
+              this.endDate.substr(0, 10)
+            )
+          : this.calendarService.generateDayModel(
+              this.calendarService.getMoment(30)
+            );
         const yesterdayM = this.calendarService.generateDayModel(
           this.calendarService.getMoment(-1)
         );

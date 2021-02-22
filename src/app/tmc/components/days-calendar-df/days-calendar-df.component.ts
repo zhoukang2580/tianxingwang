@@ -34,6 +34,7 @@ export class DaysCalendarDfComponent
   @HostBinding("class.disabled")
   @Input()
   disabled = false;
+  @Input() endDate = "";
   @ViewChild("daysContainer") daysEle: ElementRef<HTMLElement>;
   @ViewChildren("dayItem") dayItems: QueryList<ElementRef<HTMLElement>>;
   days: DayModel[];
@@ -121,13 +122,17 @@ export class DaysCalendarDfComponent
     }, 100);
   }
   onDaySelected(day: DayModel, byUser = true) {
-    if (this.disabled) {
+    if (this.disabled || !day.enabled) {
       return;
     }
     day.selected = true;
     let index = 0;
+    const endD = this.calendarService.generateDayModelByDate(this.endDate);
     for (let i = 0; i < this.days.length; i++) {
       const d = this.days[i];
+      if (this.endDate) {
+        d.enabled = d.timeStamp < endD.timeStamp;
+      }
       if (d.date !== day.date) {
         // 其他day非选中状态
         d.selected = false;
