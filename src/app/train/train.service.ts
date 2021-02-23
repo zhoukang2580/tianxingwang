@@ -22,6 +22,7 @@ import {
   InitialBookDtoModel,
   FlightHotelTrainType,
   IBookOrderResult,
+  ExchangeInfo,
 } from "../tmc/tmc.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 // import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
@@ -766,17 +767,22 @@ export class TrainService {
       this.setBookInfoSource(this.bookInfos);
     }
   }
-  openCalendar(isMulti: boolean, endDate = "") {
+  openCalendar(isMulti: boolean, endDate = "", disabledSelectDateReason = "") {
     const goTrain = this.getBookInfos().find(
       (f) => f.bookInfo && f.bookInfo.tripType == TripType.departureTrip
     );
     const s = this.getSearchTrainModel();
+    if (endDate && goTrain.exchangeInfo) {
+      disabledSelectDateReason =
+        disabledSelectDateReason || goTrain.exchangeInfo.rangeExchangeDateTip;
+    }
     return this.calendarService.openCalendar({
       goArrivalTime:
         goTrain &&
         goTrain.bookInfo &&
         goTrain.bookInfo.trainEntity &&
         goTrain.bookInfo.trainEntity.ArrivalTime,
+      disabledSelectDateReason,
       tripType: s.tripType || TripType.departureTrip,
       isMulti,
       forType: FlightHotelTrainType.Train,
@@ -1109,18 +1115,21 @@ export class TrainService {
         passenger.Mobile = info.OrderTrainTicket.Passenger.Mobile;
         passenger.Email = info.OrderTrainTicket.Passenger.Email;
       }
-      const exchangedInfo = {
-        ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)),
-        order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order)),
-        insuranceResult: info.InsurnanceAmount,
-      };
+      const exchangedInfo = new ExchangeInfo();
+      exchangedInfo.ticket = JSON.parse(JSON.stringify(info.OrderTrainTicket));
+      exchangedInfo.order = JSON.parse(
+        JSON.stringify(info.OrderTrainTicket.Order)
+      );
+      exchangedInfo.insurnanceAmount = info.InsurnanceAmount;
+      exchangedInfo.rangeExchangeDateTip = info.RangeExchangeDateTip;
       const b: PassengerBookInfo<ITrainInfo> = {
         passenger,
         isNotWhitelist: !info.BookStaff,
         credential: info.DefaultCredentials,
         id: AppHelper.uuid(),
         isFilterPolicy: true,
-        exchangeInfo: exchangedInfo as any,
+        exchangeInfo: exchangedInfo,
+        
       };
       books = [b];
       const fromCity = trainStations.find((it) => it.Code == info.FromStation);

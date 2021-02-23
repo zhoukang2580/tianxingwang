@@ -1649,6 +1649,14 @@ export class TmcEntity extends BaseEntity {
   RegionType: any;
   // =============== 微信支付配置 end ======
 }
+export class ExchangeInfo {
+  order: OrderEntity;
+  ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
+  trip: OrderFlightTripEntity | OrderTrainTripEntity;
+  insurnanceAmount?: number;
+  isRangeExchange?: boolean;
+  rangeExchangeDateTip?: string;
+}
 export interface PassengerBookInfo<T> {
   passenger: StaffEntity;
   credential: CredentialsEntity;
@@ -1659,12 +1667,7 @@ export interface PassengerBookInfo<T> {
   isFilterPolicy?: boolean; // 完全符合差标
   // isFilteredPolicy?: boolean;// 是否过滤差标
   // isAllowBookPolicy?: boolean;// 所有可预订
-  exchangeInfo?: {
-    order: OrderEntity;
-    ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
-    trip: OrderFlightTripEntity | OrderTrainTripEntity;
-    insurnanceAmount?: number;
-  };
+  exchangeInfo?: ExchangeInfo;
 }
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };

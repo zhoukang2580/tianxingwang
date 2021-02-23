@@ -42,6 +42,7 @@ export class SearchTrainDfPage
   isSelf = false;
   selectedPassengers: number;
   selectedBookInfos: number;
+  exchangeTip = "正在改签";
   staff: StaffEntity;
   constructor(
     public router: Router,
@@ -119,7 +120,15 @@ export class SearchTrainDfPage
       .subscribe(async (s) => {
         console.log("search-train", s);
         this.searchTrainModel = s;
+
         if (this.searchTrainModel) {
+          if (this.searchTrainModel.IsRangeExchange) {
+            const bks = this.trainService.getBookInfos();
+            this.exchangeTip =
+              bks[0] &&
+              bks[0].exchangeInfo &&
+              bks[0].exchangeInfo.rangeExchangeDateTip;
+          }
           this.searchTrainModel.isExchange = s.isExchange;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
           this.isSingle = !s.isRoundTrip;

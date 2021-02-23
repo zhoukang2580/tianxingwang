@@ -48,6 +48,7 @@ export class ExchangeTrainModel {
     /// </summary>
     IsBack: boolean;
     IsRangeExchange: boolean;
+    RangeExchangeDateTip: string;
     /// <summary>
     /// 乘客
     /// </summary>

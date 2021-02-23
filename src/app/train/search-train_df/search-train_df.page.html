@@ -25,9 +25,9 @@
 </ion-header>
 <ion-content style="z-index: 99;--background: transparent;">
   <ion-card class='ion-padding'>
+    <ion-text color='danger' style="opacity: 0.7;font-size: 0.7rem;" *ngIf='searchTrainModel?.isExchange'>{{exchangeTip}}
+    </ion-text>
     <ion-card-content>
-      <ion-text color='danger' style="opacity: 0.7;font-size: 0.7rem;" *ngIf='searchTrainModel?.isExchange'>正在改签
-      </ion-text>
       <ion-buttons class="ion-justify-content-between">
         <ion-text style="font-size: 1.5em;" class="ion-text-wrap city-name ion-text-start" [class.disabled]='searchTrainModel?.isLocked || searchTrainModel?.isExchange' (click)='onSelectCity(true)'
           color='{{searchTrainModel?.isLocked && searchTrainModel?.isExchange?"medium":"dark"}}'>

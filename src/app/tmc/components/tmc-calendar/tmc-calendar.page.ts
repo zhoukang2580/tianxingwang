@@ -38,6 +38,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   private calendarService: CalendarService;
   private beginDate: string;
   private endDate: string;
+  private disabledSelectDateReason: string;
   private st = 0;
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
@@ -365,7 +366,11 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     if (!d.enabled) {
-      AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
+      if(this.disabledSelectDateReason){
+        AppHelper.alert(this.disabledSelectDateReason);
+      }else{
+        AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
+      }
       return;
     }
     if (this.selectedDays.length >= 2) {
