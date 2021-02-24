@@ -32,6 +32,7 @@ import { FileHelperService } from './services/file-helper.service';
 import { AppHelper } from './appHelper';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
 import { Clipboard } from "@ionic-native/clipboard/ngx";
+import { Geolocation } from "@ionic-native/geolocation/ngx";
 let curPlt: "ios" | "md";
 export function navAnimations(baseEl, opts) {
   const animation =
@@ -77,7 +78,8 @@ export function navAnimations(baseEl, opts) {
     InAppBrowser,
     Clipboard,
     AppVersion,
-    WebView
+    WebView,
+    Geolocation
   ],
   bootstrap: [AppComponent]
 })
