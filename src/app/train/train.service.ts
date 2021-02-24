@@ -769,7 +769,9 @@ export class TrainService {
   }
   openCalendar(isMulti: boolean, endDate = "", disabledSelectDateReason = "") {
     const goTrain = this.getBookInfos().find(
-      (f) => f.bookInfo && f.bookInfo.tripType == TripType.departureTrip
+      (f) =>
+        (f.bookInfo && f.bookInfo.tripType == TripType.departureTrip) ||
+        !!f.exchangeInfo
     );
     const s = this.getSearchTrainModel();
     if (endDate && goTrain.exchangeInfo) {
@@ -1129,7 +1131,6 @@ export class TrainService {
         id: AppHelper.uuid(),
         isFilterPolicy: true,
         exchangeInfo: exchangedInfo,
-        
       };
       books = [b];
       const fromCity = trainStations.find((it) => it.Code == info.FromStation);
@@ -1142,10 +1143,25 @@ export class TrainService {
         "tocity",
         toCity
       );
+      const m = this.calendarService.getFormatedDate("");
+      let isLocked = false;
+      if (
+        info.OrderTrainTicket &&
+        info.OrderTrainTicket.OrderTrainTrips &&
+        info.OrderTrainTicket.OrderTrainTrips.length
+      ) {
+        isLocked =
+          info.IsRangeExchange &&
+          m ==
+            (info.OrderTrainTicket.OrderTrainTrips[0].StartTime || "").substr(
+              0,
+              10
+            );
+      }
       this.setBookInfoSource(books);
       this.setSearchTrainModelSource({
         ...this.getSearchTrainModel(),
-        isLocked: true,
+        isLocked,
         IsRangeExchange: info.IsRangeExchange,
         isExchange: true,
         isRoundTrip: false,
