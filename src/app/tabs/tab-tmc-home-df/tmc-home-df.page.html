@@ -97,9 +97,9 @@
           </div>
         </div>
       </div>
-      <div class="swiper-container not-item-u" [class.hidden]="!itineraryList ||! itineraryList.length" #tripEle>
+      <div class="swiper-container not-item-u" [class.hidden]="!tripList ||! tripList.length" #tripEle>
         <div class="swiper-wrapper">
-          <div class="swiper-slide it-list" *ngFor="let trip of itineraryList;">
+          <div class="swiper-slide it-list" *ngFor="let trip of tripList;">
             <img src="assets/home/home-trip.png" alt="" />
             <div class="not-warp" (click)="goToDetailPage(trip.OrderId,trip.Type)">
               <div class="not-name" notranslate>{{trip.PassagerName}}</div>

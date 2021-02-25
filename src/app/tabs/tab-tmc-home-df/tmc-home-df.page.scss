@@ -245,9 +245,11 @@ ion-header ion-title {
 
   .not-item-u {
     margin: 20px;
-    // height: 44px;
     border-radius: 6px;
     box-shadow: 4px 1px 7px 6px #f5f5f5;
+    .swiper-wrapper{
+      height: 90px;
+    }
     img {
       height: 20px;
       margin-top: 0.9em;
@@ -348,7 +350,7 @@ ion-header ion-title {
     justify-content: space-between;
   }
   .list {
-    width: 41vw;  
+    width: 41vw;
     min-height: 100px;
     background: linear-gradient(90deg, #dec6fd 0%, #d1b7ff 100%);
     opacity: 0.8;

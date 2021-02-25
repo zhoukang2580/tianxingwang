@@ -126,7 +126,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     Count: string;
   };
 
-  itineraryList: {
+  tripList: {
     Id: String;
     EndTime: String;
     StartTime: String;
@@ -290,8 +290,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private async myItinerary() {
-    if (!this.itineraryList || !this.itineraryList.length) {
-      this.itineraryList = await this.tmcService.getMyItinerary();
+    if (!this.tripList || !this.tripList.length) {
+      this.tripList = await this.tmcService.getMyItinerary();
     }
   }
   private async hasShop() {
@@ -462,25 +462,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initSwiperhotels() {
     if (this.hothotelEl && this.hothotelEl.nativeElement) {
       this.hotelsSwiper = new Swiper(this.hothotelEl.nativeElement, {
-        autoplay: true,
-      });
-      this.hotelsSwiper.on("touchEnd", () => {
-        this.autoPlayHotelsSwiper();
+        autoplay: {
+          disableOnInteraction: false,
+        },
       });
       const that = this;
       this.hotelsSwiper.on("transitionEnd", function () {
-        that.autoPlayHotelsSwiper();
         that.hotIndex = this.activeIndex;
       });
-    }
-  }
-  private autoPlayHotelsSwiper() {
-    if (
-      this.hotelsSwiper &&
-      this.hotelsSwiper.autoplay &&
-      this.hotelsSwiper.autoplay.start
-    ) {
-      this.hotelsSwiper.autoplay.start();
     }
   }
   private initSwiper() {
@@ -493,54 +482,53 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initBannerSwiper() {
     if (this.containerEl && this.containerEl.nativeElement) {
       this.bannersSwiper = new Swiper(this.containerEl.nativeElement, {
-        autoplay: true,
-      });
-      this.bannersSwiper.on("touchEnd", () => {
-        this.startAutoPlayBannersSwiper();
+        autoplay: {
+          disableOnInteraction: false,
+        },
       });
       const that = this;
       this.bannersSwiper.on("transitionEnd", function () {
         that.curIndex = this.activeIndex;
-        that.startAutoPlayBannersSwiper();
       });
     }
   }
   private initTaskSpwiper() {
     const mySwiper: any = {
       circular: true,
-      autoplay: true,
+      autoplay: {
+        disableOnInteraction: false,
+      },
       speed: 1000,
       direction: "vertical",
     };
     if (this.taskEle && this.taskEle.nativeElement) {
       setTimeout(() => {
         this.taskEleSwiper = new Swiper(this.taskEle.nativeElement, mySwiper);
-        this.taskEleSwiper.on("touchEnd", () => {
-          this.startAutoPlayTaskEleSwiper();
-        });
       }, 200);
     }
   }
   private initTripSpwiper() {
     const mySwiper: any = {
       circular: true,
-      autoplay: true,
+      autoplay: {
+        disableOnInteraction: false,
+      },
       speed: 1000,
       direction: "vertical",
+      height: 88,
     };
     if (this.tripEle && this.tripEle.nativeElement) {
       setTimeout(() => {
         this.tripEleSwiper = new Swiper(this.tripEle.nativeElement, mySwiper);
-        this.tripEleSwiper.on("touchEnd", () => {
-          this.startAutoPlayTripEleSwiper();
-        });
       }, 200);
     }
   }
 
   private initAnnouncementSwiper() {
     const options: any = {
-      autoplay: true,
+      autoplay: {
+        disableOnInteraction: false,
+      },
       speed: 1000,
       direction: "vertical",
       isShowText: true,
@@ -550,9 +538,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         this.announcementEl.nativeElement,
         options
       );
-      this.announcementElSwiper.on("touchEnd", () => {
-        this.startAutoPlayAnnouncementElSwiper();
-      });
     }
   }
   async ngOnInit() {
@@ -572,7 +557,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           });
           this.agent = null;
           this.banners = [];
-          this.itineraryList = [];
+          this.tripList = [];
           this.tasklist = [];
           this.staffCredentials = null;
           if (!(await this.hasTicket())) {
@@ -621,42 +606,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .catch((e) => {
         AppHelper.alert(e);
       });
-  }
-  private startAutoPlayBannersSwiper() {
-    if (
-      this.bannersSwiper &&
-      this.bannersSwiper.autoplay &&
-      this.bannersSwiper.autoplay.start
-    ) {
-      this.bannersSwiper.autoplay.start();
-    }
-  }
-  private startAutoPlayTripEleSwiper() {
-    if (
-      this.bannersSwiper &&
-      this.bannersSwiper.autoplay &&
-      this.bannersSwiper.autoplay.start
-    ) {
-      this.bannersSwiper.autoplay.start();
-    }
-  }
-  private startAutoPlayTaskEleSwiper() {
-    if (
-      this.tripEleSwiper &&
-      this.tripEleSwiper.autoplay &&
-      this.tripEleSwiper.autoplay.start
-    ) {
-      this.tripEleSwiper.autoplay.start();
-    }
-  }
-  private startAutoPlayAnnouncementElSwiper() {
-    if (
-      this.announcementElSwiper &&
-      this.announcementElSwiper.autoplay &&
-      this.announcementElSwiper.autoplay.start
-    ) {
-      this.announcementElSwiper.autoplay.start();
-    }
   }
 
   private async getAgentNotices() {
@@ -804,7 +753,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.bannersSwiper) {
       setTimeout(() => {
         this.bannersSwiper.update();
-        this.startAutoPlayBannersSwiper();
       }, 200);
     }
   }
@@ -848,14 +796,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private async loadMyItinerary() {
-    if (!this.itineraryList || !this.itineraryList.length) {
+    if (!this.tripList || !this.tripList.length) {
       if (this.isLoadingMyItinerary) {
         return;
       }
       if (!(await this.hasTicket())) {
         return;
       }
-      this.itineraryList = [];
+      this.tripList = [];
       this.isLoadingMyItinerary = true;
       this.myItinerary().finally(() => {
         this.isLoadingMyItinerary = false;
