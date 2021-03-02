@@ -274,6 +274,11 @@ ion-header ion-title {
     display: flex;
     flex-wrap: wrap;
     margin: 0.5em 1em;
+    .not-name,.wait-trip,.view-now{
+      display: flex;
+      align-items: center;
+    }
+
   }
   .trips {
     display: flex;
