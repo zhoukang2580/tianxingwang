@@ -244,7 +244,7 @@ export class FlightListPage
       const ok = await this.checkCabinsAndPolicy(s);
       if (!ok) {
         if (!this.tmcService.isAgent) {
-          AppHelper.alert("加载差标信息失败");
+          AppHelper.alert("该航班已无可售座位");
           return;
         }
       }
@@ -573,7 +573,7 @@ export class FlightListPage
       const ok = await this.checkCabinsAndPolicy(fs);
       if (!ok) {
         if (!this.tmcService.isAgent) {
-          AppHelper.alert("加载差标信息失败");
+          AppHelper.alert("该航班已无可售座位");
           return;
         }
       }
