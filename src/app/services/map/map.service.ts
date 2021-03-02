@@ -656,6 +656,7 @@ export class MapService {
     };
     const latestLocatePos = await this.getLatestLocatePos();
     if (latestLocatePos && latestLocatePos.city) {
+      result={} as any;
       result.city = latestLocatePos.city;
       result.position = latestLocatePos.position;
       this.getPosResult();
