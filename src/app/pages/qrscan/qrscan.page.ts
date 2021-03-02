@@ -80,7 +80,7 @@ export class QrScanPage implements OnInit, OnDestroy {
         return;
       }
       this.router.navigate([AppHelper.getRoutePath("scan-result")], {
-        queryParams: { scanResult: text }
+        queryParams: { scanResult: encodeURIComponent(text) }
       });
       this.clearBackground(false);
     } catch (e) {
