@@ -385,7 +385,7 @@ export class HotelService {
     return this.conditionModelSource.asObservable();
   }
   setSearchHotelModel(m: SearchHotelModel) {
-    if (m) {
+    if (m) {      
       this.searchHotelModel = m;
       this.searchHotelModel.tag =
         m.hotelType == "normal"
