@@ -3,7 +3,7 @@ ion-header ion-title {
 }
 .home {
   --background: white;
-  padding-top: var(--ion-safe-area-top);
+  margin-top: var(--ion-safe-area-top);
 }
 .banners {
   --background: white;
@@ -140,6 +140,7 @@ ion-header ion-title {
     height: 20px;
     position: absolute;
     right: 1em;
+    top: 1em;
   }
   .name {
     flex: 1;

@@ -296,14 +296,24 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       clearInterval(this.intervalId);
     }
   }
-  private calcDayFormat(m: number) {
-    if (m && m > 0) {
-      const d = m / 60 / 24;
-      const h = m / 60;
-      const mm = m % 60;
-      return `${d > 0 ? d : ""}:${d > 0 ? h : h > 0 ? h : ""}:${mm}`;
+  private calcDayFormat(seconds: number) {
+    if (seconds && seconds > 0) {
+      // seconds= n*24*3600+h*3600+m*60+s
+      const d = Math.floor(seconds / (3600 * 24));
+      const h = Math.floor((seconds - 24 * 3600 * d) / 3600);
+      const mm = Math.floor((seconds - 24 * 3600 * d - h * 3600) / 60);
+      const ss = seconds - d * 24 * 3600 - h * 3600 - mm * 60;
+      return `${d > 0 ? d + "天" : ""}${
+        d > 0 ? h + "小时" : h > 0 ? h + "小时" : ""
+      }${mm > 0 ? mm + "分钟" : mm}${this.getHHMM(ss)}秒`;
     }
     return "";
+  }
+  private getHHMM(d) {
+    if (d < 10) {
+      return "0" + d;
+    }
+    return d;
   }
   private async myItinerary() {
     if (!this.tripList || !this.tripList.length) {
@@ -311,15 +321,18 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         if (r && r.length) {
           this.stopDownCount();
           this.intervalId = setInterval(() => {
-            r.forEach((it) => {
-              if (it.Minute && it.Minute > 0) {
-                it.Minute--;
-                it.displayTimeName = this.calcDayFormat(it.Minute);
+            r.forEach((it, idx) => {
+              if (it.Second && it.Second > 0) {
+                it.Second--;
+                it.displayTimeName = this.calcDayFormat(it.Second);
               } else {
                 it.displayTimeName = "";
+                this.tripList.splice(idx, 1);
               }
             });
-            if (r.every((it) => it.Minute <= 0)) {
+            if (
+              r.filter((it) => it.Type != "Hotel").every((it) => it.Second <= 0)
+            ) {
               this.stopDownCount();
             }
           }, 1000);
