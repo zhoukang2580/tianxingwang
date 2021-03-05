@@ -66,9 +66,8 @@ export class TmcService {
   private banners: any[];
   private memberDetail: any;
   private getRecommendHotelObj: { [key: string]: any } = {};
-  private intervalId: any;
-  // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
+  // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private identity: IdentityEntity;
   private agent: AgentEntity;
   private mobileTemplateSelectItemList: SelectItem[] = [];
@@ -310,75 +309,10 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TripList";
     req.Data = {};
-    return this.apiService.getPromiseData<any[]>(req).then((r) => {
-      if (r && r.length) {
-        r.forEach((it) => {
-          if (it.HourName == undefined) {
-            if (it.Hour) {
-              if (it.Hour > 0) {
-                if (it.Hour > 24) {
-                  const d = Math.floor(it.Hour / 24);
-                  const h = it.Hour % 24;
-                  it.HourName = `${d}D${h}H`;
-                } else {
-                  it.HourName = `${it.Hour}H`;
-                }
-              }
-            }
-          }
-          if (it.MinuteName == undefined) {
-            if (it.Minute) {
-              if (it.Minute > 0) {
-                if (it.Minute > 60) {
-                  const d = Math.floor(it.Minute / (60 * 24));
-                  const h = Math.floor(it.Minute / 60);
-                  const m = Math.floor(it.Minute % 60);
-                  it.MinuteName =
-                    d <= 0
-                      ? h <= 0
-                        ? `${m}M`
-                        : `${h}H${m}M`
-                      : `${d}D${h}H${m}M`;
-                } else {
-                  it.MinuteName = `${it.Minute}M`;
-                }
-              }
-            }
-          }
-          it.displayTimeName = "";
-        });
-        this.stopDownCount();
-        this.intervalId = setInterval(() => {
-          r.forEach((it) => {
-            if (it.Minute && it.Minute > 0) {
-              it.Minute--;
-              it.displayTimeName = moment().add(it.Minute, "minutes").fromNow();
-            } else {
-              it.displayTimeName = this.calcDayFormat(it.Minute);
-            }
-          });
-          if (r.every((it) => it.Minute <= 0)) {
-            this.stopDownCount();
-          }
-        }, 1000);
-      }
-      return r;
-    });
+    return this.apiService.getPromiseData<any[]>(req);
   }
-  private calcDayFormat(m: number) {
-    if (m && m > 0) {
-      const d = m / 60 / 24;
-      const h = m / 60;
-      const mm = m % 60;
-      return `${d > 0 ? d : ""}:${d > 0 ? h : h > 0 ? h : ""}:${mm}`;
-    }
-    return "";
-  }
-  private stopDownCount() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-    }
-  }
+
+
   async getIntegral(d: { Tag: string; PageSize: number }) {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-Exchange";

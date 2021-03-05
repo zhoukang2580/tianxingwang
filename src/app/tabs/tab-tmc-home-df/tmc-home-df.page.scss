@@ -3,6 +3,7 @@ ion-header ion-title {
 }
 .home {
   --background: white;
+  padding-top: var(--ion-safe-area-top);
 }
 .banners {
   --background: white;
@@ -120,6 +121,7 @@ ion-header ion-title {
   margin-left: 0.5em;
 }
 .info {
+  padding-top: var(--ion-safe-area-top);
   display: flex;
   align-items: center;
   position: absolute;

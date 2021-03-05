@@ -62,6 +62,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private isLoadingBanners = false;
   private isLoadingMyItinerary = false;
   private isLoadingAgent = false;
+  private intervalId: any;
   agent: AgentEntity;
   identity: IdentityEntity;
   isLoadingNotice = false;
@@ -188,6 +189,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       await this.loginService.checkIfForceAction();
       // console.log("返回到首页 ",p.keys);
       this.langService.translate();
+      this.loadMyItinerary();
     });
   }
   ngOnDestroy() {
@@ -289,9 +291,41 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.getRecommendHotel();
     }
   }
+  private stopDownCount() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
+  private calcDayFormat(m: number) {
+    if (m && m > 0) {
+      const d = m / 60 / 24;
+      const h = m / 60;
+      const mm = m % 60;
+      return `${d > 0 ? d : ""}:${d > 0 ? h : h > 0 ? h : ""}:${mm}`;
+    }
+    return "";
+  }
   private async myItinerary() {
     if (!this.tripList || !this.tripList.length) {
-      this.tripList = await this.tmcService.getMyItinerary();
+      this.tripList = await this.tmcService.getMyItinerary().then((r) => {
+        if (r && r.length) {
+          this.stopDownCount();
+          this.intervalId = setInterval(() => {
+            r.forEach((it) => {
+              if (it.Minute && it.Minute > 0) {
+                it.Minute--;
+                it.displayTimeName = this.calcDayFormat(it.Minute);
+              } else {
+                it.displayTimeName = "";
+              }
+            });
+            if (r.every((it) => it.Minute <= 0)) {
+              this.stopDownCount();
+            }
+          }, 1000);
+        }
+        return r;
+      });
     }
   }
   private async hasShop() {
@@ -796,24 +830,22 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private async loadMyItinerary() {
-    if (!this.tripList || !this.tripList.length) {
-      if (this.isLoadingMyItinerary) {
-        return;
-      }
-      if (!(await this.hasTicket())) {
-        return;
-      }
-      this.tripList = [];
-      this.isLoadingMyItinerary = true;
-      this.myItinerary().finally(() => {
-        this.isLoadingMyItinerary = false;
-        setTimeout(() => {
-          if (this.tripEleSwiper) {
-            this.tripEleSwiper.update();
-          }
-        }, 200);
-      });
+    if (this.isLoadingMyItinerary) {
+      return;
     }
+    if (!(await this.hasTicket())) {
+      return;
+    }
+    this.tripList = [];
+    this.isLoadingMyItinerary = true;
+    this.myItinerary().finally(() => {
+      this.isLoadingMyItinerary = false;
+      setTimeout(() => {
+        if (this.tripEleSwiper) {
+          this.tripEleSwiper.update();
+        }
+      }, 200);
+    });
   }
 
   goToDetailPage(orderId: string, type: string) {
