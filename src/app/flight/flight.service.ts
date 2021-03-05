@@ -1675,6 +1675,13 @@ export class FlightService {
     }
     return result;
   }
+  filterByIsAgreement(segs: FlightSegmentEntity[]) {
+    let result = segs;
+    if (this.filterCondition && this.filterCondition.isAgreement) {
+      result = result.filter((s) => s.IsAgreement);
+    }
+    return result;
+  }
   filterByFromAirports(segs: FlightSegmentEntity[]) {
     let result = segs;
     if (

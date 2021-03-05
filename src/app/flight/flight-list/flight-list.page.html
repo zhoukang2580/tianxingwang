@@ -77,8 +77,8 @@
   <ion-list>
     <ul class='flight recomend' *ngIf='lowestPriceSegments?.length==1'>
       <li *ngFor='let s of lowestPriceSegments' class='lowest-item' (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [segment]='s' [isRecomendSegment]='true'>
-        </app-flight-segment-item>
+        <app-flight-segment-item-df [segment]='s' [isRecomendSegment]='true'>
+        </app-flight-segment-item-df>
       </li>
     </ul>
     <ul class='flight'>

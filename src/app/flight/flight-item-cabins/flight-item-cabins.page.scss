@@ -109,6 +109,21 @@ ion-content.padding-half-c {
     small {
       font-size: 0.85rem;
     }
+    .c {
+      border: 2px solid var(--ion-color-secondary);
+      border-radius: 50%;
+      width: 0.8em;
+      height: 0.8em;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      left: -0.1em;
+      bottom: 0.1em;
+      ion-text {
+        font-size: 0.5em;
+      }
+    }
   }
   .discount {
     font-size: 0.75rem;

@@ -167,6 +167,8 @@ export class FlightSegmentEntity {
   /// 直飞 False
   /// </summary>
   IsStop: boolean;
+  // 是否显示协议图片
+  IsAgreement: boolean;
   //Normal价
   BasicPrice: string;
   //前后航班最低价

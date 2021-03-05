@@ -34,7 +34,7 @@ ion-toolbar {
     flex-flow: column nowrap;
     justify-content: center;
     // height: 45vh;
-    height: 300px;
+    height: 208px;
     overflow: auto;
     padding-bottom: 1em;
     .tab {
@@ -72,7 +72,6 @@ ion-toolbar {
     -webkit-overflow-scrolling: touch;
   }
   .right {
-
     flex: 1;
     position: sticky;
     overflow: auto;
@@ -85,6 +84,14 @@ ion-toolbar {
   padding: 0.5em;
   display: flex;
   align-items: center;
+  .c {
+    ion-toggle {
+      margin-right: 0;
+    }
+    display: flex;
+    align-items: center;
+    margin-right: 1em;
+  }
 }
 ion-footer {
   padding: 0.5em;

@@ -566,7 +566,6 @@ export class FlightItemCabinsPage implements OnInit {
       cssClass: "ticket-changing",
       // animated: false
     });
-    m.backdropDismiss = false;
     await m.present();
   }
   async onFilterCabinType(evt: CustomEvent) {

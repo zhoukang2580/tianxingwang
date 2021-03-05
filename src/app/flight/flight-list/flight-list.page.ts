@@ -131,6 +131,7 @@ export class FlightListPage
   get filterConditionIsFiltered() {
     return (
       (this.filterCondition && this.filterCondition.onlyDirect) ||
+      (this.filterCondition && this.filterCondition.isAgreement) ||
       (this.filterCondition.userOps &&
         Object.keys(this.filterCondition.userOps).some(
           (k) => this.filterCondition.userOps[k]
@@ -491,6 +492,7 @@ export class FlightListPage
     }
     return result;
   }
+
   private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
@@ -910,6 +912,7 @@ export class FlightListPage
     result = this.flightService.filterByCabins(result);
     result = this.flightService.filterByTakeOffTimeSpan(result);
     result = this.flightService.filterByFlightDirect(result);
+    result = this.flightService.filterByIsAgreement(result);
     return result;
   }
   canDeactivate() {
