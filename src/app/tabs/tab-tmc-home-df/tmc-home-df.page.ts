@@ -60,7 +60,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private taskEleSwiper: any;
   private tripEleSwiper: any;
   private isLoadingBanners = false;
-  private isLoadingMyItinerary = false;
+  private isLoadingTripList = false;
   private isLoadingAgent = false;
   private intervalId: any;
   agent: AgentEntity;
@@ -189,7 +189,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       await this.loginService.checkIfForceAction();
       // console.log("返回到首页 ",p.keys);
       this.langService.translate();
-      this.loadMyItinerary();
+      this.loadTripList();
     });
   }
   ngOnDestroy() {
@@ -314,32 +314,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       return "0" + d;
     }
     return d;
-  }
-  private async myItinerary() {
-    if (!this.tripList || !this.tripList.length) {
-      this.tripList = await this.tmcService.getMyItinerary().then((r) => {
-        if (r && r.length) {
-          this.stopDownCount();
-          this.intervalId = setInterval(() => {
-            r.forEach((it, idx) => {
-              if (it.Second && it.Second > 0) {
-                it.Second--;
-                it.displayTimeName = this.calcDayFormat(it.Second);
-              } else {
-                it.displayTimeName = "";
-                this.tripList.splice(idx, 1);
-              }
-            });
-            if (
-              r.filter((it) => it.Type != "Hotel").every((it) => it.Second <= 0)
-            ) {
-              this.stopDownCount();
-            }
-          }, 1000);
-        }
-        return r;
-      });
-    }
   }
   private async hasShop() {
     const d = await this.getAgentData();
@@ -556,19 +530,27 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private initTripSpwiper() {
     const mySwiper: any = {
-      circular: true,
+      loop: true,
       autoplay: {
         disableOnInteraction: false,
       },
       speed: 1000,
-      direction: "vertical",
-      height: 88,
+      // effect: "coverflow",
+      // slidesPerView: 3,
+      // centeredSlides: true,
+      // coverflowEffect: {
+      //   rotate: 30,
+      //   stretch: 10,
+      //   depth: 60,
+      //   modifier: 2,
+      //   slideShadows: true,
+      // },
     };
-    if (this.tripEle && this.tripEle.nativeElement) {
-      setTimeout(() => {
+    setTimeout(() => {
+      if (this.tripEle && this.tripEle.nativeElement) {
         this.tripEleSwiper = new Swiper(this.tripEle.nativeElement, mySwiper);
-      }, 200);
-    }
+      }
+    }, 200);
   }
 
   private initAnnouncementSwiper() {
@@ -617,7 +599,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.loadNotices();
           this.integral();
           this.loadReviewedTask();
-          this.loadMyItinerary();
+          this.loadTripList();
         } catch (e) {
           console.error(e);
         }
@@ -842,23 +824,47 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       }, 200);
     }
   }
-  private async loadMyItinerary() {
-    if (this.isLoadingMyItinerary) {
+  private async loadTripList() {
+    if (this.isLoadingTripList) {
       return;
     }
     if (!(await this.hasTicket())) {
       return;
     }
     this.tripList = [];
-    this.isLoadingMyItinerary = true;
-    this.myItinerary().finally(() => {
-      this.isLoadingMyItinerary = false;
-      setTimeout(() => {
-        if (this.tripEleSwiper) {
-          this.tripEleSwiper.update();
+    this.isLoadingTripList = true;
+    this.tripList = await this.tmcService
+      .getTripList()
+      .then((r) => {
+        if (r && r.length) {
+          this.stopDownCount();
+          this.intervalId = setInterval(() => {
+            r.filter((it) => it.Type != "Hotel").forEach((it, idx) => {
+              if (it.Second && it.Second > 0) {
+                it.Second--;
+                it.displayTimeName = this.calcDayFormat(it.Second);
+              } else {
+                it.displayTimeName = "";
+                this.tripList.splice(idx, 1);
+              }
+            });
+            if (
+              r.filter((it) => it.Type != "Hotel").every((it) => it.Second <= 0)
+            ) {
+              this.stopDownCount();
+            }
+          }, 1000);
         }
-      }, 200);
-    });
+        return r;
+      })
+      .finally(() => {
+        this.isLoadingTripList = false;
+        setTimeout(() => {
+          if (this.tripEleSwiper) {
+            this.tripEleSwiper.update();
+          }
+        }, 1000);
+      });
   }
 
   goToDetailPage(orderId: string, type: string) {

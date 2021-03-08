@@ -305,7 +305,7 @@ export class TmcService {
     }
     return false;
   }
-  async getMyItinerary() {
+  async getTripList() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TripList";
     req.Data = {};
