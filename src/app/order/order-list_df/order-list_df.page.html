@@ -1,74 +1,132 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button [isBackHome]='true' [backFn]='back.bind(this)'></app-back-button>
+    <ion-buttons slot="start">
+      <app-back-button
+        [isBackHome]="true"
+        [backFn]="back.bind(this)"
+      ></app-back-button>
     </ion-buttons>
     <ion-title>{{title}}</ion-title>
-    <ion-buttons slot='end'>
-      <ion-button color='primary' (click)='openSearchModal()'>
-        <ion-icon name="search" color='secondary'></ion-icon>
+    <ion-buttons slot="end">
+      <ion-button color="primary" (click)="openSearchModal()">
+        <ion-icon name="search" color="secondary"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar>
-    <app-tabs-container [tabs]='tabs' [options]='{displayNameKey:"label",valueKey:"value",tabRef:tabRef}' (activetab)='onTabClick($event)'></app-tabs-container>
+    <app-tabs-container
+      [tabs]="tabs"
+      [options]='{displayNameKey:"label",valueKey:"value",tabRef:tabRef}'
+      (activetab)="onTabClick($event)"
+    ></app-tabs-container>
   </ion-toolbar>
 </ion-header>
 <ng-template let-it="tab" #tabRef>
   <ion-label class="ion-text-nowrap">{{it.label}}</ion-label>
 </ng-template>
 <ion-content>
-  <app-refresher (ionRefresh)='doRefresh()' slot='fixed'>
+  <app-refresher (ionRefresh)="doRefresh()" slot="fixed">
     <ion-refresher-content>正在加载</ion-refresher-content>
   </app-refresher>
   <ng-template #fakeList>
     <ion-list>
-      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8]'>
-        <div style='width: 100%;'>
+      <ion-item *ngFor="let item of [1,2,3,4,5,6,7,8]">
+        <div style="width: 100%">
           <ion-row>
-            <ion-col size='10'>
+            <ion-col size="10">
               <ion-label>
                 <h2>
-                  <ion-skeleton-text animated style='width: 100%'></ion-skeleton-text>
+                  <ion-skeleton-text
+                    animated
+                    style="width: 100%"
+                  ></ion-skeleton-text>
                 </h2>
                 <h2>
-                  <ion-skeleton-text style='width: 100%'></ion-skeleton-text>
+                  <ion-skeleton-text style="width: 100%"></ion-skeleton-text>
                 </h2>
-                <div style='display: flex;align-items: center;'>
-                  <ion-skeleton-text animated style="width: 1.2em;height:1.2em;border-radius:100%;margin-right: 0.5em;">
+                <div style="display: flex; align-items: center">
+                  <ion-skeleton-text
+                    animated
+                    style="
+                      width: 1.2em;
+                      height: 1.2em;
+                      border-radius: 100%;
+                      margin-right: 0.5em;
+                    "
+                  >
                   </ion-skeleton-text>
-                  <ion-skeleton-text style='width: 90%'></ion-skeleton-text>
+                  <ion-skeleton-text style="width: 90%"></ion-skeleton-text>
                 </div>
               </ion-label>
             </ion-col>
-            <ion-col size='2' style="align-self: center;display: flex;justify-content: center;align-items: center">
-              <ion-skeleton-text animated style='width: 50%'></ion-skeleton-text>
+            <ion-col
+              size="2"
+              style="
+                align-self: center;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              "
+            >
+              <ion-skeleton-text
+                animated
+                style="width: 50%"
+              ></ion-skeleton-text>
             </ion-col>
           </ion-row>
         </div>
       </ion-item>
     </ion-list>
   </ng-template>
-  <ng-container *ngIf='activeTab?.value!==productItemType.waitingApprovalTask else waitingapprovalTempl'>
-    <ng-container *ngIf='!isLoading else fakeList'>
-      <ng-container *ngIf='!isShowMyTrips'>
-        <ion-list lines='none' *ngIf='orderModel?.Orders?.length else nomoredate'>
-          <ion-item class="item" *ngFor='let order of orderModel.Orders' (click)='goToDetailPage(order.Id,orderModel.Type)'>
-            <app-order-item-df [order]='order' [tmc]='tmc' (payaction)='onPay(order)' (refundTrainTicket)='doRefresh();' (abolishOrder)='onAbolishOrder($event)'
-              (exchangeFlightTicket)='onExchangeFlightTicket($event)' (refundFlightTicket)='onRefundFlightTicket($event)'>
+  <ng-container
+    *ngIf="activeTab?.value!==productItemType.waitingApprovalTask else waitingapprovalTempl"
+  >
+    <ng-container *ngIf="!isLoading else fakeList">
+      <ng-container *ngIf="!isShowMyTrips">
+        <ion-list
+          lines="none"
+          *ngIf="orderModel?.Orders?.length else nomoredate"
+        >
+          <ion-item
+            class="item"
+            *ngFor="let order of orderModel.Orders"
+            (click)="goToDetailPage(order.Id,orderModel.Type)"
+          >
+            <app-order-item-df
+              [order]="order"
+              [tmc]="tmc"
+              (payaction)="onPay(order)"
+              (refundTrainTicket)="doRefresh();"
+              (abolishOrder)="onAbolishOrder($event)"
+              (abolishHotelOrder)="abolishHotelOrder($event)"
+              (exchangeFlightTicket)="onExchangeFlightTicket($event)"
+              (refundFlightTicket)="onRefundFlightTicket($event)"
+            >
             </app-order-item-df>
           </ion-item>
         </ion-list>
       </ng-container>
-      <ng-container *ngIf='isShowMyTrips'>
-        <ul *ngIf='myTrips?.length else nomoredate'>
-          <li *ngFor='let trip of myTrips' (click)='goToDetailPage(trip.OrderId,orderModel.Type)'>
-            <ng-container [ngSwitch]='trip.Type'>
+      <ng-container *ngIf="isShowMyTrips">
+        <ul *ngIf="myTrips?.length else nomoredate">
+          <li
+            *ngFor="let trip of myTrips"
+            (click)="goToDetailPage(trip.OrderId,orderModel.Type)"
+          >
+            <ng-container [ngSwitch]="trip.Type">
               <ng-container *ngSwitchCase='"Flight"'>
-                <app-flight-trip [trip]="trip" *ngIf="!(trip.VariablesJsonObj&&trip.VariablesJsonObj.IsCustomApplyRefund)"></app-flight-trip>
+                <app-flight-trip
+                  [trip]="trip"
+                  *ngIf="!(trip.VariablesJsonObj&&trip.VariablesJsonObj.IsCustomApplyRefund)"
+                ></app-flight-trip>
               </ng-container>
-              <app-train-trip *ngSwitchCase='"Train"' [trip]="trip"></app-train-trip>
-              <app-hotel-trip *ngSwitchCase='"Hotel"' [trip]="trip"></app-hotel-trip>
+              <app-train-trip
+                *ngSwitchCase='"Train"'
+                [trip]="trip"
+              ></app-train-trip>
+              <app-hotel-trip
+                *ngSwitchCase='"Hotel"'
+                [trip]="trip"
+              ></app-hotel-trip>
             </ng-container>
           </li>
         </ul>
@@ -76,24 +134,32 @@
     </ng-container>
   </ng-container>
   <ng-template #nomoredate>
-    <app-or-comp *ngIf='!this.isLoading'>
-      暂无数据
-    </app-or-comp>
+    <app-or-comp *ngIf="!this.isLoading"> 暂无数据 </app-or-comp>
   </ng-template>
   <ng-template #waitingapprovalTempl>
-    <ng-container *ngIf='!isLoading else fakeList'>
-      <ng-container *ngIf='tasks?.length else nomoredate'>
+    <ng-container *ngIf="!isLoading else fakeList">
+      <ng-container *ngIf="tasks?.length else nomoredate">
         <ion-list>
-          <ion-item [attr.detail]='!!task.VariablesJsonObj["TaskUrl"]' *ngFor='let task of tasks' (click)='onTaskDetail(task)'>
+          <ion-item
+            [attr.detail]='!!task.VariablesJsonObj["TaskUrl"]'
+            *ngFor="let task of tasks"
+            (click)="onTaskDetail(task)"
+          >
             <ion-label>
-              <h3>任务：
+              <h3>
+                任务：
                 <ng-template #labelTemp>
                   <span>{{task.Name}}</span>
                 </ng-template>
-                <ion-text class='ion-text-wrap' *ngIf='task.VariablesJsonObj["TaskUrl"] else labelTemp' color='secondary'>
-                  {{task.Name}}</ion-text>
+                <ion-text
+                  class="ion-text-wrap"
+                  *ngIf='task.VariablesJsonObj["TaskUrl"] else labelTemp'
+                  color="secondary"
+                >
+                  {{task.Name}}</ion-text
+                >
               </h3>
-              <h4 *ngIf='task?.VariablesJsonObj' style="user-select: text;">
+              <h4 *ngIf="task?.VariablesJsonObj" style="user-select: text">
                 <ng-container *ngIf='task.VariablesJsonObj["ConsumerId"]'>
                   编号：{{getTaskOrderId(task)}}
                 </ng-container>
@@ -101,9 +167,7 @@
                   订单号：{{getTaskOrderId(task)}}
                 </ng-container>
               </h4>
-              <h4>
-                发起时间： {{task.InsertTime}}
-              </h4>
+              <h4>发起时间： {{task.InsertTime}}</h4>
               <h4>
                 超时时间：{{task.ExpiredTime?.startsWith("1800")?"":task.ExpiredTime}}
               </h4>
@@ -119,22 +183,45 @@
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
-<ion-footer *ngIf='activeTab?.value !== productItemType.waitingApprovalTask&&activeTab?.value !== productItemType.car'>
+<ion-footer
+  *ngIf="activeTab?.value !== productItemType.waitingApprovalTask&&activeTab?.value !== productItemType.car"
+>
   <ion-row>
-    <ion-col class='ion-text-center'>
-      <ion-button color='{{!isShowMyTrips?"secondary":"medium"}}' fill='clear' size='small' (click)='doRefresh()'>
-        全部<span slot='end' *ngIf='dataCount'>(<span *ngIf='orderModel?.Orders?.length'>{{orderModel?.Orders?.length}}/</span>{{dataCount}})</span>
+    <ion-col class="ion-text-center">
+      <ion-button
+        color='{{!isShowMyTrips?"secondary":"medium"}}'
+        fill="clear"
+        size="small"
+        (click)="doRefresh()"
+      >
+        全部<span slot="end" *ngIf="dataCount"
+          >(<span *ngIf="orderModel?.Orders?.length"
+            >{{orderModel?.Orders?.length}}/</span
+          >{{dataCount}})</span
+        >
       </ion-button>
     </ion-col>
-    <ion-col class='ion-text-center'>
-      <ion-button color='{{isShowMyTrips?"secondary":"medium"}}' fill='clear' size='small' (click)='onshowMyTrips()'>待出行
-        <span *ngIf='myTripsTotalCount'>({{myTrips?.length}}/{{myTripsTotalCount}})</span>
+    <ion-col class="ion-text-center">
+      <ion-button
+        color='{{isShowMyTrips?"secondary":"medium"}}'
+        fill="clear"
+        size="small"
+        (click)="onshowMyTrips()"
+        >待出行
+        <span *ngIf="myTripsTotalCount"
+          >({{myTrips?.length}}/{{myTripsTotalCount}})</span
+        >
       </ion-button>
     </ion-col>
-    <ion-col class='ion-text-center' *ngIf='false'>
-      <ion-button color='secondary' fill='clear' size='small' (click)='historyTrips()'>历史订单</ion-button>
+    <ion-col class="ion-text-center" *ngIf="false">
+      <ion-button
+        color="secondary"
+        fill="clear"
+        size="small"
+        (click)="historyTrips()"
+        >历史订单</ion-button
+      >
     </ion-col>
   </ion-row>
-
 </ion-footer>
 <ion-datetime displayFormat="YYYY-MM-DD" class="hidden"></ion-datetime>
