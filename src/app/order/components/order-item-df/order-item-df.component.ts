@@ -111,10 +111,11 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
 
   onAbolishHotelOrder(evt: CustomEvent, orderId) {//OrderHotels
     evt.stopPropagation();
-    console.log(orderId, 'Id==========');
     AppHelper.alert(
       "确定取消订单?",
-      true
+      true,
+      "确定",
+      "取消"
     ).then((ok) => {
       if (ok) {
         this.abolishHotelOrder.emit({
