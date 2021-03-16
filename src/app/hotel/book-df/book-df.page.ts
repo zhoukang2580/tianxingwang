@@ -1232,6 +1232,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .startOf("year")
             .format("YYYY-MM-DD")}`,
         } as any;
+        combineInfo.isShowTravelDetail = true;
         combineInfo.creditCardPersionInfo = {} as any;
         combineInfo.credential = bookInfo.credential;
         combineInfo.id = bookInfo.id;
@@ -1824,6 +1825,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     info.illegalReason = reason.illegalReason;
     info.otherIllegalReason = reason.otherIllegalReason;
   }
+  onToggleShowTravelDetail(item: IPassengerHotelBookInfo) {
+    item.isShowTravelDetail = !item.isShowTravelDetail;
+  }
   async onModify(item: IPassengerHotelBookInfo) {
     if (!item.credentialsRequested) {
       const res: {
@@ -1971,6 +1975,7 @@ interface IPassengerHotelBookInfo {
     name: string;
   };
   isShowApprovalInfo: boolean;
+  isShowTravelDetail: boolean;
   expenseType: string;
   isCanEditCrendentails: boolean;
   isNotWhitelist?: boolean;
