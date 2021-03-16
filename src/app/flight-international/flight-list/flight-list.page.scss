@@ -23,7 +23,9 @@
     background-color: rgba(var(--ion-color-success-rgb), 0.13);
   }
 }
-
+ion-button.disabled {
+  opacity: 0.6;
+}
 .sticky {
   position: sticky;
   top: 0;

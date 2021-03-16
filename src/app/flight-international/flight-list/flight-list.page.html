@@ -75,7 +75,7 @@
                     <ion-text color='medium' style="font-size:0.8rem;">({{fare.TypeName}})</ion-text>
                   </ng-container>
                 </ion-text>
-                <ion-button class="book-btn" [color]='fare.color' [disabled]='fare.disabled' (click)='onBook(fr,fare)' fill='solid' expand='block' size='small'>
+                <ion-button class="book-btn" [class.disabled]="fare.disabled" [color]='fare.color' (click)='onBook(fr,fare)' fill='solid' expand='block' size='small'>
                   <ion-text color='light'>预订</ion-text>
                 </ion-button>
               </div>

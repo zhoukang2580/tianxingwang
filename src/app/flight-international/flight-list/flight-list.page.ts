@@ -105,10 +105,15 @@ export class FlightListPage implements OnInit, OnDestroy {
     return isLastTrip;
   }
   async onBook(flightRoute: FlightRouteEntity, fare?: FlightFareEntity) {
-    if (!fare.hasCheckPolicy) {
-      if (fare) {
+    if (fare) {
+      if (fare.disabled) {
+        AppHelper.alert("违反差标政策，不可选择");
+        return;
+      }
+      if (!fare.hasCheckPolicy) {
         const ok = await this.flightService.checkPolicy(flightRoute, fare);
         if (!ok) {
+          AppHelper.alert("违反差标政策，不可选择");
           return;
         }
         let tip = (fare.policy && fare.policy.Message) || "";
@@ -121,8 +126,6 @@ export class FlightListPage implements OnInit, OnDestroy {
           AppHelper.alert(tip);
           return;
         }
-      } else {
-        return;
       }
     }
     if (fare) {
@@ -346,7 +349,9 @@ export class FlightListPage implements OnInit, OnDestroy {
   }
   async onToggleFlightFare(fr: FlightRouteEntity) {
     try {
-      await this.flightService.loadListDetail(fr);
+      if (!fr.isLoadDetail) {
+        await this.flightService.loadListDetail(fr);
+      }
       if (this.reqAnimate) {
         clearTimeout(this.reqAnimate);
       }
@@ -369,7 +374,7 @@ export class FlightListPage implements OnInit, OnDestroy {
               clearTimeout(this.reqAnimate);
               return;
             }
-            console.log("looping");
+            // console.log("looping");
             const arr = fr.flightFares.slice(
               fr.vmFares.length,
               this.farePageSize + fr.vmFares.length
