@@ -153,7 +153,6 @@
             </ion-item-group>
           </ng-container>
         </ion-list>
-
         <ion-list>
           <ion-item-group>
             <ion-item class="pass-information">
@@ -161,12 +160,12 @@
                 <div class="passenger">旅客信息</div>
                 <div class="ion-up">
                   <ion-icon
-                    name="caret-down-outline"
+                    name="chevron-down-outline"
                     *ngIf="!isShowOtherInfo"
                     (click)="isShowOtherInfo=!isShowOtherInfo"
                   ></ion-icon>
                   <ion-icon
-                    name="caret-up-outline"
+                    name="chevron-up-outline"
                     *ngIf="isShowOtherInfo"
                     (click)="isShowOtherInfo=!isShowOtherInfo"
                   ></ion-icon>
@@ -335,12 +334,12 @@
             <div class="passenger">出差信息</div>
             <div style="width: 100%; text-align: end">
               <ion-icon
-                name="caret-down-outline"
+                name="chevron-down-outline"
                 *ngIf="isShowTravelInfo"
                 (click)="isShowTravelInfo=!isShowTravelInfo"
               ></ion-icon>
               <ion-icon
-                name="caret-up-outline"
+                name="chevron-up-outline"
                 *ngIf="!isShowTravelInfo"
                 (click)="isShowTravelInfo=!isShowTravelInfo"
               ></ion-icon>
