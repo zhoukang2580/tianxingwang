@@ -65,7 +65,7 @@
               </div>
               <ng-container *ngIf="!isRoomPlanFreeBook(combindInfo)">
                 <div lines="none" class="exceeding" *ngIf="getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg">
-                  <ion-label class="ion-text-wrap" color="danger">超标{{msg}}
+                  <ion-label class="ion-text-wrap" color="danger">超标：{{msg}}
                     <!-- 违反提前3天以上预定航班的政策 -->
                   </ion-label>
                 </div>
@@ -245,7 +245,7 @@
         <ion-list class="section" *ngIf="combindInfo.creditCardInfo.isShowCreditCard" [attr.datacreditcardid]="combindInfo.id">
           <ion-item style="display: none">
             <ion-label>信用卡</ion-label>
-            <ion-select [(ngModel)]="combindInfo.creditCardInfo.creditCardType" #creditCardTypeEle>
+            <ion-select [(ngModel)]="combindInfo.creditCardInfo.creditCardType" #creditCardTypeEle [okText]='"确定"' [cancelText]='"取消"'>
               <ion-select-option value="VI">VISA</ion-select-option>
               <ion-select-option value="AX">美国运通卡</ion-select-option>
               <ion-select-option value="CA"> 万事达卡</ion-select-option>
@@ -272,47 +272,46 @@
               <ion-select-option value="{{CredentialsType.Other}}">其它</ion-select-option>
             </ion-select>
           </ion-item>
-          <div class="info">
-            <div class="title ion-padding-vertical">信用卡信息</div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardInfocreditCardType]="combindInfo.id">
-              <span class="label">信用卡</span>
-              <span>{{getCreditCardInfoName(combindInfo)}}</span>
-              <ion-icon name="caret-down-outline" class="down" (click)="onOpenSelect(creditCardTypeEle)"></ion-icon>
+          <div>
+            <div class="title">
+              <div class="name">
+                信用卡信息
+              </div>
             </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardInfocreditCardNumber]="combindInfo.id">
-              <span class="label">信用卡号</span>
-              <ion-input [(ngModel)]="combindInfo.creditCardInfo.creditCardNumber" placeholder="信用卡卡号"></ion-input>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardInfocreditCardCvv]="combindInfo.id">
-              <span class="label">CVV</span>
-              <ion-input [(ngModel)]="combindInfo.creditCardInfo.creditCardCvv" placeholder="CVV"></ion-input>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardInfoexpirationYear]="combindInfo.id">
-              <span class="label">有效期</span>
-              <span>{{combindInfo.creditCardInfo.expirationYear}}</span>
-              <ion-icon name="caret-down-outline" class="down" (click)="onOpenSelect(expirationYearEle)"></ion-icon>
-              <span>{{combindInfo.creditCardInfo.expirationMonth+"月"}}</span>
-              <ion-icon name="caret-down-outline" class="down" (click)="onOpenSelect(expirationMonthEle)"></ion-icon>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardPersionInfocredentialType]="combindInfo.id" (click)="onOpenSelect(cctypeEle)">
-              <span class="label">证件类型</span>
-              <span> {{getCredentialTypeName(combindInfo)}}</span>
-              <ion-icon name="caret-down-outline" class="down"></ion-icon>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardPersionInfoname]="combindInfo.id">
-              <span class="label">姓名</span>
-              <ion-input [(ngModel)]="combindInfo.creditCardPersionInfo.name" type="text" placeholder="持卡人姓名"></ion-input>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardPersionInfocredentialNumber]="combindInfo.id">
-              <span class="label">证件号码</span>
-              <ion-input [(ngModel)]="combindInfo.creditCardPersionInfo.credentialNumber" type="text" placeholder="持卡人证件号码"></ion-input>
+            <div class="info">
+              <div class="flex padding-v row" [attr.creditCardInfocreditCardType]="combindInfo.id">
+                <span class="label">信用卡</span>
+                <span>{{getCreditCardInfoName(combindInfo)}}</span>
+                <ion-icon name="caret-down-outline" class="down" (click)="onOpenSelect(creditCardTypeEle)"></ion-icon>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardInfocreditCardNumber]="combindInfo.id">
+                <span class="label">信用卡号</span>
+                <ion-input [(ngModel)]="combindInfo.creditCardInfo.creditCardNumber" placeholder="信用卡卡号"></ion-input>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardInfocreditCardCvv]="combindInfo.id">
+                <span class="label">CVV</span>
+                <ion-input [(ngModel)]="combindInfo.creditCardInfo.creditCardCvv" placeholder="CVV"></ion-input>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardInfoexpirationYear]="combindInfo.id">
+                <span class="label">有效期</span>
+                <span>{{combindInfo.creditCardInfo.expirationYear}}</span>
+                <ion-icon name="caret-down-outline" class="down" (click)="onOpenSelect(expirationYearEle)"></ion-icon>
+                <span>{{combindInfo.creditCardInfo.expirationMonth+"月"}}</span>
+                <ion-icon name="caret-down-outline" class="down" (click)="onOpenSelect(expirationMonthEle)"></ion-icon>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardPersionInfocredentialType]="combindInfo.id" (click)="onOpenSelect(cctypeEle)">
+                <span class="label">证件类型</span>
+                <span> {{getCredentialTypeName(combindInfo)}}</span>
+                <ion-icon name="caret-down-outline" class="down"></ion-icon>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardPersionInfoname]="combindInfo.id">
+                <span class="label">姓名</span>
+                <ion-input [(ngModel)]="combindInfo.creditCardPersionInfo.name" type="text" placeholder="持卡人姓名"></ion-input>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardPersionInfocredentialNumber]="combindInfo.id">
+                <span class="label">证件号码</span>
+                <ion-input [(ngModel)]="combindInfo.creditCardPersionInfo.credentialNumber" type="text" placeholder="持卡人证件号码"></ion-input>
+              </div>
             </div>
           </div>
         </ion-list>
