@@ -13,7 +13,6 @@ ion-item {
 }
 ion-content {
   ion-list + ion-list {
-    padding: 0.3em 0;
     margin: 10px;
     border-radius: 10px;
   }
@@ -42,7 +41,6 @@ ion-content {
     align-items: flex-start;
   }
   ion-item-group {
-    margin: 0.5em;
     &.n-m {
       margin: 0;
     }
@@ -86,11 +84,12 @@ ion-content {
     margin: -3px 0.3em;
   }
   .passenger {
-    font-size: 18px;
+    font-size: 16px;
     font-family: PingFang SC;
     font-weight: bold;
     color: #333333;
-    margin-left: 15px;
+    margin-left: 20px;
+    width: 100px;
   }
   .con-div {
     display: flex;
@@ -99,7 +98,7 @@ ion-content {
   }
   .ion-mobile,
   .ion-email {
-    margin-left: 1.1em;
+    margin: 0 20px;
     max-width: 6em;
     font-size: 14px;
   }
@@ -111,6 +110,7 @@ ion-content {
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
+    height: 35p
   }
 }
 .spacebetween {
@@ -164,7 +164,7 @@ ion-content {
 }
 .otherinfo {
   font-size: 14px;
-  margin-left: 1.1em;
+  margin-left: 20px;
   .other {
     display: flex;
     align-items: center;
@@ -251,14 +251,14 @@ ion-footer .toolbar {
 }
 .info {
   width: 100%;
-  padding: 0.5em;
+  padding: 0.5em 0;
 }
 .section {
   margin-top: 1em;
 }
 
 .padding-v {
-  margin-left: 1.1em;
+  margin-left: 20px;
   font-size: 14px;
   display: flex;
   .label {
@@ -277,4 +277,8 @@ ion-footer .toolbar {
     margin-left: 25px;
     max-width: 6.5em;
   }
+}
+
+ion-item{
+  --min-height: 35px;
 }
