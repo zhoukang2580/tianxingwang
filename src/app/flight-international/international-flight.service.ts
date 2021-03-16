@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import { FlightFareEntity } from "./../flight/models/FlightFareEntity";
 import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
@@ -700,8 +700,8 @@ export class InternationalFlightService {
         this.flightListResult.FlightSegments.length
       ) {
         let result = this.flightListResult;
-        const policyResult = await this.checkRoutePolicy(result);
-        this.initRoutePolicy(policyResult);
+        // const policyResult = await this.checkRoutePolicy(result);
+        // this.initRoutePolicy(policyResult);
         result = this.initParagraphFlightRoutes(result);
         if (!keepFilterCondition) {
           await this.initParagraphCondition(result);
@@ -717,12 +717,60 @@ export class InternationalFlightService {
         return it;
       }),
     });
-    let date = this.calendarService.getMoment(0).format("YYYY-MM-DD");
-    let fromAirports: string[];
-    let toAirports: string[];
+    const c = this.getSearchC();
     const req = new RequestEntity();
     req.Method = `TmcApiInternationalFlightUrl-Home-Index`;
+    req.Data = {
+      Date: c.date,
+      FromAirport: c.fromAirports.join(","),
+      ToAirport: c.toAirports.join(","),
+      VoyageType: search.voyageType,
+      travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
+      Cabin: FlightCabinInternationalType[search.cabin && search.cabin.value],
+    };
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在获取航班列表...";
+    return this.apiService
+      .getPromiseData<FlightResultEntity>(req)
+      .then((r) => {
+        if (r) {
+          if (r.FlightFares) {
+            r.FlightFares.forEach((f) => {
+              f.color = "secondary";
+            });
+          }
+          this.flightListResult = r;
+          if (!r.flightRoutesData) {
+            r.flightRoutesData = r.FlightRoutes;
+          }
+        }
+        // return this.checkRoutePolicy(this.flightListResult);
+        return this.flightListResult;
+      })
+      .then((res) => {
+        if (res) {
+          if (!res.flightRoutesData) {
+            res.flightRoutesData = res.FlightRoutes;
+          }
+          // this.initRoutePolicy(res);
+        }
+        this.flightListResult = this.initFlightRouteSegments(
+          this.flightListResult
+        );
+        return this.initParagraphCondition(this.flightListResult).then(
+          () => this.flightListResult
+        );
+      })
+      .then((data) => {
+        return this.initFlightRoutesMinPriceFlightFare(data);
+      });
+  }
+  private getSearchC() {
+    let date = this.calendarService.getMoment(0).format("YYYY-MM-DD");
     let days: string[] = [];
+    let fromAirports: string[];
+    let toAirports: string[];
+    const search = this.searchModel;
     if (search.voyageType == FlightVoyageType.OneWay) {
       const trip = search.trips[0];
       date = trip.date;
@@ -746,43 +794,68 @@ export class InternationalFlightService {
         .map((it) => it.toCity && it.toCity.AirportCityCode)
         .filter((it) => !!it);
     }
-    req.Data = {
-      Date: date,
-      FromAirport: fromAirports.join(","),
-      ToAirport: toAirports.join(","),
-      VoyageType: search.voyageType,
-      travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
-      Cabin: FlightCabinInternationalType[search.cabin && search.cabin.value],
+    return {
+      date,
+      days,
+      fromAirports,
+      toAirports,
     };
+  }
+  loadListDetail(fr: FlightRouteEntity) {
+    const req = new RequestEntity();
+    req.Method = `TmcApiInternationalFlightUrl-Home-Detail`;
     req.IsShowLoading = true;
-    req.LoadingMsg = "正在获取航班列表...";
-    return this.apiService
-      .getPromiseData<FlightResultEntity>(req)
-      .then((r) => {
-        if (r) {
-          if (r.FlightFares) {
-            r.FlightFares.forEach((f) => {
-              f.color = "secondary";
-            });
+    const pid =
+      (this.getBookInfos()[0] &&
+        this.getBookInfos()[0].passenger &&
+        this.getBookInfos()[0].passenger.Policy &&
+        this.getBookInfos()[0].passenger.Policy.Id) ||
+      "";
+    const lastTrip = this.searchModel.trips[this.searchModel.trips.length - 1];
+    const date = (fr.FirstTime || lastTrip.date).substr(0, 10);
+    const froutes = this.searchModel.trips
+      .filter((it) => !!it.bookInfo)
+      .map((it) => it.bookInfo.flightRoute)
+      .concat(fr);
+    const c = this.getSearchC();
+    req.Data = {
+      FlightQuery: JSON.stringify({
+        Date: date,
+        FromAirport: c.fromAirports.join(","),
+        ToAirport: c.toAirports.join(","),
+        VoyageType: this.searchModel.voyageType,
+        Cabin: FlightCabinInternationalType[this.searchModel.cabin.value],
+        FlightRoutes: JSON.stringify(froutes),
+        FlightSegments: JSON.stringify(
+          froutes
+            .map((r) => r.FlightSegments)
+            .reduce((acc, seg) => {
+              acc = [...acc, ...seg];
+              return acc;
+            }, [])
+        ),
+      }),
+      PolicyId: pid,
+    };
+    return this.apiService.getPromiseData<FlightResultEntity>(req).then((r) => {
+      if (r) {
+        fr.isLoadDetail = r.FlightFares && r.FlightFares.length > 0;
+        fr.flightFares = r.FlightFares.map((it) => {
+          if (it) {
+            it.color = "secondary";
+            if (!it.IsAllowOrder) {
+              it.color = "danger";
+              it.disabled = true;
+            }
           }
-          this.flightListResult = r;
-          if (!r.flightRoutesData) {
-            r.flightRoutesData = r.FlightRoutes;
-          }
-        }
-        return this.checkRoutePolicy(this.flightListResult);
-      })
-      .then((policyResult) => {
-        if (policyResult) {
-          if (!policyResult.flightRoutesData) {
-            policyResult.flightRoutesData = policyResult.FlightRoutes;
-          }
-          this.initRoutePolicy(policyResult);
-        }
-        return this.initParagraphCondition(this.flightListResult).then(
-          () => this.flightListResult
-        );
-      });
+          return it;
+        });
+        fr.minPriceFlightFare = this.getMinPriceFlightFare(r.FlightFares, [
+          fr.Id,
+        ]);
+      }
+      return r;
+    });
   }
   private initRoutePolicy(policyResult: FlightResultEntity) {
     if (policyResult) {
@@ -812,7 +885,6 @@ export class InternationalFlightService {
         }
       }
     }
-    this.flightListResult = this.initFlightRouteSegments(this.flightListResult);
   }
   async checkPolicy(route: FlightRouteEntity, flightFare: FlightFareEntity) {
     try {
@@ -868,7 +940,7 @@ export class InternationalFlightService {
             const s = new FlightSegmentEntity();
             s.Id = seg.Id;
             s.Duration = seg.Duration;
-            s.Number=seg.Number;
+            s.Number = seg.Number;
             return s;
           }),
         FlightFare: {
@@ -1249,25 +1321,32 @@ export class InternationalFlightService {
             });
           }
         }
-        const routeIds = m.trips
-          .filter((it) => it.bookInfo && !!it.bookInfo.flightRoute)
-          .map((it) => it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id)
-          .filter((it) => !!it);
-        const fares = data.FlightFares.filter((it) => {
-          const temp = it.FlightRouteIds || [];
-          return temp.join(",") === [...routeIds, r.Id].join(",");
-        });
-        fares.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
-        r.flightFares = fares;
-        const flightFare = this.getMinPriceFlightFare(fares, routeIds);
-        if (flightFare) {
-          r.minPriceFlightFare = flightFare;
-        }
+
         return r;
       });
       this.setFilterConditionSource(condition);
       console.timeEnd("initParagraphCondition");
     }
+  }
+  private initFlightRoutesMinPriceFlightFare(data: FlightResultEntity) {
+    const m = this.getSearchModel();
+    const routeIds = m.trips
+      .filter((it) => it.bookInfo && !!it.bookInfo.flightRoute)
+      .map((it) => it.bookInfo.flightRoute && it.bookInfo.flightRoute.Id)
+      .filter((it) => !!it);
+    data.FlightRoutes.forEach((r) => {
+      const fares = data.FlightFares.filter((it) => {
+        const temp = it.FlightRouteIds || [];
+        return temp.join(",") === [...routeIds, r.Id].join(",");
+      });
+      fares.sort((a, b) => +a.SalesPrice - +b.SalesPrice);
+      r.flightFares = fares;
+      const flightFare = this.getMinPriceFlightFare(fares, [...routeIds, r.Id]);
+      if (flightFare) {
+        r.minPriceFlightFare = flightFare;
+      }
+    });
+    return data;
   }
   private initFlightRouteSegments(data: FlightResultEntity) {
     if (data && data.FlightSegments && data.FlightFares) {

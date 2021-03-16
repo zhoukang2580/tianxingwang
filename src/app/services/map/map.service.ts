@@ -656,7 +656,7 @@ export class MapService {
     };
     const latestLocatePos = await this.getLatestLocatePos();
     if (latestLocatePos && latestLocatePos.city) {
-      result={} as any;
+      result = {} as any;
       result.city = latestLocatePos.city;
       result.position = latestLocatePos.position;
       this.getPosResult();
@@ -666,10 +666,13 @@ export class MapService {
     return result;
   }
   private getPosByIp(): Promise<MapPoint> {
-    return new Promise<MapPoint>((s) => {
+    return new Promise<MapPoint>(async (s) => {
       if (!window["BMap"]) {
-        console.error("getCityNameByIp,BMap 地图尚未加载。。。");
-        s(null);
+        await this.initBMap();
+        if(!window["BMap"]){
+          console.error("getCityNameByIp,BMap 地图尚未加载。。。");
+          s(null);
+        }
       }
       const myCity = new window["BMap"].LocalCity();
       let timeout = false;

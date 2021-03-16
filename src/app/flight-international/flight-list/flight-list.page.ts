@@ -141,31 +141,35 @@ export class FlightListPage implements OnInit, OnDestroy {
     });
   }
   async onSelectTrip(flightRoute: FlightRouteEntity, fare?: FlightFareEntity) {
-    console.log(this.searchModel, "this.searchModel");
-    if (this.searchModel && this.searchModel.trips) {
-      let trip = this.searchModel.trips.find((it) => !it.bookInfo);
-      this.isLastTrip =
-        this.searchModel.trips.findIndex((it) => it == trip) ==
-        this.searchModel.trips.length - 1;
+    try {
+      console.log(this.searchModel, "this.searchModel");
+      if (this.searchModel && this.searchModel.trips) {
+        let trip = this.searchModel.trips.find((it) => !it.bookInfo);
+        this.isLastTrip =
+          this.searchModel.trips.findIndex((it) => it == trip) ==
+          this.searchModel.trips.length - 1;
 
-      if (!trip) {
-        trip = this.searchModel.trips[this.searchModel.trips.length - 1];
+        if (!trip) {
+          trip = this.searchModel.trips[this.searchModel.trips.length - 1];
+        }
+        if (this.isLastTrip) {
+          this.onToggleFlightFare(flightRoute);
+          return;
+        }
+        if (fare) {
+          flightRoute.selectFlightFare = fare;
+        }
+        trip.bookInfo = {
+          fromSegment: flightRoute.fromSegment,
+          toSegment: flightRoute.toSegment,
+          flightRoute: flightRoute,
+          id: AppHelper.uuid(),
+        };
+        this.flightService.setSearchModelSource(this.searchModel);
+        this.doRefresh();
       }
-      if (this.isLastTrip) {
-        this.onToggleFlightFare(flightRoute);
-        return;
-      }
-      if (fare) {
-        flightRoute.selectFlightFare = fare;
-      }
-      trip.bookInfo = {
-        fromSegment: flightRoute.fromSegment,
-        toSegment: flightRoute.toSegment,
-        flightRoute: flightRoute,
-        id: AppHelper.uuid(),
-      };
-      this.flightService.setSearchModelSource(this.searchModel);
-      this.doRefresh();
+    } catch (e) {
+      AppHelper.alert(e);
     }
   }
   onShowMoreRuleMessage(flightfare: FlightFareEntity) {
@@ -324,14 +328,14 @@ export class FlightListPage implements OnInit, OnDestroy {
           0,
           this.pageSize
         );
-        this.flightRoutes.forEach((it) => {
-          it.vmFares = [];
-          it.isShowFares = false;
-          if (it.flightFares && it.flightFares.length < this.farePageSize) {
-            it.isShowFares = true;
-            it.vmFares = it.flightFares;
-          }
-        });
+        // this.flightRoutes.forEach((it) => {
+        //   it.vmFares = [];
+        //   it.isShowFares = false;
+        //   if (it.flightFares && it.flightFares.length < this.farePageSize) {
+        //     it.isShowFares = true;
+        //     it.vmFares = it.flightFares;
+        //   }
+        // });
       }
       this.scrollToTop();
       this.isLastTrip = this.checkIsLastTrip();
@@ -340,45 +344,50 @@ export class FlightListPage implements OnInit, OnDestroy {
       AppHelper.alert(e);
     }
   }
-  onToggleFlightFare(fr: FlightRouteEntity) {
-    if (this.reqAnimate) {
-      clearTimeout(this.reqAnimate);
-    }
-    if (fr) {
-      fr.isShowFares = !fr.isShowFares;
-      if (!fr.isShowFares) {
-        fr.vmFares = [];
-        return;
+  async onToggleFlightFare(fr: FlightRouteEntity) {
+    try {
+      await this.flightService.loadListDetail(fr);
+      if (this.reqAnimate) {
+        clearTimeout(this.reqAnimate);
       }
-      this.flightRoutes.forEach((r) => {
-        r.vmFares = [];
-        r.isShowFares = r == fr;
-      });
-      const r = this.flightRoutes.find((it) => it.isShowFares);
-      if (r) {
-        r.vmFares = [];
-        const loop = (timeout = 100) => {
-          if (!fr.isShowFares) {
-            r.vmFares = [];
-            clearTimeout(this.reqAnimate);
-            return;
-          }
-          console.log("looping");
-          const arr = fr.flightFares.slice(
-            fr.vmFares.length,
-            this.farePageSize + fr.vmFares.length
-          );
-          if (arr.length) {
-            r.vmFares = r.vmFares.concat(arr);
-            this.reqAnimate = setTimeout(() => {
-              loop();
-            }, timeout);
-          } else {
-            clearTimeout(this.reqAnimate);
-          }
-        };
-        loop(500);
+      if (fr) {
+        fr.isShowFares = !fr.isShowFares;
+        if (!fr.isShowFares) {
+          fr.vmFares = [];
+          return;
+        }
+        this.flightRoutes.forEach((r) => {
+          r.vmFares = [];
+          r.isShowFares = r == fr;
+        });
+        const r = this.flightRoutes.find((it) => it.isShowFares);
+        if (r) {
+          r.vmFares = [];
+          const loop = (timeout = 100) => {
+            if (!fr.isShowFares) {
+              r.vmFares = [];
+              clearTimeout(this.reqAnimate);
+              return;
+            }
+            console.log("looping");
+            const arr = fr.flightFares.slice(
+              fr.vmFares.length,
+              this.farePageSize + fr.vmFares.length
+            );
+            if (arr.length) {
+              r.vmFares = r.vmFares.concat(arr);
+              this.reqAnimate = setTimeout(() => {
+                loop();
+              }, timeout);
+            } else {
+              clearTimeout(this.reqAnimate);
+            }
+          };
+          loop(500);
+        }
       }
+    } catch (e) {
+      console.error(e);
     }
   }
 

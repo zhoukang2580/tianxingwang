@@ -35,6 +35,12 @@
     small {
       font-size: 9px;
     }
+    .tip {
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: var(--ion-color-success);
+      text-align: end;
+    }
   }
   .center {
     margin: 0 1em;

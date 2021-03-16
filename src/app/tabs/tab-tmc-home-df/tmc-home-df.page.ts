@@ -305,7 +305,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       const ss = seconds - d * 24 * 3600 - h * 3600 - mm * 60;
       return `${d > 0 ? d + "天" : ""}${
         d > 0 ? h + "小时" : h > 0 ? h + "小时" : ""
-      }${mm > 0 ? mm + "分钟" : mm}${this.getHHMM(ss)}秒`;
+      }${mm > 0 ? mm + "分钟" : ""}${this.getHHMM(ss)}秒`;
     }
     return "";
   }
@@ -535,22 +535,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         disableOnInteraction: false,
       },
       speed: 1000,
-      // effect: "coverflow",
-      // slidesPerView: 3,
-      // centeredSlides: true,
-      // coverflowEffect: {
-      //   rotate: 30,
-      //   stretch: 10,
-      //   depth: 60,
-      //   modifier: 2,
-      //   slideShadows: true,
-      // },
     };
-    setTimeout(() => {
-      if (this.tripEle && this.tripEle.nativeElement) {
-        this.tripEleSwiper = new Swiper(this.tripEle.nativeElement, mySwiper);
-      }
-    }, 200);
+    if (this.tripEle && this.tripEle.nativeElement) {
+      this.tripEleSwiper = new Swiper(this.tripEle.nativeElement, mySwiper);
+    }
   }
 
   private initAnnouncementSwiper() {
@@ -844,8 +832,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
                 it.Second--;
                 it.displayTimeName = this.calcDayFormat(it.Second);
               } else {
-                it.displayTimeName = "";
-                this.tripList.splice(idx, 1);
+                // it.displayTimeName = "";
+                // this.tripList.splice(idx, 1);
+                // if (this.tripEleSwiper) {
+                //   this.tripEleSwiper.update();
+                // }
               }
             });
             if (

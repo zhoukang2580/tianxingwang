@@ -8,11 +8,16 @@ import {
   AfterViewInit,
   ViewChild,
 } from "@angular/core";
-import { PopoverController, IonInput, IonList, IonSelect } from "@ionic/angular";
+import {
+  PopoverController,
+  IonInput,
+  IonList,
+  IonSelect,
+} from "@ionic/angular";
 import { Component, OnInit, Input, Output } from "@angular/core";
 import { Subscription, fromEvent } from "rxjs";
-import { TmcService, TravelUrlInfo } from 'src/app/tmc/tmc.service';
-import { SelectTravelNumberComponent } from 'src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component';
+import { TmcService, TravelUrlInfo } from "src/app/tmc/tmc.service";
+import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
 @Component({
   selector: "app-flight-outnumber",
   templateUrl: "./flight-outnumber.component.html",
@@ -67,13 +72,13 @@ export class FlightOutNumberComponent
     if (evt && evt.detail && !evt.detail.value && ele) {
       try {
         ele["el"].shadowRoot.querySelector(".select-text").textContent = "";
-      } catch (e) {
-
-      }
+      } catch (e) {}
     }
   }
   onOpenSelect(el: IonSelect, disabled) {
-    if (disabled) { return; }
+    if (disabled) {
+      return;
+    }
     el.open();
   }
   onChange(arg: ITmcOutNumberInfo, evt: CustomEvent) {
@@ -95,7 +100,7 @@ export class FlightOutNumberComponent
   compareWithFn(o1: string, o2: string) {
     return o1 == o2;
   }
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -138,12 +143,13 @@ export class FlightOutNumberComponent
       );
       if (result) {
         tmcOutNumberInfos.forEach((info) => {
-          info.loadTravelUrlErrorMsg =
-            result[info.staffNumber] && result[info.staffNumber].Message;
+          // info.loadTravelUrlErrorMsg =
+          //   result[info.staffNumber] && result[info.staffNumber].Message;
           info.travelUrlInfos =
             (result[info.staffNumber] && result[info.staffNumber].Data) || [];
           if (info.travelUrlInfos.length) {
-            info.loadTravelUrlErrorMsg = info.loadTravelUrlErrorMsg || "请选择";
+            info.loadTravelUrlErrorMsg =
+              info.travelUrlInfos.length > 1 ? "请选择" : "";
             if (info.loadTravelUrlErrorMsg.includes("failure response")) {
               info.loadTravelUrlErrorMsg = "暂无数据";
             }

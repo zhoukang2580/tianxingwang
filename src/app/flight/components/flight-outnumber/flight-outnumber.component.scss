@@ -21,12 +21,12 @@
 //   font-size:14px;
 // }
 .row {
-  padding: 1em;
+  padding: 0.5em 1em;
   display: flex;
   align-items: center;
   font-size: 14px;
   .label {
-    width: 90px;
+    width: 102px;
     font-family: PingFang SC;
     font-weight: 500;
     color: #666666;
@@ -38,7 +38,7 @@
   .emails {
     &.ismulti .label {
       align-self: flex-start;
-      padding-top: 1em;
+      padding-top: 0.5em;
     }
   }
   ion-input {

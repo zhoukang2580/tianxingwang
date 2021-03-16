@@ -12,7 +12,7 @@
 .item-wrapper {
   position: relative;
   margin-bottom: 0.5em;
-  // border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
+  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
   &.warning {
     background-color: rgba(var(--ion-color-warning-rgb), 0.13);
   }

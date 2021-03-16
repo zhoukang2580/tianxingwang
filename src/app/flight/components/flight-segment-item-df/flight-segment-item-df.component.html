@@ -36,7 +36,10 @@
       </div>
     </div>
     <div class="row2">
-      <div class="price" *ngIf='isShowPrice'><small>￥</small>{{(segment?.LowestFare)|flightprice}}</div>
+      <div class="price" *ngIf='isShowPrice'>
+        <small>￥</small>{{(segment?.LowestFare)|flightprice}}
+        <div class="tip" *ngIf='segment.isLowestPrice'>{{langOpt.lowestPrice}}</div>
+      </div>
       <div class="air">
         <!-- <ng-container *ngIf='isHasAgreement'>
           <span (click)="onShowAgreement($event)" class="agreement">{{langOpt.agreement}}</span>

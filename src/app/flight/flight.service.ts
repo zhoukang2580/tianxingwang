@@ -1162,6 +1162,15 @@ export class FlightService {
     return this.policyFlights;
   }
   private async getFlightSegmentDetail(s: FlightSegmentEntity) {
+    let ADTPtcs = this.getPassengerBookInfos().length;
+    const isSelf = this.staffService.isSelfBookType();
+    if (isSelf) {
+      ADTPtcs=1;
+    }
+    if (ADTPtcs > 9) {
+      AppHelper.alert("添加的乘客数量不能超过9个");
+      return;
+    }
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Detail`;
     req.Version = "2.0";
@@ -1175,6 +1184,7 @@ export class FlightService {
       FlightNumber: s.Number,
       FromAsAirport: search.FromAsAirport,
       ToAsAirport: search.ToAsAirport,
+      ADTPtcs,
     };
     if (req.Language) {
       req.Data.Lang = req.Language;

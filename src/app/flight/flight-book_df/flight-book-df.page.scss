@@ -231,7 +231,6 @@
 
 .section {
   border-radius: 10px;
-  padding: 0.5em 0;
   margin: 0.5em;
   background-color: var(--ion-color-light);
   &.n-p-b {
@@ -245,25 +244,25 @@
   .title {
     display: flex;
     justify-content: space-between;
-    padding: 1em;
+    padding: 0.5em;
     border-bottom: 1px solid #eee;
     &.n-b {
       border: none;
     }
     .name {
-      font-size: 18px;
+      font-size: 15px;
       font-family: PingFang SC;
       font-weight: bold;
       color: #333333;
     }
   }
   .row {
-    padding: 1em;
+    padding: 0.5em 1em;
     display: flex;
     align-items: center;
     font-size: 14px;
     .label {
-      width: 90px;
+      width: 102px;
       font-family: PingFang SC;
       font-weight: 500;
       color: #666666;

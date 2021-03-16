@@ -42,10 +42,10 @@
                         </div>
                         <img class="editicon" src="assets/images/editicon.png" alt="" (click)='onChangeCredential(credentialSelect,combindInfo)'>
                         <ion-text class='add' *ngIf='isself' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
-                        <div class="toggle-icon">
+                        <!-- <div class="toggle-icon">
                             <ion-icon name="chevron-down-outline" (click)='onToggleIsShowDetail(combindInfo)' *ngIf='!combindInfo.isShowDetail'></ion-icon>
                             <ion-icon name="chevron-up-outline" (click)='onToggleIsShowDetail(combindInfo)' *ngIf='combindInfo.isShowDetail'></ion-icon>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="flight-info">
                         <ng-container [ngTemplateOutlet]='fsgm' [ngTemplateOutletContext]='{obj:{s:combindInfo.modal?.bookInfo?.flightSegment,combindInfo:combindInfo}}'></ng-container>
@@ -103,7 +103,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="section" [class.hidden]='!combindInfo.isShowDetail'>
+                <div class="section">
                     <div class="title">
                         <div class="name">
                             旅客信息
@@ -113,7 +113,7 @@
                             <ion-icon name="chevron-up-outline" (click)='onToggleShowCredentialDetail(combindInfo)' *ngIf='combindInfo.isShowCredentialDetail'></ion-icon>
                         </div>
                     </div>
-                    <div class="info">
+                    <div class="info" [class.hidden]='!combindInfo.isShowCredentialDetail'>
                         <div class="row" [attr.mobileid]='combindInfo.id'>
                             <div class="label">联系方式</div>
                             <div class="value">
@@ -170,7 +170,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="section" [class.hidden]='!combindInfo.isShowDetail'>
+                <div class="section">
                     <div class="title">
                         <div class="name">
                             出差信息
@@ -180,12 +180,20 @@
                             <ion-icon name="chevron-up-outline" (click)='onToggleShowTravelDetail(combindInfo)' *ngIf='combindInfo.isShowTravelDetail'></ion-icon>
                         </div>
                     </div>
-                    <div class="info">
+                    <div class="info" [class.hidden]='!combindInfo.isShowTravelDetail'>
                         <ng-container *ngIf='combindInfo?.modal?.bookInfo?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
-                            <div class="row illegal" (click)='onSelectIllegalReason(combindInfo)' [attr.illegalReasonsid]='combindInfo.id'>
+                            <div class="row illegal" (click)='onSelectIllegalReason(combindInfo)' [attr.illegalReasonsid]='combindInfo.id' *ngIf='illegalReasons?.length'>
                                 <div class="label">超标原因</div>
-                                <div class="vlaue">{{combindInfo?.illegalReason}}</div>
+                                <div class="value">{{combindInfo?.illegalReason}}</div>
                                 <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
+                            </div>
+                            <div class="row illegal-custom-reason " *ngIf='tmc?.IsAllowCustomReason'>
+                                <div class="label">
+                                    其他原因
+                                </div>
+                                <div class="value">
+                                    <ion-input [(ngModel)]='combindInfo.otherIllegalReason' placeholder='请输入其他原因'></ion-input>
+                                </div>
                             </div>
                         </ng-container>
                         <div class="outnumbers" [attr.outnumberid]='combindInfo.id' *ngIf='combindInfo.isShowGroupedInfo'>
@@ -216,16 +224,7 @@
                             </ion-text>
                             <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                         </div>
-                        <div class="showmore" *ngIf='combindInfo.isShowTravelDetail'>
-                            <div class="row illegal " *ngIf='tmc?.IsAllowCustomReason'>
-                                <div class="label">
-                                    其他原因
-                                </div>
-                                <div class="value">
-                                    <ion-input [(ngModel)]='combindInfo.otherIllegalReason' placeholder='请输入其他原因'></ion-input>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
                 <div class='section' *ngIf='combindInfo.isShowGroupedInfo'>
@@ -313,7 +312,7 @@
                 <ion-button slot='end' size='small' color='secondary' (click)='bookFlight(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
             </div>
             <div class="submit-btn">
-                <ion-button slot='end' size='small' fill='clear' (click)='bookFlight(false,$event)' [disabled]='isSubmitDisabled'> 提交
+                <ion-button slot='end' size='small' fill='clear' (click)='bookFlight(false,$event)' [disabled]='isSubmitDisabled'> 生成订单
                 </ion-button>
             </div>
         </div>

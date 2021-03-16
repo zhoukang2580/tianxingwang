@@ -554,27 +554,32 @@ export class FlightBookDfPage
       }
     });
     const result = await this.tmcService.getTravelUrls(args);
-    const trvaelNumber = this.tmcService.getTravelFormNumber();
+    const travelnumber = this.tmcService.getTravelFormNumber();
     if (result) {
       this.vmCombindInfos.forEach((combindInfo) => {
         if (combindInfo.tmcOutNumberInfos) {
           combindInfo.tmcOutNumberInfos.forEach((info) => {
             if (info.label.toLowerCase() == "travelnumber") {
-              info.loadTravelUrlErrorMsg =
-                result[info.staffNumber] && result[info.staffNumber].Message;
               info.travelUrlInfos =
                 result[info.staffNumber] && result[info.staffNumber].Data;
               if (
                 !info.value &&
-                trvaelNumber &&
                 info.travelUrlInfos &&
                 info.travelUrlInfos.length
               ) {
-                // info.value = info.travelUrlInfos.find(
-                //   (it) => it.TravelNumber == trvaelNumber
-                // ).TravelNumber;
-                info.value = trvaelNumber;
-              } else {
+                info.value = travelnumber || "";
+                if (!info.value) {
+                  if (info.travelUrlInfos.length > 1) {
+                    info.value = "";
+                    info.placeholder = "请选择";
+                    info.loadTravelUrlErrorMsg = "请选择";
+                  } else {
+                    info.value = info.travelUrlInfos[0].TravelNumber;
+                    info.loadTravelUrlErrorMsg = "";
+                    info.placeholder = info.label;
+                  }
+                }
+              } else if (!travelnumber) {
                 info.value = "";
                 info.placeholder = "请选择";
               }
@@ -1604,6 +1609,7 @@ export class FlightBookDfPage
             +it.insuranceResult.Id
         );
         const combineInfo: ICombindInfo = {} as ICombindInfo;
+        combineInfo.isShowTravelDetail = true;
         combineInfo.selectedInsuranceProductId =
           forceInsurance &&
           forceInsurance.insuranceResult &&

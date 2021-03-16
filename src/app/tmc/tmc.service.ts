@@ -309,9 +309,34 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TripList";
     req.Data = {};
+    // return [
+    //   {
+    //     Type: "Hotel",
+    //     StartTime: "2021-03-22",
+    //     Second: 200,
+    //     Name: "测试",
+    //     FromName: "上海",
+    //     ToName: "北京",
+    //   },
+    //   {
+    //     Type: "Train",
+    //     StartTime: "2021-03-22",
+    //     Second: 200000,
+    //     Name: "测试",
+    //     FromName: "上海",
+    //     ToName: "北京",
+    //   },
+    //   {
+    //     Type: "Flight",
+    //     StartTime: "2021-03-22",
+    //     Second: 100000,
+    //     Name: "测试",
+    //     FromName: "上海",
+    //     ToName: "北京",
+    //   },
+    // ];
     return this.apiService.getPromiseData<any[]>(req);
   }
-
 
   async getIntegral(d: { Tag: string; PageSize: number }) {
     const req = new RequestEntity();
