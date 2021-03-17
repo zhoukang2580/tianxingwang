@@ -979,6 +979,8 @@ export class InternationalFlightService {
         } else {
           if (result.Policy.IsIllegal || result.Policy.Message) {
             flightFare.color = "warning";
+          } else if(!result.Policy.IsIllegal) {
+            flightFare.color = "success";
           }
         }
       }
