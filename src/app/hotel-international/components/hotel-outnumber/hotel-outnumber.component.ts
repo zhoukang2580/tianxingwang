@@ -63,6 +63,12 @@ export class InterHotelOutNumberComponent
       });
     }
   }
+  onOpenSelect(el: IonSelect, disabled) {
+    if (disabled) {
+      return;
+    }
+    el.open();
+  }
   onSelectChange(evt: CustomEvent, ele: IonSelect) {
     if (evt && evt.detail && !evt.detail.value && ele) {
       try{

@@ -1,25 +1,50 @@
-ion-input.travel-number {
-  font-size: 0.9rem;
+.row {
+  padding: 0.5em 1.6em;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  .label {
+    width: 102px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    // color: #666666;
+  }
+  .value {
+    flex: 1;
+  }
+  .mobiles,
+  .emails {
+    &.ismulti .label {
+      align-self: flex-start;
+      padding-top: 0.5em;
+    }
+  }
+  ion-input {
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --padding-start: 0;
+  }
+  ion-item {
+    font-size: 14px;
+    --padding-start: 0;
+    ion-checkbox {
+      width: 1.2em;
+      height: 1.2em;
+      margin: 0;
+    }
+  }
+  ion-icon {
+    opacity: 0.6;
+    font-size: 16px;
+    margin-left: auto;
+  }
+  &:not(:last-child) {
+    border-bottom: 1px solid #eeeeee;
+  }
+  &.n-b {
+    border: none;
+  }
 }
-ion-input {
-  text-align: end;
-}
-ion-icon {
-  font-size: 1rem;
-  margin-right: 0.2em;
-  margin-left: -0.5em;
-}
-.div {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-}
-.loading {
-  opacity: 0.4;
-  font-size: 0.8rem;
-}
-ion-item{
-  font-size:12px;
-  padding: 0 0.4em;
+:host {
+  width: 100%;
 }

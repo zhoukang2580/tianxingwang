@@ -168,6 +168,9 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
       })
     );
   }
+  onToggleShowTravelDetail(item: IPassengerHotelBookInfo) {
+    item.isShowTravelDetail = !item.isShowTravelDetail;
+  }
   calcNights(curSelectedBookInfo: IPassengerHotelBookInfo) {
     // this.curSelectedBookInfo = this.hotelService.getBookInfos()[0];
 
@@ -1056,6 +1059,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
           credentials.push(bookInfo.credential);
         }
         const combineInfo: IPassengerHotelBookInfo = {} as any;
+        combineInfo.isShowTravelDetail = true;
         const years = [];
         for (let j = 0; j <= 30; j++) {
           years.push(
@@ -1912,6 +1916,8 @@ interface IPassengerHotelBookInfo {
     name: string;
   };
   isShowApprovalInfo: boolean;
+  isShowOtherInfo: boolean;
+  isShowTravelDetail: boolean;
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;
   credential: CredentialsEntity;
