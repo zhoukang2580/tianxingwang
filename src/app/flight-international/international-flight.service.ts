@@ -811,8 +811,8 @@ export class InternationalFlightService {
         this.getBookInfos()[0].passenger.Policy &&
         this.getBookInfos()[0].passenger.Policy.Id) ||
       "";
-    const lastTrip = this.searchModel.trips[this.searchModel.trips.length - 1];
-    const date = (fr.FirstTime || lastTrip.date).substr(0, 10);
+    // const lastTrip = this.searchModel.trips[this.searchModel.trips.length - 1];
+    const dates =this.searchModel.trips.map(it=>it.date).join(",");
     const froutes = this.searchModel.trips
       .filter((it) => !!it.bookInfo)
       .map((it) => it.bookInfo.flightRoute)
@@ -828,9 +828,9 @@ export class InternationalFlightService {
       return;
     }
     req.Data = {
+      ADTPtcs,
       FlightQuery: JSON.stringify({
-        Date: date,
-        ADTPtcs,
+        Date: dates,
         FromAirport: c.fromAirports.join(","),
         ToAirport: c.toAirports.join(","),
         VoyageType: this.searchModel.voyageType,

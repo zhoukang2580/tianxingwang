@@ -164,13 +164,13 @@
                 <span class="label">超标原因：</span>{{combindInfo?.illegalReason}}
                 <ion-icon name="caret-down-outline" class='down' (click)='onSelectIllegalReason(combindInfo)'></ion-icon>
               </div>
-              <div class="flex padding-v row" *ngIf='true||tmc?.IsAllowCustomReason'>
+              <div class="flex padding-v row">
                 <span>其他原因：</span>
                 <ion-input [(ngModel)]='combindInfo.otherIllegalReason' placeholder='请输入其他原因'></ion-input>
               </div>
             </div>
             <div class="expanse" *ngIf='expenseTypes?.length'>
-              <div class="flex padding-v row" *ngIf='tmc?.IsAllowCustomReason'>
+              <div class="flex padding-v row">
                 <span class="label">费用类别：</span>
                 <span class="value">{{combindInfo.expenseType}}</span>
                 <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(expenseTypeSelect)'></ion-icon>
@@ -185,7 +185,7 @@
                 <ion-icon name="caret-down-outline" class='down'></ion-icon>
               </div>
             </div>
-            <div class="outnumbers" [attr.outnumberid]='combindInfo.id'>
+            <div class="outnumbers" [attr.outnumberid]='combindInfo.id' [class.hidden]='!combindInfo?.tmcOutNumberInfos?.length'>
               <app-inter-hotel-outnumber [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
               </app-inter-hotel-outnumber>
             </div>

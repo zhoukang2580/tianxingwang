@@ -1156,12 +1156,16 @@ export class FlightBookDfPage
         }
       }
       p.ExpenseType = combindInfo.expenseType;
+
       p.IllegalReason =
         (this.tmc &&
           this.tmc.IsAllowCustomReason &&
           combindInfo.otherIllegalReason) ||
         combindInfo.illegalReason ||
         "";
+      if (combindInfo.otherIllegalReason) {
+        p.IllegalReason = "";
+      }
       if (
         !combindInfo.modal.isNotWhitelist &&
         combindInfo.modal.bookInfo &&
@@ -1174,7 +1178,7 @@ export class FlightBookDfPage
           "illegalreasonsid",
           combindInfo.id
         );
-        if (!p.IllegalReason) {
+        if (!p.IllegalReason && !combindInfo.otherIllegalReason) {
           combindInfo.isShowTravelDetail = true;
           showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),
@@ -1195,6 +1199,7 @@ export class FlightBookDfPage
         }, 200);
         return false;
       }
+
       p.CostCenterCode =
         combindInfo.otherCostCenterCode ||
         (combindInfo.costCenter && combindInfo.costCenter.code) ||
