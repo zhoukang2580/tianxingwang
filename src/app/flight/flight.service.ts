@@ -1163,7 +1163,7 @@ export class FlightService {
   }
   private async getFlightSegmentDetail(s: FlightSegmentEntity) {
     let ADTPtcs = this.getPassengerBookInfos().length;
-    const isSelf = this.staffService.isSelfBookType();
+    const isSelf =await this.staffService.isSelfBookType();
     if (isSelf) {
       ADTPtcs=1;
     }

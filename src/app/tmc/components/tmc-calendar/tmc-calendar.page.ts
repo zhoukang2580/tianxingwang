@@ -241,7 +241,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       if (rect && rect.top) {
         this.isSrollToCurYm = true;
         const delta = rect.top - this.plt.height() / 3;
-        console.log("delta ", delta, rect);
         this.content.scrollByPoint(0, delta, 100);
       }
     }
@@ -256,13 +255,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.forType != FlightHotelTrainType.Train) {
       for (let i = 0; i < 2; i++) {
         const temp = m.clone().add(i, "months");
-        console.log(
-          "temp ",
-          temp.year(),
-          temp.month() + 1,
-          this.beginDate,
-          this.endDate
-        );
         this.calendars.push(
           this.calendarService.generateYearNthMonthCalendar(
             temp.year(),
@@ -286,9 +278,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     const st = Date.now();
     const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
     const goDate = m.format("YYYY-MM-DD");
-    // if (!this.selectedDays || !this.selectedDays.length) {
-    //   goDate = "";
-    // }
     if (this.calendars && this.calendars.length) {
       const type = this.forType;
       if (
@@ -296,26 +285,26 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
         this.tripType == TripType.checkOut ||
         this.forType == FlightHotelTrainType.InternationalFlight
       ) {
-        if (this.goArrivalTime) {
-          if (this.calendars.length) {
-            const endDay = this.calendarService.generateDayModel(
-              this.calendarService.getMoment(30)
-            );
-            this.calendars.forEach((day) => {
-              if (day.dayList) {
-                day.dayList.forEach((d) => {
+        // if (this.goArrivalTime) {
+        if (this.calendars.length) {
+          const endDay = this.calendarService.generateDayModel(
+            this.calendarService.getMoment(30)
+          );
+          this.calendars.forEach((day) => {
+            if (day.dayList) {
+              day.dayList.forEach((d) => {
+                d.enabled =
+                  AppHelper.getDate(d.date.substr(0, 10)).getTime() >=
+                  AppHelper.getDate(goDate).getTime();
+                if (type == FlightHotelTrainType.Train) {
                   d.enabled =
-                    AppHelper.getDate(d.date.substr(0, 10)).getTime() >=
-                    AppHelper.getDate(goDate).getTime();
-                  if (type == FlightHotelTrainType.Train) {
-                    d.enabled =
-                      d.timeStamp <= endDay.timeStamp ? d.enabled : false;
-                  }
-                });
-              }
-            });
-          }
+                    d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+                }
+              });
+            }
+          });
         }
+        // }
       } else {
         const today = this.calendarService.generateDayModel(
           this.calendarService.getMoment(0)
@@ -366,10 +355,14 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     if (!d.enabled) {
-      if(this.disabledSelectDateReason){
+      if (this.disabledSelectDateReason) {
         AppHelper.alert(this.disabledSelectDateReason);
-      }else{
-        AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
+      } else {
+        AppHelper.toast(
+          LanguageHelper.getSelectOtherFlyDayTip(),
+          1000,
+          "middle"
+        );
       }
       return;
     }

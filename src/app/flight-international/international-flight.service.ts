@@ -801,7 +801,7 @@ export class InternationalFlightService {
       toAirports,
     };
   }
-  loadListDetail(fr: FlightRouteEntity) {
+  async loadListDetail(fr: FlightRouteEntity) {
     const req = new RequestEntity();
     req.Method = `TmcApiInternationalFlightUrl-Home-Detail`;
     req.IsShowLoading = true;
@@ -811,16 +811,26 @@ export class InternationalFlightService {
         this.getBookInfos()[0].passenger.Policy &&
         this.getBookInfos()[0].passenger.Policy.Id) ||
       "";
-    const lastTrip = this.searchModel.trips[this.searchModel.trips.length - 1];
-    const date = (fr.FirstTime || lastTrip.date).substr(0, 10);
+    // const lastTrip = this.searchModel.trips[this.searchModel.trips.length - 1];
+    const dates =this.searchModel.trips.map(it=>it.date).join(",");
     const froutes = this.searchModel.trips
       .filter((it) => !!it.bookInfo)
       .map((it) => it.bookInfo.flightRoute)
       .concat(fr);
     const c = this.getSearchC();
+    let ADTPtcs = this.getBookInfos().length;
+    const isSelf = await this.staffService.isSelfBookType();
+    if (isSelf) {
+      ADTPtcs = 1;
+    }
+    if (ADTPtcs > 9) {
+      AppHelper.alert("添加的乘客数量不能超过9个");
+      return;
+    }
     req.Data = {
+      ADTPtcs,
       FlightQuery: JSON.stringify({
-        Date: date,
+        Date: dates,
         FromAirport: c.fromAirports.join(","),
         ToAirport: c.toAirports.join(","),
         VoyageType: this.searchModel.voyageType,
@@ -979,6 +989,8 @@ export class InternationalFlightService {
         } else {
           if (result.Policy.IsIllegal || result.Policy.Message) {
             flightFare.color = "warning";
+          } else if (!result.Policy.IsIllegal) {
+            flightFare.color = "success";
           }
         }
       }

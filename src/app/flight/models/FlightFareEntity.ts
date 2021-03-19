@@ -137,6 +137,9 @@ export class FlightFareEntity {
   /// 是否允许预订
   /// </summary>
   IsAllowOrder: boolean;
+
+  IsIllegal: boolean;
+  Message:string;
   /// <summary>
   /// 违规
   /// </summary>

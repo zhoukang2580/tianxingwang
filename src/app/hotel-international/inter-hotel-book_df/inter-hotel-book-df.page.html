@@ -33,9 +33,9 @@
               <ion-text *ngIf='isSelfBookType' class='ion-margin-start' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
             </div>
             <div class="hotel">
-              <div class="name padding-v"><img alt="" style="width: 40px;" src="assets/svgs/product-hotel1.svg"> {{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
+              <div class="name padding-v"><img alt="" style="width: 30px;" src="assets/svgs/product-hotel1.svg"> {{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div>
               <!-- <div class="name padding-v">酒店名称：{{combindInfo?.bookInfo?.bookInfo?.hotelEntity?.Name}} </div> -->
-              <div class="date font padding-v">
+              <div class="font padding-v">
                 <span>入离日期:</span>
                 <span>{{combindInfo?.bookInfo?.bookInfo?.roomPlan?.BeginDate?.substr(0,10)}}</span>
                 <span class="ion-margin-horizontal totals">共{{calcNights(combindInfo)}}晚</span>
@@ -51,28 +51,17 @@
                   <!-- <span *ngIf='combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]'>{{combindInfo.bookInfo.bookInfo.hotelRoom["roomArea"]}}</span> -->
                   <span>
                     <div class="selfpay">
-                        <ion-text *ngIf='hotelPaymentType==HotelPaymentType.SelfPay'>现付</ion-text>                  
-                        <ion-text *ngIf='hotelPaymentType==HotelPaymentType.Prepay'>预付</ion-text>             
-                        <ion-text *ngIf='hotelPaymentType==HotelPaymentType.Settle'>月付</ion-text>
+                      <ion-text *ngIf='hotelPaymentType==HotelPaymentType.SelfPay'>现付</ion-text>
+                      <ion-text *ngIf='hotelPaymentType==HotelPaymentType.Prepay'>预付</ion-text>
+                      <ion-text *ngIf='hotelPaymentType==HotelPaymentType.Settle'>月付</ion-text>
                     </div>
                   </span>
                 </ng-container>
               </div>
               <div lines='none' class="exceeding" *ngIf='getRuleMessage(combindInfo.bookInfo?.bookInfo?.roomPlan) as msg'>
                 <ion-label class='ion-text-wrap' color='danger'>超标:{{msg}}
-                  <!-- 违反提前3天以上预定航班的政策 -->
                 </ion-label>
               </div>
-              <!-- <div class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
-                <span class="label arrival-time">
-                  <ion-icon name="star" color='danger' style="font-size: 0.5rem;margin-right: 5px;"></ion-icon>到店时间：
-                </span>{{combindInfo?.arrivalHotelTime}}
-                <ion-icon name="caret-down-outline" (click)='onSelectDatetime(datetimeEl,combindInfo)'></ion-icon>
-              </div>  -->
-              <!-- <div *ngIf='combindInfo.bookInfo?.bookInfo?.roomPlan.BookType != HotelBookType.Elong' class="flex ion-padding-vertical b-top" [attr.arrivalHoteltimeid]='combindInfo.id'>
-                <span class="label arrival-time">床型需求（尽量安排）：</span>{{combindInfo.bookInfo?.bookInfo?.roomPlan.Remark}}
-                <ion-icon name="caret-down-outline" (click)='onBedChange(bedEle)'></ion-icon>
-              </div> -->
             </div>
           </div>
           <ion-item style="display: none;" lines='none'>
@@ -96,65 +85,55 @@
             </ion-select>
           </ion-item>
         </ion-list>
-        <ion-list class="passenger-info">
-          <div class="info">
-            <div class="title ion-padding-vertical">
-              旅客信息
-              <ion-icon name="caret-down-outline" class='down' *ngIf='!combindInfo["isShowOtherInfo"]' (click)='combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]'></ion-icon>
-              <ion-icon name="caret-up-outline" class='down' *ngIf='combindInfo["isShowOtherInfo"]' (click)='combindInfo["isShowOtherInfo"]=!combindInfo["isShowOtherInfo"]'></ion-icon>
+        <ion-list class="passenger-info section">
+          <div class="title">
+            <span class="name">旅客信息</span>
+            <div class="toggle-icon">
+              <ion-icon name="chevron-down-outline" (click)='combindInfo.isShowOtherInfo=!combindInfo.isShowOtherInfo' *ngIf='!combindInfo.isShowOtherInfo'></ion-icon>
+              <ion-icon name="chevron-up-outline" (click)='combindInfo.isShowOtherInfo=!combindInfo.isShowOtherInfo' *ngIf='combindInfo.isShowOtherInfo'></ion-icon>
             </div>
-            <div class="line"></div>
-            <div class="credentials costcenter">
-              <div class="flex padding-v mobiles" [class.multi]='combindInfo.credentialStaffMobiles?.length>1'>
+          </div>
+          <div class="info" [class.hidden]='!combindInfo.isShowOtherInfo'>
+            <div class="credentials costcenter row">
+              <div class="flex padding-v mobiles row" [class.multi]='combindInfo.credentialStaffMobiles?.length>1'>
                 <span class="label">联系电话</span>
                 <div *ngFor='let m of combindInfo.credentialStaffMobiles;' class="item">
                   <ion-checkbox [(ngModel)]='m.checked'></ion-checkbox><span (click)='m.checked=!m.checked'>{{m.mobile}}</span>
                 </div>
               </div>
-              <div class="line"></div>
-              <div class="flex padding-v emails" [class.multi]='combindInfo.credentialStaffEmails?.length>1'>
+              <div class="flex padding-v row">
+                <span class="label">其他电话：</span>
+                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='电话'></ion-input>
+              </div>
+              <div class="flex padding-v emails row" [class.multi]='combindInfo.credentialStaffEmails?.length>1'>
                 <span class="label">联系邮箱：</span>
                 <div *ngFor='let m of combindInfo.credentialStaffEmails;' class="item">
                   <ion-checkbox [(ngModel)]='m.checked'></ion-checkbox><span (click)='m.checked=!m.checked'>{{m.email}}</span>
                 </div>
               </div>
-              <div class="line"></div>
-              <div class="flex padding-v" (click)='searchCostCenter(combindInfo)'>
+              <div class="flex padding-v row">
+                <span class="label">其他邮箱：</span>
+                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='邮箱'></ion-input>
+              </div>
+              <div class="flex padding-v row" (click)='searchCostCenter(combindInfo)'>
                 <span class="label">部门：</span>{{combindInfo?.costCenter?.name}}
                 <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
               </div>
-              <div class="line"></div>
-              <div class="flex padding-v" (click)='searchOrganization(combindInfo)'>
+              <div class="flex padding-v row" (click)='searchOrganization(combindInfo)'>
                 <span class="label">成本中心：</span>{{combindInfo?.organization?.Name}}
                 <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
               </div>
             </div>
-            <div class="otherinfo" *ngIf='combindInfo["isShowOtherInfo"]'>
-              <div class="line"></div>
-              <div class="flex padding-v">
-                <span class="label">其他电话：</span>
-                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='电话'></ion-input>
-              </div>
-              <div class="line"></div>
-              <div class="flex padding-v">
-                <span class="label">其他邮箱：</span>
-                <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='邮箱'></ion-input>
-              </div>
-            </div>
-            <div class="occup" [attr.checkinpersionid]='combindInfo.id'>
-              <div class="line"></div>
-              <div class="flex padding-k" *ngFor='let c of combindInfo.checkInPersonInfos'>
+            <div class="occup row" [attr.checkinpersionid]='combindInfo.id'>
+              <div class="flex padding-k row" *ngFor='let c of combindInfo.checkInPersonInfos'>
                 <span class="label">{{c.isMain?"主入住人":"其他入住人"}}:</span>
                 <ion-input [(ngModel)]='c.lastName' [disabled]='c.isMain' placeholder='姓氏(英文/拼音)'></ion-input>
                 <ion-input [(ngModel)]='c.firstName' [disabled]='c.isMain' placeholder='名字(英文/拼音)'></ion-input>
-                <ion-button size='small' fill='clear' (click)='onRemoveCheckInPersion(c,combindInfo)'
-                  [style.visibility]='!c.isMain?"visibile":"collapse"'>
+                <ion-button size='small' fill='clear' (click)='onRemoveCheckInPersion(c,combindInfo)' [style.visibility]='!c.isMain?"visibile":"collapse"'>
                   <ion-icon name="close-circle-outline" color='dark'></ion-icon>
                 </ion-button>
               </div>
-              <div class="line"></div>
-              <ion-button color='secondary' expand='full' class='add_occupants' fill='clear'
-                (click)='onAddCheckInPersion(combindInfo)'>
+              <ion-button color='secondary' expand='full' size='small' class='add_occupants' fill='clear' (click)='onAddCheckInPersion(combindInfo)'>
                 <ion-icon name='add-outline'></ion-icon>
                 添加入住人
               </ion-button>
@@ -172,40 +151,41 @@
               </ion-select-option>
             </ion-select>
           </ion-item>
-          <div class="info padding-v">
-            <div class="title ion-padding-vertical">出差信息</div>
-            <div class="line"></div>
+          <div class="title">
+            <span class="name">出差信息</span>
+            <div class="toggle-icon">
+              <ion-icon name="chevron-down-outline" (click)='onToggleShowTravelDetail(combindInfo)' *ngIf='!combindInfo.isShowTravelDetail'></ion-icon>
+              <ion-icon name="chevron-up-outline" (click)='onToggleShowTravelDetail(combindInfo)' *ngIf='combindInfo.isShowTravelDetail'></ion-icon>
+            </div>
+          </div>
+          <div class="info" [class.hidden]='!combindInfo.isShowTravelDetail'>
             <div class="illegal" [attr.illegalReasonsid]='combindInfo.id' *ngIf='combindInfo?.bookInfo?.bookInfo?.roomPlan?.Rules && !combindInfo?.isNotWhitelist'>
-              <div class="flex padding-v">
+              <div class="flex padding-v row" *ngIf='illegalReasons?.length'>
                 <span class="label">超标原因：</span>{{combindInfo?.illegalReason}}
                 <ion-icon name="caret-down-outline" class='down' (click)='onSelectIllegalReason(combindInfo)'></ion-icon>
               </div>
-              <div class="line" *ngIf='tmc?.IsAllowCustomReason'></div>
-              <div class="flex padding-v" *ngIf='tmc?.IsAllowCustomReason'>
+              <div class="flex padding-v row">
                 <span>其他原因：</span>
                 <ion-input [(ngModel)]='combindInfo.otherIllegalReason' placeholder='请输入其他原因'></ion-input>
               </div>
             </div>
-            <div class="line" *ngIf='expenseTypes?.length'></div>
             <div class="expanse" *ngIf='expenseTypes?.length'>
-              <div class="flex padding-v" *ngIf='tmc?.IsAllowCustomReason'>
-                <span>费用类别：</span>
-                {{combindInfo.expenseType}}
+              <div class="flex padding-v row">
+                <span class="label">费用类别：</span>
+                <span class="value">{{combindInfo.expenseType}}</span>
                 <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(expenseTypeSelect)'></ion-icon>
               </div>
             </div>
-            <div class="line" *ngIf='isAllowSelectApprove(combindInfo)'></div>
             <div class="approval-info" *ngIf='isAllowSelectApprove(combindInfo)' [attr.approverid]='combindInfo.id' (click)='openApproverModal(combindInfo)'>
-              <div class="flex padding-v">
+              <div class="flex padding-v row">
                 <span class="label">审批人：</span>
-                <ion-text *ngIf='combindInfo?.appovalStaff'>
+                <ion-text *ngIf='combindInfo?.appovalStaff' class="value">
                   {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
                 </ion-text>
                 <ion-icon name="caret-down-outline" class='down'></ion-icon>
               </div>
             </div>
-            <div class="line" *ngIf='combindInfo?.tmcOutNumberInfos?.length'></div>
-            <div class="outnumbers" [attr.outnumberid]='combindInfo.id'>
+            <div class="outnumbers" [attr.outnumberid]='combindInfo.id' [class.hidden]='!combindInfo?.tmcOutNumberInfos?.length'>
               <app-inter-hotel-outnumber [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
               </app-inter-hotel-outnumber>
             </div>
@@ -241,7 +221,7 @@
         <ion-list class='section' *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
           <div class="info">
             <div class="flex padding-v">
-              <span class="label">服务费：</span>{{getServiceFee(combindInfo)}}元
+              <span class="label">服务费：</span><span class="value">{{getServiceFee(combindInfo)}}元</span>
             </div>
           </div>
         </ion-list>
@@ -275,47 +255,42 @@
               <ion-select-option value="{{CredentialsType.Other}}">其它</ion-select-option>
             </ion-select>
           </ion-item>
-          <div class="info">
-            <div class="title ion-padding-vertical">
-              信用卡信息
+          <div>
+            <div class="title ">
+              <span class="name">信用卡信息</span>
             </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardInfocreditCardType]='combindInfo.id'>
-              <span class="label">信用卡：</span> <span>{{getCreditCardInfoName(combindInfo)}}</span>
-              <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(creditCardTypeEle)'></ion-icon>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardInfocreditCardNumber]='combindInfo.id'>
-              <span class="label">信用卡号：</span>
-              <ion-input [(ngModel)]='combindInfo.creditCardInfo.creditCardNumber' placeholder="信用卡卡号"></ion-input>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardInfocreditCardCvv]='combindInfo.id'>
-              <span class="label">CVV：</span>
-              <ion-input [(ngModel)]='combindInfo.creditCardInfo.creditCardCvv' placeholder="CVV"></ion-input>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardInfoexpirationYear]='combindInfo.id'>
-              <span class="label">有效期：</span>
-              <span>{{combindInfo.creditCardInfo.expirationYear}}</span>
-              <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(expirationYearEle)'></ion-icon>
-              <span>{{combindInfo.creditCardInfo.expirationMonth+"月"}}</span>
-              <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(expirationMonthEle)'></ion-icon>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardPersionInfocredentialType]='combindInfo.id' (click)='onOpenSelect(cctypeEle)'>
-              <span class="label">证件类型：</span> <span> {{getCredentialTypeName(combindInfo)}}</span>
-              <ion-icon name="caret-down-outline" class='down'></ion-icon>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardPersionInfoname]='combindInfo.id'>
-              <span class="label">姓名：</span>
-              <ion-input [(ngModel)]='combindInfo.creditCardPersionInfo.name' type='text' placeholder="持卡人姓名"></ion-input>
-            </div>
-            <div class="line"></div>
-            <div class="flex padding-v" [attr.creditCardPersionInfocredentialNumber]='combindInfo.id'>
-              <span class="label">证件号码：</span>
-              <ion-input [(ngModel)]='combindInfo.creditCardPersionInfo.credentialNumber' type='text' placeholder="持卡人证件号码"></ion-input>
+            <div class="info">
+              <div class="flex padding-v row" [attr.creditCardInfocreditCardType]='combindInfo.id'>
+                <span class="label">信用卡：</span> <span>{{getCreditCardInfoName(combindInfo)}}</span>
+                <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(creditCardTypeEle)'></ion-icon>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardInfocreditCardNumber]='combindInfo.id'>
+                <span class="label">信用卡号：</span>
+                <ion-input [(ngModel)]='combindInfo.creditCardInfo.creditCardNumber' placeholder="信用卡卡号"></ion-input>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardInfocreditCardCvv]='combindInfo.id'>
+                <span class="label">CVV：</span>
+                <ion-input [(ngModel)]='combindInfo.creditCardInfo.creditCardCvv' placeholder="CVV"></ion-input>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardInfoexpirationYear]='combindInfo.id'>
+                <span class="label">有效期：</span>
+                <span>{{combindInfo.creditCardInfo.expirationYear}}</span>
+                <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(expirationYearEle)'></ion-icon>
+                <span>{{combindInfo.creditCardInfo.expirationMonth+"月"}}</span>
+                <ion-icon name="caret-down-outline" class='down' (click)='onOpenSelect(expirationMonthEle)'></ion-icon>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardPersionInfocredentialType]='combindInfo.id' (click)='onOpenSelect(cctypeEle)'>
+                <span class="label">证件类型：</span> <span> {{getCredentialTypeName(combindInfo)}}</span>
+                <ion-icon name="caret-down-outline" class='down'></ion-icon>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardPersionInfoname]='combindInfo.id'>
+                <span class="label">姓名：</span>
+                <ion-input [(ngModel)]='combindInfo.creditCardPersionInfo.name' type='text' placeholder="持卡人姓名"></ion-input>
+              </div>
+              <div class="flex padding-v row" [attr.creditCardPersionInfocredentialNumber]='combindInfo.id'>
+                <span class="label">证件号码：</span>
+                <ion-input [(ngModel)]='combindInfo.creditCardPersionInfo.credentialNumber' type='text' placeholder="持卡人证件号码"></ion-input>
+              </div>
             </div>
           </div>
         </ion-list>
@@ -334,11 +309,9 @@
           </app-inter-hotel-addcontacts-comp>
         </ion-list>
       </ng-container>
-      <ion-list [attr.orderTravelPayTypeid]='"orderTravelPayType"' lines='none' class='section orderpaytypes'>
-        <div class="info">
-          <div class="title ion-padding-vertical">
-            支付方式
-          </div>
+      <ion-list [attr.orderTravelPayTypeid]='"orderTravelPayType"' class='section orderpaytypes'>
+        <div class="title ">
+          <span class="name">支付方式</span>
         </div>
         <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' mode='md'>
           <!-- 酒店预付月结 -->
@@ -348,7 +321,6 @@
                 <ion-label>{{pt.label}}</ion-label>
                 <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)' [class.radio-checked]='orderTravelPayType==pt.value' mode='md'> </ion-radio>
               </ion-item>
-              <div class="line"></div>
             </ng-container>
           </ng-container>
           <ng-template #zhifu2>
@@ -359,7 +331,6 @@
                   <ion-label>前台现付</ion-label>
                   <ion-radio [value]="OrderTravelPayType.Company" mode='md'></ion-radio>
                 </ion-item>
-                <div class="line"></div>
               </ng-container>
               <ng-template #zfTpl>
                 <ng-container *ngIf='!(tmc?.HotelPayType==OrderTravelPayType.Company||OrderTravelPayType.Balance==tmc?.HotelPayType)' [ngTemplateOutlet]='configPayTpl'> </ng-container>
@@ -375,7 +346,6 @@
                       <ion-label>前台现付</ion-label>
                       <ion-radio mode='md' [value]="OrderTravelPayType.Company"></ion-radio>
                     </ion-item>
-                    <div class="line"></div>
                   </ng-container>
                 </ng-container>
               </ng-container>
@@ -390,7 +360,6 @@
                 <ion-label>前台现付（服务费:{{pt.label}}）</ion-label>
                 <ion-radio [value]="pt.value" [class.radio-checked]='orderTravelPayType==pt.value' mode='md'> </ion-radio>
               </ion-item>
-              <div class="line"></div>
             </ng-container>
           </ng-template>
         </ion-radio-group>

@@ -381,59 +381,7 @@ export class InternationalHotelDetailDfPage
     this.hotelService.viewHotel = null;
     this.subscription.unsubscribe();
   }
-  // private initHotelDetailInfos() {
-  //   if (this.hotel && this.hotel.HotelDetails) {
-  //     const temp: {
-  //       [tag: string]: HotelDetailEntity[];
-  //     } = {};
-  //     this.hotel.HotelDetails.forEach((d) => {
-  //       if (temp[d.Tag]) {
-  //         temp[d.Tag].push(d);
-  //       } else {
-  //         temp[d.Tag] = [d];
-  //       }
-  //     });
-  //     this.hotelDetails = [];
-  //     const showOpen = `<span class='open-close-arrow'></span>`;
-  //     Object.keys(temp).forEach((tag) => {
-  //       const sep = tag.toLowerCase().includes("facilit")
-  //         ? `<span class='line'>|</span>`
-  //         : ",";
-  //       if (temp[tag] && temp[tag].length) {
-  //         const description = temp[tag].map((it) => it.Description).join(sep);
-  //         let overviewDesc = description;
-  //         const len = 21 * 2;
-  //         const res = description.match(/<\s*(\w+)\s*>.*?<\/\s*\1\s*>/i);
-  //         const el = res && res[1];
-  //         const index = res && res.index;
-  //         if (index && el) {
-  //           if (index >= len) {
-  //             const str1 = description.substring(0, len);
-  //             overviewDesc = `${str1}...${showOpen}</${el}>`;
-  //           } else {
-  //             const str1 = description.substring(0, len);
-  //             overviewDesc = `${str1}...${showOpen}</${el}>`;
-  //           }
-  //         } else {
-  //           if (description.length > len) {
-  //             const str1 = description.substring(0, len);
-  //             overviewDesc = `${str1}...${showOpen}</${el}>`;
-  //           }
-  //         }
-  //         const tempDescription = description;
-  //         const mat = tempDescription.match(/.+<\s*(?!\/\w+)\s*>/gi);
-  //         // console.log("tempDescription", tempDescription, mat);
-  //         this.hotelDetails.push({
-  //           Tag: tag,
-  //           Name: temp[tag][0].Name,
-  //           Description: description,
-  //           OverviewDesc: overviewDesc,
-  //         });
-  //       }
-  //     });
-  //     // console.log(temp, this.hotelDetailsOtherThanFacilities);
-  //   }
-  // }
+
   private initHotelDetailInfos() {
     if (this.hotel && this.hotel.HotelDetails) {
       const obj = this.hotel.HotelDetails.reduce((acc, it) => {
@@ -714,12 +662,28 @@ export class InternationalHotelDetailDfPage
     color: string;
   }) {
     console.log("onBookRoomPlan", evt.roomPlan);
-
+    const bookInfos = this.hotelService.getBookInfos();
     if (!evt || !evt.room || !evt.roomPlan) {
       return;
     }
     const isself = await this.staffService.isSelfBookType();
-
+    if (isself) {
+      const info = bookInfos[0];
+      if (info) {
+        if (!info.credential) {
+          const ok = await AppHelper.alert(
+            "请先维护证件信息",
+            true,
+            "确定",
+            "取消"
+          );
+          if (ok) {
+            this.router.navigate(["member-credential-list"]);
+          }
+          return false;
+        }
+      }
+    }
     if (!this.checkIfPassengerSelected() && !isself) {
       const ok = await AppHelper.alert(
         "是否先添加旅客(Please Add Passengers)",
@@ -792,7 +756,6 @@ export class InternationalHotelDetailDfPage
       AppHelper.alert("已满房，不可预订");
       return;
     }
-    const bookInfos = this.hotelService.getBookInfos();
     const isSelf = await this.staffService.isSelfBookType();
     if (bookInfos.length === 0) {
       if (!isSelf) {
@@ -802,7 +765,7 @@ export class InternationalHotelDetailDfPage
       }
     } else {
       const s = this.hotelService.getSearchCondition();
-      bookInfos.forEach((info) => {
+      for (const info of bookInfos) {
         let bookInfo: IInterHotelInfo;
         bookInfo = {
           hotelEntity: this.hotel,
@@ -844,7 +807,7 @@ export class InternationalHotelDetailDfPage
           }
         }
         info.bookInfo = bookInfo;
-      });
+      }
       if (removedBookInfos.length) {
         AppHelper.alert(
           `${removedBookInfos
