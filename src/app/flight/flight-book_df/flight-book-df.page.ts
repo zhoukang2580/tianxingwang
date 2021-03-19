@@ -1174,7 +1174,7 @@ export class FlightBookDfPage
           "illegalreasonsid",
           combindInfo.id
         );
-        if (!p.IllegalReason) {
+        if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
           combindInfo.isShowTravelDetail = true;
           showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),

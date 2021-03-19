@@ -965,7 +965,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         !this.isRoomPlanFreeBook(combindInfo)
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
-        if (!p.IllegalReason) {
+        if (!p.IllegalReason&&this.tmc.IsNeedIllegalReason) {
           this.showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo,

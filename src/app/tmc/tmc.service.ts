@@ -1441,6 +1441,7 @@ export class TmcEntity extends BaseEntity {
   /// 是否可以自定义违规理由
   /// </summary>
   IsAllowCustomReason: boolean;
+  IsNeedIllegalReason: boolean;
   // ===================== 客户接口对接配置 start ===========
   /// <summary>
   /// 校验行程单
