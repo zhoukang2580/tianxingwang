@@ -42,9 +42,9 @@ ion-header {
   right: 0;
   z-index: 999;
 }
-.div-for-scroll {
-  min-height: 60vh;
-}
+// .div-for-scroll {
+//   min-height: 60vh;
+// }
 .info {
   background-color: var(--ion-color-light);
   padding: 1em;
@@ -212,7 +212,7 @@ ion-header {
     }
   }
 
-  .label{
+  .label {
     flex: 1;
   }
 
@@ -305,4 +305,3 @@ ion-row {
     flex: 1;
   }
 }
-

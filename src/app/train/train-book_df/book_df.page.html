@@ -51,6 +51,7 @@
                     (click)="onChangeCredential(credentialSelect,combindInfo)"
                   />
                   <ion-text
+                    style="font-size: 14px"
                     *ngIf="isSelfBookType"
                     color="secondary"
                     (click)="onManagementCredentials(combindInfo)"
@@ -70,12 +71,15 @@
                   [selectSeatLocation]="combindInfo.bookInfo?.bookInfo?.trainEntity?.BookSeatLocation"
                 >
                 </app-train-list-item-df>
-                <ion-label
-                  class="rules ion-text-wrap"
-                  color="danger"
-                  style="padding-top: 15px"
+                <ion-label color="danger" class="ion-label-text"
+                  >如果本次列车剩余席位无法满足您的选座需求,系统将自动为您分配席位</ion-label
                 >
-                  {{combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.join(";")
+                <ion-label
+                  color="danger"
+                  class="ion-label-text"
+                  *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules"
+                >
+                  超标:{{combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.join(";")
                   }}
                 </ion-label>
               </div>

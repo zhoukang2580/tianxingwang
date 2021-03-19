@@ -55,7 +55,7 @@ ion-content {
   .name {
     width: 43px;
     height: 14px;
-    font-size: 15px;
+    font-size: 18px;
     font-family: PingFang SC;
     font-weight: bold;
   }
@@ -81,7 +81,8 @@ ion-content {
   }
   .editicon {
     width: 14px;
-    margin: -3px 0.3em;
+    height: 14px;
+    margin: -4px 10px -2px 16px;
   }
   .passenger {
     font-size: 16px;
@@ -126,6 +127,12 @@ ion-content {
   // border-top-left-radius: 10px;
   font-size: 0.9rem;
   box-shadow: 0.1em 0.2em 0.6em rgba(0, 0, 0, 0.1);
+}
+
+.ion-label-text {
+  padding-top: 12px;
+  font-size: 12px;
+  white-space: break-spaces;
 }
 
 .person {
