@@ -1158,11 +1158,7 @@ export class FlightBookDfPage
       p.ExpenseType = combindInfo.expenseType;
 
       p.IllegalReason =
-        (this.tmc &&
-          this.tmc.IsAllowCustomReason &&
-          combindInfo.otherIllegalReason) ||
-        combindInfo.illegalReason ||
-        "";
+        combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (combindInfo.otherIllegalReason) {
         p.IllegalReason = "";
       }
@@ -1178,7 +1174,7 @@ export class FlightBookDfPage
           "illegalreasonsid",
           combindInfo.id
         );
-        if (!p.IllegalReason && !combindInfo.otherIllegalReason) {
+        if (!p.IllegalReason) {
           combindInfo.isShowTravelDetail = true;
           showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),

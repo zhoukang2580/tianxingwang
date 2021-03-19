@@ -955,11 +955,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }`;
       }
       p.IllegalReason =
-        (this.tmc &&
-          this.tmc.IsAllowCustomReason &&
-          combindInfo.otherIllegalReason) ||
-        combindInfo.illegalReason ||
-        "";
+        combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (
         !combindInfo.isNotWhitelist &&
         combindInfo.bookInfo &&
