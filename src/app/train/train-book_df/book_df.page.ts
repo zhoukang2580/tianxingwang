@@ -1255,28 +1255,25 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       ele: HTMLElement
     ) => {
       console.log(this.illegalReasons?.length);
-      if (this.illegalReasons?.length != 0) {
-        await AppHelper.alert(
-          this.langService.isCn
-            ? `${(item.credentialStaff && item.credentialStaff.Name) ||
-            (item.bookInfo.credential &&
-              item.bookInfo.credential.Surname +
-              item.bookInfo.credential.Givenname)
-            } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
-            }】 ${msg} 信息不能为空`
-            : `${(item.credentialStaff && item.credentialStaff.Name) ||
-            (item.bookInfo.credential &&
-              item.bookInfo.credential.Surname +
-              item.bookInfo.credential.Givenname)
-            } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
-            }】 ${msg} ${this.langService.isEn
-              ? "Information cannot be empty"
-              : "信息不能为空"
-            }`
-        );
-      } else {
-        this.moveRequiredEleToViewPort(ele);
-      }
+      await AppHelper.alert(
+        this.langService.isCn
+          ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
+          }】 ${msg} 信息不能为空`
+          : `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
+          }】 ${msg} ${this.langService.isEn
+            ? "Information cannot be empty"
+            : "信息不能为空"
+          }`
+      );
+      this.moveRequiredEleToViewPort(ele);
     };
     bookDto.Passengers = [];
     for (const combindInfo of this.viewModel.combindInfos) {
