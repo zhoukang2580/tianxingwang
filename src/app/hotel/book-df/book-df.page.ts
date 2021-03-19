@@ -965,7 +965,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         !this.isRoomPlanFreeBook(combindInfo)
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
-        if (!p.IllegalReason&&this.tmc.IsNeedIllegalReason) {
+        if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
           this.showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo,
@@ -1230,6 +1230,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         } as any;
         combineInfo.isShowTravelDetail = true;
         combineInfo.creditCardPersionInfo = {} as any;
+        combineInfo.creditCardPersionInfo.credentialType = `${CredentialsType.Other}`;
         combineInfo.credential = bookInfo.credential;
         combineInfo.id = bookInfo.id;
         combineInfo.bookInfo = bookInfo;
@@ -1918,6 +1919,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       roomPlan.RoomPlanRules &&
       roomPlan.RoomPlanRules.map((it) => it.Description).join(",")
     );
+  }
+  credentialTypeCompareFn(t1: string, t2: string) {
+    return t1 && t2 && t1 == t2;
   }
   credentialCompareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
     return (

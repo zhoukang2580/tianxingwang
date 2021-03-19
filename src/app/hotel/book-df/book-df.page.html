@@ -266,7 +266,7 @@
           </ion-item>
           <ion-item style="display: none">
             <ion-label>证件类型</ion-label>
-            <ion-select [(ngModel)]="combindInfo.creditCardPersionInfo.credentialType" #cctypeEle>
+            <ion-select [(ngModel)]="combindInfo.creditCardPersionInfo.credentialType" #cctypeEle [compareWith]='credentialTypeCompareFn' [okText]='"确定"' [cancelText]='"取消"'>
               <ion-select-option value="{{CredentialsType.IdCard}}">身份证</ion-select-option>
               <ion-select-option value="{{CredentialsType.Passport}}">护照</ion-select-option>
               <ion-select-option value="{{CredentialsType.Other}}">其它</ion-select-option>
