@@ -1053,11 +1053,7 @@ export class FlightBookDfPage implements OnInit, OnDestroy, AfterViewInit {
       p.ExpenseType = combindInfo.expenseType;
       p.OrderFlightTicketType = OrderFlightTicketType.International;
       p.IllegalReason =
-        (this.tmc &&
-          this.tmc.IsAllowCustomReason &&
-          combindInfo.otherIllegalReason) ||
-        combindInfo.illegalReason ||
-        "";
+        combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (
         !combindInfo.bookInfo.isNotWhitelist &&
         combindInfo.bookInfo.bookInfo &&
@@ -1072,7 +1068,7 @@ export class FlightBookDfPage implements OnInit, OnDestroy, AfterViewInit {
           "illegalReasonid",
           combindInfo.id
         );
-        if (!p.IllegalReason) {
+        if (!p.IllegalReason&&this.tmc.IsNeedIllegalReason) {
           showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo,
