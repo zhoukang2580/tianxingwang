@@ -411,7 +411,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           queryParams: {
             url,
             title: task && task.Name,
-            tabId: this.activeTab?.value,
+            // tabId: this.activeTab?.value,
             isOpenInAppBrowser: false,
             isIframeOpen: true,
             isHideTitle: false,
@@ -434,7 +434,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .getIdentityAsync()
       .catch((_) => null);
     let url = this.getTaskUrl(task);
-    if (url?.includes("?")) {
+    if (url.includes("?")) {
       url = `${url}&taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
       }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
