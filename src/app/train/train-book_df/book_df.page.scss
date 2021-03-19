@@ -110,7 +110,7 @@ ion-content {
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
-    height: 35p
+    height: 35px;
   }
 }
 .spacebetween {
@@ -264,6 +264,8 @@ ion-footer .toolbar {
   .label {
     color: #666666;
     min-width: 6.5rem;
+    display: flex;
+    align-items: center;
   }
   ion-icon {
     margin-top: 3px;
@@ -279,6 +281,6 @@ ion-footer .toolbar {
   }
 }
 
-ion-item{
+ion-item {
   --min-height: 35px;
 }

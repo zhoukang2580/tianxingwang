@@ -81,6 +81,7 @@ import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEnt
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
+import { SelectComponent } from "src/app/components/select/select.component";
 
 @Component({
   selector: "app-train-book-df",
@@ -128,6 +129,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isApproval = true;
   isPlaceOrderOk = true;
   expenseTypes: string[];
+  illegalReasons: any[];
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
@@ -146,7 +148,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private calendarService: CalendarService,
     private plt: Platform,
-    private langService: LangService
+    private langService: LangService,
+    private popoverCtrl: PopoverController,
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
     this.ionChange = new EventEmitter();
@@ -323,6 +326,44 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     if (insurance) {
       insurance.showDetail = !insurance.showDetail;
+    }
+  }
+  // isRoomPlanFreeBook(item: ITrainPassengerBookInfo) {
+  //   if (
+  //     item &&
+  //     item.bookInfo &&
+  //     item.bookInfo.bookInfo &&
+  //     item.bookInfo.bookInfo.roomPlan
+  //   ) {
+  //     return (
+  //       this.hotelService.checkRoomPlanIsFreeBook(
+  //         item.bookInfo.bookInfo.roomPlan
+  //       ) && item.bookInfo.bookInfo.roomPlan.isFreeBookRoom
+  //     );
+  //   }
+  // }
+
+  async onSelectIllegalReason(item: ITrainPassengerBookInfo) {
+    if (item.isOtherIllegalReason) {
+      return;
+    }
+    const p = await this.popoverCtrl.create({
+      component: SelectComponent,
+      cssClass: "vw-70",
+      componentProps: {
+        label: "超标原因",
+        data: (this.illegalReasons || []).map((it) => {
+          return {
+            label: it.Name,
+            value: it.Name,
+          };
+        }),
+      },
+    });
+    p.present();
+    const data = await p.onDidDismiss();
+    if (data && data.data) {
+      item.illegalReason = data.data;
     }
   }
   private async initCombindInfos() {
@@ -1213,25 +1254,29 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item: ITrainPassengerBookInfo,
       ele: HTMLElement
     ) => {
-      await AppHelper.alert(
-        this.langService.isCn
-          ? `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-            item.bookInfo.credential.Givenname)
-          } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
-          }】 ${msg} 信息不能为空`
-          : `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-            item.bookInfo.credential.Givenname)
-          } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
-          }】 ${msg} ${this.langService.isEn
-            ? "Information cannot be empty"
-            : "信息不能为空"
-          }`
-      );
-      this.moveRequiredEleToViewPort(ele);
+      console.log(this.illegalReasons?.length);
+      if (this.illegalReasons?.length != 0) {
+        await AppHelper.alert(
+          this.langService.isCn
+            ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+            (item.bookInfo.credential &&
+              item.bookInfo.credential.Surname +
+              item.bookInfo.credential.Givenname)
+            } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
+            }】 ${msg} 信息不能为空`
+            : `${(item.credentialStaff && item.credentialStaff.Name) ||
+            (item.bookInfo.credential &&
+              item.bookInfo.credential.Surname +
+              item.bookInfo.credential.Givenname)
+            } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
+            }】 ${msg} ${this.langService.isEn
+              ? "Information cannot be empty"
+              : "信息不能为空"
+            }`
+        );
+      } else {
+        this.moveRequiredEleToViewPort(ele);
+      }
     };
     bookDto.Passengers = [];
     for (const combindInfo of this.viewModel.combindInfos) {

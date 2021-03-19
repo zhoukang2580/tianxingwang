@@ -36,7 +36,7 @@
               </ion-select>
             </ion-item>
             <ion-item class="ion-inbook p">
-              <div style="width: 100%; padding: 1.6em 0.25em">
+              <div style="width: 100%; padding: 1em 0.25em">
                 <div>
                   <span class="name">{{combindInfo?.vmCredential?.Name}}</span
                   >&nbsp;&nbsp;
@@ -70,6 +70,14 @@
                   [selectSeatLocation]="combindInfo.bookInfo?.bookInfo?.trainEntity?.BookSeatLocation"
                 >
                 </app-train-list-item-df>
+                <ion-label
+                  class="rules ion-text-wrap"
+                  color="danger"
+                  style="padding-top: 15px"
+                >
+                  {{combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.join(";")
+                  }}
+                </ion-label>
               </div>
             </ion-item>
           </ion-item-group>
@@ -346,6 +354,45 @@
             </div>
           </ion-item>
           <div *ngIf="!isShowTravelInfo">
+            <div
+              class="illegal"
+              [attr.illegalReasonsid]="combindInfo.id"
+              *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist"
+            >
+              <div
+                class="flex padding-v row"
+                (click)="onSelectIllegalReason(combindInfo)"
+                *ngIf="illegalReasons?.length"
+              >
+                <div class="label">超标原因</div>
+                <div class="value">{{combindInfo?.illegalReason}}</div>
+                <ion-icon
+                  name="chevron-forward-outline"
+                  color="medium"
+                ></ion-icon>
+              </div>
+              <div class="flex padding-v row">
+                <span class="label">其他原因</span>
+                <ion-input
+                  [(ngModel)]="combindInfo.otherIllegalReason"
+                  placeholder="请输入其他原因"
+                ></ion-input>
+              </div>
+            </div>
+            <!-- <ion-item
+              *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist"
+            >
+              <div style="width: 100%">
+                <app-book-illegal-reason-comp
+                  [attr.illegalReasonid]="combindInfo.id"
+                  #illegalReasonsEle
+                  [illegalReasons]="viewModel?.illegalReasons"
+                  [isAllowCustomReason]="tmc?.IsAllowCustomReason"
+                  (ionchange)="onIllegalReason($event,combindInfo)"
+                >
+                </app-book-illegal-reason-comp>
+              </div>
+            </ion-item> -->
             <ion-item *ngIf="viewModel?.expenseTypes?.length">
               <div class="line" *ngIf="viewModel?.expenseTypes?.length"></div>
               <div class="expanse" *ngIf="viewModel?.expenseTypes?.length">
