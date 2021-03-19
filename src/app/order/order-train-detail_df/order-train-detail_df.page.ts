@@ -59,6 +59,7 @@ export class OrderTrainDetailDfPage
   orderDetail: OrderDetailModel;
   isLoading = false;
   showTiket = false;
+  isSelf = false;
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
   @ViewChildren("slide") slides: QueryList<any>;
   @ViewChild(IonHeader) headerEle: IonHeader;
@@ -543,7 +544,7 @@ export class OrderTrainDetailDfPage
     this.initTikectsInsurances();
     this.isLoading = false;
     this.initTabs();
-    this.sortTabs();
+    // this.sortTabs();
     if (!this.tmc) {
       this.tmc = await this.tmcService.getTmc(true);
     }
