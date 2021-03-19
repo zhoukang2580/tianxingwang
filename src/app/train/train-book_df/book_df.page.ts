@@ -1372,9 +1372,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
-        (this.tmc &&
-          this.tmc.IsAllowCustomReason &&
-          combindInfo.otherIllegalReason) ||
+        (combindInfo.otherIllegalReason) ||
         combindInfo.illegalReason ||
         "";
       if (
@@ -1389,7 +1387,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         if (!p.IllegalReason) {
           // 只有白名单的才需要考虑差标
           const ele: HTMLElement = this.getEleByAttr(
-            "illegalReasonid",
+            "illegalReasonsid",
             combindInfo.id
           );
           if (!p.IllegalReason) {
@@ -1401,6 +1399,14 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             return false;
           }
         }
+        // if (!p.IllegalReason) {
+        //   this.showErrorMsg(
+        //     LanguageHelper.Flight.getIllegalReasonTip(),
+        //     combindInfo,
+        //     this.getEleByAttr("illegalReasonsid", combindInfo.id)
+        //   );
+        //   return false;
+        // }
       }
       if (!p.Mobile) {
         this.isShowOtherInfo = true;

@@ -360,6 +360,7 @@
               *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist"
             >
               <div
+                style="height: 35px"
                 class="flex padding-v row"
                 (click)="onSelectIllegalReason(combindInfo)"
                 *ngIf="illegalReasons?.length"
@@ -369,6 +370,7 @@
                 <ion-icon
                   name="chevron-forward-outline"
                   color="medium"
+                  style="margin-top: 11px"
                 ></ion-icon>
               </div>
               <div class="flex padding-v row">
