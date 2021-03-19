@@ -328,7 +328,7 @@ export class FlightListPage
       (!(await this.staffService.isSelfBookType()) &&
         !this.flightService
           .getPassengerBookInfos()
-          .every((it) => it.exchangeInfo));
+          .every((it) => !!it.exchangeInfo));
     return this.showAddPassenger;
   }
   async onCalenderClick() {
