@@ -323,7 +323,7 @@
               {{combindInfo.vmCredential?.TypeName}}:{{combindInfo.vmCredential?.HideNumber}}
             </div>
             <img class="editicon" src="assets/images/editicon.png" alt="" (click)='onChangeCredential(credentialSelect,combindInfo)'>
-            <ion-text class='add' *ngIf='isself' color='secondary' (click)='onManagementCredentials(combindInfo)'>新增</ion-text>
+            <ion-text class='add' *ngIf='isself' color='secondary' (click)='onManagementCredentials()'>新增</ion-text>
           </div>
         </div>
         <div class="section">

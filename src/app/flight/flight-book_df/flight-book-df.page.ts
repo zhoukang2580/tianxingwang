@@ -1159,9 +1159,6 @@ export class FlightBookDfPage
 
       p.IllegalReason =
         combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
-      if (combindInfo.otherIllegalReason) {
-        p.IllegalReason = "";
-      }
       if (
         !combindInfo.modal.isNotWhitelist &&
         combindInfo.modal.bookInfo &&
