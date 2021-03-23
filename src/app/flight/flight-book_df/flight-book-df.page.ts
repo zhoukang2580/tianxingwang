@@ -1171,7 +1171,7 @@ export class FlightBookDfPage
       ) {
         // 只有白名单的才需要考虑差标
         const ele: HTMLElement = this.getEleByAttr(
-          "illegalreasonsid",
+          "illegalReasonsid",
           combindInfo.id
         );
         if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
