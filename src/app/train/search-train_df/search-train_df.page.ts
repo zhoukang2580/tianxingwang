@@ -186,8 +186,7 @@ export class SearchTrainDfPage
     if (isFrom) {
       if (
         this.searchTrainModel &&
-        this.searchTrainModel.isExchange &&
-        this.searchTrainModel.isLocked
+        (this.searchTrainModel.isExchange || this.searchTrainModel.isLocked)
       ) {
         return;
       }
