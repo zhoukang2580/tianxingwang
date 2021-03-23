@@ -1,4 +1,4 @@
-import { InternationalFlightService } from "./../flight-international/international-flight.service";
+import { InternationalFlightService } from "../international-flight/international-flight.service";
 import { EventEmitter, Injectable } from "@angular/core";
 import { Platform } from "@ionic/angular";
 import { Storage } from "@ionic/storage";

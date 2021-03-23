@@ -25,7 +25,7 @@ import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { finalize } from "rxjs/operators";
 import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
-import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
+import { InternationalFlightService } from "src/app/international-flight/international-flight.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
 import { LoginService } from "src/app/services/login/login.service";

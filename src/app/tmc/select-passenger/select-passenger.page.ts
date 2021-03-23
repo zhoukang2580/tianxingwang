@@ -51,7 +51,7 @@ import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { CountryEntity } from "../models/CountryEntity";
-import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
+import { InternationalFlightService } from "src/app/international-flight/international-flight.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { CredentialsComponent } from "src/app/member/components/credentials/credentials.component";
 export const NOT_WHITE_LIST = "notwhitelist";

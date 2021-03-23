@@ -37,7 +37,7 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { tap, shareReplay, map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
 import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
-import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
+import { InternationalFlightService } from "src/app/international-flight/international-flight.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
 import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";

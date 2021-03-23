@@ -33,7 +33,7 @@ import {
   IInternationalFlightSearchModel,
   InternationalFlightService,
   ITripInfo,
-} from "src/app/flight-international/international-flight.service";
+} from "src/app/international-flight/international-flight.service";
 import { FlightCityService } from "../flight-city.service";
 import { CONFIG } from "src/app/config";
 @Component({
