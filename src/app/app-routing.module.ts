@@ -19,7 +19,7 @@ import { HrModule } from "./hr/hr.module";
 import { TrainModule } from "./train/train.module";
 import { HotelModule } from "./hotel/hotel.module";
 import { CarModule } from "./car/car.module";
-import { HotelInternationalModule } from "./hotel-international/hotel-international.module";
+import { HotelInternationalModule } from "./international-hotel/hotel-international.module";
 import { WorkflowModule } from "./workflow/workflow.module";
 import { FlightInternationalModule } from "./international-flight/international-flight.module";
 import { TravelApplicationModule } from "./travel-application/travel-application.module";

@@ -36,7 +36,7 @@ import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { tap, shareReplay, map } from "rxjs/operators";
 import { environment } from "src/environments/environment";
-import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
+import { InternationalHotelService } from "src/app/international-hotel/international-hotel.service";
 import { InternationalFlightService } from "src/app/international-flight/international-flight.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";

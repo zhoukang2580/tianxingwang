@@ -15,7 +15,7 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { FlightService } from "src/app/flight/flight.service";
 import { TrainService } from "src/app/train/train.service";
 import { HotelService } from "src/app/hotel/hotel.service";
-import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
+import { InternationalHotelService } from "src/app/international-hotel/international-hotel.service";
 
 @Component({
   selector: "app-travel-apply-detail",

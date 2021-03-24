@@ -1,5 +1,5 @@
 import { flyInOut } from "./../../animations/flyInOut";
-import { InternationalHotelService } from "./../../hotel-international/international-hotel.service";
+import { InternationalHotelService } from "../../international-hotel/international-hotel.service";
 import { HotelService } from "./../../hotel/hotel.service";
 import { SelectCountryModalComponent } from "../components/select-country/select-countrymodal.component";
 import { TrainService } from "./../../train/train.service";

@@ -129,7 +129,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isApproval = true;
   isPlaceOrderOk = true;
   expenseTypes: string[];
-  illegalReasons: any[];
+  // illegalReasons: any[];
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
@@ -352,12 +352,14 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       cssClass: "vw-70",
       componentProps: {
         label: "超标原因",
-        data: (this.illegalReasons || []).map((it) => {
-          return {
-            label: it.Name,
-            value: it.Name,
-          };
-        }),
+        data: ((this.viewModel && this.viewModel.illegalReasons) || []).map(
+          (it) => {
+            return {
+              label: it.Name,
+              value: it.Name,
+            };
+          }
+        ),
       },
     });
     p.present();
@@ -1254,7 +1256,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item: ITrainPassengerBookInfo,
       ele: HTMLElement
     ) => {
-      console.log(this.illegalReasons?.length);
+      // console.log(this.viewModel.illegalReasons?.length);
       await AppHelper.alert(
         this.langService.isCn
           ? `${
