@@ -1,0 +1,60 @@
+
+.continents {
+  display: flex;
+  align-items: center;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  .c {
+    padding: 1em;
+    &.active {
+      color: var(--ion-color-secondary);
+    }
+    white-space: nowrap;
+  }
+}
+.national-label {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+}
+.active {
+  color: var(--ion-color-secondary);
+}
+ion-header {
+  form {
+    flex: 1;
+    margin-right: 1em;
+    background: transparent;
+    margin: 0;
+    padding: 0.5em;
+    ion-searchbar {
+      padding: 0;
+      margin: 0;
+    }
+  }
+}
+ion-fab {
+  ion-fab-button {
+    --background-activated: var(--ion-color-secondar);
+    --background: rgba(var(--ion-color-secondary-rgb), 0.22);
+    --border-color: var(--ion-color-secondar);
+    --border-width: 1px;
+    ion-icon {
+      color: rgba(var(--ion-color-light-rgb), 0.5);
+    }
+  }
+  &.solid {
+    ion-fab-button {
+      ion-icon {
+        color: white;
+      }
+      --background: rgba(var(--ion-color-secondary-rgb), 1);
+      --background-activated: rgba(var(--ion-color-secondary-rgb), 1);
+    }
+  }
+}
+ion-fab {
+  margin-bottom: 3em;
+}

@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref=""></app-back-button>
+    </ion-buttons>
+    <ion-title>{{hotel?.name}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <app-swiper-slides [items]='images' [initialPos]='initPos' [loadingImage]='config?.PrerenderImageUrl' [bgColorBlack]='true' [defaultImage]='config?.DefaultImageUrl'
+    [options]='{imageStyle:{objectFit:"contain"}}'>
+  </app-swiper-slides>
+
+</ion-content>
