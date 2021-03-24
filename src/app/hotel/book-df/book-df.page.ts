@@ -1548,10 +1548,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
 
-    bookDto.Passengers.forEach((p) => {
-      p.IllegalPolicy = "";
-      p.IllegalReason = "";
-    });
+    // bookDto.Passengers.forEach((p) => {
+    //   p.IllegalPolicy = "";
+    //   p.IllegalReason = "";
+    // });
     if (canBook && canBook2) {
       const popover = await this.popoverCtrl.create({
         component: WarrantyComponent,
