@@ -1171,6 +1171,7 @@ export class TrainService {
       });
       this.router.navigate([AppHelper.getRoutePath("search-train")]);
     } catch (e) {
+      AppHelper.alert(e);
       console.error(e);
     }
   }
