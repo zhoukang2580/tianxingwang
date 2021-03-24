@@ -671,16 +671,19 @@ export class InternationalHotelDetailDfPage
       const info = bookInfos[0];
       if (info) {
         if (!info.credential) {
-          const ok = await AppHelper.alert(
-            "请先维护证件信息",
-            true,
-            "确定",
-            "取消"
-          );
-          if (ok) {
-            this.router.navigate(["member-credential-list"]);
+          await this.hotelService.initPassengerCredential();
+          if (!info.credential) {
+            const ok = await AppHelper.alert(
+              "请先维护证件信息",
+              true,
+              "确定",
+              "取消"
+            );
+            if (ok) {
+              this.router.navigate(["member-credential-list"]);
+            }
+            return false;
           }
-          return false;
         }
       }
     }

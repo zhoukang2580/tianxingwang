@@ -836,11 +836,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
-        (this.tmc &&
-          this.tmc.IsAllowCustomReason &&
-          combindInfo.otherIllegalReason) ||
-        combindInfo.illegalReason ||
-        "";
+        combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (
         !combindInfo.isNotWhitelist &&
         combindInfo.bookInfo &&
@@ -849,11 +845,11 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
         combindInfo.bookInfo.bookInfo.roomPlan.Rules
       ) {
         // 只有白名单的才需要考虑差标
-        if (!p.IllegalReason) {
+        if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
           this.showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo,
-            this.getEleByAttr("illegalReasonid", combindInfo.id)
+            this.getEleByAttr("illegalReasonsid", combindInfo.id)
           );
           return false;
         }

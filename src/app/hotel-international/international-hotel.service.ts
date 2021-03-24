@@ -97,51 +97,52 @@ export class InternationalHotelService {
       this.disposal();
     });
     memerService.getCredentialsChangeSource().subscribe(async () => {
-      this.selfCredentials = [];
-      const staff = await this.staffService.getStaff(false, true);
-      const isSelf = await this.staffService.isSelfBookType();
-      if (!isSelf) {
-        return;
-      }
-      const res = await this.getPassengerCredentials(
-        [staff.AccountId],
-        true
-      ).catch((_) => ({ [staff.AccountId]: [] }));
-      this.selfCredentials = res[staff.AccountId];
-      const passportOrHmTwPass =
-        this.selfCredentials &&
-        this.selfCredentials.find((c) => this.isPassportHmTwPass(c.Type));
-      const bookInfos = this.getBookInfos();
-      const exists = bookInfos
-        .filter((it) =>
-          this.isPassportHmTwPass(it.credential && it.credential.Type)
-        )
-        .map((it) => it.credential);
-
-      if (passportOrHmTwPass) {
-        if (!exists || !exists.length) {
-          this.setBookInfos(
-            bookInfos.map((it) => {
-              it.credential = passportOrHmTwPass;
-              return it;
-            })
-          );
-        } else {
-          this.setBookInfos(
-            bookInfos.map((it) => {
-              if (
-                this.isPassportHmTwPass(
-                  it && it.credential && it.credential.Type
-                )
-              ) {
-                it.credential = passportOrHmTwPass;
-              }
-              return it;
-            })
-          );
-        }
-      }
+      this.initPassengerCredential();
     });
+  }
+  async initPassengerCredential() {
+    this.selfCredentials = [];
+    const staff = await this.staffService.getStaff(false, true);
+    const isSelf = await this.staffService.isSelfBookType();
+    if (!isSelf) {
+      return;
+    }
+    const res = await this.getPassengerCredentials(
+      [staff.AccountId],
+      true
+    ).catch((_) => ({ [staff.AccountId]: [] }));
+    this.selfCredentials = res[staff.AccountId];
+    const passportOrHmTwPass =
+      this.selfCredentials &&
+      this.selfCredentials.find((c) => this.isPassportHmTwPass(c.Type));
+    const bookInfos = this.getBookInfos();
+    const exists = bookInfos
+      .filter((it) =>
+        this.isPassportHmTwPass(it.credential && it.credential.Type)
+      )
+      .map((it) => it.credential);
+
+    if (passportOrHmTwPass) {
+      if (!exists || !exists.length) {
+        this.setBookInfos(
+          bookInfos.map((it) => {
+            it.credential = passportOrHmTwPass;
+            return it;
+          })
+        );
+      } else {
+        this.setBookInfos(
+          bookInfos.map((it) => {
+            if (
+              this.isPassportHmTwPass(it && it.credential && it.credential.Type)
+            ) {
+              it.credential = passportOrHmTwPass;
+            }
+            return it;
+          })
+        );
+      }
+    }
   }
   async onBook(bookDto: OrderBookDto): Promise<IBookOrderResult> {
     const req = new RequestEntity();
