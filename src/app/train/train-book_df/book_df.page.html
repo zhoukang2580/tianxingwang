@@ -203,12 +203,12 @@
               <ion-icon name="chevron-up-outline" *ngIf="!isShowTravelInfo" (click)="isShowTravelInfo=!isShowTravelInfo"></ion-icon>
             </div>
           </ion-item>
-          <div *ngIf="!isShowTravelInfo">
+          <div *ngIf="!isShowTravelInfo" style="margin-top: 0.5em;">
             <div class="illegal" [attr.illegalReasonsid]="combindInfo.id" *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist">
-              <div style="height: 35px" class="flex padding-v row" (click)="onSelectIllegalReason(combindInfo)" *ngIf="viewModel?.illegalReasons?.length">
+              <div class="flex padding-v row" (click)="onSelectIllegalReason(combindInfo)" *ngIf="viewModel?.illegalReasons?.length">
                 <div class="label">超标原因</div>
                 <div class="value">{{combindInfo?.illegalReason}}</div>
-                <ion-icon name="chevron-forward-outline" color="medium" ></ion-icon>
+                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
               </div>
               <div class="flex padding-v row">
                 <span class="label">其他原因</span>
