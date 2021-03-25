@@ -4,13 +4,23 @@
 </div>
 <input type="file" #input class="hidden">
 <div class="ion-page swipers" [class.show]='isViewImage' *ngIf='imageUrls?.length&&isViewImage' (click)='onHide()'>
-  <app-swiper-slides [defaultImage]='defaultImage' [options]='{slideTplRef:ref}' [loadingImage]='loadingImage' [items]='imageUrls' [initialPos]='pos'>
-  </app-swiper-slides>
+  <ng-container *ngIf='imageUrls?.length>1 else oneTpl'>
+    <app-swiper-slides [defaultImage]='defaultImage' [options]='{slideTplRef:ref}' [loadingImage]='loadingImage' [items]='imageUrls' [initialPos]='pos'>
+    </app-swiper-slides>
+  </ng-container>
+  <ng-template #oneTpl>
+    <div pinch-zoom>
+      <div class="imgwrapper">
+        <img [src]="imageUrls[0].imageUrl" alt="" [class.show]='isViewImage'>
+      </div>
+    </div>
+  </ng-template>
 </div>
 <ng-template #ref let-it='slideItem'>
   <div pinch-zoom>
     <div class="imgwrapper">
-      <img [lazyLoad]='it.imageUrl' [class.show]='isViewImage' [ngStyle]='{objectFit:"contain"}' [loadingImage]='loadingImage' class="pic" [defaultImage]='defaultImage' alt="图片">
+      <!-- <img [lazyLoad]='it.imageUrl' [class.show]='isViewImage' [ngStyle]='{objectFit:"contain"}' [loadingImage]='loadingImage' class="pic" [defaultImage]='defaultImage' alt="图片"> -->
+      <img [src]="it.imageUrl" alt="" [class.show]='isViewImage'>
     </div>
   </div>
 </ng-template>

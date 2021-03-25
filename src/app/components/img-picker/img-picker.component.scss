@@ -12,10 +12,10 @@
         /* This rule is very important, please do not ignore this! */
     }
 
-    ion-button {
-        position: fixed;
-        bottom     : 3em;
-        z-index : 1;
+  ion-button {
+    position: fixed;
+    bottom: 0.5em;
+    z-index: 1;
 
         &.cancel-btn {
             left: 1em;

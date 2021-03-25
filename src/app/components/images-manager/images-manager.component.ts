@@ -24,9 +24,9 @@ export class ImagesMangerComponent implements OnInit {
   @Input() isMulti = false;
   @Input() maxCount = Infinity;
   @Input() desc = false;
-  @Input() minCropBoxWidthPercent;
-  @Input() maxCropWidth;
-  @Input() maxCropHeight;
+  @Input() cropperOptions;
+  // @Input() maxCropWidth;
+  // @Input() maxCropHeight;
   @Input() images: {
     fileValue: string;
     imageUrl: string;
@@ -55,7 +55,7 @@ export class ImagesMangerComponent implements OnInit {
         isViewImage: true,
         loadingImage: this.config && this.config.PrerenderImageUrl,
         defaultImage: this.config && this.config.DefaultImageUrl,
-        minCropBoxWidthPercent: this.minCropBoxWidthPercent,
+        cropperOptions: this.cropperOptions,
       },
     });
     m.present();

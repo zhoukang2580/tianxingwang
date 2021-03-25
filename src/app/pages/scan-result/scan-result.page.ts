@@ -61,7 +61,7 @@ export class ScanResultPage
   ) {
     this.subscription = activatedRoute.queryParamMap.subscribe((p) => {
       console.log("scanResult", p.get("scanResult"));
-      this.scan(p.get("scanResult"));
+      this.scan(decodeURIComponent(p.get("scanResult")));
     });
   }
   ngOnDestroy() {
