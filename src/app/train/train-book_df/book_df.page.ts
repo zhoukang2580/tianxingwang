@@ -1117,6 +1117,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isAllowSelectApprove(info: ITrainPassengerBookInfo) {
     const Tmc = this.initialBookDto.Tmc;
     const staff = info.credentialStaff;
+    if(info.bookInfo&&info.bookInfo.exchangeInfo){
+      // 改签不需要添加审批人
+      return false;
+    }
     if (
       !Tmc ||
       Tmc.TrainApprovalType == TmcApprovalType.None ||

@@ -278,8 +278,8 @@
             </div>
           </div>
         </ion-list>
-        <ion-list *ngIf="(viewModel?.isCanSkipApproval$|async)" class="can-skip-approve">
-          <ion-item class="ion-no-margin">
+        <ion-list class="can-skip-approve">
+          <ion-item class="ion-no-margin" *ngIf="(viewModel?.isCanSkipApproval$|async)">
             <ion-label class="label">跳过审批:</ion-label>
             <ion-checkbox class="ion-margin-end" color="secondary" [(ngModel)]="combindInfo.isSkipApprove">
             </ion-checkbox>
