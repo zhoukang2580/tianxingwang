@@ -1097,7 +1097,6 @@ export class TrainService {
     try {
       const info = await this.getExchangeInfo(orderTrainTicket.Id);
       const trainStations = await this.getStationsAsync();
-      // .catch(_=>[]);
       if (!info || !info.OrderTrainTicket) {
         AppHelper.alert("改签失败，请联系客服人员");
         return;
