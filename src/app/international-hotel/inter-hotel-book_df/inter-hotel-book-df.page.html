@@ -86,11 +86,11 @@
           </ion-item>
         </ion-list>
         <ion-list class="passenger-info section">
-          <div class="title">
+          <div class="title" (click)='combindInfo.isShowOtherInfo=!combindInfo.isShowOtherInfo'>
             <span class="name">旅客信息</span>
             <div class="toggle-icon">
-              <ion-icon name="chevron-down-outline" (click)='combindInfo.isShowOtherInfo=!combindInfo.isShowOtherInfo' *ngIf='!combindInfo.isShowOtherInfo'></ion-icon>
-              <ion-icon name="chevron-up-outline" (click)='combindInfo.isShowOtherInfo=!combindInfo.isShowOtherInfo' *ngIf='combindInfo.isShowOtherInfo'></ion-icon>
+              <ion-icon name="chevron-down-outline"  *ngIf='!combindInfo.isShowOtherInfo'></ion-icon>
+              <ion-icon name="chevron-up-outline"  *ngIf='combindInfo.isShowOtherInfo'></ion-icon>
             </div>
           </div>
           <div class="info" [class.hidden]='!combindInfo.isShowOtherInfo'>

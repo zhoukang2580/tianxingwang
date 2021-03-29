@@ -327,13 +327,13 @@
           </div>
         </div>
         <div class="section">
-          <div class="title">
+          <div class="title" (click)='onToggleShowCredentialDetail(combindInfo)'>
             <div class="name">
               旅客信息
             </div>
             <div class="toggle-icon">
-              <ion-icon name="chevron-down-outline" (click)='onToggleShowCredentialDetail(combindInfo)' *ngIf='!combindInfo.isShowCredentialDetail'></ion-icon>
-              <ion-icon name="chevron-up-outline" (click)='onToggleShowCredentialDetail(combindInfo)' *ngIf='combindInfo.isShowCredentialDetail'></ion-icon>
+              <ion-icon name="chevron-down-outline"  *ngIf='!combindInfo.isShowCredentialDetail'></ion-icon>
+              <ion-icon name="chevron-up-outline"  *ngIf='combindInfo.isShowCredentialDetail'></ion-icon>
             </div>
           </div>
           <div class="info" [class.hidden]='!combindInfo.isShowCredentialDetail'>

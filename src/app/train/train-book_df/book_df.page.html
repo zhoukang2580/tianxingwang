@@ -94,11 +94,11 @@
         <ion-list>
           <ion-item-group>
             <ion-item class="pass-information">
-              <div class="con-div">
+              <div class="con-div" (click)="isShowOtherInfo=!isShowOtherInfo">
                 <div class="passenger">旅客信息</div>
                 <div class="ion-up">
-                  <ion-icon name="chevron-down-outline" *ngIf="!isShowOtherInfo" (click)="isShowOtherInfo=!isShowOtherInfo"></ion-icon>
-                  <ion-icon name="chevron-up-outline" *ngIf="isShowOtherInfo" (click)="isShowOtherInfo=!isShowOtherInfo"></ion-icon>
+                  <ion-icon name="chevron-down-outline" *ngIf="!isShowOtherInfo" ></ion-icon>
+                  <ion-icon name="chevron-up-outline" *ngIf="isShowOtherInfo" ></ion-icon>
                 </div>
               </div>
             </ion-item>

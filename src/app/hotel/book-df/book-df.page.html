@@ -103,10 +103,10 @@
           </ion-item>
         </ion-list>
         <ion-list class="section passenger-info">
-          <div class="title">
+          <div class="title" (click)="isShowOtherInfo=!isShowOtherInfo">
             <span class="name">旅客信息</span>
-            <ion-icon name="chevron-down-outline" class="down" *ngIf="!isShowOtherInfo" (click)="isShowOtherInfo=!isShowOtherInfo"></ion-icon>
-            <ion-icon name="chevron-up-outline" class="down" *ngIf="isShowOtherInfo" (click)="isShowOtherInfo=!isShowOtherInfo"></ion-icon>
+            <ion-icon name="chevron-down-outline" class="down" *ngIf="!isShowOtherInfo" ></ion-icon>
+            <ion-icon name="chevron-up-outline" class="down" *ngIf="isShowOtherInfo" ></ion-icon>
           </div>
           <div class="info" [class.hidden]='!isShowOtherInfo'>
             <div class="credentials costcenter">
