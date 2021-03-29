@@ -41,6 +41,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
   private progress = 0;
   private scrollEl?: HTMLElement;
   private startY = 0;
+  private startX = 0;
   private _disabled;
   private closetimeoutid: any;
   private isMoveBeginRefresh = false;
@@ -63,7 +64,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     this.ionPull = new EventEmitter();
     this.ionStart = new EventEmitter();
   }
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   ngOnInit() {
     this.connectedCallback();
   }
@@ -251,6 +252,7 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
     this.progress = 0;
     this.state = RefresherState.Inactive;
     this.startY = evt.touches[0] && evt.touches[0].clientY;
+    this.startX = evt.touches[0] && evt.touches[0].clientX;
     this.isMoveBeginRefresh = false;
   }
 
@@ -275,6 +277,10 @@ export class RefresherComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     let deltaY = ev.touches[0].clientY - this.startY;
+    let deltaX = Math.abs(ev.touches[0].clientX - this.startX);
+    if (deltaX >= deltaY / 4) {
+      return;
+    }
     const pullFactor =
       Number.isNaN(this.pullFactor) || this.pullFactor < 0
         ? 1
