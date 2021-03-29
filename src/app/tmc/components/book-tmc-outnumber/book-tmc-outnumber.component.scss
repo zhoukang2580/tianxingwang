@@ -5,7 +5,7 @@ ion-input.travel-number {
 ion-input {
   // text-align: end;
 }
-ion-label{
+ion-label {
   flex: initial;
   font-size: 14px;
   color: #666;
@@ -27,6 +27,13 @@ ion-icon {
   font-size: 0.8rem;
 }
 
-ion-item{
+ion-item {
   --min-height: 35px;
+  .t-label {
+    font-size: 14px;
+    color: #666;
+    padding-right: 44px;
+    margin: 0;
+    width: 6.5rem;
+  }
 }
