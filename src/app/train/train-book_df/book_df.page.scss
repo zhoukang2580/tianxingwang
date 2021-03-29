@@ -216,7 +216,9 @@ ion-content {
     border-radius: 10px 10px 0 0;
   }
 }
-
+.padding-v ion-input{
+  --padding-start:0 !important;
+}
 ion-footer .toolbar {
   line-height: 49px;
   --border-width: 0;
@@ -288,7 +290,6 @@ ion-footer .toolbar {
     max-width: 6.5em;
   }
 }
-
 ion-item {
   --min-height: 35px;
 }
