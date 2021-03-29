@@ -432,6 +432,10 @@ ion-header ion-title {
     .not-name {
       margin-left: 15px;
       padding-right: 15px;
+      max-width: 6em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .not-approvd {
       margin: 0;
