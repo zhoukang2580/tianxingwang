@@ -1,58 +1,64 @@
+<div class="tip recomend-segment" *ngIf='isRecomendSegment'>{{langOpt.lowestPrice}}</div>
 <div class="f-list-item">
-  <div class="row1">
-    <div class="left">
-      <div class="time">
-        {{segment?.TakeoffShortTime}}
+  <img src="assets/images/agreementairline.png" *ngIf='segment?.IsAgreement' class="agreement-airline" alt="">
+  <img [src]='segment?.AirlineSrc' alt="" class="air-img">
+  <div class="infos">
+    <div class="row1">
+      <div class="left">
+        <div class="time">
+          {{segment?.TakeoffShortTime}}
+        </div>
+        <div class="name">
+          {{segment?.FromAirportName?.replace("国际机场","")?.replace("机场","")}}
+          <span *ngIf='segment?.FromTerminal'>{{segment?.FromTerminal}}</span>
+        </div>
       </div>
-      <div class="name">
-        {{segment?.FromAirportName}}
-        <span *ngIf='segment?.FromTerminal'>({{segment?.FromTerminal}})</span>
+      <div class="center">
+        <div class="img-t txt">
+          {{segment?.FlyTimeName}}
+        </div>
+        <div class="img">
+          <img src="assets/images/f-list-item-arrow.png" alt="">
+        </div>
+        <div class="txt img-b">
+          {{segment?.IsStop?langOpt?.isStop:langOpt?.directFly}}
+        </div>
+      </div>
+      <div class="right">
+        <div class="time">
+          {{segment?.ArrivalShortTime}}
+        </div>
+        <div class="name">
+          {{segment?.ToAirportName?.replace("国际机场","")?.replace("机场","")}} <span *ngIf='segment?.ToTerminal'>
+            {{segment?.ToTerminal}}
+          </span>
+        </div>
       </div>
     </div>
-    <div class="center">
-      <div class="img-t txt">
-        {{segment?.FlyTimeName}}
+    <div class="row2">
+      <div class="price" *ngIf='isShowPrice'>
+        <small>￥</small>{{(segment?.LowestFare)|flightprice}}
+        <div class="tip" *ngIf='segment.isLowestPrice'>{{langOpt.lowestPrice}}</div>
       </div>
-      <div class="img">
-        <img src="assets/images/f-list-item-arrow.png" alt="">
-      </div>
-      <div class="txt img-b">
-        {{segment?.IsStop?langOpt?.isStop:langOpt?.directFly}}
-      </div>
-    </div>
-    <div class="right">
-      <div class="time">
-        {{segment?.ArrivalShortTime}}
-      </div>
-      <div class="name">
-        {{segment?.ToAirportName}} <span *ngIf='segment?.ToTerminal'>
-          ({{segment?.ToTerminal}})
-        </span>
-      </div>
-    </div>
-  </div>
-  <div class="row2">
-    <div class="price" *ngIf='isShowPrice'><small>￥</small>{{(segment?.LowestFare)|flightprice}}</div>
-    <div class="air">
-      <img [src]='segment?.AirlineSrc' alt="">
-      <ng-container *ngIf='isHasAgreement'>
+      <div class="air">
+        <!-- <ng-container *ngIf='isHasAgreement'>
+          <span (click)="onShowAgreement($event)" class="agreement">{{langOpt.agreement}}</span>
+          <span class="line">|</span>
+        </ng-container> -->
+        <span>{{segment?.AirlineName}}</span>
+        <ng-container *ngIf='segment?.CodeShareNumber'>
+          <span class="line">|</span>
+          <span>{{langOpt.common}}{{segment?.CodeShareNumber}}</span>
+        </ng-container>
         <span class="line">|</span>
-        <span (click)="onShowAgreement($event)" class="agreement">{{langOpt.agreement}}</span>
-      </ng-container>
-      <span class="line">|</span>
-      <span>{{segment?.AirlineName}}</span>
-      <ng-container *ngIf='segment?.CodeShareNumber'>
+        <span>{{segment?.Number}}</span>
+        <ng-container *ngIf='segment?.FlyTimeName'>
+          <span class="line">|</span>
+          <span>{{langOpt.planeType}}{{segment?.PlaneType}}</span>
+        </ng-container>
         <span class="line">|</span>
-        <span>{{langOpt.common}}{{segment?.CodeShareNumber}}</span>
-      </ng-container>
-      <span class="line">|</span>
-      <span>{{segment?.Number}}</span>
-      <ng-container *ngIf='segment?.FlyTimeName'>
-        <span class="line">|</span>
-        <span>{{langOpt.planeType}}{{segment?.PlaneType}}</span>
-      </ng-container>
-      <span class="line">|</span>
-      <span>{{segment.Meal?langOpt.has:langOpt.no}}{{langOpt.meal}}</span>
+        <span>{{segment.Meal?langOpt.has:langOpt.no}}{{langOpt.meal}}</span>
+      </div>
     </div>
   </div>
 </div>

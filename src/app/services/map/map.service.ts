@@ -5,6 +5,7 @@ import { Injectable } from "@angular/core";
 import { WechatHelper } from "src/app/wechatHelper";
 import { BehaviorSubject, Subject } from "rxjs";
 import { Storage } from "@ionic/storage";
+import { Geolocation } from "@ionic-native/geolocation/ngx";
 export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
 export const GaodeMapKey = `42acb0dcc0c0541c738f8842ffb360ce`;
 const _KEY_GET_LATEST_LOCATE_POS = `_key_get_latest_locate_pos`;
@@ -37,7 +38,11 @@ export class MapService {
   private latestLocatePos: {
     [time: number]: { point: MapPoint; city: TrafficlineEntity; position: any };
   };
-  constructor(private apiService: ApiService, private storage: Storage) {
+  constructor(
+    private apiService: ApiService,
+    private storage: Storage,
+    private geolocation: Geolocation
+  ) {
     this.querys = AppHelper.getQueryParamers();
     this.bMapLocalSearchSources = new BehaviorSubject([]);
     console.log("MapService,tree", this.querys);
@@ -256,6 +261,17 @@ export class MapService {
     });
   }
   private async getCurrentPosition(): Promise<MapPoint> {
+    if (AppHelper.isApp()) {
+      const r = await this.geolocation.getCurrentPosition().catch(() => null);
+      const p: MapPoint = {
+        lat: `${r && r.coords.latitude}`,
+        lng: `${r && r.coords.longitude}`,
+        cityName: "",
+        province: "",
+        address: null,
+      };
+      return p;
+    }
     // 关于状态码
     //  BMAP_STATUS_SUCCESS	检索成功。对应数值“0”。
     // BMAP_STATUS_CITY_LIST	城市列表。对应数值“1”。
@@ -640,6 +656,7 @@ export class MapService {
     };
     const latestLocatePos = await this.getLatestLocatePos();
     if (latestLocatePos && latestLocatePos.city) {
+      result = {} as any;
       result.city = latestLocatePos.city;
       result.position = latestLocatePos.position;
       this.getPosResult();
@@ -649,10 +666,13 @@ export class MapService {
     return result;
   }
   private getPosByIp(): Promise<MapPoint> {
-    return new Promise<MapPoint>((s) => {
+    return new Promise<MapPoint>(async (s) => {
       if (!window["BMap"]) {
-        console.error("getCityNameByIp,BMap 地图尚未加载。。。");
-        s(null);
+        await this.initBMap();
+        if(!window["BMap"]){
+          console.error("getCityNameByIp,BMap 地图尚未加载。。。");
+          s(null);
+        }
       }
       const myCity = new window["BMap"].LocalCity();
       let timeout = false;

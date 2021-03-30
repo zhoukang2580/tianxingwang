@@ -554,27 +554,32 @@ export class FlightBookDfPage
       }
     });
     const result = await this.tmcService.getTravelUrls(args);
-    const trvaelNumber = this.tmcService.getTravelFormNumber();
+    const travelnumber = this.tmcService.getTravelFormNumber();
     if (result) {
       this.vmCombindInfos.forEach((combindInfo) => {
         if (combindInfo.tmcOutNumberInfos) {
           combindInfo.tmcOutNumberInfos.forEach((info) => {
             if (info.label.toLowerCase() == "travelnumber") {
-              info.loadTravelUrlErrorMsg =
-                result[info.staffNumber] && result[info.staffNumber].Message;
               info.travelUrlInfos =
                 result[info.staffNumber] && result[info.staffNumber].Data;
               if (
                 !info.value &&
-                trvaelNumber &&
                 info.travelUrlInfos &&
                 info.travelUrlInfos.length
               ) {
-                // info.value = info.travelUrlInfos.find(
-                //   (it) => it.TravelNumber == trvaelNumber
-                // ).TravelNumber;
-                info.value = trvaelNumber;
-              } else {
+                info.value = travelnumber || "";
+                if (!info.value) {
+                  if (info.travelUrlInfos.length > 1) {
+                    info.value = "";
+                    info.placeholder = "请选择";
+                    info.loadTravelUrlErrorMsg = "请选择";
+                  } else {
+                    info.value = info.travelUrlInfos[0].TravelNumber;
+                    info.loadTravelUrlErrorMsg = "";
+                    info.placeholder = info.label;
+                  }
+                }
+              } else if (!travelnumber) {
                 info.value = "";
                 info.placeholder = "请选择";
               }
@@ -1151,12 +1156,9 @@ export class FlightBookDfPage
         }
       }
       p.ExpenseType = combindInfo.expenseType;
+
       p.IllegalReason =
-        (this.tmc &&
-          this.tmc.IsAllowCustomReason &&
-          combindInfo.otherIllegalReason) ||
-        combindInfo.illegalReason ||
-        "";
+        combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (
         !combindInfo.modal.isNotWhitelist &&
         combindInfo.modal.bookInfo &&
@@ -1166,10 +1168,10 @@ export class FlightBookDfPage
       ) {
         // 只有白名单的才需要考虑差标
         const ele: HTMLElement = this.getEleByAttr(
-          "illegalreasonsid",
+          "illegalReasonsid",
           combindInfo.id
         );
-        if (!p.IllegalReason) {
+        if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
           combindInfo.isShowTravelDetail = true;
           showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),
@@ -1190,6 +1192,7 @@ export class FlightBookDfPage
         }, 200);
         return false;
       }
+
       p.CostCenterCode =
         combindInfo.otherCostCenterCode ||
         (combindInfo.costCenter && combindInfo.costCenter.code) ||
@@ -1604,6 +1607,7 @@ export class FlightBookDfPage
             +it.insuranceResult.Id
         );
         const combineInfo: ICombindInfo = {} as ICombindInfo;
+        combineInfo.isShowTravelDetail = true;
         combineInfo.selectedInsuranceProductId =
           forceInsurance &&
           forceInsurance.insuranceResult &&

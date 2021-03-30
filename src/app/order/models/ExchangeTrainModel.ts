@@ -47,7 +47,8 @@ export class ExchangeTrainModel {
     /// 是否回城
     /// </summary>
     IsBack: boolean;
-    isLockedDestination: boolean;
+    IsRangeExchange: boolean;
+    RangeExchangeDateTip: string;
     /// <summary>
     /// 乘客
     /// </summary>

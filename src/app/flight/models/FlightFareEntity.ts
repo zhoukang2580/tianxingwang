@@ -6,6 +6,7 @@ import { FlightPolicyEntity } from "./flight/FlightPolicyEntity";
 import { FlightSegmentEntity } from "./flight/FlightSegmentEntity";
 import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
 import { FlightFareRuleEntity } from "./FlightFareRuleEntity";
+import { FlightRouteEntity } from "./flight/FlightRouteEntity";
 
 export class FlightFareEntity {
   /// <summary>
@@ -21,6 +22,7 @@ export class FlightFareEntity {
   ///
   /// </summary>
   FlightRouteIds: string[];
+  flightRoutes: FlightRouteEntity[];
   FlightFareRules: FlightFareRuleEntity[];
   /// <summary>
   ///
@@ -137,6 +139,9 @@ export class FlightFareEntity {
   /// 是否允许预订
   /// </summary>
   IsAllowOrder: boolean;
+
+  IsIllegal: boolean;
+  Message: string;
   /// <summary>
   /// 违规
   /// </summary>

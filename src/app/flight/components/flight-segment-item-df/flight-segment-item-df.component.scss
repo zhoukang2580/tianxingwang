@@ -1,5 +1,18 @@
 .f-list-item {
-  padding: 13.5px 1em;
+  padding: 13.5px 1em 13.5px 0.3em;
+  display: flex;
+  background: #ffffff;
+  border-radius: 5px;
+  position: relative;
+  .air-img {
+    width: 1.5em;
+    height: 1.5em;
+    align-self: center;
+    margin-right: 0.3em;
+    min-width: 1.5em;
+    min-height: 1.5em;
+    object-fit: contain;
+  }
   .row1 {
     display: flex;
     margin-bottom: 11.5px;
@@ -10,9 +23,7 @@
     font-weight: 500;
     color: #333333;
   }
-  background: #ffffff;
-  border-radius: 5px;
-  position: relative;
+
   .price {
     position: absolute;
     right: 0.5em;
@@ -23,6 +34,12 @@
     color: #ff3333;
     small {
       font-size: 9px;
+    }
+    .tip {
+      font-size: 0.7rem;
+      font-weight: bold;
+      color: var(--ion-color-success);
+      text-align: end;
     }
   }
   .center {
@@ -79,4 +96,30 @@
       line-height: 0;
     }
   }
+}
+.agreement-airline {
+  width: 2.7em;
+  position: absolute;
+  right: 0.5em;
+  bottom: 1em;
+}
+.recomend-segment {
+  padding: 0.5em;
+  border-radius: 0.3em;
+  border-top-left-radius: 0;
+  .price {
+    align-self: flex-start;
+  }
+  background-color: rgba(var(--ion-color-secondary-rgb), 0.1);
+}
+.tip.recomend-segment {
+  background: var(--ion-color-primary);
+  // background: transparent;
+  width: 6em;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  padding: 0.1em 0.2em;
+  font-size: 0.7rem;
+  color: var(--ion-color-success);
+  text-align: center;
 }

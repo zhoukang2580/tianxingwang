@@ -297,7 +297,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
         });
       } else {
         this.carService.setOpenUrlSource(url);
-        if (window.navigator.geolocation) {
+        if (window.navigator.geolocation && false) {
           navigator.geolocation.getCurrentPosition(
             () => {
               this.router.navigate([AppHelper.getRoutePath("open-rental-car")]);

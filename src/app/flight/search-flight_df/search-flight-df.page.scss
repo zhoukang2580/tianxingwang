@@ -41,10 +41,10 @@ ion-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 44px;
+  height: 41px;
   border-top-right-radius: 8px;
   border-top-left-radius: 8px;
-  border-bottom: 1px dashed gray;
+  // border-bottom: 1px dashed gray;
   &.ios {
     right: 1em;
     left: 1em;

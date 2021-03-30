@@ -288,9 +288,10 @@ export class OrderService {
       fromCity: TrafficlineEntity;
       toCity: TrafficlineEntity;
       order: OrderEntity;
-      credentails: { CredentialsNumber:string;HideCredentialsNumber:string; }[]
+      credentails: { CredentialsNumber: string; HideCredentialsNumber: string; }[]
     }>(req);
   }
+
 
   abolishFlightOrder(data: {
     OrderId: string;
@@ -306,6 +307,14 @@ export class OrderService {
   }) {
     return this.abolishOrder({ ...data, Tag: "train" });
   }
+
+  abolishHotelsOrder(data: {
+    OrderId: string;
+    orderHotelId: string;
+    Channel: string;
+  }) {
+    return this.abolishHotelOrder({ ...data });
+  }
   private abolishOrder(data: {
     OrderId: string;
     TicketId: string;
@@ -318,6 +327,22 @@ export class OrderService {
     req.Method = `TmcApiOrderUrl-Order-AbolishOrder`;
     return this.apiService.getPromiseData<any>(req);
   }
+
+  private abolishHotelOrder(data: {
+    OrderId: string;
+    orderHotelId: string;
+    Channel: string;
+  }) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = {
+      ...data,
+      OrderHotelId: data.orderHotelId
+    };
+    req.Method = `TmcApiOrderUrl-Order-CancelOrderHotel`;
+    return this.apiService.getPromiseData<any>(req);
+  }
+
   async getExchangeDate(startTime: string) {
     return this.calendarService.openCalendar({
       goArrivalTime: startTime,

@@ -13,7 +13,6 @@ ion-item {
 }
 ion-content {
   ion-list + ion-list {
-    padding: 0.3em 0;
     margin: 10px;
     border-radius: 10px;
   }
@@ -42,7 +41,6 @@ ion-content {
     align-items: flex-start;
   }
   ion-item-group {
-    margin: 0.5em;
     &.n-m {
       margin: 0;
     }
@@ -57,7 +55,7 @@ ion-content {
   .name {
     width: 43px;
     height: 14px;
-    font-size: 15px;
+    font-size: 18px;
     font-family: PingFang SC;
     font-weight: bold;
   }
@@ -83,14 +81,16 @@ ion-content {
   }
   .editicon {
     width: 14px;
-    margin: -3px 0.3em;
+    height: 14px;
+    margin: -4px 10px -2px 16px;
   }
   .passenger {
-    font-size: 18px;
+    font-size: 16px;
     font-family: PingFang SC;
     font-weight: bold;
     color: #333333;
-    margin-left: 15px;
+    margin-left: 20px;
+    width: 100px;
   }
   .con-div {
     display: flex;
@@ -99,7 +99,7 @@ ion-content {
   }
   .ion-mobile,
   .ion-email {
-    margin-left: 1.1em;
+    margin: 0 20px;
     max-width: 6em;
     font-size: 14px;
   }
@@ -111,6 +111,7 @@ ion-content {
     font-family: PingFang SC;
     font-weight: 500;
     color: #333333;
+    height: 35px;
   }
 }
 .spacebetween {
@@ -126,6 +127,12 @@ ion-content {
   // border-top-left-radius: 10px;
   font-size: 0.9rem;
   box-shadow: 0.1em 0.2em 0.6em rgba(0, 0, 0, 0.1);
+}
+
+.ion-label-text {
+  padding-top: 12px;
+  font-size: 12px;
+  white-space: break-spaces;
 }
 
 .person {
@@ -159,12 +166,12 @@ ion-content {
 // .other_equipment {
 //   --border-radius: 0 0 10px 10px;
 // }
-.approval-info {
-  padding-left: 0.5em;
-}
+// .approval-info {
+//   padding-left: 0.5em;
+// }
 .otherinfo {
   font-size: 14px;
-  margin-left: 1.1em;
+  margin-left: 20px;
   .other {
     display: flex;
     align-items: center;
@@ -176,7 +183,7 @@ ion-content {
 }
 .can-skip-approve {
   .label {
-    margin: 0 1.7em;
+    margin: 0 1.1em;
     max-width: 6.5em;
     color: #666666;
   }
@@ -209,7 +216,9 @@ ion-content {
     border-radius: 10px 10px 0 0;
   }
 }
-
+.padding-v ion-input{
+  --padding-start:0 !important;
+}
 ion-footer .toolbar {
   line-height: 49px;
   --border-width: 0;
@@ -225,6 +234,10 @@ ion-footer .toolbar {
     background: #5099fe;
     border-radius: 5px;
   }
+}
+.flex{
+  display: flex;
+  align-items: center;
 }
 
 .center {
@@ -251,22 +264,21 @@ ion-footer .toolbar {
 }
 .info {
   width: 100%;
-  padding: 0.5em;
+  padding: 0.5em 0;
 }
 .section {
   margin-top: 1em;
 }
 
 .padding-v {
-  margin-left: 1.1em;
+  margin-left: 20px;
   font-size: 14px;
   display: flex;
   .label {
     color: #666666;
     min-width: 6.5rem;
-  }
-  ion-icon {
-    margin-top: 3px;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -274,7 +286,10 @@ ion-footer .toolbar {
   font-size: 14px;
   .serFee {
     color: #666666;
-    margin-left: 25px;
+    margin-left: 20px;
     max-width: 6.5em;
   }
+}
+ion-item {
+  --min-height: 35px;
 }

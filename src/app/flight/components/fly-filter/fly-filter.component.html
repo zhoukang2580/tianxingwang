@@ -1,6 +1,12 @@
 <div class="non-stop">
-    <ion-toggle mode='md' [(ngModel)]="filterCondition.onlyDirect" class="ion-margin-end"></ion-toggle>
-    <ion-label>{{langOpt.NonStopOnly}}</ion-label>
+    <div class="c">
+        <ion-toggle mode='md' [(ngModel)]="filterCondition.onlyDirect" class="ion-margin-end"></ion-toggle>
+        <ion-label>{{langOpt.NonStopOnly}}</ion-label>
+    </div>
+    <div class="c">
+        <ion-toggle mode='md' [(ngModel)]="filterCondition.isAgreement" class="ion-margin-end"></ion-toggle>
+        <ion-label>{{langOpt.IsAgreement}}</ion-label>
+    </div>
 </div>
 <ion-content class="filter-container">
     <section class="search-cond">
@@ -17,12 +23,12 @@
             <div class='tab' [class.active]='tab===6' [class.user-op]='userOps?.toAirportOp' (click)='onTabClick(6)'>
                 <span>{{langOpt.Arrival}}</span>
             </div>
-            <div class='tab' [class.active]='tab===4' [class.user-op]='userOps?.airTypeOp' (click)='onTabClick(4)'>
-                <span>{{langOpt.Aircraft}}</span>
-            </div>
             <div class='tab' [ngClass]='{active:tab===5,hidden:!filterCondition?.cabins?.length,"user-op":userOps?.cabinOp}' (click)='onTabClick(5)'>
                 <span>{{langOpt.Cabins}}</span>
-            </div> 
+            </div>
+            <div class='tab' [ngClass]='{active:tab===4,hidden:true,"user-op":userOps?.airTypeOp}' (click)='onTabClick(4)'>
+                <span>{{langOpt.Aircraft}}</span>
+            </div>
         </article>
         <article class="right">
             <ion-list>

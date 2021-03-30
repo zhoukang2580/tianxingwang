@@ -1,22 +1,21 @@
-<ion-header class='ion-text-center'>
-  <ion-toolbar class="ion-toolbar">
+<ion-header >
+  <ion-toolbar >
     <ion-buttons slot='start'>
       <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
     <ion-title class='sm-font-size title' [class.ion-text-start]='(isShowAddPassenger$|async)' [class.ion-text-center]='!(isShowAddPassenger$|async)'>
-      <ion-text (click)='onSelectStation(true)' color='{{ !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked&&!searchTrainModel?.isLockedDestination ?"secondary":"medium"}}'
-        class='from-station'>
+      <ion-text (click)='onSelectStation(true)' color='{{ !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked&&!searchTrainModel?.IsRangeExchange ?"secondary":"medium"}}' class='from-station'>
         <span class="city-name">
           {{vmFromCity?.CityName||vmFromCity?.Name}}
         </span>
         <!-- <ion-icon name='caret-down-outline' *ngIf=' !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked'></ion-icon> -->
       </ion-text>
-      <ion-text color='{{!searchTrainModel?.isExchange&&!searchTrainModel?.isLocked&&!searchTrainModel?.isLockedDestination ?"secondary":"medium"}}'>
+      <ion-text color='{{!searchTrainModel?.isExchange&&!searchTrainModel?.isLocked&&!searchTrainModel?.IsRangeExchange ?"secondary":"medium"}}'>
         <i (click)='onSwapStation()'><img src="assets/images/3.png" alt=""></i>
         <!-- <div (click)='onSwapStation()'> -->
         <!-- </div> -->
       </ion-text>
-      <ion-text (click)='onSelectStation(false)' class='to-station' color='{{searchTrainModel?.isExchange||!searchTrainModel?.isLocked &&!searchTrainModel?.isLockedDestination?"secondary":"medium"}}'>
+      <ion-text (click)='onSelectStation(false)' class='to-station' color='{{searchTrainModel?.isExchange||!searchTrainModel?.isLocked &&!searchTrainModel?.IsRangeExchange?"secondary":"medium"}}'>
         <span class="city-name">{{vmToCity?.CityName||vmToCity?.Name}}</span>
         <!-- <ion-icon name='caret-down-outline' *ngIf='searchTrainModel?.isExchange||!searchTrainModel?.isLocked'></ion-icon> -->
       </ion-text>
@@ -38,7 +37,7 @@
   <ion-list>
     <div class="content-header">
       <ion-toolbar class="fly-days">
-        <app-days-calendar-df (itemSelected)="onChangedDay($event,true)" [disabled]='searchTrainModel?.isExchangeToDay' (calenderClick)="onCalenderClick()">
+        <app-days-calendar-df [endDate]='searchTrainModel.IsRangeExchange?tripDate:""' (itemSelected)="onChangedDay($event,true)" [disabled]='disabledChangeDate' (calenderClick)="onCalenderClick()">
         </app-days-calendar-df>
       </ion-toolbar>
     </div>

@@ -24,7 +24,7 @@ import { OrderTrainTicketStatusType } from "../../models/OrderTrainTicketStatusT
 import { OrderFlightTicketEntity } from "../../models/OrderFlightTicketEntity";
 import { OrderTrainTicketEntity } from "../../models/OrderTrainTicketEntity";
 import { TrainBookType } from "src/app/train/models/TrainBookType";
-import { OrderHotelStatusType } from "../../models/OrderHotelEntity";
+import { OrderHotelEntity, OrderHotelStatusType } from "../../models/OrderHotelEntity";
 import { HotelPaymentType } from "src/app/hotel/models/HotelPaymentType";
 import { TrainSupplierType } from "src/app/train/models/TrainSupplierType";
 import { Router } from "@angular/router";
@@ -65,6 +65,11 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     ticketId: string;
     tag: "flight" | "train";
   }>;
+  @Output() abolishHotelOrder: EventEmitter<{
+    orderId: string;
+    orderHotelId: string;
+  }>;
+
   @Output() refundFlightTicket: EventEmitter<{
     orderId: string;
     ticketId: string;
@@ -93,6 +98,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     this.refundTrainTicket = new EventEmitter();
     this.refundFlightTicket = new EventEmitter();
     this.abolishOrder = new EventEmitter();
+    this.abolishHotelOrder = new EventEmitter();
     this.exchangeFlightTicket = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
@@ -102,6 +108,24 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     evt.preventDefault();
     evt.stopPropagation();
   }
+
+  onAbolishHotelOrder(evt: CustomEvent, orderId) {//OrderHotels
+    evt.stopPropagation();
+    AppHelper.alert(
+      "确定取消订单?",
+      true,
+      "确定",
+      "取消"
+    ).then((ok) => {
+      if (ok) {
+        this.abolishHotelOrder.emit({
+          orderId: this.order.Id,
+          orderHotelId: orderId,
+        });
+      }
+    });
+  }
+
   onHelp(evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
@@ -467,7 +491,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   isSelfBook(channal: string) {
     return this.selfBookChannals.includes(channal);
   }
-  async ngOnInit() {}
+  async ngOnInit() { }
   getHHmm(time: string) {
     if (time) {
       return this.calendarService.getHHmm(time);

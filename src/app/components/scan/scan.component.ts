@@ -10,8 +10,8 @@ import { WechatHelper } from "src/app/wechatHelper";
 import { Subscription } from "rxjs";
 import {
   IQrScannerStatus,
-  ScanService,
-} from "src/app/services/scan/scan.service";
+  QrScanService,
+} from "src/app/services/qrScan/qrscan.service";
 @Component({
   selector: "app-scan-comp",
   templateUrl: "./scan.component.html",
@@ -33,7 +33,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
     private plt: Platform,
     private identityService: IdentityService,
     private router: Router,
-    private qrScanService: ScanService
+    private qrScanService: QrScanService
   ) {
     this.scanResult = new EventEmitter();
     this.identityEntitySub = this.identityService
@@ -109,7 +109,12 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       } else {
         if (status.canOpenSettings == "1") {
-          const ok = await AppHelper.alert("允许打开设置应用权限管理界面？",true,"允许",'拒绝');
+          const ok = await AppHelper.alert(
+            "允许打开设置应用权限管理界面？",
+            true,
+            "允许",
+            "拒绝"
+          );
           if (ok) {
             await this.qrScanService.openSettings().catch((e) => {
               console.log("openSettings error", e);
@@ -155,7 +160,7 @@ export class ScanComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     this.router.navigate([AppHelper.getRoutePath("scan-result")], {
-      queryParams: { scanResult: r },
+      queryParams: { scanResult: encodeURIComponent(r) },
     });
   }
 }

@@ -66,8 +66,8 @@ export class TmcService {
   private banners: any[];
   private memberDetail: any;
   private getRecommendHotelObj: { [key: string]: any } = {};
-  // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private tmc: TmcEntity;
+  // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private identity: IdentityEntity;
   private agent: AgentEntity;
   private mobileTemplateSelectItemList: SelectItem[] = [];
@@ -305,50 +305,37 @@ export class TmcService {
     }
     return false;
   }
-  async getMyItinerary() {
+  async getTripList() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TripList";
     req.Data = {};
-    return this.apiService.getPromiseData<any[]>(req).then((r) => {
-      if (r && r.length) {
-        r.forEach((it) => {
-          if (it.HourName == undefined) {
-            if (it.Hour) {
-              if (it.Hour > 0) {
-                if (it.Hour > 24) {
-                  const d = Math.floor(it.Hour / 24);
-                  const h = it.Hour % 24;
-                  it.HourName = `${d}D${h}H`;
-                } else {
-                  it.HourName = `${it.Hour}H`;
-                }
-              }
-            }
-          }
-          if (it.MinuteName == undefined) {
-            if (it.Minute) {
-              if (it.Minute > 0) {
-                if (it.Minute > 60) {
-                  const d = Math.floor(it.Minute / (60 * 24));
-                  const h = Math.floor(it.Minute / 60);
-                  const m = Math.floor(it.Minute % 60);
-                  it.MinuteName =
-                    d <= 0
-                      ? h <= 0
-                        ? `${m}M`
-                        : `${h}H${m}M`
-                      : `${d}D${h}H${m}M`;
-                } else {
-                  it.MinuteName = `${it.Minute}M`;
-                }
-              }
-            }
-          }
-          it.displayTimeName = it.MinuteName || it.HourName;
-        });
-      }
-      return r;
-    });
+    // return [
+    //   {
+    //     Type: "Hotel",
+    //     StartTime: "2021-03-22",
+    //     Second: 200,
+    //     Name: "测试",
+    //     FromName: "上海",
+    //     ToName: "北京",
+    //   },
+    //   {
+    //     Type: "Train",
+    //     StartTime: "2021-03-22",
+    //     Second: 200000,
+    //     Name: "测试",
+    //     FromName: "上海",
+    //     ToName: "北京",
+    //   },
+    //   {
+    //     Type: "Flight",
+    //     StartTime: "2021-03-22",
+    //     Second: 100000,
+    //     Name: "测试",
+    //     FromName: "上海",
+    //     ToName: "北京",
+    //   },
+    // ];
+    return this.apiService.getPromiseData<any[]>(req);
   }
 
   async getIntegral(d: { Tag: string; PageSize: number }) {
@@ -1454,6 +1441,7 @@ export class TmcEntity extends BaseEntity {
   /// 是否可以自定义违规理由
   /// </summary>
   IsAllowCustomReason: boolean;
+  IsNeedIllegalReason: boolean;
   // ===================== 客户接口对接配置 start ===========
   /// <summary>
   /// 校验行程单
@@ -1649,6 +1637,14 @@ export class TmcEntity extends BaseEntity {
   RegionType: any;
   // =============== 微信支付配置 end ======
 }
+export class ExchangeInfo {
+  order: OrderEntity;
+  ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
+  trip: OrderFlightTripEntity | OrderTrainTripEntity;
+  insurnanceAmount?: number;
+  isRangeExchange?: boolean;
+  rangeExchangeDateTip?: string;
+}
 export interface PassengerBookInfo<T> {
   passenger: StaffEntity;
   credential: CredentialsEntity;
@@ -1659,12 +1655,7 @@ export interface PassengerBookInfo<T> {
   isFilterPolicy?: boolean; // 完全符合差标
   // isFilteredPolicy?: boolean;// 是否过滤差标
   // isAllowBookPolicy?: boolean;// 所有可预订
-  exchangeInfo?: {
-    order: OrderEntity;
-    ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
-    trip: OrderFlightTripEntity | OrderTrainTripEntity;
-    insurnanceAmount?: number;
-  };
+  exchangeInfo?: ExchangeInfo;
 }
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };

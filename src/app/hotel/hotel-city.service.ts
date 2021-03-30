@@ -6,7 +6,7 @@ import { finalize } from "rxjs/operators";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { Router } from "@angular/router";
 import { HotelService } from "./hotel.service";
-import { InternationalHotelService } from "../hotel-international/international-hotel.service";
+import { InternationalHotelService } from "../international-hotel/international-hotel.service";
 @Injectable({
   providedIn: "root",
 })

@@ -955,11 +955,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }`;
       }
       p.IllegalReason =
-        (this.tmc &&
-          this.tmc.IsAllowCustomReason &&
-          combindInfo.otherIllegalReason) ||
-        combindInfo.illegalReason ||
-        "";
+        combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (
         !combindInfo.isNotWhitelist &&
         combindInfo.bookInfo &&
@@ -969,7 +965,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         !this.isRoomPlanFreeBook(combindInfo)
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
-        if (!p.IllegalReason) {
+        if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
           this.showErrorMsg(
             LanguageHelper.Flight.getIllegalReasonTip(),
             combindInfo,
@@ -1232,7 +1228,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .startOf("year")
             .format("YYYY-MM-DD")}`,
         } as any;
+        combineInfo.isShowTravelDetail = true;
         combineInfo.creditCardPersionInfo = {} as any;
+        combineInfo.creditCardPersionInfo.credentialType = `${CredentialsType.Other}`;
         combineInfo.credential = bookInfo.credential;
         combineInfo.id = bookInfo.id;
         combineInfo.bookInfo = bookInfo;
@@ -1550,10 +1548,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto);
 
-    bookDto.Passengers.forEach((p) => {
-      p.IllegalPolicy = "";
-      p.IllegalReason = "";
-    });
+    // bookDto.Passengers.forEach((p) => {
+    //   p.IllegalPolicy = "";
+    //   p.IllegalReason = "";
+    // });
     if (canBook && canBook2) {
       const popover = await this.popoverCtrl.create({
         component: WarrantyComponent,
@@ -1776,25 +1774,40 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       });
     });
     const result = await this.tmcService.getTravelUrls(args);
+    const travelnumber = this.tmcService.getTravelFormNumber();
     if (result) {
-      this.combindInfos.forEach((item) =>
-        item.tmcOutNumberInfos.forEach((info) => {
-          if (info.label.toLowerCase() == "travelnumber") {
-            info.loadTravelUrlErrorMsg =
-              result[info.staffNumber] && result[info.staffNumber].Message;
-            info.travelUrlInfos =
-              result[info.staffNumber] && result[info.staffNumber].Data;
-            // if (
-            //   !info.value &&
-            //   info.travelUrlInfos &&
-            //   info.travelUrlInfos.length
-            // ) {
-            //   info.value = info.travelUrlInfos[0].TravelNumber;
-            // }
-          }
-          info.isLoadingNumber = false;
-        })
-      );
+      this.combindInfos.forEach((combindInfo) => {
+        if (combindInfo.tmcOutNumberInfos) {
+          combindInfo.tmcOutNumberInfos.forEach((info) => {
+            if (info.label.toLowerCase() == "travelnumber") {
+              info.travelUrlInfos =
+                result[info.staffNumber] && result[info.staffNumber].Data;
+              if (
+                !info.value &&
+                info.travelUrlInfos &&
+                info.travelUrlInfos.length
+              ) {
+                info.value = travelnumber || "";
+                if (!info.value) {
+                  if (info.travelUrlInfos.length > 1) {
+                    info.value = "";
+                    info.placeholder = "请选择";
+                    info.loadTravelUrlErrorMsg = "请选择";
+                  } else {
+                    info.value = info.travelUrlInfos[0].TravelNumber;
+                    info.loadTravelUrlErrorMsg = "";
+                    info.placeholder = info.label;
+                  }
+                }
+              } else if (!travelnumber) {
+                info.value = "";
+                info.placeholder = "请选择";
+              }
+            }
+            info.isLoadingNumber = false;
+          });
+        }
+      });
     }
   }
   onIllegalReason(
@@ -1808,6 +1821,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     info.isOtherIllegalReason = reason.isOtherIllegalReason;
     info.illegalReason = reason.illegalReason;
     info.otherIllegalReason = reason.otherIllegalReason;
+  }
+  onToggleShowTravelDetail(item: IPassengerHotelBookInfo) {
+    item.isShowTravelDetail = !item.isShowTravelDetail;
   }
   async onModify(item: IPassengerHotelBookInfo) {
     if (!item.credentialsRequested) {
@@ -1904,6 +1920,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       roomPlan.RoomPlanRules.map((it) => it.Description).join(",")
     );
   }
+  credentialTypeCompareFn(t1: string, t2: string) {
+    return t1 && t2 && t1 == t2;
+  }
   credentialCompareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
     return (
       (t1 && t2 && t1 == t2) || (t1.Type == t2.Type && t1.Number == t2.Number)
@@ -1956,6 +1975,7 @@ interface IPassengerHotelBookInfo {
     name: string;
   };
   isShowApprovalInfo: boolean;
+  isShowTravelDetail: boolean;
   expenseType: string;
   isCanEditCrendentails: boolean;
   isNotWhitelist?: boolean;

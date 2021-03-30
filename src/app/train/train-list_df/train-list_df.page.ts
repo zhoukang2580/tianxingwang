@@ -49,6 +49,7 @@ import { Storage } from "@ionic/storage";
 import { trigger, transition, style, animate } from "@angular/animations";
 import { SelectedTrainSegmentInfoEnComponent } from "../components/selected-train-segment-info_en/selected-train-segment-info_en.component";
 import { SelectedTrainSegmentInfoDfComponent } from "../components/selected-train-segment-info-df/selected-train-segment-info-df.component";
+import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
 @Component({
   selector: "app-train-list-df",
   templateUrl: "./train-list_df.page.html",
@@ -117,6 +118,8 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   timeOrdM2N: boolean; // 时间从早到晚
   filterCondition: FilterTrainCondition;
   searchModalSubscription = Subscription.EMPTY;
+  tripDate: string;
+  disabledChangeDate = false;
   curFilteredBookInfo$: Observable<PassengerBookInfo<ITrainInfo>>;
   constructor(
     private trainService: TrainService,
@@ -139,10 +142,50 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   ngAfterViewInit() {}
+  private checkExchangeDateDisabled() {
+    const bk = this.trainService.getBookInfos()[0];
+    const ticket =
+      bk &&
+      bk.exchangeInfo &&
+      (bk.exchangeInfo.ticket as OrderTrainTicketEntity);
+    const trip = ticket && ticket.OrderTrainTrips && ticket.OrderTrainTrips[0];
+    const endDate = this.searchTrainModel.IsRangeExchange
+      ? (trip && trip.StartTime.substr(0, 10)) || ""
+      : "";
+    if (this.searchTrainModel.IsRangeExchange) {
+      if (
+        trip &&
+        trip.StartTime.substr(0, 10) ==
+          this.calendarService.getMoment(0).format("YYYY-MM-DD")
+      ) {
+        this.disabledChangeDate = true;
+        return true;
+      }
+    }
+    return false;
+  }
+  private initExchangeDate() {
+    if (
+      this.trainService.getBookInfos()[0] &&
+      this.trainService.getBookInfos()[0].exchangeInfo
+    ) {
+      const t =
+        this.trainService.getBookInfos()[0].exchangeInfo.ticket &&
+        (this.trainService.getBookInfos()[0].exchangeInfo
+          .ticket as OrderTrainTicketEntity);
+      this.tripDate =
+        t &&
+        t.OrderTrainTrips &&
+        t.OrderTrainTrips[0] &&
+        t.OrderTrainTrips[0].StartTime;
+    }
+  }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async (_) => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       let isDoRefresh = this.checkStationChanged();
+      this.checkExchangeDateDisabled();
+      this.initExchangeDate();
       this.currentSelectedPassengerIds = this.trainService
         .getBookInfos()
         .map((it) => it.passenger && it.passenger.AccountId);
@@ -254,7 +297,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.searchTrainModel) {
       if (
         this.searchTrainModel.isExchange &&
-        this.searchTrainModel.isLockedDestination
+        this.searchTrainModel.IsRangeExchange
       ) {
         return;
       }
@@ -652,9 +695,11 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (!byUser) {
       return;
     }
-    if(this.searchTrainModel){
-      if(this.searchTrainModel.isExchangeToDay){
-        return;
+    if (this.searchTrainModel) {
+      if (this.searchTrainModel.IsRangeExchange) {
+        if(this.checkExchangeDateDisabled()){
+          return;
+        }
       }
     }
     if (!this.filterCondition) {
@@ -681,21 +726,30 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.doRefresh(true, true);
   }
   async onCalenderClick() {
-    if(this.searchTrainModel){
-      // 火车已经发车的，不允许修改日期。
-      if(this.searchTrainModel.isExchangeToDay){
+    if (!this.searchTrainModel) {
+      return;
+    }
+    const bk = this.trainService.getBookInfos()[0];
+    const ticket =
+      bk &&
+      bk.exchangeInfo &&
+      (bk.exchangeInfo.ticket as OrderTrainTicketEntity);
+    const trip = ticket && ticket.OrderTrainTrips && ticket.OrderTrainTrips[0];
+    const endDate = this.searchTrainModel.IsRangeExchange
+      ? (trip && trip.StartTime.substr(0, 10)) || ""
+      : "";
+    if (this.searchTrainModel.IsRangeExchange) {
+      if (
+        trip &&
+        trip.StartTime.substr(0, 10) ==
+          this.calendarService.getMoment(0).format("YYYY-MM-DD")
+      ) {
         return;
       }
     }
-    const days = await this.trainService.openCalendar(false);
+    const days = await this.trainService.openCalendar(false, endDate);
     if (days && days.length) {
       this.searchTrainModel.Date = days[0].date;
-      // if (
-      //   this.searchTrainModel.isRoundTrip &&
-      //   this.searchTrainModel.tripType == TripType.returnTrip
-      // ) {
-      //   this.searchTrainModel.BackDate = days[0].date;
-      // }
       this.trainService.setSearchTrainModelSource({
         ...this.searchTrainModel,
         Date: days[0].date,

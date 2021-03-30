@@ -36,7 +36,7 @@
   </div>
   <ion-card class='ion-padding' [class.hidden]='domestic!="domestic"'>
     <ion-card-content>
-      <div class="segments">
+      <div class="segments" *ngIf='isSelf'>
         <div class="seg" (click)='segmentChanged("single")' [class.active]='isSingle'>单程</div>
         <div class="seg"></div>
         <div class="seg" (click)='segmentChanged("round")' [class.active]='!isSingle'>往返</div>

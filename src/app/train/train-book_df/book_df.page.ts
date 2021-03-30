@@ -81,6 +81,7 @@ import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEnt
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
+import { SelectComponent } from "src/app/components/select/select.component";
 
 @Component({
   selector: "app-train-book-df",
@@ -97,6 +98,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
   isShowOtherInfo = false;
+  isShowTravelInfo = false;
   @Input() isOtherCostCenter: boolean;
   @Input() otherCostCenterCode: string;
   @Input() otherCostCenterName: string;
@@ -127,6 +129,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isApproval = true;
   isPlaceOrderOk = true;
   expenseTypes: string[];
+  // illegalReasons: any[];
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
@@ -145,7 +148,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private calendarService: CalendarService,
     private plt: Platform,
-    private langService: LangService
+    private langService: LangService,
+    private popoverCtrl: PopoverController
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
     this.ionChange = new EventEmitter();
@@ -322,6 +326,46 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     if (insurance) {
       insurance.showDetail = !insurance.showDetail;
+    }
+  }
+  // isRoomPlanFreeBook(item: ITrainPassengerBookInfo) {
+  //   if (
+  //     item &&
+  //     item.bookInfo &&
+  //     item.bookInfo.bookInfo &&
+  //     item.bookInfo.bookInfo.roomPlan
+  //   ) {
+  //     return (
+  //       this.hotelService.checkRoomPlanIsFreeBook(
+  //         item.bookInfo.bookInfo.roomPlan
+  //       ) && item.bookInfo.bookInfo.roomPlan.isFreeBookRoom
+  //     );
+  //   }
+  // }
+
+  async onSelectIllegalReason(item: ITrainPassengerBookInfo) {
+    if (item.isOtherIllegalReason) {
+      return;
+    }
+    const p = await this.popoverCtrl.create({
+      component: SelectComponent,
+      cssClass: "vw-70",
+      componentProps: {
+        label: "超标原因",
+        data: ((this.viewModel && this.viewModel.illegalReasons) || []).map(
+          (it) => {
+            return {
+              label: it.Name,
+              value: it.Name,
+            };
+          }
+        ),
+      },
+    });
+    p.present();
+    const data = await p.onDidDismiss();
+    if (data && data.data) {
+      item.illegalReason = data.data;
     }
   }
   private async initCombindInfos() {
@@ -1073,6 +1117,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isAllowSelectApprove(info: ITrainPassengerBookInfo) {
     const Tmc = this.initialBookDto.Tmc;
     const staff = info.credentialStaff;
+    if(info.bookInfo&&info.bookInfo.exchangeInfo){
+      // 改签不需要添加审批人
+      return false;
+    }
     if (
       !Tmc ||
       Tmc.TrainApprovalType == TmcApprovalType.None ||
@@ -1212,6 +1260,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item: ITrainPassengerBookInfo,
       ele: HTMLElement
     ) => {
+      // console.log(this.viewModel.illegalReasons?.length);
       await AppHelper.alert(
         this.langService.isCn
           ? `${
@@ -1336,11 +1385,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
-        (this.tmc &&
-          this.tmc.IsAllowCustomReason &&
-          combindInfo.otherIllegalReason) ||
-        combindInfo.illegalReason ||
-        "";
+        combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (
         !combindInfo.isNotWhitelist &&
         combindInfo.bookInfo &&
@@ -1350,10 +1395,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combindInfo.bookInfo.bookInfo.trainPolicy.Rules.length
       ) {
         // 只有白名单的才需要考虑差标
-        if (!p.IllegalReason) {
+        if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
           // 只有白名单的才需要考虑差标
           const ele: HTMLElement = this.getEleByAttr(
-            "illegalReasonid",
+            "illegalReasonsid",
             combindInfo.id
           );
           if (!p.IllegalReason) {
@@ -1365,9 +1410,18 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             return false;
           }
         }
+        // if (!p.IllegalReason) {
+        //   this.showErrorMsg(
+        //     LanguageHelper.Flight.getIllegalReasonTip(),
+        //     combindInfo,
+        //     this.getEleByAttr("illegalReasonsid", combindInfo.id)
+        //   );
+        //   return false;
+        // }
       }
       if (!p.Mobile) {
         this.isShowOtherInfo = true;
+        // this.isShowTravelInfo = true;
         const ele: HTMLElement = this.getEleByAttr("mobileid", combindInfo.id);
         setTimeout(() => {
           showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);

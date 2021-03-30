@@ -98,7 +98,7 @@ export class OrderListDfPage
     private cdref: ChangeDetectorRef,
     private langService: LangService,
     private staffService: StaffService
-  ) {}
+  ) { }
   canDeactivate() {
     console.log("canDeactivate isbackhome=", this.isBackHome);
     if (this.isBackHome && !this.isGoDetail) {
@@ -225,8 +225,8 @@ export class OrderListDfPage
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-        ? "Hotel"
-        : "Train";
+          ? "Hotel"
+          : "Train";
     this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
@@ -343,10 +343,9 @@ export class OrderListDfPage
           text: "确定",
           handler: (data: { year: TV; month: TV; day: TV }) => {
             this.selectDateChange.emit(
-              `${data.year.value}-${
-                +data.month.value < 10
-                  ? "0" + data.month.value
-                  : data.month.value
+              `${data.year.value}-${+data.month.value < 10
+                ? "0" + data.month.value
+                : data.month.value
               }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
             );
           },
@@ -475,6 +474,24 @@ export class OrderListDfPage
     } catch (e) {
       AppHelper.alert(e);
     }
+  }
+  async abolishHotelOrder(data: {
+    orderId: string;
+    orderHotelId: string;
+  }) {
+    this.orderService
+      .abolishHotelsOrder({
+        OrderId: data.orderId,
+        Channel: await this.tmcService.getChannel(),
+        orderHotelId: data.orderHotelId,
+      })
+      .then(() => {
+        AppHelper.toast("订单取消申请中", 2000, "middle");
+        this.doRefresh();
+      })
+      .catch((e) => {
+        AppHelper.alert(e);
+      });
   }
   async onAbolishOrder(data: {
     orderId: string;
@@ -637,10 +654,10 @@ export class OrderListDfPage
           this.activeTab.value == ProductItemType.plane
             ? "Flight"
             : this.activeTab.value == ProductItemType.train
-            ? "Train"
-            : this.activeTab.value == ProductItemType.car
-            ? "Car"
-            : "Hotel";
+              ? "Train"
+              : this.activeTab.value == ProductItemType.car
+                ? "Car"
+                : "Hotel";
       }
       this.orderModel.Type = m.Type;
       if (
@@ -704,13 +721,11 @@ export class OrderListDfPage
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }`;
+      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }`;
+      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }`;
     }
     return url;
   }
@@ -937,7 +952,7 @@ export class OrderListDfPage
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-          OrderTravelPayType.Person) &&
+        OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;

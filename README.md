@@ -102,7 +102,9 @@ ng serve --disableHostCheck
 
 ## app打包注意事项
 1. 如果angular.json里面的outputPath不是默认值，需要先将angular.json里面的outputPath改为默认值，即www
-2. 执行ionic cordova build android --prod --release 生成 android apk
+2. 执行`ionic cordova build android --prod --release` 生成 android apk
+3. 如果编译出错，试试删除android 平台，然后重新添加
+    `ionic cordova platform rm android ` , `ionic cordova platform add android`
 
 
 ## 判断是否是测试库

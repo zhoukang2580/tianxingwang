@@ -1,7 +1,7 @@
 import {
   InternationalHotelService,
   IInterHotelSearchCondition,
-} from "./../../hotel-international/international-hotel.service";
+} from "../../international-hotel/international-hotel.service";
 import { LanguageHelper } from "./../../languageHelper";
 import { ImageRecoverService } from "./../../services/imageRecover/imageRecover.service";
 import { DayModel } from "src/app/tmc/models/DayModel";

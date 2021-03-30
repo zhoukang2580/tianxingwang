@@ -24,8 +24,8 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { finalize } from "rxjs/operators";
-import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
-import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
+import { InternationalHotelService } from "src/app/international-hotel/international-hotel.service";
+import { InternationalFlightService } from "src/app/international-flight/international-flight.service";
 import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
 import { LoginService } from "src/app/services/login/login.service";
@@ -60,8 +60,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private taskEleSwiper: any;
   private tripEleSwiper: any;
   private isLoadingBanners = false;
-  private isLoadingMyItinerary = false;
+  private isLoadingTripList = false;
   private isLoadingAgent = false;
+  private intervalId: any;
   agent: AgentEntity;
   identity: IdentityEntity;
   isLoadingNotice = false;
@@ -126,7 +127,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     Count: string;
   };
 
-  itineraryList: {
+  tripList: {
     Id: String;
     EndTime: String;
     StartTime: String;
@@ -188,6 +189,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       await this.loginService.checkIfForceAction();
       // console.log("返回到首页 ",p.keys);
       this.langService.translate();
+      this.loadTripList();
     });
   }
   ngOnDestroy() {
@@ -289,10 +291,29 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.getRecommendHotel();
     }
   }
-  private async myItinerary() {
-    if (!this.itineraryList || !this.itineraryList.length) {
-      this.itineraryList = await this.tmcService.getMyItinerary();
+  private stopDownCount() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
     }
+  }
+  private calcDayFormat(seconds: number) {
+    if (seconds && seconds > 0) {
+      // seconds= n*24*3600+h*3600+m*60+s
+      const d = Math.floor(seconds / (3600 * 24));
+      const h = Math.floor((seconds - 24 * 3600 * d) / 3600);
+      const mm = Math.floor((seconds - 24 * 3600 * d - h * 3600) / 60);
+      const ss = seconds - d * 24 * 3600 - h * 3600 - mm * 60;
+      return `${d > 0 ? d + "天" : ""}${
+        d > 0 ? h + "小时" : h > 0 ? h + "小时" : ""
+      }${mm > 0 ? mm + "分钟" : ""}${this.getHHMM(ss)}秒`;
+    }
+    return "";
+  }
+  private getHHMM(d) {
+    if (d < 10) {
+      return "0" + d;
+    }
+    return d;
   }
   private async hasShop() {
     const d = await this.getAgentData();
@@ -390,7 +411,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           queryParams: {
             url,
             title: task && task.Name,
-            tabId: this.activeTab?.value,
+            // tabId: this.activeTab?.value,
             isOpenInAppBrowser: false,
             isIframeOpen: true,
             isHideTitle: false,
@@ -413,7 +434,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .getIdentityAsync()
       .catch((_) => null);
     let url = this.getTaskUrl(task);
-    if (url?.includes("?")) {
+    if (url.includes("?")) {
       url = `${url}&taskid=${task.Id}&ticket=${
         (identity && identity.Ticket) || ""
       }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
@@ -462,25 +483,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initSwiperhotels() {
     if (this.hothotelEl && this.hothotelEl.nativeElement) {
       this.hotelsSwiper = new Swiper(this.hothotelEl.nativeElement, {
-        autoplay: true,
-      });
-      this.hotelsSwiper.on("touchEnd", () => {
-        this.autoPlayHotelsSwiper();
+        autoplay: {
+          disableOnInteraction: false,
+        },
       });
       const that = this;
       this.hotelsSwiper.on("transitionEnd", function () {
-        that.autoPlayHotelsSwiper();
         that.hotIndex = this.activeIndex;
       });
-    }
-  }
-  private autoPlayHotelsSwiper() {
-    if (
-      this.hotelsSwiper &&
-      this.hotelsSwiper.autoplay &&
-      this.hotelsSwiper.autoplay.start
-    ) {
-      this.hotelsSwiper.autoplay.start();
     }
   }
   private initSwiper() {
@@ -493,54 +503,49 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initBannerSwiper() {
     if (this.containerEl && this.containerEl.nativeElement) {
       this.bannersSwiper = new Swiper(this.containerEl.nativeElement, {
-        autoplay: true,
-      });
-      this.bannersSwiper.on("touchEnd", () => {
-        this.startAutoPlayBannersSwiper();
+        autoplay: {
+          disableOnInteraction: false,
+        },
       });
       const that = this;
       this.bannersSwiper.on("transitionEnd", function () {
         that.curIndex = this.activeIndex;
-        that.startAutoPlayBannersSwiper();
       });
     }
   }
   private initTaskSpwiper() {
     const mySwiper: any = {
       circular: true,
-      autoplay: true,
+      autoplay: {
+        disableOnInteraction: false,
+      },
       speed: 1000,
       direction: "vertical",
     };
     if (this.taskEle && this.taskEle.nativeElement) {
       setTimeout(() => {
         this.taskEleSwiper = new Swiper(this.taskEle.nativeElement, mySwiper);
-        this.taskEleSwiper.on("touchEnd", () => {
-          this.startAutoPlayTaskEleSwiper();
-        });
       }, 200);
     }
   }
   private initTripSpwiper() {
     const mySwiper: any = {
-      circular: true,
-      autoplay: true,
+      loop: true,
+      autoplay: {
+        disableOnInteraction: false,
+      },
       speed: 1000,
-      direction: "vertical",
     };
     if (this.tripEle && this.tripEle.nativeElement) {
-      setTimeout(() => {
-        this.tripEleSwiper = new Swiper(this.tripEle.nativeElement, mySwiper);
-        this.tripEleSwiper.on("touchEnd", () => {
-          this.startAutoPlayTripEleSwiper();
-        });
-      }, 200);
+      this.tripEleSwiper = new Swiper(this.tripEle.nativeElement, mySwiper);
     }
   }
 
   private initAnnouncementSwiper() {
     const options: any = {
-      autoplay: true,
+      autoplay: {
+        disableOnInteraction: false,
+      },
       speed: 1000,
       direction: "vertical",
       isShowText: true,
@@ -550,9 +555,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         this.announcementEl.nativeElement,
         options
       );
-      this.announcementElSwiper.on("touchEnd", () => {
-        this.startAutoPlayAnnouncementElSwiper();
-      });
     }
   }
   async ngOnInit() {
@@ -572,7 +574,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           });
           this.agent = null;
           this.banners = [];
-          this.itineraryList = [];
+          this.tripList = [];
           this.tasklist = [];
           this.staffCredentials = null;
           if (!(await this.hasTicket())) {
@@ -585,7 +587,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.loadNotices();
           this.integral();
           this.loadReviewedTask();
-          this.loadMyItinerary();
+          this.loadTripList();
         } catch (e) {
           console.error(e);
         }
@@ -621,42 +623,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .catch((e) => {
         AppHelper.alert(e);
       });
-  }
-  private startAutoPlayBannersSwiper() {
-    if (
-      this.bannersSwiper &&
-      this.bannersSwiper.autoplay &&
-      this.bannersSwiper.autoplay.start
-    ) {
-      this.bannersSwiper.autoplay.start();
-    }
-  }
-  private startAutoPlayTripEleSwiper() {
-    if (
-      this.bannersSwiper &&
-      this.bannersSwiper.autoplay &&
-      this.bannersSwiper.autoplay.start
-    ) {
-      this.bannersSwiper.autoplay.start();
-    }
-  }
-  private startAutoPlayTaskEleSwiper() {
-    if (
-      this.tripEleSwiper &&
-      this.tripEleSwiper.autoplay &&
-      this.tripEleSwiper.autoplay.start
-    ) {
-      this.tripEleSwiper.autoplay.start();
-    }
-  }
-  private startAutoPlayAnnouncementElSwiper() {
-    if (
-      this.announcementElSwiper &&
-      this.announcementElSwiper.autoplay &&
-      this.announcementElSwiper.autoplay.start
-    ) {
-      this.announcementElSwiper.autoplay.start();
-    }
   }
 
   private async getAgentNotices() {
@@ -804,7 +770,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.bannersSwiper) {
       setTimeout(() => {
         this.bannersSwiper.update();
-        this.startAutoPlayBannersSwiper();
       }, 200);
     }
   }
@@ -847,25 +812,50 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       }, 200);
     }
   }
-  private async loadMyItinerary() {
-    if (!this.itineraryList || !this.itineraryList.length) {
-      if (this.isLoadingMyItinerary) {
-        return;
-      }
-      if (!(await this.hasTicket())) {
-        return;
-      }
-      this.itineraryList = [];
-      this.isLoadingMyItinerary = true;
-      this.myItinerary().finally(() => {
-        this.isLoadingMyItinerary = false;
+  private async loadTripList() {
+    if (this.isLoadingTripList) {
+      return;
+    }
+    if (!(await this.hasTicket())) {
+      return;
+    }
+    this.tripList = [];
+    this.isLoadingTripList = true;
+    this.tripList = await this.tmcService
+      .getTripList()
+      .then((r) => {
+        if (r && r.length) {
+          this.stopDownCount();
+          this.intervalId = setInterval(() => {
+            r.filter((it) => it.Type != "Hotel").forEach((it, idx) => {
+              if (it.Second && it.Second > 0) {
+                it.Second--;
+                it.displayTimeName = this.calcDayFormat(it.Second);
+              } else {
+                // it.displayTimeName = "";
+                // this.tripList.splice(idx, 1);
+                // if (this.tripEleSwiper) {
+                //   this.tripEleSwiper.update();
+                // }
+              }
+            });
+            if (
+              r.filter((it) => it.Type != "Hotel").every((it) => it.Second <= 0)
+            ) {
+              this.stopDownCount();
+            }
+          }, 1000);
+        }
+        return r;
+      })
+      .finally(() => {
+        this.isLoadingTripList = false;
         setTimeout(() => {
           if (this.tripEleSwiper) {
             this.tripEleSwiper.update();
           }
-        }, 200);
+        }, 1000);
       });
-    }
   }
 
   goToDetailPage(orderId: string, type: string) {
