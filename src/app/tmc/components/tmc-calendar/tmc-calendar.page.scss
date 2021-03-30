@@ -36,7 +36,7 @@ ul {
     &.selected.between-selected-days {
       background-color: rgba(var(--ion-color-secondary-rgb), 0.8);
       color: var(--ion-color-light);
-      .day{
+      .day {
         color: var(--ion-color-light);
       }
     }
@@ -75,7 +75,11 @@ ul {
   justify-content: center;
   align-items: center;
 }
-
+.weeks {
+  width: 100%;
+  padding: 0 0.5em;
+  height: 2.8em;
+}
 .day {
   &.active {
     background-color: var(--ion-color-secondary);
