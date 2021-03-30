@@ -198,7 +198,7 @@
             <div class="passenger">出差信息</div>
             <div style="width: 100%; text-align: end">
               <ion-icon name="chevron-down-outline" *ngIf="combindInfo.isShowTravelInfo" (click)="combindInfo.isShowTravelInfo=!combindInfo.isShowTravelInfo"></ion-icon>
-              <ion-icon name="chevron-up-outline" *ngIf="!combindInfo.isShowTravelInfo" (click)="isShowTravelInfo=!combindInfo.isShowTravelInfo"></ion-icon>
+              <ion-icon name="chevron-up-outline" *ngIf="!combindInfo.isShowTravelInfo" (click)="combindInfo.isShowTravelInfo=!combindInfo.isShowTravelInfo"></ion-icon>
             </div>
           </ion-item>
           <ng-container *ngIf="combindInfo.isShowTravelInfo" style="margin-top: 0.5em;">
