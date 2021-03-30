@@ -1054,7 +1054,8 @@ export class FlightBookDfPage
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
-        !combindInfo.isSkipApprove
+        !combindInfo.isSkipApprove &&
+        combindInfo.isShowGroupedInfo
       ) {
         const ele: HTMLElement = this.getEleByAttr(
           "approverid",
@@ -1731,6 +1732,21 @@ export class FlightBookDfPage
         }
         this.vmCombindInfos = this.vmCombindInfos.concat(group[key]);
       });
+      const whitelist = this.vmCombindInfos
+        .filter((it) => !it.vmModal.isNotWhitelist)
+        .map((it) => {
+          // 白名单全部显示
+          it.isShowGroupedInfo = true;
+          return it;
+        });
+      const notWhiteList = this.vmCombindInfos.filter(
+        (it) => it.vmModal.isNotWhitelist
+      );
+      notWhiteList.forEach((it, idx) => {
+        // 非白名单只在最后一个显示出差信息中的通知语言，跳过审批和审批人
+        it.isShowGroupedInfo = idx == notWhiteList.length - 1;
+      });
+      this.vmCombindInfos = whitelist.concat(notWhiteList);
     }
   }
   private isShowInsurances(takeoffTime: string) {
