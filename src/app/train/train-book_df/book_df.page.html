@@ -226,7 +226,7 @@
               </div>
             </ion-item>
             <ng-container *ngIf="combindInfo.isShowGroupedInfo">
-              <ion-item *ngIf="isAllowSelectApprove(combindInfo)" >
+              <ion-item *ngIf="isAllowSelectApprove(combindInfo)">
                 <div class="line" *ngIf="viewModel?.expenseTypes?.length"></div>
                 <div class="approval-info" [attr.approverid]="combindInfo.id" (click)="openApproverModal(combindInfo)">
                   <div class="flex padding-v">
@@ -238,7 +238,7 @@
                   </div>
                 </div>
               </ion-item>
-              <app-book-tmc-outnumber outnumber="outnumber"  [tmcOutNumberInfos]="combindInfo?.tmcOutNumberInfos" [isExchange]="searchTrainModel?.isExchange" [isShowGroupedInfo]="true"
+              <app-book-tmc-outnumber outnumber="outnumber" [tmcOutNumberInfos]="combindInfo?.tmcOutNumberInfos" [isExchange]="searchTrainModel?.isExchange" [isShowGroupedInfo]="true"
                 (tmcOutNumber)="onSelectTravelNumber($event,combindInfo)">
               </app-book-tmc-outnumber>
             </ng-container>
