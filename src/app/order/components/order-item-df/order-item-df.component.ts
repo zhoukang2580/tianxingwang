@@ -24,7 +24,10 @@ import { OrderTrainTicketStatusType } from "../../models/OrderTrainTicketStatusT
 import { OrderFlightTicketEntity } from "../../models/OrderFlightTicketEntity";
 import { OrderTrainTicketEntity } from "../../models/OrderTrainTicketEntity";
 import { TrainBookType } from "src/app/train/models/TrainBookType";
-import { OrderHotelEntity, OrderHotelStatusType } from "../../models/OrderHotelEntity";
+import {
+  OrderHotelEntity,
+  OrderHotelStatusType,
+} from "../../models/OrderHotelEntity";
 import { HotelPaymentType } from "src/app/hotel/models/HotelPaymentType";
 import { TrainSupplierType } from "src/app/train/models/TrainSupplierType";
 import { Router } from "@angular/router";
@@ -109,14 +112,10 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     evt.stopPropagation();
   }
 
-  onAbolishHotelOrder(evt: CustomEvent, orderId) {//OrderHotels
+  onAbolishHotelOrder(evt: CustomEvent, orderId) {
+    //OrderHotels
     evt.stopPropagation();
-    AppHelper.alert(
-      "确定取消订单?",
-      true,
-      "确定",
-      "取消"
-    ).then((ok) => {
+    AppHelper.alert("确定取消订单?", true, "确定", "取消").then((ok) => {
       if (ok) {
         this.abolishHotelOrder.emit({
           orderId: this.order.Id,
@@ -196,7 +195,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
               ticket.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(
                 ticket
               );
-              ticket.VariablesJsonObj.isShowCancelBtn = this.isShowCancelBtn(
+              ticket.VariablesJsonObj.isShowCancelButton = this.isShowFlightCancelBtn(
                 ticket
               );
               return ticket;
@@ -205,13 +204,15 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
         }
         if (this.order.OrderTrainTickets) {
           this.order.OrderTrainTickets = this.order.OrderTrainTickets.map(
-            (t) => {
+            (t, idx) => {
               if (t.Variables && !t.VariablesJsonObj) {
                 t.VariablesJsonObj =
                   t.VariablesJsonObj ||
                   (t.Variables ? JSON.parse(t.Variables) : {});
               }
-              t.VariablesJsonObj.isShowCancelBtn = this.isShowTrainCancelBtn(t);
+              t.VariablesJsonObj.isShowCancelButton =
+                this.isShowTrainCancelBtn(t) &&
+                idx == this.order.OrderTrainTickets.length - 1;
               t.VariablesJsonObj.isShowRefundOrExchangeBtn = this.isShowRefundOrExchangeBtn(
                 t
               );
@@ -306,7 +307,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     // console.log(tomorrow.format("YYYY-MM-DD"), dm.format("YYYY-MM-DD"));
     return +dm - +tomorrow >= 0;
   }
-  private isShowCancelBtn(orderFlightTicket: OrderFlightTicketEntity) {
+  private isShowFlightCancelBtn(orderFlightTicket: OrderFlightTicketEntity) {
     if (
       !orderFlightTicket ||
       !this.showBtnByTimeAndTicketType(orderFlightTicket)
@@ -334,7 +335,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     }
     return (
       orderTrainTicket.VariablesJsonObj &&
-      orderTrainTicket.VariablesJsonObj.isShowCancelBtn
+      orderTrainTicket.VariablesJsonObj.isShowCancelButton
     );
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
@@ -491,7 +492,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   isSelfBook(channal: string) {
     return this.selfBookChannals.includes(channal);
   }
-  async ngOnInit() { }
+  async ngOnInit() {}
   getHHmm(time: string) {
     if (time) {
       return this.calendarService.getHHmm(time);
