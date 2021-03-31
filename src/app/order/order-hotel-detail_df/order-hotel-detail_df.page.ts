@@ -77,6 +77,7 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
   searchHotelModel: SearchHotelModel;
   isLoading = false;
   showTiket = false;
+  VariablesJsonObj: any;
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
   @ViewChildren("slide") slides: QueryList<any>;
   @ViewChild(IonHeader) headerEle: IonHeader;
@@ -104,7 +105,7 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
     private orderService: OrderService,
     private identityService: IdentityService,
     private calendarService: CalendarService,
-  ) {}
+  ) { }
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -134,6 +135,8 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
       this.orderDetail.Order.OrderHotels.forEach((it, idx) => {
         // if (it.VariablesJsonObj.isShow) {
         this.tabs.push({ label: it.Id, value: idx + 1 });
+        this.VariablesJsonObj = this.VariablesJsonObj || JSON.parse(it.Variables);
+        console.log(this.VariablesJsonObj.ExceptionMessage, "============")
         // }
       });
     }
@@ -159,7 +162,7 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
     }
   }
   getVariable(orderHotel: OrderHotelEntity, key: string) {
-    if(orderHotel.Variables){
+    if (orderHotel.Variables) {
       orderHotel.VariablesJsonObj =
         orderHotel.VariablesJsonObj || JSON.parse(orderHotel.Variables) || {};
       return orderHotel.VariablesJsonObj[key];
@@ -201,7 +204,7 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
     }
     return amount;
   }
-  
+
   private initTicketsTripsInsurance() {
     if (
       !this.orderDetail ||
@@ -306,7 +309,7 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
         (it) => !(it.Tag || "").endsWith("Fee")
       ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
     }
-   
+
     return amount < 0 ? 0 : amount;
   }
   getOrderPayAmount() {
