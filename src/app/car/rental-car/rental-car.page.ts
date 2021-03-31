@@ -27,6 +27,7 @@ import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
 import { SwiperSlidesComponent } from "src/app/components/swiper-slides/swiper-slides.component";
+import { ConfigService } from "src/app/services/config/config.service";
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
@@ -63,7 +64,8 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private plt: Platform,
     private androidPermissions: AndroidPermissions,
-    private geolocation: Geolocation
+    private geolocation: Geolocation,
+    private configService: ConfigService
   ) {}
   onModify() {
     this.isModify = true;
@@ -215,10 +217,13 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     const tabClick = new EventEmitter();
+    const c = await this.configService.getConfigAsync();
     const m = await AppHelper.modalController.create({
       component: SwiperSlidesComponent,
       componentProps: {
         isOpenAsModel: true,
+        loadingImage: c && c.PrerenderImageUrl,
+        defaultImageUrl: c && c.DefaultImageUrl,
         items: items,
         tap: tabClick,
       },
@@ -234,24 +239,6 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private async checkPermission() {
     let ok = true;
-    if (this.plt.is("ios")) {
-      this.geolocation
-        .getCurrentPosition({ enableHighAccuracy: true })
-        .then((p) => {
-          if (p) {
-            this.latLng = {
-              lat: p.coords.latitude,
-              lng: p.coords.longitude,
-              locationInfo: p,
-            };
-          }
-        })
-        .catch((e) => {
-          this.isCanLocatePos = false;
-          console.error(e);
-        });
-      return ok;
-    }
     try {
       ok =
         (await this.androidPermissions
@@ -272,6 +259,22 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
           this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION,
         ]);
       }
+      this.geolocation
+        .getCurrentPosition({ enableHighAccuracy: true })
+        .then((p) => {
+          console.log("checkPermission",p);
+          if (p) {
+            this.latLng = {
+              lat: p.coords.latitude,
+              lng: p.coords.longitude,
+              locationInfo: p,
+            };
+          }
+        })
+        .catch((e) => {
+          this.isCanLocatePos = false;
+          console.error(e);
+        });
       // AppHelper.alert((geo && geo.coords) || "无定位信息");
     } catch (e) {
       // AppHelper.alert(e);
@@ -349,7 +352,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
         await this.checkPermission();
         if (this.latLng) {
           console.log("latLng ", this.latLng);
-          if (!url.includes("")) {
+          if (!url.includes("lat")) {
             url = url.includes("?")
               ? `${url}&lat_from=${this.latLng.lat}&lng_from=${this.latLng.lng}`
               : `${url}?lat_from=${this.latLng.lat}&lng_from=${this.latLng.lng}`;
