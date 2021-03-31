@@ -259,10 +259,10 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
           this.androidPermissions.PERMISSION.ACCESS_FINE_LOCATION,
         ]);
       }
-      this.geolocation
+      await this.geolocation
         .getCurrentPosition({ enableHighAccuracy: true })
         .then((p) => {
-          console.log("checkPermission",p);
+          console.log("checkPermission", p);
           if (p) {
             this.latLng = {
               lat: p.coords.latitude,
