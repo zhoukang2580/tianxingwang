@@ -21,6 +21,9 @@ export class SelectAndReplaceTrainInfoComponent implements OnInit {
   selectedItems: PassengerBookInfo<ITrainInfo>[] = [];
   train: TrainEntity;
   seat: TrainSeatEntity;
+  get isSelected() {
+    return this.bookInfos.some((it) => it.isSelected);
+  }
   private trainService: TrainService;
   constructor(private modal: ModalController) {}
   back() {

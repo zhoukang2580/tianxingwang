@@ -62,7 +62,8 @@
   user-select: text;
   font: inherit;
 }
-.order-flight-ticket ~ .order-flight-ticket {
+.order-flight-ticket ~ .order-flight-ticket,
+.order-train-ticket ~ .order-train-ticket {
   border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
 }
 .order-flight-ticket {

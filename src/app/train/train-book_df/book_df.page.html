@@ -97,8 +97,8 @@
               <div class="con-div" (click)="isShowOtherInfo=!isShowOtherInfo">
                 <div class="passenger">旅客信息</div>
                 <div class="ion-up">
-                  <ion-icon name="chevron-down-outline" *ngIf="!isShowOtherInfo" ></ion-icon>
-                  <ion-icon name="chevron-up-outline" *ngIf="isShowOtherInfo" ></ion-icon>
+                  <ion-icon name="chevron-down-outline" *ngIf="!isShowOtherInfo"></ion-icon>
+                  <ion-icon name="chevron-up-outline" *ngIf="isShowOtherInfo"></ion-icon>
                 </div>
               </div>
             </ion-item>
@@ -115,18 +115,16 @@
                 <div *ngFor="let m of combindInfo.credentialStaffEmails;" class="ion-ema">
                   <ion-checkbox [(ngModel)]="m.checked"></ion-checkbox><span (click)="m.checked=!m.checked">{{m.email}}</span>
                 </div>
-                <!-- <ion-label class="ion-email" color="medium">联系邮箱:</ion-label>
-              <ion-label class="ion-ema">{{email.email}}</ion-label> -->
               </ion-item>
               <ion-item>
-                <div class="flex padding-v" (click)="searchCostCenter()">
+                <div class="flex padding-v" (click)="searchCostCenter(combindInfo)">
                   <ion-label class="label">部门：</ion-label>
                   <ion-text> {{combindInfo?.costCenter?.name}} </ion-text>
                   <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
                 </div>
               </ion-item>
               <ion-item class="cost-center">
-                <div class="flex padding-v" (click)="searchOrganization()">
+                <div class="flex padding-v" (click)="searchOrganization(combindInfo)">
                   <ion-label class="label">成本中心：</ion-label>
                   <ion-text> {{combindInfo?.organization?.Name}} </ion-text>
                   <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
@@ -152,8 +150,8 @@
                 <div class="otherinfo">
                   <div class="other">
                     <span class="label">其他成本中心：</span>
-                    <ion-input [(ngModel)]="otherCostCenterName" placeholder="名称"></ion-input>
-                    <ion-input [(ngModel)]="otherCostCenterCode" placeholder="代码" (ionChange)="onValueChange()"></ion-input>
+                    <ion-input [(ngModel)]="combindInfo.otherCostCenterName" placeholder="名称"></ion-input>
+                    <ion-input [(ngModel)]="combindInfo.otherCostCenterCode" placeholder="代码"></ion-input>
                   </div>
                 </div>
               </ion-item>
@@ -161,7 +159,7 @@
                 <div class="otherinfo">
                   <div class="other">
                     <span class="label">其他部门：</span>
-                    <ion-input [(ngModel)]="otherCostCenterName" placeholder="名称" (ionChange)="onValueChange()"></ion-input>
+                    <ion-input [(ngModel)]="combindInfo.otherOrganizationName" placeholder="名称" ></ion-input>
                   </div>
                 </div>
               </ion-item>
@@ -196,14 +194,14 @@
               </ion-select-option>
             </ion-select>
           </ion-item>
-          <ion-item>
+          <ion-item *ngIf='combindInfo.isShowGroupedInfo'>
             <div class="passenger">出差信息</div>
             <div style="width: 100%; text-align: end">
-              <ion-icon name="chevron-down-outline" *ngIf="isShowTravelInfo" (click)="isShowTravelInfo=!isShowTravelInfo"></ion-icon>
-              <ion-icon name="chevron-up-outline" *ngIf="!isShowTravelInfo" (click)="isShowTravelInfo=!isShowTravelInfo"></ion-icon>
+              <ion-icon name="chevron-down-outline" *ngIf="combindInfo.isShowTravelInfo" (click)="combindInfo.isShowTravelInfo=!combindInfo.isShowTravelInfo"></ion-icon>
+              <ion-icon name="chevron-up-outline" *ngIf="!combindInfo.isShowTravelInfo" (click)="combindInfo.isShowTravelInfo=!combindInfo.isShowTravelInfo"></ion-icon>
             </div>
           </ion-item>
-          <div *ngIf="!isShowTravelInfo" style="margin-top: 0.5em;">
+          <ng-container *ngIf="combindInfo.isShowTravelInfo" style="margin-top: 0.5em;">
             <div class="illegal" [attr.illegalReasonsid]="combindInfo.id" *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist">
               <div class="flex padding-v row" (click)="onSelectIllegalReason(combindInfo)" *ngIf="viewModel?.illegalReasons?.length">
                 <div class="label">超标原因</div>
@@ -215,20 +213,6 @@
                 <ion-input [(ngModel)]="combindInfo.otherIllegalReason" placeholder="请输入其他原因"></ion-input>
               </div>
             </div>
-            <!-- <ion-item
-              *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist"
-            >
-              <div style="width: 100%">
-                <app-book-illegal-reason-comp
-                  [attr.illegalReasonid]="combindInfo.id"
-                  #illegalReasonsEle
-                  [illegalReasons]="viewModel?.illegalReasons"
-                  [isAllowCustomReason]="tmc?.IsAllowCustomReason"
-                  (ionchange)="onIllegalReason($event,combindInfo)"
-                >
-                </app-book-illegal-reason-comp>
-              </div>
-            </ion-item> -->
             <ion-item *ngIf="viewModel?.expenseTypes?.length">
               <div class="line" *ngIf="viewModel?.expenseTypes?.length"></div>
               <div class="expanse" *ngIf="viewModel?.expenseTypes?.length">
@@ -241,26 +225,24 @@
                 </div>
               </div>
             </ion-item>
-            <ion-item *ngIf="isAllowSelectApprove(combindInfo)">
-              <div class="line" *ngIf="viewModel?.expenseTypes?.length"></div>
-              <div class="approval-info" *ngIf="isAllowSelectApprove(combindInfo)" [attr.approverid]="combindInfo.id" (click)="openApproverModal(combindInfo)">
-                <div class="flex padding-v">
-                  <span class="label">审批人：</span>
-                  <ion-text *ngIf="combindInfo?.appovalStaff">
-                    {{combindInfo?.appovalStaff?.Name}}
-                  </ion-text>
-                  <ion-icon name="caret-down-outline" class="down"></ion-icon>
-                </div>
-              </div>
-            </ion-item>
             <ng-container *ngIf="combindInfo.isShowGroupedInfo">
-              <ion-item-group>
-                <app-book-tmc-outnumber outnumber="outnumber" [tmcOutNumberInfos]="combindInfo?.tmcOutNumberInfos" [isExchange]="searchTrainModel?.isExchange" [isShowGroupedInfo]="true"
-                  (tmcOutNumber)="onSelectTravelNumber($event,combindInfo)">
-                </app-book-tmc-outnumber>
-              </ion-item-group>
+              <ion-item *ngIf="isAllowSelectApprove(combindInfo)">
+                <div class="line" *ngIf="viewModel?.expenseTypes?.length"></div>
+                <div class="approval-info" [attr.approverid]="combindInfo.id" (click)="openApproverModal(combindInfo)">
+                  <div class="flex padding-v">
+                    <span class="label">审批人：</span>
+                    <ion-text *ngIf="combindInfo?.appovalStaff">
+                      {{combindInfo?.appovalStaff?.Name}}
+                    </ion-text>
+                    <ion-icon name="caret-down-outline" class="down"></ion-icon>
+                  </div>
+                </div>
+              </ion-item>
+              <app-book-tmc-outnumber outnumber="outnumber" [tmcOutNumberInfos]="combindInfo?.tmcOutNumberInfos" [isExchange]="searchTrainModel?.isExchange" [isShowGroupedInfo]="true"
+                (tmcOutNumber)="onSelectTravelNumber($event,combindInfo)">
+              </app-book-tmc-outnumber>
             </ng-container>
-          </div>
+          </ng-container>
         </ion-list>
         <ion-list class="notify-lang section" [attr.notifyLanguageid]="combindInfo.id" (click)="onOpenSelect(notifyLangEl)">
           <ion-item class="ion-no-margin" style="display: none">
@@ -271,14 +253,14 @@
               <ion-select-option value="en">英文</ion-select-option>
             </ion-select>
           </ion-item>
-          <div class="info">
+          <div class="info" *ngIf='combindInfo.isShowGroupedInfo'>
             <div class="flex padding-v">
               <span class="label">通知语言：</span>{{combindInfo.notifyLanguage=='en'?"英文":(combindInfo.notifyLanguage=='cn'?"中文":"不发")}}
               <ion-icon name="caret-down-outline" class="down"></ion-icon>
             </div>
           </div>
         </ion-list>
-        <ion-list class="can-skip-approve">
+        <ion-list class="can-skip-approve" *ngIf='combindInfo.isShowGroupedInfo'>
           <ion-item class="ion-no-margin" *ngIf="(viewModel?.isCanSkipApproval$|async)">
             <ion-label class="label">跳过审批:</ion-label>
             <ion-checkbox class="ion-margin-end" color="secondary" [(ngModel)]="combindInfo.isSkipApprove">
@@ -286,15 +268,12 @@
           </ion-item>
           <ion-item class="ion-no-margin" *ngIf="tmc?.IsShowServiceFee || viewModel?.identity?.Numbers?.AgentId">
             <ion-label class="serFee label">服务费:</ion-label>
-            <ion-label>{{combindInfo.serviceFee}}元</ion-label>
+            <ion-label>{{combindInfo.showGroupedServiceFee}}元</ion-label>
           </ion-item>
         </ion-list>
       </ng-container>
       <ion-list class="list">
         <ion-item-group *ngIf="!searchTrainModel?.isExchange">
-          <!-- <ion-item-divider>
-          授权账号查看订单：
-        </ion-item-divider> -->
           <app-book-addcontacts-comp-df buttonText="授权账号查看订单" [(contacts)]="addContacts">
           </app-book-addcontacts-comp-df>
         </ion-item-group>
@@ -329,21 +308,14 @@
 <ion-footer>
   <ion-toolbar class="toolbar" (click)="isShowFee=!isShowFee">
     <ion-buttons slot="start" class="buttons">
-      <!-- <ion-button color='secondary'>总计:
-        <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
-      </ion-button> -->
       <ion-text class="sum" color="danger">总计:&nbsp;</ion-text>
       <ion-text slot="end" color="danger">￥{{(totalPriceSource|async)}}&nbsp;</ion-text>
       <ion-text color="dark" style="font-size: 8px">明细</ion-text>
       <ion-icon name="chevron-down-outline" *ngIf="!isShowFee"></ion-icon>
       <ion-icon name="chevron-up-outline" *ngIf="isShowFee"></ion-icon>
-      <!-- <ion-icon name="caret-down-outline" color="dark" *ngIf="!isShowFee"></ion-icon>
-      <ion-icon name="caret-up-outline" color="dark" *ngIf="isShowFee"></ion-icon> -->
     </ion-buttons>
     <ion-button class="submit" slot="end" size="small" color="secondary" (click)="bookTrain(false,$event)" [disabled]="isSubmitDisabled">提交订单
     </ion-button>
-    <!-- <ion-button slot='end' size='small' *ngIf='(isCanSave$|async)&&!(searchTrainModel?.isExchange)' color='secondary'
-      (click)='bookTrain(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button> -->
   </ion-toolbar>
 </ion-footer>
 <div class="zz" *ngIf="isShowFee" (click)="isShowFee=!isShowFee"></div>
@@ -356,8 +328,10 @@
       </div>
       <div class="spacebetween" style="margin-top: 2px"
         *ngIf="tmc?.IsShowServiceFee||(viewModel.orderTravelPayType == OrderTravelPayType.Person||viewModel.orderTravelPayType==OrderTravelPayType.Credit)">
-        <ion-text>服务费</ion-text>
-        <ion-text>{{infos.serviceFee}}元</ion-text>
+        <ng-container>
+          <ion-text>服务费</ion-text>
+          <ion-text>{{infos.serviceFee}}元</ion-text>
+        </ng-container>
       </div>
     </div>
   </div>

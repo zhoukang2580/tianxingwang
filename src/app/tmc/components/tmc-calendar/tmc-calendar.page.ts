@@ -124,7 +124,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     this.st = Date.now();
     this.weeks = new Array(7)
       .fill(0)
-      .map((k) => this.calendarService.getDayOfWeekNames(k));
+      .map((i,k) => this.calendarService.getDayOfWeekNames(k));
     this.initCalendars();
   }
   private initCalendars() {
