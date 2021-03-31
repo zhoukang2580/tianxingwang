@@ -275,6 +275,20 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
           this.isCanLocatePos = false;
           console.error(e);
         });
+      if (!this.isCanLocatePos) {
+        if (window.navigator.geolocation) {
+          window.navigator.geolocation.getCurrentPosition(
+            () => {
+              this.isCanLocatePos = true;
+            },
+            (e) => {
+              this.isCanLocatePos = false;
+              console.error("window.navigator.geolocation", e);
+            },
+            { timeout: 3000 }
+          );
+        }
+      }
       // AppHelper.alert((geo && geo.coords) || "无定位信息");
     } catch (e) {
       // AppHelper.alert(e);
