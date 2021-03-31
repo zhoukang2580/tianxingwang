@@ -98,17 +98,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
   isShowOtherInfo = false;
-  @Input() isOtherCostCenter: boolean;
-  @Input() otherCostCenterCode: string;
-  @Input() otherCostCenterName: string;
-  @Input() costCenter: {
-    code: string;
-    name: string;
-  };
-  @Output() ionChange: EventEmitter<any>;
-  @Input() isOtherOrganization: boolean;
-  @Input() organization: OrganizationEntity;
-  @Input() otherOrganizationName: string;
+  // @Input() isOtherCostCenter: boolean;
+  // @Input() otherCostCenterCode: string;
+  // @Input() otherCostCenterName: string;
+  // @Input() costCenter: {
+  //   code: string;
+  //   name: string;
+  // };
+  // @Output() ionChange: EventEmitter<any>;
+  // @Input() isOtherOrganization: boolean;
+  // @Input() organization: OrganizationEntity;
+  // @Input() otherOrganizationName: string;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -151,7 +151,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private popoverCtrl: PopoverController
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
-    this.ionChange = new EventEmitter();
+    // this.ionChange = new EventEmitter();
   }
   back() {
     this.navCtrl.pop();
@@ -587,10 +587,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  async searchCostCenter() {
-    if (this.isOtherCostCenter) {
-      return;
-    }
+  async searchCostCenter(combindInfo: ITrainPassengerBookInfo) {
     const modal = await this.modalCtrl.create({
       component: SearchCostcenterComponent,
     });
@@ -599,31 +596,19 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     const result = await modal.onDidDismiss();
     if (result && result.data) {
       const res = result.data as { Text: string; Value: string };
-      this.costCenter = {
-        code: res.Value,
-        name: res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1),
-      };
-      this.onValueChange();
+      combindInfo.costCenter = combindInfo.costCenter || ({} as any);
+      combindInfo.costCenter.code = res.Value;
+      combindInfo.costCenter.name =
+        res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1);
     }
   }
 
-  onValueChange() {
-    this.ionChange.emit({
-      isOtherCostCenter: this.isOtherCostCenter,
-      otherCostCenterCode: this.otherCostCenterCode,
-      otherCostCenterName: this.otherCostCenterName,
-      costCenter: this.costCenter,
-    });
-  }
   onOpenSelect(select: IonSelect) {
     if (select) {
       select.open();
     }
   }
-  async searchOrganization() {
-    if (this.isOtherOrganization) {
-      return;
-    }
+  async searchOrganization(combindInfo: ITrainPassengerBookInfo) {
     const modal = await this.modalCtrl.create({
       component: OrganizationComponent,
     });
@@ -633,20 +618,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     console.log("organization", result.data);
     if (result && result.data) {
       const res = result.data as OrganizationEntity;
-      this.organization = {
-        ...this.organization,
-        Code: res.Code,
-        Name: res.Name,
-      };
-      this.onValueChanges();
+      if (!combindInfo.organization) {
+        combindInfo.organization = {} as any;
+      }
+      combindInfo.organization.Code = res.Code;
+      combindInfo.organization.Name = res.Name;
     }
-  }
-  onValueChanges() {
-    this.ionChange.emit({
-      isOtherOrganization: this.isOtherOrganization,
-      organization: this.organization,
-      otherOrganizationName: this.otherOrganizationName,
-    });
   }
 
   async bookTrain(isSave: boolean = false, event: CustomEvent) {
