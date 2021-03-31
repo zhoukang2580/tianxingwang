@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content >
+<ion-content>
   <!-- <ion-item>
   <ion-button (click)='onOpenTest()'>打开测试地址</ion-button>
 </ion-item> -->
@@ -33,8 +33,7 @@
       <ion-label color='secondary'>
         <i class='icon icon-mobile'></i>
       </ion-label>
-      <ion-input type='tel' (ionBlur)='onBlur()' [disabled]='!isModify' (ionChange)='onChange()' [clearInput]='true'
-        [attr.autofocus]='!mobile' [required]='true' [(ngModel)]='mobile' #mobileInput
+      <ion-input type='tel' (ionBlur)='onBlur()' [disabled]='!isModify' (ionChange)='onChange()' [clearInput]='true' [attr.autofocus]='!mobile' [required]='true' [(ngModel)]='mobile' #mobileInput
         placeholder="{{fetching?fetching:'请输入手机号码'}}">
       </ion-input>
       <ion-button slot='end' color='secondary' (click)="onModify()">修改</ion-button>
@@ -42,11 +41,9 @@
     <ng-container *ngIf='searchMobiles?.length==0'>
       <ion-item *ngIf='!isMobileVerified'>
         <ion-label>短信验证码</ion-label>
-        <ion-input type='tel' [required]='true' [clearInput]='true' [clearOnEdit]='true' [(ngModel)]='verifySmsCode'
-          placeholder="请输入验证码">
+        <ion-input type='tel' [required]='true' [clearInput]='true' [clearOnEdit]='true' [(ngModel)]='verifySmsCode' placeholder="请输入验证码">
         </ion-input>
-        <ion-button slot='end' color='{{isMobileValid? "secondary":"danger"}}' fill='outline'
-          [disabled]='!isMobileValid' *ngIf='!isSending&&(!countDown||countDown <= 0)' (click)="sendCode()">
+        <ion-button slot='end' color='{{isMobileValid? "secondary":"danger"}}' fill='outline' [disabled]='!isMobileValid' *ngIf='!isSending&&(!countDown||countDown <= 0)' (click)="sendCode()">
           <span *ngIf='isMobileValid'>发送验证码</span>
           <span *ngIf='!isMobileValid'>手机号错误</span>
         </ion-button>
@@ -56,10 +53,10 @@
         </ion-button>
       </ion-item>
     </ng-container>
-    <ng-container *ngIf='searchMobiles?.length==0' >
-      <ion-button  expand='block' color='danger' fill='clear' *ngIf='message as emsg'>{{emsg}}</ion-button>
+    <ng-container *ngIf='searchMobiles?.length==0'>
+      <ion-button expand='block' color='danger' fill='clear' *ngIf='message as emsg'>{{emsg}}</ion-button>
       <ion-button expand='block' color='secondary' (click)='validateCode()' *ngIf='!isMobileVerified'>请先验证手机号</ion-button>
-      <ion-button  expand='block' color='secondary' (click)='onRentalCar()' *ngIf='isMobileVerified'>前往用车</ion-button>
+      <ion-button expand='block' color='secondary' (click)='onRentalCar()' *ngIf='isMobileVerified'>前往用车</ion-button>
     </ng-container>
   </ion-list>
   <div class="search-result" *ngIf='searchMobiles?.length' #searchResultEl>
@@ -71,5 +68,13 @@
         <li *ngFor='let a of searchMobiles' (click)='onSelect(a)' @flyInOut>{{a}}</li>
       </ul>
     </ion-list>
+  </div>
+  <div class="tip" (click)='onOpenSettings()' *ngIf='!isCanLocatePos'>
+    <ion-text color='secondary'>
+      温馨提示：
+    </ion-text>
+    <div class="txt">
+      当前可能无法定位，需要您开启定位设置，点击查看设置
+    </div>
   </div>
 </ion-content>

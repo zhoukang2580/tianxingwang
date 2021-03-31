@@ -14,6 +14,7 @@ import { TmcService } from "./../../tmc/tmc.service";
 import { NavController, IonInput, Platform, IonItem } from "@ionic/angular";
 import { CarService } from "./../car.service";
 import {
+  EventEmitter,
   Component,
   OnInit,
   OnDestroy,
@@ -25,6 +26,7 @@ import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AndroidPermissions } from "@ionic-native/android-permissions/ngx";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 import { WechatHelper } from "src/app/wechatHelper";
+import { SwiperSlidesComponent } from "src/app/components/swiper-slides/swiper-slides.component";
 @Component({
   selector: "app-rental-car",
   templateUrl: "./rental-car.page.html",
@@ -40,6 +42,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   private defaultMobile = "";
   private verifiedMobiles: string[];
   private isSetTop = false;
+  private latLng: { lat: number; lng: number; locationInfo: any };
   @ViewChild("mobilItem") mobilItemEl: IonItem;
   @ViewChild("searchResultEl") searchResultEl: ElementRef<HTMLElement>;
   searchMobiles: string[];
@@ -47,6 +50,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   message: string;
   countDown: number;
   isSending = false;
+  isCanLocatePos = true;
   isModify = false;
   fetching = "正在获取默认手机号";
   verifySmsCode = "";
@@ -84,7 +88,8 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   onOpenTest() {
-    const url = "https://open.es.xiaojukeji.com/webapp/feESWebappLogin/index?ticket=fmx18DLsOzBwd_ngDA8B5xr_1-04sz6zi4lO_BKvEdYkzbsKwkAQRuF3OfUQ_tnNjnFae9_BS7w0KyhWIe8uwerAab6FLpI6aBBGd9KNXkiXNBq9kjL6-E8jORwxTiQYZ3KKIt95aSoRTcaV9H1UYyYXPq_v-zKToZCvxo300OTu3opxJ_HNklqtI8ZjOxhPUusvAAD__w==&cell=11000005334";
+    const url =
+      "https://open.es.xiaojukeji.com/webapp/feESWebappLogin/index?ticket=fmx18DLsOzBwd_ngDA8B5xr_1-04sz6zi4lO_BKvEdYkzbsKwkAQRuF3OfUQ_tnNjnFae9_BS7w0KyhWIe8uwerAab6FLpI6aBBGd9KNXkiXNBq9kjL6-E8jORwxTiQYZ3KKIt95aSoRTcaV9H1UYyYXPq_v-zKToZCvxo300OTu3opxJ_HNklqtI8ZjOxhPUusvAAD__w==&cell=11000005334";
     // this.router.navigate(["open-url"], {
     //   queryParams: {
     //     url,
@@ -183,10 +188,68 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
         }
       });
   }
+  async onOpenSettings() {
+    const items = [];
+    if (this.plt.is("ios")) {
+      items.push({
+        imageUrl: `assets/images/possettings/settingprivacy.png`,
+      });
+      items.push({
+        imageUrl: `assets/images/possettings/locationservice.png`,
+      });
+      items.push({
+        imageUrl: `assets/images/possettings/Safari.png`,
+      });
+      items.push({
+        imageUrl: `assets/images/possettings/allow.png`,
+      });
+    }
+    if (this.plt.is("android")) {
+      // items.push(`assets/images/possettings/allow.png`);
+      // items.push(`assets/images/possettings/allow.png`);
+      // items.push(`assets/images/possettings/allow.png`);
+      // items.push(`assets/images/possettings/allow.png`);
+      AppHelper.alert(
+        `打开手机设置，找到“应用设置”→“授权管理”→“应用权限管理”→搜索“天行商旅”，点击进入“天行商旅应用权限”，点击“定位”，将位置信息访问权限设置为“始终允许”或者“应用使用期间允许”`
+      );
+      return;
+    }
+    const tabClick = new EventEmitter();
+    const m = await AppHelper.modalController.create({
+      component: SwiperSlidesComponent,
+      componentProps: {
+        isOpenAsModel: true,
+        items: items,
+        tap: tabClick,
+      },
+    });
+    if (items.length) {
+      const sub = tabClick.subscribe(() => {
+        m.dismiss();
+      });
+      m.present();
+      await m.onDidDismiss();
+      sub.unsubscribe();
+    }
+  }
   private async checkPermission() {
     let ok = true;
     if (this.plt.is("ios")) {
-      this.geolocation.getCurrentPosition();
+      this.geolocation
+        .getCurrentPosition({ enableHighAccuracy: true })
+        .then((p) => {
+          if (p) {
+            this.latLng = {
+              lat: p.coords.latitude,
+              lng: p.coords.longitude,
+              locationInfo: p,
+            };
+          }
+        })
+        .catch((e) => {
+          this.isCanLocatePos = false;
+          console.error(e);
+        });
       return ok;
     }
     try {
@@ -276,7 +339,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       AppHelper.alert("请输入手机号");
       return;
     }
-    const url = await this.carService.verifyStaff({ Mobile: this.mobile });
+    let url = await this.carService.verifyStaff({ Mobile: this.mobile });
     if (AppHelper.isWechatH5()) {
       window.location.href = url;
       return;
@@ -284,6 +347,14 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     if (url) {
       if (AppHelper.isApp()) {
         await this.checkPermission();
+        if (this.latLng) {
+          console.log("latLng ", this.latLng);
+          if (!url.includes("")) {
+            url = url.includes("?")
+              ? `${url}&lat_from=${this.latLng.lat}&lng_from=${this.latLng.lng}`
+              : `${url}?lat_from=${this.latLng.lat}&lng_from=${this.latLng.lng}`;
+          }
+        }
         // this.router.navigate(["open-url"], {
         //   queryParams: {
         //     url,

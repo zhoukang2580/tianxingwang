@@ -35,3 +35,11 @@ ion-list > ion-button {
     }
   }
 }
+.tip {
+  color: var(--ion-color-secondary);
+  font-size: 12px;
+  padding: 1em;
+  .txt {
+    text-indent: 1em;
+  }
+}
