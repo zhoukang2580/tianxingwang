@@ -203,7 +203,7 @@
           </ion-item>
           <ng-container *ngIf="combindInfo.isShowTravelInfo" style="margin-top: 0.5em;">
             <div class="illegal" [attr.illegalReasonsid]="combindInfo.id" *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist">
-              <div class="flex padding-v row" (click)="onSelectIllegalReason(combindInfo)" *ngIf="viewModel?.illegalReasons?.length">
+              <div class="flex padding-v row exceed-reason" (click)="onSelectIllegalReason(combindInfo)" *ngIf="viewModel?.illegalReasons?.length">
                 <div class="label">超标原因</div>
                 <div class="value">{{combindInfo?.illegalReason}}</div>
                 <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>

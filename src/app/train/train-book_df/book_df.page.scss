@@ -139,7 +139,9 @@ ion-content {
   font-size: 14px;
   color: red;
 }
-
+.exceed-reason {
+  height: 2.5em;
+}
 .transfrom {
   transform: translate(0, 100%);
   position: fixed;
@@ -154,7 +156,7 @@ ion-content {
   &.show {
     z-index: 1;
     opacity: 1;
-    transform: translate(0, -44px);
+    transform: translate(0, -55px);
   }
   .wrapper {
     width: 100%;
@@ -216,8 +218,8 @@ ion-content {
     border-radius: 10px 10px 0 0;
   }
 }
-.padding-v ion-input{
-  --padding-start:0 !important;
+.padding-v ion-input {
+  --padding-start: 0 !important;
 }
 ion-footer .toolbar {
   line-height: 49px;
@@ -235,7 +237,7 @@ ion-footer .toolbar {
     border-radius: 5px;
   }
 }
-.flex{
+.flex {
   display: flex;
   align-items: center;
 }
