@@ -1,6 +1,6 @@
 import { LangService } from "src/app/services/lang.service";
 import { RefresherComponent } from "src/app/components/refresher";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { flyInOut } from "./../../animations/flyInOut";
 import {
   NavController,
@@ -26,6 +26,7 @@ import {
   AfterViewInit,
 } from "@angular/core";
 import { HotelService } from "../hotel.service";
+import { AppHelper } from "src/app/appHelper";
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -35,6 +36,10 @@ interface ISearchTextValue {
   CountryId?: string; // Code
   CountryName?: string; // Code
   CountryCode?: string; // Code
+  IsHotel?: boolean;
+  IsAddress?: boolean;
+  Lat?: string;
+  Lng?: string;
 }
 @Component({
   selector: "app-search-hotel-byText",
@@ -50,6 +55,8 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   private subscription = Subscription.EMPTY;
   private subscription2 = Subscription.EMPTY;
   searchText: string;
+  lat: string;
+  lng: string;
   // placeholderSearchText: string;
   config: any;
   searchResult: ISearchTextValue[];
@@ -58,8 +65,9 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
     private hotelService: HotelService,
     private navCtrl: NavController,
     private route: ActivatedRoute,
-    private langService: LangService
-  ) {}
+    private langService: LangService,
+    private router: Router
+  ) { }
   ngOnInit() {
     this.subscription2 = this.route.queryParamMap.subscribe((q) => {
       this.searchText = q.get("kw");
@@ -146,10 +154,18 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   onSelect(it?: ISearchTextValue) {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
-      searchText: it || { Text: this.searchText },
+      searchText: it || { Text: this.searchText, Lat: this.lat, Lng: this.lng },
     });
     setTimeout(() => {
-      this.navCtrl.back();
+      if (it && it.IsHotel == true) {
+        this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
+          queryParams: { hotelId: it.Value },
+        });
+      } else {
+        this.navCtrl.back();
+      }
+      // else if (it.IsAddress == true) {
+      // }
     }, 200);
   }
   back() {
