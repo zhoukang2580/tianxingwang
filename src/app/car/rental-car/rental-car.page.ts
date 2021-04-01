@@ -76,6 +76,17 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       }, 200);
     }
   }
+  private checkCanLocatePos(){
+    if(window.navigator){
+      window.navigator.geolocation.getCurrentPosition(r=>{
+        this.isCanLocatePos=!!(r&&r.coords);
+        console.log("window.navigator.geolocation 定位成功",r);
+      },e=>{
+        this.isCanLocatePos=false;
+        console.error("定位失败",e);
+      },{timeout:3000,enableHighAccuracy:true});
+    }
+  }
   onTestAliPay() {
     // tslint:disable-next-line: max-line-length
     const url = `alipays://platformapi/startApp?appId=20000125&orderSuffix=h5_route_token%3D%22RZ41KxkNHYPoXtUZ2Oo21WzMmvIcSQmobilecashierRZ41%22%26is_h5_route%3D%22true%22#Intent;scheme=alipays;package=com.eg.android.AlipayGphone;end`;
@@ -262,7 +273,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       await this.geolocation
         .getCurrentPosition({ enableHighAccuracy: true })
         .then((p) => {
-          console.log("checkPermission", p);
+          console.log("checkPermission getCurrentPosition", p);
           if (p) {
             this.latLng = {
               lat: p.coords.latitude,
@@ -276,18 +287,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
           console.error(e);
         });
       if (!this.isCanLocatePos) {
-        if (window.navigator.geolocation) {
-          window.navigator.geolocation.getCurrentPosition(
-            () => {
-              this.isCanLocatePos = true;
-            },
-            (e) => {
-              this.isCanLocatePos = false;
-              console.error("window.navigator.geolocation", e);
-            },
-            { timeout: 3000 }
-          );
-        }
+        this.checkCanLocatePos();
       }
       // AppHelper.alert((geo && geo.coords) || "无定位信息");
     } catch (e) {
@@ -366,7 +366,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
         await this.checkPermission();
         if (this.latLng) {
           console.log("latLng ", this.latLng);
-          if (!url.includes("lat")) {
+          if (!url.includes("lat_from")) {
             url = url.includes("?")
               ? `${url}&lat_from=${this.latLng.lat}&lng_from=${this.latLng.lng}`
               : `${url}?lat_from=${this.latLng.lat}&lng_from=${this.latLng.lng}`;
@@ -428,6 +428,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
   }
   ngOnInit() {
     this.subscription = this.route.queryParamMap.subscribe((p) => {
+      this.checkCanLocatePos();
       this.initLocalMobiles();
       this.getAccountInfo();
     });
