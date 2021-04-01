@@ -1,86 +1,163 @@
 <ion-header>
   <ion-toolbar class="tbar">
     <ion-buttons>
-      <app-back-button defaultHref="" [backFn]='back.bind(this)' customeBack='true'></app-back-button>
+      <app-back-button
+        defaultHref=""
+        [backFn]="back.bind(this)"
+        customeBack="true"
+      ></app-back-button>
       <div class="query">
-        <app-date-city [langOpt]='{
+        <app-date-city
+          [langOpt]='{
           checkin: "住",
           checkout: "离",
           night: "晚"
-        }' [checkInDate]='searchHotelModel?.checkInDate' [checkOutDate]='searchHotelModel?.checkOutDate' [city]='searchHotelModel?.destinationCity' (cityClick)='onCityClick()'
-          (dateChange)='onDateChange()' (searchBarClick)='onSearchByText()' [keywords]='searchHotelModel?.searchText?.Text||"地名/酒店/关键字"'>
+        }'
+          [checkInDate]="searchHotelModel?.checkInDate"
+          [checkOutDate]="searchHotelModel?.checkOutDate"
+          [city]="searchHotelModel?.destinationCity"
+          (cityClick)="onCityClick()"
+          (dateChange)="onDateChange()"
+          (searchBarClick)="onSearchByText()"
+          [keywords]='searchHotelModel?.searchText?.Text||"地名/酒店/关键字"'
+        >
         </app-date-city>
       </div>
     </ion-buttons>
   </ion-toolbar>
   <div class="hotel-query-wrapper">
-    <app-hotel-query (activeFilter)='onActiveFilter($event)' (hotelQueryChange)='onHotelQueryChange($event)'>
+    <app-hotel-query
+      (activeFilter)="onActiveFilter($event)"
+      (hotelQueryChange)="onHotelQueryChange($event)"
+    >
     </app-hotel-query>
   </div>
 </ion-header>
-<ion-content #cnt [scrollY]='!filterTab.isActive'>
-  <app-refresher slot='fixed' (ionRefresh)='doRefresh(false)' [disabled]='filterTab&&filterTab.isActive'>
+<ion-content #cnt [scrollY]="!filterTab.isActive">
+  <app-refresher
+    slot="fixed"
+    (ionRefresh)="doRefresh(false)"
+    [disabled]="filterTab&&filterTab.isActive"
+  >
     <ion-refresher-content>正在加载...</ion-refresher-content>
   </app-refresher>
   <div class="segments-wrapper">
     <div class="segments">
-      <div class="segment" (click)='onSegmentChanged("normal")' [class.active]='searchHotelModel?.hotelType=="normal"'>非协议酒店</div>
-      <div class="segment" (click)='onSegmentChanged("agreement")' [class.active]='searchHotelModel?.hotelType=="agreement"'>协议酒店</div>
-      <div class="segment" (click)='onSegmentChanged("specialprice")' [class.active]='searchHotelModel?.hotelType=="specialprice"'>特价酒店</div>
+      <div
+        class="segment"
+        (click)='onSegmentChanged("normal")'
+        [class.active]='searchHotelModel?.hotelType=="normal"'
+      >
+        非协议酒店
+      </div>
+      <div
+        class="segment"
+        (click)='onSegmentChanged("agreement")'
+        [class.active]='searchHotelModel?.hotelType=="agreement"'
+      >
+        协议酒店
+      </div>
+      <div
+        class="segment"
+        (click)='onSegmentChanged("specialprice")'
+        [class.active]='searchHotelModel?.hotelType=="specialprice"'
+      >
+        特价酒店
+      </div>
     </div>
   </div>
-  <div class="freebook" *ngIf='isFreeBook' (click)='onShowFreeBookTip()'>
+  <div class="freebook" *ngIf="isFreeBook" (click)="onShowFreeBookTip()">
     <span>贵公司已开通超标随心住，自行支付超标部分即可享受心仪的房间</span>
-    <ion-text color='secondary' class='ion-margin-start'>了解随心住>></ion-text>
+    <ion-text color="secondary" class="ion-margin-start">了解随心住>></ion-text>
   </div>
-  <ng-container *ngIf='!isLoadingHotels else fakeList'>
+  <ng-container *ngIf="!isLoadingHotels else fakeList">
     <ion-list>
-      <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
-        <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
-          <app-hotel-list-item [item]='item' [config]='{DefaultImageUrl:HotelDefaltImg||config?.DefaultImageUrl,PrerenderImageUrl:config?.PrerenderImageUrl}'></app-hotel-list-item>
+      <ul *ngIf="hotelDayPrices?.length  else noMoreData">
+        <li *ngFor="let item of hotelDayPrices" (click)="goToDetail(item)">
+          <app-hotel-list-item
+            [hotelquery]="searchHotelModel"
+            [item]="item"
+            [config]="{DefaultImageUrl:HotelDefaltImg||config?.DefaultImageUrl,PrerenderImageUrl:config?.PrerenderImageUrl}"
+          ></app-hotel-list-item>
         </li>
       </ul>
     </ion-list>
   </ng-container>
   <ng-template #noMoreData>
     <ion-list></ion-list>
-    <div class='ion-margin-top' *ngIf='!isLoadingHotels'>
+    <div class="ion-margin-top" *ngIf="!isLoadingHotels">
       <app-or-comp>暂无数据</app-or-comp>
     </div>
   </ng-template>
   <ng-template #fakeList>
-    <ion-list class='fakelist' *ngIf='isLoadingHotels else noMoreData'>
-      <ion-item *ngFor='let item of [1,2,3,4,5,6,7,8,9,10,11];let odd=odd'>
-        <ion-thumbnail style="margin-bottom: 0.25em;">
-          <ion-skeleton-text [animated]='odd' style='height:100%;width:100%'></ion-skeleton-text>
+    <ion-list class="fakelist" *ngIf="isLoadingHotels else noMoreData">
+      <ion-item *ngFor="let item of [1,2,3,4,5,6,7,8,9,10,11];let odd=odd">
+        <ion-thumbnail style="margin-bottom: 0.25em">
+          <ion-skeleton-text
+            [animated]="odd"
+            style="height: 100%; width: 100%"
+          ></ion-skeleton-text>
         </ion-thumbnail>
         <ion-label class="ion-margin-start">
           <h1>
-            <ion-skeleton-text style="width:90%"></ion-skeleton-text>
+            <ion-skeleton-text style="width: 90%"></ion-skeleton-text>
           </h1>
           <h1>
-            <ion-skeleton-text style="width:40%"></ion-skeleton-text>
+            <ion-skeleton-text style="width: 40%"></ion-skeleton-text>
           </h1>
-          <h1 style="display:flex;justify-content:space-between;align-items: center;">
-            <ion-skeleton-text style="width:70%"></ion-skeleton-text>
-            <ion-skeleton-text style="width:10%"></ion-skeleton-text>
+          <h1
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <ion-skeleton-text style="width: 70%"></ion-skeleton-text>
+            <ion-skeleton-text style="width: 10%"></ion-skeleton-text>
           </h1>
         </ion-label>
       </ion-item>
     </ion-list>
   </ng-template>
-  <ion-infinite-scroll (ionInfinite)="loadMore()" threshold='100px'>
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="正在加载..."></ion-infinite-scroll-content>
+  <ion-infinite-scroll (ionInfinite)="loadMore()" threshold="100px">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="正在加载..."
+    ></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
-<div class="backdrop " [ngClass]='{ios:isIos,show:filterTab?.isActive}' (click)='onBackdropClick($event)'></div>
+<div
+  class="backdrop"
+  [ngClass]="{ios:isIos,show:filterTab?.isActive}"
+  (click)="onBackdropClick($event)"
+></div>
 <div #filterCondition>
-  <app-recommend-rank id='Recommended' class="filter-condition {{isIos?'ios':''}}" (rank)='onRank()' [class.show]='filterTab?.id=="Recommended"&&filterTab.isActive'>
+  <app-recommend-rank
+    id="Recommended"
+    class="filter-condition {{isIos?'ios':''}}"
+    (rank)="onRank()"
+    [class.show]='filterTab?.id=="Recommended"&&filterTab.isActive'
+  >
   </app-recommend-rank>
-  <app-hotel-starprice class="filter-condition   {{isIos?'ios':''}}" id="PriceStar" [class.show]='filterTab?.id=="PriceStar"&&filterTab.isActive' (starPriceChange)='onStarPriceChange()'>
+  <app-hotel-starprice
+    class="filter-condition   {{isIos?'ios':''}}"
+    id="PriceStar"
+    [class.show]='filterTab?.id=="PriceStar"&&filterTab.isActive'
+    (starPriceChange)="onStarPriceChange()"
+  >
   </app-hotel-starprice>
-  <app-hotel-filter id="Filter" class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Filter"&&filterTab.isActive' (filter)='onFilter()'>
+  <app-hotel-filter
+    id="Filter"
+    class="filter-condition  {{isIos?'ios':''}}"
+    [class.show]='filterTab?.id=="Filter"&&filterTab.isActive'
+    (filter)="onFilter()"
+  >
   </app-hotel-filter>
-  <app-hotel-geo id="Location" class="filter-condition  {{isIos?'ios':''}}" [class.show]='filterTab?.id=="Location"&&filterTab.isActive' (geoFilterChange)='onFilterGeo()'>
+  <app-hotel-geo
+    id="Location"
+    class="filter-condition  {{isIos?'ios':''}}"
+    [class.show]='filterTab?.id=="Location"&&filterTab.isActive'
+    (geoFilterChange)="onFilterGeo()"
+  >
   </app-hotel-geo>
 </div>

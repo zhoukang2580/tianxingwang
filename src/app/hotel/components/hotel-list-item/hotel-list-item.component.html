@@ -33,9 +33,9 @@
     <div class="ion-text-wrap location">
       <ion-icon name="location" color="medium"></ion-icon>
       <div class="ion-text-wrap">{{ item.Hotel?.Address }}</div>
-      <!-- <ion-label color="medium">
-        {{ item.Hotel?.Distance }}
-      </ion-label> -->
+      <!-- <ion-label
+        >距离{{ hotelkey?.SearchKey }}约{{ item.Hotel?.Distance }}</ion-label
+      > -->
       <ion-label
         color="medium"
         *ngIf="
@@ -43,9 +43,15 @@
           item.Hotel?.VariablesJsonObj['GeoDistance']
         "
       >
-        距离{{ item.Hotel?.VariablesJsonObj["geoDistance"].name }}直线距离约{{
+        距离{{ item.Hotel?.VariablesJsonObj["geoDistance"].name }}约{{
           item.Hotel?.VariablesJsonObj["geoDistance"].distance
-        }}km
+        }}
+      </ion-label>
+    </div>
+    <div class="ion-text-wrap" style="font-size: 13px">
+      <ion-label color="medium" *ngIf="hotelquery?.searchText?.Text">
+        距离{{ hotelquery?.searchText?.Text }}约
+        {{ item.Hotel?.Distance }}
       </ion-label>
     </div>
   </div>
