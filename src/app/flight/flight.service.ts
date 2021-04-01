@@ -1186,6 +1186,9 @@ export class FlightService {
       ToAsAirport: search.ToAsAirport,
       ADTPtcs,
     };
+    if(s.Variables&&s.Variables.DetailKey){
+      req.Data.DetailKey=s.Variables.DetailKey;
+    }
     if (req.Language) {
       req.Data.Lang = req.Language;
     }
