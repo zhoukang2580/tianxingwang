@@ -172,7 +172,7 @@ export class FlightService {
     return this.searchFlightModelSource.asObservable();
   }
   setPassengerBookInfosSource(args: PassengerBookInfo<IFlightSegmentInfo>[]) {
-    console.log("flight setPassengerBookInfos", args); 
+    console.log("flight setPassengerBookInfos", args);
     this.passengerBookInfos = args;
     this.passengerBookInfoSource.next(this.passengerBookInfos.slice(0));
   }
