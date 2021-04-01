@@ -76,15 +76,19 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       }, 200);
     }
   }
-  private checkCanLocatePos(){
-    if(window.navigator){
-      window.navigator.geolocation.getCurrentPosition(r=>{
-        this.isCanLocatePos=!!(r&&r.coords);
-        console.log("window.navigator.geolocation 定位成功",r);
-      },e=>{
-        this.isCanLocatePos=false;
-        console.error("定位失败",e);
-      },{timeout:3000,enableHighAccuracy:true});
+  private checkCanLocatePos() {
+    if (window.navigator) {
+      window.navigator.geolocation.getCurrentPosition(
+        (r) => {
+          this.isCanLocatePos = !!(r && r.coords);
+          console.log("window.navigator.geolocation 定位成功", r);
+        },
+        (e) => {
+          this.isCanLocatePos = false;
+          console.error("定位失败", e);
+        },
+        { timeout: 3000, enableHighAccuracy: true }
+      );
     }
   }
   onTestAliPay() {
@@ -205,16 +209,22 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
     const items = [];
     if (this.plt.is("ios")) {
       items.push({
-        imageUrl: `assets/images/possettings/settingprivacy.png`,
+        imageUrl: `assets/images/possettings/settingprivacy.jpg`,
       });
       items.push({
-        imageUrl: `assets/images/possettings/locationservice.png`,
+        imageUrl: `assets/images/possettings/locationservice.jpg`,
       });
       items.push({
-        imageUrl: `assets/images/possettings/Safari.png`,
+        imageUrl: `assets/images/possettings/Safari.jpg`,
       });
       items.push({
         imageUrl: `assets/images/possettings/allow.png`,
+      });
+      items.push({
+        imageUrl: `assets/images/possettings/appitem.jpg`,
+      });
+      items.push({
+        imageUrl: `assets/images/possettings/appallow.png`,
       });
     }
     if (this.plt.is("android")) {
