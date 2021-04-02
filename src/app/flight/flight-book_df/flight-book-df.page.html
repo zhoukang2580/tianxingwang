@@ -308,7 +308,7 @@
         </div>
         <div class="btns">
             <div class="submit-btn" *ngIf='isCanSave'>
-                <ion-button slot='end' size='small' color='secondary' (click)='bookFlight(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
+                <ion-button slot='end' size='small' fill='clear' (click)='bookFlight(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
             </div>
             <div class="submit-btn">
                 <ion-button slot='end' size='small' fill='clear' (click)='bookFlight(false,$event)' [disabled]='isSubmitDisabled'> 生成订单

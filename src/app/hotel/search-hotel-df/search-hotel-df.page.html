@@ -59,7 +59,7 @@
     <ion-card #ionCardEle>
       <div class="segments"></div>
       <ion-card-content class="content" *ngIf='isDomestic'>
-        <div class='ion-padding-top' style="margin-top: 10px;">
+        <div class='ion-padding-top' style="margin-top: 10px; display: none;" *ngIf=''>
           <ion-segment mode='md' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}" color="secondary">
             <ion-segment-button value="normal">
               <ion-label>非协议酒店</ion-label>
