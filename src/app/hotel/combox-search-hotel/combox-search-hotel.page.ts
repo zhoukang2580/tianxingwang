@@ -70,7 +70,7 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
   ) { }
   ngOnInit() {
     this.subscription2 = this.route.queryParamMap.subscribe((q) => {
-      this.searchText = q.get("kw");
+      // this.searchText = q.get("kw");
       this.doRefresh(true);
     });
     if (this.langService.isCn) {
@@ -93,48 +93,65 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
     this.subscription = of((this.searchText || "").trim())
       .pipe(
         debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((name) => this.load(name)),
-        catchError((_) => of({ Data: [] }))
+        distinctUntilChanged()
       )
       .subscribe((res) => {
-        this.searchResult = res.Data;
-        this.enableScroller(res.Data.length >= 20);
+        this.loadMore(res);
+        this.loadAddress(res);
       });
   }
-  private load(name: string) {
+  private loadHotel(name: string) {
     this.isLoading = true;
-    return this.hotelService.searchHotelByText(name, this.pageIndex).pipe(
-      finalize(() => {
-        if (this.pageIndex <= 1) {
-          if (this.refresh) {
-            this.refresh.complete();
-          }
+    return this.hotelService.searchHotelByText(name, this.pageIndex).finally(() => {
+      if (this.pageIndex <= 1) {
+        if (this.refresh) {
+          this.refresh.complete();
         }
-        if (this.scroller) {
-          this.scroller.complete();
-        }
-        setTimeout(() => {
-          this.isLoading = false;
-        }, 200);
-      }),
-      map((r) => ({ Data: r })),
-      catchError((e) => {
-        console.error(e);
-        return of({ Data: [] });
-      })
-    );
+      }
+      if (this.scroller) {
+        this.scroller.complete();
+      }
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 200);
+    });
   }
+
+  private loadAddress(name: string) {
+    this.isLoading = true;
+    return this.hotelService.searchHotelByAddress(name, this.pageIndex).then((res) => {
+      const arr = res || [];
+      if (arr.length) {
+        this.searchResult = this.searchResult.concat(res);
+      }
+    }).finally(() => {
+      if (this.pageIndex <= 1) {
+        if (this.refresh) {
+          this.refresh.complete();
+        }
+      }
+      if (this.scroller) {
+        this.scroller.complete();
+      }
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 200);
+    });
+  }
+
   loadMore(name: string = "") {
-    this.subscription = this.load(name).subscribe((res) => {
-      const arr = (res && res.Data) || [];
+    this.loadHotel(name).then((res) => {
+      const arr = res || [];
       this.enableScroller(arr.length >= 20);
       if (arr.length) {
         this.pageIndex++;
-        this.searchResult = this.searchResult.concat(res.Data);
+        this.searchResult = this.searchResult.concat(res);
       }
     });
   }
+
+
+
   private enableScroller(enable: boolean) {
     if (this.scroller) {
       this.scroller.disabled = !enable;
@@ -157,6 +174,7 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
       searchText: it || { Text: this.searchText, Lat: this.lat, Lng: this.lng },
     });
     setTimeout(() => {
+      
       if (it && it.IsHotel == true) {
         this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
           queryParams: { hotelId: it.Value },

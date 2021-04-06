@@ -978,16 +978,7 @@ export class HotelService {
   searchHotelByText(
     keyword: string,
     pageIndex: number
-  ): Observable<
-    {
-      Text: string;
-      Value: string;
-      IsHotel: boolean;
-      IsAddress: boolean;
-      Lat: string;
-      Lng: string;
-    }[]
-  > {
+  ) {
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-SearchHotel`;
     req.Data = {
@@ -1000,25 +991,42 @@ export class HotelService {
       Keyword: keyword
     };
     return this.apiService
-      .getResponse<
+      .getPromiseData<
         {
           Text: string;
           Value: string;
           IsHotel: boolean;
+        }[]
+      >(req)
+  }
+  searchHotelByAddress(
+    keyword: string,
+    pageIndex: number
+  ){
+    const req = new RequestEntity();
+    req.Method = `TmcApiHotelUrl-Home-SearchAddress`;
+    req.Data = {
+      PageIndex: pageIndex || 0,
+      CityCode:
+        this.getSearchHotelModel().destinationCity &&
+        this.getSearchHotelModel().destinationCity.Code,
+      CityName: this.getSearchHotelModel().destinationCity &&
+        this.getSearchHotelModel().destinationCity.Name,
+      Keyword: keyword
+    };
+    return this.apiService
+      .getPromiseData<
+        {
+          Text: string;
+          Value: string;
           IsAddress: boolean;
           Lat: string;
           Lng: string;
         }[]
       >(req)
-      .pipe(
-        map((r) => {
-          if (r.Status) {
-            return r.Data;
-          }
-          return [];
-        })
-      );
+     
   }
+
   async getInitializeBookDto(
     bookDto: OrderBookDto
   ): Promise<InitialBookDtoModel> {

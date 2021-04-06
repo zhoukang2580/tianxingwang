@@ -34,8 +34,6 @@ export class BusinessListPage implements OnInit, OnDestroy {
   overduetime: any;
   customPopoverOptions: any = {
     header: "选择审批单状态",
-    // subHeader: 'Select your hair color',
-    // message: 'Only select your dominant hair color'
   };
   staff: StaffEntity;
   appovalStaff: string;
