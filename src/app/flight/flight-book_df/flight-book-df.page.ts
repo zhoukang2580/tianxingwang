@@ -1628,13 +1628,7 @@ export class FlightBookDfPage
           combineInfo.expenseType = this.expenseTypes[0];
         }
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
-        combineInfo.insuranceProducts = this.isShowInsurances(
-          item.bookInfo &&
-            item.bookInfo.flightSegment &&
-            item.bookInfo.flightSegment.TakeoffTime
-        )
-          ? insurances
-          : [];
+        combineInfo.insuranceProducts =insurances;
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
