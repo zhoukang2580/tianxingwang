@@ -1596,7 +1596,8 @@ export class FlightBookDfPage
             disabled:
               item.passenger &&
               item.passenger.Policy &&
-              !!item.passenger.Policy.FlightForceInsuranceId,
+              !!item.passenger.Policy.FlightForceInsuranceId &&
+              this.tmc.MandatoryBuyInsurance,
             showDetail: false,
           };
         });
