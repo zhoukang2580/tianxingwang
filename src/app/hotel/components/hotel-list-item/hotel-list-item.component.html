@@ -48,8 +48,8 @@
         }}
       </ion-label>
     </div>
-    <div class="ion-text-wrap" style="font-size: 13px">
-      <ion-label color="medium" *ngIf="hotelquery?.searchText?.Text">
+    <div class="ion-text-wrap" style="font-size: 13px" *ngIf="hotelquery?.searchText?.Text != item.Hotel?.Address">
+      <ion-label color="medium" >
         距离{{ hotelquery?.searchText?.Text }}约
         {{ item.Hotel?.Distance }}
       </ion-label>
