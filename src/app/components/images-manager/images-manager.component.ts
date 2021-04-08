@@ -21,6 +21,7 @@ export class ImagesMangerComponent implements OnInit {
   @Input() defaultImage;
   @Input() loadingImage;
   @Input() chooseScene = true;
+  @Input() canSelectFromGallery = true;
   @Input() isMulti = false;
   @Input() maxCount = Infinity;
   @Input() desc = false;

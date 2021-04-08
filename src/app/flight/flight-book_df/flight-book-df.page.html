@@ -150,17 +150,17 @@
                                 </div>
                             </div>
                         </ng-container>
-                        <div class="row" (click)='searchCostCenter(combindInfo)'>
+                        <div class="row" (click)='searchOrganization(combindInfo)'>
                             <span class="label">部门</span>
                             <div class="value">
-                                {{combindInfo?.costCenter?.name}}
+                                {{combindInfo?.organization?.Name}}
                             </div>
                             <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                         </div>
-                        <div class="row " (click)='searchOrganization(combindInfo)'>
+                        <div class="row " (click)='searchCostCenter(combindInfo)'>
                             <span class="label">成本中心</span>
                             <div class="value">
-                                {{combindInfo?.organization?.Name}}
+                                {{combindInfo?.costCenter?.name}}
                             </div>
                             <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                         </div>

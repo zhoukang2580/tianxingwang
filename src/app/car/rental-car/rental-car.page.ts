@@ -212,7 +212,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
         imageUrl: `assets/images/possettings/settingprivacy.jpg`,
       });
       items.push({
-        imageUrl: `assets/images/possettings/locationservice.jpg`,
+        imageUrl: `assets/images/possettings/locationservice.png`,
       });
       items.push({
         imageUrl: `assets/images/possettings/Safari.jpg`,

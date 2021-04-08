@@ -709,6 +709,12 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
           "VendorCode",
           combindInfo.creditCardInfo.creditCardType
         );
+        if( combindInfo.creditCardInfo.cardCredentialsMobile){
+          p.OrderCard.SetVariable(
+            "CardCredentialsMobile",
+            combindInfo.creditCardInfo.cardCredentialsMobile
+          );
+        }
         p.OrderCard.Variables = JSON.stringify(p.OrderCard.Variables);
       }
       p.ApprovalId =
@@ -1900,6 +1906,7 @@ interface IPassengerHotelBookInfo {
     isShowCreditCard: boolean;
     creditCardType: string;
     creditCardNumber: string;
+    cardCredentialsMobile: string;
     creditCardCvv: string;
     creditCardExpirationDate: string;
     expirationYear: string;

@@ -89,8 +89,8 @@
           <div class="title" (click)='combindInfo.isShowOtherInfo=!combindInfo.isShowOtherInfo'>
             <span class="name">旅客信息</span>
             <div class="toggle-icon">
-              <ion-icon name="chevron-down-outline"  *ngIf='!combindInfo.isShowOtherInfo'></ion-icon>
-              <ion-icon name="chevron-up-outline"  *ngIf='combindInfo.isShowOtherInfo'></ion-icon>
+              <ion-icon name="chevron-down-outline" *ngIf='!combindInfo.isShowOtherInfo'></ion-icon>
+              <ion-icon name="chevron-up-outline" *ngIf='combindInfo.isShowOtherInfo'></ion-icon>
             </div>
           </div>
           <div class="info" [class.hidden]='!combindInfo.isShowOtherInfo'>
@@ -115,12 +115,12 @@
                 <span class="label">其他邮箱：</span>
                 <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='邮箱'></ion-input>
               </div>
-              <div class="flex padding-v row" (click)='searchCostCenter(combindInfo)'>
-                <span class="label">部门：</span>{{combindInfo?.costCenter?.name}}
+              <div class="flex padding-v row" (click)='searchOrganization (combindInfo)'>
+                <span class="label">部门：</span>{{combindInfo?.organization?.Name}}
                 <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
               </div>
-              <div class="flex padding-v row" (click)='searchOrganization(combindInfo)'>
-                <span class="label">成本中心：</span>{{combindInfo?.organization?.Name}}
+              <div class="flex padding-v row" (click)='searchCostCenter(combindInfo)'>
+                <span class="label">成本中心：</span>{{combindInfo?.costCenter?.name}}
                 <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
               </div>
             </div>
@@ -255,7 +255,7 @@
               <ion-select-option value="{{CredentialsType.Other}}">其它</ion-select-option>
             </ion-select>
           </ion-item>
-          <div>
+          <div class='credit-card-info'>
             <div class="title ">
               <span class="name">信用卡信息</span>
             </div>
@@ -267,6 +267,10 @@
               <div class="flex padding-v row" [attr.creditCardInfocreditCardNumber]='combindInfo.id'>
                 <span class="label">信用卡号：</span>
                 <ion-input [(ngModel)]='combindInfo.creditCardInfo.creditCardNumber' placeholder="信用卡卡号"></ion-input>
+              </div>
+              <div class="flex padding-v row card-credentials-mobile" [attr.creditCardInfocreditCardNumber]="combindInfo.id">
+                <span class="label">信用卡预留手机号</span>
+                <ion-input [(ngModel)]="combindInfo.creditCardInfo.cardCredentialsMobile" placeholder="信用卡预留手机号"></ion-input>
               </div>
               <div class="flex padding-v row" [attr.creditCardInfocreditCardCvv]='combindInfo.id'>
                 <span class="label">CVV：</span>

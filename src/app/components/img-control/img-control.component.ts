@@ -31,6 +31,7 @@ export class ImgControlComponent implements OnInit, OnDestroy {
   showCropBox = false;
   uploaded = false;
   @Input() cropperOptions;
+  @Input() canSelectFromGallery = true;
   @Input() defaultImage: any;
   @Input() loadingImage: any;
   @Input() file: any;
@@ -101,13 +102,6 @@ export class ImgControlComponent implements OnInit, OnDestroy {
     } else {
       const buttons = [
         {
-          text: "从图库中选择",
-          handler: () => {
-            a.dismiss();
-            this.openPhotoGallery();
-          },
-        },
-        {
           text: "手机上选择",
           handler: () => {
             a.dismiss();
@@ -115,6 +109,15 @@ export class ImgControlComponent implements OnInit, OnDestroy {
           },
         },
       ];
+      if (this.canSelectFromGallery) {
+        buttons.unshift({
+          text: "从图库中选择",
+          handler: () => {
+            a.dismiss();
+            this.openPhotoGallery();
+          },
+        });
+      }
       if (AppHelper.isApp()) {
         buttons.push({
           text: "拍照",

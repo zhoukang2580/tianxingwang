@@ -152,6 +152,14 @@ ion-list .info {
   padding: 0.5em 1em;
   @extend .font;
 }
+.credit-card-info {
+  .card-credentials-mobile {
+    font-size: 12px;
+    ion-input {
+      align-self: flex-start;
+    }
+  }
+}
 .section {
   margin-top: 1em;
 }
@@ -167,7 +175,7 @@ ion-list .info {
   ion-input {
     --padding-top: 0;
     --padding-bottom: 0;
-    --padding-start:0;
+    --padding-start: 0;
   }
 }
 
