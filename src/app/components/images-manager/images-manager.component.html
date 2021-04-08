@@ -9,7 +9,7 @@
     </div>
   </ion-col>
   <ion-col>
-    <app-img-control *ngIf='!isMulti&& !images?.length' [cropperOptions]='cropperOptions' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
-    <app-img-control *ngIf='isMulti&&images?.length<maxCount' [cropperOptions]='cropperOptions' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
+    <app-img-control [canSelectFromGallery]='canSelectFromGallery' *ngIf='!isMulti&& !images?.length' [cropperOptions]='cropperOptions' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
+    <app-img-control [canSelectFromGallery]='canSelectFromGallery' *ngIf='isMulti&&images?.length<maxCount' [cropperOptions]='cropperOptions' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
   </ion-col>
 </ion-row>
