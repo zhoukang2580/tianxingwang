@@ -140,13 +140,6 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
   isSelfBookType = true;
   arrivalDateTimes: string[];
-  ionChange: EventEmitter<any>;
-  otherCostCenterCode: string;
-  otherCostCenterName: string;
-  costCenter: {
-    code: string;
-    name: string;
-  };
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   dates: { date: string; price: string | number }[] = [];
   constructor(
@@ -867,6 +860,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           "VendorCode",
           combindInfo.creditCardInfo.creditCardType
         );
+        p.OrderCard.SetVariable(
+          "CardCredentialsMobile",
+          combindInfo.creditCardInfo.cardCredentialsMobile
+        );
         p.OrderCard.Variables = JSON.stringify(p.OrderCard.Variables);
       }
       p.ApprovalId =
@@ -1227,10 +1224,11 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .getMoment(0)
             .startOf("year")
             .format("YYYY-MM-DD")}`,
-        } as any;
+          creditCardType: "VI",
+        };
         combineInfo.isShowTravelDetail = true;
         combineInfo.creditCardPersionInfo = {} as any;
-        combineInfo.creditCardPersionInfo.credentialType = `${CredentialsType.Other}`;
+        combineInfo.creditCardPersionInfo.credentialType = `${CredentialsType.IdCard}`;
         combineInfo.credential = bookInfo.credential;
         combineInfo.id = bookInfo.id;
         combineInfo.bookInfo = bookInfo;
@@ -1418,13 +1416,6 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       const d = AppHelper.getDate(date);
       return this.calendarService.getDayOfWeekNames(d.getDay());
     }
-  }
-  onValueChange() {
-    this.ionChange.emit({
-      otherCostCenterCode: this.otherCostCenterCode,
-      otherCostCenterName: this.otherCostCenterName,
-      costCenter: this.costCenter,
-    });
   }
   private showTransform(show: boolean) {
     try {
@@ -1960,13 +1951,14 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
 interface IPassengerHotelBookInfo {
   arrivalHotelTime: string;
   creditCardInfo: {
-    isShowCreditCard: boolean;
+    isShowCreditCard?: boolean;
     creditCardType: string;
-    creditCardNumber: string;
-    creditCardCvv: string;
-    creditCardExpirationDate: string;
-    expirationYear: string;
-    expirationMonth: string;
+    creditCardNumber?: string;
+    creditCardCvv?: string;
+    cardCredentialsMobile?: string;
+    creditCardExpirationDate?: string;
+    expirationYear?: string;
+    expirationMonth?: string;
     years: number[];
   };
   creditCardPersionInfo: {

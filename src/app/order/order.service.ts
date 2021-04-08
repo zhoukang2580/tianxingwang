@@ -52,7 +52,7 @@ export class OrderService {
     private apiService: ApiService,
     private modalCtrl: ModalController,
     private calendarService: CalendarService
-  ) { }
+  ) {}
   getOrderList(searchCondition: OrderModel) {
     const req = new RequestEntity();
     // req.IsShowLoading = true;
@@ -174,7 +174,7 @@ export class OrderService {
       (order.GetVariable<number>("TravelPayType") ==
         OrderTravelPayType.Credit ||
         order.GetVariable<number>("TravelPayType") ==
-        OrderTravelPayType.Person) &&
+          OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;
@@ -288,10 +288,12 @@ export class OrderService {
       fromCity: TrafficlineEntity;
       toCity: TrafficlineEntity;
       order: OrderEntity;
-      credentails: { CredentialsNumber: string; HideCredentialsNumber: string; }[]
+      credentails: {
+        CredentialsNumber: string;
+        HideCredentialsNumber: string;
+      }[];
     }>(req);
   }
-
 
   abolishFlightOrder(data: {
     OrderId: string;
@@ -315,6 +317,23 @@ export class OrderService {
   }) {
     return this.abolishHotelOrder({ ...data });
   }
+  onGetVerifySMSCode(data: { Mobile: string; OrderHotelId: string }) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = data;
+    req.Method = `TmcApiOrderUrl-Order-SendVerifyOrderHotelSMSCode`;
+    return this.apiService.getPromiseData<any>(req);
+  }
+  onVerifySMSCode(data: { SmsCode: string; OrderHotelId: string }) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = {
+      ProductId: data.OrderHotelId,
+      SmsCode: data.SmsCode,
+    };
+    req.Method = `TmcApiOrderUrl-Order-ConfirmVerifyOrderHotelSMSCode`;
+    return this.apiService.getPromiseData<any>(req);
+  }
   private abolishOrder(data: {
     OrderId: string;
     TicketId: string;
@@ -337,7 +356,7 @@ export class OrderService {
     req.IsShowLoading = true;
     req.Data = {
       ...data,
-      OrderHotelId: data.orderHotelId
+      OrderHotelId: data.orderHotelId,
     };
     req.Method = `TmcApiOrderUrl-Order-CancelOrderHotel`;
     return this.apiService.getPromiseData<any>(req);

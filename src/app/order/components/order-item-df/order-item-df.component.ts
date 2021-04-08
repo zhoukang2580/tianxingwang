@@ -72,6 +72,8 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     orderId: string;
     orderHotelId: string;
   }>;
+  @Output() verifySMSCode: EventEmitter<any>;
+  @Output() getVerifySMSCode: EventEmitter<any>;
 
   @Output() refundFlightTicket: EventEmitter<{
     orderId: string;
@@ -102,6 +104,8 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     this.refundFlightTicket = new EventEmitter();
     this.abolishOrder = new EventEmitter();
     this.abolishHotelOrder = new EventEmitter();
+    this.verifySMSCode = new EventEmitter();
+    this.getVerifySMSCode = new EventEmitter();
     this.exchangeFlightTicket = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
@@ -111,7 +115,20 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     evt.preventDefault();
     evt.stopPropagation();
   }
-
+  onVerifySMSCode(evt: CustomEvent, orderHotel) {
+    evt.stopPropagation();
+    this.verifySMSCode.emit({
+      orderId: this.order.Id,
+      orderHotel,
+    });
+  }
+  onGetVerifySMSCode(evt: CustomEvent, orderHotel) {
+    evt.stopPropagation();
+    this.getVerifySMSCode.emit({
+      orderId: this.order.Id,
+      orderHotel
+    });
+  }
   onAbolishHotelOrder(evt: CustomEvent, orderId) {
     //OrderHotels
     evt.stopPropagation();
@@ -381,7 +398,13 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
             (AppHelper.getDate(t.EndDate).getTime() -
               AppHelper.getDate(t.BeginDate).getTime()) /
             86400000;
-
+          if (t.Variables && !t.VariablesJsonObj) {
+            try {
+              t.VariablesJsonObj = JSON.parse(t.Variables);
+            } catch (e) {
+              console.error(e);
+            }
+          }
           return t;
         });
       }

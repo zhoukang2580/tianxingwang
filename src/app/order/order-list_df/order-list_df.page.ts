@@ -17,6 +17,8 @@ import {
   IonContent,
   IonDatetime,
   PickerController,
+  Platform,
+  PopoverController,
 } from "@ionic/angular";
 import {
   Component,
@@ -49,6 +51,8 @@ import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { RefresherComponent } from "src/app/components/refresher";
+import { OrderHotelEntity } from "../models/OrderHotelEntity";
+import { GetsmscodeComponent } from "../components/getsmscode/getsmscode.component";
 @Component({
   selector: "app-order-list_df",
   templateUrl: "./order-list_df.page.html",
@@ -97,8 +101,9 @@ export class OrderListDfPage
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
     private langService: LangService,
-    private staffService: StaffService
-  ) { }
+    private staffService: StaffService,
+    private popController: PopoverController
+  ) {}
   canDeactivate() {
     console.log("canDeactivate isbackhome=", this.isBackHome);
     if (this.isBackHome && !this.isGoDetail) {
@@ -225,8 +230,8 @@ export class OrderListDfPage
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-          ? "Hotel"
-          : "Train";
+        ? "Hotel"
+        : "Train";
     this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
@@ -343,9 +348,10 @@ export class OrderListDfPage
           text: "确定",
           handler: (data: { year: TV; month: TV; day: TV }) => {
             this.selectDateChange.emit(
-              `${data.year.value}-${+data.month.value < 10
-                ? "0" + data.month.value
-                : data.month.value
+              `${data.year.value}-${
+                +data.month.value < 10
+                  ? "0" + data.month.value
+                  : data.month.value
               }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
             );
           },
@@ -475,10 +481,7 @@ export class OrderListDfPage
       AppHelper.alert(e);
     }
   }
-  async abolishHotelOrder(data: {
-    orderId: string;
-    orderHotelId: string;
-  }) {
+  async abolishHotelOrder(data: { orderId: string; orderHotelId: string }) {
     this.orderService
       .abolishHotelsOrder({
         OrderId: data.orderId,
@@ -492,6 +495,71 @@ export class OrderListDfPage
       .catch((e) => {
         AppHelper.alert(e);
       });
+  }
+  async onVerifySMSCode(data: {
+    orderId: string;
+    orderHotel: OrderHotelEntity;
+  }) {
+    const a = await AppHelper.alertController.create({
+      inputs: [
+        {
+          type: "tel",
+          label: "短信验证码",
+          value:
+            (data.orderHotel.VariablesJsonObj &&
+              data.orderHotel.VariablesJsonObj.VerifySmsCodeMobile) ||
+            "",
+          placeholder: "请输入短信验证码",
+          handler: (r) => {
+            this.orderService
+              .onVerifySMSCode({
+                OrderHotelId: data.orderHotel.Id,
+                SmsCode: r.value,
+              })
+              .then((r) => {
+                AppHelper.alert(r);
+              })
+              .catch((e) => {
+                AppHelper.alert(e);
+              });
+          },
+        },
+      ],
+      message: "短信验证码校验",
+      backdropDismiss: false,
+    });
+    a.present();
+  }
+  async onGetVerifySMSCode(data: {
+    orderId: string;
+    orderHotel: OrderHotelEntity;
+  }) {
+    const m = await this.popController.create({
+      component: GetsmscodeComponent,
+      cssClass: "warranty",
+      componentProps: {
+        orderHotelId: data.orderHotel.Id,
+      },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && data&&d.data) {
+      data.orderHotel.VariablesJsonObj = data.orderHotel.VariablesJsonObj || {};
+      data.orderHotel.VariablesJsonObj.VerifySmsCodeMobile = d.data.mobile;
+      if (d.data.smsCode) {
+        this.orderService
+          .onVerifySMSCode({
+            OrderHotelId: data.orderHotel.Id,
+            SmsCode: d.data.smsCode,
+          })
+          .then((r) => {
+            AppHelper.alert(r);
+          })
+          .catch((e) => {
+            AppHelper.alert(e);
+          });
+      }
+    }
   }
   async onAbolishOrder(data: {
     orderId: string;
@@ -654,10 +722,10 @@ export class OrderListDfPage
           this.activeTab.value == ProductItemType.plane
             ? "Flight"
             : this.activeTab.value == ProductItemType.train
-              ? "Train"
-              : this.activeTab.value == ProductItemType.car
-                ? "Car"
-                : "Hotel";
+            ? "Train"
+            : this.activeTab.value == ProductItemType.car
+            ? "Car"
+            : "Hotel";
       }
       this.orderModel.Type = m.Type;
       if (
@@ -721,11 +789,13 @@ export class OrderListDfPage
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }`;
+      url = `${url}&taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }`;
+      url = `${url}?taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }`;
     }
     return url;
   }
@@ -952,7 +1022,7 @@ export class OrderListDfPage
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-        OrderTravelPayType.Person) &&
+          OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;

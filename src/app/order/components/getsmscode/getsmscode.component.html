@@ -1,0 +1,19 @@
+<ion-list>
+  <ion-item>
+    <ion-label>手机号</ion-label>
+    <ion-input type='tel' [(ngModel)]='mobile' placeholder='请输入手机号'></ion-input>
+    <ion-button slot='end' (click)='onGetSmsCode()' color='secondary'>获取验证码</ion-button>
+  </ion-item>
+  <ion-item lines='none'>
+    <ion-label>验证码</ion-label>
+    <ion-input type='tel' [(ngModel)]='smsCode' placeholder='请输入短信验证码'></ion-input>
+  </ion-item>
+</ion-list>
+<ion-footer>
+  <ion-toolbar>
+    <div class="btns">
+      <ion-button color='secondary' (click)='onCancel()'>取消</ion-button>
+      <ion-button color='secondary' (click)='onOk()'>确定</ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

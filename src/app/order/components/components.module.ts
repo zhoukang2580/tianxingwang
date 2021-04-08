@@ -34,6 +34,7 @@ import { SearchTicketModalEnComponent } from './search-ticket-modal_en/search-ti
 import { CarItemEnComponent } from './car-item-en/car-item-en.component';
 import { OrderItemDfComponent } from './order-item-df/order-item-df.component';
 import { CarItemDfComponent } from "./car-item-df/car-item-df.component";
+import { GetsmscodeComponent } from "./getsmscode/getsmscode.component";
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { CarItemDfComponent } from "./car-item-df/car-item-df.component";
     HotelOrderPricePopoverComponent,
     TrainOrderPricePopoverComponent,
     UploadFileComponent,
+    GetsmscodeComponent,
     SendMsgComponent,
     SendEmailComponent,
     TripRulePopoverComponent,

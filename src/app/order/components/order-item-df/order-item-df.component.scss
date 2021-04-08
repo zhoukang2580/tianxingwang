@@ -57,7 +57,10 @@
 .select-text {
   user-select: text;
 }
-
+.error-SMSCode{
+  font-size: 12px;
+  color: var(--ion-color-danger);
+}
 .select-text strong {
   user-select: text;
   font: inherit;

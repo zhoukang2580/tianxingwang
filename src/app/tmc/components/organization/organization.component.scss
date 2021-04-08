@@ -1,22 +1,29 @@
 .name-paths {
-    border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
+  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
+}
+ion-row {
+  border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
+}
+ion-row ion-col:not(:first-child) {
+  margin: 0;
+  padding: 0;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.next-hierarchy {
+  border-left: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
+  ion-text {
+    font-size: 0.8rem;
+    margin-left: 0.2em;
   }
-  ion-row {
-    border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
+}
+ion-header .wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  ion-searchbar {
+    flex: 1;
   }
-  ion-row ion-col:not(:first-child) {
-    margin: 0;
-    padding: 0;
-    align-self: center;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
-  .next-hierarchy {
-    border-left: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
-    ion-text {
-      font-size: 0.8rem;
-      margin-left: 0.2em;
-    }
-  }
-  
+}
