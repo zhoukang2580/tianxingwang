@@ -66,6 +66,7 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 export class HotelDetailEnPage implements OnInit, AfterViewInit, OnDestroy {
   private hotelDayPrice: HotelDayPriceEntity;
   private hotelId:string;
+  private hotelprice:string;
   private curPos = 0;
   private subscriptions: Subscription[] = [];
   private hotelDetailSub = Subscription.EMPTY;
@@ -253,6 +254,7 @@ export class HotelDetailEnPage implements OnInit, AfterViewInit, OnDestroy {
       this.route.queryParamMap.subscribe(async (q) => {
         // this.hotelDayPrice = this.hotelService.curViewHotel;
         this.hotelId = q.get("hotelId");
+        this.hotelprice = q.get("hotelprice");
         const isSelf = await this.staffService.isSelfBookType();
         if (!this.hotelPolicy || this.hotelPolicy.length == 0) {
           this.hotelPolicy = await this.getPolicy();
@@ -310,7 +312,7 @@ export class HotelDetailEnPage implements OnInit, AfterViewInit, OnDestroy {
       this.hotelDetailSub.unsubscribe();
     }
     this.hotelDetailSub = this.hotelService
-      .getHotelDetail(this.hotelId)
+      .getHotelDetail(this.hotelId,this.hotelprice)
       .pipe(
         map((res) => res && res.Data),
         tap((r) => {

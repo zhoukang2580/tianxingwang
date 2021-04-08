@@ -97,7 +97,7 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
       )
       .subscribe((res) => {
         this.loadMore(res);
-        this.loadAddress(res);
+        // this.loadAddress(res);
       });
   }
   private loadHotel(name: string) {
@@ -117,27 +117,27 @@ export class ComboxSearchHotelPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private loadAddress(name: string) {
-    this.isLoading = true;
-    return this.hotelService.searchHotelByAddress(name, this.pageIndex).then((res) => {
-      const arr = res || [];
-      if (arr.length) {
-        this.searchResult = this.searchResult.concat(res);
-      }
-    }).finally(() => {
-      if (this.pageIndex <= 1) {
-        if (this.refresh) {
-          this.refresh.complete();
-        }
-      }
-      if (this.scroller) {
-        this.scroller.complete();
-      }
-      setTimeout(() => {
-        this.isLoading = false;
-      }, 200);
-    });
-  }
+  // private loadAddress(name: string) {
+  //   this.isLoading = true;
+  //   return this.hotelService.searchHotelByAddress(name, this.pageIndex).then((res) => {
+  //     const arr = res || [];
+  //     if (arr.length) {
+  //       this.searchResult = this.searchResult.concat(res);
+  //     }
+  //   }).finally(() => {
+  //     if (this.pageIndex <= 1) {
+  //       if (this.refresh) {
+  //         this.refresh.complete();
+  //       }
+  //     }
+  //     if (this.scroller) {
+  //       this.scroller.complete();
+  //     }
+  //     setTimeout(() => {
+  //       this.isLoading = false;
+  //     }, 200);
+  //   });
+  // }
 
   loadMore(name: string = "") {
     this.loadHotel(name).then((res) => {

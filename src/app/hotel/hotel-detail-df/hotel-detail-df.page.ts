@@ -68,6 +68,7 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 })
 export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   private hotelId: string;
+  private hotelprice: string;
   private hotelDayPrice: HotelDayPriceEntity;
   private curPos = 0;
   private subscriptions: Subscription[] = [];
@@ -260,6 +261,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (q) => {
         this.hotelId = q.get("hotelId");
+        this.hotelprice = q.get("hotelprice");
         const isSelf = await this.staffService.isSelfBookType();
         const isReload = this.checkIfPassengerChanged();
         if (!this.hotel || isReload) {
@@ -334,7 +336,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.hotelDetailSub.unsubscribe();
     }
     this.hotelDetailSub = this.hotelService
-      .getHotelDetail(this.hotelId)
+      .getHotelDetail(this.hotelId,this.hotelprice)
       .pipe(
         map((res) => res && res.Data),
         tap((r) => {

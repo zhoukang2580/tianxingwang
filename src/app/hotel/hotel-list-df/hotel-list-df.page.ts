@@ -336,7 +336,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     // this.hotelService.curViewHotel = { ...item };
     if (item.Hotel) {
       this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
-        queryParams: { hotelId: item.Hotel.Id },
+        queryParams: { hotelId: item.Hotel.Id, hotelprice: item.AvgPrice },
       });
     }
   }

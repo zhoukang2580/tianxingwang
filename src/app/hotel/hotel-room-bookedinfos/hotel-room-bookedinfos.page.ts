@@ -143,21 +143,21 @@ export class HotelRoomBookedinfosPage implements OnInit {
     if (!this.changeDateBookInfo || !this.changeDateBookInfo.bookInfo) {
       return;
     }
-    this.hotelDetailSub = this.hotelService
-      .getHotelDetail({
-        Hotel: this.changeDateBookInfo.bookInfo.hotelEntity,
-      } as any)
-      .pipe(
-        map((res) => res && res.Data),
-        tap((r) => {
-          console.log(r);
-        })
-      )
-      .subscribe(async (hotel) => {
-        if (hotel) {
-          this.checkIfBookedRoomPlan(hotel.Hotel);
-        }
-      });
+    // this.hotelDetailSub = this.hotelService
+    //   .getHotelDetail({
+    //     Hotel: this.changeDateBookInfo.bookInfo.hotelEntity,
+    //   } as any)
+    //   .pipe(
+    //     map((res) => res && res.Data),
+    //     tap((r) => {
+    //       console.log(r);
+    //     })
+    //   )
+    //   .subscribe(async (hotel) => {
+    //     if (hotel) {
+    //       this.checkIfBookedRoomPlan(hotel.Hotel);
+    //     }
+    //   });
   }
   private checkIfBookedRoomPlan(hotel: HotelEntity) {
     const priceHasChanged: { roomPlan: RoomPlanEntity }[] = [];

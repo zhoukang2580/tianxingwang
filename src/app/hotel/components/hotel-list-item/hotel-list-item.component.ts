@@ -29,7 +29,6 @@ export class HotelListItemComponent implements OnInit {
         };
       }
     }
-    console.log(this.hotelquery, "========");
   }
   getHotelAddress() {
   }

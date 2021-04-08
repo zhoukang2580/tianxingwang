@@ -756,7 +756,7 @@ export class HotelService {
       })
     );
   }
-  getHotelDetail(hotelId: string) {
+  getHotelDetail(hotelId: string,hotelprice: string) {
     // return throwError("没获取列表")
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-Detail`;
@@ -769,11 +769,13 @@ export class HotelService {
       this.getSearchHotelModel().destinationCity &&
       this.getSearchHotelModel().destinationCity.Code;
     hotelquery.Tag = this.getSearchHotelModel().tag;
+
     req.IsShowLoading = true;
     req.Data = {
       ...hotelquery,
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
       hotelType: this.getSearchHotelModel().hotelType,
+      MinPrice:hotelprice
     };
     // req.IsShowLoading = true;
     return from(this.setDefaultFilterPolicy()).pipe(
@@ -999,33 +1001,33 @@ export class HotelService {
         }[]
       >(req)
   }
-  searchHotelByAddress(
-    keyword: string,
-    pageIndex: number
-  ){
-    const req = new RequestEntity();
-    req.Method = `TmcApiHotelUrl-Home-SearchAddress`;
-    req.Data = {
-      PageIndex: pageIndex || 0,
-      CityCode:
-        this.getSearchHotelModel().destinationCity &&
-        this.getSearchHotelModel().destinationCity.Code,
-      CityName: this.getSearchHotelModel().destinationCity &&
-        this.getSearchHotelModel().destinationCity.Name,
-      Keyword: keyword
-    };
-    return this.apiService
-      .getPromiseData<
-        {
-          Text: string;
-          Value: string;
-          IsAddress: boolean;
-          Lat: string;
-          Lng: string;
-        }[]
-      >(req)
+  // searchHotelByAddress(
+  //   keyword: string,
+  //   pageIndex: number
+  // ){
+  //   const req = new RequestEntity();
+  //   req.Method = `TmcApiHotelUrl-Home-SearchAddress`;
+  //   req.Data = {
+  //     PageIndex: pageIndex || 0,
+  //     CityCode:
+  //       this.getSearchHotelModel().destinationCity &&
+  //       this.getSearchHotelModel().destinationCity.Code,
+  //     CityName: this.getSearchHotelModel().destinationCity &&
+  //       this.getSearchHotelModel().destinationCity.Name,
+  //     Keyword: keyword
+  //   };
+  //   return this.apiService
+  //     .getPromiseData<
+  //       {
+  //         Text: string;
+  //         Value: string;
+  //         IsAddress: boolean;
+  //         Lat: string;
+  //         Lng: string;
+  //       }[]
+  //     >(req)
      
-  }
+  // }
 
   async getInitializeBookDto(
     bookDto: OrderBookDto
