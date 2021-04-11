@@ -49,6 +49,7 @@
         <source-file src="src/android/MyInAppBrowser.java" target-dir="src/com/beeant/inappbrowser" />
         <source-file src="src/android/MyInAppBrowserDialog.java" target-dir="src/com/beeant/inappbrowser" />
         <source-file src="src/android/MyInAppChromeClient.java" target-dir="src/com/beeant/inappbrowser" />
+        <source-file src="src/android/SlowlyProgressBar.java" target-dir="src/com/beeant/inappbrowser" />
 
         <!-- drawable src/android/resources -->
         <resource-file src="src/android/res/drawable-hdpi/ic_action_next_item.png" target="res/drawable-hdpi/ic_action_next_item.png" />
