@@ -22,6 +22,7 @@ import {
   ViewChild,
   OnDestroy,
   AfterViewInit,
+  IterableDiffers,
 } from "@angular/core";
 import {
   IonRefresher,
@@ -47,7 +48,8 @@ import { map, tap, switchMap } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
 import { trigger, transition, style, animate } from "@angular/animations";
 import { SelectedTrainSegmentInfoEnComponent } from "../components/selected-train-segment-info_en/selected-train-segment-info_en.component";
-import { SelectedTrainSegmentInfoDfComponent } from '../components/selected-train-segment-info-df/selected-train-segment-info-df.component';
+import { SelectedTrainSegmentInfoDfComponent } from "../components/selected-train-segment-info-df/selected-train-segment-info-df.component";
+import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
 @Component({
   selector: "app-train-list-df",
   templateUrl: "./train-list_df.page.html",
@@ -76,15 +78,20 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   private trains: TrainEntity[] = [];
   private trainsForRender: TrainEntity[] = [];
   private subscriptions: Subscription[] = [];
+  private trainCodes: any[];
+  private lastSelectFromStation: TrafficlineEntity;
+  private lastSelectToStation: TrafficlineEntity;
   progressName = "";
   trainsCount = 0;
   vmTrains: TrainEntity[] = [];
   isLoading = false;
+  isOpenFilter = false;
   get isFiltered() {
     return (
       this.filterCondition &&
-      ((this.filterCondition.arrivalStations &&
-        this.filterCondition.arrivalStations.length) ||
+      (this.filterCondition.isOnlyHasSeat ||
+        (this.filterCondition.arrivalStations &&
+          this.filterCondition.arrivalStations.length) ||
         (this.filterCondition.departureStations &&
           this.filterCondition.departureStations.length) ||
         (this.filterCondition.trainTypes &&
@@ -111,6 +118,8 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   timeOrdM2N: boolean; // 时间从早到晚
   filterCondition: FilterTrainCondition;
   searchModalSubscription = Subscription.EMPTY;
+  tripDate: string;
+  disabledChangeDate = false;
   curFilteredBookInfo$: Observable<PassengerBookInfo<ITrainInfo>>;
   constructor(
     private trainService: TrainService,
@@ -133,10 +142,50 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   ngAfterViewInit() {}
+  private checkExchangeDateDisabled() {
+    const bk = this.trainService.getBookInfos()[0];
+    const ticket =
+      bk &&
+      bk.exchangeInfo &&
+      (bk.exchangeInfo.ticket as OrderTrainTicketEntity);
+    const trip = ticket && ticket.OrderTrainTrips && ticket.OrderTrainTrips[0];
+    const endDate = this.searchTrainModel.IsRangeExchange
+      ? (trip && trip.StartTime.substr(0, 10)) || ""
+      : "";
+    if (this.searchTrainModel.IsRangeExchange) {
+      if (
+        trip &&
+        trip.StartTime.substr(0, 10) ==
+          this.calendarService.getMoment(0).format("YYYY-MM-DD")
+      ) {
+        this.disabledChangeDate = true;
+        return true;
+      }
+    }
+    return false;
+  }
+  private initExchangeDate() {
+    if (
+      this.trainService.getBookInfos()[0] &&
+      this.trainService.getBookInfos()[0].exchangeInfo
+    ) {
+      const t =
+        this.trainService.getBookInfos()[0].exchangeInfo.ticket &&
+        (this.trainService.getBookInfos()[0].exchangeInfo
+          .ticket as OrderTrainTicketEntity);
+      this.tripDate =
+        t &&
+        t.OrderTrainTrips &&
+        t.OrderTrainTrips[0] &&
+        t.OrderTrainTrips[0].StartTime;
+    }
+  }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async (_) => {
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
-      let isDoRefresh = false;
+      let isDoRefresh = this.checkStationChanged();
+      this.checkExchangeDateDisabled();
+      this.initExchangeDate();
       this.currentSelectedPassengerIds = this.trainService
         .getBookInfos()
         .map((it) => it.passenger && it.passenger.AccountId);
@@ -233,19 +282,35 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   trackBy(idx: number, train: TrainEntity) {
     return train && train.TrainCode;
   }
+  private checkStationChanged() {
+    return (
+      this.lastSelectToStation &&
+      this.lastSelectFromStation &&
+      this.vmFromCity &&
+      this.vmToCity &&
+      (this.lastSelectFromStation.Code != this.vmFromCity.Code ||
+        this.lastSelectToStation.Code != this.vmToCity.Code)
+    );
+  }
   async onSelectStation(isFrom: boolean) {
     this.scrollToTop();
     if (this.searchTrainModel) {
       if (
+        this.searchTrainModel.isExchange &&
+        this.searchTrainModel.IsRangeExchange
+      ) {
+        return;
+      }
+      if (
         isFrom &&
-        !this.searchTrainModel?.isExchange &&
-        !this.searchTrainModel?.isLocked
+        !this.searchTrainModel.isExchange &&
+        !this.searchTrainModel.isLocked
       ) {
         this.trainService.onSelectCity(isFrom);
       }
       if (
         !isFrom &&
-        (this.searchTrainModel?.isExchange || !this.searchTrainModel?.isLocked)
+        (this.searchTrainModel.isExchange || !this.searchTrainModel.isLocked)
       ) {
         this.trainService.onSelectCity(isFrom);
       }
@@ -280,6 +345,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async filterPolicyTrains() {
     try {
+      this.trainCodes = [];
       const popover = await this.popoverController.create({
         component: FilterPassengersPolicyComponent,
         componentProps: {
@@ -289,19 +355,31 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       });
       await popover.present();
       const d = await popover.onDidDismiss();
-      // this.doRefresh(false, false, d.data);
+      // this.doRefresh(false,d.data);
       this.isLoading = true;
       if (!d.data) {
         return;
       }
-      let data;
+      let data: TrainEntity[] = [];
       if (d.data == "isUnFilterPolicy") {
         data = this.filterPassengerPolicyTrains(null);
       } else {
         data = this.filterPassengerPolicyTrains(d.data);
       }
       data = this.filterTrains(data);
+      console.log(data, "data");
+
+      this.vmTrains.forEach((element) => {
+        if (element.isShowSeats) {
+          this.trainCodes.push(element.TrainCode);
+        }
+      });
+      console.log("TrainCodes ", this.trainCodes);
+      data.forEach((t) => {
+        t.isShowSeats = this.trainCodes.find((it) => it == t.TrainCode);
+      });
       this.vmTrains = data;
+
       this.isLoading = false;
     } catch (e) {
       console.error(e);
@@ -311,10 +389,18 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.lastSelectedPassengerIds = this.trainService
       .getBookInfos()
       .map((it) => it.passenger && it.passenger.AccountId);
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger-df")], {
       queryParams: {
         forType: FlightHotelTrainType.Train,
       },
+    });
+  }
+  onCloseFilter() {
+    this.isOpenFilter = false;
+    this.modalCtrl.getTop().then((t) => {
+      if (t) {
+        t.dismiss();
+      }
     });
   }
   async onFilter() {
@@ -322,8 +408,17 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     const m = await this.modalCtrl.create({
       component: TrainFilterComponent,
       componentProps: {
+        filterCondition: this.filterCondition,
         trains: JSON.parse(JSON.stringify(this.trains)),
       },
+      cssClass: "offset-top-40 top-radius-8",
+      showBackdrop: false,
+      swipeToClose: true,
+    });
+    m.present();
+    this.isOpenFilter = true;
+    m.onWillDismiss().then(() => {
+      this.isOpenFilter = false;
     });
     if (m) {
       m.present();
@@ -369,7 +464,9 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
+    keepSearchCondition = true;
     this.trainsForRender = [];
+    this.trainCodes = [];
     this.trainsCount = 0;
     if (this.scroller) {
       this.scroller.disabled = false;
@@ -396,11 +493,18 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
           this.activeTab = "none";
         }, 0);
       }
+      if (this.isFiltered) {
+        setTimeout(() => {
+          this.activeTab = "filter";
+        }, 0);
+      }
       this.isLoading = true;
       let data: TrainEntity[] = JSON.parse(JSON.stringify(this.trains));
       if (loadDataFromServer) {
         this.progressName = "正在获取火车票列表";
         // 强制从服务器端返回新数据
+        this.lastSelectToStation = this.vmToCity;
+        this.lastSelectFromStation = this.vmFromCity;
         data = await this.loadPolicyedTrainsAsync();
       }
       this.apiService.showLoadingView({ msg: this.progressName });
@@ -509,6 +613,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     result = this.filterByDepartureTimespan(result);
     result = this.filterByDepartureStations(result);
     result = this.filterByArrivalStations(result);
+    result = this.filterByIsOnlyHasSeat(result);
     return result;
   }
   onScrollToTop() {
@@ -529,6 +634,14 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
           (h < this.filterCondition.departureTimeSpan.upper ||
             (h == this.filterCondition.departureTimeSpan.upper && m <= 0))
         );
+      });
+    }
+    return trains;
+  }
+  private filterByIsOnlyHasSeat(trains: TrainEntity[]) {
+    if (trains && this.filterCondition && this.filterCondition.isOnlyHasSeat) {
+      return trains.filter((train) => {
+        return train.Seats && train.Seats.some((s) => +s.Count > 0);
       });
     }
     return trains;
@@ -582,6 +695,13 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (!byUser) {
       return;
     }
+    if (this.searchTrainModel) {
+      if (this.searchTrainModel.IsRangeExchange) {
+        if(this.checkExchangeDateDisabled()){
+          return;
+        }
+      }
+    }
     if (!this.filterCondition) {
       this.filterCondition = FilterTrainCondition.init();
     }
@@ -606,15 +726,30 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.doRefresh(true, true);
   }
   async onCalenderClick() {
-    const days = await this.trainService.openCalendar(false);
+    if (!this.searchTrainModel) {
+      return;
+    }
+    const bk = this.trainService.getBookInfos()[0];
+    const ticket =
+      bk &&
+      bk.exchangeInfo &&
+      (bk.exchangeInfo.ticket as OrderTrainTicketEntity);
+    const trip = ticket && ticket.OrderTrainTrips && ticket.OrderTrainTrips[0];
+    const endDate = this.searchTrainModel.IsRangeExchange
+      ? (trip && trip.StartTime.substr(0, 10)) || ""
+      : "";
+    if (this.searchTrainModel.IsRangeExchange) {
+      if (
+        trip &&
+        trip.StartTime.substr(0, 10) ==
+          this.calendarService.getMoment(0).format("YYYY-MM-DD")
+      ) {
+        return;
+      }
+    }
+    const days = await this.trainService.openCalendar(false, endDate);
     if (days && days.length) {
       this.searchTrainModel.Date = days[0].date;
-      // if (
-      //   this.searchTrainModel.isRoundTrip &&
-      //   this.searchTrainModel.tripType == TripType.returnTrip
-      // ) {
-      //   this.searchTrainModel.BackDate = days[0].date;
-      // }
       this.trainService.setSearchTrainModelSource({
         ...this.searchTrainModel,
         Date: days[0].date,

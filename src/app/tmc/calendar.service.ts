@@ -70,6 +70,7 @@ export class CalendarService {
   async openCalendar(data: {
     goArrivalTime: string;
     beginDate: string;
+    disabledSelectDateReason?: string;
     isCanSelectYesterday?: boolean;
     endDate: string;
     title?: string;
@@ -592,7 +593,7 @@ export class CalendarService {
     req.Data = {
       beginDate: moment()
         .startOf("year")
-        .add(-3, "months")
+        .add(-6, "months")
         .format("YYYY-MM-DD"),
     };
     this.fetchingHolidaysPromise = this.apiService

@@ -25,14 +25,14 @@
         <ion-text class='sm-font-size'>过滤差标</ion-text>
       </ion-button>
       <ion-button fill='clear' *ngIf='showAddPassenger' color='secondary' size='small' (click)='onSelectPassenger()'>
-        <ion-text class='sm-font-size'>添加旅客</ion-text>
+        <ion-icon name="person-add-outline"></ion-icon>
         <ion-badge color='danger'>
           <ion-text color='light' class='xs-font-size'>{{selectedPassengersNumbers}}</ion-text>
         </ion-badge>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-  <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'" (click)='onShowSelectedInfos()'>
+  <ion-grid class='xs-font-size' [style.visibility]="!isLoading?'initial':'collapse'" *ngIf='' (click)='onShowSelectedInfos()'>
     <ion-row>
       <ion-col>
         {{searchFlightModel?.Date}}共{{vmFlights?.length}}个航班
@@ -77,14 +77,13 @@
   <ion-list>
     <ul class='flight recomend' *ngIf='lowestPriceSegments?.length==1'>
       <li *ngFor='let s of lowestPriceSegments' class='lowest-item' (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [segment]='s' [isRecomendSegment]='true' >
-        </app-flight-segment-item>
-        <!-- <ion-button color='secondary' (click)='onBookLowestSegment($event,s)' [disabled]='s["disabled"]' size='small'>预订</ion-button> -->
+        <app-flight-segment-item-df [segment]='s' [isRecomendSegment]='true'>
+        </app-flight-segment-item-df>
       </li>
     </ul>
     <ul class='flight'>
       <li *ngFor='let s of vmFlights; trackBy:trackById' #fli (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item [segment]='s' ></app-flight-segment-item>
+        <app-flight-segment-item-df [segment]='s'></app-flight-segment-item-df>
       </li>
     </ul>
   </ion-list>

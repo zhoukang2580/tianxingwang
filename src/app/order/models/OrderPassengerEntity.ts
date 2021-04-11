@@ -29,6 +29,7 @@ export class OrderPassengerEntity extends BaseVariablesEntity {
   /// 证件号码
   /// </summary>
   CredentialsNumber: string;
+  HideCredentialsNumber: string;
   /// <summary>
   /// 性别
   /// </summary>
@@ -37,6 +38,7 @@ export class OrderPassengerEntity extends BaseVariablesEntity {
   /// 手机号码
   /// </summary>
   Mobile: string;
+  HideMobile: string;
   /// <summary>
   /// 邮箱
   /// </summary>

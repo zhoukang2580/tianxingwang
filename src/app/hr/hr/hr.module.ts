@@ -8,11 +8,13 @@ import { IonicModule } from '@ionic/angular';
 
 import { HrPage } from './hr.page';
 import { HrComponentsModule } from '../components/hrcomponents.module';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: HrPage
+    component: HrPage,
+    canActivate: [StylePageGuard]
   }
 ];
 

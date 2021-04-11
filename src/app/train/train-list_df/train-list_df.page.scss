@@ -1,3 +1,8 @@
+.ion-toolbar {
+  height: 55px;
+  display: flex;
+  align-items: center;
+}
 ul.train {
   list-style-type: none;
   padding: 0;
@@ -39,11 +44,11 @@ ion-content {
   }
 }
 
-ion-toolbar{
+ion-toolbar {
   margin-top: -8px;
 }
 
-ion-title {
+.title {
   font-size: 0.9rem;
   &.text-start {
     text-align: start;
@@ -103,7 +108,7 @@ ion-title {
 ion-list.fakelist {
   margin-top: 0;
 }
-ion-list{
+ion-list {
   background: #f6f6f6;
   margin-bottom: -15px;
 }
@@ -111,13 +116,15 @@ ion-list{
   margin: 0 1em;
 }
 
-img{
-  width: 18px;
-  margin: 0px 20px -4px;
+img {
+  width: 14px;
+  margin: 0px 7px -4px;
 }
 
-.city-name{
-  font-size: 1.3em;
+.city-name {
+  font-size: 14px;
   color: #000;
 }
-
+[color="medium"] .city-name {
+  color: var(--ion-color-medium);
+}

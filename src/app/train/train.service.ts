@@ -22,6 +22,7 @@ import {
   InitialBookDtoModel,
   FlightHotelTrainType,
   IBookOrderResult,
+  ExchangeInfo,
 } from "../tmc/tmc.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 // import { SelectDateComponent } from "../tmc/components/select-date/select-date.component";
@@ -44,11 +45,11 @@ export class SearchTrainModel {
   ToStation: string;
   TrainNo: string;
   isLocked?: boolean;
+  IsRangeExchange?: boolean; // 48小时内改签
   tripType: TripType;
   isRoundTrip?: boolean; // 是否是往返
   isExchange?: boolean; // 是否是改签
 }
-
 export interface ICurrentViewtTainItem {
   selectedSeat: TrainSeatEntity;
   train: TrainEntity;
@@ -501,6 +502,9 @@ export class TrainService {
             await AppHelper.alert(`超标:${cannotArr.join(",")}`);
           }
         }
+        // if(cannotArr.length == bookInfos.length){
+        //   return
+        // }
       } else {
         bookInfos = this.getBookInfos();
         if (bookInfos.length) {
@@ -566,6 +570,7 @@ export class TrainService {
         }
       }
     }
+
     bookInfos = bookInfos.map((it) => {
       const item = data.find((d) => d.id == it.id);
       if (item) {
@@ -762,22 +767,29 @@ export class TrainService {
       this.setBookInfoSource(this.bookInfos);
     }
   }
-  openCalendar(isMulti: boolean) {
+  openCalendar(isMulti: boolean, endDate = "", disabledSelectDateReason = "") {
     const goTrain = this.getBookInfos().find(
-      (f) => f.bookInfo && f.bookInfo.tripType == TripType.departureTrip
+      (f) =>
+        (f.bookInfo && f.bookInfo.tripType == TripType.departureTrip) ||
+        !!f.exchangeInfo
     );
     const s = this.getSearchTrainModel();
+    if (endDate && goTrain.exchangeInfo) {
+      disabledSelectDateReason =
+        disabledSelectDateReason || goTrain.exchangeInfo.rangeExchangeDateTip;
+    }
     return this.calendarService.openCalendar({
       goArrivalTime:
         goTrain &&
         goTrain.bookInfo &&
         goTrain.bookInfo.trainEntity &&
         goTrain.bookInfo.trainEntity.ArrivalTime,
+      disabledSelectDateReason,
       tripType: s.tripType || TripType.departureTrip,
       isMulti,
       forType: FlightHotelTrainType.Train,
       beginDate: this.searchModel && this.searchModel.Date,
-      endDate: "",
+      endDate,
     });
   }
   async getStationsAsync(forceUpdate = false): Promise<TrafficlineEntity[]> {
@@ -832,6 +844,13 @@ export class TrainService {
   }
   setBookInfoSource(infos: PassengerBookInfo<ITrainInfo>[]) {
     console.log("setBookInfoSource", infos);
+    var obj = {};
+    infos = infos.reduce(function (item, next) {
+      obj[next?.credential?.Id]
+        ? ""
+        : (obj[next?.credential?.Id] = true && item.push(next));
+      return item;
+    }, []);
     this.bookInfos = infos || [];
     this.bookInfoSource.next(this.bookInfos);
   }
@@ -998,7 +1017,7 @@ export class TrainService {
     }
   }
 
-  getExchangeInfo(ticketId: string): Promise<ExchangeTrainModel> {
+  private getExchangeInfo(ticketId: string): Promise<ExchangeTrainModel> {
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-GetExchangeInfo`;
     req.IsShowLoading = true;
@@ -1007,12 +1026,7 @@ export class TrainService {
     req.Data = {
       TicketId: ticketId,
     };
-    return this.apiService
-      .getPromiseData<ExchangeTrainModel>(req)
-      .catch((_) => {
-        AppHelper.alert(_.Message || _);
-        return null;
-      });
+    return this.apiService.getPromiseData<ExchangeTrainModel>(req);
   }
   private doRefund(
     ticketId: string
@@ -1042,6 +1056,7 @@ export class TrainService {
         Id: string;
         Name: string;
         CredentialsNumber: string;
+        HideCredentialsNumber: string;
         StartTime: string;
         ArrivalTime: string;
         FromStationName: string;
@@ -1082,8 +1097,8 @@ export class TrainService {
     try {
       const info = await this.getExchangeInfo(orderTrainTicket.Id);
       const trainStations = await this.getStationsAsync();
-      // .catch(_=>[]);
       if (!info || !info.OrderTrainTicket) {
+        AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
       let books = this.getBookInfos();
@@ -1101,18 +1116,20 @@ export class TrainService {
         passenger.Mobile = info.OrderTrainTicket.Passenger.Mobile;
         passenger.Email = info.OrderTrainTicket.Passenger.Email;
       }
-      const exchangedInfo = {
-        ticket: JSON.parse(JSON.stringify(info.OrderTrainTicket)),
-        order: JSON.parse(JSON.stringify(info.OrderTrainTicket.Order)),
-        insuranceResult: info.InsurnanceAmount,
-      };
+      const exchangedInfo = new ExchangeInfo();
+      exchangedInfo.ticket = JSON.parse(JSON.stringify(info.OrderTrainTicket));
+      exchangedInfo.order = JSON.parse(
+        JSON.stringify(info.OrderTrainTicket.Order)
+      );
+      exchangedInfo.insurnanceAmount = info.InsurnanceAmount;
+      exchangedInfo.rangeExchangeDateTip = info.RangeExchangeDateTip;
       const b: PassengerBookInfo<ITrainInfo> = {
         passenger,
         isNotWhitelist: !info.BookStaff,
         credential: info.DefaultCredentials,
         id: AppHelper.uuid(),
         isFilterPolicy: true,
-        exchangeInfo: exchangedInfo as any,
+        exchangeInfo: exchangedInfo,
       };
       books = [b];
       const fromCity = trainStations.find((it) => it.Code == info.FromStation);
@@ -1125,10 +1142,26 @@ export class TrainService {
         "tocity",
         toCity
       );
+      const m = this.calendarService.getFormatedDate("");
+      let isLocked = false;
+      if (
+        info.OrderTrainTicket &&
+        info.OrderTrainTicket.OrderTrainTrips &&
+        info.OrderTrainTicket.OrderTrainTrips.length
+      ) {
+        isLocked =
+          info.IsRangeExchange &&
+          m ==
+            (info.OrderTrainTicket.OrderTrainTrips[0].StartTime || "").substr(
+              0,
+              10
+            );
+      }
       this.setBookInfoSource(books);
       this.setSearchTrainModelSource({
         ...this.getSearchTrainModel(),
-        isLocked: true,
+        isLocked,
+        IsRangeExchange: info.IsRangeExchange,
         isExchange: true,
         isRoundTrip: false,
         fromCity,
@@ -1137,6 +1170,7 @@ export class TrainService {
       });
       this.router.navigate([AppHelper.getRoutePath("search-train")]);
     } catch (e) {
+      AppHelper.alert(e);
       console.error(e);
     }
   }

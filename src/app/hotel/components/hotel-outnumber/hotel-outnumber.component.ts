@@ -8,11 +8,16 @@ import {
   AfterViewInit,
   ViewChild,
 } from "@angular/core";
-import { PopoverController, IonInput, IonList, IonSelect } from "@ionic/angular";
+import {
+  PopoverController,
+  IonInput,
+  IonList,
+  IonSelect,
+} from "@ionic/angular";
 import { Component, OnInit, Input, Output } from "@angular/core";
 import { Subscription, fromEvent } from "rxjs";
-import { TmcService, TravelUrlInfo } from 'src/app/tmc/tmc.service';
-import { SelectTravelNumberComponent } from 'src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component';
+import { TmcService, TravelUrlInfo } from "src/app/tmc/tmc.service";
+import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
 @Component({
   selector: "app-hotel-outnumber",
   templateUrl: "./hotel-outnumber.component.html",
@@ -65,11 +70,9 @@ export class HotelOutNumberComponent
   }
   onSelectChange(evt: CustomEvent, ele: IonSelect) {
     if (evt && evt.detail && !evt.detail.value && ele) {
-      try{
-        ele["el"].shadowRoot.querySelector (".select-text").textContent = "";
-      }catch(e){
-
-      }
+      try {
+        ele["el"].shadowRoot.querySelector(".select-text").textContent = "";
+      } catch (e) {}
     }
   }
   onChange(arg: ITmcOutNumberInfo, evt: CustomEvent) {
@@ -112,6 +115,12 @@ export class HotelOutNumberComponent
           : true
       );
     }
+  }
+  onOpenSelect(el: IonSelect, disabled) {
+    if (disabled) {
+      return;
+    }
+    el.open();
   }
   async onSelectTravelNumber(arg: ITmcOutNumberInfo) {
     const tmcOutNumberInfos = this.tmcOutNumberInfos;

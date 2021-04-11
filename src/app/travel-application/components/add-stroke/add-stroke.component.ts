@@ -18,8 +18,8 @@ import { FlightService } from "src/app/flight/flight.service";
 import { Router } from "@angular/router";
 import { from } from "rxjs";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
-import { InternationalHotelService } from "src/app/hotel-international/international-hotel.service";
+import { InternationalFlightService } from "src/app/international-flight/international-flight.service";
+import { InternationalHotelService } from "src/app/international-hotel/international-hotel.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { HotelService } from "src/app/hotel/hotel.service";
 import { TrainService } from "src/app/train/train.service";
@@ -391,8 +391,8 @@ export class AddStrokeComponent implements OnInit, OnChanges {
       const fromCity: TrafficlineEntity = a.VariablesJsonObj.City || {};
       this.internationalHotelService.setSearchConditionSource({
         ...this.internationalHotelService.getSearchCondition(),
-        checkinDate: this.getDate(this.trip.StartDate),
-        checkoutDate: this.addOneDate(this.trip.EndDate),
+        checkInDate: this.getDate(this.trip.StartDate),
+        checkOutDate: this.addOneDate(this.trip.EndDate),
         destinationCity: fromCity,
         country: countries.find((it) => it.Code == fromCity.CountryCode),
         adultCount: 1,

@@ -38,6 +38,9 @@ import {
   QueryList,
   AfterViewInit,
   OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
 } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
@@ -49,6 +52,7 @@ import {
   ModalController,
   PopoverController,
   Platform,
+  IonSelect,
 } from "@ionic/angular";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import {
@@ -75,6 +79,9 @@ import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/boo
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
+import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
+import { SelectComponent } from "src/app/components/select/select.component";
 
 @Component({
   selector: "app-train-book-df",
@@ -84,11 +91,24 @@ import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private checkPayCountIntervalId: any;
   private isShowInsuranceBack = false;
+  private isManagentCredentails = false;
   private checkPayCount = 5;
   private checkPayCountIntervalTime = 3 * 1000;
   private subscription = Subscription.EMPTY;
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
+  isShowOtherInfo = false;
+  // @Input() isOtherCostCenter: boolean;
+  // @Input() otherCostCenterCode: string;
+  // @Input() otherCostCenterName: string;
+  // @Input() costCenter: {
+  //   code: string;
+  //   name: string;
+  // };
+  // @Output() ionChange: EventEmitter<any>;
+  // @Input() isOtherOrganization: boolean;
+  // @Input() organization: OrganizationEntity;
+  // @Input() otherOrganizationName: string;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -105,12 +125,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isCheckingPay = false;
   isShowFee = false;
   isSelfBookType = true;
+  isApproval = true;
+  isPlaceOrderOk = true;
+  expenseTypes: string[];
+  // illegalReasons: any[];
   orderTravelPayTypes: {
     label: string;
     value: OrderTravelPayType;
     checked?: boolean;
   }[];
   CredentialsType = CredentialsType;
+  combindInfos: ITrainPassengerBookInfo[];
   constructor(
     private trainService: TrainService,
     private storage: Storage,
@@ -122,9 +147,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private calendarService: CalendarService,
     private plt: Platform,
-    private langService: LangService
+    private langService: LangService,
+    private popoverCtrl: PopoverController
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
+    // this.ionChange = new EventEmitter();
   }
   back() {
     this.navCtrl.pop();
@@ -171,10 +198,6 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private async getInitializeBookDto() {
-    // const mock = await this.storage.get("mock-initialBookDto-train");
-    // if (mock) {
-    //   return mock;
-    // }
     const bookDto = new OrderBookDto();
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
     const infos = this.trainService.getBookInfos();
@@ -230,6 +253,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       });
     }
   }
+  expanseCompareFn(t1: string, t2: string) {
+    return t1 && t2 ? t1 === t2 : false;
+  }
   onSeatPicker(seat: string, item: PassengerBookInfo<ITrainInfo>) {
     if (item.bookInfo) {
       item.bookInfo.pickSeat = seat || "";
@@ -283,6 +309,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     await this.initOrderTravelPayTypes();
     console.log("viewModel", this.viewModel);
   }
+  onManagementCredentials(item: ITrainPassengerBookInfo) {
+    item.credentialsRequested = false;
+    this.isManagentCredentails = true;
+    this.router.navigate([AppHelper.getRoutePath("member-credential-list")]);
+  }
   onShowInsuranceDetail(insurance: { showDetail: boolean }, evt: CustomEvent) {
     if (evt) {
       evt.stopImmediatePropagation();
@@ -290,6 +321,32 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     if (insurance) {
       insurance.showDetail = !insurance.showDetail;
+    }
+  }
+
+  async onSelectIllegalReason(item: ITrainPassengerBookInfo) {
+    if (item.isOtherIllegalReason) {
+      return;
+    }
+    const p = await this.popoverCtrl.create({
+      component: SelectComponent,
+      cssClass: "vw-70",
+      componentProps: {
+        label: "超标原因",
+        data: ((this.viewModel && this.viewModel.illegalReasons) || []).map(
+          (it) => {
+            return {
+              label: it.Name,
+              value: it.Name,
+            };
+          }
+        ),
+      },
+    });
+    p.present();
+    const data = await p.onDidDismiss();
+    if (data && data.data) {
+      item.illegalReason = data.data;
     }
   }
   private async initCombindInfos() {
@@ -319,7 +376,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           (this.initialBookDto && this.initialBookDto.Staffs) ||
           []
         ).find((it) => it.Account.Id == bookInfo.passenger.AccountId);
-        const cstaff = cs && cs.CredentialStaff;
+        const cstaff =
+          bookInfo.passenger.AccountId == this.tmc.Account.Id
+            ? bookInfo.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
@@ -374,6 +434,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           };
         });
         const combineInfo: ITrainPassengerBookInfo = {} as any;
+        combineInfo.isShowTravelInfo = true;
         const forceInsurance = insurances.find((it) => it.disabled);
         combineInfo.selectedInsuranceProduct =
           forceInsurance && forceInsurance.insuranceResult;
@@ -496,6 +557,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       console.error(e);
     }
   }
+
+  async onChangeCredential(
+    credentialSelect: IonSelect,
+    item: ITrainPassengerBookInfo
+  ) {
+    await this.onModify(item);
+    if (credentialSelect) {
+      credentialSelect.open();
+    }
+  }
+
   getGroupedTitle(item: ITrainPassengerBookInfo) {
     const group = this.getGroupedCombindInfo(
       this.viewModel.combindInfos,
@@ -514,6 +586,46 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+
+  async searchCostCenter(combindInfo: ITrainPassengerBookInfo) {
+    const modal = await this.modalCtrl.create({
+      component: SearchCostcenterComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    if (result && result.data) {
+      const res = result.data as { Text: string; Value: string };
+      combindInfo.costCenter = combindInfo.costCenter || ({} as any);
+      combindInfo.costCenter.code = res.Value;
+      combindInfo.costCenter.name =
+        res.Text && res.Text.substring(res.Text.lastIndexOf("-") + 1);
+    }
+  }
+
+  onOpenSelect(select: IonSelect) {
+    if (select) {
+      select.open();
+    }
+  }
+  async searchOrganization(combindInfo: ITrainPassengerBookInfo) {
+    const modal = await this.modalCtrl.create({
+      component: OrganizationComponent,
+    });
+    modal.backdropDismiss = false;
+    await modal.present();
+    const result = await modal.onDidDismiss();
+    console.log("organization", result.data);
+    if (result && result.data) {
+      const res = result.data as OrganizationEntity;
+      if (!combindInfo.organization) {
+        combindInfo.organization = {} as any;
+      }
+      combindInfo.organization.Code = res.Code;
+      combindInfo.organization.Name = res.Name;
+    }
+  }
+
   async bookTrain(isSave: boolean = false, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
@@ -568,70 +680,56 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (res) {
         if (res.TradeNo) {
-          // await AppHelper.alert(
-          //   exchangeInfo && exchangeInfo.exchangeInfo
-          //     ? exchangeTip
-          //     : this.langService.isEn
-          //     ? "Checkout success"
-          //     : "下单成功!"
-          // );
+          this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
+          let isHasTask = res.HasTasks;
+          let payResult = false;
+          this.trainService.removeAllBookInfos();
+          let checkPayResult = false;
+          const isCheckPay = res.IsCheckPay;
           const isSelf = await this.staffService.isSelfBookType();
-          if (
-            !isSave &&
-            isSelf &&
-            (this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
-              this.viewModel.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            let canPay = true;
-            if (res.IsCheckPay) {
+          if (!isSave) {
+            if (isCheckPay) {
               this.isCheckingPay = true;
-              canPay = await this.checkPay(res.TradeNo);
+              checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
+            } else {
+              payResult = true;
             }
-            if (canPay) {
-              if (res.HasTasks) {
+            if (checkPayResult) {
+              if (isSelf && isHasTask) {
                 await AppHelper.alert(
-                  exchangeInfo && exchangeInfo.exchangeInfo
-                    ? res.Message || exchangeTip
-                    : LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
-                await this.tmcService.payOrder(res.TradeNo);
+                if (isCheckPay) {
+                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                }
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              if (isSelf) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                  true
+                );
+              }
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(
-                this.langService.isEn ? "Order saved" : "订单已保存!",
-                true
-              );
+              await AppHelper.alert("订单已保存!");
             } else {
-              await AppHelper.alert(
-                exchangeInfo && exchangeInfo.exchangeInfo
-                  ? res.Message || exchangeTip
-                  : this.langService.isEn
-                  ? "Checkout success"
-                  : "下单成功!",
-                true
-              );
+              // await AppHelper.alert("下单成功!");
             }
           }
-          this.trainService.removeAllBookInfos();
-          this.viewModel.combindInfos = [];
-          this.trainService.setSearchTrainModelSource({
-            ...this.trainService.getSearchTrainModel(),
-            isExchange: false,
-            isLocked: false,
+          this.goToMyOrders({
+            isHasTask: isHasTask,
+            payResult,
+            isCheckPay:
+              isCheckPay ||
+              this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
+              this.viewModel.orderTravelPayType == OrderTravelPayType.Credit,
           });
-          const isExchange = exchangeInfo && !!exchangeInfo.exchangeInfo;
-          this.goToMyOrders(ProductItemType.train, isExchange);
         }
       }
     }
@@ -745,15 +843,41 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.timeEnd("总计");
   }
-  private goToMyOrders(tab: ProductItemType, isExchange = false) {
-    if (this.langService.isCn) {
-      this.router.navigate(["order-list"], {
-        queryParams: { tabId: tab, doRefresh: isExchange },
+  private async goToMyOrders(data: {
+    isHasTask: boolean;
+    payResult: boolean;
+    isCheckPay: boolean;
+  }) {
+    // this.router.navigate(["order-list"], {
+    //   // isbackhome:true，是防止 android 通过物理返回键返回当前页面
+    //   queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
+    // });
+    try {
+      const m = this.trainService.getSearchTrainModel();
+      // const cities = await this.flightService.getStationsAsync();
+      // const city = m.toCity;
+      const toCity = this.trainService.getSearchTrainModel().toCity;
+      if (toCity && !toCity.CityCode) {
+        const cities = await this.trainService.getStationsAsync();
+        const c = cities.find((it) => it.Code == toCity.Code);
+        if (c) {
+          toCity.CityCode = c.CityCode;
+        }
+      }
+      // const c = cities.find(it => it.Code == (city && city.Code));
+      this.router.navigate(["checkout-success"], {
+        queryParams: {
+          tabId: ProductItemType.train,
+          cityCode: toCity && toCity.CityCode,
+          cityName: toCity && toCity.CityName,
+          isApproval: data.isHasTask,
+          payResult: data.payResult,
+          isCheckPay: data.isCheckPay,
+          date: m.Date,
+        },
       });
-    } else {
-      this.router.navigate(["order-list_en"], {
-        queryParams: { tabId: tab, doRefresh: isExchange },
-      });
+    } catch (e) {
+      console.error(e);
     }
   }
   private isShowInsurances(takeoffTime: string) {
@@ -868,7 +992,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       return "";
     }
     const day = this.calendarService.generateDayModel(moment(train.StartTime));
-    const time = day.date.substring(5).replace('-', '月');
+    const time = day.date.substring(5).replace("-", "月");
     return `${time}日  ${day.dayOfWeekName}`;
   }
   private getOneServiceFee(item: ITrainPassengerBookInfo) {
@@ -886,6 +1010,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isAllowSelectApprove(info: ITrainPassengerBookInfo) {
     const Tmc = this.initialBookDto.Tmc;
     const staff = info.credentialStaff;
+    if (info.bookInfo && info.bookInfo.exchangeInfo) {
+      // 改签不需要添加审批人
+      return false;
+    }
     if (
       !Tmc ||
       Tmc.TrainApprovalType == TmcApprovalType.None ||
@@ -1025,6 +1153,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item: ITrainPassengerBookInfo,
       ele: HTMLElement
     ) => {
+      // console.log(this.viewModel.illegalReasons?.length);
       await AppHelper.alert(
         this.langService.isCn
           ? `${
@@ -1033,7 +1162,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 item.bookInfo.credential.Surname +
                   item.bookInfo.credential.Givenname)
             } 【${
-              item.bookInfo.credential && item.bookInfo.credential.Number
+              item.bookInfo.credential && item.bookInfo.credential.HideNumber
             }】 ${msg} 信息不能为空`
           : `${
               (item.credentialStaff && item.credentialStaff.Name) ||
@@ -1041,7 +1170,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 item.bookInfo.credential.Surname +
                   item.bookInfo.credential.Givenname)
             } 【${
-              item.bookInfo.credential && item.bookInfo.credential.Number
+              item.bookInfo.credential && item.bookInfo.credential.HideNumber
             }】 ${msg} ${
               this.langService.isEn
                 ? "Information cannot be empty"
@@ -1055,12 +1184,16 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (
         this.isAllowSelectApprove(combindInfo) &&
         !combindInfo.appovalStaff &&
-        !combindInfo.isSkipApprove
+        !combindInfo.isSkipApprove &&
+        combindInfo.isShowGroupedInfo
       ) {
         const ele: HTMLElement = this.getEleByAttr(
-          "approvalid",
+          "approverid",
           combindInfo.id
         );
+        if (!combindInfo.isShowTravelInfo) {
+          combindInfo.isShowTravelInfo = true;
+        }
         showErrorMsg(LanguageHelper.Flight.getApproverTip(), combindInfo, ele);
         return;
       }
@@ -1149,11 +1282,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
-        (this.tmc &&
-          this.tmc.IsAllowCustomReason &&
-          combindInfo.otherIllegalReason) ||
-        combindInfo.illegalReason ||
-        "";
+        combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (
         !combindInfo.isNotWhitelist &&
         combindInfo.bookInfo &&
@@ -1163,10 +1292,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combindInfo.bookInfo.bookInfo.trainPolicy.Rules.length
       ) {
         // 只有白名单的才需要考虑差标
-        if (!p.IllegalReason) {
+        if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
           // 只有白名单的才需要考虑差标
           const ele: HTMLElement = this.getEleByAttr(
-            "illegalReasonid",
+            "illegalReasonsid",
             combindInfo.id
           );
           if (!p.IllegalReason) {
@@ -1178,10 +1307,22 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             return false;
           }
         }
+        // if (!p.IllegalReason) {
+        //   this.showErrorMsg(
+        //     LanguageHelper.Flight.getIllegalReasonTip(),
+        //     combindInfo,
+        //     this.getEleByAttr("illegalReasonsid", combindInfo.id)
+        //   );
+        //   return false;
+        // }
       }
       if (!p.Mobile) {
+        this.isShowOtherInfo = true;
+        // this.isShowTravelInfo = true;
         const ele: HTMLElement = this.getEleByAttr("mobileid", combindInfo.id);
-        showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
+        setTimeout(() => {
+          showErrorMsg(LanguageHelper.Flight.getMobileTip(), combindInfo, ele);
+        }, 1000);
         return false;
       }
       p.CostCenterCode =
@@ -1237,10 +1378,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         );
         return false;
       }
-      p.Credentials.Account =
-        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
-      p.Credentials.Account =
-        p.Credentials.Account || combindInfo.credential.Account;
+      if (
+        combindInfo.credentialStaff &&
+        combindInfo.credentialStaff.Account &&
+        combindInfo.credentialStaff.Account.Id &&
+        combindInfo.credentialStaff.Account.Id != "0"
+      ) {
+        p.Credentials.Account =
+          combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+        p.Credentials.Account =
+          p.Credentials.Account || combindInfo.credential.Account;
+      }
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.viewModel.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
@@ -1328,13 +1476,33 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 (acc = AppHelper.add(acc, this.getOneServiceFee(it))),
               0
             );
-            group[key][idx].serviceFee = showTotalFees;
+            group[key][idx].showGroupedServiceFee = showTotalFees;
+            if (group[key].length) {
+              group[key].forEach((it) => {
+                it.serviceFee = this.getOneServiceFee(it);
+              });
+            }
           }
         }
         this.viewModel.combindInfos = this.viewModel.combindInfos.concat(
           group[key]
         );
       });
+      const whitelist = this.viewModel.combindInfos
+        .filter((it) => !it.bookInfo.isNotWhitelist)
+        .map((it) => {
+          // 白名单全部显示
+          it.isShowGroupedInfo = true;
+          return it;
+        });
+      const notWhiteList = this.viewModel.combindInfos.filter(
+        (it) => it.bookInfo.isNotWhitelist
+      );
+      notWhiteList.forEach((it, idx) => {
+        // 非白名单只在最后一个显示出差信息中的通知语言，跳过审批和审批人
+        it.isShowGroupedInfo = idx == notWhiteList.length - 1;
+      });
+      this.viewModel.combindInfos = whitelist.concat(notWhiteList);
     }
   }
   async openApproverModal(item: ITrainPassengerBookInfo) {
@@ -1488,6 +1656,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       item.otherCostCenterName = data.otherCostCenterName;
     }
   }
+  credentialCompareFn(t1: CredentialsEntity, t2: CredentialsEntity) {
+    return (
+      (t1 && t2 && t1 == t2) || (t1.Type == t2.Type && t1.Number == t2.Number)
+    );
+  }
   onOrganizationChange(
     data: {
       isOtherOrganization: boolean;
@@ -1594,6 +1767,8 @@ export interface IBookTrainViewModel {
 }
 interface ITrainPassengerBookInfo {
   isShowGroupedInfo?: boolean;
+  isShowTravelInfo: boolean;
+  showGroupedServiceFee: number;
   serviceFee: number;
   isNotWhitelist?: boolean;
   vmCredential: CredentialsEntity;

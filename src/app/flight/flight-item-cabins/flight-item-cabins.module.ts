@@ -7,11 +7,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { FlightItemCabinsPage } from './flight-item-cabins.page';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: FlightItemCabinsPage
+    component: FlightItemCabinsPage,
+    canActivate:[StylePageGuard]
   }
 ];
 

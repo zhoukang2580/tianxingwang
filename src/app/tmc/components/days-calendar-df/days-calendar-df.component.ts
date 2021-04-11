@@ -14,6 +14,7 @@ import {
   ViewChildren,
   OnDestroy,
   Input,
+  HostBinding,
 } from "@angular/core";
 import * as moment from "moment";
 import { CalendarService } from "src/app/tmc/calendar.service";
@@ -22,13 +23,18 @@ import { CalendarService } from "src/app/tmc/calendar.service";
   templateUrl: "./days-calendar-df.component.html",
   styleUrls: ["./days-calendar-df.component.scss"],
 })
-export class DaysCalendarDfComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DaysCalendarDfComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   @Output() itemSelected: EventEmitter<DayModel>;
   @Output() calenderClick: EventEmitter<any>;
   @Input() langOpt = {
     calendar: "日历",
   };
+  @HostBinding("class.disabled")
+  @Input()
+  disabled = false;
+  @Input() endDate = "";
   @ViewChild("daysContainer") daysEle: ElementRef<HTMLElement>;
   @ViewChildren("dayItem") dayItems: QueryList<ElementRef<HTMLElement>>;
   days: DayModel[];
@@ -99,6 +105,9 @@ export class DaysCalendarDfComponent implements OnInit, AfterViewInit, OnDestroy
     // console.log("days calendar", `n=${n}`, this.days);
   }
   onCalendar() {
+    if (this.disabled) {
+      return;
+    }
     this.calenderClick.emit();
   }
   ngAfterViewInit() {
@@ -113,10 +122,17 @@ export class DaysCalendarDfComponent implements OnInit, AfterViewInit, OnDestroy
     }, 100);
   }
   onDaySelected(day: DayModel, byUser = true) {
+    if (this.disabled || !day.enabled) {
+      return;
+    }
     day.selected = true;
     let index = 0;
+    const endD = this.calendarService.generateDayModelByDate(this.endDate);
     for (let i = 0; i < this.days.length; i++) {
       const d = this.days[i];
+      if (this.endDate) {
+        d.enabled = d.timeStamp < endD.timeStamp;
+      }
       if (d.date !== day.date) {
         // 其他day非选中状态
         d.selected = false;

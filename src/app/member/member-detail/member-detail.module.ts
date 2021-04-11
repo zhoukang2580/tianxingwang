@@ -9,12 +9,13 @@ import { IonicModule } from "@ionic/angular";
 import { MemberDetailPage } from "./member-detail.page";
 import { AuthorityGuard } from "src/app/guards/authority.guard";
 import { AppDirectivesModule } from "src/app/directives/directives.module";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: MemberDetailPage,
-    canActivate: [AuthorityGuard]
+    canActivate: [AuthorityGuard,StylePageGuard]
   }
 ];
 

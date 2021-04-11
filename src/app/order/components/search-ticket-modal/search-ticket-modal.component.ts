@@ -26,7 +26,7 @@ export class SearchTicketModalComponent implements OnInit {
     }
     const m = await this.modalCtrl.getTop();
     if (m) {
-      m.dismiss(this.condition).catch((_) => null);
+      m.dismiss().catch((_) => null);
     }
   }
   search() {

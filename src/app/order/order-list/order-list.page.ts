@@ -10,19 +10,13 @@ import {
   TmcService,
   PassengerBookInfo,
 } from "../../tmc/tmc.service";
-import {
-  ActivatedRoute,
-  ActivatedRouteSnapshot,
-  Router,
-  RouterStateSnapshot,
-} from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import {
   ModalController,
   IonInfiniteScroll,
   IonContent,
   IonDatetime,
   PickerController,
-  NavController,
 } from "@ionic/angular";
 import {
   Component,
@@ -63,11 +57,12 @@ export class OrderListPage
   implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
+  private isGoDetail = false;
+  private isBackHome = false;
   public loadDataSub = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private selectDateChange = new EventEmitter();
   private selectDateSubscription = Subscription.EMPTY;
-  private isBackHome = false;
   productItemType = ProductItemType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
@@ -99,15 +94,14 @@ export class OrderListPage
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
     private langService: LangService,
-    private natCtrl: NavController,
     private staffService: StaffService
   ) {}
   canDeactivate() {
     console.log("canDeactivate isbackhome=", this.isBackHome);
-    if (this.isBackHome) {
+    if (this.isBackHome && !this.isGoDetail) {
       // this.natCtrl.navigateRoot("", { animated: true });
-      this.router.navigate([""]);
       this.isBackHome = false;
+      this.router.navigate([""]);
       return false;
     }
     return true;
@@ -387,18 +381,27 @@ export class OrderListPage
         !res ||
         !res.trip ||
         !res.order ||
-        !res.order.OrderPassengers ||
-        !res.order.OrderPassengers.length
+        !res.order.OrderFlightTickets ||
+        !res.order.OrderFlightTickets.length
       ) {
         AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
-      const orderPassenger = res.order.OrderPassengers[0];
+      const ticket = res.order.OrderFlightTickets.find(
+        (it) => it.Id == data.ticketId
+      );
+      if (!ticket) {
+        AppHelper.alert("改签失败，请联系客服人员");
+        return;
+      }
+      const orderPassenger = ticket.Passenger;
+      const credentails = res.credentails || [];
+      const hideCredential = credentails.find(it => it.CredentialsNumber == orderPassenger.CredentialsNumber)
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
       await this.flightService.initSelfBookTypeBookInfos();
       const isSelf = await this.staffService.isSelfBookType();
-      const bookInfos = this.flightService.getPassengerBookInfos();
+      let bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
         if (isSelf) {
           await AppHelper.alert("改签失败，请联系客服人员");
@@ -413,6 +416,7 @@ export class OrderListPage
             } as StaffEntity,
             credential: {
               Number: orderPassenger.CredentialsNumber,
+              HideNumber: hideCredential && hideCredential.HideCredentialsNumber,
               Type: orderPassenger.CredentialsType,
               TypeName: orderPassenger.CredentialsTypeName,
               Name: orderPassenger.Name,
@@ -422,12 +426,6 @@ export class OrderListPage
         }
       }
       let passenger: StaffEntity = bookInfos[0].passenger;
-      if (res.staff) {
-        passenger = {
-          ...passenger,
-          ...res.staff,
-        };
-      }
       let credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
@@ -435,11 +433,8 @@ export class OrderListPage
         isFilterPolicy: false,
         isNotWhitelist: !isSelf,
       };
-      this.flightService.addPassengerBookInfo(info);
-      if (!bookInfos.length) {
-        AppHelper.alert("改签失败，请联系客服人员");
-        return;
-      }
+      // this.flightService.addPassengerBookInfo(info);
+      bookInfos = [info];
       bookInfos[0].exchangeInfo = {
         order: { Id: data.orderId } as any,
         ticket: { Id: data.ticketId } as any,
@@ -458,6 +453,8 @@ export class OrderListPage
         isRoundTrip: false,
         Date: date.substr(0, 10),
       });
+      this.isGoDetail = true;
+      this.flightService.setPassengerBookInfosSource(bookInfos);
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true },
       });
@@ -502,6 +499,7 @@ export class OrderListPage
   }
   goToDetailPage(orderId: string, type: string) {
     // Flight
+    this.isGoDetail = true;
     console.log(type, "dddd");
 
     if (type && type.toLowerCase() == "car") {
@@ -703,6 +701,7 @@ export class OrderListPage
     return url;
   }
   async onTaskDetail(task: TaskEntity) {
+    this.isGoDetail = true;
     const url = await this.getTaskHandleUrl(task);
     if (url) {
       this.router
@@ -856,6 +855,7 @@ export class OrderListPage
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
         this.isBackHome = d.get("isBackHome") == "true";
+        this.isGoDetail = false;
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );

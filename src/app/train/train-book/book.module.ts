@@ -11,12 +11,13 @@ import { TrainComponentsModule } from '../components/traincomponents.module';
 import { TrainBookPage } from './book.page';
 import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 import { AppDirectivesModule } from 'src/app/directives/directives.module';
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: TrainBookPage,
-    canActivate: [ConfirmCredentialInfoGuard]
+    canActivate: [StylePageGuard,ConfirmCredentialInfoGuard]
   }
 ];
 

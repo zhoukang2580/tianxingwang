@@ -1,7 +1,8 @@
 import {
   InternationalHotelService,
   IInterHotelSearchCondition,
-} from "../../hotel-international/international-hotel.service";
+  IInterHotelInfo,
+} from "../../international-hotel/international-hotel.service";
 import { LanguageHelper } from "../../languageHelper";
 import { ImageRecoverService } from "../../services/imageRecover/imageRecover.service";
 import { DayModel } from "src/app/tmc/models/DayModel";
@@ -37,12 +38,15 @@ import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standa
 import { OverHotelComponent } from "../components/over-hotel/over-hotel.component";
 import { environment } from "src/environments/environment";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
+import { HotelCityService } from "../hotel-city.service";
 @Component({
   selector: "app-search-hotel-df",
   templateUrl: "./search-hotel-df.page.html",
   styleUrls: ["./search-hotel-df.page.scss"],
 })
-export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
+export class SearchHotelDfPage
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   @ViewChild("imgEles", { static: true }) imgEles: ElementRef<HTMLElement>;
   @ViewChild("ionCardEle", { static: true }) ionCard: IonCard;
@@ -79,6 +83,9 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
   get selectedPassengers() {
     return this.hotelService.getBookInfos().length;
   }
+  get interSelectedPassengers() {
+    return this.internationalHotelService.getBookInfos().length;
+  }
   get totalFlyDays() {
     if (
       this.searchHotelModel &&
@@ -102,10 +109,12 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     public router: Router,
     private hotelService: HotelService,
     route: ActivatedRoute,
+    private hotelCityService: HotelCityService,
     private modalController: ModalController,
     private staffService: StaffService,
     private calendarService: CalendarService,
     plt: Platform,
+    private tmcService: TmcService,
     private popoverCtrl: PopoverController,
     private internationalHotelService: InternationalHotelService
   ) {
@@ -137,6 +146,13 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.isIos = plt.is("ios");
     });
     this.subscriptions.push(sub);
+  }
+  canDeactivate() {
+    if (this.hotelCityService.isShowingPage) {
+      this.hotelCityService.onSelectCity(false);
+      return false;
+    }
+    return true;
   }
   private observeSearchCondition() {
     this.subscriptions.push(
@@ -180,7 +196,12 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     //   this.initEles();
     // }
   }
-  onToggleDomestic(isDomestic) {
+  async onToggleDomestic(isDomestic) {
+    const ok = await this.checkHasAuth(isDomestic);
+    if (!ok) {
+      AppHelper.alert("您没有预定权限");
+      return;
+    }
     this.isDomestic = isDomestic;
   }
   onSelectNationality() {
@@ -233,10 +254,33 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.observeSearchCondition();
     this.onPosition();
+    this.initSegment();
   }
-  onSearchCity() {
+  private async checkHasAuth(isDomestic = true) {
+    return this.tmcService.hasBookRight(
+      isDomestic ? "hotel" : "international-hotel"
+    );
+  }
+  private async initSegment() {
     if (this.isDomestic) {
-      this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
+      const ok = await this.checkHasAuth(this.isDomestic);
+      if (!ok) {
+        this.isDomestic = false;
+        return;
+      }
+    }
+  }
+  async onSearchCity() {
+    if (this.isDomestic) {
+      // this.router.navigate([AppHelper.getRoutePath("hotel-city-df")]);
+      const rs = await this.hotelCityService.onSelectCity(true);
+      if (rs) {
+        this.hotelService.setSearchHotelModel({
+          ...this.searchHotelModel,
+          destinationCity: rs.city,
+        });
+        this.hotelCityService.onSelectCity(false);
+      }
     } else {
       this.router.navigate([AppHelper.getRoutePath("select-inter-city")]);
     }
@@ -268,10 +312,10 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.isPositioning = false;
   }
   onShowSelectedBookInfos() {
-    this.router.navigate([AppHelper.getRoutePath("hotel-room-bookedinfos")]);
+    this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
   }
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger-df")], {
       queryParams: {
         forType: this.isDomestic
           ? FlightHotelTrainType.Hotel
@@ -280,6 +324,37 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   async onOpenSelectedPassengers() {
+    if (this.isDomestic) {
+      this.onOpenDomesticSelectedPassenger();
+    } else {
+      this.onOpenInterSelectedPassenger();
+    }
+  }
+  private async onOpenInterSelectedPassenger() {
+    const removeitem = new EventEmitter();
+    removeitem.subscribe(async (info: PassengerBookInfo<IInterHotelInfo>) => {
+      const ok = await AppHelper.alert(
+        LanguageHelper.getConfirmDeleteTip(),
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
+      if (ok) {
+        this.internationalHotelService.removeBookInfo(info, true);
+      }
+    });
+    const m = await this.modalController.create({
+      component: SelectedPassengersComponent,
+      componentProps: {
+        bookInfos$: this.internationalHotelService.getBookInfoSource(),
+        removeitem,
+      },
+    });
+    await m.present();
+    await m.onDidDismiss();
+    removeitem.unsubscribe();
+  }
+  private async onOpenDomesticSelectedPassenger() {
     const removeitem = new EventEmitter();
     removeitem.subscribe(async (info: PassengerBookInfo<IHotelInfo>) => {
       const ok = await AppHelper.alert(
@@ -319,13 +394,19 @@ export class SearchHotelDfPage implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.internationalHotelService.setSearchConditionSource({
           ...this.internationalHotelService.getSearchCondition(),
-          checkinDate: checkInDate.date,
-          checkoutDate: checkOutDate.date,
+          checkInDate: checkInDate.date,
+          checkOutDate: checkOutDate.date,
         });
       }
     }
   }
   async onSearchHotel() {
+    const ok = await this.tmcService.hasBookRight(
+      this.isDomestic ? "hotel" : "international-hotel"
+    );
+    if (!ok) {
+      return;
+    }
     if (this.totalFlyDays >= 15) {
       const popover = await this.popoverCtrl.create({
         component: OverHotelComponent,

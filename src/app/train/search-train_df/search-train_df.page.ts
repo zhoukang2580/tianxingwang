@@ -14,17 +14,14 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
 import * as moment from "moment";
 import { Subscription, of } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
-import {
-  ModalController,
-  PopoverController,
-} from "@ionic/angular";
+import { ModalController, PopoverController } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { map } from "rxjs/operators";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
-import { LangService } from 'src/app/services/lang.service';
-import { SelectedTrainSegmentInfoDfComponent } from '../components/selected-train-segment-info-df/selected-train-segment-info-df.component';
+import { LangService } from "src/app/services/lang.service";
+import { SelectedTrainSegmentInfoDfComponent } from "../components/selected-train-segment-info-df/selected-train-segment-info-df.component";
 @Component({
   selector: "app-search-train-df",
   templateUrl: "./search-train_df.page.html",
@@ -45,6 +42,7 @@ export class SearchTrainDfPage
   isSelf = false;
   selectedPassengers: number;
   selectedBookInfos: number;
+  exchangeTip = "正在改签";
   staff: StaffEntity;
   constructor(
     public router: Router,
@@ -55,7 +53,8 @@ export class SearchTrainDfPage
     private trainService: TrainService,
     private calendarService: CalendarService,
     private modalCtrl: ModalController,
-    private popoverCtrl: PopoverController  ) {}
+    private popoverCtrl: PopoverController
+  ) {}
   async onShowSelectedBookInfos() {
     let c = SelectedTrainSegmentInfoDfComponent;
     const m = await this.modalCtrl.create({
@@ -77,7 +76,7 @@ export class SearchTrainDfPage
   ngAfterViewInit(): void {
     console.log("ngAfterViewInit");
   }
-  onToggleDomestic(isDomestic){
+  onToggleDomestic(isDomestic) {
     this.isDomestic = isDomestic;
   }
   onSegmentChanged(evt: CustomEvent) {
@@ -101,7 +100,7 @@ export class SearchTrainDfPage
     }
     const p = await this.popoverCtrl.create({
       component: ShowStandardDetailsComponent,
-      mode:"md",
+      mode: "md",
       componentProps: {
         details: s.Policy.TrainDescription.split("。"),
       },
@@ -121,7 +120,15 @@ export class SearchTrainDfPage
       .subscribe(async (s) => {
         console.log("search-train", s);
         this.searchTrainModel = s;
+
         if (this.searchTrainModel) {
+          if (this.searchTrainModel.IsRangeExchange) {
+            const bks = this.trainService.getBookInfos();
+            this.exchangeTip =
+              bks[0] &&
+              bks[0].exchangeInfo &&
+              bks[0].exchangeInfo.rangeExchangeDateTip;
+          }
           this.searchTrainModel.isExchange = s.isExchange;
           this.goDate = this.calendarService.generateDayModelByDate(s.Date);
           this.isSingle = !s.isRoundTrip;
@@ -168,7 +175,7 @@ export class SearchTrainDfPage
   }
 
   onSelectPassenger() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger")], {
+    this.router.navigate([AppHelper.getRoutePath("select-passenger-df")], {
       queryParams: { forType: FlightHotelTrainType.Train },
     });
   }
@@ -179,9 +186,13 @@ export class SearchTrainDfPage
     if (isFrom) {
       if (
         this.searchTrainModel &&
-        this.searchTrainModel.isExchange &&
-        this.searchTrainModel.isLocked
+        (this.searchTrainModel.isExchange || this.searchTrainModel.isLocked)
       ) {
+        return;
+      }
+    }
+    if (!isFrom) {
+      if (this.searchTrainModel.IsRangeExchange) {
         return;
       }
     }
@@ -193,6 +204,13 @@ export class SearchTrainDfPage
       return;
     }
     if (this.searchTrainModel.isExchange || this.searchTrainModel.isLocked) {
+      return;
+    }
+    if (
+      this.searchTrainModel.isExchange &&
+      this.searchTrainModel.IsRangeExchange
+    ) {
+      AppHelper.alert("距离出发时间48小时内，不得更改达到城市");
       return;
     }
     this.trainService.onSwapCity();
@@ -266,7 +284,28 @@ export class SearchTrainDfPage
     return this.calendarService.getDescOfDay(d);
   }
   async onSelecDate(isGo: boolean) {
-    const days = await this.trainService.openCalendar(false);
+    if (!this.searchTrainModel) {
+      return;
+    }
+    const bk = this.trainService.getBookInfos()[0];
+    const ticket =
+      bk &&
+      bk.exchangeInfo &&
+      (bk.exchangeInfo.ticket as OrderTrainTicketEntity);
+    const trip = ticket && ticket.OrderTrainTrips && ticket.OrderTrainTrips[0];
+    const endDate = this.searchTrainModel.IsRangeExchange
+      ? (trip && trip.StartTime.substr(0, 10)) || ""
+      : "";
+    if (this.searchTrainModel.IsRangeExchange) {
+      if (
+        trip &&
+        trip.StartTime.substr(0, 10) ==
+          this.calendarService.getMoment(0).format("YYYY-MM-DD")
+      ) {
+        return;
+      }
+    }
+    const days = await this.trainService.openCalendar(false, endDate);
     // console.log("train openCalendar", days);
     if (days && days.length) {
       if (this.searchTrainModel) {
@@ -307,9 +346,11 @@ export class SearchTrainDfPage
         this.trainService.setSearchTrainModelSource({
           ...this.searchTrainModel,
           isExchange: false,
+          IsRangeExchange: false,
           isLocked: false,
         });
         this.trainService.removeAllBookInfos();
+        this.isCanLeave = true;
         return true;
       }
     }

@@ -69,10 +69,11 @@ export class LoginPage implements OnInit, OnDestroy, AfterViewInit {
     private navCtrl: NavController,
     private modalCtrl: ModalController
   ) {
-    AppHelper.isWXAppInstalled().then((installed) => {
-      this.isShowWechatLogin = installed;
-    });
     route.queryParamMap.subscribe((_) => {
+      AppHelper.isWXAppInstalled().then((installed) => {
+        this.isShowWechatLogin =
+          installed && AppHelper.getStorage<boolean>("IsShowThirdPartyLogin");
+      });
       this.isShowWechatMiniTip = AppHelper.isWechatMini();
       setTimeout(() => {
         this.isShowWechatMiniTip = false;

@@ -4,19 +4,19 @@ import { HistoryEntity } from "src/app/order/models/HistoryEntity";
 import { BaseVariablesEntity } from "src/app/models/BaseVariablesEntity";
 import { BaseEntity } from "src/app/models/BaseEntity";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
-import { TravelFormEntity } from 'src/app/tmc/tmc.service';
+import { TravelFormEntity } from "src/app/tmc/tmc.service";
 
 export class TaskEntity extends BaseVariablesEntity {
-
   Consumer: BaseEntity;
-  
+
   TravelForms: TravelFormEntity[];
   /// <summary>
   /// 用户
   /// </summary>
   Account: AccountEntity;
   Title: string;
-  imageStatus:"isOverdue"|"isRejected"|"isPassed"|"isClosed";
+  imageStatus: "isOverdue" | "isRejected" | "isPassed" | "isClosed";
+  StatusPicName: "Pass" | "Refuse" | "Close" | "Overdue" | "";
 
   /// <summary>
   ///名称

@@ -31,7 +31,7 @@
                     <ion-label color='medium' *ngIf='forType != FlightHotelTrainType.InternationalFlight'>
                         <ion-text color='dark' notranslate>{{item?.Name}}</ion-text>
                         <ng-container *ngIf='!item.CredentialsInfo'>
-                            {{item.Number}}
+                            {{item.HideNumber}}
                         </ng-container>
                         <span *ngIf='item.CredentialsInfo'>
               {{item?.CredentialsInfo}}
@@ -57,7 +57,7 @@
         </ng-template>
     </ng-container>
     <ng-template #addTempl>
-        <ion-radio-group value="{{selectedCredentialId}}" [allowEmptySelection]="true">
+        <ion-radio-group value="{{selectedCredentialId}}" mode='md' [allowEmptySelection]="true">
             <ion-list>
                 <ng-container *ngFor='let item of staffCredentails' class='ion-margin-bottom'>
                     <ng-container *ngIf='item!=vmNewCredential'>
@@ -86,7 +86,7 @@
                                         ID No.:
                                     </ion-col>
                                     <ion-col>
-                                        {{item?.Number}}
+                                        {{item?.HideNumber}}
                                     </ion-col>
                                 </ion-row>
                                 <ion-row>
@@ -105,7 +105,7 @@
                                         {{item?.Country}}
                                     </ion-col>
                                 </ion-row>
-                                <ion-row>
+                                <!-- <ion-row>
                                     <ion-col>
                                         Birth Date:
                                     </ion-col>
@@ -120,7 +120,7 @@
                                     <ion-col>
                                         {{item?.ExpirationDate}}
                                     </ion-col>
-                                </ion-row>
+                                </ion-row> -->
                                 <ion-row>
                                     <ion-col>
                                         Gender:
@@ -151,7 +151,7 @@
                                 </ion-item>
                             </ion-col>
                             <ion-col size='12'>
-                                <ion-radio-group class='credentials-remark ion-no-margin ion-no-padding' [(ngModel)]='vmNewCredential.CredentialsRemark' name='CredentialsRemark'>
+                                <ion-radio-group class='credentials-remark ion-no-margin ion-no-padding' mode='md' [(ngModel)]='vmNewCredential.CredentialsRemark' name='CredentialsRemark'>
                                     <ion-item *ngFor='let r of credentialsRemarks' [style.opacity]='vmNewCredential?.Id !=selectedCredentialId?0.7:1' [disabled]='vmNewCredential?.Id !=selectedCredentialId'>
                                         <ion-label>{{r.value}}</ion-label>
                                         <ion-radio value="{{r.value}}"></ion-radio>
@@ -181,7 +181,7 @@
                                         ID No.:
                                     </ion-col>
                                     <ion-col>
-                                        {{item?.Number}}
+                                        {{item?.HideNumber}}
                                     </ion-col>
                                 </ion-row>
                                 <ion-row>
@@ -208,7 +208,7 @@
                                         {{item?.Country}}
                                     </ion-col>
                                 </ion-row>
-                                <ion-row>
+                                <!-- <ion-row>
                                     <ion-col>
                                         Birth Date:
                                     </ion-col>
@@ -223,7 +223,7 @@
                                     <ion-col>
                                         {{item?.ExpirationDate}}
                                     </ion-col>
-                                </ion-row>
+                                </ion-row> -->
                                 <ion-row>
                                     <ion-col>
                                         Gender:

@@ -4,11 +4,12 @@
     <div class="file">
       <ion-icon name="close-circle" color='danger' (click)='onRemoveImage(img)'>
       </ion-icon>
-      <img [lazyLoad]="img.imageUrl" [defaultImage]='defaultImage' [loadingImage]='loadingImage' (click)='onViewPic(img,idx)' alt="">
+      <!-- <img [lazyLoad]="img.imageUrl" [defaultImage]='defaultImage' [loadingImage]='loadingImage' (click)='onViewPic(img,idx)' alt=""> -->
+      <img [src]="img.imageUrl" (click)='onViewPic(img,idx)' alt="">
     </div>
   </ion-col>
   <ion-col>
-    <app-img-control *ngIf='!isMulti&& !images?.length' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
-    <app-img-control *ngIf='isMulti&&images?.length<maxCount' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
+    <app-img-control [canSelectFromGallery]='canSelectFromGallery' *ngIf='!isMulti&& !images?.length' [cropperOptions]='cropperOptions' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
+    <app-img-control [canSelectFromGallery]='canSelectFromGallery' *ngIf='isMulti&&images?.length<maxCount' [cropperOptions]='cropperOptions' [chooseScene]='chooseScene' (fileChange)='onAddFile($event)'></app-img-control>
   </ion-col>
 </ion-row>

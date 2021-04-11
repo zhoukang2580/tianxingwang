@@ -35,6 +35,8 @@ import {
   ApprovalStatusType,
   TravelFormDetailEntity,
 } from "../travel-application/travel.service";
+import { CONFIG } from "../config";
+import { AgentRegionType } from "./models/AgentRegionType";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -63,8 +65,9 @@ export class TmcService {
   private companies: GroupCompanyEntity[];
   private banners: any[];
   private memberDetail: any;
-  // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
+  private getRecommendHotelObj: { [key: string]: any } = {};
   private tmc: TmcEntity;
+  // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private identity: IdentityEntity;
   private agent: AgentEntity;
   private mobileTemplateSelectItemList: SelectItem[] = [];
@@ -116,6 +119,7 @@ export class TmcService {
     this.tmc = null;
     this.agent = null;
     this.fetchingTmcPromise = null;
+    this.getRecommendHotelObj = {};
     this.setSelectedCompanySource("");
   }
   get isAgent() {
@@ -140,6 +144,247 @@ export class TmcService {
         return r;
       });
   }
+
+  async getRecommendHotel(d: {
+    PageIndex: number;
+    PageSize: number;
+    CityCode: string;
+    SearchDate: string;
+  }) {
+    const req = new RequestEntity();
+    const id = await this.identityService.getIdentityAsync();
+    // .catch(e=>null);
+    if (!id || !id.Id) {
+      return null;
+    }
+    if (this.getRecommendHotelObj[`${id.Id}_${d.CityCode}_${d.PageIndex}`]) {
+      return this.getRecommendHotelObj[`${id.Id}_${d.CityCode}_${d.PageIndex}`];
+    }
+    req.Method = "TmcApiHotelUrl-Home-RecommendHotel";
+    req.IsRedirctNoAuthorize = false;
+    req.IsRedirctLogin = false;
+    req.Data = {
+      PageIndex: 0,
+      PageSize: d.PageSize,
+      CityCode: d.CityCode,
+      SearchDate: d.SearchDate,
+    };
+    return this.apiService
+      .getPromiseData<{
+        DataCount: string;
+        HotelDefaultImg: string;
+        HotelDayPrices: {
+          Id: string;
+          HotelName: string;
+          HotelAddress: string;
+          HotelCategory: string;
+          HotelFileName: string;
+        }[];
+      }>(req)
+      .then((r) => {
+        if (r && r.HotelDayPrices && r.HotelDayPrices.length) {
+          this.getRecommendHotelObj[
+            `${id.Id}_${d.CityCode}_${d.PageIndex}`
+          ] = r;
+        }
+        return r;
+      });
+  }
+
+  async getTaskReviewed() {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-TaskReviewed";
+    req.Data = {};
+    return this.apiService.getPromiseData<any[]>(req);
+  }
+  private async checkHasAuth(isDomestic = true) {
+    try {
+      // const msg = "您没有预定权限";
+      const Tmc = await this.getTmc();
+      const tmcRegionTypeValues = Tmc.RegionTypeValue.split(",");
+      const Agent = await this.getAgent();
+      if (!isDomestic) {
+        const pass =
+          Tmc &&
+          // tslint:disable-next-line: no-bitwise
+          (Tmc.RegionType & AgentRegionType.InternationalHotel) > 0 &&
+          Agent &&
+          // tslint:disable-next-line: no-bitwise
+          (Agent.RegionType & AgentRegionType.InternationalHotel) > 0;
+        if (
+          !tmcRegionTypeValues.find(
+            (it) => it.toLowerCase() == "internationalhotel"
+          ) ||
+          !pass
+        ) {
+          // AppHelper.alert(msg);
+          return false;
+        }
+      }
+      if (isDomestic) {
+        const pass =
+          Tmc &&
+          // tslint:disable-next-line: no-bitwise
+          (Tmc.RegionType & AgentRegionType.Hotel) > 0 &&
+          Agent != null &&
+          // tslint:disable-next-line: no-bitwise
+          (Agent.RegionType & AgentRegionType.Hotel) > 0;
+        if (
+          !tmcRegionTypeValues.find((it) => it.toLowerCase() == "hotel") ||
+          !pass
+        ) {
+          return false;
+        }
+      }
+    } catch (e) {
+      return false;
+    }
+
+    return true;
+  }
+  async hasBookRight(
+    name:
+      | "flight"
+      | "international-flight"
+      | "hotel"
+      | "international-hotel"
+      | "train"
+      | "rentalCar"
+      | "bulletin"
+  ) {
+    if (name) {
+      const tmc = await this.getTmc();
+      if (!tmc || !tmc.RegionTypeValue) {
+        return false;
+      }
+      let route = "";
+
+      const tmcRegionTypeValues = tmc.RegionTypeValue.toLowerCase().split(",");
+      if (name == "international-flight") {
+        if (!CONFIG.mockProBuild) {
+          return false;
+        }
+        route = "search-international-flight";
+        if (!tmcRegionTypeValues.find((it) => it == "internationalflight")) {
+          return false;
+        }
+        return true;
+      }
+      if (name == "international-hotel") {
+        route = "search-international-hotel";
+        return this.checkHasAuth(false);
+      }
+      if (name == "hotel") {
+        route = "search-hotel";
+        return this.checkHasAuth(true);
+      }
+      if (name == "train") {
+        route = "search-train";
+        if (!tmcRegionTypeValues.find((it) => it == "train")) {
+          return false;
+        }
+        return true;
+      }
+      if (name == "flight") {
+        route = "search-flight";
+        if (!tmcRegionTypeValues.find((it) => it == "flight")) {
+          return false;
+        }
+        return true;
+      }
+      if (name == "rentalCar") {
+        route = "rental-car";
+        if (!tmcRegionTypeValues.find((it) => it == "car")) {
+          return false;
+        }
+        return true;
+      }
+      if (name == "bulletin") {
+        route = "bulletin-list";
+      }
+    }
+    return false;
+  }
+  async getTripList() {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-TripList";
+    req.Data = {};
+    // return [
+    //   {
+    //     Type: "Hotel",
+    //     StartTime: "2021-03-22",
+    //     Second: 200,
+    //     Name: "测试",
+    //     FromName: "上海",
+    //     ToName: "北京",
+    //   },
+    //   {
+    //     Type: "Train",
+    //     StartTime: "2021-03-22",
+    //     Second: 200000,
+    //     Name: "测试",
+    //     FromName: "上海",
+    //     ToName: "北京",
+    //   },
+    //   {
+    //     Type: "Flight",
+    //     StartTime: "2021-03-22",
+    //     Second: 100000,
+    //     Name: "测试",
+    //     FromName: "上海",
+    //     ToName: "北京",
+    //   },
+    // ];
+    return this.apiService.getPromiseData<any[]>(req);
+  }
+
+  async getIntegral(d: { Tag: string; PageSize: number }) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-Exchange";
+    req.Data = {
+      Tag: d.Tag,
+      PageSize: d.PageSize,
+    };
+    return this.apiService.getPromiseData<any>(req).then((it) => {
+      if (it) {
+        try {
+          return JSON.parse(it);
+        } catch (e) {
+          console.log(e);
+          return null;
+        }
+      }
+      return null;
+    });
+  }
+  getSign(d: { Amount: number; Name: string }) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-Sign";
+    req.Data = {
+      Amount: d.Amount,
+      Name: d.Name,
+    };
+    req.IsShowLoading = true;
+    return this.apiService.getResponse<any>(req);
+  }
+  checkIfCanDailySigned(showLoading = false) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-Initialization";
+    req.IsShowLoading = showLoading;
+    return this.apiService.getPromiseData<{
+      isRegister: boolean;
+      isCanSign: boolean;
+    }>(req);
+  }
+
+  async getLogin() {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-Login";
+    req.Data = {};
+    req.IsShowLoading = true;
+    return this.apiService.getPromiseData<any>(req);
+  }
+
   setTravelFormNumber(tn: string) {
     AppHelper.setQueryParamers("TravelNumber", tn);
   }
@@ -248,14 +493,7 @@ export class TmcService {
     return payResult;
   }
   async checkHasHotelBookRight() {
-    if (!this.tmc) {
-      await this.getTmc();
-    }
-    return (
-      this.tmc &&
-      this.tmc.RegionTypeValue &&
-      this.tmc.RegionTypeValue.toLowerCase().includes("hotel")
-    );
+    return this.hasBookRight("hotel");
   }
   private async wechatPay(
     tradeNo: string,
@@ -1203,6 +1441,7 @@ export class TmcEntity extends BaseEntity {
   /// 是否可以自定义违规理由
   /// </summary>
   IsAllowCustomReason: boolean;
+  IsNeedIllegalReason: boolean;
   // ===================== 客户接口对接配置 start ===========
   /// <summary>
   /// 校验行程单
@@ -1398,6 +1637,14 @@ export class TmcEntity extends BaseEntity {
   RegionType: any;
   // =============== 微信支付配置 end ======
 }
+export class ExchangeInfo {
+  order: OrderEntity;
+  ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
+  trip: OrderFlightTripEntity | OrderTrainTripEntity;
+  insurnanceAmount?: number;
+  isRangeExchange?: boolean;
+  rangeExchangeDateTip?: string;
+}
 export interface PassengerBookInfo<T> {
   passenger: StaffEntity;
   credential: CredentialsEntity;
@@ -1408,12 +1655,7 @@ export interface PassengerBookInfo<T> {
   isFilterPolicy?: boolean; // 完全符合差标
   // isFilteredPolicy?: boolean;// 是否过滤差标
   // isAllowBookPolicy?: boolean;// 所有可预订
-  exchangeInfo?: {
-    order: OrderEntity;
-    ticket: OrderTrainTicketEntity | OrderFlightTicketEntity;
-    trip: OrderFlightTripEntity | OrderTrainTripEntity;
-    insurnanceAmount?: number;
-  };
+  exchangeInfo?: ExchangeInfo;
 }
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };

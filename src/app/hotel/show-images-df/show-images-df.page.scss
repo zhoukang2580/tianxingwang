@@ -1,0 +1,56 @@
+app-slides {
+  height: 100vh;
+}
+app-swiper-slides {
+  width: 100vw;
+  height: 100vh;
+}
+
+.list {
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition-property: transform;
+  display: flex;
+  align-items: center;
+  .inner {
+    position: relative;
+    width: 100%;
+    height: 50%;
+    img {
+      height: 100%;
+      width: 100%;
+    }
+  }
+  .logo {
+    width: 5em;
+    height: 3em;
+    position: absolute;
+    right: 0;
+    bottom: 0em;
+    background-color: white;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      object-fit: contain;
+    }
+  }
+}
+
+.indicator {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  bottom: 15.5em;
+  width: auto;
+  text-align: center;
+  z-index: 99;
+  padding: 0.25em 0.3em;
+  display: block;
+  border-radius: 4px;
+  right: 1em;
+  height: auto;
+  font-size: 0.7rem;
+}

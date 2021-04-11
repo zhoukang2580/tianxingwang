@@ -28,7 +28,7 @@ export class TrainListItemDfComponent implements OnInit {
     Left: "余票",
     agreement: "协",
     agreementDesc: "协议价",
-    reserve: "立刻预订",
+    reserve: "预订",
   };
   @Output() scheduleEmit: EventEmitter<any>;
   @Output() bookTicket: EventEmitter<TrainSeatEntity>;
@@ -78,7 +78,7 @@ export class TrainListItemDfComponent implements OnInit {
     }
     if ((seat && seat.color) == "danger") {
       if (seat && seat.Policy && seat.Policy.Rules) {
-        let tip = "";
+        let tip = seat.Policy.Rules.join(",");
         const bookInfos = this.trainService.getBookInfos();
         if (bookInfos && bookInfos.length) {
           const info = bookInfos.find(
@@ -87,7 +87,7 @@ export class TrainListItemDfComponent implements OnInit {
               it.bookInfo.id == (this.bookInfo && this.bookInfo.id)
           );
           if (info && info.passenger && info.passenger.Policy) {
-            tip = info.passenger.Policy.TrainIllegalTip
+            tip += info.passenger.Policy.TrainIllegalTip
               ? `(${info.passenger.Policy.TrainIllegalTip})`
               : "";
           }
@@ -97,6 +97,7 @@ export class TrainListItemDfComponent implements OnInit {
     if (this.train) {
       this.train.BookSeatType = seat.SeatType;
     }
+    
     this.bookTicket.emit(seat);
   }
   onSeatPicker(seat: string) {
@@ -109,7 +110,8 @@ export class TrainListItemDfComponent implements OnInit {
 
     return this.train.Seats;
   }
-  ngOnInit() {}
+  ngOnInit() {
+  }
   onScheduls(evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();

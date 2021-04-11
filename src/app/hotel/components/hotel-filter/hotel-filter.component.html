@@ -8,7 +8,7 @@
                 <ion-item-divider class='title'>{{item.label}}
                     <ion-button color='secondary' fill='clear' size='small' slot='end' (click)='resetItems(item)'>{{langOpt.any}}</ion-button>
                 </ion-item-divider>
-                <ion-item >
+                <ion-item>
                     <ul>
                         <li *ngFor='let it of item.items' [class.active]='it.IsSelected' class="item" (click)='onItemClick(it,item)'>
                             <span class="text">

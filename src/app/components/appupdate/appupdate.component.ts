@@ -7,12 +7,13 @@ import { Platform } from "@ionic/angular";
 import { LogService } from "src/app/services/log/log.service";
 import { ExceptionEntity } from "src/app/services/log/exception.entity";
 import { InAppBrowser } from "@ionic-native/in-app-browser/ngx";
+import { SafariViewController } from "@ionic-native/safari-view-controller/ngx";
 
 @Component({
   selector: "app-update-comp",
   templateUrl: "./appupdate.component.html",
   styleUrls: ["./appupdate.component.scss"],
-  providers: [InAppBrowser],
+  providers: [SafariViewController],
 })
 export class AppUpdateComponent implements OnInit {
   updateInfo: {
@@ -26,7 +27,7 @@ export class AppUpdateComponent implements OnInit {
   constructor(
     private fileService: FileHelperService,
     private logService: LogService,
-    private iab: InAppBrowser,
+    private safariViewController: SafariViewController,
     private ngZone: NgZone,
     private plt: Platform
   ) {}
@@ -178,11 +179,11 @@ export class AppUpdateComponent implements OnInit {
           `https://apps.apple.com/cn/app/${AppHelper.getAppStoreAppId()}`
         );
         await AppHelper.platform.ready();
-        // this.iab.create(url, "_system");
-        // if (window["cordova.InAppBrowser.open"]) {
-        // } else {
-        // }
-        window.open(url, "_blank");
+        this.safariViewController
+          .show({ url, hidden: false })
+          .subscribe((r) => {
+            console.log("open url", url, r);
+          });
         this.forceUpdate = false;
       } else {
         this.forceUpdate = false;

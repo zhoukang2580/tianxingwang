@@ -17,6 +17,7 @@ import {
 } from "@angular/core";
 import { TakeOffTimeSpanComponent } from "./take-off-timespan/take-off-timespan.component";
 import { CabinEnComponent } from "./cabin_en/cabin_en.component";
+import { TakeOffTimeSpanDfComponent } from "./take-off-timespan-df/take-off-timespan-df.component";
 @Component({
   selector: "app-fly-filter",
   templateUrl: "./fly-filter.component.html",
@@ -29,9 +30,10 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(AirtypeComponent) airTypeComp: AirtypeComponent;
   @ViewChild(CabinComponent) cabinComp: CabinComponent;
   @ViewChild(CabinEnComponent) cabinEnComp: CabinEnComponent;
-  @ViewChild(TakeOffTimeSpanComponent) timeSpanComp: TakeOffTimeSpanComponent;
+  @ViewChild(TakeOffTimeSpanDfComponent) timeSpanCompDf: TakeOffTimeSpanDfComponent;
   @Input() langOpt = {
     NonStopOnly: "仅直达",
+    IsAgreement: "协议航司",
     TakeTime: "起飞时段",
     Airlines: "航空公司",
     Departure: "起飞机场",
@@ -79,9 +81,12 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.cabinEnComp) {
       this.cabinEnComp.onReset();
     }
-    this.timeSpanComp.onReset();
+    this.timeSpanCompDf.onReset();
     if (this.filterCondition) {
       this.filterCondition.onlyDirect = false;
+    }
+    if (this.filterCondition) {
+      this.filterCondition.isAgreement = false;
     }
   }
 }

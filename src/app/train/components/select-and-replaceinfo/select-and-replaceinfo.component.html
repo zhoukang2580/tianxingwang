@@ -18,7 +18,7 @@
                 <strong>
                   {{bookInfo.info?.credential?.Name}}:
                 </strong>
-                <span>{{bookInfo.info?.credential?.Number}}</span>
+                <span>{{bookInfo.info?.credential?.HideNumber}}</span>
               </div>
             </ion-label>
             <ion-checkbox slot='end' [(ngModel)]="bookInfo.isSelected" [disabled]='true'
@@ -65,7 +65,7 @@
   <ion-toolbar>
     <ion-button slot='end' expand='block' (click)='onCancel()' color='secondary'>取消
     </ion-button>
-    <ion-button slot='end' expand='block' (click)='onConfirm()' color='secondary'>确定
+    <ion-button slot='end' expand='block' (click)='onConfirm()' color='secondary' [disabled]='!isSelected'>确定
     </ion-button>
   </ion-toolbar>
 </ion-footer>

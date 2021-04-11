@@ -10,12 +10,14 @@ import { FlightListPage } from "./flight-list.page";
 import { FlightComponentsModule } from "../components/components.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: FlightListPage,
     canDeactivate: [CandeactivateGuard],
+    canActivate:[StylePageGuard]
   },
 ];
 

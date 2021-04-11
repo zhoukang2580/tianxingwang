@@ -10,7 +10,7 @@
   <ion-item-group *ngFor='let bookInfo of  passengerAndBookInfos$|async'>
     <ng-container *ngIf='bookInfo.bookInfo'>
       <ion-item-divider color='primary' sticky>
-        <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;&nbsp;{{bookInfo?.credential?.Number}}</ion-label>
+        <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;&nbsp;{{bookInfo?.credential?.HideNumber}}</ion-label>
       </ion-item-divider>
       <ion-item>
         <div class='detail'>
@@ -57,8 +57,8 @@
           <ion-label *ngIf='getFlightlegalTip(bookInfo) as tip' color='danger' class='rules ion-text-wrap'>提示：({{tip}})
           </ion-label>
           <ion-label class='rules ion-text-wrap' color='dark' (click)='onSelectLowestSegment(bookInfo)' *ngIf='canShowLowerSegment(bookInfo)'>
-            当前航班前后{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowerSegmentRangTime&&bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowerSegmentRangTime!='0-0:00'?
-            bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowerSegmentRangTime:"60"}}分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
+            当前航班前后{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowerSegmentFlightLowerFare&&bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowerSegmentFlightLowerFare!='0-0:00'?
+            bookInfo.bookInfo?.flightPolicy?.LowerSegment?.LowerSegmentFlightLowerFare:"60"}}分钟内有更低价航班:{{bookInfo.bookInfo?.flightPolicy?.LowerSegment?.Number}}&nbsp;
             {{getTime(bookInfo.bookInfo?.flightPolicy?.LowerSegment?.TakeoffTime)}}
             <ion-button color='secondary' size='small'>选择更低价</ion-button>
           </ion-label>

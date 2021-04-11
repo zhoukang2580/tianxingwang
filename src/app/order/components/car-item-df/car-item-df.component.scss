@@ -1,0 +1,42 @@
+ion-row {
+  ion-col:not(.dark) {
+    color: var(--ion-color-medium);
+  }
+  ion-col {
+    font-size: 12px;
+    align-self: flex-start;
+  }
+}
+.select-text {
+  user-select: text;
+}
+
+.dark strong{
+  font-weight: 400;
+  color: var(--ion-color-medium);
+}
+
+.img{
+  width: 25px;
+  height: 19px;
+}
+
+.number{
+  border-bottom: 1px solid #dddddd;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+}
+
+.item-car{
+  display: flex;
+  font-size: 16px;
+  span{
+    font-weight: bold;
+  }
+  div{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 7em;
+  }
+}

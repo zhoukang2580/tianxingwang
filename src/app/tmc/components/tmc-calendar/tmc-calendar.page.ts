@@ -38,6 +38,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   private calendarService: CalendarService;
   private beginDate: string;
   private endDate: string;
+  private disabledSelectDateReason: string;
   private st = 0;
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
@@ -123,7 +124,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     this.st = Date.now();
     this.weeks = new Array(7)
       .fill(0)
-      .map((k) => this.calendarService.getDayOfWeekNames(k));
+      .map((i,k) => this.calendarService.getDayOfWeekNames(k));
     this.initCalendars();
   }
   private initCalendars() {
@@ -140,7 +141,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       begin = null;
     }
     let end = this.calendarService.generateDayModelByDate(this.endDate);
-    if (!this.endDate) {
+    if (!this.endDate || !this.isMulti) {
       end = null;
     }
     if (this.calendars) {
@@ -150,7 +151,8 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
             d.selected = false;
             d.topDesc = "";
             d.hasToolTip = false;
-            if (this.beginDate && this.endDate) {
+            d.lastSelected = false;
+            if (this.beginDate && this.beginDate) {
               if (d.date == this.beginDate) {
                 if (
                   this.forType == FlightHotelTrainType.Hotel ||
@@ -167,7 +169,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
                 d.firstSelected = true;
               }
-              if (d.date == this.endDate) {
+              if (d.date == this.endDate && this.isMulti) {
                 d.lastSelected = true;
                 if (
                   this.forType == FlightHotelTrainType.Hotel ||
@@ -190,8 +192,14 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
                 }
               }
             }
-            d.selected =
-              d.selected || d.date == this.beginDate || d.date == this.endDate;
+            if (this.isMulti) {
+              d.selected =
+                d.selected ||
+                d.date == this.beginDate ||
+                d.date == this.endDate;
+            } else {
+              d.selected = d.selected || d.date == this.beginDate;
+            }
             return d;
           });
         }
@@ -233,7 +241,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       if (rect && rect.top) {
         this.isSrollToCurYm = true;
         const delta = rect.top - this.plt.height() / 3;
-        console.log("delta ", delta, rect);
         this.content.scrollByPoint(0, delta, 100);
       }
     }
@@ -248,13 +255,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.forType != FlightHotelTrainType.Train) {
       for (let i = 0; i < 2; i++) {
         const temp = m.clone().add(i, "months");
-        console.log(
-          "temp ",
-          temp.year(),
-          temp.month() + 1,
-          this.beginDate,
-          this.endDate
-        );
         this.calendars.push(
           this.calendarService.generateYearNthMonthCalendar(
             temp.year(),
@@ -278,9 +278,6 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     const st = Date.now();
     const m = this.calendarService.getMoment(0, this.goArrivalTime || "");
     const goDate = m.format("YYYY-MM-DD");
-    // if (!this.selectedDays || !this.selectedDays.length) {
-    //   goDate = "";
-    // }
     if (this.calendars && this.calendars.length) {
       const type = this.forType;
       if (
@@ -288,33 +285,38 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
         this.tripType == TripType.checkOut ||
         this.forType == FlightHotelTrainType.InternationalFlight
       ) {
-        if (this.goArrivalTime) {
-          if (this.calendars.length) {
-            const endDay = this.calendarService.generateDayModel(
-              this.calendarService.getMoment(30)
-            );
-            this.calendars.forEach((day) => {
-              if (day.dayList) {
-                day.dayList.forEach((d) => {
+        // if (this.goArrivalTime) {
+        if (this.calendars.length) {
+          const endDay = this.calendarService.generateDayModel(
+            this.calendarService.getMoment(30)
+          );
+          this.calendars.forEach((day) => {
+            if (day.dayList) {
+              day.dayList.forEach((d) => {
+                d.enabled =
+                  AppHelper.getDate(d.date.substr(0, 10)).getTime() >=
+                  AppHelper.getDate(goDate).getTime();
+                if (type == FlightHotelTrainType.Train) {
                   d.enabled =
-                    AppHelper.getDate(d.date.substr(0, 10)).getTime() >=
-                    AppHelper.getDate(goDate).getTime();
-                  if (type == FlightHotelTrainType.Train) {
-                    d.enabled =
-                      d.timeStamp <= endDay.timeStamp ? d.enabled : false;
-                  }
-                });
-              }
-            });
-          }
+                    d.timeStamp <= endDay.timeStamp ? d.enabled : false;
+                }
+              });
+            }
+          });
         }
+        // }
       } else {
         const today = this.calendarService.generateDayModel(
           this.calendarService.getMoment(0)
         );
-        const endDay = this.calendarService.generateDayModel(
-          this.calendarService.getMoment(30)
-        );
+        // 2021-10-22
+        const endDay = this.endDate
+          ? this.calendarService.generateDayModelByDate(
+              this.endDate.substr(0, 10)
+            )
+          : this.calendarService.generateDayModel(
+              this.calendarService.getMoment(30)
+            );
         const yesterdayM = this.calendarService.generateDayModel(
           this.calendarService.getMoment(-1)
         );
@@ -353,7 +355,15 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     if (!d.enabled) {
-      AppHelper.toast(LanguageHelper.getSelectOtherFlyDayTip(), 1000, "middle");
+      if (this.disabledSelectDateReason) {
+        AppHelper.alert(this.disabledSelectDateReason);
+      } else {
+        AppHelper.toast(
+          LanguageHelper.getSelectOtherFlyDayTip(),
+          1000,
+          "middle"
+        );
+      }
       return;
     }
     if (this.selectedDays.length >= 2) {

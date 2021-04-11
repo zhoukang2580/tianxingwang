@@ -695,7 +695,7 @@ export class FlightService {
               if (item.credential) {
                 name = `${item.credential.Surname}${
                   item.credential.Givenname
-                }(${(item.credential.Number || "").substr(0, 6)}...)`;
+                }(${(item.credential.HideNumber || "").substr(0, 6)}...)`;
               }
               cannotArr.push(name);
               // item.bookInfo = null;
@@ -1162,6 +1162,15 @@ export class FlightService {
     return this.policyFlights;
   }
   private async getFlightSegmentDetail(s: FlightSegmentEntity) {
+    let ADTPtcs = this.getPassengerBookInfos().length;
+    const isSelf =await this.staffService.isSelfBookType();
+    if (isSelf) {
+      ADTPtcs=1;
+    }
+    if (ADTPtcs > 9) {
+      AppHelper.alert("添加的乘客数量不能超过9个");
+      return;
+    }
     const req = new RequestEntity();
     req.Method = `TmcApiFlightUrl-Home-Detail`;
     req.Version = "2.0";
@@ -1175,7 +1184,11 @@ export class FlightService {
       FlightNumber: s.Number,
       FromAsAirport: search.FromAsAirport,
       ToAsAirport: search.ToAsAirport,
+      ADTPtcs,
     };
+    if(s.Variables&&s.Variables.DetailKey){
+      req.Data.DetailKey=s.Variables.DetailKey;
+    }
     if (req.Language) {
       req.Data.Lang = req.Language;
     }
@@ -1330,18 +1343,22 @@ export class FlightService {
   private getFlightSegments(r: FlightResultEntity) {
     console.log("getTotalFlySegments flyJourneys", r);
     const result: FlightSegmentEntity[] = [];
-    if (r && r.FlightSegments) {
-      for (const seg of r.FlightSegments) {
-        seg.TakeoffTimeStamp = AppHelper.getDate(seg.TakeoffTime).getTime();
-        seg.ArrivalTimeStamp = AppHelper.getDate(seg.ArrivalTime).getTime();
-        seg.TakeoffShortTime = this.getHHmm(seg.TakeoffTime);
-        seg.ArrivalShortTime = this.getHHmm(seg.ArrivalTime);
-        if (seg.AirlineSrc) {
-          seg.AirlineSrc = seg.AirlineSrc.toLowerCase();
+    try {
+      if (r && r.FlightSegments) {
+        for (const seg of r.FlightSegments) {
+          seg.TakeoffTimeStamp = AppHelper.getDate(seg.TakeoffTime).getTime();
+          seg.ArrivalTimeStamp = AppHelper.getDate(seg.ArrivalTime).getTime();
+          seg.TakeoffShortTime = this.getHHmm(seg.TakeoffTime);
+          seg.ArrivalShortTime = this.getHHmm(seg.ArrivalTime);
+          if (seg.AirlineSrc) {
+            seg.AirlineSrc = seg.AirlineSrc.toLowerCase();
+          }
+          seg.AddOneDayTip = this.addoneday(seg);
+          result.push({ ...seg });
         }
-        seg.AddOneDayTip = this.addoneday(seg);
-        result.push({ ...seg });
       }
+    } catch (e) {
+      console.error(e);
     }
     console.log("getTotalFlySegments", result);
     return result;
@@ -1664,15 +1681,17 @@ export class FlightService {
       ToAsAirport: s.FromAsAirport,
     });
   }
-  onSelectCity(isFrom: boolean) {
-    this.router.navigate([AppHelper.getRoutePath("select-flight-city")], {
-      queryParams: { requestCode: isFrom ? "select_from_city" : "to_city" },
-    });
-  }
   filterByFlightDirect(segs: FlightSegmentEntity[]) {
     let result = segs;
     if (this.filterCondition && this.filterCondition.onlyDirect) {
       result = result.filter((s) => !s.IsStop);
+    }
+    return result;
+  }
+  filterByIsAgreement(segs: FlightSegmentEntity[]) {
+    let result = segs;
+    if (this.filterCondition && this.filterCondition.isAgreement) {
+      result = result.filter((s) => s.IsAgreement);
     }
     return result;
   }

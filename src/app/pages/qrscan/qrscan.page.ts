@@ -5,7 +5,7 @@ import { OnDestroy, ViewChild, ElementRef } from "@angular/core";
 import { Component, OnInit } from "@angular/core";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { AppHelper } from "src/app/appHelper";
-import { ScanService } from 'src/app/services/scan/scan.service';
+import { QrScanService } from "src/app/services/qrScan/qrscan.service";
 
 @Component({
   selector: "app-qrscan",
@@ -19,7 +19,7 @@ export class QrScanPage implements OnInit, OnDestroy {
   isMovingScanBar = false;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   constructor(
-    private qrScanService: ScanService,
+    private qrScanService: QrScanService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -80,7 +80,7 @@ export class QrScanPage implements OnInit, OnDestroy {
         return;
       }
       this.router.navigate([AppHelper.getRoutePath("scan-result")], {
-        queryParams: { scanResult: text }
+        queryParams: { scanResult: encodeURIComponent(text) }
       });
       this.clearBackground(false);
     } catch (e) {

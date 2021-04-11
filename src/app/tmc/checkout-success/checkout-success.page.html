@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar style="--border-width: 0">
+    <ion-buttons slot="start" style="font-size: 25px">
+      <ion-icon name="chevron-back-outline" (click)="onOrderList()"></ion-icon>
+    </ion-buttons>
+    <ion-title>下单成功</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <div class="container">
+    <div class="up">
+      <div>
+        <img src="assets/images/order.png" alt="" />
+      </div>
+    </div>
+    <div class="down">
+      <div class="success">下单成功</div>
+      <div class="active ion-text-nowrap" *ngIf="isApproval">
+        您的订单需要审批{{isCheckPay?"、请于审批完成后到订单列表进行支付":""}}
+      </div>
+      <div class="active ion-text-nowrap" *ngIf="!payResult&&isCheckPay">
+        <ion-text color='danger'>
+          您的订单尚未支付，请您稍后到订单列表进行支付
+        </ion-text>
+      </div>
+    </div>
+  </div>
+  <!-- <div class="integral" *ngIf="tabId==3">
+    <div class="img">
+      <div class="inside">
+        <div class="right">+200<span>积分</span></div>
+        <div class="center">恭喜您!获得200积分</div>
+      </div>
+    </div>
+  </div> -->
+  <div class="hotel-item" *ngIf="boutiqueHotel?.HotelDayPrices?.length">
+    <div class="boutique">{{city?.CityName}}精品酒店推荐</div>
+    <div class="list" *ngFor="let item of boutiqueHotel?.HotelDayPrices" (click)="goToDetail(item.Id)">
+      <img [lazyLoad]="item.HotelFileName" />
+      <div class="right-side">
+        <div class="name">{{item?.HotelName}}</div>
+        <div class="grade-stars">
+          <div class="score">
+            <div class="label">评分:</div>
+            <ion-text class="grade" color="danger">{{item?.HotelCategory}}分</ion-text>
+          </div>
+          <ion-text class="ion-text-end ion-padding-end price" color="danger"><small>￥</small><strong>{{item?.Price}}</strong><small>起</small>
+          </ion-text>
+        </div>
+        <div class="ion-text-wrap location">
+          <ion-icon name="location" color="medium" style="margin-top: 3px"></ion-icon>
+          <div class="ion-text-wrap">{{item?.HotelAddress}}</div>
+        </div>
+      </div>
+    </div>
+    <ion-item (click)="onMore()" detail> 查看更多 </ion-item>
+  </div>
+</ion-content>

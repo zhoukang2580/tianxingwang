@@ -12,12 +12,13 @@ import { TmcGuard } from "src/app/guards/tmc.guard";
 import { AuthorityGuard } from "src/app/guards/authority.guard";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
 import { MemberComponentsModule } from 'src/app/member/components/components.module';
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: SelectPassengerPage,
-    canActivate: [AuthorityGuard, TmcGuard],
+    canActivate: [AuthorityGuard, TmcGuard,StylePageGuard],
     canDeactivate: [CandeactivateGuard],
   },
 ];

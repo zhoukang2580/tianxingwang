@@ -48,6 +48,8 @@ import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
+import { FlightCityService } from "../flight-city.service";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -129,6 +131,7 @@ export class FlightListPage
   get filterConditionIsFiltered() {
     return (
       (this.filterCondition && this.filterCondition.onlyDirect) ||
+      (this.filterCondition && this.filterCondition.isAgreement) ||
       (this.filterCondition.userOps &&
         Object.keys(this.filterCondition.userOps).some(
           (k) => this.filterCondition.userOps[k]
@@ -146,6 +149,7 @@ export class FlightListPage
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
     private storage: Storage,
+    private flightCityService: FlightCityService,
     private tmcService: TmcService
   ) {
     this.subscriptions.push(
@@ -241,7 +245,7 @@ export class FlightListPage
       const ok = await this.checkCabinsAndPolicy(s);
       if (!ok) {
         if (!this.tmcService.isAgent) {
-          AppHelper.alert("加载差标信息失败");
+          AppHelper.alert("该航班已无可售座位");
           return;
         }
       }
@@ -321,7 +325,10 @@ export class FlightListPage
       .catch((_) => null);
     this.showAddPassenger =
       (identity && identity.Numbers && identity.Numbers.AgentId) ||
-      !(await this.staffService.isSelfBookType());
+      (!(await this.staffService.isSelfBookType()) &&
+        !this.flightService
+          .getPassengerBookInfos()
+          .every((it) => !!it.exchangeInfo));
     return this.showAddPassenger;
   }
   async onCalenderClick() {
@@ -427,7 +434,10 @@ export class FlightListPage
       this.isLoading = true;
       this.currentProcessStatus = "正在获取航班列表";
       this.apiService.showLoadingView({ msg: this.currentProcessStatus });
-      this.oldSearchCities.fromCityCode = this.searchFlightModel.fromCity.Code;
+      this.oldSearchCities.fromCityCode =
+        this.searchFlightModel &&
+        this.searchFlightModel.fromCity &&
+        this.searchFlightModel.fromCity.Code;
       this.oldSearchCities.toCityCode = this.searchFlightModel.toCity.Code;
       const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
         loadDataFromServer
@@ -482,6 +492,7 @@ export class FlightListPage
     }
     return result;
   }
+
   private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
@@ -564,7 +575,7 @@ export class FlightListPage
       const ok = await this.checkCabinsAndPolicy(fs);
       if (!ok) {
         if (!this.tmcService.isAgent) {
-          AppHelper.alert("加载差标信息失败");
+          AppHelper.alert("该航班已无可售座位");
           return;
         }
       }
@@ -608,12 +619,33 @@ export class FlightListPage
     );
     this.doRefresh(false, true);
   }
-  onSelectCity(isFrom: boolean) {
+  async onSelectCity(isFrom: boolean) {
     if (this.flightService.getSearchFlightModel().isLocked) {
       return;
     }
     this.isCanLeave = true;
-    this.flightService.onSelectCity(isFrom);
+    // this.flightService.onSelectCity(isFrom);
+    const rs = await this.flightCityService.onSelectCity(true, isFrom);
+    if (rs) {
+      const s = this.searchFlightModel;
+      if (rs.isDomestic) {
+        const fromCity = isFrom ? rs.city : s.fromCity;
+        const toCity = isFrom ? s.toCity : rs.city;
+        this.flightService.setSearchFlightModelSource({
+          ...s,
+          fromCity,
+          toCity,
+          FromCode: fromCity.Code,
+          ToCode: toCity.Code,
+          FromAsAirport: s.ToAsAirport,
+          ToAsAirport: s.FromAsAirport,
+        });
+        if (this.checkIfCityChanged()) {
+          this.doRefresh(true, false);
+        }
+      } else {
+      }
+    }
   }
   private async initSearchModelParams() {
     this.subscriptions.push(
@@ -880,9 +912,14 @@ export class FlightListPage
     result = this.flightService.filterByCabins(result);
     result = this.flightService.filterByTakeOffTimeSpan(result);
     result = this.flightService.filterByFlightDirect(result);
+    result = this.flightService.filterByIsAgreement(result);
     return result;
   }
   canDeactivate() {
+    if (this.flightCityService.isShowingPage) {
+      this.flightCityService.onSelectCity(false, false);
+      return false;
+    }
     const s = this.flightService.getSearchFlightModel();
     if (s.isExchange) {
       if (this.isCanLeave) {

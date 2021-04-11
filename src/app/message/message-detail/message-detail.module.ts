@@ -7,11 +7,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { MessageDetailPage } from './message-detail.page';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: MessageDetailPage
+    component: MessageDetailPage,
+    canActivate: [StylePageGuard]
   }
 ];
 

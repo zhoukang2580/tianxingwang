@@ -5,3 +5,6 @@
 ion-item-divider {
   border-left: 4px solid var(--ion-color-secondary);
 }
+ion-item ion-label:first-child {
+  max-width: 90px;
+}

@@ -30,11 +30,11 @@
       <div class='time'>
         <ion-text color='dark'>起飞日期：{{startDate}}</ion-text>
       </div>
-      <div class="passenger" *ngIf='trip.Passenger'>
+      <div class="passenger">
         <strong>
-          {{trip.Passenger.Name}}:
+          {{trip.Passenger?.Name}}:
         </strong>
-        <span>{{trip.Passenger.CredentialsNumber}}</span>
+        <span>{{trip.HideCredentialsNumber}}</span>
       </div>
       <ion-text color='medium'>
         <p>

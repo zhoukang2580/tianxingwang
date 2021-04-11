@@ -1,0 +1,320 @@
+.flight-city-page-container {
+  padding-top: var(--ion-safe-area-top);
+  transform: translate3d(100%, 0, 0);
+  transition: all ease-in-out 200ms;
+  position: absolute;
+  height: 100%;
+  overflow: hidden;
+  overflow-y: auto;
+  width: 100%;
+  top: 0;
+  background-color: white;
+  // z-index: 1000;
+  &.show {
+    transform: translate3d(0, 0, 0);
+  }
+  .list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+  }
+  .item {
+    margin: 0;
+    padding: 0.5em 1em;
+  }
+  .list .item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  .list .item.selected {
+    color: var(--ion-color-secondary);
+  }
+  .list .item label {
+    font-size: 14px;
+    .city-name {
+      color: #666;
+      margin-left: 1em;
+    }
+  }
+  .list .letter-header {
+    font-weight: bolder;
+    background-color: #eee;
+    height: 20px;
+    padding: 0 0.6em;
+    position: static;
+    top: 0;
+    label {
+      font-size: 14px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: #333333;
+    }
+  }
+  .letters-wrapper {
+    position: sticky;
+    left: 90%;
+    z-index: 10;
+    top: 0;
+    width: 2em;
+    height: 100%;
+  }
+  .letter-navs {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    background: transparent;
+    position: absolute;
+    right: 0.5em;
+    z-index: 99;
+    top: 4vh;
+  }
+  .letter-navs .nav-letter {
+    padding: 0.15em 0.5em;
+    font-size: 16px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: hsl(0, 0%, 60%);
+  }
+  .hot-cities-wrapper .header {
+    display: flex;
+    align-items: center;
+    padding: 1em;
+  }
+  .hot-cities-wrapper .header .icon {
+    margin-left: auto;
+    margin-right: 1em;
+  }
+  .hot-cities-wrapper .list {
+    display: flex;
+    flex-flow: row wrap;
+    list-style: none;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0;
+  }
+  .hot-cities-wrapper .list-wrapper {
+    width: 100%;
+    padding: 0 1.5em 0.5em 1.5em;
+  }
+  &.md .hot-cities-wrapper .list-wrapper {
+    padding: 0 0.5em 0 0.5em;
+  }
+  .header {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    padding-top: 0.5em;
+    margin-top: 0.5em;
+    .searchbar {
+      height: 100%;
+      flex: 1;
+    }
+    ion-icon {
+      font-size: 1.5rem;
+      opacity: 0.8;
+      margin: 0 0.2em;
+    }
+    .back-icon {
+      font-size: 1.5rem;
+    }
+    ion-searchbar {
+      --border-radius: 5px;
+      padding: 0;
+      margin-right: -0.5em;
+      height: 100%;
+    }
+    .cancel {
+      color: var(--ion-color-secondary);
+    }
+  }
+  .segments {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 4em;
+    border-bottom: 1px solid #e5e5e5;
+    .segment {
+      position: relative;
+      &.active {
+        label {
+          color: var(--ion-color-secondary);
+        }
+      }
+      &.active::after {
+        position: absolute;
+        content: "";
+        display: block;
+        height: 3px;
+        background-color: var(--ion-color-secondary, #5099fe);
+        bottom: -8px;
+        left: 0;
+        right: 0;
+        border-radius: 4px;
+      }
+    }
+  }
+  .container {
+    height: calc(100% - 98px);
+    overflow: auto;
+    overflow-x: hidden;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    position: relative;
+    .wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      transition: all ease 200ms;
+      height: 100%;
+      &.domestic.show,
+      &.international.show {
+        transform: translate(0, 0);
+      }
+      &.domestic {
+        transform: translate(-100%, 0);
+      }
+      &.international {
+        transform: translate(100%, 0);
+      }
+    }
+  }
+  .international-page-container {
+    display: flex;
+    height: 101%;
+    .sidebar {
+      text-align: center;
+      flex-basis: 100px;
+      width: 100px;
+      height: 112%;
+      background: #f1f1f1;
+      max-height: 102%;
+      overflow: auto;
+      overflow-x: hidden;
+      .tab {
+        padding: 1em;
+        &.active {
+          background: #ffffff;
+          color: var(--ion-color-secondary, #5099fe);
+        }
+      }
+    }
+    .main {
+      max-height: 100%;
+      overflow: auto;
+      flex: 1;
+      .label-header {
+        padding: 16px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #333333;
+      }
+      .list {
+        padding-bottom: 0.5em;
+      }
+    }
+  }
+  .fab-btn {
+    color: white;
+    background-color: rgba(var(--ion-color-secondary-rgb), 0.6);
+    border-radius: 50%;
+    position: fixed;
+    right: 10vw;
+    width: 2em;
+    height: 2em;
+    bottom: 5vh;
+    z-index: -10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ion-icon {
+      font-size: 1.1rem;
+    }
+    transition: all ease-in-out 200ms;
+    transform: translate3d(1000%, 0, 0);
+    &.show {
+      z-index: 99;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    margin: 0.5em;
+    min-height: 35px;
+    &.full-w {
+      width: 100%;
+    }
+    .city-item {
+      &.empty {
+        visibility: collapse;
+      }
+      &.active {
+        color: var(--ion-color-secondary, tomato);
+      }
+      &.col-2 {
+        flex-basis: 64.666%;
+        max-width: 64.666%;
+      }
+      &.col-2:first-child {
+        margin-right: 1.5%;
+      }
+      &.col-2:last-child {
+        margin-left: 1.5%;
+      }
+      &.col-3 {
+        flex-basis: 31.333%;
+        max-width: 31.333%;
+      }
+      font-size: 14px;
+      background: #f6f6f6;
+      border-radius: 3px;
+      padding: 0.5em 0.1em;
+      border-radius: 3px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      &.empty {
+        background: transparent;
+        visibility: collapse;
+      }
+      &.f-8 {
+        font-size: 8px;
+      }
+      &.f-10 {
+        font-size: 10px;
+      }
+      &.f-12 {
+        font-size: 12px;
+      }
+    }
+  }
+}
+.search-list-page {
+  padding-top: var(--ion-safe-area-top);
+  transform: translate3d(0, 100%, 0);
+  transition: all ease-in-out 200ms;
+  position: fixed;
+  top: calc(44px + 0.3em);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  &.show {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  .item {
+    padding: 0.5em 1em;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+    .city-name {
+      color: gray;
+    }
+  }
+}

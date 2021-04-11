@@ -1,9 +1,0 @@
-<ion-buttons>
-  <ion-button  *ngFor='let t of tabs' color='{{t.active?"secondary":"dark"}}' (click)='onTabClick(t)'>
-    <span style="font-size: 12px;" [class.has-selected-item]="checkHasItemSelected(t)">
-      {{t.name}}
-    </span>
-    <ion-icon name='chevron-up-outline' *ngIf='t.active'></ion-icon>
-    <ion-icon name='chevron-down-outline' *ngIf='!t.active'></ion-icon>
-  </ion-button>
-</ion-buttons>

@@ -44,6 +44,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "hotel-show-images_df",
+    loadChildren: () =>
+      import("./show-images-df/show-images-df.module").then(
+        m => m.ShowImagesDfPageModule
+      )
+  },
+  {
     path: "hotel-room-detail",
     loadChildren: () =>
       import("./room-detail/room-detail.module").then(
@@ -55,6 +62,13 @@ export const routes: Routes = [
     loadChildren: () =>
       import("./room-detail_en/room-detail_en.module").then(
         m => m.RoomDetailEnPageModule
+      )
+  },
+  {
+    path: "hotel-room-detail-df",
+    loadChildren: () =>
+      import("./room-detail_df/room-detail_df.module").then(
+        m => m.RoomDetailDfPageModule
       )
   },
   {
@@ -123,6 +137,7 @@ export const routes: Routes = [
     path: 'hotel-map',
     loadChildren: () => import('./hotel-map/hotel-map.module').then( m => m.HotelMapPageModule)
   }
+
 
 ];
 @NgModule({

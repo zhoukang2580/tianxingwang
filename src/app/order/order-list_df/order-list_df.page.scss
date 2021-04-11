@@ -11,6 +11,8 @@ ion-list {
   background: transparent;
   ion-item {
     margin-bottom: 0.5em;
+    --padding-start: 0;
+    --padding-end: 0;
   }
 }
 ion-footer ion-row ion-col {
@@ -36,11 +38,16 @@ ion-footer ion-row ion-col {
 }
 app-order-item {
   font-size: 0.9rem;
-  padding: 1em 0;
+  padding: 0.5em 0;
 }
 ul {
   list-style: none;
   margin: 0;
   padding: 0.5em 0;
   // background-color: var(--ion-color-light);
+}
+
+.item{
+  margin: 10px;
+  border-radius: 5px;
 }

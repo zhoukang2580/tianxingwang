@@ -186,22 +186,6 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.router.events
-      .pipe(
-        filter(
-          (evt) =>
-            evt instanceof NavigationEnd && this.router.url.includes("tabs/my")
-        )
-      )
-      .subscribe(() => {
-        if (this.langService.isCn) {
-          if (this.router.url.endsWith("en")) {
-            this.router.navigate([
-              this.router.url.substr(1, this.router.url.lastIndexOf("_")),
-            ]);
-          }
-        }
-      });
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (_) => {
         this.items = ORDER_TABS.filter((it) => it.isDisplay);

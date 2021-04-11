@@ -1,4 +1,4 @@
-import { FlightVoyageType } from "src/app/flight-international/international-flight.service";
+import { FlightVoyageType } from "src/app/international-flight/international-flight.service";
 
 export class FlightQueryEntity {
   /// <summary>

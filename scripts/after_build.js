@@ -125,6 +125,7 @@ function generateVersionJson(plt, apkmd5, md5) {
             DownloadUrl: ``,
             ApkDownloadUrl: ``,
             Ignore: true,
+            IsShowThirdPartyLogin: true,
             EnabledHcpUpdate: true,
             EnabledAppUpdate: true,
             ...one,

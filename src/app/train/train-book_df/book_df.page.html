@@ -1,269 +1,292 @@
 <ion-header>
   <ion-toolbar>
-    <ion-buttons slot='start'>
-      <app-back-button defaultHref=''></app-back-button>
+    <ion-buttons slot="start">
+      <app-back-button defaultHref=""></app-back-button>
     </ion-buttons>
     <ion-title>确认信息</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ng-container *ngIf='!error else retryTempl'>
-    <app-refresher slot='fixed' (ionRefresh)='doRefresh(true)'>
+  <ng-container *ngIf="!error else retryTempl">
+    <app-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
       <ion-refresher-content>正在刷新...</ion-refresher-content>
     </app-refresher>
-    <ng-container *ngIf='viewModel?.combindInfos?.length'>
-      <ion-list class="list" *ngFor="let combindInfo of viewModel?.combindInfos" lines='none'>
-        <!-- <ion-item color='primary' class="sticky">
-          {{combindInfo?.vmCredential?.Name}}
-          【{{tmc?.Name}}】
-          <div>身份证 {{combindInfo?.vmCredential?.Number}}</div>
-        </ion-item> -->
-
-        <ion-item-group>
-          <!-- <ion-item-divider>车票预订信息:</ion-item-divider> -->
-          <ion-item class="ion-inbook">
-            <div style='width: 100%;padding: 1em 0.25em '>
-              <div>
-                <span class="name">{{combindInfo?.vmCredential?.Name}}</span>&nbsp;&nbsp;
-                <span class="idcode">身份证号: {{combindInfo?.vmCredential?.Number}}</span>
-              </div>
-              <strong>
-                <ion-label style="padding: 0.5em 0">
-                  {{getDate(combindInfo?.bookInfo?.bookInfo?.trainEntity)}}
-                </ion-label>
-              </strong>
-              <app-train-list-item-df [train]='combindInfo?.bookInfo?.bookInfo?.trainEntity' [showBookBtn]='false'
-                [seat]='combindInfo?.bookInfo?.bookInfo?.selectedSeat' (seatPicker)='onSeatPicker($event,combindInfo)'
-                [selectSeatLocation]='combindInfo.bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'>
-              </app-train-list-item-df>
-            </div>
-          </ion-item>
-        </ion-item-group>
-        <ion-item-group>
-          <ion-item>
-            <div class="passenger">旅客信息</div>
-          </ion-item>
-          <!-- <ion-item-divider>旅客信息：</ion-item-divider> -->
-          <!-- <ion-item [disabled]='searchTrainModel?.isExchange'>  
-            <div style='width: 100%'>
-              <app-book-credential-comp [attr.credentialcompid]='combindInfo.id'
-                [credential]='combindInfo?.vmCredential' *ngIf='!searchTrainModel?.isExchange else excredentialTemp'
-                [canEdit]='true' [canEditNumber]='false'
-                [isself]='isSelfBookType'
-                [canEditSurname]='combindInfo?.vmCredential.Type==CredentialsType.HvPass||combindInfo?.vmCredential.Type==CredentialsType.Taiwan'
-                [canEditName]='combindInfo?.vmCredential.Type==CredentialsType.HvPass||combindInfo?.vmCredential.Type==CredentialsType.Taiwan'
-                (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'
-                (modify)='onModify(combindInfo)'>
-              </app-book-credential-comp>
-              <ng-template #excredentialTemp>
-                <app-book-credential-comp [attr.credentialcompid]='combindInfo.id' [canEdit]='false' 
-                  [credential]='combindInfo?.vmCredential' (savecredential)='onSavecredential($event,combindInfo)'
-                  [credentials]='combindInfo?.credentials'>
-                </app-book-credential-comp>
-              </ng-template>
-            </div>
-          </ion-item> -->
-          <ion-item *ngIf='combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist'>
-            <div style='width: 100%'>
-              <app-book-illegal-reason-comp [attr.illegalReasonid]='combindInfo.id' #illegalReasonsEle
-                [illegalReasons]='viewModel?.illegalReasons' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
-                (ionchange)='onIllegalReason($event,combindInfo)'>
-              </app-book-illegal-reason-comp>
-            </div>
-          </ion-item>
-          <ng-container *ngIf='viewModel?.expenseTypes?.length'>
-            <ion-item lines='none'>
-              <app-book-expense-types-comp style="width: 100%;" [expenseTypes]='viewModel.expenseTypes'
-                [(expenseType)]='combindInfo.expenseType'>
-              </app-book-expense-types-comp>
-            </ion-item>
-          </ng-container>
-          <ion-item>
-            <app-book-organization-comp-df (ionChange)='onOrganizationChange($event,combindInfo)'
-              [organization]='combindInfo?.organization' [isOtherOrganization]='combindInfo?.isOtherOrganization'
-              [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp-df>
-          </ion-item>
-          <ion-item>
-            <app-book-costcenter-comp-df [isOtherCostCenter]='combindInfo.isOtherCostCenter'
-              [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
-              [otherCostCenterName]='combindInfo.otherCostCenterName'
-              (ionChange)='onCostCenterChange($event,combindInfo)'>
-            </app-book-costcenter-comp-df>
-          </ion-item>
-        </ion-item-group>
-        <ion-item-group>
-          <ion-item-divider>
-            联系方式:
-          </ion-item-divider>
-          <div class='mobiles' [attr.mobileid]='combindInfo.id'>
-            <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'
-              [disabled]='searchTrainModel?.isExchange'>
-              <ion-checkbox color="secondary" [(ngModel)]="mobile.checked"></ion-checkbox>
-              <ion-label style='margin-left: 0.5em'>{{mobile.mobile}}</ion-label>
-            </ion-item>
-            <ion-item [disabled]='searchTrainModel?.isExchange'>
-              <ion-label style='margin-right: 0.5em'>其他号码：</ion-label>
-              <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='请输入其他号码'></ion-input>
-            </ion-item>
-          </div>
-        </ion-item-group>
-        <ion-item-group>
-          <ion-item-divider>
-            联系邮箱:
-          </ion-item-divider>
-          <div class='emails'>
-            <ion-item *ngFor='let email of combindInfo?.credentialStaffEmails'
-              [disabled]='searchTrainModel?.isExchange'>
-              <ion-checkbox color="secondary" [(ngModel)]="email.checked"></ion-checkbox>
-              <ion-label style='margin-left: 0.5em'>{{email.email}}</ion-label>
-            </ion-item>
-            <ion-item class='ion-no-margin' [disabled]='searchTrainModel?.isExchange'>
-              <ion-label>其他邮箱：</ion-label>
-              <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
-            </ion-item>
-          </div>
-        </ion-item-group>
-        <ng-container *ngIf='combindInfo?.insuranceProducts?.length'>
+    <ng-container *ngIf="viewModel?.combindInfos?.length">
+      <ng-container *ngFor="let combindInfo of viewModel?.combindInfos">
+        <ion-list class="list" lines="none">
           <ion-item-group>
-            <ion-item-divider color="primary">
-              保险:
-            </ion-item-divider>
-            <ion-radio-group [disabled]='searchTrainModel?.isExchange' allow-empty-selection='true'
-              [value]='combindInfo.selectedInsuranceProduct' [(ngModel)]='combindInfo.selectedInsuranceProduct'
-              (ionChange)='calcTotalPrice()'>
-              <div *ngFor='let insurance of combindInfo?.insuranceProducts'
-                style="margin-top: 1em;background-color: var(--ion-color-primary);padding-right: 1em;">
-                <ion-buttons>
-                  <ion-item style="--background:transparent;flex: 1;">
-                    <ion-radio [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
-                    <ion-label class="ion-margin-horizontal">
-                      {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
-                  </ion-item>
-                  <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
-                    详情
-                    <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
-                    </ion-icon>
-                    <ion-icon name="caret-down-outline" *ngIf='!insurance.showDetail'>
-                    </ion-icon>
-                  </ion-label>
-                </ion-buttons>
-                <div [@flyInOut] *ngIf='insurance.showDetail' style='width: 100%;'
-                  (click)='insurance.showDetail=!insurance.showDetail'>
-                  <ion-row>
-                    <ion-col>
-                      <ion-label color='medium' class='small-font ion-text-wrap'>
-                        <div style="user-select: text;"
-                          [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
-                      </ion-label>
-                    </ion-col>
-                  </ion-row>
-                  <ion-item style="--background: transparent;" *ngIf='insurance.insuranceResult?.DetailUrl' detail
-                    button (click)='onShowProductDetail(insurance.insuranceResult,$event)'>
-                    <ion-label color='secondary'>显示更多</ion-label>
-                  </ion-item>
-                </div>
-              </div>
-            </ion-radio-group>
-          </ion-item-group>
-        </ng-container>
-        <ion-item-group *ngIf="isShowApprove(combindInfo)">
-          <ion-item-divider>
-            审批人:
-          </ion-item-divider>
-          <ion-item>
-            <div style='width: 100%;'>
-              <ion-row style='margin-top: .5em;'>
-                <ion-col>
-                  <app-timeline [hideLastTimeLineTail]='false'>
-                    <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
-                      第{{it.Tag}}级审批:
-                      <ion-label class='ion-text-wrap' *ngFor='let ap of it.approvers;let last'>
-                        {{ap.Name}}({{it?.Type==1?"所有通过":"任意通过"}})
-                      </ion-label>
-                    </app-timeline-item>
-                  </app-timeline>
-                </ion-col>
-              </ion-row>
-            </div>
-          </ion-item>
-        </ion-item-group>
-        <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
-          <ion-item-group>
-            <!-- <ion-list-header color='primary' class='sticky'>
-              <ion-label class='ion-text-wrap' *ngIf='getGroupedTitle(combindInfo) as title'>
-                {{title}}
-                【{{tmc?.Name}}】
-              </ion-label>
-            </ion-list-header> -->
-            <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
-              <ion-label>通知语言:</ion-label>
-              <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
-                <ion-select-option value=''>不发</ion-select-option>
-                <ion-select-option value='cn'>中文</ion-select-option>
-                <ion-select-option value='en'>英文</ion-select-option>
+            <ion-item lines="none" style="display: none">
+              <ion-label>选择证件</ion-label>
+              <ion-select #credentialSelect [(ngModel)]="combindInfo.vmCredential" name="Type" okText="确定" cancelText="取消" selectedText="{{combindInfo.vmCredential?.Type|credential}}"
+                [compareWith]="credentialCompareFn">
+                <ion-select-option [value]="opt" *ngFor="let opt of combindInfo?.credentials">
+                  {{(opt?.Type|credential)}}{{opt?.HideNumber}}
+                </ion-select-option>
               </ion-select>
             </ion-item>
-            <ion-item class="ion-no-margin" *ngIf='viewModel?.isCanSkipApproval$|async'>
-              <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
-              <ion-checkbox class='ion-margin-end' color="secondary" [(ngModel)]='combindInfo.isSkipApprove'>
-              </ion-checkbox>
-            </ion-item>
-            <ion-item class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || viewModel?.identity?.Numbers?.AgentId'>
-              <ion-label>服务费:</ion-label>
-              <ion-label slot='end' class='ion-text-end ion-padding-end'>{{combindInfo.serviceFee}}元</ion-label>
-            </ion-item>
-            <ng-container *ngIf='!searchTrainModel?.isExchange else exApproval'>
-              <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)'
-                (click)='openApproverModal(combindInfo)' [attr.approvalid]='combindInfo.id'>
-                <ion-label>
-                  审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
-                    {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
-                  </ion-text>
+            <ion-item class="ion-inbook p">
+              <div style="width: 100%; padding: 1em 0.25em">
+                <div>
+                  <span class="name">{{combindInfo?.vmCredential?.Name}}</span>&nbsp;&nbsp;
+                  <span class="idcode">{{combindInfo?.vmCredential?.TypeName}}:
+                    {{combindInfo?.vmCredential?.HideNumber}}</span>
+                  <img class="editicon" src="assets/images/editicon.png" alt="" (click)="onChangeCredential(credentialSelect,combindInfo)" />
+                  <ion-text style="font-size: 14px" *ngIf="isSelfBookType" color="secondary" (click)="onManagementCredentials(combindInfo)">新增</ion-text>
+                </div>
+                <strong>
+                  <ion-label style="padding: 0.5em 0">
+                    {{getDate(combindInfo?.bookInfo?.bookInfo?.trainEntity)}}
+                  </ion-label>
+                </strong>
+                <app-train-list-item-df [train]="combindInfo?.bookInfo?.bookInfo?.trainEntity" [showBookBtn]="false" [seat]="combindInfo?.bookInfo?.bookInfo?.selectedSeat"
+                  (seatPicker)="onSeatPicker($event,combindInfo)" [selectSeatLocation]="combindInfo.bookInfo?.bookInfo?.trainEntity?.BookSeatLocation">
+                </app-train-list-item-df>
+                <ion-label color="danger" class="ion-label-text">如果本次列车剩余席位无法满足您的选座需求,系统将自动为您分配席位</ion-label>
+                <ion-label color="danger" class="ion-label-text" *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules">
+                  超标:{{combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.join(";")
+                  }}
                 </ion-label>
-              </ion-item>
-            </ng-container>
-            <ng-template #exApproval>
-              <ion-item class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' disabled
-                [attr.approvalid]='combindInfo.id'>
-                <ion-label>
-                  审批人:<ion-text *ngIf='combindInfo?.appovalStaff'>
-                    {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
-                  </ion-text>
-                </ion-label>
-              </ion-item>
-            </ng-template>
+              </div>
+            </ion-item>
           </ion-item-group>
+          <ng-container *ngIf="combindInfo?.insuranceProducts?.length">
+            <ion-item-group>
+              <ion-item-divider color="primary"> 保险: </ion-item-divider>
+              <ion-radio-group [disabled]="searchTrainModel?.isExchange" mode="md" allow-empty-selection="true" [value]="combindInfo.selectedInsuranceProduct"
+                [(ngModel)]="combindInfo.selectedInsuranceProduct" (ionChange)="calcTotalPrice()">
+                <div *ngFor="let insurance of combindInfo?.insuranceProducts" style="
+                    margin-top: 1em;
+                    background-color: var(--ion-color-primary);
+                    padding-right: 1em;
+                  ">
+                  <ion-buttons>
+                    <ion-item style="--background: transparent; flex: 1">
+                      <ion-radio [value]="insurance.insuranceResult.Id" [disabled]="insurance.disabled"></ion-radio>
+                      <ion-label class="ion-margin-horizontal">
+                        {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
+                    </ion-item>
+                    <ion-label color="secondary" (click)="onShowInsuranceDetail(insurance,$event)">
+                      详情
+                      <ion-icon name="caret-up-outline" *ngIf="insurance.showDetail">
+                      </ion-icon>
+                      <ion-icon name="caret-down-outline" *ngIf="!insurance.showDetail">
+                      </ion-icon>
+                    </ion-label>
+                  </ion-buttons>
+                  <div [@flyInOut] *ngIf="insurance.showDetail" style="width: 100%" (click)="insurance.showDetail=!insurance.showDetail">
+                    <ion-row>
+                      <ion-col>
+                        <ion-label color="medium" class="small-font ion-text-wrap">
+                          <div style="user-select: text" [innerHtml]="getInsuranceDetails(insurance.insuranceResult?.Detail)"></div>
+                        </ion-label>
+                      </ion-col>
+                    </ion-row>
+                    <ion-item style="--background: transparent" *ngIf="insurance.insuranceResult?.DetailUrl" detail button (click)="onShowProductDetail(insurance.insuranceResult,$event)">
+                      <ion-label color="secondary">显示更多</ion-label>
+                    </ion-item>
+                  </div>
+                </div>
+              </ion-radio-group>
+            </ion-item-group>
+          </ng-container>
+        </ion-list>
+        <ion-list>
           <ion-item-group>
-            <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
-              [isExchange]='searchTrainModel?.isExchange' [isShowGroupedInfo]='true'
-              (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
-            </app-book-tmc-outnumber>
+            <ion-item class="pass-information">
+              <div class="con-div" (click)="isShowOtherInfo=!isShowOtherInfo">
+                <div class="passenger">旅客信息</div>
+                <div class="ion-up">
+                  <ion-icon name="chevron-down-outline" *ngIf="!isShowOtherInfo"></ion-icon>
+                  <ion-icon name="chevron-up-outline" *ngIf="isShowOtherInfo"></ion-icon>
+                </div>
+              </div>
+            </ion-item>
+            <div *ngIf="isShowOtherInfo">
+              <ion-item *ngFor="let mobile of combindInfo?.credentialStaffMobiles" [disabled]="searchTrainModel?.isExchange">
+                <ion-label color="medium" class="ion-mobile">联系电话:</ion-label>
+                <div class="ion-phone">
+                  <ion-checkbox color="secondary" [(ngModel)]="mobile.checked"></ion-checkbox>
+                  <ion-label>{{mobile.mobile}}</ion-label>
+                </div>
+              </ion-item>
+              <ion-item>
+                <ion-label color="medium" class="ion-email">联系邮箱：</ion-label>
+                <div *ngFor="let m of combindInfo.credentialStaffEmails;" class="ion-ema">
+                  <ion-checkbox [(ngModel)]="m.checked"></ion-checkbox><span (click)="m.checked=!m.checked">{{m.email}}</span>
+                </div>
+              </ion-item>
+              <ion-item>
+                <div class="flex padding-v" (click)="searchOrganization(combindInfo)">
+                  <ion-label class="label">部门：</ion-label>
+                  <ion-text> {{combindInfo?.organization?.Name}}  </ion-text>
+                  <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
+                </div>
+              </ion-item>
+              <ion-item class="cost-center">
+                <div class="flex padding-v" (click)="searchCostCenter(combindInfo)">
+                  <ion-label class="label">成本中心：</ion-label>
+                  <ion-text>{{combindInfo?.costCenter?.name}} </ion-text>
+                  <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
+                </div>
+              </ion-item>
+              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id">
+                <div class="otherinfo">
+                  <div class="other">
+                    <span class="label">其他电话：</span>
+                    <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder="电话"></ion-input>
+                  </div>
+                </div>
+              </ion-item>
+              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id">
+                <div class="otherinfo">
+                  <div class="other">
+                    <span class="label">其他邮箱：</span>
+                    <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder="邮箱"></ion-input>
+                  </div>
+                </div>
+              </ion-item>
+              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id">
+                <div class="otherinfo">
+                  <div class="other">
+                    <span class="label">其他成本中心：</span>
+                    <ion-input [(ngModel)]="combindInfo.otherCostCenterName" placeholder="名称"></ion-input>
+                    <ion-input [(ngModel)]="combindInfo.otherCostCenterCode" placeholder="代码"></ion-input>
+                  </div>
+                </div>
+              </ion-item>
+              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id">
+                <div class="otherinfo">
+                  <div class="other">
+                    <span class="label">其他部门：</span>
+                    <ion-input [(ngModel)]="combindInfo.otherOrganizationName" placeholder="名称" ></ion-input>
+                  </div>
+                </div>
+              </ion-item>
+            </div>
           </ion-item-group>
-        </ng-container>
-      </ion-list>
-      <ion-list>
-        <ion-item-group *ngIf='!searchTrainModel?.isExchange'>
-          <ion-item-divider>
-            授权账号查看订单：
-          </ion-item-divider>
-          <ion-item>
-            <app-book-addcontacts-comp  buttonText='授权账号查看订单' [(contacts)]='addContacts'>
-            </app-book-addcontacts-comp>
+          <ion-item-group *ngIf="isShowApprove(combindInfo)">
+            <ion-item-divider> 审批人: </ion-item-divider>
+            <ion-item>
+              <div style="width: 100%">
+                <ion-row style="margin-top: 0.5em">
+                  <ion-col>
+                    <app-timeline [hideLastTimeLineTail]="false">
+                      <app-timeline-item *ngFor="let it of combindInfo?.credentialStaffApprovers">
+                        第{{it.Tag}}级审批:
+                        <ion-label class="ion-text-wrap" *ngFor="let ap of it.approvers;let last">
+                          {{ap.Name}}({{it?.Type==1?"所有通过":"任意通过"}})
+                        </ion-label>
+                      </app-timeline-item>
+                    </app-timeline>
+                  </ion-col>
+                </ion-row>
+              </div>
+            </ion-item>
+          </ion-item-group>
+        </ion-list>
+        <ion-list>
+          <ion-item lines="none" style="display: none">
+            <ion-label> 费用类别 </ion-label>
+            <ion-select #expenseTypeSelect [(ngModel)]="combindInfo.expenseType" name="Type" [compareWith]="expanseCompareFn" okText="确定" cancelText="取消">
+              <ion-select-option [value]="type" *ngFor="let type of viewModel?.expenseTypes">
+                {{type}}
+              </ion-select-option>
+            </ion-select>
           </ion-item>
+          <ion-item *ngIf='combindInfo.isShowGroupedInfo'>
+            <div class="passenger">出差信息</div>
+            <div style="width: 100%; text-align: end">
+              <ion-icon name="chevron-down-outline" *ngIf="combindInfo.isShowTravelInfo" (click)="combindInfo.isShowTravelInfo=!combindInfo.isShowTravelInfo"></ion-icon>
+              <ion-icon name="chevron-up-outline" *ngIf="!combindInfo.isShowTravelInfo" (click)="combindInfo.isShowTravelInfo=!combindInfo.isShowTravelInfo"></ion-icon>
+            </div>
+          </ion-item>
+          <ng-container *ngIf="combindInfo.isShowTravelInfo" style="margin-top: 0.5em;">
+            <div class="illegal" [attr.illegalReasonsid]="combindInfo.id" *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.length && !combindInfo?.isNotWhitelist">
+              <div class="flex padding-v row exceed-reason" (click)="onSelectIllegalReason(combindInfo)" *ngIf="viewModel?.illegalReasons?.length">
+                <div class="label">超标原因</div>
+                <div class="value">{{combindInfo?.illegalReason}}</div>
+                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
+              </div>
+              <div class="flex padding-v row">
+                <span class="label">其他原因</span>
+                <ion-input [(ngModel)]="combindInfo.otherIllegalReason" placeholder="请输入其他原因"></ion-input>
+              </div>
+            </div>
+            <ion-item *ngIf="viewModel?.expenseTypes?.length">
+              <div class="line" *ngIf="viewModel?.expenseTypes?.length"></div>
+              <div class="expanse" *ngIf="viewModel?.expenseTypes?.length">
+                <div class="flex padding-v">
+                  <span class="label">费用类别：</span>
+                  <div (click)="onOpenSelect(expenseTypeSelect)" style="display: flex">
+                    {{combindInfo.expenseType}}
+                    <ion-icon name="caret-down-outline" class="down"></ion-icon>
+                  </div>
+                </div>
+              </div>
+            </ion-item>
+            <ng-container *ngIf="combindInfo.isShowGroupedInfo">
+              <ion-item *ngIf="isAllowSelectApprove(combindInfo)">
+                <div class="line" *ngIf="viewModel?.expenseTypes?.length"></div>
+                <div class="approval-info" [attr.approverid]="combindInfo.id" (click)="openApproverModal(combindInfo)">
+                  <div class="flex padding-v">
+                    <span class="label">审批人：</span>
+                    <ion-text *ngIf="combindInfo?.appovalStaff">
+                      {{combindInfo?.appovalStaff?.Name}}
+                    </ion-text>
+                    <ion-icon name="caret-down-outline" class="down"></ion-icon>
+                  </div>
+                </div>
+              </ion-item>
+              <app-book-tmc-outnumber outnumber="outnumber" [tmcOutNumberInfos]="combindInfo?.tmcOutNumberInfos" [isExchange]="searchTrainModel?.isExchange" [isShowGroupedInfo]="true"
+                (tmcOutNumber)="onSelectTravelNumber($event,combindInfo)">
+              </app-book-tmc-outnumber>
+            </ng-container>
+          </ng-container>
+        </ion-list>
+        <ion-list class="notify-lang section" [attr.notifyLanguageid]="combindInfo.id" (click)="onOpenSelect(notifyLangEl)">
+          <ion-item class="ion-no-margin" style="display: none">
+            <ion-label>通知语言:</ion-label>
+            <ion-select value="cn" okText="确定" cancelText="取消" [(ngModel)]="combindInfo.notifyLanguage" #notifyLangEl>
+              <ion-select-option value="">不发</ion-select-option>
+              <ion-select-option value="cn">中文</ion-select-option>
+              <ion-select-option value="en">英文</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <div class="info" *ngIf='combindInfo.isShowGroupedInfo'>
+            <div class="flex padding-v">
+              <span class="label">通知语言：</span>{{combindInfo.notifyLanguage=='en'?"英文":(combindInfo.notifyLanguage=='cn'?"中文":"不发")}}
+              <ion-icon name="caret-down-outline" class="down"></ion-icon>
+            </div>
+          </div>
+        </ion-list>
+        <ion-list class="can-skip-approve" *ngIf='combindInfo.isShowGroupedInfo'>
+          <ion-item class="ion-no-margin" *ngIf="(viewModel?.isCanSkipApproval$|async)">
+            <ion-label class="label">跳过审批:</ion-label>
+            <ion-checkbox class="ion-margin-end" color="secondary" [(ngModel)]="combindInfo.isSkipApprove">
+            </ion-checkbox>
+          </ion-item>
+          <ion-item class="ion-no-margin" *ngIf="tmc?.IsShowServiceFee || viewModel?.identity?.Numbers?.AgentId">
+            <ion-label class="serFee label">服务费:</ion-label>
+            <ion-label>{{combindInfo.showGroupedServiceFee}}元</ion-label>
+          </ion-item>
+        </ion-list>
+      </ng-container>
+      <ion-list class="list">
+        <ion-item-group *ngIf="!searchTrainModel?.isExchange">
+          <app-book-addcontacts-comp-df buttonText="授权账号查看订单" [(contacts)]="addContacts">
+          </app-book-addcontacts-comp-df>
         </ion-item-group>
-        <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
-          <ion-item-divider>
-            支付方式：
-          </ion-item-divider>
-          <ion-item [disabled]='searchTrainModel?.isExchange'>
-            <div style='width: 100%'>
-              <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'
-                (ionChange)="calcTotalPrice()">
-                <ion-item *ngFor='let pt of orderTravelPayTypes'>
-                  <ion-label>{{pt.label}}</ion-label>
-                  <ion-radio [value]="pt.value" (ionSelect)='onOrderTravelPayTypeSelect(pt)'
-                    [class.radio-checked]='pt.checked'>
+        <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"' class="n-m" mode="md">
+          <ion-item class="ion-one p">
+            <div class="payment_method">支付方式</div>
+          </ion-item>
+          <ion-item class="ion-two" [disabled]="searchTrainModel?.isExchange">
+            <div class="pay-met">
+              <ion-radio-group class="n-m" mode="md" [(ngModel)]="viewModel.orderTravelPayType" name="travelPayType" (ionChange)="calcTotalPrice()">
+                <ion-item *ngFor="let pt of orderTravelPayTypes" class="p">
+                  <ion-label>{{pt.label}}<span class="person" *ngIf="pt?.value==2">(请在20分钟内完成支付)</span></ion-label>
+                  <ion-radio [value]="pt.value" (ionSelect)="onOrderTravelPayTypeSelect(pt)" [class.radio-checked]="pt.checked">
                   </ion-radio>
                 </ion-item>
               </ion-radio-group>
@@ -274,45 +297,43 @@
     </ng-container>
   </ng-container>
   <ng-template #retryTempl>
-    <ion-row style="position: relative;top:35%">
-      <ion-col class='ion-text-center'>
-        <ion-label color='danger'>请求数据出错</ion-label>
-        <ion-button fill='clear' expand='block' color='secondary' (click)='doRefresh(true)'>点击重试</ion-button>
+    <ion-row style="position: relative; top: 35%">
+      <ion-col class="ion-text-center">
+        <ion-label color="danger">请求数据出错</ion-label>
+        <ion-button fill="clear" expand="block" color="secondary" (click)="doRefresh(true)">点击重试</ion-button>
       </ion-col>
     </ion-row>
   </ng-template>
 </ion-content>
 <ion-footer>
-  <ion-toolbar (click)="isShowFee=!isShowFee">
-    <ion-buttons slot='start'>
-      <!-- <ion-button color='secondary'>总计:
-        <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
-      </ion-button> -->
-      <ion-text color="secondary">总计:</ion-text>
-      <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
-      <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
-      <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
+  <ion-toolbar class="toolbar" (click)="isShowFee=!isShowFee">
+    <ion-buttons slot="start" class="buttons">
+      <ion-text class="sum" color="danger">总计:&nbsp;</ion-text>
+      <ion-text slot="end" color="danger">￥{{(totalPriceSource|async)}}&nbsp;</ion-text>
+      <ion-text color="dark" style="font-size: 8px">明细</ion-text>
+      <ion-icon name="chevron-down-outline" *ngIf="!isShowFee"></ion-icon>
+      <ion-icon name="chevron-up-outline" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
-    <ion-button slot='end' size='small' color='secondary' (click)='bookTrain(false,$event)' [disabled]='isSubmitDisabled'> 提交
+    <ion-button class="submit" slot="end" size="small" color="secondary" (click)="bookTrain(false,$event)" [disabled]="isSubmitDisabled">提交订单
     </ion-button>
-    <!-- <ion-button slot='end' size='small' *ngIf='(isCanSave$|async)&&!(searchTrainModel?.isExchange)' color='secondary'
-      (click)='bookTrain(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button> -->
   </ion-toolbar>
 </ion-footer>
 <div class="zz" *ngIf="isShowFee" (click)="isShowFee=!isShowFee"></div>
 <div [class.show]="isShowFee" class="transfrom">
   <div class="wrapper">
-    <div *ngFor="let infos of viewModel.combindInfos" class="ion-padding fee"
-    [style.min-width]="viewModel.combindInfos.length>1?'90%':'100%'">
-    <div class="spacebetween"style="margin-top: 2px;">
-      <ion-text>票价</ion-text>
-    <ion-text>{{infos.bookInfo.bookInfo.selectedSeat.Price}}元</ion-text>
+    <div *ngFor="let infos of viewModel.combindInfos" class="ion-padding fee" [style.min-width]="viewModel.combindInfos.length>1?'90%':'100%'">
+      <div class="spacebetween" style="margin-top: 2px">
+        <ion-text>票价</ion-text>
+        <ion-text>{{infos.bookInfo.bookInfo.selectedSeat.Price}}元</ion-text>
+      </div>
+      <div class="spacebetween" style="margin-top: 2px"
+        *ngIf="tmc?.IsShowServiceFee||(viewModel.orderTravelPayType == OrderTravelPayType.Person||viewModel.orderTravelPayType==OrderTravelPayType.Credit)">
+        <ng-container>
+          <ion-text>服务费</ion-text>
+          <ion-text>{{infos.serviceFee}}元</ion-text>
+        </ng-container>
+      </div>
     </div>
-    <div class="spacebetween"style="margin-top: 2px;" *ngIf="tmc?.IsShowServiceFee||(viewModel.orderTravelPayType == OrderTravelPayType.Person||viewModel.orderTravelPayType==OrderTravelPayType.Credit)">
-      <ion-text>服务费</ion-text>
-    <ion-text>{{infos.serviceFee}}元</ion-text>
-    </div>
-  </div>
   </div>
 </div>
-<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍后...</app-waiting-check-pay>
+<app-waiting-check-pay [isLoading]="true" *ngIf="isCheckingPay">正在预订中，请稍后...</app-waiting-check-pay>

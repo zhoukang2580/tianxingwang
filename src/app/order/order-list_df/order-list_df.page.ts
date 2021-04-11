@@ -17,6 +17,8 @@ import {
   IonContent,
   IonDatetime,
   PickerController,
+  Platform,
+  PopoverController,
 } from "@ionic/angular";
 import {
   Component,
@@ -47,14 +49,21 @@ import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { monitorEventLoopDelay } from "perf_hooks";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
+import { RefresherComponent } from "src/app/components/refresher";
+import { OrderHotelEntity } from "../models/OrderHotelEntity";
+import { GetsmscodeComponent } from "../components/getsmscode/getsmscode.component";
 @Component({
   selector: "app-order-list_df",
   templateUrl: "./order-list_df.page.html",
   styleUrls: ["./order-list_df.page.scss"],
 })
-export class OrderListDfPage implements OnInit, OnDestroy {
+export class OrderListDfPage
+  implements OnInit, OnDestroy, CanComponentDeactivate {
   private condition: SearchTicketConditionModel = new SearchTicketConditionModel();
   private readonly pageSize = 20;
+  private isGoDetail = false;
+  private isBackHome = false;
   public loadDataSub = Subscription.EMPTY;
   private subscriptions: Subscription[] = [];
   private selectDateChange = new EventEmitter();
@@ -78,6 +87,8 @@ export class OrderListDfPage implements OnInit, OnDestroy {
   @ViewChild(IonContent) ionContent: IonContent;
   @ViewChild(IonDatetime) datetime: IonDatetime;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
+  @ViewChild(RefresherComponent, { static: true })
+  refresher: RefresherComponent;
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   constructor(
     private modalCtrl: ModalController,
@@ -90,9 +101,19 @@ export class OrderListDfPage implements OnInit, OnDestroy {
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
     private langService: LangService,
-    private staffService: StaffService
+    private staffService: StaffService,
+    private popController: PopoverController
   ) {}
-
+  canDeactivate() {
+    console.log("canDeactivate isbackhome=", this.isBackHome);
+    if (this.isBackHome && !this.isGoDetail) {
+      // this.natCtrl.navigateRoot("", { animated: true });
+      this.isBackHome = false;
+      this.router.navigate([""]);
+      return false;
+    }
+    return true;
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
@@ -127,6 +148,9 @@ export class OrderListDfPage implements OnInit, OnDestroy {
     this.loadMoreErrMsg = "";
     if (this.infiniteScroll) {
       this.infiniteScroll.disabled = false;
+    }
+    if (this.refresher) {
+      this.refresher.complete();
     }
     if (
       this.activeTab &&
@@ -251,10 +275,15 @@ export class OrderListDfPage implements OnInit, OnDestroy {
     this.router.navigate([AppHelper.getRoutePath("tabs/my")]);
   }
   private getVariablesJsonObj(trip: OrderTripModel) {
-    if (!trip) {
-      return trip;
+    try {
+      if (!trip) {
+        return trip;
+      }
+      trip.VariablesJsonObj =
+        trip.VariablesJsonObj || JSON.parse(trip.Variables);
+    } catch (e) {
+      console.error(e);
     }
-    trip.VariablesJsonObj = trip.VariablesJsonObj || JSON.parse(trip.Variables);
     return trip;
   }
   async openSearchModal() {
@@ -368,18 +397,29 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         !res ||
         !res.trip ||
         !res.order ||
-        !res.order.OrderPassengers ||
-        !res.order.OrderPassengers.length
+        !res.order.OrderFlightTickets ||
+        !res.order.OrderFlightTickets.length
       ) {
         AppHelper.alert("改签失败，请联系客服人员");
         return;
       }
-      const orderPassenger = res.order.OrderPassengers[0];
+      const ticket = res.order.OrderFlightTickets.find(
+        (it) => it.Id == data.ticketId
+      );
+      if (!ticket) {
+        AppHelper.alert("改签失败，请联系客服人员");
+        return;
+      }
+      const orderPassenger = ticket.Passenger;
+      const credentails = res.credentails || [];
+      const hideCredential = credentails.find(
+        (it) => it.CredentialsNumber == orderPassenger.CredentialsNumber
+      );
       // setSearchFlightModelSource
       this.flightService.removeAllBookInfos();
       await this.flightService.initSelfBookTypeBookInfos();
       const isSelf = await this.staffService.isSelfBookType();
-      const bookInfos = this.flightService.getPassengerBookInfos();
+      let bookInfos = this.flightService.getPassengerBookInfos();
       if (!bookInfos.length) {
         if (isSelf) {
           await AppHelper.alert("改签失败，请联系客服人员");
@@ -394,6 +434,8 @@ export class OrderListDfPage implements OnInit, OnDestroy {
             } as StaffEntity,
             credential: {
               Number: orderPassenger.CredentialsNumber,
+              HideNumber:
+                hideCredential && hideCredential.HideCredentialsNumber,
               Type: orderPassenger.CredentialsType,
               TypeName: orderPassenger.CredentialsTypeName,
               Name: orderPassenger.Name,
@@ -403,12 +445,6 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         }
       }
       let passenger: StaffEntity = bookInfos[0].passenger;
-      if (res.staff) {
-        passenger = {
-          ...passenger,
-          ...res.staff,
-        };
-      }
       let credential: CredentialsEntity = bookInfos[0].credential;
       const info: PassengerBookInfo<IFlightSegmentInfo> = {
         passenger,
@@ -416,11 +452,8 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         isFilterPolicy: false,
         isNotWhitelist: !isSelf,
       };
-      this.flightService.addPassengerBookInfo(info);
-      if (!bookInfos.length) {
-        AppHelper.alert("改签失败，请联系客服人员");
-        return;
-      }
+      // this.flightService.addPassengerBookInfo(info);
+      bookInfos = [info];
       bookInfos[0].exchangeInfo = {
         order: { Id: data.orderId } as any,
         ticket: { Id: data.ticketId } as any,
@@ -439,11 +472,93 @@ export class OrderListDfPage implements OnInit, OnDestroy {
         isRoundTrip: false,
         Date: date.substr(0, 10),
       });
+      this.isGoDetail = true;
+      this.flightService.setPassengerBookInfosSource(bookInfos);
       this.router.navigate(["flight-list"], {
         queryParams: { doRefresh: true },
       });
     } catch (e) {
       AppHelper.alert(e);
+    }
+  }
+  async abolishHotelOrder(data: { orderId: string; orderHotelId: string }) {
+    this.orderService
+      .abolishHotelsOrder({
+        OrderId: data.orderId,
+        Channel: await this.tmcService.getChannel(),
+        orderHotelId: data.orderHotelId,
+      })
+      .then(() => {
+        AppHelper.toast("订单取消申请中", 2000, "middle");
+        this.doRefresh();
+      })
+      .catch((e) => {
+        AppHelper.alert(e);
+      });
+  }
+  async onVerifySMSCode(data: {
+    orderId: string;
+    orderHotel: OrderHotelEntity;
+  }) {
+    const a = await AppHelper.alertController.create({
+      inputs: [
+        {
+          type: "tel",
+          label: "短信验证码",
+          value:
+            (data.orderHotel.VariablesJsonObj &&
+              data.orderHotel.VariablesJsonObj.VerifySmsCodeMobile) ||
+            "",
+          placeholder: "请输入短信验证码",
+          handler: (r) => {
+            this.orderService
+              .onVerifySMSCode({
+                OrderHotelId: data.orderHotel.Id,
+                SmsCode: r.value,
+              })
+              .then((r) => {
+                AppHelper.alert(r);
+              })
+              .catch((e) => {
+                AppHelper.alert(e);
+              });
+          },
+        },
+      ],
+      message: "短信验证码校验",
+      backdropDismiss: false,
+    });
+    a.present();
+  }
+  async onGetVerifySMSCode(data: {
+    orderId: string;
+    orderHotel: OrderHotelEntity;
+  }) {
+    const m = await this.popController.create({
+      component: GetsmscodeComponent,
+      cssClass: "warranty",
+      componentProps: {
+        orderHotelId: data.orderHotel.Id,
+      },
+    });
+    m.present();
+    const d = await m.onDidDismiss();
+    if (d && data&&d.data) {
+      data.orderHotel.VariablesJsonObj = data.orderHotel.VariablesJsonObj || {};
+      data.orderHotel.VariablesJsonObj.VerifySmsCodeMobile = d.data.mobile;
+      if (d.data.smsCode) {
+        this.orderService
+          .onVerifySMSCode({
+            OrderHotelId: data.orderHotel.Id,
+            SmsCode: d.data.smsCode,
+          })
+          .then((r) => {
+            AppHelper.alert(r);
+          })
+          .catch((e) => {
+            AppHelper.alert(e);
+          });
+      }
     }
   }
   async onAbolishOrder(data: {
@@ -483,6 +598,7 @@ export class OrderListDfPage implements OnInit, OnDestroy {
   }
   goToDetailPage(orderId: string, type: string) {
     // Flight
+    this.isGoDetail = true;
     console.log(type, "dddd");
 
     if (type && type.toLowerCase() == "car") {
@@ -684,6 +800,7 @@ export class OrderListDfPage implements OnInit, OnDestroy {
     return url;
   }
   async onTaskDetail(task: TaskEntity) {
+    this.isGoDetail = true;
     const url = await this.getTaskHandleUrl(task);
     if (url) {
       this.router
@@ -836,6 +953,8 @@ export class OrderListDfPage implements OnInit, OnDestroy {
   async ngOnInit() {
     try {
       const sub = this.route.queryParamMap.subscribe((d) => {
+        this.isBackHome = d.get("isBackHome") == "true";
+        this.isGoDetail = false;
         const plane = ORDER_TABS.find(
           (it) => it.value == ProductItemType.plane
         );

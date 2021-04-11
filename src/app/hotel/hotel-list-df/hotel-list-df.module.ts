@@ -9,11 +9,13 @@ import { IonicModule } from "@ionic/angular";
 
 import { HotelListDfPage } from "./hotel-list-df.page";
 import { HotelComponentsModule } from "../components/components.module";
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: "",
-    component: HotelListDfPage
+    component: HotelListDfPage,
+    canActivate:[StylePageGuard]
   }
 ];
 

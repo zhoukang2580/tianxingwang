@@ -3,9 +3,9 @@ import { OrderInsuranceEntity } from "./OrderInsuranceEntity";
 import { InsuranceResultEntity } from "src/app/tmc/models/Insurance/InsuranceResultEntity";
 import { OrderFlightTicketType } from "./OrderFlightTicketType";
 import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
-import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
+import { BaseVariablesEntity } from "src/app/models/BaseVariablesEntity";
 
-export class OrderTripModel extends BaseVariablesEntity{
+export class OrderTripModel extends BaseVariablesEntity {
   /// <summary>
   /// 行程类型 Flight Train Hotel
   /// </summary>
@@ -46,6 +46,7 @@ export class OrderTripModel extends BaseVariablesEntity{
   ToName: string;
   IsInternational: boolean;
   Passenger: OrderPassengerEntity;
+  HideCredentialsNumber: string;
   OrderInsurances: OrderInsuranceEntity[];
   Key: string;
   AdditionKey: string;

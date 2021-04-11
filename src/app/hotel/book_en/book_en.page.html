@@ -19,7 +19,7 @@
               <div style="padding: 0.5em 0;" notranslate>
                 {{combindInfo?.vmCredential?.Name}}
                 【Adult】
-                <span style="color:var(--ion-color-medium)">{{combindInfo?.vmCredential?.Number}}</span>
+                <span style="color:var(--ion-color-medium)">{{combindInfo?.vmCredential?.HideNumber}}</span>
               </div>
               <div style="display: flex;align-items: center;font-size: 0.9rem;padding-bottom: 0.5em;">
                 <img src="assets/svgs/home-hotel.svg" style="width: 1.5em;height: 1.5em;margin-right: 0.5em;" alt="">
@@ -30,7 +30,7 @@
           <ng-container *ngIf='combindInfo.isShowApprovalInfo'>
             <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
               <ion-label>Notification language:</ion-label>
-              <ion-select value='cn' okText="Confirm" cancelText="Cancel" [(ngModel)]='combindInfo.notifyLanguage'>
+              <ion-select value='cn' okText="Determine" cancelText="Cancel" [(ngModel)]='combindInfo.notifyLanguage'>
                 <ion-select-option value=''>No hair</ion-select-option>
                 <ion-select-option value='cn' notranslate>中文</ion-select-option>
                 <ion-select-option value='en'>English</ion-select-option>
@@ -236,7 +236,7 @@
         <ion-list-header>
           <strong>Payment method</strong>
         </ion-list-header>
-        <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='onOrderTravelPayTypeSelect()'>
+        <ion-radio-group [(ngModel)]='orderTravelPayType' mode='md' name='travelPayType' (ionChange)='onOrderTravelPayTypeSelect()'>
           <!-- 酒店预付月结 -->
           <ng-container *ngIf='hotelPaymentType==HotelPaymentType.Prepay||hotelPaymentType==HotelPaymentType.Settle else zhifu2'>
             <ng-container *ngFor='let pt of orderTravelPayTypes'>

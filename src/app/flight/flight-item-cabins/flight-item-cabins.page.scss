@@ -105,8 +105,24 @@ ion-content.padding-half-c {
 .cabin-item {
   .price {
     font-size: 1.55rem;
+    padding: 0.2em 0;
     small {
-      font-size: 0.75rem;
+      font-size: 0.85rem;
+    }
+    .c {
+      border: 2px solid var(--ion-color-secondary);
+      border-radius: 50%;
+      width: 0.8em;
+      height: 0.8em;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      left: -0.1em;
+      bottom: 0.1em;
+      ion-text {
+        font-size: 0.5em;
+      }
     }
   }
   .discount {
@@ -115,6 +131,9 @@ ion-content.padding-half-c {
   .remain {
     font-size: 0.65rem;
   }
+}
+.rules {
+  margin-top: -0.5em;
 }
 .cabin-list-item + .cabin-list-item {
   margin-top: 0.5em;

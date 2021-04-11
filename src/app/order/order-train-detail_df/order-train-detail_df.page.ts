@@ -37,32 +37,29 @@ import { ActivatedRoute } from "@angular/router";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { OrderNumberEntity } from "../models/OrderNumberEntity";
 import { flyInOut } from "src/app/animations/flyInOut";
-import { TaskStatusType } from 'src/app/workflow/models/TaskStatusType';
-import { OrderTravelPayType } from '../models/OrderTravelEntity';
-import { TrainOrderPricePopoverComponent } from '../components/train-order-price-popover/train-order-price-popover.component';
-interface ITab {
-  label: string;
-  value: number;
-  active?: boolean;
-}
+import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
+import { OrderTravelPayType } from "../models/OrderTravelEntity";
+import { TrainOrderPricePopoverComponent } from "../components/train-order-price-popover/train-order-price-popover.component";
 @Component({
-  selector: "app-order-train-detail-df",
+  selector: "app-order-train-detail_df",
   templateUrl: "./order-train-detail_df.page.html",
   styleUrls: ["./order-train-detail_df.page.scss"],
   animations: [flyInOut],
 })
-export class OrderTrainDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
+export class OrderTrainDetailDfPage
+  implements OnInit, AfterViewInit, OnDestroy {
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
-  TaskStatusType:TaskStatusType;
+  TaskStatusType: TaskStatusType;
   ProductItemType = ProductItemType;
   items: { label: string; value: string }[] = [];
-  tabs: ITab[] = [];
-  OrderTravelPayType=OrderTravelPayType;
+  tabs: OrderTrainTicketEntity[] = [];
+  OrderTravelPayType = OrderTravelPayType;
   orderDetail: OrderDetailModel;
   isLoading = false;
   showTiket = false;
+  isSelf = false;
   @ViewChild("infos") infosContainer: ElementRef<HTMLElement>;
   @ViewChildren("slide") slides: QueryList<any>;
   @ViewChild(IonHeader) headerEle: IonHeader;
@@ -76,6 +73,7 @@ export class OrderTrainDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
   tikectId2OriginalTickets: {
     [ticketId: string]: OrderTrainTicketEntity[];
   } = {};
+  selectedTicket: OrderTrainTicketEntity;
   scrollTop: number;
   constructor(
     private plt: Platform,
@@ -360,22 +358,38 @@ export class OrderTrainDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
   }
   private initTabs() {
     this.tabs = [];
-    this.tabs.push({ label: "订单信息", value: 0 });
     if (
       this.orderDetail &&
       this.orderDetail.Order &&
       this.orderDetail.Order.OrderTrainTickets
     ) {
       this.orderDetail.Order.OrderTrainTickets.forEach((it, idx) => {
-        if (it.VariablesJsonObj.isShow) {
-          this.tabs.push({ label: it.Id, value: idx + 1 });
-        }
+        this.tabs.push(it);
+        // if (it.VariablesJsonObj.isShow) {
+        // }
       });
+    }
+  }
+  onSelectTicket(
+    t: OrderTrainTicketEntity,
+    container?: HTMLElement,
+    tabEl?: HTMLElement
+  ) {
+    this.selectedTicket = t;
+    if (container) {
+      try {
+        if (tabEl) {
+          const rect = tabEl.getBoundingClientRect();
+          const left = rect.left + rect.width / 2 - this.plt.width() / 1.5;
+          container.scrollBy({ left, behavior: "smooth" });
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
   async ngOnInit() {
     this.route.queryParamMap.subscribe((q) => {
-      this.initTabs();
       if (q.get("orderId")) {
         this.getOrderInfo(q.get("orderId"));
       }
@@ -429,10 +443,22 @@ export class OrderTrainDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
     }
     return amount;
   }
-  // private getTicketPassenger(p: OrderPassengerEntity ) {
-  //   const p = (this.orderDetail.Order && this.orderDetail.Order.OrderPassengers) || [];
-  //   return p.find(it => it.Id == (ticket.Passenger && ticket.Passenger.Id));
-  // }
+
+  private sortTabs() {
+    if (this.tabs) {
+      this.tabs.sort((t1, t2) => {
+        return +t2.Id - +t1.Id;
+      });
+    }
+  }
+  isOriginalTicket(tid: string) {
+    return (
+      this.tikectId2OriginalTickets &&
+      Object.keys(this.tikectId2OriginalTickets).some((k) =>
+        this.tikectId2OriginalTickets[k].some((it) => it.Id == tid)
+      )
+    );
+  }
   private initOriginalTickets() {
     this.tikectId2OriginalTickets = {};
     if (
@@ -518,6 +544,7 @@ export class OrderTrainDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
     this.initTikectsInsurances();
     this.isLoading = false;
     this.initTabs();
+    // this.sortTabs();
     if (!this.tmc) {
       this.tmc = await this.tmcService.getTmc(true);
     }
@@ -550,6 +577,9 @@ export class OrderTrainDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
           }
           return h;
         });
+      }
+      if (this.tabs) {
+        this.onSelectTicket(this.tabs[0]);
       }
     }
   }

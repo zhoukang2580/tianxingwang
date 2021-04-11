@@ -34,13 +34,13 @@ const routes: Routes = [
             (m) => m.TmcHomeEnPageModule
           ),
       },
-      // {
-      //   path: "tmc-home_df",
-      //   loadChildren: () =>
-      //     import("./tab-tmc-home-df/tmc-home-df.module").then(
-      //       (m) => m.TmcHomeDfPageModule
-      //     ),
-      // },
+      {
+        path: "tmc-home_df",
+        loadChildren: () =>
+          import("./tab-tmc-home-df/tmc-home-df.module").then(
+            (m) => m.TmcHomeDfPageModule
+          ),
+      },
       {
         path: "home_en",
         loadChildren: () =>
@@ -57,6 +57,11 @@ const routes: Routes = [
         path: "my_en",
         loadChildren: () =>
           import("./tab-my_en/my_en.module").then((m) => m.MyEnPageModule),
+      }
+      ,{
+        path: "my_df",
+        loadChildren: () =>
+          import("./tab-my_df/my_df.module").then((m) => m.MyDfPageModule),
       },
       {
         path: "trip",

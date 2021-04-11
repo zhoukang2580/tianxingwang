@@ -22,6 +22,17 @@ export const routes: Routes = [
       import("./select-passenger_en/select-passenger_en.module").then(
         m => m.SelectPassengerEnPageModule
       )
+  },
+  {
+    path: "select-passenger-df",
+    loadChildren: () =>
+      import("./select-passenger-df/select-passenger-df.module").then(
+        m => m.SelectPassengerDfPageModule
+      )
+  },
+  {
+    path: 'checkout-success',
+    loadChildren: () => import('./checkout-success/checkout-success.module').then( m => m.CheckoutSuccessPageModule)
   }
 
 ];

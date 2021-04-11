@@ -103,6 +103,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   OrderTravelPayType = OrderTravelPayType;
   addContacts: AddContact[] = [];
   isCheckingPay = false;
+  isPlaceOrderOk = false;
   isShowFee = false;
   isSelfBookType = true;
   orderTravelPayTypes: {
@@ -319,7 +320,10 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           (this.initialBookDto && this.initialBookDto.Staffs) ||
           []
         ).find((it) => it.Account.Id == bookInfo.passenger.AccountId);
-        const cstaff = cs && cs.CredentialStaff;
+        const cstaff =
+          bookInfo.passenger.AccountId == this.tmc.Account.Id
+            ? bookInfo.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {
@@ -566,72 +570,123 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           return null;
         });
       }
+      // if (res) {
+      //   if (res.TradeNo) {
+      //     this.isSubmitDisabled = true;
+      //     this.isSubmitDisabled = true;
+      //     let isHasTask = res.HasTasks;
+      //     let payResult = false;
+      //     const isself = await this.staffService.isSelfBookType();
+      //     if (!isSave) {
+      //       let checkPayResult = false;
+      //       if (res.IsCheckPay) {
+      //         this.isCheckingPay = true;
+      //         checkPayResult = await this.checkPay(res.TradeNo);
+      //         this.isCheckingPay = false;
+      //       } else {
+      //         payResult = true;
+      //       }
+      //       if (checkPayResult) {
+      //         if (res.HasTasks) {
+      //           if (isself) {
+      //             await AppHelper.alert(
+      //               exchangeInfo && exchangeInfo.exchangeInfo
+      //                 ? res.Message || exchangeTip
+      //                 : LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+      //               true
+      //             );
+      //           }
+      //         } else {
+      //           payResult = await this.tmcService.payOrder(res.TradeNo);
+      //         }
+      //       } else {
+      //         if (isself) {
+      //           await AppHelper.alert(
+      //             LanguageHelper.Order.getBookTicketWaitingTip(res.IsCheckPay),
+      //             true
+      //           );
+      //         }
+      //       }
+      //     } else {
+      //       if (isSave) {
+      //         await AppHelper.alert(
+      //           this.langService.isEn ? "Order saved" : "订单已保存!",
+      //           true
+      //         );
+      //       } else {
+      //         // await AppHelper.alert(
+      //         //   exchangeInfo && exchangeInfo.exchangeInfo
+      //         //     ? res.Message || exchangeTip
+      //         //     : this.langService.isEn
+      //         //       ? "Checkout success"
+      //         //       : "下单成功!",
+      //         //   true
+      //         // );
+      //       }
+      //     }
+      //     this.trainService.removeAllBookInfos();
+      //     this.viewModel.combindInfos = [];
+      //     this.trainService.setSearchTrainModelSource({
+      //       ...this.trainService.getSearchTrainModel(),
+      //       isExchange: false,
+      //       isLocked: false,
+      //     });
+      //     const isExchange = exchangeInfo && !!exchangeInfo.exchangeInfo;
+      //     // const isApproval =
+      //     this.goToMyOrders({ isExchange, payResult, isHasTask:isHasTask&&isself });
+      //   }
+      // }
       if (res) {
         if (res.TradeNo) {
-          // await AppHelper.alert(
-          //   exchangeInfo && exchangeInfo.exchangeInfo
-          //     ? exchangeTip
-          //     : this.langService.isEn
-          //     ? "Checkout success"
-          //     : "下单成功!"
-          // );
+          this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
+          let isHasTask = res.HasTasks;
+          let payResult = false;
+          this.trainService.removeAllBookInfos();
+          let checkPayResult = false;
+          const isCheckPay = res.IsCheckPay;
           const isSelf = await this.staffService.isSelfBookType();
-          if (
-            !isSave &&
-            isSelf &&
-            (this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
-              this.viewModel.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            let canPay = true;
-            if (res.IsCheckPay) {
+          if (!isSave) {
+            if (isCheckPay) {
               this.isCheckingPay = true;
-              canPay = await this.checkPay(res.TradeNo);
+              checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
+            } else {
+              payResult = true;
             }
-            if (canPay) {
-              if (res.HasTasks) {
+            if (checkPayResult) {
+              if (isSelf && isHasTask) {
                 await AppHelper.alert(
-                  exchangeInfo && exchangeInfo.exchangeInfo
-                    ? res.Message || exchangeTip
-                    : LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                   true
                 );
               } else {
-                await this.tmcService.payOrder(res.TradeNo);
+                if (isCheckPay) {
+                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                }
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              if (isSelf) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                  true
+                );
+              }
             }
           } else {
             if (isSave) {
-              await AppHelper.alert(
-                this.langService.isEn ? "Order saved" : "订单已保存!",
-                true
-              );
+              await AppHelper.alert("订单已保存!");
             } else {
-              await AppHelper.alert(
-                exchangeInfo && exchangeInfo.exchangeInfo
-                  ? res.Message || exchangeTip
-                  : this.langService.isEn
-                  ? "Checkout success"
-                  : "下单成功!",
-                true
-              );
+              // await AppHelper.alert("下单成功!");
             }
           }
-          this.trainService.removeAllBookInfos();
-          this.viewModel.combindInfos = [];
-          this.trainService.setSearchTrainModelSource({
-            ...this.trainService.getSearchTrainModel(),
-            isExchange: false,
-            isLocked: false,
+          this.goToMyOrders({
+            isHasTask: isHasTask ,
+            payResult,
+            isCheckPay: isCheckPay ||
+            this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
+            this.viewModel.orderTravelPayType == OrderTravelPayType.Credit,
           });
-          const isExchange = exchangeInfo && !!exchangeInfo.exchangeInfo;
-          this.goToMyOrders(ProductItemType.train, isExchange);
         }
       }
     }
@@ -745,15 +800,34 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     }
     // console.timeEnd("总计");
   }
-  private goToMyOrders(tab: ProductItemType, isExchange = false) {
-    if (this.langService.isCn) {
-      this.router.navigate(["order-list"], {
-        queryParams: { tabId: tab, doRefresh: isExchange },
+  private goToMyOrders(data: {
+    isHasTask: boolean;
+    payResult: boolean;
+    isCheckPay: boolean;
+  }) {
+    // this.router.navigate(["order-list"], {
+    //   // isbackhome:true，是防止 android 通过物理返回键返回当前页面
+    //   queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
+    // });
+    try {
+      const m = this.trainService.getSearchTrainModel();
+      // const cities = await this.flightService.getStationsAsync();
+      // const city = m.toCity;
+      const cities = this.trainService.getSearchTrainModel().toCity;
+      // const c = cities.find(it => it.Code == (city && city.Code));
+      this.router.navigate(["checkout-success"], {
+        queryParams: {
+          tabId: ProductItemType.plane,
+          cityCode: cities && cities.CityCode,
+          cityName: cities && cities.CityName,
+          isApproval: data.isHasTask,
+          payResult: data.payResult,
+          isCheckPay: data.isCheckPay,
+          date: m.Date,
+        },
       });
-    } else {
-      this.router.navigate(["order-list_en"], {
-        queryParams: { tabId: tab, doRefresh: isExchange },
-      });
+    } catch (e) {
+      console.error(e);
     }
   }
   private isShowInsurances(takeoffTime: string) {
@@ -1236,10 +1310,17 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         );
         return false;
       }
-      p.Credentials.Account =
-        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
-      p.Credentials.Account =
-        p.Credentials.Account || combindInfo.credential.Account;
+      if (
+        combindInfo.credentialStaff &&
+        combindInfo.credentialStaff.Account &&
+        combindInfo.credentialStaff.Account.Id &&
+        combindInfo.credentialStaff.Account.Id != "0"
+      ) {
+        p.Credentials.Account =
+          combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+        p.Credentials.Account =
+          p.Credentials.Account || combindInfo.credential.Account;
+      }
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.viewModel.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;

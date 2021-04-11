@@ -16,7 +16,7 @@
         box-shadow: 0.1em 0.2em 0.6em rgba(0,0,0,.1);
         padding-bottom: 0.5em;font-size: 14px;">
                     <div style="width: 100%" notranslate>
-                        {{combindInfo?.vmCredential?.Name}} 【{{tmc?.Name}}】 {{combindInfo?.vmCredential?.Number}}
+                        {{combindInfo?.vmCredential?.Name}} 【{{tmc?.Name}}】 {{combindInfo?.vmCredential?.HideNumber}}
                         <ion-label style="text-align:center;font-weight: bold">
                             <ng-container *ngIf='isRoundTrip'>第{{idx+1}}程</ng-container>
                             Flight Book Information
@@ -189,7 +189,7 @@
                     <ion-item *ngIf='false'>
                         <div class='travel-type ion-margin-top'>
                             Travel Type:
-                            <ion-radio-group [(ngModel)]='combindInfo.travelType' name='travelType'>
+                            <ion-radio-group mode='md' [(ngModel)]='combindInfo.travelType' name='travelType'>
                                 <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Business)'>
                                     <ion-label notranslate>因公</ion-label>
                                     <ion-radio notranslate [value]="OrderTravelType.Business"></ion-radio>
@@ -215,7 +215,7 @@
                                 <ion-select-option value='en'>English</ion-select-option>
                             </ion-select>
                         </ion-item>
-                        <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval$|async'>
+                        <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval'>
                             <ion-label style='margin-right: 0.5em'>Skip approval:</ion-label>
                             <ion-checkbox class='ion-margin-end' color="secondary" [(ngModel)]='combindInfo.isSkipApprove'>
                             </ion-checkbox>
@@ -254,7 +254,7 @@
                 </ion-item-divider>
                 <ion-item>
                     <div style='width: 100%'>
-                        <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
+                        <ion-radio-group mode='md' [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
                             <ion-item *ngFor='let pt of orderTravelPayTypes'>
                                 <ion-label>{{pt.label.replace('公付','Company')}}
                                     <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>
@@ -282,12 +282,8 @@
 <ion-footer>
     <ion-toolbar (click)="onToggleIsShowFee();">
         <ion-buttons slot='start'>
-            <!-- <ion-button color='secondary' (click)='onShowPriceDetail()'>总计:
-        <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)|flightprice:"1"}}</ion-text>
-        <ion-icon name='caret-up-outline' slot='end' color='secondary' mode='md'></ion-icon>
-      </ion-button> -->
             <ion-text color="secondary">Total:</ion-text>
-            <ion-text slot='end' color='danger'>￥{{(totalPriceSource|async)}}</ion-text>
+            <ion-text slot='end' color='danger'>￥{{totalPrice}}</ion-text>
             <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
             <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
         </ion-buttons>

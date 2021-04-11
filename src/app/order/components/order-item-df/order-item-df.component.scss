@@ -1,36 +1,128 @@
 :host {
   width: 100%;
-  ion-row{
+  ion-row {
     align-items: start;
+    font-size: 12px;
   }
 }
+.order-item {
+  margin: 5px;
+}
+.flex {
+  display: flex;
+  align-items: center;
+}
+
 .item {
-  padding: 0.2em 0;
+  padding: 0.5em 0.6em;
   display: flex;
   align-items: flex-start;
+  font-size: 12px;
+  .id {
+    min-width: 5.9em;
+  }
+  .left {
+    flex: 80%;
+    display: flex;
+  }
+  .status {
+    color: #666666;
+  }
   & > *:first-child {
-    min-width: 2.25rem;
+    min-width: 4rem;
     margin-right: 0.5em;
     color: var(--ion-color-medium);
   }
   span {
     margin-right: 0.5em;
   }
+  .item-con {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333333;
+    img {
+      width: 27.5px;
+    }
+  }
+  .item-tail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
 }
 
 .select-text {
   user-select: text;
 }
-.order-flight-ticket ~ .order-flight-ticket {
+.error-SMSCode{
+  font-size: 12px;
+  color: var(--ion-color-danger);
+}
+.select-text strong {
+  user-select: text;
+  font: inherit;
+}
+.order-flight-ticket ~ .order-flight-ticket,
+.order-train-ticket ~ .order-train-ticket {
   border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
 }
-.btn-show-margin{
-  margin-top: -8px;
+.order-flight-ticket {
+  border-top: 1px solid #dad1d1;
+}
+.btn-show-margin {
   margin-bottom: -8px;
 }
-.stop-line .line{
-  background-color: rgba(var(--ion-color-dark-rgb), 0.3);
-  width: 6.1em;
-  position: relative;
-  top: -1.3em;
+.hotel {
+  .orderid {
+    margin: 0 1.6em;
+  }
+  .status-name {
+    margin-left: auto;
+    margin-right: 1em;
+  }
+  .free-book-tag {
+    display: inline-block;
+    padding: 0.05em 0.5em;
+    background-color: #5098fe56;
+    font-size: 10px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+    border-radius: 4px;
+    margin-right: 1em;
+  }
+}
+.hotel,
+.train {
+  .frist-ion {
+    font-size: 10px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #666666;
+    border-bottom: 1px solid #eadcdc;
+    line-height: 22px;
+    .strong {
+      font: inherit;
+    }
+  }
+
+  .ion-img,
+  .ion-train {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    img {
+      width: 22px;
+      margin-top: 5px;
+    }
+  }
+
+  .payin {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }

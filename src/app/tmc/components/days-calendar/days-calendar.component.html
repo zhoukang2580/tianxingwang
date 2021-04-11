@@ -1,7 +1,6 @@
 <section class="days" #daysContainer>
   <ng-container *ngIf='days.length else fackList'>
-    <article *ngFor='let item of days' [attr.date]='item?.date' #dayItem [class.active]='item.selected'
-      (click)='onDaySelected(item)'>
+    <article *ngFor='let item of days' [attr.date]='item?.date' #dayItem [class.active]='item.selected' (click)='onDaySelected(item)'>
       <ion-text>{{item?.topDesc}}</ion-text>
       <ion-text class='ion-text-nowrap'>
         <strong>
@@ -23,7 +22,8 @@
   </ng-template>
 </section>
 <section class="calendar" (click)='onCalendar()'>
-  <i class="icon icon-calendar" color='secondary'></i>
+  <!-- <i class="icon icon-calendar" color='secondary'></i> -->
   <!-- <ion-icon color='secondary' size='large' name='calendar'></ion-icon> -->
-  <ion-text color='secondary' >{{langOpt?.calendar}}</ion-text>
+  <img src="assets/images/days-calendar.png" alt="日历图标">
+  <ion-text color='dark'>{{langOpt?.calendar}}</ion-text>
 </section>

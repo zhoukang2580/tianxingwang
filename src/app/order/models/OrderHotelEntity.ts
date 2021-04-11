@@ -10,6 +10,7 @@ import { RoomPlanEntity } from "src/app/hotel/models/RoomPlanEntity";
 import { BaseVariablesEntity } from "src/app/models/BaseVariablesEntity";
 
 export class OrderHotelEntity extends BaseVariablesEntity {
+  Id: string;
   /// <summary>
   /// 所属申请单
   /// </summary>

@@ -14,12 +14,13 @@ import { SearchTrainPage } from "./search-train.page";
 import { TrainComponentsModule } from "../components/traincomponents.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { AuthorityGuard } from "src/app/guards/authority.guard";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 const routes: Routes = [
   {
     path: "",
     component: SearchTrainPage,
-    canActivate: [AuthorityGuard, TmcGuard, ConfirmCredentialInfoGuard],
+    canActivate: [StylePageGuard,AuthorityGuard, TmcGuard, ConfirmCredentialInfoGuard],
     canDeactivate: [CandeactivateGuard]
   }
 ];

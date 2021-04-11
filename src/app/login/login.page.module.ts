@@ -8,11 +8,13 @@ import { IonicModule } from "@ionic/angular";
 
 import { LoginPage } from "./login.page";
 import { AppComponentsModule } from "../components/appcomponents.module";
+import { StylePageGuard } from '../guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: "",
-    component: LoginPage
+    component: LoginPage,
+    canActivate: [StylePageGuard]
   }
 ];
 

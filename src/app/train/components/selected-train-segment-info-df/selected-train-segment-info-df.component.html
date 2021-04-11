@@ -13,17 +13,16 @@
 <ion-content>
   <ion-item-group *ngFor='let bookInfo of bookInfos$|async'>
     <ng-container *ngIf='bookInfo?.bookInfo'>
-      <!-- <ion-item-divider color='primary' sticky>
-        <ion-label color='dark'>{{bookInfo?.credential?.Name}}{{bookInfo?.credential?.Number}}</ion-label>
-      </ion-item-divider> -->
-      <ion-item lines='none' >
+      <ion-item lines='none' style="--background:#fff">
         <div class='detail'>
-          <!-- <div class='date'>
+          <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;{{bookInfo?.credential?.HideNumber}}</ion-label>
+          <div class='date'>
             <strong>{{getDate(bookInfo?.bookInfo?.trainEntity)}}
-              <ion-text color='secondary' *ngIf='!bookInfo.bookInfo?.isExchange'>
-                {{getTripTypeTip(bookInfo?.bookInfo)}}</ion-text></strong>
+              <!-- <ion-text color='secondary' *ngIf='!bookInfo.bookInfo?.isExchange'>
+                {{getTripTypeTip(bookInfo?.bookInfo)}}</ion-text> -->
+              </strong>
             <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
-              <ion-icon name="trash" color='danger' mode='ios'>
+              <ion-icon name="trash" color='medium' mode='ios'>
               </ion-icon>
               <div class='reset' *ngIf='bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
                 <ion-button fill='clear' expand='block' color='secondary' size='small' (click)='reelect(bookInfo)'
@@ -31,7 +30,7 @@
                 </ion-button>
               </div>
             </ion-button>
-          </div> -->
+          </div>
           <ion-label class='train-item'>
             <app-train-list-item-df [seat]='bookInfo.bookInfo?.selectedSeat' [isShowSelectSeatLocation]="false"
               [selectSeatLocation]='bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'
@@ -54,7 +53,11 @@
 
 </ion-content>
 <ion-footer>
-  <ion-toolbar>
-    <ion-button (click)='nextStep()' slot='end' color='secondary' [disabled]='!canGoToNext()'>下一步</ion-button>
+  <ion-toolbar class="toolbar" style="--border-width: 0;">
+    <div class="btn_container">
+      <ion-button class='ion-margin-top' (click)='nextStep()' color="secondary" [disabled]='!canGoToNext()' expand="block">
+        <ion-text class="text_search">确   定</ion-text>
+      </ion-button>
+    </div>
   </ion-toolbar>
 </ion-footer>

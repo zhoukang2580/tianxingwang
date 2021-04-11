@@ -9,7 +9,7 @@ import {
   trigger,
 } from "@angular/animations";
 import { Component, OnInit, HostBinding, Input } from "@angular/core";
-import { Router, NavigationStart } from "@angular/router";
+import { Router, NavigationStart, NavigationEnd } from "@angular/router";
 import { TripPage } from "./tab-trip/trip.page";
 import { LangService } from "../services/lang.service";
 
@@ -51,10 +51,11 @@ export class TabsPage implements OnInit {
   // @HostBinding("class.ion-page-hidden")
   // private isHidden;
   tab: string;
+  private lastLang;
+  private isLangChanged = false;
   tabChangeHooks: () => any;
   constructor(private router: Router, private langService: LangService) {
     // this.tab = "home";
-   
   }
   onTabActive(tab: string) {
     this.tab = tab;
@@ -62,7 +63,24 @@ export class TabsPage implements OnInit {
   }
   ngOnInit() {
     this.tab = "tmc-home";
+    this.router.events
+      .pipe(
+        filter(
+          (evt) =>
+            evt instanceof NavigationEnd && this.router.url.includes("tabs/my")
+        )
+      )
+      .subscribe((evt) => {
+        console.log("evt", evt);
+        if (this.isLangChanged) {
+          this.router.navigate([
+            this.router.url.substr(1, this.router.url.lastIndexOf("_")),
+          ]);
+        }
+      });
     this.langService.getLangSource().subscribe((lang) => {
+      this.isLangChanged = this.lastLang != undefined && this.lastLang != lang;
+      this.lastLang = lang;
       if (this.langService.isEn) {
         this.langOpt.HomePage = "Home";
         this.langOpt.My = "My";

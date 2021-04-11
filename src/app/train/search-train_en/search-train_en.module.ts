@@ -20,7 +20,7 @@ const routes: Routes = [
   {
     path: "",
     component: SearchTrainEnPage,
-    canActivate: [AuthorityGuard, TmcGuard, ConfirmCredentialInfoGuard, StylePageGuard],
+    canActivate: [StylePageGuard,AuthorityGuard, TmcGuard, ConfirmCredentialInfoGuard],
     canDeactivate: [CandeactivateGuard]
   }
 ];

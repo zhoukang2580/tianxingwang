@@ -39,12 +39,18 @@
   align-items: center;
   justify-content: center;
   flex-flow: column nowrap;
+  img {
+    width: 1.3em;
+    height: 1.3em;
+    min-width: 1.3em;
+    min-height: 1.3em;
+  }
   .icon-calendar {
     font-size: 1.5rem;
     color: var(--ion-color-secondary);
   }
   ion-text {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
   }
   &::before {
     position: absolute;

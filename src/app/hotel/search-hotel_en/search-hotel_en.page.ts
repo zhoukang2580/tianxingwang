@@ -18,7 +18,7 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 import {
   IInterHotelSearchCondition,
   InternationalHotelService,
-} from "src/app/hotel-international/international-hotel.service";
+} from "src/app/international-hotel/international-hotel.service";
 import { StaffService } from "src/app/hr/staff.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CalendarService } from "src/app/tmc/calendar.service";
@@ -262,8 +262,8 @@ export class SearchHotelEnPage implements OnInit, OnDestroy {
       } else {
         this.internationalHotelService.setSearchConditionSource({
           ...this.internationalHotelService.getSearchCondition(),
-          checkinDate: checkInDate.date,
-          checkoutDate: checkOutDate.date,
+          checkInDate: checkInDate.date,
+          checkOutDate: checkOutDate.date,
         });
       }
     }

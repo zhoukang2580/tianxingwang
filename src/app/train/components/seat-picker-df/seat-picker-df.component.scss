@@ -5,20 +5,41 @@
 }
 .selectSeatLocation {
   border: 1px;
-  width: 20px;
+  width: 35px;
   text-align: center;
   cursor: pointer;
-  // background: #fff;
   margin-left: 0.5em;
+  margin-top: -5px;
+  z-index: 101;
+  font-weight: bold;
+  font-size: 15px;
 }
+
 .selectSeatLocationBlank {
   border: none;
   margin-left: 1em;
 }
 .selected {
   color: white;
-  background: var(--ion-color-secondary);
 }
+img {
+  clip: rect(0px 42px 30px 0px);
+  z-index: -1;
+  position: absolute;
+  display: inline-flex;
+  width: 78px;
+  height: 30px;
+  transform: translate(-22px,-1px);
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center center;
+}
+.selected img {
+  transform: translate(-66px, -1px);
+  clip: rect(0px 77px 30px 37px);
+}
+
+
 .trainCode {
   display: none;
   margin: 0px;
@@ -30,15 +51,16 @@
 .red {
   color: tomato;
 }
-.window{
-  background: #c3c3c3;
-  width: 1.7em;
-  height: 2em;
+.window {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 22px;
+  height: 35px;
+  background: #d2d2d2;
+  border-radius: 3px;
 }
 
-.font{
+.font {
   font-size: 0.6rem;
 }

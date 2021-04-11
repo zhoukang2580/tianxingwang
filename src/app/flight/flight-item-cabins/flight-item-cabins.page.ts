@@ -63,6 +63,7 @@ export class FlightItemCabinsPage implements OnInit {
   cabinTypes: SearchTypeModel[];
   isSelf = true;
   isAgreement = false;
+  isExchange = false;
   constructor(
     private flightService: FlightService,
     activatedRoute: ActivatedRoute,
@@ -349,11 +350,11 @@ export class FlightItemCabinsPage implements OnInit {
                       cabin.LowerSegment.LowerSegmentRangTime
                     }内有更低价航班:${cabin.LowerSegment.Number} ${(
                       cabin.LowerSegment.TakeoffTime || ""
-                    ).substr(11,5)},是否预订更低价航班？`;
+                    ).substr(11, 5)},是否预订更低价航班？`;
                   } else {
                     msg = `是否预订更低价航班？${cabin.LowerSegment.Number} ${(
                       cabin.LowerSegment.TakeoffTime || ""
-                    ).substr(11,5)}`;
+                    ).substr(11, 5)}`;
                   }
                   const ok = await AppHelper.alert(
                     msg,
@@ -565,7 +566,6 @@ export class FlightItemCabinsPage implements OnInit {
       cssClass: "ticket-changing",
       // animated: false
     });
-    m.backdropDismiss = false;
     await m.present();
   }
   async onFilterCabinType(evt: CustomEvent) {
@@ -601,7 +601,12 @@ export class FlightItemCabinsPage implements OnInit {
     this.setDefaultFilteredInfo();
     this.filteredPolicyPassenger$ = this.flightService
       .getPassengerBookInfoSource()
-      .pipe(map((infos) => infos.find((it) => it.isFilterPolicy)));
+      .pipe(
+        tap((infos) => {
+          this.isExchange = infos && infos.every((it) => it.exchangeInfo);
+        }),
+        map((infos) => infos.find((it) => it.isFilterPolicy&&!it.exchangeInfo))
+      );
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()
       .pipe(

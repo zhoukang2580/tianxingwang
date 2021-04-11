@@ -1,4 +1,4 @@
-import { LangService } from 'src/app/services/lang.service';
+import { LangService } from "src/app/services/lang.service";
 import { environment } from "./../../../../environments/environment";
 import { OrderFlightTripEntity } from "./../../models/OrderFlightTripEntity";
 import { TrainService } from "./../../../train/train.service";
@@ -14,6 +14,7 @@ import {
   OnChanges,
   SimpleChanges,
   ViewChild,
+  OnDestroy,
 } from "@angular/core";
 import { OrderEntity, OrderStatusType } from "src/app/order/models/OrderEntity";
 import { OrderFlightTripStatusType } from "src/app/order/models/OrderFlightTripStatusType";
@@ -23,18 +24,26 @@ import { OrderTrainTicketStatusType } from "../../models/OrderTrainTicketStatusT
 import { OrderFlightTicketEntity } from "../../models/OrderFlightTicketEntity";
 import { OrderTrainTicketEntity } from "../../models/OrderTrainTicketEntity";
 import { TrainBookType } from "src/app/train/models/TrainBookType";
-import { OrderHotelStatusType } from "../../models/OrderHotelEntity";
+import {
+  OrderHotelEntity,
+  OrderHotelStatusType,
+} from "../../models/OrderHotelEntity";
 import { HotelPaymentType } from "src/app/hotel/models/HotelPaymentType";
 import { TrainSupplierType } from "src/app/train/models/TrainSupplierType";
+import { Router } from "@angular/router";
 import { OrderPassengerEntity } from "../../models/OrderPassengerEntity";
 import { OrderFlightTicketType } from "../../models/OrderFlightTicketType";
 import {
   PopoverController,
+  PickerController,
   IonDatetime,
 } from "@ionic/angular";
 import { RefundFlightTicketTipComponent } from "../refund-flight-ticket-tip/refund-flight-ticket-tip.component";
 import { OrderService } from "../../order.service";
 import { LanguageHelper } from "src/app/languageHelper";
+import { DayModel } from "src/app/tmc/models/DayModel";
+import { tick } from "@angular/core/testing";
+import { TrainSeatEntity } from "src/app/train/models/TrainSeatEntity";
 @Component({
   selector: "app-order-item-df",
   templateUrl: "./order-item-df.component.html",
@@ -59,6 +68,13 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     ticketId: string;
     tag: "flight" | "train";
   }>;
+  @Output() abolishHotelOrder: EventEmitter<{
+    orderId: string;
+    orderHotelId: string;
+  }>;
+  @Output() verifySMSCode: EventEmitter<any>;
+  @Output() getVerifySMSCode: EventEmitter<any>;
+
   @Output() refundFlightTicket: EventEmitter<{
     orderId: string;
     ticketId: string;
@@ -80,12 +96,16 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     private calendarService: CalendarService,
     private popoverCtrl: PopoverController,
     private trainService: TrainService,
-    private LangServicel: LangService
+    private orderService: OrderService,
+    private LangService: LangService
   ) {
     this.payaction = new EventEmitter();
     this.refundTrainTicket = new EventEmitter();
     this.refundFlightTicket = new EventEmitter();
     this.abolishOrder = new EventEmitter();
+    this.abolishHotelOrder = new EventEmitter();
+    this.verifySMSCode = new EventEmitter();
+    this.getVerifySMSCode = new EventEmitter();
     this.exchangeFlightTicket = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
@@ -95,9 +115,39 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     evt.preventDefault();
     evt.stopPropagation();
   }
+  onVerifySMSCode(evt: CustomEvent, orderHotel) {
+    evt.stopPropagation();
+    this.verifySMSCode.emit({
+      orderId: this.order.Id,
+      orderHotel,
+    });
+  }
+  onGetVerifySMSCode(evt: CustomEvent, orderHotel) {
+    evt.stopPropagation();
+    this.getVerifySMSCode.emit({
+      orderId: this.order.Id,
+      orderHotel
+    });
+  }
+  onAbolishHotelOrder(evt: CustomEvent, orderId) {
+    //OrderHotels
+    evt.stopPropagation();
+    AppHelper.alert("确定取消订单?", true, "确定", "取消").then((ok) => {
+      if (ok) {
+        this.abolishHotelOrder.emit({
+          orderId: this.order.Id,
+          orderHotelId: orderId,
+        });
+      }
+    });
+  }
+
   onHelp(evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
+    }
+    if (this.LangService.isEn) {
+      AppHelper.alert("It takes 3-15 days for refund and 7-10 days for refund");
     }
     AppHelper.alert("退票操作需3-15个工作日，退款操作需7-10个工作日");
   }
@@ -162,7 +212,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
               ticket.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(
                 ticket
               );
-              ticket.VariablesJsonObj.isShowCancelBtn = this.isShowCancelBtn(
+              ticket.VariablesJsonObj.isShowCancelButton = this.isShowFlightCancelBtn(
                 ticket
               );
               return ticket;
@@ -171,13 +221,15 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
         }
         if (this.order.OrderTrainTickets) {
           this.order.OrderTrainTickets = this.order.OrderTrainTickets.map(
-            (t) => {
+            (t, idx) => {
               if (t.Variables && !t.VariablesJsonObj) {
                 t.VariablesJsonObj =
                   t.VariablesJsonObj ||
                   (t.Variables ? JSON.parse(t.Variables) : {});
               }
-              t.VariablesJsonObj.isShowCancelBtn = this.isShowTrainCancelBtn(t);
+              t.VariablesJsonObj.isShowCancelButton =
+                this.isShowTrainCancelBtn(t) &&
+                idx == this.order.OrderTrainTickets.length - 1;
               t.VariablesJsonObj.isShowRefundOrExchangeBtn = this.isShowRefundOrExchangeBtn(
                 t
               );
@@ -185,7 +237,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
                 t.OrderTrainTrips = t.OrderTrainTrips.map((trip) => {
                   if (trip.StartTime) {
                     trip["StartTimeGetHHmm"] = this.getHHmm(trip.StartTime);
-                    trip.StartTime = trip.StartTime.substr(0, 10);
+                    // trip.StartTime = trip.StartTime.substr(0, 10);
                   }
                   return trip;
                 });
@@ -202,10 +254,23 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
       }
     }
   }
+  private sortOrderFlightTicketsByTime(arr: OrderFlightTicketEntity[]) {
+    const result = ((arr && arr.slice(0)) || []).filter(
+      (t) => t.OrderFlightTrips && t.OrderFlightTrips.length > 0
+    );
+    result.sort((t1, t2) => {
+      return (
+        AppHelper.getDate(t1.OrderFlightTrips[0].TakeoffDate).getTime() -
+        AppHelper.getDate(t2.OrderFlightTrips[0].TakeoffDate).getTime()
+      );
+    });
+    return result;
+  }
   // private checkIfOrderFlightTicketShow() {
   //   if (this.order && this.order.OrderFlightTickets) {
   //     const statusArr = [
   //       OrderFlightTicketStatusType.ChangeTicket,
+  //       // OrderFlightTicketStatusType.Refunded
   //     ];
   //     this.order.OrderFlightTickets = this.order.OrderFlightTickets.map(t => {
   //       if (t.VariablesJsonObj) {
@@ -216,19 +281,6 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   //     });
   //   }
   // }
-  check(orderTrainTicket: OrderTrainTicketEntity) {
-    return (
-      orderTrainTicket &&
-      orderTrainTicket.OrderTrainTrips &&
-      orderTrainTicket.OrderTrainTrips.length == 1 &&
-      +this.calendarService.getMoment(
-        0,
-        orderTrainTicket.OrderTrainTrips[0].StartTime
-      ) -
-        +this.calendarService.getMoment(0) >
-        0
-    );
-  }
   async onExchangeTrainTicket(
     evt: CustomEvent,
     orderTrainTicket: OrderTrainTicketEntity
@@ -272,7 +324,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     // console.log(tomorrow.format("YYYY-MM-DD"), dm.format("YYYY-MM-DD"));
     return +dm - +tomorrow >= 0;
   }
-  private isShowCancelBtn(orderFlightTicket: OrderFlightTicketEntity) {
+  private isShowFlightCancelBtn(orderFlightTicket: OrderFlightTicketEntity) {
     if (
       !orderFlightTicket ||
       !this.showBtnByTimeAndTicketType(orderFlightTicket)
@@ -289,34 +341,18 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
       return false;
     }
     return (
-      [
-        OrderTrainTicketStatusType.Issued,
-        OrderTrainTicketStatusType.Exchanged,
-      ].includes(orderTrainTicket.Status) &&
-      orderTrainTicket.OrderTrainTrips.some((trip) => {
-        return (
-          AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
-          30 * 60 * 1000
-        );
-      })
+      orderTrainTicket.VariablesJsonObj &&
+      (orderTrainTicket.VariablesJsonObj.isShowExchangeButton ||
+        orderTrainTicket.VariablesJsonObj.isShowRefundButton)
     );
   }
   private isShowTrainCancelBtn(orderTrainTicket: OrderTrainTicketEntity) {
-    if (!orderTrainTicket || !orderTrainTicket.OrderTrainTrips) {
+    if (!orderTrainTicket) {
       return false;
     }
     return (
-      orderTrainTicket &&
-      [
-        OrderTrainTicketStatusType.Booked,
-        OrderTrainTicketStatusType.BookExchanged,
-      ].includes(orderTrainTicket.Status) &&
-      orderTrainTicket.OrderTrainTrips.some((trip) => {
-        return (
-          AppHelper.getDate(trip.StartTime).getTime() - new Date().getTime() >=
-          30 * 60 * 1000
-        );
-      })
+      orderTrainTicket.VariablesJsonObj &&
+      orderTrainTicket.VariablesJsonObj.isShowCancelButton
     );
   }
   private isShowExchangeBtn(orderFlightTicket: OrderFlightTicketEntity) {
@@ -362,7 +398,13 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
             (AppHelper.getDate(t.EndDate).getTime() -
               AppHelper.getDate(t.BeginDate).getTime()) /
             86400000;
-
+          if (t.Variables && !t.VariablesJsonObj) {
+            try {
+              t.VariablesJsonObj = JSON.parse(t.Variables);
+            } catch (e) {
+              console.error(e);
+            }
+          }
           return t;
         });
       }
@@ -383,7 +425,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   onAbolishFlightOrder(evt: CustomEvent, ticket: OrderFlightTicketEntity) {
     evt.stopPropagation();
     AppHelper.alert(
-      "确定取消订单?",
+      this.LangService.isCn ? "确定取消订单?" : "Confirm order cancellation",
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
@@ -400,7 +442,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   onAbolishTraninOrder(evt: CustomEvent, train: OrderTrainTicketEntity) {
     evt.stopPropagation();
     AppHelper.alert(
-       "确定取消订单?",
+      this.LangService.isCn ? "确定取消订单?" : "Confirm order cancellation",
       true,
       LanguageHelper.getConfirmTip(),
       LanguageHelper.getCancelTip()
@@ -493,38 +535,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     if (order.Status == OrderStatusType.WaitPay) {
       return true;
     }
-    let rev =
-      order.PayAmount < order.TotalAmount &&
-      (order.VariablesJsonObj["TravelPayType"] == OrderTravelPayType.Credit ||
-        order.VariablesJsonObj["TravelPayType"] == OrderTravelPayType.Person) &&
-      order.Status != OrderStatusType.Cancel;
-    if (!rev) {
-      return false;
-    }
-    // rev =
-    //   !order.OrderFlightTickets ||
-    //   order.OrderFlightTickets.filter(
-    //     it =>
-    //       it.Status == OrderFlightTicketStatusType.Booking ||
-    //       it.Status == OrderFlightTicketStatusType.BookExchanging
-    //   ).filter(ticket => {
-    //     return ticket.OrderFlightTrips.some(
-    //       trip =>
-    //         AppHelper.getDate(trip.TakeoffTime).getTime() -
-    //           new Date().getTime() >=
-    //         0
-    //     );
-    //   }).length == 0;
-    // if (!rev) {
-    //   return false;
-    // }
-    rev =
-      !order.OrderTrainTickets ||
-      order.OrderTrainTickets.filter(
-        (it) =>
-          it.Status == OrderTrainTicketStatusType.Booking ||
-          it.Status == OrderTrainTicketStatusType.BookExchanging
-      ).length > 0;
+    let rev = order.VariablesJsonObj["isPay"];
     return rev;
   }
   // getTotalAmount(order: OrderEntity, key: string) {

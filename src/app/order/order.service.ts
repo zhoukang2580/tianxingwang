@@ -7,7 +7,7 @@ import { Injectable } from "@angular/core";
 import { ApiService } from "../services/api/api.service";
 import { OrderModel } from "./models/OrderModel";
 import { OrderEntity, OrderStatusType } from "./models/OrderEntity";
-import { map, switchMap } from "rxjs/operators";
+import { finalize, map, switchMap } from "rxjs/operators";
 import { from, Observable, of } from "rxjs";
 import * as moment from "moment";
 import { OrderTravelPayType } from "./models/OrderTravelEntity";
@@ -33,10 +33,12 @@ import { OrderTrainTicketEntity } from "./models/OrderTrainTicketEntity";
 import { TravelModel } from "./models/TravelModel";
 import { StaffEntity } from "../hr/staff.service";
 import { CalendarService } from "../tmc/calendar.service";
+import { OrderPassengerEntity } from "./models/OrderPassengerEntity";
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
   Order: OrderEntity;
+  OrderPassengers: OrderPassengerEntity[];
   TravelPayType: string;
   TravelType: string;
   orderTotalAmount: number;
@@ -70,18 +72,35 @@ export class OrderService {
   //   const result = this.apiService.getPromiseData<OrderModel>(req);
   //   return result;
   // }
-  getOrderDetailAsync(id: string): Promise<OrderDetailModel> {
+  async getOrderDetailAsync(id: string): Promise<OrderDetailModel> {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = `TmcApiOrderUrl-Order-Detail`;
     req.Data = {
       Id: id,
     };
-    // if(!environment.production){
-    //   return Promise.resolve(this.getmockOrderDetail())
-    // }
-    const result = this.apiService.getPromiseData<OrderDetailModel>(req);
-    return result;
+    return new Promise<OrderDetailModel>((rsv, rej) => {
+      const sub = this.getOrderDetail(id)
+        .pipe(
+          finalize(() => {
+            setTimeout(() => {
+              sub.unsubscribe();
+            }, 200);
+          })
+        )
+        .subscribe(
+          (r) => {
+            if (r && r.Status) {
+              rsv(r && r.Data);
+            } else {
+              rej(r && r.Message);
+            }
+          },
+          (e) => {
+            rej(e);
+          }
+        );
+    });
   }
   getOrderTotalAmount(order: OrderEntity, tmc: TmcEntity) {
     let amount = 0;
@@ -114,7 +133,14 @@ export class OrderService {
     req.Data = {
       Id: id,
     };
-    return this.apiService.getResponse<OrderDetailModel>(req);
+    return this.apiService.getResponse<OrderDetailModel>(req).pipe(
+      map((it) => {
+        if (it.Data && it.Data.Order) {
+          it.Data.Order.OrderPassengers = it.Data.OrderPassengers;
+        }
+        return it;
+      })
+    );
   }
   getOrderTasks(
     data: TaskModel,
@@ -180,7 +206,20 @@ export class OrderService {
     if (data.Type) {
       req["Type"] = data.Type;
     }
-    const result = this.apiService.getResponse<TravelModel>(req);
+    const result = this.apiService.getResponse<TravelModel>(req).pipe(
+      map((it) => {
+        if (it && it.Data && it.Data.Trips && it.Data.Trips.length) {
+          it.Data.Trips.forEach((t) => {
+            if (t.Passenger && t.HideCredentialsNumber) {
+              if (!t.Passenger.HideCredentialsNumber) {
+                t.Passenger.HideCredentialsNumber = t.HideCredentialsNumber;
+              }
+            }
+          });
+        }
+        return it;
+      })
+    );
     return result;
   }
   refundFlightTicket(data: {
@@ -249,7 +288,10 @@ export class OrderService {
       fromCity: TrafficlineEntity;
       toCity: TrafficlineEntity;
       order: OrderEntity;
-      staff: StaffEntity;
+      credentails: {
+        CredentialsNumber: string;
+        HideCredentialsNumber: string;
+      }[];
     }>(req);
   }
 
@@ -267,6 +309,31 @@ export class OrderService {
   }) {
     return this.abolishOrder({ ...data, Tag: "train" });
   }
+
+  abolishHotelsOrder(data: {
+    OrderId: string;
+    orderHotelId: string;
+    Channel: string;
+  }) {
+    return this.abolishHotelOrder({ ...data });
+  }
+  onGetVerifySMSCode(data: { Mobile: string; OrderHotelId: string }) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = data;
+    req.Method = `TmcApiOrderUrl-Order-SendVerifyOrderHotelSMSCode`;
+    return this.apiService.getPromiseData<any>(req);
+  }
+  onVerifySMSCode(data: { SmsCode: string; OrderHotelId: string }) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = {
+      ProductId: data.OrderHotelId,
+      SmsCode: data.SmsCode,
+    };
+    req.Method = `TmcApiOrderUrl-Order-ConfirmVerifyOrderHotelSMSCode`;
+    return this.apiService.getPromiseData<any>(req);
+  }
   private abolishOrder(data: {
     OrderId: string;
     TicketId: string;
@@ -279,6 +346,22 @@ export class OrderService {
     req.Method = `TmcApiOrderUrl-Order-AbolishOrder`;
     return this.apiService.getPromiseData<any>(req);
   }
+
+  private abolishHotelOrder(data: {
+    OrderId: string;
+    orderHotelId: string;
+    Channel: string;
+  }) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = {
+      ...data,
+      OrderHotelId: data.orderHotelId,
+    };
+    req.Method = `TmcApiOrderUrl-Order-CancelOrderHotel`;
+    return this.apiService.getPromiseData<any>(req);
+  }
+
   async getExchangeDate(startTime: string) {
     return this.calendarService.openCalendar({
       goArrivalTime: startTime,

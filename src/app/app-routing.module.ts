@@ -19,13 +19,14 @@ import { HrModule } from "./hr/hr.module";
 import { TrainModule } from "./train/train.module";
 import { HotelModule } from "./hotel/hotel.module";
 import { CarModule } from "./car/car.module";
-import { HotelInternationalModule } from "./hotel-international/hotel-international.module";
+import { HotelInternationalModule } from "./international-hotel/hotel-international.module";
 import { WorkflowModule } from "./workflow/workflow.module";
-import { FlightInternationalModule } from "./flight-international/international-flight.module";
+import { FlightInternationalModule } from "./international-flight/international-flight.module";
 import { TravelApplicationModule } from "./travel-application/travel-application.module";
 import { LoginEnModule } from "./login_en/login_en.module";
 import { RegisterEnPageModule } from './register_en/register_en.page.module';
 import { RegisterEnModule } from './register_en/register_en.module';
+import { DemandModule } from "./demand/demand.module";
 
 const routes: Routes = [
   {
@@ -118,12 +119,14 @@ const routes: Routes = [
     loadChildren: () =>
       import("./page404/page404.module").then((m) => m.Page404PageModule),
   },
+  
 ];
 @NgModule({
   imports: [
     CarModule,
     RegisterModule,
     RegisterEnModule,
+    DemandModule,
     LoginModule,
     LoginEnModule,
     FlightModule,

@@ -47,6 +47,8 @@ export class ExchangeTrainModel {
     /// 是否回城
     /// </summary>
     IsBack: boolean;
+    IsRangeExchange: boolean;
+    RangeExchangeDateTip: string;
     /// <summary>
     /// 乘客
     /// </summary>
@@ -102,6 +104,7 @@ export class ExchangeTrainModel {
     /// </summary>
     Trafficlines: TrafficlineEntity[];
     IsAllowModify: boolean;
+    IsExchange: boolean;
     StaffBookType: StaffBookType;
     InsurnanceAmount: number;
 }

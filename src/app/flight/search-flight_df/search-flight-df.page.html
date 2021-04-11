@@ -1,0 +1,129 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref="" color='light'></app-back-button>
+    </ion-buttons>
+    <ion-buttons slot='end'>
+      <ion-button fill='clear' *ngIf='(isShowBookInfos$|async) as num' color='light' size='small' (click)='onShowSelectedInfosPage();isCanleave=true'>已选航班
+        <ion-badge slot='end' color='danger'>
+          <ion-text color='light'>{{num}}</ion-text>
+        </ion-badge>
+      </ion-button>
+      <ion-button fill='clear' *ngIf='isSelf' color='light' size='small' (click)='onShowStandardDesc();'>差旅标准
+      </ion-button>
+      <ion-button fill='clear' *ngIf='!isSelf' color='light' size='small' (click)='onSelectPassenger()'>
+        <ion-icon name="person-add-outline"></ion-icon>
+        <ion-badge color='danger'>
+          <ion-text color='light'>{{selectedPassengers}}</ion-text>
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<img src="assets/images/search-flight.png" alt="" class="bgimg">
+<ion-content class="cnt">
+  <div class="wrapper">
+    <div class="search-img" [class.ios]='isIos' #imgEles>
+      <div class="left" (click)='onToggleDomestic("domestic")'>
+        <img src="assets/images/hotel-rect.png" class="left" alt="" [class.hidden]='domestic!="domestic"'>
+        <span class="text">国内</span>
+      </div>
+      <div class="right" (click)='onToggleDomestic("international")'>
+        <img src="assets/images/hotel-rect-r.png" class="right" [class.hidden]='domestic!="international"' alt="">
+        <span class="text">国际*港澳台</span>
+      </div>
+    </div>
+  </div>
+  <ion-card class='ion-padding' [class.hidden]='domestic!="domestic"'>
+    <ion-card-content>
+      <div class="segments" *ngIf='isSelf'>
+        <div class="seg" (click)='segmentChanged("single")' [class.active]='isSingle'>单程</div>
+        <div class="seg"></div>
+        <div class="seg" (click)='segmentChanged("round")' [class.active]='!isSingle'>往返</div>
+      </div>
+      <ion-buttons class="city">
+        <ion-text class="ion-text-wrap city-name ion-text-start" [class.disabled]='disabled' (click)='onSelectCity(true)' color='{{disabled?"medium":"secondary"}}'>
+          {{isEn?searchFlightModel?.fromCity?.EnglishName|| searchFlightModel?.fromCity?.Nickname:searchFlightModel?.fromCity?.Nickname?.replace('国际','')?.replace('机场','')}}</ion-text>
+        <ion-button color='{{disabled?"medium":"secondary"}}' [disabled]='disabled' (click)='onSwapCity()'>
+          <img src='assets/images/flight-rotate.png' [class.rotate]='isSwapingCity' />
+        </ion-button>
+        <ion-text class="ion-text-wrap city-name ion-text-end" [class.disabled]='disabled' (click)='onSelectCity(false)' color='{{disabled?"medium":"secondary"}}'>
+          {{isEn?searchFlightModel?.toCity?.EnglishName|| searchFlightModel?.toCity?.Nickname:searchFlightModel?.toCity?.Nickname?.replace('国际','')?.replace('机场','')}}</ion-text>
+      </ion-buttons>
+      <section class="flight-date">
+        <app-search-day-comp [day]='goDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
+        </app-search-day-comp>
+        <div *ngIf="">{{ totalFlyDays }}天</div>
+        <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
+        </app-search-day-comp>
+      </section>
+    </ion-card-content>
+    <div class="btn-search" (click)="searchFlight()" *ngIf='isSelf||(!isSelf&&selectedPassengers>0)'>查询航班</div>
+    <div class="btn-search" (click)="onSelectPassenger()" *ngIf='(!isSelf && selectedPassengers==0)'>请添加乘客</div>
+  </ion-card>
+  <ion-card class='international' [class.hidden]='domestic!="international"'>
+    <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>
+    <ion-card-content>
+      <ion-segment mode='ios' (ionChange)="onTripsSegmentChanged($event)" [value]='searchInterFlightModel?.voyageType' color='secondary' [disabled]='disabled'>
+        <ion-segment-button value="{{FlightVoyageType.OneWay}}">
+          <ion-label><strong>单程</strong></ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="{{FlightVoyageType.GoBack}}">
+          <ion-label><strong>往返</strong></ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="{{FlightVoyageType.MultiCity}}">
+          <ion-label><strong>多程(含缺口)</strong></ion-label>
+        </ion-segment-button>
+      </ion-segment>
+      <ul class="multi-city" *ngIf='searchInterFlightModel'>
+        <ng-container *ngFor='let trip of searchInterFlightModel.trips;let i=index;let first=first;let last=last'>
+          <li class="tarvel-li" *ngIf='searchInterFlightModel?.voyageType!=FlightVoyageType.MultiCity&&first||searchInterFlightModel?.voyageType==FlightVoyageType.MultiCity'>
+            <ion-text class="index-number" color='secondary' *ngIf='searchInterFlightModel?.voyageType==FlightVoyageType.MultiCity'>{{i+1}}
+            </ion-text>
+            <div class="from-to-city">
+              <ion-buttons class="ion-justify-content-between ion-align-items-center city-wrapper">
+                <ion-text class="city-name ion-text-start" (click)='onSelectInterCity(true,trip)' color='{{disabled?"medium":"secondary"}}'>
+                  {{trip?.fromCity?.Nickname?.replace("国际机场","")?.replace("机场","")}}</ion-text>
+                <ion-button color='{{disabled?"medium":"secondary"}}' (click)='onSwapInterCity(trip)' size='small'>
+                  <ion-icon class='swap' name="swap-horizontal-outline" color='{{disabled?"medium":"secondary"}}'>
+                  </ion-icon>
+                </ion-button>
+                <ion-text class="city-name ion-text-end" (click)='onSelectInterCity(false,trip)' color='{{disabled?"medium":"secondary"}}'>
+                  {{trip?.toCity?.Nickname?.replace("国际机场","")?.replace("机场","")}}
+                  <ion-text *ngIf='!trip?.toCity?.Nickname' color='medium'>到达城市
+                  </ion-text>
+                </ion-text>
+              </ion-buttons>
+              <div style="height: 2em;">
+                <ion-buttons class="ion-justify-content-between">
+                  <ion-text color='secondary' (click)="onSelectInterFlyDate(true,trip)">{{trip.date}}</ion-text>
+                  <ion-text color='secondary' (click)="onSelectInterFlyDate(false,trip)" *ngIf='searchInterFlightModel.voyageType==FlightVoyageType.GoBack'>
+                    {{searchInterFlightModel.trips[1]?.date}}
+                  </ion-text>
+                  <ion-button (click)='onRemoveTrip(trip)' color='danger' *ngIf='searchInterFlightModel.voyageType==FlightVoyageType.MultiCity&&searchInterFlightModel?.trips?.length>2'>
+                    <ion-icon name="close-circle-outline" style="margin-right: 0.2em;"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </div>
+            </div>
+          </li>
+        </ng-container>
+        <li *ngIf='searchInterFlightModel.voyageType==FlightVoyageType.MultiCity&&searchInterFlightModel.trips?.length&&searchInterFlightModel.trips?.length<6'>
+          <ion-button style="flex: 1;" size="small" expand='block' (click)='onAddMoreTrip()'>
+            <ion-icon color='secondary' name="add-circle-outline"></ion-icon>
+            <ion-text color='secondary'>
+              再加一程
+            </ion-text>
+          </ion-button>
+        </li>
+        <ion-select (ionChange)='onCabinChange()' style="padding: 0 1em 0 0;margin:1em 0;" [(ngModel)]='searchInterFlightModel.cabin.value' color="dark" cancel-text="取消" interface="action-sheet"
+          [compareWith]="compareWithFn">
+          <ion-select-option [value]="flightCabin.value" *ngFor="let flightCabin of searchInterFlightModel?.cabins">
+            {{flightCabin.label}}</ion-select-option>
+        </ion-select>
+      </ul>
+      <div class="btn-search" (click)="searchFlight(false)" *ngIf='isSelf||(!isSelf&&selectedInterPassengers?.length>0)'>查询航班</div>
+      <div class="btn-search" (click)="onSelectPassenger(false)" *ngIf='(!isSelf && selectedInterPassengers?.length==0)'>请添加乘客</div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

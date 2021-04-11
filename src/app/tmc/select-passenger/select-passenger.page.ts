@@ -1,5 +1,5 @@
 import { flyInOut } from "./../../animations/flyInOut";
-import { InternationalHotelService } from "./../../hotel-international/international-hotel.service";
+import { InternationalHotelService } from "../../international-hotel/international-hotel.service";
 import { HotelService } from "./../../hotel/hotel.service";
 import { SelectCountryModalComponent } from "../components/select-country/select-countrymodal.component";
 import { TrainService } from "./../../train/train.service";
@@ -43,12 +43,15 @@ import { StaffEntity } from "src/app/hr/staff.service";
 import { Observable, Subscription, fromEvent } from "rxjs";
 import { tap, finalize } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
-import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import {
+  CredentialPipe,
+  CredentialsType,
+} from "src/app/member/pipe/credential.pipe";
 import { AppHelper } from "src/app/appHelper";
 import { ValidatorService } from "src/app/services/validator/validator.service";
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { CountryEntity } from "../models/CountryEntity";
-import { InternationalFlightService } from "src/app/flight-international/international-flight.service";
+import { InternationalFlightService } from "src/app/international-flight/international-flight.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { CredentialsComponent } from "src/app/member/components/credentials/credentials.component";
 export const NOT_WHITE_LIST = "notwhitelist";
@@ -609,6 +612,11 @@ export class SelectPassengerPage
       this.vmNewCredential &&
       selectedCredential.Id == this.vmNewCredential.Id
     ) {
+      if (!selectedCredential.TypeName) {
+        selectedCredential.TypeName = new CredentialPipe().transform(
+          selectedCredential.Type
+        );
+      }
       selectedCredential = {
         ...selectedCredential,
         showCountry: {
@@ -632,12 +640,16 @@ export class SelectPassengerPage
       );
       return;
     }
+    const isNotWhitelist =
+      this.selectedPassenger.isNotWhiteList || !this.selectedPassenger.Policy;
+    if (!selectedCredential.HideNumber) {
+      selectedCredential.HideNumber = selectedCredential.Number;
+    }
     const passengerBookInfo: PassengerBookInfo<any> = {
       credential: ({
         ...selectedCredential,
       } as any) as CredentialsEntity,
-      isNotWhitelist:
-        this.selectedPassenger.isNotWhiteList || !this.selectedPassenger.Policy,
+      isNotWhitelist,
       passenger: {
         ...this.selectedPassenger,
         Name: this.selectedPassenger.Name,

@@ -5,6 +5,7 @@ import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { SelectTrainStationPage } from "./select-station.page";
+import { StylePageGuard } from "src/app/guards/style-page.guard";
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { SelectTrainStationPage } from "./select-station.page";
     RouterModule.forChild([
       {
         path: "",
-        component: SelectTrainStationPage
+        component: SelectTrainStationPage,
+        canActivate:[StylePageGuard]
       }
     ])
   ],

@@ -60,8 +60,9 @@ export class ScanResultPage
     private apiService: ApiService
   ) {
     this.subscription = activatedRoute.queryParamMap.subscribe((p) => {
-      console.log("scanResult", p.get("scanResult"));
-      this.scan(p.get("scanResult"));
+      const scanResult=decodeURIComponent(p.get("scanResult"));
+      console.log("scanResult", scanResult);
+      this.scan(scanResult);
     });
   }
   ngOnDestroy() {

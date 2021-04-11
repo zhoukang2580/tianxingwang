@@ -47,6 +47,7 @@ import {
   ElementRef,
   ViewChild,
   Component,
+  OnDestroy,
 } from "@angular/core";
 import { Storage } from "@ionic/storage";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -60,6 +61,7 @@ import {
   combineLatest,
   of,
   fromEvent,
+  Subscription,
 } from "rxjs";
 import {
   OrderTravelType,
@@ -90,7 +92,7 @@ import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
   styleUrls: ["./book_en.page.scss"],
 })
 export class BookEnPage
-  implements OnInit, AfterViewInit, CanComponentDeactivate {
+  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
   langOpt = {
     meal: "Meal",
     isStop: "Stop over",
@@ -104,6 +106,9 @@ export class BookEnPage
     lowestPriceRecommend: "LowestPriceRecommend",
   };
   private isShowInsuranceBack = false;
+  private subscriptions: Subscription[] = [];
+  private totalPriceSource: Subject<number>;
+  totalPrice = 0;
   FlightCabinFareType = FlightCabinFareType;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
@@ -119,7 +124,6 @@ export class BookEnPage
   checkPayCount = 5;
   checkPayCountIntervalTime = 3 * 1000;
   checkPayCountIntervalId: any;
-  totalPriceSource: Subject<number>;
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
@@ -127,7 +131,7 @@ export class BookEnPage
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   isCheckingPay: boolean;
-  isCanSkipApproval$ = of(false);
+  isCanSkipApproval = false;
   isCanSave = false;
   isRoundTrip = false;
   isShowFee = false;
@@ -142,9 +146,8 @@ export class BookEnPage
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
-  @ViewChild("transfromEle", { static: true }) transfromEle: ElementRef<
-    HTMLElement
-  >;
+  @ViewChild("transfromEle", { static: true })
+  transfromEle: ElementRef<HTMLElement>;
   @ViewChild(IonFooter, { static: true }) ionFooter: IonFooter;
   constructor(
     private flightService: FlightService,
@@ -163,8 +166,15 @@ export class BookEnPage
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
-
+  ngOnDestroy() {
+    this.subscriptions.forEach((s) => s.unsubscribe());
+  }
   async ngOnInit() {
+    this.subscriptions.push(
+      this.totalPriceSource.subscribe((p) => {
+        this.totalPrice = p;
+      })
+    );
     this.isRoundTrip = this.flightService.getSearchFlightModel().isRoundTrip;
     this.flightService.setPassengerBookInfosSource(
       this.flightService.getPassengerBookInfos().filter((it) => !!it.bookInfo)
@@ -200,22 +210,28 @@ export class BookEnPage
         this.isShowInsuranceBack = false;
       }, 200);
     });
-    this.isCanSkipApproval$ = combineLatest([
-      from(this.tmcService.getTmc()),
-      from(this.staffService.isSelfBookType()),
-      this.identityService.getIdentitySource(),
-    ]).pipe(
-      map(([tmc, isSelfType, identity]) => {
-        return (
-          tmc.FlightApprovalType != 0 &&
-          tmc.FlightApprovalType != TmcApprovalType.None &&
-          !isSelfType &&
-          !(identity && identity.Numbers && identity.Numbers.AgentId)
-        );
-      }),
-      tap((can) => {
-        console.log("是否可以跳过审批", can);
-      })
+    this.subscriptions.push(
+      combineLatest([
+        from(this.tmcService.getTmc()),
+        from(this.staffService.isSelfBookType()),
+        this.identityService.getIdentitySource(),
+      ])
+        .pipe(
+          map(([tmc, isSelfType, identity]) => {
+            return (
+              tmc.FlightApprovalType != 0 &&
+              tmc.FlightApprovalType != TmcApprovalType.None &&
+              !isSelfType &&
+              !(identity && identity.Numbers && identity.Numbers.AgentId)
+            );
+          }),
+          tap((can) => {
+            console.log("是否可以跳过审批", can);
+          })
+        )
+        .subscribe((is) => {
+          this.isCanSkipApproval = is;
+        })
     );
     this.isself = await this.staffService.isSelfBookType();
     console.log(this.isself, "isself");
@@ -733,71 +749,90 @@ export class BookEnPage
           AppHelper.alert(e);
           return null;
         });
-      if (res) {
-        if (res.TradeNo) {
-          AppHelper.toast("checkout success!", 1400, "top");
-          this.isSubmitDisabled = true;
-          this.flightService.removeAllBookInfos();
-          if (
-            !isSave &&
-            isSelf &&
-            (this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit)
-          ) {
-            let canPay = true;
-            if (res.IsCheckPay) {
-              this.isCheckingPay = true;
-              canPay = await this.checkPay(res.TradeNo);
-              this.isCheckingPay = false;
-            }
-            if (canPay) {
-              if (res.HasTasks) {
-                await AppHelper.alert(
-                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
-                  true
-                );
+        if (res) {
+          if (res.TradeNo) {
+            // AppHelper.toast("下单成功!", 1400, "top");
+            // this.isPlaceOrderOk = true;
+            this.isSubmitDisabled = true;
+            let isHasTask = res.HasTasks;
+            let payResult = false;
+            this.flightService.removeAllBookInfos();
+            let checkPayResult = false;
+            const isCheckPay = res.IsCheckPay;
+            if (!isSave) {
+              if (isCheckPay) {
+                this.isCheckingPay = true;
+                checkPayResult = await this.checkPay(res.TradeNo);
+                this.isCheckingPay = false;
               } else {
-                await this.tmcService.payOrder(res.TradeNo);
+                payResult = true;
+              }
+              if (checkPayResult) {
+                if (this.isself && isHasTask) {
+                  await AppHelper.alert(
+                    LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                    true
+                  );
+                } else {
+                  if (isCheckPay) {
+                    payResult = await this.tmcService.payOrder(res.TradeNo);
+                  }
+                }
+              } else {
+                if (this.isself) {
+                  await AppHelper.alert(
+                    LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                    true
+                  );
+                }
               }
             } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(),
-                true
-              );
+              if (isSave) {
+                await AppHelper.alert("订单已保存!");
+              } else {
+                // await AppHelper.alert("下单成功!");
+              }
             }
-          } else {
-            if (isSave) {
-              await AppHelper.alert("Order saved");
-            } else {
-              await AppHelper.alert("checkout success!");
-            }
+            this.goToMyOrders({
+              isHasTask: isHasTask ,
+              payResult,
+              isCheckPay: isCheckPay ||
+              this.orderTravelPayType == OrderTravelPayType.Person ||
+              this.orderTravelPayType == OrderTravelPayType.Credit,
+            });
           }
-          const hasRight = await this.tmcService.checkHasHotelBookRight();
-          if (hasRight) {
-            const ok = await AppHelper.alert(
-              "您的预订已完成，是否继续预订酒店？",
-              true,
-              "是",
-              "否"
-            );
-            if (ok) {
-              this.router.navigate([AppHelper.getRoutePath("search-hotel")], {
-                queryParams: {
-                  fromRoute: "bookflight",
-                },
-              });
-              return;
-            }
-          }
-          this.goToMyOrders(ProductItemType.plane);
         }
-      }
     }
   }
-  private goToMyOrders(tab: ProductItemType) {
-    this.router.navigate(["order-list_en"], {
-      queryParams: { tabId: tab, fromRoute: "bookflight" },
-    });
+  private goToMyOrders(data: {
+    isHasTask: boolean;
+    payResult: boolean;
+    isCheckPay: boolean;
+  }) {
+    // this.router.navigate(["order-list"], {
+    //   // isbackhome:true，是防止 android 通过物理返回键返回当前页面
+    //   queryParams: { tabId: tab, fromRoute: "bookflight", isBackHome: true },
+    // });
+    try {
+      const m = this.flightService.getSearchFlightModel();
+      // const cities = await this.flightService.getStationsAsync();
+      // const city = m.toCity;
+      const cities = this.flightService.getSearchFlightModel().toCity;
+      // const c = cities.find(it => it.Code == (city && city.Code));
+      this.router.navigate(["checkout-success"], {
+        queryParams: {
+          tabId: ProductItemType.plane,
+          cityCode: cities && cities.CityCode,
+          cityName: cities && cities.CityName,
+          isApproval: data.isHasTask,
+          payResult: data.payResult,
+          isCheckPay: data.isCheckPay,
+          date: m.Date,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
   private async checkPay(tradeNo: string) {
     return new Promise<boolean>((s) => {
@@ -1089,10 +1124,17 @@ export class BookEnPage
         );
         return false;
       }
-      p.Credentials.Account =
-        combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
-      p.Credentials.Account =
-        p.Credentials.Account || combindInfo.modal.credential.Account;
+      if (
+        combindInfo.credentialStaff &&
+        combindInfo.credentialStaff.Account &&
+        combindInfo.credentialStaff.Account.Id &&
+        combindInfo.credentialStaff.Account.Id != "0"
+      ) {
+        p.Credentials.Account =
+          combindInfo.credentialStaff && combindInfo.credentialStaff.Account;
+        p.Credentials.Account =
+          p.Credentials.Account || combindInfo.modal.credential.Account;
+      }
       p.TravelType = combindInfo.travelType;
       p.TravelPayType = this.orderTravelPayType;
       p.IsSkipApprove = combindInfo.isSkipApprove;
@@ -1102,8 +1144,13 @@ export class BookEnPage
         p.FlightCabin.InsuranceProducts = p.InsuranceProducts;
         p.InsuranceProducts = null;
         if (p.FlightSegment) {
+          if (!p.FlightSegment.CabinCode) {
+            p.FlightSegment.CabinCode =
+              p.FlightCabin.CabinCodes[p.FlightSegment.Number];
+          }
           if (p.FlightCabin.CabinCodes && !p.FlightCabin.Code) {
-            p.FlightCabin.Code = p.FlightCabin.CabinCodes[p.FlightSegment.Id];
+            p.FlightCabin.Code =
+              p.FlightCabin.CabinCodes[p.FlightSegment.Number];
           }
         }
       }
@@ -1369,7 +1416,10 @@ export class BookEnPage
         const cs = this.initialBookDtoModel.Staffs.find(
           (it) => it.Account.Id == item.passenger.AccountId
         );
-        const cstaff = cs && cs.CredentialStaff;
+        const cstaff =
+          item.passenger.AccountId == this.tmc.Account.Id
+            ? item.credential.Staff
+            : cs && cs.CredentialStaff;
         const credentials = [];
         const arr = cstaff && cstaff.Approvers;
         let credentialStaffApprovers: {

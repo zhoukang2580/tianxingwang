@@ -65,6 +65,7 @@ type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 })
 export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
   private hotelDayPrice: HotelDayPriceEntity;
+  private hotelId:string;
   private curPos = 0;
   private subscriptions: Subscription[] = [];
   private hotelDetailSub = Subscription.EMPTY;
@@ -250,7 +251,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     );
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (q) => {
-        this.hotelDayPrice = this.hotelService.curViewHotel;
+        this.hotelId=q.get("hotelId");
         const isSelf = await this.staffService.isSelfBookType();
         if (!this.hotelPolicy || this.hotelPolicy.length == 0) {
           this.hotelPolicy = await this.getPolicy();
@@ -310,22 +311,20 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
       this.hotelDetailSub.unsubscribe();
     }
     this.hotelDetailSub = this.hotelService
-      .getHotelDetail(this.hotelDayPrice)
+      .getHotelDetail(this.hotelId)
       .pipe(
         map((res) => res && res.Data),
         tap((r) => {
           console.log(r);
         })
       )
-      .pipe(finalize(() => {}))
+      .pipe(finalize(() => { }))
       .subscribe(
         async (hotel) => {
           if (hotel) {
             this.hotel = hotel.Hotel;
             if (this.hotel) {
-              if (this.hotelDayPrice) {
-                this.hotelDayPrice.Hotel = this.hotel;
-              }
+              this.hotelDayPrice = { Hotel: this.hotel } as any;
               this.hotelPolicy = await this.getPolicy();
               this.content.scrollToTop();
               this.initFilterPolicy();
@@ -674,7 +673,9 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     // this.curSelectedRoom.Hotel = this.curSelectedRoom.Hotel || this.hotel;
     let roomImages = this.getRoomImages(room);
     if (!roomImages || roomImages.length === 0) {
-      if (this.config && this.config.DefaultImageUrl) {
+      if (this.hotelService.RoomDefaultImg) {
+        roomImages = [this.hotelService.RoomDefaultImg];
+      } else if (this.config && this.config.DefaultImageUrl) {
         roomImages = [this.config.DefaultImageUrl];
       }
     }
@@ -740,7 +741,13 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
       });
       return;
     }
-    this.router.navigate(["hotel-map"]);
+    this.router.navigate(["hotel-map"], {
+      queryParams: {
+        name: this.hotel && this.hotel.Name,
+        lat: this.hotel && this.hotel.Lat,
+        lng: this.hotel && this.hotel.Lng,
+      }
+    });
   }
   async ngAfterViewInit() {
     setTimeout(() => {

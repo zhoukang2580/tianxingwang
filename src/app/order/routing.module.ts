@@ -45,6 +45,13 @@ export const routes: Routes = [
       )
   },
   {
+    path: "order-car-detail_df",
+    loadChildren: () =>
+      import("./order-car-detail_df/order-car-detail_df.module").then(
+        m => m.OrderCarDetailDfPageModule
+      )
+  },
+  {
     path: "order-flight-detail",
     loadChildren: () =>
       import("./order-flight-detail/order-flight-detail.module").then(
@@ -56,6 +63,13 @@ export const routes: Routes = [
     loadChildren: () =>
       import("./order-flight-detail_en/order-flight-detail_en.module").then(
         m => m.OrderFlightDetailEnPageModule
+      )
+  },
+  {
+    path: "order-flight-detail_df",
+    loadChildren: () =>
+      import("./order-flight-detail_df/order-flight-detail_df.module").then(
+        m => m.OrderFlightDetailDfPageModule
       )
   },
   {
@@ -71,6 +85,13 @@ export const routes: Routes = [
       import("./order-hotel-detail_en/order-hotel-detail_en.module").then(
         m => m.OrderHotelDetailEnPageModule
       )
+  }
+  ,{
+    path: "order-hotel-detail_df",
+    loadChildren: () =>
+      import("./order-hotel-detail_df/order-hotel-detail_df.module").then(
+        m => m.OrderHotelDetailDfPageModule
+      )
   },
  {
     path: "order-train-detail",
@@ -84,6 +105,13 @@ export const routes: Routes = [
      loadChildren: () =>
        import('./order-train-detail_en/order-train-detail_en.module').then(
          m => m.OrderTrainDetailEnPageModule
+       )
+   },
+  {
+     path: "order-train-detail_df",
+     loadChildren: () =>
+       import('./order-train-detail_df/order-train-detail_df.module').then(
+         m => m.OrderTrainDetailDfPageModule
        )
    }
 

@@ -9,12 +9,14 @@ import { IonicModule } from '@ionic/angular';
 
 import { ScanResultPage } from './scan-result.page';
 import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: ScanResultPage,
-    canDeactivate:[CandeactivateGuard]
+    canDeactivate:[CandeactivateGuard],
+    canActivate:[StylePageGuard]
   }
 ];
 

@@ -995,6 +995,9 @@ export class AppHelper {
 
     return req;
   }
+  private static async openInAppBrowser(url: string) {
+    return AppHelper.payH5Url(url).catch(() => null);
+  }
   static async jump(router: Router, url: string, queryParams: any) {
     if (!url) {
       return false;
@@ -1067,7 +1070,14 @@ export class AppHelper {
     ) {
       queryParams.url = url;
       queryParams.isOpenInAppBrowser = AppHelper.isApp();
-      queryParams.isHideTitle = true;
+      queryParams.isHideTitle =
+        queryParams.isHideTitle != undefined ? queryParams.isHideTitle : true;
+      if (AppHelper.isApp()) {
+        AppHelper.openInAppBrowser(url).catch((e) => {
+          console.error(e);
+        });
+        return true;
+      }
       router.navigate(["open-url"], {
         queryParams: queryParams,
       });

@@ -145,6 +145,7 @@ export class OpenRentalCarPage implements OnInit, OnDestroy {
     if (url) {
       url = decodeURIComponent(url);
     }
+    console.log("open-rental-car openInMyBrowser,url",url);
     try {
       if (this.platform.is("ios")) {
         if ((await this.safariController.isAvailable())) {

@@ -1,0 +1,96 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+
+            <app-back-button defaultHref=""></app-back-button>
+        </ion-buttons>
+        <ion-title style="text-align: start;">Ticket</ion-title>
+        <ion-buttons slot='end'>
+            <ion-button fill='clear' color='secondary' size='small' isCanleave='true'>Selected
+                <ion-badge slot='end' color='danger'>
+                    <ion-text color='light' class="danger">{{0}}</ion-text>
+                </ion-badge>
+            </ion-button>
+            <ion-button fill='clear' *ngIf='isSelf' color='secondary' size='small' (click)='onShowStandardDesc();'>Policy
+            </ion-button>
+            <ion-button fill='clear' *ngIf='!isSelf' color='secondary' size='small' (click)='onSelectPassenger()'>
+                <ion-icon name="person-add-outline"></ion-icon>
+                <ion-badge color='danger'>
+                    <ion-text color='light' class="danger">{{selectedPassengers?.length||0}}</ion-text>
+                </ion-badge>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-card class='ion-padding'>
+        <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>
+        <ion-card-content style="padding: 0.5em;">
+            <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" [value]='searchFlightModel?.voyageType' color='secondary' [disabled]='disabled'>
+                <ion-segment-button value="{{FlightVoyageType.OneWay}}">
+                    <ion-label><strong>One-way</strong></ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="{{FlightVoyageType.GoBack}}">
+                    <ion-label><strong>Round-trip</strong></ion-label>
+                </ion-segment-button>
+                <ion-segment-button value="{{FlightVoyageType.MultiCity}}">
+                    <ion-label><strong>Multi-City</strong></ion-label>
+                </ion-segment-button>
+            </ion-segment>
+            <ul class="multi-city" *ngIf='searchFlightModel'>
+                <ng-container *ngFor='let trip of searchFlightModel.trips;let i=index;let first=first;let last=last'>
+                    <li class="tarvel-li" *ngIf='searchFlightModel?.voyageType!=FlightVoyageType.MultiCity&&first||searchFlightModel?.voyageType==FlightVoyageType.MultiCity'>
+                        <ion-text class="index-number" color='secondary' *ngIf='searchFlightModel?.voyageType==FlightVoyageType.MultiCity'>{{i+1}}
+                        </ion-text>
+                        <div class="from-to-city">
+                            <ion-buttons class="ion-justify-content-between ion-align-items-center city-wrapper">
+                                <ion-text class="city-name ion-text-start" (click)='onSelectCity(true,trip)' color='{{disabled?"medium":"secondary"}}'>
+                                    {{trip?.fromCity?.Nickname?.replace("国际机场","")?.replace("机场","")}}</ion-text>
+                                <ion-button color='{{disabled?"medium":"secondary"}}' (click)='onSwapCity(trip)' size='small'>
+                                    <ion-icon class='swap' name="swap-horizontal-outline" color='{{disabled?"medium":"secondary"}}'>
+                                    </ion-icon>
+                                </ion-button>
+                                <ion-text class="city-name ion-text-end" (click)='onSelectCity(false,trip)' color='{{disabled?"medium":"secondary"}}'>
+                                    {{trip?.toCity?.Nickname?.replace("国际机场","")?.replace("机场","")}}
+                                    <ion-text *ngIf='!trip?.toCity?.Nickname' color='medium'>到达城市
+                                    </ion-text>
+                                </ion-text>
+                            </ion-buttons>
+                            <div style="height: 2em;">
+                                <ion-buttons class="ion-justify-content-between">
+                                    <ion-text color='secondary' (click)="onSelectFlyDate(true,trip)">{{trip.date}}</ion-text>
+                                    <ion-text color='secondary' (click)="onSelectFlyDate(false,trip)" *ngIf='searchFlightModel.voyageType==FlightVoyageType.GoBack'>{{searchFlightModel.trips[1]?.date}}
+                                    </ion-text>
+                                    <ion-button (click)='onRemoveTrip(trip)' color='danger' *ngIf='searchFlightModel.voyageType==FlightVoyageType.MultiCity&&searchFlightModel?.trips?.length>2'>
+                                        <ion-icon name="close-circle-outline" style="margin-right: 0.2em;"></ion-icon>
+                                    </ion-button>
+                                </ion-buttons>
+                            </div>
+                        </div>
+                    </li>
+                </ng-container>
+                <li *ngIf='searchFlightModel.voyageType==FlightVoyageType.MultiCity&&searchFlightModel.trips?.length&&searchFlightModel.trips?.length<6'>
+                    <ion-button style="flex: 1;" size="small" expand='block' (click)='onAddMoreTrip()'>
+                        <ion-icon color='secondary' name="add-circle-outline"></ion-icon>
+                        <ion-text color='secondary'>
+                            再加一程
+                        </ion-text>
+                    </ion-button>
+                </li>
+                <ion-select (ionChange)='onCabinChange()' style="padding: 0;margin:1em 0;" [(ngModel)]='searchFlightModel.cabin.value' color="dark" cancel-text="取消" interface="action-sheet" [compareWith]="compareWithFn">
+                    <ion-select-option [value]="flightCabin.value" *ngFor="let flightCabin of searchFlightModel?.cabins">
+                        {{flightCabin.label}}</ion-select-option>
+                </ion-select>
+            </ul>
+            <ion-item *ngIf='flightCabinLevelPolicy' line='none'>
+                <ion-label color='danger' class="ion-text-wrap">{{flightCabinLevelPolicy}}
+                </ion-label>
+            </ion-item>
+            <ion-button style='width: 100%' (click)="searchFlight()" class='ion-margin-top' *ngIf='isSelf||(!isSelf&&selectedPassengers?.length>0)' color="secondary" expand="block">
+                <ion-text>Search</ion-text>
+            </ion-button>
+            <ion-button style='width: 100%' (click)="onSelectPassenger()" class='ion-margin-top' *ngIf='(!isSelf && selectedPassengers?.length==0)' color="secondary" expand="block">
+                <ion-text>Please Add Passengers</ion-text>
+            </ion-button>
+        </ion-card-content>
+    </ion-card>

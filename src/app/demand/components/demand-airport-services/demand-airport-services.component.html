@@ -1,0 +1,122 @@
+<ion-list lines='none' class="list">
+  <div class="container">
+    <div class="item">
+      <div class="label">联系人</div>
+      <div class="main">
+        <ion-input placeholder="请输入联系人" [(ngModel)]="demandAirportModel.LiaisonName"></ion-input>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">联系手机</div>
+      <div class="main">
+        <ion-input placeholder="请输入手机号" [(ngModel)]="demandAirportModel.LiaisonPhone"></ion-input>
+      </div>
+    </div>
+    <div class="item">
+      <div>
+        <div class="label">服务类型</div>
+        <div class="main">
+          <ion-radio-group [(ngModel)]="demandAirportModel.ServiceType">
+            <div class="radios">
+              <ion-item>
+                <ion-radio mode='md' value="Lounge"></ion-radio>
+                <ion-label>休息室</ion-label>
+              </ion-item>
+              <ion-item>
+                <ion-radio mode='md' value="ConciergeCar"></ion-radio>
+                <ion-label>礼宾车</ion-label>
+              </ion-item>
+              <ion-item>
+                <ion-radio mode='md' value="Yaoketong"></ion-radio>
+                <ion-label>要客通</ion-label>
+              </ion-item>
+              <ion-item>
+                <ion-radio mode='md' value="ValetParking"></ion-radio>
+                <ion-label>代客泊车</ion-label>
+              </ion-item>
+              <ion-item>
+                <ion-radio mode='md' value="ReservationOfBoardingPass"></ion-radio>
+                <ion-label>预留登机牌</ion-label>
+              </ion-item>
+              <ion-item>
+                <ion-radio mode='md' value="TheBoardingGate"></ion-radio>
+                <ion-label>登机口迎送</ion-label>
+              </ion-item>
+              <ion-item>
+                <ion-radio mode='md' value="Baggage"></ion-radio>
+                <ion-label>行李托运</ion-label>
+              </ion-item>
+              <ion-item class="large">
+                <ion-radio mode='md' value="ExpressDeliveryService"></ion-radio>
+                <ion-label>物品快递服务</ion-label>
+              </ion-item>
+            </div>
+          </ion-radio-group>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">城市名称</div>
+      <div class="main" (click)="onSelectCitys()">
+        <ion-text>{{demandAirportModel.City}}</ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">机场名称</div>
+      <div class="main">
+        <ng-container *ngIf='airports?.length else fromAirInputTpl'>
+          <ion-select [(ngModel)]="airport" [cancelText]="'取消'" [okText]='"确定"' [selectedText]='airport&&airport.Name'>
+            <ion-select-option *ngFor='let air of airports' [value]='air'>{{air.Name}}</ion-select-option>
+          </ion-select>
+        </ng-container>
+        <ng-template #fromAirInputTpl>
+          <ion-input placeholder="请输入机场名称" [(ngModel)]="airport&&airport.Name"></ion-input>
+        </ng-template>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">航站楼</div>
+      <div class="main">
+        <ion-input placeholder="请输入航站楼" [(ngModel)]="demandAirportModel.Terminal"></ion-input>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">需求时间</div>
+      <div class="time">
+        <ion-datetime min="2010-03-14" max="2050-12-09" displayFormat="YYYY-MM-DD" [(ngModel)]="demandAirportModel.DepartureDateDay" doneText="确定" cancelText="取消">
+        </ion-datetime>
+        <ion-datetime min="2010-03-14" max="2050-12-09" displayFormat="HH:mm" [(ngModel)]="demandAirportModel.DepartureDateHour" doneText="确定" cancelText="取消">
+        </ion-datetime>
+      </div>
+    </div>
+    <div class="item">
+      <div>
+        <div class="label" style="min-width: 5.8em;">人数</div>
+        <div class="main">
+          <ion-radio-group [(ngModel)]="demandAirportModel.NumberOfPeople">
+            <div class="radios">
+              <ion-item *ngFor='let i of [0,1,2,3,4,5,6,7,8,9,"more"]'>
+                <ion-radio mode='md' value="{{i}}"></ion-radio>
+                <ion-label>{{i!='more'?i+1:"更多"}}人</ion-label>
+              </ion-item>
+            </div>
+          </ion-radio-group>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">备注</div>
+      <div class="main">
+        <ion-input size="2" placeholder="请输入备注" [(ngModel)]="demandAirportModel.Remarks"></ion-input>
+      </div>
+    </div>
+  </div>
+  <div class="ion-footer">
+    <div class="btn_container">
+      <ion-button color="secondary" class="ion-top" (click)="onSubmit()">
+        <ion-text>提 交</ion-text>
+      </ion-button>
+    </div>
+  </div>
+</ion-list>

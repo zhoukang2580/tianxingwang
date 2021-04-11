@@ -11,12 +11,14 @@ import { TrainComponentsModule } from '../components/traincomponents.module';
 import { TrainBookDfPage } from './book_df.page';
 import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
 import { AppDirectivesModule } from 'src/app/directives/directives.module';
+import { StylePageGuard } from "src/app/guards/style-page.guard";
+import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
 
 const routes: Routes = [
   {
     path: "",
     component: TrainBookDfPage,
-    canActivate: [ConfirmCredentialInfoGuard]
+    canActivate: [StylePageGuard,ConfirmCredentialInfoGuard]
   }
 ];
 
@@ -29,7 +31,8 @@ const routes: Routes = [
     TmcComponentsModule,
     AppComponentsModule,
     TrainComponentsModule,
-    AppDirectivesModule
+    AppDirectivesModule,
+    MemberPipesModule
   ],
   declarations: [TrainBookDfPage]
 })

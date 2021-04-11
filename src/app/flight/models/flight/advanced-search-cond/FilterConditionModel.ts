@@ -7,6 +7,7 @@ export class FilterConditionModel {
   toAirports: SearchTypeModel[];
   cabins: SearchTypeModel[];
   onlyDirect: boolean;
+  isAgreement: boolean;
   takeOffTimeSpan: {
     lower: number;
     upper: number;

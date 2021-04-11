@@ -29,11 +29,11 @@
     <div class='time'>
       <ion-text color='dark'>发车时间：{{trip&&trip['goDate']}}</ion-text>
     </div>
-    <div class="passenger" *ngIf='trip?.Passenger'>
+    <div class="passenger">
       <strong>
-        {{trip.Passenger.Name}}:
+        {{trip.Passenger?.Name}}:
       </strong>
-      <span>{{trip.Passenger.CredentialsNumber}}</span>
+      <span>{{trip.HideCredentialsNumber}}</span>
     </div>
     <ion-text color='medium'>
       <p>

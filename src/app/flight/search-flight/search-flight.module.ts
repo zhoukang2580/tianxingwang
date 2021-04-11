@@ -14,12 +14,13 @@ import { AppDirectivesModule } from "src/app/directives/directives.module";
 import { TmcGuard } from "src/app/guards/tmc.guard";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ConfirmCredentialInfoGuard } from 'src/app/guards/confirm-credential-info.guard';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: "",
     component: SearchFlightPage,
-    canActivate: [AuthorityGuard,TmcGuard,ConfirmCredentialInfoGuard],
+    canActivate: [StylePageGuard,AuthorityGuard,TmcGuard,ConfirmCredentialInfoGuard],
     canDeactivate:[CandeactivateGuard]
   }
 ];

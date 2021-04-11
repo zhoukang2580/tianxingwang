@@ -50,6 +50,8 @@ body.dark {
 }
 @import "../app/components/refresher/refresher.scss";
 @import "../app/tmc/calendar.scss";
+@import "./hotel/hotel-city-df/style.scss";
+@import "./flight/select-flight-city/style.scss";
 .inner-html {
   .line {
     margin: 0 0.2em;
@@ -325,4 +327,10 @@ ion-modal.offset-top-40 {
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
   }
+}
+iframe[width='0'][height='0']{
+  display: none;
+}
+ion-searchbar.smfont input{
+  font-size: 14px !important;
 }

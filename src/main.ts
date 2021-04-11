@@ -15,14 +15,10 @@ import { CONFIG } from "./app/config";
 // const module = window["module"];
 try {
   AppHelper.initlizeQueryParamers();
-  // if (CONFIG.mockProBuild) {
-  //   const obj = AppHelper.getQueryParamers();
-  //   obj.style = "df";
-  //   obj.language = "cn";
-  // }
   processPath();
   console.log("url,locationurl", window.location.href);
   changeAppTitle();
+  initStyle();
   if (
     // true||
     window["VConsole"] &&
@@ -42,6 +38,10 @@ try {
 } catch (e) {
   console.error(e);
 }
+if (CONFIG.mockProBuild) {
+  const obj = AppHelper.getQueryParamers();
+  obj.style = "df";
+}
 AppHelper.checkNetworkStatus();
 
 function changeAppTitle() {
@@ -52,6 +52,15 @@ function changeAppTitle() {
       el.textContent = title;
     }
   }
+}
+function initStyle() {
+  const obj = AppHelper.getQueryParamers();
+  obj.style =
+    obj.style ||
+    AppHelper.getStyle() ||
+    AppHelper.getLanguage() ||
+    CONFIG.defaultStyle;
+  obj.language = obj.language || (obj.style == "en" ? "en" : "cn");
 }
 function processPath() {
   const query = AppHelper.getQueryParamers();

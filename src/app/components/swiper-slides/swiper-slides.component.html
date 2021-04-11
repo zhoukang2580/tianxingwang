@@ -1,6 +1,6 @@
 <div class="swiper-container" #container [class.black]='bgColorBlack'>
   <div class="swiper-wrapper">
-    <div class="swiper-slide" #slide *ngFor='let it of vmItems;let idx=index;' (click)='onItemClick(it,idx)'>
+    <div class="swiper-slide back" #slide *ngFor='let it of vmItems;let idx=index;' (click)='onItemClick(it,idx)'>
       <ng-container *ngIf='options?.slideTplRef else normalTpl'>
         <ng-container [ngTemplateOutlet]='options.slideTplRef' [ngTemplateOutletContext]='{slideItem:it,item:it}'></ng-container>
       </ng-container>

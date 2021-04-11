@@ -1,0 +1,327 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button></app-back-button>
+        </ion-buttons>
+        <ion-title>确认信息</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ng-container *ngIf='!errors else errorTemp'>
+        <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
+        <ng-container *ngIf='vmCombindInfos?.length'>
+            <ion-list *ngFor='let combindInfo of vmCombindInfos;let last=last;let idx=index;' lines='none'>
+                <ion-item-divider color='primary' class="backg_w sticky" [class.not-sticky]='isDingTalk' style="    z-index: 200;
+        box-shadow: 0.1em 0.2em 0.6em rgba(0,0,0,.1);
+        padding-bottom: 0.5em;">
+                    <div style="width: 100%">
+                        {{combindInfo?.vmCredential?.Name}} 【{{tmc?.Name}}】 {{combindInfo?.vmCredential?.HideNumber}}
+                        <ion-label style="text-align:center;font-weight: bold">
+                            <ng-container *ngIf='isRoundTrip'>第{{idx+1}}程</ng-container>
+                            航班预订信息
+                        </ion-label>
+                    </div>
+                </ion-item-divider>
+                <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
+                    <ion-item-divider color="primary">航班信息:</ion-item-divider>
+                    <div style='width: 100%' class='detail'>
+                        <ion-item>
+                            <div class='date'>
+                                <strong>{{getDate(s?.flightSegment)}} <ion-text color='secondary'>
+                                        {{s?.flightSegment?.FromCityName}}
+                                        <ion-text color='dark' style="font-size: 0.7rem;">到</ion-text>
+                                        {{s?.flightSegment?.ToCityName}}
+                                        <span>【{{combindInfo?.modal?.bookInfo?.flightPolicy?.Cabin?.TypeName}}{{s?.flightPolicy?.Cabin?.Discount|discount}}】</span>
+                                    </ion-text>
+                                </strong>
+                            </div>
+                        </ion-item>
+                        <ion-item>
+                            <div style='width: 100%'>
+                                <app-fly-list-item [flightSegment]='s.flightSegment' [isAgreement]='s.flightPolicy?.Cabin?.FareType==FlightCabinFareType.Agreement' [showDetails]='true' [flightPolicy]='s.flightPolicy'>
+                                </app-fly-list-item>
+                                <div class='price'>
+                                    <ion-label color='danger'>机票票价:￥{{s.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
+                                    <ion-label color='danger' class='ion-margin-start'>税费:￥{{s.flightSegment?.Tax}}
+                                    </ion-label>
+                                </div>
+                            </div>
+                        </ion-item>
+                        <ion-item>
+                            <div style='width: 100%'>
+                                <p *ngIf='s.flightSegment.Carrier=="9C"' style="font-size: 0.9rem;color:darkblue">
+                                    温馨提醒： 无论何种原因航班延误或取消，春秋航空不提供任何补偿。
+                                </p>
+                                <!-- 取消温馨提醒 -->
+                                <ion-button fill='clear' *ngIf='' class='change-policy-btn' (click)='onShowFriendlyReminder(combindInfo)' color='secondary'>
+                                    温馨提醒
+                                    <ion-icon name='caret-down-outline' *ngIf='combindInfo?.showFriendlyReminder'></ion-icon>
+                                    <ion-icon name="caret-up-outline" *ngIf='!combindInfo?.showFriendlyReminder'></ion-icon>
+                                </ion-button>
+                                <div [@flyInOut] *ngIf='combindInfo?.showFriendlyReminder'>
+                                    <ion-label color='success' class='small-font ion-text-wrap'>
+                                        温馨提醒: 国内廉价航司机票部分舱位不包含免费托运行李服务，免费托运行李相关事宜可以拨打我们客服电话咨询。（例如： 中联航: 每位旅客可携带1件免费随身行李，重量不能超过10千克且体积不超过20×30×40厘米。托运行李收费标准：X ≤ 5KG 柜台价格30元； 5KG &lt; X ≤ 10KG 柜台价格60元；
+                                        10KG &lt; X ≤ 15KG 柜台价格90元； 15KG &lt; X ≤ 20KG 柜台价格120元；等） </ion-label>
+                                </div>
+                                <ion-label color='danger' class='small-font ion-text-wrap' *ngIf='s?.flightPolicy?.Rules?.length'>
+                                    超标：{{s?.flightPolicy?.Rules?.join(",")}}
+                                </ion-label>
+                                <div>
+                                    <ion-button fill='clear' class='change-policy-btn' (click)='onOpenrules(combindInfo)' color='secondary'>
+                                        退改签政策
+                                        <ion-icon name='caret-down-outline' *ngIf='combindInfo?.openrules'></ion-icon>
+                                        <ion-icon name="caret-up-outline" *ngIf='!combindInfo?.openrules'></ion-icon>
+                                    </ion-button>
+                                </div>
+                                <p class="small-font ion-text-justify" [innerHTML]='getExplain(s?.flightPolicy?.Cabin?.Explain)' (click)='onOpenrules(combindInfo)' [@flyInOut]
+                                    *ngIf='combindInfo?.openrules'>
+                                </p>
+                            </div>
+                        </ion-item>
+                    </div>
+                </ion-item-group>
+                <ion-item-group *ngIf='combindInfo?.modal?.bookInfo as s'>
+                    <ion-item-divider color="primary">旅客信息:</ion-item-divider>
+                    <app-book-credential-comp [credential]='combindInfo.vmCredential' [isself]="isself" (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo.credentials'
+                        (modify)='onModify(combindInfo)' [attr.credentialcompid]='combindInfo.id'>
+                    </app-book-credential-comp>
+                    <ng-container *ngIf='s?.flightPolicy?.Rules?.length && !combindInfo?.modal.isNotWhitelist'>
+                        <app-book-illegal-reason-comp [illegalReasons]='illegalReasons' [attr.illegalReasonid]='combindInfo.id' [isAllowCustomReason]='tmc?.IsAllowCustomReason'
+                            (ionchange)='onIllegalReason($event,combindInfo)'>
+                        </app-book-illegal-reason-comp>
+                    </ng-container>
+                    <ng-container *ngIf='expenseTypes?.length'>
+                        <app-book-expense-types-comp [expenseTypes]='expenseTypes' [(expenseType)]='combindInfo.expenseType'>
+                        </app-book-expense-types-comp>
+                    </ng-container>
+                    <app-book-costcenter-comp [isOtherCostCenter]='combindInfo.isOtherCostCenter' [costCenter]='combindInfo.costCenter' [otherCostCenterCode]='combindInfo.otherCostCenterCode'
+                        [otherCostCenterName]='combindInfo.otherCostCenterName' (ionChange)='onCostCenterChange($event,combindInfo)'></app-book-costcenter-comp>
+                    <app-book-organization-comp (ionChange)='onOrganizationChange($event,combindInfo)' [organization]='combindInfo?.organization'
+                        [isOtherOrganization]='combindInfo?.isOtherOrganization' [otherOrganizationName]='combindInfo?.otherOrganizationName'></app-book-organization-comp>
+                    <ion-item-divider color="primary">
+                        联系方式:
+                    </ion-item-divider>
+                    <div class='mobiles' [attr.mobileid]='combindInfo.id'>
+                        <ion-item *ngFor='let mobile of combindInfo?.credentialStaffMobiles'>
+                            <ion-checkbox color="secondary" [(ngModel)]="mobile.checked"></ion-checkbox>
+                            <ion-label style='margin-left: 0.5em'>{{mobile.mobile}}</ion-label>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label style='margin-right: 0.5em'>其他号码：</ion-label>
+                            <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder='请输入其他号码'></ion-input>
+                        </ion-item>
+                    </div>
+                    <ion-item-divider color="primary">
+                        联系邮箱：
+                    </ion-item-divider>
+                    <div class='emails'>
+                        <ion-item *ngFor='let email of combindInfo?.credentialStaffEmails'>
+                            <ion-checkbox color="secondary" [(ngModel)]="email.checked"></ion-checkbox>
+                            <ion-label style='margin-left: 0.5em'>{{email.email}}</ion-label>
+                        </ion-item>
+                        <ion-item>
+                            <ion-label style='margin-right: 0.5em'>其他邮箱：</ion-label>
+                            <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder='请输入其他邮箱'></ion-input>
+                        </ion-item>
+                    </div>
+                    <ng-container *ngIf='combindInfo?.insuranceProducts?.length'>
+                        <ion-item-divider color="primary">
+                            保险:
+                        </ion-item-divider>
+                        <ion-radio-group mode="md" allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId'
+                            (ionChange)='calcTotalPrice()'>
+                            <div *ngFor='let insurance of combindInfo?.insuranceProducts' style="margin-top: 1em;background-color: var(--ion-color-primary);padding-right: 1em;">
+                                <ion-buttons>
+                                    <ion-item style="--background:transparent;flex: 1;">
+                                        <ion-radio mode="md" [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
+                                        <ion-label class="ion-margin-horizontal">
+                                            {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
+                                    </ion-item>
+                                    <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
+                                        详情
+                                        <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
+                                        </ion-icon>
+                                        <ion-icon name="caret-down-outline" *ngIf='!insurance.showDetail'>
+                                        </ion-icon>
+                                    </ion-label>
+                                </ion-buttons>
+                                <div [@flyInOut] *ngIf='insurance.showDetail' style='width: 100%;' (click)='insurance.showDetail=!insurance.showDetail'>
+                                    <ion-row>
+                                        <ion-col>
+                                            <ion-label color='medium' class='small-font ion-text-wrap'>
+                                                <div style="user-select: text;" [innerHtml]='getInsuranceDetails(insurance.insuranceResult?.Detail)'></div>
+                                            </ion-label>
+                                        </ion-col>
+                                    </ion-row>
+                                    <ion-item style="--background: transparent;" *ngIf='insurance.insuranceResult?.DetailUrl' detail button
+                                        (click)='onShowProductDetail(insurance.insuranceResult,$event)'>
+                                        <ion-label color='secondary'>显示更多</ion-label>
+                                    </ion-item>
+                                </div>
+                            </div>
+                        </ion-radio-group>
+                    </ng-container>
+                    <ng-container *ngIf="isShowApprove()">
+                        <ion-item-divider>
+                            审批人：
+                        </ion-item-divider>
+                        <ion-item>
+                            <div>
+                                <ion-row style='margin-top: .5em;'>
+                                    <ion-col>
+                                        <app-timeline [hideLastTimeLineTail]='false'>
+                                            <app-timeline-item *ngFor='let it of combindInfo?.credentialStaffApprovers'>
+                                                第{{it.Tag}}级审批:
+                                                <ion-label class='ion-text-wrap' *ngFor='let ap of it.approvers;let last'>
+                                                    {{ap.Name}}({{it?.Type==1?"所有通过":"任意通过"}})
+                                                </ion-label>
+                                            </app-timeline-item>
+                                        </app-timeline>
+                                    </ion-col>
+                                </ion-row>
+                            </div>
+                        </ion-item>
+                    </ng-container>
+
+                    <ion-item *ngIf='false'>
+                        <div class='travel-type ion-margin-top'>
+                            差旅类型:
+                            <ion-radio-group mode='md' [(ngModel)]='combindInfo.travelType' name='travelType'>
+                                <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Business)'>
+                                    <ion-label>因公</ion-label>
+                                    <ion-radio [value]="OrderTravelType.Business"></ion-radio>
+                                </ion-item>
+                                <ion-item *ngIf='checkOrderTravelType(OrderTravelType.Person)'>
+                                    <ion-label>因私</ion-label>
+                                    <ion-radio [value]="OrderTravelType.Person">
+                                    </ion-radio>
+                                </ion-item>
+                            </ion-radio-group>
+                        </div>
+                    </ion-item>
+                </ion-item-group>
+                <ng-container *ngIf='combindInfo.isShowGroupedInfo'>
+                    <ion-item-group>
+                        <ion-item class="ion-no-margin" [attr.notifyLanguageid]='combindInfo.id'>
+                            <ion-label>通知语言:</ion-label>
+                            <ion-select value='cn' okText="确定" cancelText="取消" [(ngModel)]='combindInfo.notifyLanguage'>
+                                <ion-select-option value=''>不发</ion-select-option>
+                                <ion-select-option value='cn'>中文</ion-select-option>
+                                <ion-select-option value='en'>英文</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+                        <ion-item class="ion-no-margin" *ngIf='isCanSkipApproval'>
+                            <ion-label style='margin-right: 0.5em'>跳过审批:</ion-label>
+                            <ion-checkbox class='ion-margin-end' color="secondary" [(ngModel)]='combindInfo.isSkipApprove'>
+                            </ion-checkbox>
+                        </ion-item>
+                        <ion-item class="ion-no-margin" *ngIf='tmc?.IsShowServiceFee || identity?.Numbers?.AgentId'>
+                            <ion-label>服务费:</ion-label>
+                            <ion-label slot='end' class='ion-text-end ion-padding-end'>{{combindInfo.serviceFee}}元</ion-label>
+                        </ion-item>
+                        <ion-item [attr.approvalid]='combindInfo?.id' class="ion-no-margin" detail *ngIf='isAllowSelectApprove(combindInfo)' (click)='openApproverModal(combindInfo)'>
+                            <ion-label>
+                                审批人:
+                            </ion-label>
+                            <ion-label style="flex: 4;" *ngIf='combindInfo?.appovalStaff'>
+                                {{combindInfo?.appovalStaff?.Name}}|{{combindInfo?.appovalStaff?.Email||combindInfo?.appovalStaff?.Account?.Email}}|{{combindInfo?.appovalStaff?.Number||combindInfo?.appovalStaff?.Mobile}}
+                            </ion-label>
+                        </ion-item>
+                    </ion-item-group>
+                    <ion-item-group *ngIf='combindInfo.isShowGroupedInfo'>
+                        <app-book-tmc-outnumber [attr.outnumber]='combindInfo.id' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' [isShowGroupedInfo]="true"
+                            (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+                        </app-book-tmc-outnumber>
+                    </ion-item-group>
+                </ng-container>
+            </ion-list>
+            <ion-item-group>
+                <ion-item-divider color="primary">
+                    授权账号查看订单:
+                </ion-item-divider>
+                <ion-item>
+                    <app-book-addcontacts-comp buttonText='授权账号查看订单' [(contacts)]='addContacts'>
+                    </app-book-addcontacts-comp>
+                </ion-item>
+            </ion-item-group>
+            <ion-item-group [attr.orderTravelPayTypeid]='"orderTravelPayTypeid"'>
+                <ion-item-divider color="primary">
+                    支付方式：
+                </ion-item-divider>
+                <ion-item>
+                    <div style='width: 100%'>
+                        <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
+                            <ion-item *ngFor='let pt of orderTravelPayTypes'>
+                                <ion-label>{{pt.label}}
+                                    <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>
+                                        (请在20分钟内完成支付)
+                                    </ng-container>
+                                </ion-label>
+                                <ion-radio [value]="pt.value">
+                                </ion-radio>
+                            </ion-item>
+                        </ion-radio-group>
+                    </div>
+                </ion-item>
+            </ion-item-group>
+        </ng-container>
+    </ng-container>
+    <ng-template #errorTemp>
+        <ion-row style="position: relative;top:35%">
+            <ion-col class='ion-text-center'>
+                <ion-label color='danger'>请求数据出错</ion-label>
+                <ion-button fill='clear' expand='block' color='secondary' (click)='refresh(true)'>点击重试</ion-button>
+            </ion-col>
+        </ion-row>
+    </ng-template>
+</ion-content>
+<ion-footer>
+    <ion-toolbar (click)="onToggleIsShowFee();">
+        <ion-buttons slot='start'>
+            <ion-text color="secondary">总计:</ion-text>
+            <ion-text slot='end' color='danger'>￥{{(totalPrice)}}</ion-text>
+            <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
+            <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
+        </ion-buttons>
+        <ion-button slot='end' size='small' *ngIf='isCanSave' color='secondary' (click)='bookFlight(true,$event)' [disabled]='isSubmitDisabled'>保存订单</ion-button>
+        <ion-button slot='end' size='small' color='secondary' (click)='bookFlight(false,$event)' [disabled]='isSubmitDisabled'> 提交
+        </ion-button>
+    </ion-toolbar>
+</ion-footer>
+<div class="zz" *ngIf="isShowFee" (click)="onToggleIsShowFee()"></div>
+<div [class.show]="isShowFee" class="transfrom" #transfromEle>
+    <div class="wrapper">
+        <!-- <div *ngFor="let vm of vmCombindInfos" style="    min-width: 90%;"> -->
+        <div *ngFor="let infos of vmCombindInfos" class="ion-padding fee" [style.min-width]='vmCombindInfos.length>1?"90%":"100%"'>
+            <div style="color: var(--ion-color-dark);">{{infos?.vmCredential?.Name}}({{infos?.vmCredential?.Number}})
+            </div>
+            <div class="spacebetween">
+                <ion-text color="secondary">{{infos.modal?.bookInfo?.flightSegment?.FromCityName}}</ion-text>
+                <ion-text color="secondary">{{infos.modal?.bookInfo?.flightSegment?.ToCityName}}</ion-text>
+            </div>
+            <div class="spacebetween" *ngIf="infos.modal?.bookInfo?.flightPolicy?.Cabin?.SalesPrice">
+                <ion-text style="color: #ccc;">机票票价</ion-text>
+                <ion-text>{{infos?.modal?.bookInfo?.flightPolicy?.Cabin?.SalesPrice}}元</ion-text>
+            </div>
+            <div class="spacebetween" *ngIf="infos.modal?.bookInfo?.flightSegment?.Tax">
+                <ion-text style="color: #ccc;">税费</ion-text>
+                <ion-text>{{infos?.modal?.bookInfo?.flightSegment?.Tax}}元</ion-text>
+            </div>
+            <ng-container>
+                <div *ngFor='let insurance of infos?.insuranceProducts'>
+                    <div class="spacebetween" *ngIf="insurance.insuranceResult?.Id==infos.selectedInsuranceProductId">
+                        <ion-text style="color: #ccc;">{{insurance.insuranceResult?.Name}}</ion-text>
+                        <ion-text>{{insurance?.insuranceResult?.Price}}元</ion-text>
+                    </div>
+                </div>
+            </ng-container>
+            <div class="spacebetween" *ngIf="identity?.Numbers?.AgentId||tmc?.IsShowServiceFee||(orderTravelPayType==OrderTravelPayType.Person||orderTravelPayType==OrderTravelPayType.Credit)">
+                <ion-text style="color: #ccc;">服务费</ion-text>
+                <ion-text>{{passengerServiceFeesObj[infos.modal?.id]}}元</ion-text>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- </div> -->
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍候...</app-waiting-check-pay>

@@ -15,6 +15,7 @@ export class TrainRefundComponent implements OnInit {
   Id: string;
   Name: string;
   CredentialsNumber: string;
+  HideCredentialsNumber: string;
   StartTime: string;
   ArrivalTime: string;
   FromStationName: string;
@@ -38,7 +39,7 @@ export class TrainRefundComponent implements OnInit {
     this.train.ArrivalTime = this.ArrivalTime;
     this.train.StartTime = this.StartTime;
     this.train.TrainCode = this.TrainCode;
-    this.passenger.CredentialsInfo = this.CredentialsNumber;
+    this.passenger.HideCredentialsNumber = this.HideCredentialsNumber;
     this.passenger.Name = this.Name;
   }
 

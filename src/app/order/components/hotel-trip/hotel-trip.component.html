@@ -15,11 +15,11 @@
         <div class="date">
           <span>日期</span>： {{trip.StartTime?.substr(0,"yyyy-mm-dd".length)}} <span style='margin:.25em'>~</span> {{trip.EndTime?.substr(0,"yyyy-mm-dd".length)}}
         </div>
-        <div class="passenger" *ngIf='trip?.Passenger'>
+        <div class="passenger">
           <span>
-            {{trip.Passenger.Name}}:
+            {{trip.Passenger?.Name}}:
           </span>
-          <span>{{trip.Passenger.CredentialsNumber}}</span>
+          <span>{{trip.HideCredentialsNumber}}</span>
         </div>
         <div class="orderno">
           <span>订单编号</span>：{{trip.OrderId}}

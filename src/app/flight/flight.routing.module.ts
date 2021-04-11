@@ -19,6 +19,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: "search-flight_df",
+    loadChildren: () =>
+      import("./search-flight_df/search-flight-df.module").then(
+        (m) => m.SearchFlightDfPageModule
+      ),
+  },
+  {
     path: "selected-flight-bookinfos",
     loadChildren: () =>
       import(
@@ -56,39 +63,35 @@ const routes: Routes = [
   {
     path: "flight-item-cabins",
     loadChildren: () =>
-      import(
-        "src/app/flight/flight-item-cabins/flight-item-cabins.module"
-      ).then((m) => m.FlightItemCabinsPageModule),
+      import("./flight-item-cabins/flight-item-cabins.module").then(
+        (m) => m.FlightItemCabinsPageModule
+      ),
     canActivate: [TmcGuard],
   },
   {
     path: "flight-item-cabins_en",
     loadChildren: () =>
-      import(
-        "src/app/flight/flight-item-cabins_en/flight-item-cabins_en.module"
-      ).then((m) => m.FlightItemCabinsEnPageModule),
-    canActivate: [TmcGuard],
-  },
-  {
-    path: "flight-book",
-    loadChildren: () =>
-      import("src/app/flight/book/book.module").then(
-        (m) => m.FlightBookPageModule
+      import("./flight-item-cabins_en/flight-item-cabins_en.module").then(
+        (m) => m.FlightItemCabinsEnPageModule
       ),
+    canActivate: [TmcGuard],
   },
   {
     path: "flight-book_df",
     loadChildren: () =>
-      import("src/app/flight/book_df/book-df.module").then(
+      import("./flight-book_df/flight-book-df.module").then(
         (m) => m.FlightBookDfPageModule
       ),
   },
   {
+    path: "flight-book",
+    loadChildren: () =>
+      import("./flight-book/flight-book.module").then((m) => m.FlightBookPageModule),
+  },
+  {
     path: "flight-book_en",
     loadChildren: () =>
-      import("src/app/flight/book_en/book_en.module").then(
-        (m) => m.FlightBookEnPageModule
-      ),
+      import("./book_en/book_en.module").then((m) => m.FlightBookEnPageModule),
   },
 ];
 @NgModule({

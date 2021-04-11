@@ -11,6 +11,7 @@ import {
   AfterViewInit,
   ViewChild,
   OnDestroy,
+  Renderer2,
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import {
@@ -32,6 +33,8 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
   isHideTitle = false;
   isShowFabButton = false;
   isIframeOpen = true;
+  vertical = "top";
+  horizontal = "start";
   private isOpenInAppBrowser = false;
   private isback = false;
   private goPath = "";
@@ -47,10 +50,17 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
     private navCtrl: NavController,
     private iab: InAppBrowser,
     private plt: Platform,
-    private router: Router
+    private router: Router,
+    private render: Renderer2
   ) {
     this.url$ = new BehaviorSubject(null);
     this.subscription = activatedRoute.queryParamMap.subscribe((p) => {
+      if (p.get("vertical")) {
+        this.vertical = p.get("vertical");
+      }
+      if (p.get("horizontal")) {
+        this.horizontal = p.get("horizontal");
+      }
       let url = decodeURIComponent(p.get("url"));
       if (url) {
         if (this.plt.is("ios") && !url.includes("isIos")) {
@@ -60,7 +70,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
             url += "?isIos=true";
           }
         }
-        if(!url.includes("lang")){
+        if (!url.includes("lang")) {
           if (url.includes("?")) {
             url += `&lang=${AppHelper.getLanguage()}`;
           } else {
@@ -94,7 +104,7 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
       this.isHideTitle = h == "true";
     });
   }
-  private openInAppBrowser(url: string) {
+  private async openInAppBrowser(url: string) {
     if (this.browser) {
       this.browser.close();
     }
@@ -112,12 +122,15 @@ export class OpenUrlPage implements OnInit, AfterViewInit, OnDestroy {
     };
     this.browser = this.iab.create(encodeURI(url), "_blank", options);
     const sub = this.browser.on("exit").subscribe(() => {
+      console.log("browser exit");
       setTimeout(() => {
         if (sub) {
           sub.unsubscribe();
         }
       }, 100);
-      this.backButton.popToPrePage();
+      setTimeout(() => {
+        this.backButton.popToPrePage();
+      }, 200);
     });
   }
   private onMessage(evt: MessageEvent) {

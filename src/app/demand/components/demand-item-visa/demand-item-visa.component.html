@@ -1,0 +1,66 @@
+<div class="list">
+  <div class="container">
+    <div class="item">
+      <div class="label">签证类型</div>
+      <ion-list lines="none">
+        <ion-radio-group value="Business" class="group" mode="md" 
+        [(ngModel)]="demandVisaModel.VisaType">
+          <ion-item style="border-bottom: 0;--padding-start: 0;">
+            <label>商务签证</label>
+            <ion-radio slot="start" value="Business"></ion-radio>
+          </ion-item>
+          <ion-item style="border-bottom: 0;--padding-start: 0;">
+            <label>旅游签证</label>
+            <ion-radio slot="start" value="Tour"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+    </div>
+    <div class="item">
+      <div class="label">联系人</div>
+      <div class="main">
+        <ion-input [(ngModel)]="demandVisaModel.LiaisonName" placeholder="请输入联系人"></ion-input>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">联系手机</div>
+      <div class="main">
+        <ion-input [(ngModel)]="demandVisaModel.LiaisonPhone" placeholder="请输入手机号"></ion-input>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">邮箱</div>
+      <div class="main">
+        <ion-input [(ngModel)]="demandVisaModel.Email" placeholder="请输入邮箱"></ion-input>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">目的地国家</div>
+      <div class="main" (click)="onSelectCountry()">
+        <ion-text>{{demandVisaModel.Destination}}<span *ngIf="demandVisaModel.DestinationCode">({{demandVisaModel.DestinationCode}})</span></ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">工作居住地</div>
+      <div class="main" (click)="onSelectCitys()">
+        <ion-text>{{demandVisaModel.WorkPlace}}</ion-text>
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="item">
+      <div class="label">备注</div>
+      <div class="main">
+        <ion-input [(ngModel)]="demandVisaModel.Remarks" placeholder="请输入备注"></ion-input>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ion-footer">
+  <div class="btn_container">
+    <ion-button color="secondary" class="ion-top" (click)="onSubmit()">
+      <ion-text>提 交</ion-text>
+    </ion-button>
+  </div>
+</div>

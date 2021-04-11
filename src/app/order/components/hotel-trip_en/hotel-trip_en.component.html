@@ -12,11 +12,11 @@
                 <ion-label>
                     <strong>{{trip.Name}}</strong>
                 </ion-label>
-                <div class="passenger" *ngIf='trip?.Passenger'>
+                <div class="passenger">
                     <span>
-            {{trip.Passenger.Name}}:
-          </span>
-                    <span>{{trip.Passenger.CredentialsNumber}}</span>
+                        {{trip.Passenger?.Name}}:
+                    </span>
+                    <span>{{trip.HideCredentialsNumber}}</span>
                 </div>
                 <ion-label>
                     <p>

@@ -120,4 +120,5 @@ export class SelectedTrainSegmentInfoDfComponent implements OnInit {
     await this.trainService.reelectBookInfo(bookInfo);
     return true;
   }
+
 }

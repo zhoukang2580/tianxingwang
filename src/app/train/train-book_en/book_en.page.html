@@ -134,7 +134,7 @@
             <ion-item-divider color="primary">
               Insurance:
             </ion-item-divider>
-            <ion-radio-group [disabled]='searchTrainModel?.isExchange' allow-empty-selection='true'
+            <ion-radio-group [disabled]='searchTrainModel?.isExchange' mode='md' allow-empty-selection='true'
               [value]='combindInfo.selectedInsuranceProduct' [(ngModel)]='combindInfo.selectedInsuranceProduct'
               (ionChange)='calcTotalPrice()'>
               <div *ngFor='let insurance of combindInfo?.insuranceProducts'
@@ -263,7 +263,7 @@
           </ion-item-divider>
           <ion-item [disabled]='searchTrainModel?.isExchange'>
             <div style='width: 100%'>
-              <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' name='travelPayType'
+              <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' mode='md' name='travelPayType'
                 (ionChange)="calcTotalPrice()">
                 <ion-item *ngFor='let pt of orderTravelPayTypes'>
                   <ion-label>{{pt.label.replace('公付','Company')}}</ion-label>

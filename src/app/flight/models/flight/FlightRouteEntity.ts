@@ -21,9 +21,11 @@ export class FlightRouteEntity {
   isTransfer: boolean;
   transferSegments: FlightSegmentEntity[];
   FlightSegments: FlightSegmentEntity[];
+  FromAirport: string; // CN";
   FromCountry: string; // CN";
   Id: string; //  1;
   isShowFares: boolean;
+  isLoadDetail: boolean;
   vmFares:FlightFareEntity[];
   IsAllowOrder: boolean;
   color: "danger" | "warning" | "success"|"secondary";
@@ -35,6 +37,7 @@ export class FlightRouteEntity {
   Rules: any;
   rulesMessages: string[];
   ToCountry: string; // CN";
+  ToAirPort: string; // CN";
   Type: number;
   TypeName: string; // 经济舱";
   Week: string; // 周三";

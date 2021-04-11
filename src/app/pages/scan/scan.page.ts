@@ -49,8 +49,8 @@ export class ScanPage implements OnInit, OnDestroy {
     private navCtrl: NavController,
     private apiService: ApiService
   ) {
-    this.subscription = activatedRoute.paramMap.subscribe(p => {
-      this.scan(p.get("scanResult"));
+    this.subscription = activatedRoute.queryParamMap.subscribe(p => {
+      this.scan(decodeURIComponent(p.get("scanResult")));
     });
   }
   ngOnDestroy() {

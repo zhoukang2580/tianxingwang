@@ -45,8 +45,8 @@ export class LanguageHelper {
     getStatusWaitSignTypeTip: () => {
       return "待签收";
     },
-    getBookTicketWaitingTip: () => {
-      return "您的订单正在预订，请稍后到“我的订单”中支付";
+    getBookTicketWaitingTip: (isPay) => {
+      return `您的订单正在预订${isPay ? "，请稍后到“我的订单”中支付" : ""}`;
     },
     getBookTicketWaitingApprovToPayTip: () => {
       return "下单成功！您的订单需要审批，请于审批完成后到订单列表进行支付";

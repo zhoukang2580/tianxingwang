@@ -27,6 +27,7 @@
     "@capacitor/core": "^1.5.3",
     "@ionic-native/android-permissions": "^5.27.0",
     "@ionic-native/app-version": "^5.27.0",
+    "@ionic-native/camera": "^5.31.1",
     "@ionic-native/clipboard": "^5.27.0",
     "@ionic-native/core": "^5.27.0",
     "@ionic-native/file": "^5.27.0",
@@ -93,6 +94,7 @@
     "cordova-android": "^9.0.0",
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "^6.1.1",
+    "cordova-plugin-camera": "^5.0.1",
     "cordova-plugin-file-transfer": "file:cordova-filetransfer-plugin",
     "cordova-plugin-inappbrowser": "^4.0.0",
     "cordova-plugin-ionic-webview": "^5.0.0",
@@ -141,11 +143,14 @@
       "cordova-plugin-inappbrowser": {},
       "cordova-hcp-plugin": {},
       "cordova-plugin-safariviewcontroller": {},
-      "cordova-ali-plugin": {}
+      "cordova-ali-plugin": {},
+      "cordova-plugin-camera": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      }
     },
     "platforms": [
-      "ios",
-      "android"
+      "android",
+      "ios"
     ]
   }
 }

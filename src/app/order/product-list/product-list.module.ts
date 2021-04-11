@@ -7,11 +7,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 import { ProductListPage } from './product-list.page';
+import { StylePageGuard } from 'src/app/guards/style-page.guard';
 
 const routes: Routes = [
   {
     path: '',
-    component: ProductListPage
+    component: ProductListPage,
+    canActivate:[StylePageGuard]
   }
 ];
 
