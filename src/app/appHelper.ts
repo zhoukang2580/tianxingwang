@@ -307,6 +307,18 @@ export class AppHelper {
       console.error(e);
     }
   }
+  static async dismissModalLayers() {
+    try {
+      let i = 5;
+      let a = await this.modalController.getTop();
+      while (a && --i > 0) {
+        await a.dismiss();
+        a = await this.modalController.getTop();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
   static getWechatUniversalLinks() {
     return CONFIG.wechat.universalLinks;
   }
@@ -995,8 +1007,70 @@ export class AppHelper {
 
     return req;
   }
+  private static async openInMyInAppBrowser(url: string) {
+    try {
+      await AppHelper.platform.ready();
+      const MyInAppBrowser = window["MyInAppBrowser"];
+      const obj = {
+        location: "no",
+        fullscreen: "no",
+        progressbarColor:CONFIG.progressbarColor
+      };
+      const opts = Object.keys(obj)
+        .map((it) => `${it}=${obj[it]}`)
+        .join(",");
+       MyInAppBrowser(url, "_blank", opts);
+    } catch (e) {
+      console.error(e);
+    }
+  }
   private static async openInAppBrowser(url: string) {
-    return AppHelper.payH5Url(url).catch(() => null);
+    try {
+      await AppHelper.platform.ready();
+      if (AppHelper.platform.is("ios")) {
+        if (window["SafariViewController"]) {
+          window["SafariViewController"].isAvailable(function (available) {
+            if (available) {
+              window["SafariViewController"].show(
+                { url },
+                function (result) {
+                  if (result.event === "opened") {
+                    console.log("opened");
+                  } else if (result.event === "loaded") {
+                    console.log("loaded");
+                  } else if (result.event === "closed") {
+                    console.log("closed");
+                  }
+                },
+                function (msg) {
+                  console.log("KO: " + JSON.stringify(msg));
+                }
+              );
+              return true;
+            }
+          });
+        } else if (window["cordova"].InAppBrowser) {
+          const opt = {
+            hidespinner: "yes",
+            toolbarposition: "bottom",
+            closebuttoncaption: "关闭",
+            location: "no",
+          };
+          window["cordova"].InAppBrowser.open(
+            encodeURI(url),
+            "_blank",
+            Object.keys(opt)
+              .map((k) => `${k}=${opt[k]}`)
+              .join(",")
+          );
+          return true;
+        }
+      }
+      return AppHelper.openInMyInAppBrowser(url);
+    } catch (e) {
+      console.error("openInAppBrowser" + JSON.stringify(e));
+      return false;
+    }
   }
   static async jump(router: Router, url: string, queryParams: any) {
     if (!url) {
@@ -1057,6 +1131,12 @@ export class AppHelper {
           url = "path://" + jumpInfo.path;
         } else if (jumpInfo.url) {
           url = jumpInfo.url;
+          if (jumpInfo.isBlank != undefined) {
+            queryParams.isBlank = jumpInfo.isBlank;
+          }
+          if (jumpInfo.isOpenInAppBrowser != undefined) {
+            queryParams.isOpenInAppBrowser = jumpInfo.isOpenInAppBrowser;
+          }
         }
       } catch (e) {
         console.error(e);
@@ -1069,13 +1149,15 @@ export class AppHelper {
       url.toLowerCase().startsWith("https")
     ) {
       queryParams.url = url;
-      queryParams.isOpenInAppBrowser = AppHelper.isApp();
       queryParams.isHideTitle =
         queryParams.isHideTitle != undefined ? queryParams.isHideTitle : true;
-      if (AppHelper.isApp()) {
+      if (AppHelper.isApp() && queryParams.isOpenInAppBrowser) {
         AppHelper.openInAppBrowser(url).catch((e) => {
           console.error(e);
         });
+        return true;
+      } else if (!AppHelper.isApp() && queryParams.isBlank) {
+        window.open(url);
         return true;
       }
       router.navigate(["open-url"], {

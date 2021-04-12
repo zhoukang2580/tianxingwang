@@ -7,6 +7,7 @@ export const CONFIG = {
   isForWechatMiniApproval: false,
   isEnableTranslate: true,
   defaultStyle: "df",
+  progressbarColor: "#08c261",// webview加载第三方应用进度条的颜色
   showNotUseWechatAccountTipTimeout: 5000,
   appDomain: {
     production: "sky-trip.com",
