@@ -77,11 +77,6 @@ export class HotelEntity extends BaseVariablesEntity {
   /// </summary>
   FileName: string;
 
-  /// <summary>
-  /// 距离
-  /// </summary>
-  Distance: string
-
   FullFileName: string;
   /// <summary>
   /// 坐标系
