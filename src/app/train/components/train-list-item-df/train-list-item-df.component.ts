@@ -71,7 +71,9 @@ export class TrainListItemDfComponent implements OnInit {
     }
     train.isShowSeats = !train.isShowSeats;
   }
-  onBookTicket(seat: TrainSeatEntity) {
+  onBookTicket(seat: TrainSeatEntity,evt:CustomEvent) {
+    evt.preventDefault();
+    evt.stopPropagation();
     if (seat && +seat.Count <= 0) {
       AppHelper.alert("余票不足!");
       return;
