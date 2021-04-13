@@ -93,7 +93,7 @@
           <span class="seat-count" *ngIf="seat.SeatType == TrainSeatType.NoSeat">{{ seat.Count ? "" : "no" }}{{ langOpt.Left }}</span>
           <div class="price" style="margin-left: auto">￥{{ seat.SalesPrice }}<span *ngIf='seat.SeatType==TrainSeatType.HardBerth'>起</span></div>
     </div>
-    <div *ngIf='seat.SeatTypeName?.includes("硬卧")'>卧铺席位，以实际出票为准</div>
+    <div *ngIf='seat.SeatTypeName?.includes("硬卧")'><ion-text color='danger'>卧铺席位，以实际出票为准</ion-text></div>
   </div>
   <div *ngIf="!bookInfo?.isExchange && isShowSelectSeatLocation">
     <app-seat-picker-df [selectdSeat]="seat" [selectSeatLocation]="selectSeatLocation" (seatPicker)="onSeatPicker($event)">

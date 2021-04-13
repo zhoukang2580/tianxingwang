@@ -45,10 +45,8 @@ export class TrainListItemDfComponent implements OnInit {
       evt.preventDefault();
       evt.stopPropagation();
     }
-    AppHelper.toast(
-      LanguageHelper.Train.getCanSwipeIdCardTip(),
-      2000,
-      "middle"
+    AppHelper.alert(
+      LanguageHelper.Train.getCanSwipeIdCardTip()
     );
   }
   getLowestSeatPrice() {
