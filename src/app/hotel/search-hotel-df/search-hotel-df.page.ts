@@ -415,6 +415,10 @@ export class SearchHotelDfPage
       return await popover.present();
     }
     if (this.isDomestic) {
+      this.hotelService.setSearchHotelModel({
+        ...this.hotelService.getSearchHotelModel(),
+        searchText: null,
+      });
       this.hotelService.setHotelQuerySource({
         ...this.hotelService.getHotelQueryModel(),
         ranks: null,
@@ -428,6 +432,10 @@ export class SearchHotelDfPage
       this.isLeavePage = true;
       this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
     } else {
+      this.internationalHotelService.setSearchConditionSource({
+        ...this.internationalHotelService.getSearchCondition(),
+        searchText: null,
+      });
       this.router.navigate([
         AppHelper.getRoutePath("international-hotel-list"),
       ]);

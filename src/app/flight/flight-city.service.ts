@@ -940,12 +940,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     return item;
   }
   function loadMoreItems(infinite = null) {
-    const kw = getSearchBarText();
+    const kw :string= getSearchBarText();
     let arr = that.isDomestic ? that.cities : that.internationalCities;
     let temp = [];
     if (kw) {
       let tmpArr;
-      if (kw.length == 3) {
+      if (kw.length == 3&&kw.match(/[a-z]/ig)) {
         tmpArr = arr.filter(
           (it) => (it.Code || "").toLowerCase() == kw.toLowerCase()
         );

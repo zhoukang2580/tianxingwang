@@ -1,6 +1,7 @@
 import { ConfigEntity } from "./../../../services/config/config.entity";
 import { Component, OnInit, Input } from "@angular/core";
 import { HotelDayPriceEntity } from "../../models/HotelDayPriceEntity";
+import { SearchHotelModel } from "../../hotel.service";
 
 @Component({
   selector: "app-hotel-list-item",
@@ -14,17 +15,8 @@ export class HotelListItemComponent implements OnInit {
     branch: "分",
     rise: "起",
   };
+  @Input() searchHotelModel: SearchHotelModel;
   constructor() {}
 
-  ngOnInit() {
-    if (this.item && this.item.Hotel && this.item.Hotel.VariablesJsonObj) {
-      if (this.item.Hotel.VariablesJsonObj["GeoDistance"]) {
-        const distance = this.item.Hotel.VariablesJsonObj["GeoDistance"];
-        this.item.Hotel.VariablesJsonObj["geoDistance"] = {
-          distance: distance.substring(distance.indexOf(",") + 1),
-          name: distance.substring(0, distance.indexOf(",")),
-        };
-      }
-    }
-  }
+  ngOnInit() {}
 }

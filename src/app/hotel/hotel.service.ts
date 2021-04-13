@@ -58,7 +58,7 @@ export class SearchHotelModel {
   destinationCity: TrafficlineEntity;
   tag: "Agreement" | "" | "SpecialPrice";
   hotelType: "agreement" | "normal" | "specialprice";
-  searchText: { Value?: string; Text: string };
+  searchText: { Value?: string; Text: string; Lat?: string; Lng?: string };
 }
 export interface LocalHotelCityCache {
   LastUpdateTime: number;
@@ -291,7 +291,7 @@ export class HotelService {
       )
     );
   }
- 
+
   getRoomPlanDescriptions(room: RoomEntity) {
     const itm =
       room &&
@@ -385,7 +385,7 @@ export class HotelService {
     return this.conditionModelSource.asObservable();
   }
   setSearchHotelModel(m: SearchHotelModel) {
-    if (m) {      
+    if (m) {
       this.searchHotelModel = m;
       this.searchHotelModel.tag =
         m.hotelType == "normal"
@@ -732,6 +732,10 @@ export class HotelService {
     }
     if (cond && cond.searchText) {
       req.Data["SearchKey"] = cond.searchText.Text;
+      if (cond.searchText.Lat && cond.searchText.Lng) {
+        req.Data["Lat"] = cond.searchText.Lat;
+        req.Data["Lng"] = cond.searchText.Lng;
+      }
       if (cond.searchText.Value) {
         req.Data["HotelId"] = cond.searchText.Value;
       } else {
@@ -780,7 +784,7 @@ export class HotelService {
     hotelquery.BeginDate = this.getSearchHotelModel().checkInDate;
     hotelquery.EndDate = this.getSearchHotelModel().checkOutDate;
     hotelquery.IsLoadDetail = true;
-    hotelquery.HotelId =hotelId;
+    hotelquery.HotelId = hotelId;
     hotelquery.CityCode =
       this.getSearchHotelModel().destinationCity &&
       this.getSearchHotelModel().destinationCity.Code;
@@ -1004,6 +1008,9 @@ export class HotelService {
     req.Method = `TmcApiHotelUrl-Home-SearchHotel`;
     req.Data = {
       PageIndex: pageIndex,
+      CityName:
+        this.getSearchHotelModel().destinationCity &&
+        this.getSearchHotelModel().destinationCity.Name,
       CityCode:
         this.getSearchHotelModel().destinationCity &&
         this.getSearchHotelModel().destinationCity.Code,

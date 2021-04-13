@@ -1,22 +1,12 @@
 <div class="hotel-item">
   <!-- <div class="hotel-img" [lazyLoad]='item?.Hotel?.FileName' [defaultImage]='config?.PrerenderImageUrl'></div> -->
-  <img
-    class="hotel-img"
-    [recoverImage]="false"
-    [loadingImage]="config?.PrerenderImageUrl"
-    [lazyLoad]="item?.Hotel?.FileName"
-    [defaultImage]="config?.DefaultImageUrl"
-  />
+  <img class="hotel-img" [recoverImage]="false" [loadingImage]="config?.PrerenderImageUrl" [lazyLoad]="item?.Hotel?.FullFileName||item?.Hotel?.FileName" [defaultImage]="config?.DefaultImageUrl" />
   <div class="right-side">
     <div class="name ion-text-wrap">
       {{ item.Hotel?.Name }}
     </div>
     <div class="grade-stars">
-      <ion-text
-        class="grade"
-        color="danger"
-        *ngIf="item.Hotel?.Grade && item.Hotel?.Grade >= 4"
-      >
+      <ion-text class="grade" color="danger" *ngIf="item.Hotel?.Grade && item.Hotel?.Grade >= 4">
         {{ item.Hotel?.Grade }}{{ langOpt.branch }}
       </ion-text>
       <div class="stars" *ngIf="item.Hotel['stars']">
@@ -25,24 +15,15 @@
           <ion-icon name="star-half" color="warning" *ngIf="s < 1"></ion-icon>
         </ng-container>
       </div>
-      <ion-text class="ion-text-end ion-padding-end price" color="danger"
-        ><small>￥</small> <strong>{{ item.Hotel["avgPrice"] }}</strong>
+      <ion-text class="ion-text-end ion-padding-end price" color="danger"><small>￥</small> <strong>{{ item.Hotel["avgPrice"] }}</strong>
         <small> {{ langOpt?.rise }}</small>
       </ion-text>
     </div>
     <div class="ion-text-wrap location">
       <ion-icon name="location" color="medium"></ion-icon>
       <div class="ion-text-wrap">{{ item.Hotel?.Address }}</div>
-      <ion-label
-        color="medium"
-        *ngIf="
-          item.Hotel?.VariablesJsonObj &&
-          item.Hotel?.VariablesJsonObj['GeoDistance']
-        "
-      >
-        距离{{ item.Hotel?.VariablesJsonObj["geoDistance"].name }}直线距离约{{
-          item.Hotel?.VariablesJsonObj["geoDistance"].distance
-        }}km
+      <ion-label color="medium" *ngIf="item.Hotel?.Distance">
+        距离{{ searchHotelModel?.searchText?.Text }}直线距离约{{item.Hotel?.Distance}}
       </ion-label>
     </div>
   </div>

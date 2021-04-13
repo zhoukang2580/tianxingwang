@@ -25,16 +25,6 @@
             </div>
           </ion-row>
           <ion-row>
-            <ion-col size="4" class="hotel-name"> </ion-col>
-            <ion-col size="8" class="ion-text-end ion-padding-end">
-              {{orderHotel?.StatusName}}<ion-text
-                *ngIf="VariablesJsonObj?.ExceptionMessage"
-                color="danger"
-                >({{VariablesJsonObj?.ExceptionMessage}})</ion-text
-              >
-            </ion-col>
-          </ion-row>
-          <ion-row>
             <ion-col size="8" class="hotel-name">
               {{orderHotel.HotelName}}
             </ion-col>
@@ -44,9 +34,13 @@
             <ion-col size="3"> 房型名称 </ion-col>
             <ion-col>
               {{orderHotel.RoomName}}
-              <span class="ion-margin-start"
-                >{{orderHotel.Breakfast>"0"?orderHotel.Breakfast+"份":"无"}}早餐</span
-              >
+              <span class="ion-margin-start">{{orderHotel.Breakfast>"0"?orderHotel.Breakfast+"份":"无"}}早餐</span>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="3">酒店状态</ion-col>
+            <ion-col class="ion-padding-end">
+              {{orderHotel?.StatusName}}<ion-text *ngIf="VariablesJsonObj?.ExceptionMessage" color="danger">({{VariablesJsonObj?.ExceptionMessage}})</ion-text>
             </ion-col>
           </ion-row>
           <ion-row>
@@ -56,7 +50,7 @@
                 {{orderHotel.BeginDate?.substr(0,"yyyy-MM-dd".length)}}
                 &nbsp;至&nbsp;
                 {{orderHotel.EndDate?.substr(0,"yyyy-MM-dd".length)}}
-                &nbsp;{{orderHotel?.countDay}}晚
+                &nbsp;{{orderHotel['beCountDay']}}晚
               </ion-text>
             </ion-col>
           </ion-row>
@@ -95,11 +89,7 @@
           </ion-row> -->
           <ion-row>
             <ion-col>
-              <div
-                class="clip-text"
-                (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]'
-                [class.show]='orderHotel["isShowDetail"]'
-              >
+              <div class="clip-text" (click)='orderHotel["isShowDetail"]=!orderHotel["isShowDetail"]' [class.show]='orderHotel["isShowDetail"]'>
                 {{orderHotel.RuleDescription}}
               </div>
             </ion-col>
@@ -111,12 +101,8 @@
             <div style="width: 100%" class="passenger-info">
               <ion-row>
                 <ion-col size="3">姓名</ion-col>
-                <ion-col
-                  >{{p.Name}}
-                  <span
-                    *ngIf='orderDetail.Order.Type?.toLowerCase()!="hotel"&& p.PassengerTypeName'
-                    >({{p.PassengerTypeName}})</span
-                  >
+                <ion-col>{{p.Name}}
+                  <span *ngIf='orderDetail.Order.Type?.toLowerCase()!="hotel"&& p.PassengerTypeName'>({{p.PassengerTypeName}})</span>
                 </ion-col>
               </ion-row>
               <ion-row>
@@ -138,15 +124,11 @@
               <ng-container>
                 <ion-row>
                   <ion-col size="3">成本中心</ion-col>
-                  <ion-col
-                    >{{info?.CostCenterCode}}-{{info?.CostCenterName}}</ion-col
-                  >
+                  <ion-col>{{info?.CostCenterCode}}-{{info?.CostCenterName}}</ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col size="3">组织架构</ion-col>
-                  <ion-col
-                    >{{info?.OrganizationCode}}-{{info?.OrganizationName}}</ion-col
-                  >
+                  <ion-col>{{info?.OrganizationCode}}-{{info?.OrganizationName}}</ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col size="3">违规</ion-col>
@@ -156,19 +138,13 @@
                   <ion-col size="3">违规原因</ion-col>
                   <ion-col>{{info.IllegalReason}}</ion-col>
                 </ion-row>
-                <ng-container
-                  *ngIf="orderDetail.Order?.OrderHotels as OrderHotels"
-                >
+                <ng-container *ngIf="orderDetail.Order?.OrderHotels as OrderHotels">
                   <ion-row>
                     <ion-col size="3.1">其他入住人</ion-col>
                     <ion-col>
-                      <ng-container
-                        *ngFor="let it of OrderHotels;let i=index;let last=last"
-                      >
+                      <ng-container *ngFor="let it of OrderHotels;let i=index;let last=last">
                         <div *ngIf="it.Type==OrderHotelType.International">
-                          <div
-                            *ngIf='it.CustomerName?.includes(",")&&it.CustomerName?.substring(it.CustomerName?.indexOf("/")+1)?.replace("/","|")?.replace(",","/") as n'
-                          >
+                          <div *ngIf='it.CustomerName?.includes(",")&&it.CustomerName?.substring(it.CustomerName?.indexOf("/")+1)?.replace("/","|")?.replace(",","/") as n'>
                             <ion-text class="ion-margin-end"> {{n}} </ion-text>
                           </div>
                           <div *ngIf='it.ChildrenName.replace(",","/") as n '>
@@ -182,27 +158,13 @@
               </ng-container>
               <ion-row *ngIf="canSendEmailMsg()">
                 <ion-col>
-                  <ion-button
-                    no-margin
-                    size="small"
-                    color="secondary"
-                    (click)="sendMsg(p)"
-                  >
-                    <ion-icon
-                      name="create-outline"
-                      mode="ios"
-                      slot="start"
-                    ></ion-icon>
+                  <ion-button no-margin size="small" color="secondary" (click)="sendMsg(p)">
+                    <ion-icon name="create-outline" mode="ios" slot="start"></ion-icon>
                     发送短信
                   </ion-button>
                 </ion-col>
                 <ion-col>
-                  <ion-button
-                    no-margin
-                    size="small"
-                    color="secondary"
-                    (click)="sendEmail(p)"
-                  >
+                  <ion-button no-margin size="small" color="secondary" (click)="sendEmail(p)">
                     <ion-icon name="mail" mode="ios" slot="start"></ion-icon>
                     发送邮件
                   </ion-button>
@@ -224,16 +186,13 @@
             </ion-row>
             <ion-row>
               <ion-col size="3">订单状态:</ion-col>
-              <ion-col
-                >{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" :
+              <ion-col>{{orderDetail.Order.StatusName == "等待处理" ? "等待审批" :
                 orderDetail.Order.StatusName}}
               </ion-col>
             </ion-row>
             <ion-row>
               <ion-col size="3">付款方式:</ion-col>
-              <ion-col
-                >{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col
-              >
+              <ion-col>{{orderDetail.TravelType}}-{{orderDetail.TravelPayType}}</ion-col>
             </ion-row>
             <ion-row>
               <ion-col size="3">完成时间:</ion-col>
@@ -243,12 +202,9 @@
               <ion-col size="3">应付金额:</ion-col>
               <ion-col>
                 <div>
-                  <ion-text color="danger"
-                    >￥{{orderDetail.Order.TotalAmount}}
+                  <ion-text color="danger">￥{{orderDetail.Order.TotalAmount}}
                   </ion-text>
-                  <ion-text color="secondary" style="font-size: 0.7rem"
-                    >应付明细</ion-text
-                  >
+                  <ion-text color="secondary" style="font-size: 0.7rem">应付明细</ion-text>
                 </div>
               </ion-col>
             </ion-row>
@@ -272,28 +228,19 @@
             </ion-row>
             <ion-row *ngIf="orderDetail.Order.OrderHotels[0].PaymentType==1">
               <ion-col size="3">预付金额:</ion-col>
-              <ion-col
-                >{{orderDetail.Order.OrderHotels[0].TotalSalesAmount}}</ion-col
-              >
+              <ion-col>{{orderDetail.Order.OrderHotels[0].TotalSalesAmount}}</ion-col>
             </ion-row>
             <ion-row>
-              <ion-col size="3" *ngIf="orderDetail?.Order?.OrderNumbers"
-                >外部编号</ion-col
-              >
+              <ion-col size="3" *ngIf="orderDetail?.Order?.OrderNumbers">外部编号</ion-col>
               <ion-col>
                 <div *ngFor="let n of orderDetail?.Order?.OrderNumbers">
-                  <span *ngIf='n.Tag=="TmcOutNumber"'
-                    >{{n.Name}}:{{n.Number}}</span
-                  >
+                  <span *ngIf='n.Tag=="TmcOutNumber"'>{{n.Name}}:{{n.Number}}</span>
                 </div>
               </ion-col>
             </ion-row>
           </div>
           <div>
-            <div
-              class="ion-item-divider"
-              *ngIf="orderDetail.Histories.length>0"
-            >
+            <div class="ion-item-divider" *ngIf="orderDetail.Histories.length>0">
               审批记录
             </div>
           </div>
@@ -306,12 +253,9 @@
                 </ion-row>
                 <ion-row>
                   <ion-col size="4">审批人:</ion-col>
-                  <ion-col
-                    >{{history.Account?.RealName}}
-                    <span *ngIf="history.StatusName"
-                      >({{history.StatusName}})</span
-                    ></ion-col
-                  >
+                  <ion-col>{{history.Account?.RealName}}
+                    <span *ngIf="history.StatusName">({{history.StatusName}})</span>
+                  </ion-col>
                 </ion-row>
                 <ion-row>
                   <ion-col size="4">发起审批时间:</ion-col>
@@ -319,9 +263,7 @@
                 </ion-row>
                 <ion-row>
                   <ion-col size="4">审批截止时间:</ion-col>
-                  <ion-col
-                    >{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col
-                  >
+                  <ion-col>{{history?.ExpiredTime?.startsWith("1800")?"":history?.ExpiredTime}}</ion-col>
                 </ion-row>
               </div>
             </div>

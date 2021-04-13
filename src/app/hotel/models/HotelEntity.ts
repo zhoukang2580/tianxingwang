@@ -21,6 +21,7 @@ export class HotelEntity extends BaseVariablesEntity {
   /// </summary>
   Name: string;
   EnName: string;
+  Distance: string;
   EnAddress: string;
   /// <summary>
   /// 城市代码
