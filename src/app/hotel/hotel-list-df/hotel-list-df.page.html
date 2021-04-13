@@ -72,13 +72,10 @@
   </div>
   <ng-container *ngIf="!isLoadingHotels else fakeList">
     <ion-list>
-      <ul *ngIf="hotelDayPrices?.length  else noMoreData">
-        <li *ngFor="let item of hotelDayPrices" (click)="goToDetail(item)">
-          <app-hotel-list-item
-            [hotelquery]="searchHotelModel"
-            [item]="item"
-            [config]="{DefaultImageUrl:HotelDefaltImg||config?.DefaultImageUrl,PrerenderImageUrl:config?.PrerenderImageUrl}"
-          ></app-hotel-list-item>
+      <ul *ngIf='hotelDayPrices?.length  else noMoreData'>
+        <li *ngFor='let item of hotelDayPrices' (click)='goToDetail(item)'>
+          <app-hotel-list-item [item]='item' [searchHotelModel]='searchHotelModel' [config]='{DefaultImageUrl:HotelDefaltImg||config?.DefaultImageUrl,PrerenderImageUrl:config?.PrerenderImageUrl}'>
+          </app-hotel-list-item>
         </li>
       </ul>
     </ion-list>

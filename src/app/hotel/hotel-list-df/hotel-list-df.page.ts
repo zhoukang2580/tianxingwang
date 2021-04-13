@@ -355,7 +355,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   onSearchByText() {
     this.isUseSearchText = true;
-    this.router.navigate([AppHelper.getRoutePath("combox-search-hotel")], {
+    this.router.navigate([AppHelper.getRoutePath("hotel-searchtext")], {
       queryParams: {
         kw:
           (this.searchHotelModel.searchText &&

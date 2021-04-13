@@ -307,9 +307,9 @@ export class HotelService {
     forceFetch =
       forceFetch ||
       city.Code !=
-      (this.conditionModel &&
-        this.conditionModel.city &&
-        this.conditionModel.city.Code);
+        (this.conditionModel &&
+          this.conditionModel.city &&
+          this.conditionModel.city.Code);
     if (
       forceFetch ||
       !this.conditionModel ||
@@ -391,8 +391,8 @@ export class HotelService {
         m.hotelType == "normal"
           ? ""
           : m.hotelType == "agreement"
-            ? "Agreement"
-            : "SpecialPrice";
+          ? "Agreement"
+          : "SpecialPrice";
       this.searchHotelModelSource.next(this.searchHotelModel);
     }
   }
@@ -713,8 +713,11 @@ export class HotelService {
       req.Data.Categories = query.Stars;
     }
     if (cond && cond.searchText) {
-      req.Data["Lat"] = cond.searchText.Lat;
-      req.Data["Lng"] = cond.searchText.Lng;
+      req.Data["SearchKey"] = cond.searchText.Text;
+      if (cond.searchText.Lat && cond.searchText.Lng) {
+        req.Data["Lat"] = cond.searchText.Lat;
+        req.Data["Lng"] = cond.searchText.Lng;
+      }
       if (cond.searchText.Value) {
         req.Data["HotelId"] = cond.searchText.Value;
       } else {
@@ -756,7 +759,7 @@ export class HotelService {
       })
     );
   }
-  getHotelDetail(hotelId: string,hotelprice: string) {
+  getHotelDetail(hotelId: string, hotelprice: string) {
     // return throwError("没获取列表")
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-Detail`;
@@ -775,7 +778,7 @@ export class HotelService {
       ...hotelquery,
       travelformid: AppHelper.getQueryParamers()["travelformid"] || "",
       hotelType: this.getSearchHotelModel().hotelType,
-      MinPrice:hotelprice
+      MinPrice: hotelprice,
     };
     // req.IsShowLoading = true;
     return from(this.setDefaultFilterPolicy()).pipe(
@@ -977,29 +980,26 @@ export class HotelService {
       // HotelCities: TrafficlineEntity[];
     }>(req);
   }
-  searchHotelByText(
-    keyword: string,
-    pageIndex: number
-  ) {
+  searchHotelByText(keyword: string, pageIndex: number) {
     const req = new RequestEntity();
     req.Method = `TmcApiHotelUrl-Home-SearchHotel`;
     req.Data = {
-      PageIndex: pageIndex || 0,
+      PageIndex: pageIndex,
+      CityName:
+        this.getSearchHotelModel().destinationCity &&
+        this.getSearchHotelModel().destinationCity.Name,
       CityCode:
         this.getSearchHotelModel().destinationCity &&
         this.getSearchHotelModel().destinationCity.Code,
-      CityName: this.getSearchHotelModel().destinationCity &&
-        this.getSearchHotelModel().destinationCity.Name,
-      Keyword: keyword
+      Keyword: keyword,
     };
-    return this.apiService
-      .getResponse<
-        {
-          Text: string;
-          Value: string;
-          IsHotel: boolean;
-        }[]
-      >(req)
+    return this.apiService.getResponse<
+      {
+        Text: string;
+        Value: string;
+        IsHotel: boolean;
+      }[]
+    >(req);
   }
   // searchHotelByAddress(
   //   keyword: string,
@@ -1026,7 +1026,7 @@ export class HotelService {
   //         Lng: string;
   //       }[]
   //     >(req)
-     
+
   // }
 
   async getInitializeBookDto(
@@ -1067,7 +1067,7 @@ export class HotelService {
     let i = 10;
     let top = await this.modalCtrl.getTop();
     while (top && --i > 0) {
-      await top.dismiss().catch((_) => { });
+      await top.dismiss().catch((_) => {});
       top = await this.modalCtrl.getTop();
     }
   }

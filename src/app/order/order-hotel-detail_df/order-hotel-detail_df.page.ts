@@ -52,8 +52,8 @@ import { OrderTrainTicketEntity } from "../models/OrderTrainTicketEntity";
 import { OrderHotelType, OrderHotelEntity } from "../models/OrderHotelEntity";
 import { MOCK_TMC_DATA } from "../mock-data";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
-import { HotelOrderPricePopoverComponent } from '../components/hotel-order-price-popover/hotel-order-price-popover.component';
-import { SearchHotelModel } from 'src/app/hotel/hotel.service';
+import { HotelOrderPricePopoverComponent } from "../components/hotel-order-price-popover/hotel-order-price-popover.component";
+import { SearchHotelModel } from "src/app/hotel/hotel.service";
 
 export interface TabItem {
   label: string;
@@ -64,7 +64,8 @@ export interface TabItem {
   templateUrl: "./order-hotel-detail_df.page.html",
   styleUrls: ["./order-hotel-detail_df.page.scss"],
 })
-export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
+export class OrderHotelDetailDfPage
+  implements OnInit, AfterViewInit, OnDestroy {
   private headerHeight = 0;
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
@@ -104,8 +105,8 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService,
-    private calendarService: CalendarService,
-  ) { }
+    private calendarService: CalendarService
+  ) {}
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {
@@ -135,8 +136,9 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
       this.orderDetail.Order.OrderHotels.forEach((it, idx) => {
         // if (it.VariablesJsonObj.isShow) {
         this.tabs.push({ label: it.Id, value: idx + 1 });
-        this.VariablesJsonObj = this.VariablesJsonObj || JSON.parse(it.Variables);
-        console.log(this.VariablesJsonObj.ExceptionMessage, "============")
+        this.VariablesJsonObj =
+          this.VariablesJsonObj || JSON.parse(it.Variables);
+        console.log(this.VariablesJsonObj.ExceptionMessage, "============");
         // }
       });
     }
@@ -279,6 +281,22 @@ export class OrderHotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy 
             h.InsertDateTime = this.transformTime(h.InsertTime);
           }
           return h;
+        });
+      }
+      if (this.orderDetail.Order && this.orderDetail.Order.OrderHotels) {
+        this.orderDetail.Order.OrderHotels.forEach((it) => {
+          if (it.CheckinTime && it.CheckoutTime) {
+            it.countDay =
+              (AppHelper.getDate(it.CheckoutTime.substr(0, 10)).getTime() -
+                AppHelper.getDate(it.CheckinTime.substr(0, 10)).getTime()) /
+              86400000;
+          }
+          if (it.BeginDate && it.EndDate) {
+            it["beCountDay"] =
+              (AppHelper.getDate(it.EndDate).getTime() -
+                AppHelper.getDate(it.BeginDate).getTime()) /
+              86400000;
+          }
         });
       }
     }

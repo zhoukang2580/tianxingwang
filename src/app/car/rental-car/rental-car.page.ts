@@ -233,7 +233,7 @@ export class RentalCarPage implements OnInit, OnDestroy, AfterViewInit {
       // items.push(`assets/images/possettings/allow.png`);
       // items.push(`assets/images/possettings/allow.png`);
       AppHelper.alert(
-        `打开手机设置，找到“应用设置”→“授权管理”→“应用权限管理”→搜索“天行商旅”，点击进入“天行商旅应用权限”，点击“定位”，将位置信息访问权限设置为“始终允许”或者“应用使用期间允许”`
+        `打开手机设置，找到“应用设置”→“授权管理”→“应用权限管理”→找到当前使用的应用→“定位”，将位置信息访问权限设置为“始终允许”或者“应用使用期间允许”`
       );
       return;
     }
