@@ -993,7 +993,7 @@ export class HotelService {
       Keyword: keyword
     };
     return this.apiService
-      .getPromiseData<
+      .getResponse<
         {
           Text: string;
           Value: string;

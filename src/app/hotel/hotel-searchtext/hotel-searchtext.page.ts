@@ -104,11 +104,6 @@ export class HotelSearchTextPage implements OnInit, OnDestroy, AfterViewInit {
         setTimeout(() => {
           this.isLoading = false;
         }, 200);
-      }),
-      map((r) => ({ Data: r })),
-      catchError((e) => {
-        console.error(e);
-        return of({ Data: [] });
       })
     );
   }
