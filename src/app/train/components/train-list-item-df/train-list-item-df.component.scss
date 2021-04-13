@@ -8,7 +8,6 @@
 .time,
 .station,
 .train-item,
-.seat,
 .seat-item,
 .stop-line-stop {
   display: flex;
@@ -65,10 +64,10 @@ img.access-by-IdCard {
   justify-content: flex-start;
   flex-flow: row wrap;
   width: 100%;
+  font-size: 0.9rem;
   .seat-item {
-    font-size: 0.9rem;
-    width: 50%;
     justify-content: flex-start;
+    padding: .5em 0;
     ion-button {
       padding-left: 0.25em;
     }

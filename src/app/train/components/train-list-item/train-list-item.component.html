@@ -5,8 +5,7 @@
         <strong>{{train?.StartShortTime}}</strong>
         <div class='travel-time-name'>{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}
         </div>
-        <strong [class.has-add-day-tip]='train?.AddOneDayTip'
-          [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
+        <strong [class.has-add-day-tip]='train?.AddOneDayTip' [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
       </div>
       <div class='station'>
         <div class='from-station-name'>{{train?.FromStationName}}</div>
@@ -32,28 +31,27 @@
   <ion-row class='seat-outline' color='medium'>
     <ion-col size='4' *ngFor='let seat of getSeats()'>
       <span>{{seat.SeatTypeName}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"":"无票"}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"有":"无"}}票</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?(+seat.Count < 20?seat.Count+"张":"有"):"无票"}}</span>
+          <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?(+seat.Count < 20?seat.Count+"张":"有"):"无"}}票</span>
     </ion-col>
   </ion-row>
   <ion-grid class='seats' *ngIf='train["isShowSeats"]'>
-    <ng-container *ngFor='let seat of getSeats()' >
-      <ion-row [attr.color]='seat.color' *ngIf="seat.Count > '0'">
-          <ion-col>{{seat.SeatTypeName}}</ion-col>
-          <ion-col>
-            <ion-text color='danger'>
-              ￥{{seat.SalesPrice}}
-            </ion-text>
-          </ion-col>
-          <ion-col size='4'>
-            <span class='seat-count'>{{langOpt.Left}}:{{seat.Count?seat.Count+"":""}}</span>
-          </ion-col>
-          <ion-col (click)='onBookTicket(seat)'>
-            <ion-button *ngIf='showBookBtn' size='small' class='ion-text-start' [color]='seat.color'
-              [class.disabled]='seat.color=="danger"||seat.Count=="0"'>
-              <ion-text color='light'>{{langOpt.reserve}}</ion-text>
-            </ion-button>
-          </ion-col>
+    <ng-container *ngFor='let seat of getSeats()'>
+      <ion-row [attr.color]='seat.color' *ngIf="seat.Count > 0">
+        <ion-col>{{seat.SeatTypeName}}</ion-col>
+        <ion-col>
+          <ion-text color='danger'>
+            ￥{{seat.SalesPrice}}
+          </ion-text>
+        </ion-col>
+        <ion-col size='4'>
+          <span class='seat-count'>{{seat.Count?(+seat.Count < 20?seat.Count+"张":"有"):""}}</span>
+        </ion-col>
+        <ion-col (click)='onBookTicket(seat)'>
+          <ion-button *ngIf='showBookBtn' size='small' class='ion-text-start' [color]='seat.color' [class.disabled]='seat.color=="danger"||seat.Count==0'>
+            <ion-text color='light'>{{langOpt.reserve}}</ion-text>
+          </ion-button>
+        </ion-col>
       </ion-row>
     </ng-container>
   </ion-grid>
@@ -65,8 +63,7 @@
       <div class='travel-time-name'>{{train?.TravelTimeName?.replace("h","时").replace("m",'分')}}
       </div>
       <!-- <div class='travel-time-name'>{{train?.TravelTimeName}}</div> -->
-      <strong [class.has-add-day-tip]='train?.AddOneDayTip'
-        [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
+      <strong [class.has-add-day-tip]='train?.AddOneDayTip' [attr.adddaytip]='train?.AddOneDayTip'>{{train?.ArrivalShortTime}}</strong>
     </div>
     <div class='station'>
       <div class='from-station-name'>{{train?.FromStationName}}</div>
@@ -81,10 +78,11 @@
   <div class='seat' *ngIf='seat'>
     <div class='seat-item'>
       <span>{{seat.SeatTypeName}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?seat.Count+"张":""}}</span>
-      <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"no"}}{{langOpt.Left}}</span>
+      <span class='seat-count' *ngIf='seat.SeatType != TrainSeatType.NoSeat'>{{seat.Count?(seat.Count < 20?seat.Count+"张":"有"):""}}</span>
+          <span class='seat-count' *ngIf='seat.SeatType == TrainSeatType.NoSeat'>{{seat.Count?"":"no"}}{{langOpt.Left}}</span>
     </div>
-    <div class='price' style='margin-left: auto'>￥{{seat.SalesPrice}}</div>
+    <div class='price' style='margin-left: auto'>￥{{seat.SalesPrice}}<span *ngIf='seat.SeatType==TrainSeatType.HardBerth'>起</span></div>
+    <div class="seat-item" *ngIf='seat.SeatTypeName?.includes("硬卧")'>卧铺席位，以实际出票为准</div>
   </div>
   <div *ngIf='!bookInfo?.isExchange&&isShowSelectSeatLocation'>
     <app-seat-picker [selectdSeat]='seat' [selectSeatLocation]='selectSeatLocation' (seatPicker)='onSeatPicker($event)'>

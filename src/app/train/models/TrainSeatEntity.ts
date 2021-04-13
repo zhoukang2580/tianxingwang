@@ -9,7 +9,7 @@ export class TrainSeatEntity {
   /// <summary>
   /// 剩余数量
   /// </summary>
-  Count: string;
+  Count: number;
   Price: string;
   /// <summary>
   /// 价格
