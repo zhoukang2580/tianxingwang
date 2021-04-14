@@ -92,6 +92,7 @@ export class FlightListPage
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private lastFetchTime = 0;
+  private lastPassengerIds: string[] = [];
   private oldSearchCities: {
     fromCityCode: string;
     toCityCode: string;
@@ -198,7 +199,10 @@ export class FlightListPage
       this.showAddPassenger = await this.canShowAddPassenger();
       const delta = Math.floor((Date.now() - this.lastFetchTime) / 1000);
       console.log("this.route.queryParamMap deltaTime=", delta);
-      const isFetch = delta >= 60 * 2 || this.checkIfCityChanged();
+      const isFetch =
+        delta >= 60 * 2 ||
+        this.checkIfCityChanged() ||
+        this.checkIfSelectedPassengerChanged();
       if (
         (d && d.get("doRefresh") == "true") ||
         !this.vmFlights ||
@@ -225,6 +229,20 @@ export class FlightListPage
         this.searchFlightModel.fromCity.Code !=
           this.oldSearchCities.fromCityCode ||
         this.searchFlightModel.toCity.Code != this.oldSearchCities.toCityCode
+      );
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  }
+  private checkIfSelectedPassengerChanged() {
+    try {
+      return (
+        this.lastPassengerIds.join(",") !=
+        this.flightService
+          .getPassengerBookInfos()
+          .map((it) => it.passenger && it.passenger.Id)
+          .join(",")
       );
     } catch (e) {
       console.error(e);
@@ -320,15 +338,12 @@ export class FlightListPage
     }
   }
   async canShowAddPassenger() {
-    const identity = await this.identityService
-      .getIdentityAsync()
-      .catch((_) => null);
     this.showAddPassenger =
-      (identity && identity.Numbers && identity.Numbers.AgentId) ||
+      this.tmcService.isAgent ||
       (!(await this.staffService.isSelfBookType()) &&
-        !this.flightService
+        this.flightService
           .getPassengerBookInfos()
-          .every((it) => !!it.exchangeInfo));
+          .every((it) => !it.exchangeInfo));
     return this.showAddPassenger;
   }
   async onCalenderClick() {
@@ -561,8 +576,13 @@ export class FlightListPage
         await this.flightService.initFlightSegmentCabins(fs);
       }
       if (fs.Cabins && fs.Cabins.length) {
-        const p = await this.flightService.initFlightSegmentCabinsPolicy();
-        return p && p.length > 0;
+        if (
+          this.flightService.getPassengerBookInfos().map((it) => it.passenger)
+            .length
+        ) {
+          const p = await this.flightService.initFlightSegmentCabinsPolicy();
+          return p && p.length > 0;
+        }
       }
     } catch (e) {
       console.error(e);
@@ -582,6 +602,9 @@ export class FlightListPage
       this.isCanLeave = true;
       await this.flightService.addOneBookInfoToSelfBookType();
       this.flightService.currentViewtFlightSegment = fs;
+      this.lastPassengerIds = this.flightService
+      .getPassengerBookInfos()
+      .map((it) => it.passenger && it.passenger.Id);
       this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
     } catch (e) {
       console.error(e);

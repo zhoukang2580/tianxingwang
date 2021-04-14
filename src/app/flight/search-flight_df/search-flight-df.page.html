@@ -58,8 +58,8 @@
         </app-search-day-comp>
       </section>
     </ion-card-content>
-    <div class="btn-search" (click)="searchFlight()" *ngIf='isSelf||(!isSelf&&selectedPassengers>0)'>查询航班</div>
-    <div class="btn-search" (click)="onSelectPassenger()" *ngIf='(!isSelf && selectedPassengers==0)'>请添加乘客</div>
+    <div class="btn-search" (click)="searchFlight()">查询航班</div>
+    <!-- <div class="btn-search" (click)="onSelectPassenger()" *ngIf='(!isSelf && selectedPassengers==0)'>请添加乘客</div> -->
   </ion-card>
   <ion-card class='international' [class.hidden]='domestic!="international"'>
     <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>
@@ -122,8 +122,8 @@
             {{flightCabin.label}}</ion-select-option>
         </ion-select>
       </ul>
-      <div class="btn-search" (click)="searchFlight(false)" *ngIf='isSelf||(!isSelf&&selectedInterPassengers?.length>0)'>查询航班</div>
-      <div class="btn-search" (click)="onSelectPassenger(false)" *ngIf='(!isSelf && selectedInterPassengers?.length==0)'>请添加乘客</div>
+      <div class="btn-search" (click)="searchFlight(false)">查询航班</div>
+      <!-- <div class="btn-search" (click)="onSelectPassenger(false)" *ngIf='(!isSelf && selectedInterPassengers?.length==0)'>请添加乘客</div> -->
     </ion-card-content>
   </ion-card>
 </ion-content>

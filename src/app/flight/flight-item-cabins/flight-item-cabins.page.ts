@@ -12,7 +12,7 @@ import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import { ActivatedRoute, Router } from "@angular/router";
 import { FlightService } from "src/app/flight/flight.service";
-import { Component, OnInit } from "@angular/core";
+import { Component, EventEmitter, OnInit, ViewChild } from "@angular/core";
 import {
   ModalController,
   AlertController,
@@ -28,7 +28,11 @@ import {
 } from "../models/PassengerFlightInfo";
 import { of, Observable, Subscription } from "rxjs";
 import { map, tap, filter } from "rxjs/operators";
-import { PassengerBookInfo, TmcService } from "src/app/tmc/tmc.service";
+import {
+  FlightHotelTrainType,
+  PassengerBookInfo,
+  TmcService,
+} from "src/app/tmc/tmc.service";
 import { AppHelper } from "src/app/appHelper";
 import { FlightFareType } from "../models/flight/FlightFareType";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
@@ -39,6 +43,8 @@ import { OrderService } from "src/app/order/order.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 import { SelectFlightsegmentCabinComponent } from "../components/select-flightsegment-cabin/select-flightsegment-cabin.component";
+import { SelectFlightPassengerComponent } from "../components/select-flight-passenger/select-flight-passenger.component";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -49,6 +55,8 @@ export class FlightItemCabinsPage implements OnInit {
   private cabins: FlightPolicy[] = [];
   private economyClassCabins: FlightPolicy[] = []; // 显示经济舱的最低价、协议价、全价
   private moreCabins: FlightPolicy[] = []; // 显示更多价格
+  @ViewChild(BackButtonComponent, { static: true })
+  backbtn: BackButtonComponent;
   vmCabins: FlightPolicy[] = [];
   hasMoreCabins = true;
   vmFlightSegment: FlightSegmentEntity;
@@ -295,8 +303,58 @@ export class FlightItemCabinsPage implements OnInit {
     }
     return true;
   }
+  async selectPassenger() {
+    const removeitem = new EventEmitter<
+      PassengerBookInfo<IFlightSegmentInfo>
+    >();
+    const sub = removeitem.subscribe(async (info) => {
+      const ok = await AppHelper.alert(
+        LanguageHelper.getConfirmDeleteTip(),
+        true,
+        LanguageHelper.getConfirmTip(),
+        LanguageHelper.getCancelTip()
+      );
+      if (ok) {
+        this.flightService.removePassengerBookInfo(info, true);
+      }
+    });
+    const m = await this.modalCtrl.create({
+      component: SelectFlightPassengerComponent,
+      componentProps: {
+        isOpenPageAsModal: true,
+        removeitem,
+        forType: FlightHotelTrainType.Flight,
+        bookInfos$: this.flightService.getPassengerBookInfoSource(),
+      },
+    });
+    // const oldBookInfos = this.flightService
+    //   .getPassengerBookInfos()
+    //   .map((it) => it.id);
+    await m.present();
+    await m.onDidDismiss();
+    if (sub) {
+      sub.unsubscribe();
+    }
+    // const newBookInfos = this.flightService
+    //   .getPassengerBookInfos()
+    //   .map((it) => it.id);
+    // console.log(
+    //   "old ",
+    //   oldBookInfos.map((it) => it),
+    //   "new ",
+    //   newBookInfos.map((it) => it)
+    // );
+    this.setDefaultFilteredInfo();
+    this.backbtn.popToPrePage();
+  }
   async onBookTicket(cabin: FlightPolicy) {
     try {
+      const should = await this.flightService.checkIfShouldAddPassenger();
+      if (should) {
+        await AppHelper.alert("请您先添加旅客");
+        await this.selectPassenger();
+        return;
+      }
       const flightCabin = cabin.Cabin;
       const bookInfos = this.flightService.getPassengerBookInfos();
       let isShowPage = false;
@@ -605,7 +663,9 @@ export class FlightItemCabinsPage implements OnInit {
         tap((infos) => {
           this.isExchange = infos && infos.every((it) => it.exchangeInfo);
         }),
-        map((infos) => infos.find((it) => it.isFilterPolicy&&!it.exchangeInfo))
+        map((infos) =>
+          infos.find((it) => it.isFilterPolicy && !it.exchangeInfo)
+        )
       );
     this.showOpenBtn$ = this.flightService
       .getPassengerBookInfoSource()

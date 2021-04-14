@@ -26,9 +26,9 @@ import { FlightSegmentItemEnComponent } from "./flight-segment-item-en/flight-se
 import { FlightSegmentItemComponent } from "./flight-segment-item/flight-segment-item.component";
 import { CabinEnComponent } from "./fly-filter/cabin_en/cabin_en.component";
 import { TakeOffTimeSpanDfComponent } from "./fly-filter/take-off-timespan-df/take-off-timespan-df.component";
-import { FlightSegmentItemDfComponent } from "./flight-segment-item-df/flight-segment-item-df.component";
-import { FlightOutNumberComponent } from "./flight-outnumber/flight-outnumber.component";
 import { FlightBookAddcontactsCompComponent } from "./flightbook-addcontacts/flightbook-addcontacts.component";
+import { FlightOutNumberComponent } from "./flight-outnumber/flight-outnumber.component";
+import { FlightSegmentItemDfComponent } from "./flight-segment-item-df/flight-segment-item-df.component";
 
 @NgModule({
   declarations: [

@@ -1157,15 +1157,25 @@ export class FlightService {
       console.error(e);
     }
   }
+  async checkIfShouldAddPassenger() {
+    const isSelf = await this.staffService.isSelfBookType();
+    if (isSelf) {
+      return false;
+    }
+    if (this.passengerBookInfos) {
+      return this.passengerBookInfos.map((it) => it.passenger).length <= 0;
+    }
+    return false;
+  }
   async initFlightSegmentCabinsPolicy() {
     await this.loadPolicyedFlightsAsync(this.flightResult);
     return this.policyFlights;
   }
   private async getFlightSegmentDetail(s: FlightSegmentEntity) {
-    let ADTPtcs = this.getPassengerBookInfos().length;
-    const isSelf =await this.staffService.isSelfBookType();
+    let ADTPtcs = this.getPassengerBookInfos().length || 1;
+    const isSelf = await this.staffService.isSelfBookType();
     if (isSelf) {
-      ADTPtcs=1;
+      ADTPtcs = 1;
     }
     if (ADTPtcs > 9) {
       AppHelper.alert("添加的乘客数量不能超过9个");
@@ -1186,8 +1196,8 @@ export class FlightService {
       ToAsAirport: search.ToAsAirport,
       ADTPtcs,
     };
-    if(s.Variables&&s.Variables.DetailKey){
-      req.Data.DetailKey=s.Variables.DetailKey;
+    if (s.Variables && s.Variables.DetailKey) {
+      req.Data.DetailKey = s.Variables.DetailKey;
     }
     if (req.Language) {
       req.Data.Lang = req.Language;
@@ -1465,7 +1475,7 @@ export class FlightService {
     // if (!environment.production) {
     //   await this.storage.set("test_flightjourney", this.flightJourneyList);
     // }
-    return this.flightResult || [];
+    return this.flightResult;
   }
   private async setDefaultFilterInfo() {
     const self = await this.staffService.isSelfBookType();
