@@ -7,13 +7,14 @@ import { Routes, RouterModule } from "@angular/router";
 
 import { IonicModule } from "@ionic/angular";
 
-import { FlightPipesModule } from "../pipes/Pipes.module";
+// import { FlightPipesModule } from "../pipes/Pipes.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { ConfirmCredentialInfoGuard } from "src/app/guards/confirm-credential-info.guard";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 import { StylePageGuard } from "src/app/guards/style-page.guard";
 import { FlightBookDfPage } from "./flight-book-df.page";
+import { FlightPipesModule } from "../pipes/Pipes.module";
 
 const routes: Routes = [
   {
