@@ -154,7 +154,7 @@ export class SearchTrainDfPage
           });
         }
       }
-      this.canAddPassengers = !(await this.staffService.isSelfBookType());
+      this.canAddPassengers = await this.trainService.checkIfShouldAddPassenger();
       const searchTrainModel = this.trainService.getSearchTrainModel();
       this.searchTrainModel.isExchange =
         searchTrainModel.isExchange ||

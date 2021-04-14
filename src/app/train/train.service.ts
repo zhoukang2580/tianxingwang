@@ -263,7 +263,7 @@ export class TrainService {
   }
   async checkCanAdd() {
     const bookInfos = this.getBookInfos().filter((it) => !!it.bookInfo);
-    if (!(await this.staffService.isSelfBookType())) {
+    if (await this.checkIfShouldAddPassenger()) {
       if (bookInfos.length >= 5) {
         return false;
       }
@@ -747,6 +747,15 @@ export class TrainService {
     s.tripType = TripType.departureTrip;
     s.Date = moment().format("YYYY-MM-DD");
     return this.searchModel || s;
+  }
+  async checkIfShouldAddPassenger() {
+    const isSelf = await this.staffService.isSelfBookType();
+    if (isSelf) {
+      return false;
+    }
+    return (
+      this.bookInfos && this.bookInfos.map((it) => it.passenger).length <= 0
+    );
   }
   setSearchTrainModelSource(m: SearchTrainModel) {
     console.log("setSearchTrainModel", m);

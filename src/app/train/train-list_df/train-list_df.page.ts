@@ -540,6 +540,12 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async onBookTicket(train: TrainEntity, seat: TrainSeatEntity) {
+    const isAdd = await this.trainService.checkIfShouldAddPassenger();
+    if (isAdd) {
+      await AppHelper.alert("请添加旅客");
+      this.onSelectPassenger();
+      return;
+    }
     let showResult = true;
     if (await this.trainService.checkCanAdd()) {
       const currentViewtTainItem: ICurrentViewtTainItem = {
@@ -697,7 +703,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     if (this.searchTrainModel) {
       if (this.searchTrainModel.IsRangeExchange) {
-        if(this.checkExchangeDateDisabled()){
+        if (this.checkExchangeDateDisabled()) {
           return;
         }
       }
