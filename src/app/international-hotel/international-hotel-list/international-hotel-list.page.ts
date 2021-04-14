@@ -107,7 +107,8 @@ export class InternationalHotelListPage
   @ViewChild(InterHotelQueryComponent)
   private queryComp: InterHotelQueryComponent;
   @ViewChild(IonContent) private content: IonContent;
-  @ViewChild(IonInfiniteScroll) private scroller: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll, { static: true })
+  private scroller: IonInfiniteScroll;
   @ViewChild(RefresherComponent) private refresher: RefresherComponent;
   @ViewChild(PinFabComponent) pinFabComp: PinFabComponent;
   private isSearchByText = false;
@@ -247,9 +248,7 @@ export class InternationalHotelListPage
   }
   onViewHotel(hotel: HotelEntity) {
     this.hotelService.viewHotel = hotel;
-    this.langService.isCn
-      ? this.router.navigate(["international-hotel-detail"])
-      : this.router.navigate(["international-hotel-detail_en"]);
+    this.router.navigate(["international-hotel-detail"]);
   }
   async onChangeDate() {
     await this.hotelService.openCalendar();
@@ -404,24 +403,24 @@ export class InternationalHotelListPage
             this.hotels = this.hotels.concat(
               arr.map((it) => {
                 const sumary =
-                  it.Hotel.HotelSummaries &&
-                  it.Hotel.HotelSummaries.find(
+                  it.HotelSummaries &&
+                  it.HotelSummaries.find(
                     (o) =>
                       (o.Tag || "").toLowerCase() == "name" && o.Lang == "en"
                   );
                 const addrSumary =
-                  it.Hotel.HotelSummaries &&
-                  it.Hotel.HotelSummaries.find(
+                  it.HotelSummaries &&
+                  it.HotelSummaries.find(
                     (o) =>
                       (o.Tag || "").toLowerCase() == "Address" && o.Lang == "en"
                   );
-                if (it.Hotel && sumary && this.isEn) {
-                  it.Hotel.EnName = sumary.Content;
+                if (sumary && this.isEn) {
+                  it.EnName = sumary.Content;
                 }
-                if (it.Hotel && addrSumary && this.isEn) {
-                  it.Hotel.EnAddress = addrSumary.Content;
+                if (addrSumary && this.isEn) {
+                  it.EnAddress = addrSumary.Content;
                 }
-                return it.Hotel;
+                return it;
               })
             );
           }

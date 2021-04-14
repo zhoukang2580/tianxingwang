@@ -108,13 +108,13 @@
             </ion-button>
           </ion-item>
         </div>
-        <ion-button class="btn_search" (click)="onSearchHotel()" *ngIf='!((canAddPassengers) && selectedPassengers==0)' color="secondary" expand="block">
+        <ion-button class="btn_search" (click)="onSearchHotel()"  color="secondary" expand="block">
           <ion-text>查&nbsp;&nbsp;询</ion-text>
         </ion-button>
-        <ion-button class="btn_search" *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
+        <!-- <ion-button class="btn_search" *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">
           <ion-text>请添加乘客
           </ion-text>
-        </ion-button>
+        </ion-button> -->
       </ion-card-content>
       <ion-card-content *ngIf='!isDomestic'>
         <ion-item lines='none' style="margin-left: -1em;margin-right:-1em;">
@@ -160,13 +160,13 @@
             </ion-label>
           </ion-item>
         </div>
-        <ion-button class='ion-margin-top' *ngIf='!((canAddPassengers) && interSelectedPassengers==0)' style='width: 100%;--border-radius:10px' (click)="onSearchHotel()" color="secondary" expand="block">
+        <ion-button class='ion-margin-top' style='width: 100%;--border-radius:10px' (click)="onSearchHotel()" color="secondary" expand="block">
           <ion-text>查询酒店</ion-text>
         </ion-button>
-        <ion-button class='ion-margin-top' *ngIf='(canAddPassengers) && interSelectedPassengers==0'  style='width: 100%;--border-radius:10px' (click)='onSelectPassenger()' color="secondary" expand="block">
+        <!-- <ion-button class='ion-margin-top' *ngIf='(canAddPassengers) && interSelectedPassengers==0'  style='width: 100%;--border-radius:10px' (click)='onSelectPassenger()' color="secondary" expand="block">
           <ion-text>请添加乘客
           </ion-text>
-        </ion-button>
+        </ion-button> -->
       </ion-card-content>
     </ion-card>
   </div>

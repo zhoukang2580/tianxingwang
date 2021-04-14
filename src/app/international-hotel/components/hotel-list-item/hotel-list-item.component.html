@@ -19,7 +19,7 @@
     </div>
     <div class="ion-text-end price">
       <small>￥</small>
-      <span>{{hotel?.avgPrice}}</span>
+      <span>{{hotel?.avgPrice||hotel?.VariablesJsonObj?.AvgPrice}}</span>
       <small>{{langOpt.rise}}</small>
     </div>
   </div>

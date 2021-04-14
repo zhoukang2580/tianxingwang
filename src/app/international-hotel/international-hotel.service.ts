@@ -400,9 +400,9 @@ export class InternationalHotelService {
         }
         if (res && res.Data && res.Data.HotelDayPrices) {
           res.Data.HotelDayPrices = res.Data.HotelDayPrices.map((it) => {
-            if (it.Hotel) {
-              it.Hotel.VariablesJsonObj = this.parseVariables(
-                it.Hotel.Variables
+            if (it.Variables) {
+              it.VariablesJsonObj = this.parseVariables(
+                it.Variables
               );
             }
             return it;
@@ -910,13 +910,7 @@ export interface IInterHotelSearchResult {
   Hotel: HotelEntity;
   HotelQuery: any;
   DataCount: number;
-  HotelDayPrices: IHotelDayPrices[];
-}
-export interface IHotelDayPrices {
-  Id: string;
-  Hotel: HotelEntity;
-  Variables: string;
-  VariablesObj: any;
+  HotelDayPrices: HotelEntity[];
 }
 
 export interface IHotelSummary {
