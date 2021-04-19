@@ -83,12 +83,13 @@ import { TaskType } from "src/app/workflow/models/TaskType";
 import { environment } from "src/environments/environment";
 import { PriceDetailComponent } from "../components/price-detail/price-detail.component";
 import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
-import { FlightService } from "../flight.service";
+// import { FlightService } from "../flight.service";
 import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { IFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import { LangService } from "src/app/services/lang.service";
 import { Storage } from "@ionic/storage";
+import { FlightService } from "../flight.service";
 
 @Component({
   selector: "app-flight-book-df",
