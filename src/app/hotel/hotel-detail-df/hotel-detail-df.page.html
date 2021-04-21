@@ -36,8 +36,8 @@
     <div class="back-button">
       <app-back-button color='light'></app-back-button>
     </div>
-    <app-swiper-slides (click)='onShowHotelImages()' (slideChange)='onSlideChange($event)' [options]='{autoplay:true}' [items]='hotelImages' [loadingImage]='config?.PrerenderImageUrl'
-      [defaultImage]='config?.DefaultImageUrl'>
+    <app-swiper-slides  (click)='onShowHotelImages()' (slideChange)='onSlideChange($event)' [options]='{autoplay:true}' [items]='hotelImages' [loadingImage]='config?.PrerenderImageUrl'
+      [defaultImage]='config?.DefaultImageUrl' [logoUrl]='config?.LogoImageUrl'>
     </app-swiper-slides>
   </div>
   <div class="info">
