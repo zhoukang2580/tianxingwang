@@ -971,6 +971,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           );
           return false;
         }
+      }else{
+        p.IllegalReason ='随心住';
       }
       if (!p.Mobile) {
         this.isShowOtherInfo = true;
@@ -1565,9 +1567,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (this.isRoomPlanFreeBook(this.combindInfos[0])) {
         bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
       } else {
-        bookDto.SelfPayAmount = `0`;
+        // bookDto.IsSelfPayAmount = `0`;
         if (roomPlan.VariablesJsonObj && roomPlan.Variables) {
-          roomPlan.VariablesJsonObj.SelfPayAmount = 0;
+          roomPlan.VariablesJsonObj.IsSelfPayAmount = false;
           roomPlan.Variables = JSON.stringify(roomPlan.VariablesJsonObj);
         }
       }
