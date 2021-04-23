@@ -960,6 +960,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combindInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.roomPlan &&
+        combindInfo.bookInfo.bookInfo.roomPlan.Rules&&
         Object.keys(combindInfo.bookInfo.bookInfo.roomPlan.Rules).length > 0
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
