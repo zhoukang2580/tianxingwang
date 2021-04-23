@@ -582,12 +582,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo.roomPlan.Rules &&
-      info.bookInfo.bookInfo.roomPlan.Rules.length
+      Object.keys(info.bookInfo.bookInfo.roomPlan.Rules).length
     ) {
       return true;
     }
     if (
       (!staff.Approvers || staff.Approvers.length == 0) &&
+      Tmc.HotelApprovalType == TmcApprovalType.ExceedPolicyApprover &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo.roomPlan.Rules &&
@@ -1515,8 +1516,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.combindInfos && this.combindInfos[0].bookInfo.bookInfo.roomPlan;
     if (this.isRoomPlanFreeBook(this.combindInfos[0])) {
       bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
-    }else{
+    } else {
       bookDto.SelfPayAmount = `0`;
+      roomPlan.VariablesJsonObj.SelfPayAmount = 0;
     }
     bookDto.IsFromOffline = isSave;
     let canBook = false;
