@@ -1518,7 +1518,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
     } else {
       bookDto.SelfPayAmount = `0`;
-      roomPlan.VariablesJsonObj.SelfPayAmount = 0;
+      if(roomPlan.VariablesJsonObj&&roomPlan.Variables){
+        roomPlan.VariablesJsonObj.SelfPayAmount = 0;
+        roomPlan.Variables=JSON.stringify(roomPlan.VariablesJsonObj);
+      }
     }
     bookDto.IsFromOffline = isSave;
     let canBook = false;
