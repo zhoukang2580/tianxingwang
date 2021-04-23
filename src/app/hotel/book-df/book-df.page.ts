@@ -1515,6 +1515,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.combindInfos && this.combindInfos[0].bookInfo.bookInfo.roomPlan;
     if (this.isRoomPlanFreeBook(this.combindInfos[0])) {
       bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
+    }else{
+      bookDto.SelfPayAmount = `0`;
     }
     bookDto.IsFromOffline = isSave;
     let canBook = false;
