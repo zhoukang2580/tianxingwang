@@ -150,9 +150,7 @@
             <div style="display: flex; align-items: center">
               <ion-text color="medium">应付金额</ion-text>
               <ion-text color="danger" style="margin: 0 1.1em">
-                <ion-text>￥{{
-                  orderTrainTicket?.VariablesJsonObj?.ticketAmount
-                  }}</ion-text>
+                <ion-text>￥{{ order.TotalAmount }}</ion-text>
                 <span *ngIf="order.OrderInsurances?.length"> (含保险) </span>
               </ion-text>
               <ng-container class="ion-text-end" *ngIf="order.VariablesJsonObj?.isPay" size="3">
