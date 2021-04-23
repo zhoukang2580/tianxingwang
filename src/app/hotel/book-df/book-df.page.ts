@@ -955,12 +955,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       p.IllegalReason =
         combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (
+        !this.isRoomPlanFreeBook(combindInfo) &&
         !combindInfo.isNotWhitelist &&
         combindInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.roomPlan &&
-        combindInfo.bookInfo.bookInfo.roomPlan.Rules &&
-        !this.isRoomPlanFreeBook(combindInfo)
+        Object.keys(combindInfo.bookInfo.bookInfo.roomPlan.Rules).length > 0
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
         if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
@@ -1514,15 +1514,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     const bookDto: OrderBookDto = new OrderBookDto();
     const roomPlan =
       this.combindInfos && this.combindInfos[0].bookInfo.bookInfo.roomPlan;
-    if (this.isRoomPlanFreeBook(this.combindInfos[0])) {
-      bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
-    } else {
-      bookDto.SelfPayAmount = `0`;
-      if(roomPlan.VariablesJsonObj&&roomPlan.Variables){
-        roomPlan.VariablesJsonObj.SelfPayAmount = 0;
-        roomPlan.Variables=JSON.stringify(roomPlan.VariablesJsonObj);
-      }
-    }
+   
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
@@ -1569,7 +1561,16 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       this.isSubmitDisabled = true;
-
+      // 随心住设置
+      if (this.isRoomPlanFreeBook(this.combindInfos[0])) {
+        bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
+      } else {
+        bookDto.SelfPayAmount = `0`;
+        if (roomPlan.VariablesJsonObj && roomPlan.Variables) {
+          roomPlan.VariablesJsonObj.SelfPayAmount = 0;
+          roomPlan.Variables = JSON.stringify(roomPlan.VariablesJsonObj);
+        }
+      }
       const res = await this.hotelService.onBook(bookDto).catch((e) => {
         AppHelper.alert(e);
         return { TradeNo: "", HasTasks: true } as IBookOrderResult;
