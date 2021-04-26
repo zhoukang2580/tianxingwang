@@ -88,6 +88,9 @@ export class TrainService {
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
     identityService.getIdentitySource().subscribe((res) => {
       this.disposal();
+      if (res && res.Ticket) {
+        this.getStationsAsync(true);
+      }
     });
   }
   private async initSearchTrainModel() {
@@ -816,9 +819,13 @@ export class TrainService {
     }
     const req = new RequestEntity();
     req.Method = `ApiHomeUrl-Resource-TrainStation`;
-    req.Data = {
-      LastUpdateTime: this.localTrafficLine.lastUpdateTime,
-    };
+    req.Data = {};
+    if (this.localTrafficLine && this.localTrafficLine.lastUpdateTime) {
+      req.Data.LastUpdateTime = this.localTrafficLine.lastUpdateTime;
+    }
+    if (forceUpdate) {
+      req.Data = {};
+    }
     const result = await this.apiService
       .getPromiseData<{
         Trafficlines: TrafficlineEntity[];
@@ -840,7 +847,7 @@ export class TrainService {
         }
         return item;
       });
-      // arr = await this.cacheTrafficLinesAsync(result.Trafficlines);
+      arr = await this.cacheTrafficLinesAsync(result.Trafficlines);
     }
     this.localTrafficLine = {
       lastUpdateTime: Math.floor(Date.now() / 1000),
