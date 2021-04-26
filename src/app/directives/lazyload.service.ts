@@ -165,8 +165,8 @@ export class LazyloadService {
       if (url.includes("data:image")) {
         return url;
       }
-      url = url.includes("?v")
-        ? `${url.split("?v")[0]}?v=${Date.now()}`
+      url = url.includes("?")
+        ? `${url}&v=${Date.now()}`
         : `${url}?v=${Date.now()}`;
     }
     return url;

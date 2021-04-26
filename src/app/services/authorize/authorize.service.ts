@@ -30,7 +30,7 @@ export class AuthorizeService {
       return this.loadSubsystemsPromise;
     }
     const req = new RequestEntity();
-    req.Method = "ApiHomeUrl-Authorize-SubSystems";
+    req.Method = "HrApiUrl-Authorize-SubSystems";
     this.loadSubsystemsPromise = this.apiService
       .getPromiseData<string[]>(req)
       .then((r) => {
@@ -61,7 +61,7 @@ export class AuthorizeService {
       return this.fetchAuthority.promise;
     }
     const req = new RequestEntity();
-    req.Method = "ApiHomeUrl-Authorize-Load";
+    req.Method = "HrApiUrl-Authorize-Load";
     req.Data = {};
     this.fetchAuthority = {
       promise: this.apiService

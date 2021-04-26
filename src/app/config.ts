@@ -1,14 +1,15 @@
 export const CONFIG = {
   // 该变量用于 启用 --prod 编译，若为true，访问的是测试库的地址，否则访问生产地址
-  mockProBuild:true,
+  mockProBuild: true,
   isShowPrivacy: true,
   production: true,
-  isShowVConsole:!!window["cordova"],
+  isShowVConsole: !!window["cordova"],
   isForWechatMiniApproval: false,
   isEnableTranslate: true,
   defaultStyle: "df",
-  progressbarColor: "#08c261",// webview加载第三方应用进度条的颜色
+  progressbarColor: "#08c261", // webview加载第三方应用进度条的颜色
   showNotUseWechatAccountTipTimeout: 5000,
+  apiExcceedlogtime: 6 * 1000,// api请求超过某个时间，就发送一个日志到后台
   appDomain: {
     production: "sky-trip.com",
     debug: "testskytrip.com",

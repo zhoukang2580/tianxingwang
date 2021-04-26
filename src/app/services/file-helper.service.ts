@@ -17,7 +17,6 @@ import { RequestEntity } from "./api/Request.entity";
 import { App } from "../app.component";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 const KEY_NEW_VERSION_PAGE_PATH = "key_newVersionPagePath";
-
 interface Hcp {
   getHash: (filePath: string) => Promise<string>;
   getUUID: () => Promise<string>;
