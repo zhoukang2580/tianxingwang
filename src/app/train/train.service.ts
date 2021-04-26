@@ -840,7 +840,7 @@ export class TrainService {
         }
         return item;
       });
-      arr = await this.cacheTrafficLinesAsync(result.Trafficlines);
+      // arr = await this.cacheTrafficLinesAsync(result.Trafficlines);
     }
     this.localTrafficLine = {
       lastUpdateTime: Math.floor(Date.now() / 1000),
