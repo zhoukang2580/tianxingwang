@@ -1,0 +1,131 @@
+<ion-header>
+    <ion-toolbar style="--border-width: 0;">
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref=""></app-back-button>
+        </ion-buttons>
+        <ion-title>
+            <div class="tit">
+                <div>{{flightNo}}</div>
+                <span>上海航空</span>
+            </div>
+        </ion-title>
+        <img src="assets/images/share.png" alt="">
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="con-cnt">
+    <section class="sec">
+        <div class="dy-need-to-know">
+            <div class="arrive">到达</div>
+            <div class="distance">航班提前{{hour}}小时到达</div>
+            <!-- <div class="distance" *ngIf="item.StatusName=='到达'">航班提前{{hour}}小时到达</div> -->
+        </div>
+    </section>
+    <ion-list class="list">
+        <div class="left_nav">
+            <div class="space" *ngFor="let item of flightDynamicDetailsModel">
+                <div class="item-img">
+                    <img class="oval" src="assets/images/oval.png" alt="">
+                </div>
+                <div class="item-img">
+                    <img class="shape" src="assets/images/shape.png" alt="">
+                </div>
+                <div class="item-img">
+                    <img class="oval" src="assets/images/oval.png" alt="">
+                </div>
+            </div>
+        </div>
+        <ion-item-group class="right-gro">
+            <div *ngFor="let item of flightDynamicDetailsModel">
+                <ion-item lines="none">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="terminal">{{item.FromAirportName}}{{item.FromTerminal}}</ion-col>
+                            <ion-col class="select">
+                                <ion-icon name="chevron-forward-outline"></ion-icon>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col>
+                                <ion-text *ngIf='item.StatusName=="计划"'>计划起飞</ion-text>
+                                <ion-text *ngIf='item.StatusName=="到达"'>实际起飞</ion-text>
+                                <ion-text *ngIf='item.StatusName=="取消"'>取消起飞</ion-text>
+                                <ion-text class="time">{{item.PlanTakeoffTime}}</ion-text>
+                                <ion-text>{{PlanTakeoffTime}}</ion-text>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col *ngIf='item.StatusName=="计划"'>预计起飞</ion-col>
+                            <ion-col *ngIf='item.StatusName=="到达"'>原计划</ion-col>
+                            <ion-col *ngIf='item.StatusName=="取消"'>取消起飞</ion-col>
+                            <ion-col>值机柜台</ion-col>
+                            <ion-col>登机口</ion-col>
+                        </ion-row>
+                        <ion-row class="end">
+                            <ion-col>{{item.EstimateTakeoffTime}}</ion-col>
+                            <ion-col>{{item.CkiCounter}}</ion-col>
+                            <ion-col>{{item.BoardingGate}}</ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item>
+                <ion-item>
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="terminal">{{item.ToAirportName}}{{item.ToTerminal}}</ion-col>
+                            <ion-col class="select">
+                                <ion-icon name="chevron-forward-outline"></ion-icon>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col>
+                                <ion-text *ngIf='item.StatusName=="计划"'>计划到达</ion-text>
+                                <ion-text *ngIf='item.StatusName=="到达"'>实际到达</ion-text>
+                                <ion-text *ngIf='item.StatusName=="取消"'>取消起飞</ion-text>
+                                <ion-text class="time">{{item.PlanArrivalTime}}</ion-text>
+                                <ion-text>{{PlanArrivalTime}}</ion-text>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col *ngIf='item.StatusName=="计划"'>预计到达</ion-col>
+                            <ion-col *ngIf='item.StatusName=="到达"'>原计划</ion-col>
+                            <ion-col *ngIf='item.StatusName=="取消"'>取消起飞</ion-col>
+                            <ion-col>行李转盘</ion-col>
+                            <ion-col>出口</ion-col>
+                        </ion-row>
+                        <ion-row class="end">
+                            <ion-col>{{item.EstimateArrivalTime}}</ion-col>
+                            <ion-col>{{item.Carousel}}</ion-col>
+                            <ion-col>--</ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item>
+            </div>
+        </ion-item-group>
+    </ion-list>
+    <section class="sec-footer" *ngIf="flightDynamicPro as pre">
+        <div class="pro" *ngIf="isShow" (click)="onPreorder(pre)">
+            <div class="before-flight">
+                <div class="preorder">前序航班:{{pre.PreviousFlightNumber}}</div>
+                <div class="to-city-goes">
+                    {{pre.PreviousFromAirport}}-{{pre.PreviousToAirport}}
+                </div>
+            </div>
+            <div class="right">
+                <div class="arrive">到达</div>
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+            </div>
+        </div>
+        <div class="pro" *ngIf="!isShow">
+            <div class="before-flight">
+                <div class="preorder">前序航班</div>
+            </div>
+            <div class="arrive no">暂无</div>
+        </div>
+    </section>
+</ion-content>
+
+<ion-footer>
+    <ion-button class="btn_chare" color="secondary" expand="block">
+        <ion-text>关注航班</ion-text>
+    </ion-button>
+</ion-footer>

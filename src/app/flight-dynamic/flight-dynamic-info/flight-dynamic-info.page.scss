@@ -1,0 +1,154 @@
+ion-header {
+    padding: 5px;
+    background: #fff;
+    .tit {
+        div {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    }
+    img {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        right: 12px;
+        bottom: 12px;
+    }
+}
+
+.con-cnt {
+    .sec {
+        display: flex;
+        padding: 12px;
+        justify-content: center;
+        .dy-need-to-know {
+            width: 100%;
+            text-align: center;
+            height: 74px;
+            background: #5099fe57;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            .arrive {
+                font-size: 18px;
+                font-family: PingFang SC;
+                font-weight: bold;
+                color: #5099FE;
+                padding: 0 30px;
+            }
+            .distance {
+                font-size: 14px;
+                font-family: PingFang SC;
+                font-weight: 500;
+                color: #333333;
+            }
+        }
+    }
+    .list {
+        display: flex;
+        margin: 12px;
+        background: #f5f7f9;
+        .left_nav {
+            flex: 0.3;
+            padding-top: 17px;
+            .space {
+                margin-bottom: 120px;
+            }
+            .item-img {
+                display: flex;
+                justify-content: center;
+                .oval {
+                    width: 10px;
+                    height: 10px;
+                }
+                .shape {
+                    width: 1px;
+                    height: 155px;
+                }
+            }
+        }
+        .right-gro {
+            flex: 2;
+            ion-item {
+                margin-bottom: 12px;
+                border-radius: 10px;
+                font-size: 14px;
+                color: #666666;
+                .terminal {
+                    font-size: 16px;
+                    color: #333;
+                }
+                .select {
+                    text-align: end;
+                    ion-icon {
+                        font-size: 20px;
+                    }
+                }
+                .time {
+                    padding: 0 10px;
+                    color: #333;
+                }
+                .end {
+                    color: #333;
+                    font-size: 15px;
+                    ion-col:first-child {
+                        color: #6699FF;
+                    }
+                }
+            }
+        }
+    }
+    .sec-footer {
+        display: flex;
+        padding: 12px;
+        justify-content: space-between;
+        background: #fff;
+        margin: 12px;
+        border-radius: 12px;
+        .pro {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+        .before-flight {
+            .preorder {
+                padding: 5px 10px;
+            }
+            .to-city-goes {
+                padding: 5px 10px;
+                font-size: 13px;
+                color: #666;
+            }
+        }
+        .right {
+            display: flex;
+            align-items: center;
+            .arrive {
+                margin-right: 10px;
+                color: #6699FF;
+            }
+            ion-icon {
+                font-size: 20px;
+                margin-top: 3px;
+            }
+        }
+    }
+}
+
+ion-footer {
+    background-color: #fff;
+    padding: 10px;
+    .btn_chare {
+        color: #fff;
+        --border-radius: 25px;
+        ion-text {
+            font-size: 20px;
+            font-weight: 500;
+            letter-spacing: .2em;
+        }
+    }
+}

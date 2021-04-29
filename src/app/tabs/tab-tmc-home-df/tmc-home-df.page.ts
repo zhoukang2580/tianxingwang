@@ -214,6 +214,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   onDemand() {
     this.router.navigate([AppHelper.getRoutePath("demand-list")]);
   }
+  onFlightDynamic() {
+    this.router.navigate([AppHelper.getRoutePath("search-flight-dynamic")]);
+  }
   onJump(b: { Url: string }) {
     if (b && b.Url) {
       AppHelper.jump(this.router, b.Url, null);

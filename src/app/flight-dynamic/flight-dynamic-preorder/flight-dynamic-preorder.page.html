@@ -1,0 +1,146 @@
+<ion-header>
+    <ion-toolbar style="--border-width:0">
+        <ion-buttons slot="start">
+            <app-back-button defaultHref=""></app-back-button>
+        </ion-buttons>
+        <ion-title>前序航班</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="cnt">
+    <section class="sec-head">
+        <div class="flight-time">
+            <div class="plan-time">今日计划飞行时间</div>
+            <div class="minute">699分钟</div>
+        </div>
+        <div class="flights">
+            <div class="several">今日计划航班班次</div>
+            <div class="num">5次</div>
+        </div>
+    </section>
+    <ion-list class="list">
+        <div class="left_nav">
+            <div class="item-img">
+                <img class="oval" src="assets/images/ashen-oval.png" alt="">
+            </div>
+            <div class="item-img">
+                <img class="shape" src="assets/images/ashen-shape.png" alt="">
+            </div>
+            <div class="item-img">
+                <img class="oval" src="assets/images/ashen-oval.png" alt="">
+            </div>
+            <div class="item-img">
+                <img class="shape" src="assets/images/shape.png" alt="">
+            </div>
+            <div class="item-img">
+                <img class="oval" src="assets/images/oval.png" alt="">
+            </div>
+        </div>
+        <ion-item-group>
+            <div *ngFor="let item of thisFlightDynamicDetails">
+                <ion-item-divider class="divider">{{item.FromAirportName}}|本次航班</ion-item-divider>
+                <ion-item lines="none" (click)="onSelectFlight(item.FlightNumber)">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col class="label">{{item.FlightNumber}}</ion-col>
+                            <ion-col class="end project">
+                                <ion-text class="plan">{{item.StatusName}}</ion-text>
+                                <ion-icon class="ionc" name="chevron-forward-outline"></ion-icon>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="fro-city">
+                            <ion-col>{{item.FromAirportName}}</ion-col>
+                            <ion-col class="end">
+                                {{item.ToAirportName}}
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="fly-time">
+                            <ion-col class="timer">{{item.PlanTakeoffTime}}</ion-col>
+                            <ion-col class="fly-logo">
+                                <ion-text class="dot">●●●</ion-text>
+                                <ion-text class="img-log">
+                                    <img src="assets/images/airplane.png" alt="">
+                                </ion-text>
+                                <ion-text class="dot">●●●</ion-text>
+                            </ion-col>
+                            <ion-col class="end timer">{{item.PlanArrivalTime}}</ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col>预计起飞{{item.EstimateTakeoffTime}}</ion-col>
+                            <ion-col class="end">预计到达{{item.EstimateArrivalTime}}</ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item>
+            </div>
+            <div *ngFor="let preor of flightDynamicDetailsModel">
+                <ion-item-divider class="divider">{{preor.FromAirportName}}|您查询的前序航班</ion-item-divider>
+                <ion-item class="last" lines="none" (click)="onSelectFlight(preor.FlightNumber)">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col>{{preor.FlightNumber}}</ion-col>
+                            <ion-col class="end project">
+                                <ion-text class="plan">{{preor.StatusName}}</ion-text>
+                                <ion-icon class="ionc" name="chevron-forward-outline"></ion-icon>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="fro-city">
+                            <ion-col>{{preor.FromAirportName}}</ion-col>
+                            <ion-col class="end">
+                                {{preor.ToAirportName}}
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="fly-time">
+                            <ion-col class="timer">{{preor.PlanTakeoffTime}}</ion-col>
+                            <ion-col class="fly-logo">
+                                <ion-text class="dot">●●●</ion-text>
+                                <ion-text class="img-log">
+                                    <img src="assets/images/airplane.png" alt="">
+                                </ion-text>
+                                <ion-text class="dot">●●●</ion-text>
+                            </ion-col>
+                            <ion-col class="end timer">{{preor.PlanArrivalTime}}</ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col>预计起飞{{preor.EstimateTakeoffTime}}</ion-col>
+                            <ion-col class="end">预计到达{{preor.EstimateArrivalTime}}</ion-col>
+                        </ion-row>
+                    </ion-grid>
+                </ion-item>
+            </div>
+            <!-- <ion-item-divider class="divider">上海浦东|本次航班</ion-item-divider>
+            <ion-item lines="none">
+                <ion-grid>
+                    <ion-row>
+                        <ion-col>FM9069</ion-col>
+                        <ion-col class="end project">
+                            <ion-text class="plan">计划</ion-text>
+                            <ion-icon class="ionc" name="chevron-forward-outline"></ion-icon>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row class="fro-city">
+                        <ion-col>上海浦东</ion-col>
+                        <ion-col class="end">
+                            天津滨海
+                        </ion-col>
+                    </ion-row>
+                    <ion-row class="fly-time">
+                        <ion-col class="timer">22:25</ion-col>
+                        <ion-col class="fly-logo">
+                            <ion-text class="dot">●●●</ion-text>
+                            <ion-text class="img-log">
+                                <img src="assets/images/airplane.png" alt="">
+                            </ion-text>
+                            <ion-text class="dot">●●●</ion-text>
+                        </ion-col>
+                        <ion-col class="end timer">00:55</ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col>预计起飞22:25</ion-col>
+                        <ion-col class="end">预计到达时间</ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-item> -->
+            <ion-item-divider class="divider">出发</ion-item-divider>
+        </ion-item-group>
+    </ion-list>
+</ion-content>
