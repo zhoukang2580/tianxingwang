@@ -146,10 +146,23 @@ export class FlightDynamicService {
     req.IsShowLoading = true;
     req.LoadingMsg = "正在获取详情";
     req.Data = {
-      Date: Date,
-      FlightNumber: FlightNumber
+      date: Date,
+      flightNumber: FlightNumber
     };
 
+    return this.apiService.getPromiseData<any>(req);
+  }
+
+  getFlightDynamicDetail(d: { Date: string; FlightNumber: string;distinguish }) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiFlightDynamicUrl-Home-Detail";
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在获取详情";
+    req.Data = {
+      flightNumber: d.FlightNumber,
+      date: d.Date,
+      distinguish : d.distinguish
+    };
     return this.apiService.getPromiseData<any>(req);
   }
 }

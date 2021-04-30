@@ -176,15 +176,16 @@ ion-header ion-title {
     .plane,
     .hotel,
     .train,
-    .car {
+    .car,
+    .gp {
         flex: 1;
         display: flex;
         flex-flow: column nowrap;
         align-items: center;
         flex-basis: 25%;
         img {
-            width: 64px;
-            height: 64px;
+            width: 54px;
+            height: 54px;
         }
         .txt {
             margin-top: 0.8em;

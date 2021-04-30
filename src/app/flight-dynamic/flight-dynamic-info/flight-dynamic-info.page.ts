@@ -21,6 +21,11 @@ export class FlightDynamicInfoPage implements OnInit {
   dateTime: string;
   PlanArrivalTime: string;
   PlanTakeoffTime: string;
+  detailList: {
+    Date: string,
+    FlightNumber: string,
+    distinguish: string
+  }
   hour: string
   isShow = false;
   constructor(
@@ -38,6 +43,11 @@ export class FlightDynamicInfoPage implements OnInit {
         this.flightNo = q.get("flightNo")
         this.initSearchModelParams();
         this.dateTime = this.searchDynamicModel.Date;
+        this.detailList = {
+          Date: this.dateTime,
+          FlightNumber: this.flightNo,
+          distinguish: this.searchDynamicModel.fromCity.CityName + ',' + this.searchDynamicModel.toCity.CityName,
+        }
         this.loadDetails();
       })
     } catch (error) {
@@ -47,7 +57,7 @@ export class FlightDynamicInfoPage implements OnInit {
 
   private loadDetails() {
     if (this.flightNo) {
-      this.flightDynamicService.getFlightDynamicDetails(this.dateTime, this.flightNo).then(d => {
+      this.flightDynamicService.getFlightDynamicDetail(this.detailList).then(d => {
         d.forEach(it => {
           this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
           this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
@@ -58,7 +68,8 @@ export class FlightDynamicInfoPage implements OnInit {
 
           const fliNo = it.PreviousFlightNumber;
           this.hour = it.Minute;
-          if (fliNo) {
+          this.isShow = false;
+          if (fliNo && fliNo.length) {
             this.isShow = true;
           }
         });

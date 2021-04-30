@@ -66,7 +66,7 @@ export class FlightDynamicPreorderPage implements OnInit {
   }
 
   async onSelectFlight(flightNo: string) {
-    this.router.navigate([AppHelper.getRoutePath("dynamic-info")], {
+    this.router.navigate([AppHelper.getRoutePath("flight-dynamic-info")], {
       queryParams: { flightNo: flightNo }
     })
   }
