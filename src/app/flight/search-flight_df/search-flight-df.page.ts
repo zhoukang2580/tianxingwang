@@ -36,6 +36,7 @@ import {
 } from "src/app/international-flight/international-flight.service";
 import { FlightCityService } from "../flight-city.service";
 import { CONFIG } from "src/app/config";
+import { flatten } from "@angular/compiler";
 @Component({
   selector: "app-search-flight-df",
   templateUrl: "./search-flight-df.page.html",
@@ -109,7 +110,7 @@ export class SearchFlightDfPage
       return;
     }
     trip.isSelectInfo = true;
-    const rs = await this.flightCityService.onSelectCity(true, isFrom, false);
+    const rs = await this.flightCityService.onSelectCity({ isShowPage: true, isFrom, isDomestic: false });
     if (rs && rs.city) {
       this.internationalFlightService.onCitySelected(rs.city, isFrom);
     }
@@ -196,8 +197,8 @@ export class SearchFlightDfPage
       this.backDate =
         this.goDate.timeStamp > this.backDate.timeStamp
           ? this.calendarService.generateDayModel(
-              this.calendarService.getMoment(1, this.goDate.date)
-            )
+            this.calendarService.getMoment(1, this.goDate.date)
+          )
           : this.backDate;
     }
   }
@@ -229,7 +230,7 @@ export class SearchFlightDfPage
   }
   async canDeactivate() {
     if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity(false, false);
+      this.flightCityService.onSelectCity({ isShowPage: false, isFrom: false });
       return false;
     }
     if (this.isCanleave) {
@@ -492,8 +493,8 @@ export class SearchFlightDfPage
         const arrivalDate = this.calendarService.getMoment(
           0,
           go.bookInfo &&
-            go.bookInfo.flightSegment &&
-            go.bookInfo.flightSegment.ArrivalTime
+          go.bookInfo.flightSegment &&
+          go.bookInfo.flightSegment.ArrivalTime
         );
         if (
           +this.calendarService.getMoment(0, this.backDate.date) <
@@ -548,7 +549,13 @@ export class SearchFlightDfPage
   }
   async onSelectCity(isFromCity = true) {
     this.isCanleave = true;
-    const rs = await this.flightCityService.onSelectCity(true, isFromCity);
+    const rs = await this.flightCityService.onSelectCity({
+      isDomestic: true,
+      isFrom: isFromCity,
+      isShowAirports: false,
+      isShowPage: true,
+      isShowSegs: true
+    });
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {

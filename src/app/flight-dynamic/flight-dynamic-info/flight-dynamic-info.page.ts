@@ -26,7 +26,8 @@ export class FlightDynamicInfoPage implements OnInit {
     FlightNumber: string,
     distinguish: string
   }
-  hour: string
+  hour: string;
+  type: string;
   isShow = false;
   constructor(
     private flightDynamicService: FlightDynamicService,
@@ -68,6 +69,7 @@ export class FlightDynamicInfoPage implements OnInit {
 
           const fliNo = it.PreviousFlightNumber;
           this.hour = it.Minute;
+          this.type = it.StatusName;
           this.isShow = false;
           if (fliNo && fliNo.length) {
             this.isShow = true;

@@ -648,7 +648,7 @@ export class FlightListPage
     }
     this.isCanLeave = true;
     // this.flightService.onSelectCity(isFrom);
-    const rs = await this.flightCityService.onSelectCity(true, isFrom);
+    const rs = await this.flightCityService.onSelectCity({isShowPage:false,isFrom:false});
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {
@@ -940,7 +940,7 @@ export class FlightListPage
   }
   canDeactivate() {
     if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity(false, false);
+      this.flightCityService.onSelectCity({isShowPage:false,isFrom:false});
       return false;
     }
     const s = this.flightService.getSearchFlightModel();

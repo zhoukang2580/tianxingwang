@@ -17,12 +17,16 @@ export class FlightCityService {
     private flightService: FlightService,
     private interFlightService: InternationalFlightService,
     private router: Router
-  ) {}
-  private async initPage() {
+  ) { }
+  private async initPage(isShowSegs = true) {
     if (!this.cityPage) {
       const dCities = await this.flightService.getDomesticAirports();
       const iCities = await this.interFlightService.getInternationalAirports();
+      // if (isShowSegs) {
+      //   this.cityPage = new CityPage(dCities, []);
+      // } else {
       this.cityPage = new CityPage(dCities, iCities);
+      // }
     }
   }
   private onSearbarClick(isFrom) {
@@ -33,18 +37,63 @@ export class FlightCityService {
       });
     };
   }
-  async onSelectCity(isShow, isFrom, isDomestic = true) {
+  private onHideSegments(isHide = true,isHotHide = true) {
+    const page = document.body.querySelector(".flight-city-page-container");
+    const page1 = document.body.querySelector(".flight-city-page-container");
+    const seg: HTMLElement = page && page.querySelector('.segments');
+    const seg1: HTMLElement = page1 && page1.querySelector('.hot-cities-wrapper1');
+    if (seg && seg1) {
+      if (isHide && isHotHide) {
+        seg.classList.add("hide")
+        seg1.classList.add("hide");
+      } else {
+        seg.classList.remove("hide")
+        seg1.classList.remove("hide");
+      }
+    }
+  }
+  async onSelectCity({
+    isShowSegs,
+    isDomestic,
+    isShowPage,
+    isShowAirports,
+    isFrom,
+    isShowHotCity
+  }: {
+    isShowPage: boolean;
+    isFrom: boolean;
+    isShowAirports?: boolean;
+    isDomestic?: boolean;
+    isShowSegs?: boolean
+    isShowHotCity?:boolean
+  }) {
     if (!this.cityPage) {
-      await this.initPage();
+      await this.initPage(isShowSegs);
     }
     if (!this.cityPage) {
       return null;
     }
+    if (isDomestic == undefined) {
+      isDomestic = true;
+    }
+    if (isShowSegs == undefined) {
+      isShowSegs = true;
+    }
+    if(isShowAirports == undefined){
+      isShowAirports = false;
+    }
+    if (isShowHotCity == undefined) {
+      isShowHotCity = true;
+    }
     this.cityPage.isDomestic = isDomestic;
-    this.isShowingPage = isShow;
+    this.isShowingPage = isShowPage;
+    this.cityPage.isShowAirports = isShowAirports;
+    this.cityPage.isShowHotCity = isShowHotCity;
+    this.cityPage.isShowSegs = isShowSegs;
     this.onSearbarClick(isFrom);
-    this.cityPage.openPage(isShow);
-    if (!isShow) {
+    this.cityPage.openPage(isShowPage);
+    this.onHideSegments(!isShowSegs,!isShowHotCity)
+    if (!isShowPage) {
       return null;
     }
     this.cityPage.onToggleSegmentsPage(isDomestic);
@@ -84,6 +133,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   this.interSidebarsTabs;
   this.pageSize = 40;
   this.isDomestic = true;
+  this.isShowSegs = true;
   this.textSearchResults = [];
   this.openPage = openPage;
   this.onToggleSegmentsPage = onToggleSegmentsPage;
@@ -175,6 +225,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     }
   }
   function getSegmentHtml() {
+    // that.isShowSegs
     const seg = document.createElement("div");
     seg.classList.add("segments");
     const d = document.createElement("div");
@@ -312,9 +363,13 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     item.classList.add("city-item");
     item.textContent =
       lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
+      
     item.setAttribute("Code", c.Code);
     const label = document.createElement("label");
     label.textContent = c.IsHot ? c.CityName : c.Nickname;
+    if (that.isShowAirports) {
+      label.textContent = c.Name;
+    }
     if (!label.textContent) {
       item.classList.add("empty");
     }
@@ -344,6 +399,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     const wrapper = document.createElement("div");
     try {
       wrapper.classList.add("hot-cities-wrapper");
+      wrapper.classList.add("hot-cities-wrapper1");
       const header = document.createElement("div");
       header.classList.add("header");
       const label = document.createElement("label");
@@ -742,7 +798,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       if (l) {
         return JSON.parse(l);
       }
-    } catch (e) {}
+    } catch (e) { }
     return [];
   }
   function clearCachedHistories() {
@@ -823,6 +879,9 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     const label = document.createElement("label");
     label.textContent =
       lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
+    if (that.isShowAirports) {
+      label.textContent =c.Name;
+    }
     label.classList.add("notranslate");
     if (c.CityName) {
       const sp = document.createElement("span");
@@ -940,12 +999,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     return item;
   }
   function loadMoreItems(infinite = null) {
-    const kw :string= getSearchBarText();
+    const kw: string = getSearchBarText();
     let arr = that.isDomestic ? that.cities : that.internationalCities;
     let temp = [];
     if (kw) {
       let tmpArr;
-      if (kw.length == 3&&kw.match(/[a-z]/ig)) {
+      if (kw.length == 3 && kw.match(/[a-z]/ig)) {
         tmpArr = arr.filter(
           (it) => (it.Code || "").toLowerCase() == kw.toLowerCase()
         );

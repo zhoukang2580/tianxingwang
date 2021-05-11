@@ -98,8 +98,8 @@ export class SearchFlightPage
       this.backDate =
         this.goDate.timeStamp > this.backDate.timeStamp
           ? this.calendarService.generateDayModel(
-              this.calendarService.getMoment(1, this.goDate.date)
-            )
+            this.calendarService.getMoment(1, this.goDate.date)
+          )
           : this.backDate;
     }
   }
@@ -131,7 +131,7 @@ export class SearchFlightPage
   }
   async canDeactivate() {
     if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity(false,true);
+      this.flightCityService.onSelectCity({ isShowPage: false, isFrom: false });
       return false;
     }
     if (this.isCanleave) {
@@ -334,8 +334,8 @@ export class SearchFlightPage
         const arrivalDate = this.calendarService.getMoment(
           0,
           go.bookInfo &&
-            go.bookInfo.flightSegment &&
-            go.bookInfo.flightSegment.ArrivalTime
+          go.bookInfo.flightSegment &&
+          go.bookInfo.flightSegment.ArrivalTime
         );
         if (
           +this.calendarService.getMoment(0, this.backDate.date) <
@@ -386,7 +386,7 @@ export class SearchFlightPage
   }
   async onSelectCity(isFromCity = true) {
     this.isCanleave = true;
-    const rs = await this.flightCityService.onSelectCity(true,isFromCity);
+    const rs = await this.flightCityService.onSelectCity({ isShowPage: true, isFrom: isFromCity });
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {

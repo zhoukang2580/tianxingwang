@@ -7,6 +7,7 @@
         <ion-title>
             {{searchDynamicModel?.fromCity?.Nickname}}
             <i class='icon icon-flight-plane'></i> {{ searchDynamicModel?.toCity?.Nickname}}
+
         </ion-title>
     </ion-toolbar>
 </ion-header>
@@ -39,7 +40,10 @@
                 <li class="label">{{item.PlanArrivalTime}}</li>
                 <li class="label">{{item.RealArrivalTime}}</li>
                 <li class="label">
-                    <ion-text class="plan" color="success">{{item.StatusName}}</ion-text>
+                    <ion-text class="plan" *ngIf="item.StatusName == '到达'||item.StatusName == '计划'||item.StatusName == '起飞'" color="success">{{item.StatusName}}</ion-text>
+                    <ion-text class="plan" *ngIf="item.StatusName == '取消'" color="danger">{{item.StatusName}}</ion-text>
+                    <ion-text class="plan" *ngIf="item.StatusName == '预警'" color="warning">{{item.StatusName}}</ion-text>
+                    <ion-text class="plan" *ngIf="item.StatusName == '延误'" color="danger">{{item.StatusName}}</ion-text>
                     <ion-icon class="ionc" name="chevron-forward-outline"></ion-icon>
                 </li>
             </ul>
