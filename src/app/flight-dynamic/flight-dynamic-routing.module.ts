@@ -31,6 +31,12 @@ const routes: Routes = [
       import("./flight-dynamic-preorder/flight-dynamic-preorder.module").then(
         (m) => m.FlightDynamicPreorderPageModule
       ),
+  },{
+    path: "select-flight-dynamic-city",
+    loadChildren: () =>
+      import("./select-flight-dynamic-city/select-flight-dynamic-city.module").then(
+        (m) => m.SelectFlightDynamicCityPageModule
+      ),
   },
 ];
 

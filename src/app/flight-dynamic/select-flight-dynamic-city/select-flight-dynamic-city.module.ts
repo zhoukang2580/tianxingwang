@@ -1,11 +1,11 @@
-import { AppComponentsModule } from "./../../components/appcomponents.module";
+import { AppComponentsModule } from "../../components/appcomponents.module";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { IonicModule } from "@ionic/angular";
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
-import { SelectFlightCityPage } from "./select-flight-city.page";
 import { StylePageGuard } from "src/app/guards/style-page.guard";
+import { SelectFlightDynamicCityPage } from "./select-flight-dynamic-city.page";
 
 @NgModule({
   imports: [
@@ -16,11 +16,11 @@ import { StylePageGuard } from "src/app/guards/style-page.guard";
     RouterModule.forChild([
       {
         path: "",
-        component: SelectFlightCityPage,
+        component: SelectFlightDynamicCityPage,
         canActivate:[StylePageGuard]
       }
     ])
   ],
-  declarations: [SelectFlightCityPage]
+  declarations: [SelectFlightDynamicCityPage]
 })
-export class SelectFlightCityPageModule {}
+export class SelectFlightDynamicCityPageModule {}

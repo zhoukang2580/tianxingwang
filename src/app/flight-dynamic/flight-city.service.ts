@@ -21,14 +21,13 @@ export class FlightCityService {
   private async initPage() {
     if (!this.cityPage) {
       const dCities = await this.flightService.getDomesticAirports();
-      // const iCities = await this.interFlightService.getInternationalAirports();
       this.cityPage = new CityPage(dCities, []);
     }
   }
   private onSearbarClick(isFrom) {
     this.cityPage.onSearbarClick = () => {
       this.cityPage.openPage(false);
-      this.router.navigate(["select-flight-city"], {
+      this.router.navigate(["select-flight-dynamic-city"], {
         queryParams: { requestCode: isFrom ? "select_from_city" : "to_city" },
       });
     };

@@ -9,10 +9,10 @@ import { Storage } from "@ionic/storage";
 import { CalendarService } from 'src/app/tmc/calendar.service';
 import { DayModel } from 'src/app/tmc/models/DayModel';
 import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
-import { FlightCityService } from 'src/app/flight/flight-city.service';
 import { FlightService, SearchFlightModel } from 'src/app/flight/flight.service';
 import { FlightDynamicService, SearchDynamicModule } from '../flight-dynamic.service';
 import { IdentityService } from 'src/app/services/identity/identity.service';
+import { FlightCityService } from '../flight-city.service';
 
 @Component({
   selector: 'app-search-flight-dynamic',
@@ -180,7 +180,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
   async onSelectCity(isFromCity = true) {
     console.log("111");
     this.isCanleave = true;
-    const rs = await this.flightCityService.onSelectCity(true, isFromCity, true);
+    const rs = await this.flightCityService.onSelectCity(true, isFromCity, true, true);
     if (rs) {
       const s = this.searchDynamicModel;
       if (rs.isDomestic) {

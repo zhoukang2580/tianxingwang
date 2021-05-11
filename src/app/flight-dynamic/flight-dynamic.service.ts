@@ -7,7 +7,7 @@ import { RequestEntity } from '../services/api/Request.entity';
 import { CalendarService } from '../tmc/calendar.service';
 import { TrafficlineEntity } from '../tmc/models/TrafficlineEntity';
 import { TripType } from '../tmc/models/TripType';
-import { FlightHotelTrainType, PassengerBookInfo } from '../tmc/tmc.service';
+import { FlightHotelTrainType, PassengerBookInfo, TmcService } from '../tmc/tmc.service';
 
 export class SearchDynamicModule {
   Date: string;
@@ -35,7 +35,8 @@ export class FlightDynamicService {
   flightResult: FlightResultEntity; 
   constructor(
     private apiService: ApiService,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private tmcService:TmcService
   ) {
     this.searchDynamicModel = new SearchDynamicModule();
     this.searchDynamicModelSource = new BehaviorSubject(this.searchDynamicModel);
@@ -51,6 +52,10 @@ export class FlightDynamicService {
 
   getPassengerBookInfoSource() {
     return this.passengerBookInfoSource.asObservable();
+  }
+
+  async getDomesticAirports(forceFetch: boolean = false) {
+    return this.tmcService.getDomesticAirports(forceFetch);
   }
 
 

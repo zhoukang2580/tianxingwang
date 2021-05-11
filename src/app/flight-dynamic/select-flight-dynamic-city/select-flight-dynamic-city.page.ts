@@ -1,7 +1,7 @@
-import { RefresherComponent } from "./../../components/refresher/refresher.component";
+import { RefresherComponent } from "../../components/refresher/refresher.component";
 import { Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
-import { BackButtonComponent } from "./../../components/back-button/back-button.component";
+import { BackButtonComponent } from "../../components/back-button/back-button.component";
 import { Storage } from "@ionic/storage";
 import {
   IonContent,
@@ -27,12 +27,12 @@ import {
   transition,
 } from "@angular/animations";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { FlightService } from "../flight.service";
 import { LangService } from "src/app/services/lang.service";
+import { FlightService } from "src/app/flight/flight.service";
 @Component({
-  selector: "app-select-flight-city",
-  templateUrl: "./select-flight-city.page.html",
-  styleUrls: ["./select-flight-city.page.scss"],
+  selector: "app-select-flight-dynamic-city",
+  templateUrl: "./select-flight-dynamic-city.page.html",
+  styleUrls: ["./select-flight-dynamic-city.page.scss"],
   animations: [
     trigger("openclose", [
       state("true", style({ transform: "scale(1)" })),
@@ -41,7 +41,7 @@ import { LangService } from "src/app/services/lang.service";
     ]),
   ],
 })
-export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
+export class SelectFlightDynamicCityPage implements OnInit, OnDestroy, AfterViewInit {
   private cities: TrafficlineEntity[] = [];
   private histories: TrafficlineEntity[] = [];
   private subscription = Subscription.EMPTY;
