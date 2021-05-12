@@ -183,9 +183,8 @@ export class TmcService {
       }>(req)
       .then((r) => {
         if (r && r.HotelDayPrices && r.HotelDayPrices.length) {
-          this.getRecommendHotelObj[
-            `${id.Id}_${d.CityCode}_${d.PageIndex}`
-          ] = r;
+          this.getRecommendHotelObj[`${id.Id}_${d.CityCode}_${d.PageIndex}`] =
+            r;
         }
         return r;
       });
@@ -443,7 +442,8 @@ export class TmcService {
     return local.countries as CountryEntity[];
   }
   async getChannel() {
-    const identity: IdentityEntity = await this.identityService.getIdentityAsync();
+    const identity: IdentityEntity =
+      await this.identityService.getIdentityAsync();
     let tag: "代理" | "客户" = "客户";
     if (identity) {
       if (identity.Numbers.AgentId) {
@@ -1025,6 +1025,14 @@ export class TmcService {
       AppHelper.alert(_);
       return null;
     });
+  }
+  async checkIfHasCostCenter() {
+    const arr = await this.getCostCenter("").catch(() => []);
+    return arr.length > 0;
+  }
+  async checkIfHasOrganizations() {
+    const arr = await this.getOrganizations().catch(() => []);
+    return arr.length > 0;
   }
   async getCostCenter(
     name: string

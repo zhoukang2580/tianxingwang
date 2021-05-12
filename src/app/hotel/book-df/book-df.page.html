@@ -130,26 +130,30 @@
                 <span class="label">其他邮箱</span>
                 <ion-input [(ngModel)]="combindInfo.credentialStaffOtherEmail" placeholder="邮箱"></ion-input>
               </div>
-              <div class="flex padding-v row" (click)="searchOrganization (combindInfo)">
-                <span class="label">部门</span>{{combindInfo?.organization?.Name}}
-                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
-              </div>
-              <div class="flex padding-v row">
-                <span class="label">其他部门</span>
-                <ion-input [(ngModel)]="combindInfo.otherOrganizationName" placeholder="名称">
-                </ion-input>
-              </div>
-              <div class="flex padding-v row" (click)="searchCostCenter(combindInfo)">
-                <span class="label">成本中心</span>{{combindInfo?.costCenter?.name}}
-                <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
-              </div>
-            </div>
-            <div class="flex padding-v row">
-              <span class="label">其他成本中心</span>
-              <ion-input [(ngModel)]="combindInfo.otherCostCenterName" placeholder="名称">
-              </ion-input>
-              <ion-input [(ngModel)]="combindInfo.otherCostCenterCode" placeholder="代码">
-              </ion-input>
+              <ng-container *ngIf='isShowOrganizations'>
+                <div class="flex padding-v row" (click)="searchOrganization (combindInfo)">
+                  <span class="label">部门</span>{{combindInfo?.organization?.Name}}
+                  <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
+                </div>
+                <div class="flex padding-v row">
+                  <span class="label">其他部门</span>
+                  <ion-input [(ngModel)]="combindInfo.otherOrganizationName" placeholder="名称">
+                  </ion-input>
+                </div>
+              </ng-container>
+              <ng-container *ngIf='isShowCostCenter'>
+                <div class="flex padding-v row" (click)="searchCostCenter(combindInfo)">
+                  <span class="label">成本中心</span>{{combindInfo?.costCenter?.name}}
+                  <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
+                </div>
+                <div class="flex padding-v row">
+                  <span class="label">其他成本中心</span>
+                  <ion-input [(ngModel)]="combindInfo.otherCostCenterName" placeholder="名称">
+                  </ion-input>
+                  <ion-input [(ngModel)]="combindInfo.otherCostCenterCode" placeholder="代码">
+                  </ion-input>
+                </div>
+              </ng-container>
             </div>
           </div>
         </ion-list>

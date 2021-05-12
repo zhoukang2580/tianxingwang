@@ -136,6 +136,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }[];
   CredentialsType = CredentialsType;
   combindInfos: ITrainPassengerBookInfo[];
+  isShowCostCenter = true;
+  isShowOrganizations = true;
   constructor(
     private trainService: TrainService,
     private storage: Storage,
@@ -180,6 +182,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       }
       this.error = "";
+      this.tmcService.checkIfHasCostCenter().then((has) => {
+        this.isShowCostCenter = has;
+      });
+      this.tmcService.checkIfHasOrganizations().then((has) => {
+        this.isShowOrganizations = has;
+      });
       this.identity = await this.identityService.getIdentityAsync();
       this.bookInfos = this.trainService
         .getBookInfos()

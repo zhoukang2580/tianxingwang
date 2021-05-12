@@ -117,14 +117,14 @@
                 </div>
               </ion-item>
               <ion-item>
-                <div class="flex padding-v" (click)="searchOrganization(combindInfo)">
+                <div class="flex padding-v" (click)="searchOrganization(combindInfo)" *ngIf='isShowOrganizations'>
                   <ion-label class="label">部门：</ion-label>
-                  <ion-text> {{combindInfo?.organization?.Name}}  </ion-text>
+                  <ion-text> {{combindInfo?.organization?.Name}} </ion-text>
                   <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
                 </div>
               </ion-item>
               <ion-item class="cost-center">
-                <div class="flex padding-v" (click)="searchCostCenter(combindInfo)">
+                <div class="flex padding-v" (click)="searchCostCenter(combindInfo)" *ngIf='isShowCostCenter'>
                   <ion-label class="label">成本中心：</ion-label>
                   <ion-text>{{combindInfo?.costCenter?.name}} </ion-text>
                   <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
@@ -146,7 +146,7 @@
                   </div>
                 </div>
               </ion-item>
-              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id">
+              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id" *ngIf='isShowCostCenter'>
                 <div class="otherinfo">
                   <div class="other">
                     <span class="label">其他成本中心：</span>
@@ -155,11 +155,11 @@
                   </div>
                 </div>
               </ion-item>
-              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id">
+              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id" *ngIf='isShowOrganizations'>
                 <div class="otherinfo">
                   <div class="other">
                     <span class="label">其他部门：</span>
-                    <ion-input [(ngModel)]="combindInfo.otherOrganizationName" placeholder="名称" ></ion-input>
+                    <ion-input [(ngModel)]="combindInfo.otherOrganizationName" placeholder="名称"></ion-input>
                   </div>
                 </div>
               </ion-item>

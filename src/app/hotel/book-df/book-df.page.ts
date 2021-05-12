@@ -139,6 +139,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   checkPayCountIntervalTime = 5 * 1000;
   curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
   isSelfBookType = true;
+  isShowCostCenter = true;
+  isShowOrganizations = true;
   arrivalDateTimes: string[];
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   dates: { date: string; price: string | number }[] = [];
@@ -419,6 +421,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       }
       this.error = "";
+      this.tmcService.checkIfHasCostCenter().then((has) => {
+        this.isShowCostCenter = has;
+      });
+      this.tmcService.checkIfHasOrganizations().then((has) => {
+        this.isShowOrganizations = has;
+      });
       this.identity = await this.identityService.getIdentityAsync();
       this.bookInfos = this.hotelService
         .getBookInfos()
