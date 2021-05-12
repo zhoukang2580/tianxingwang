@@ -98,17 +98,19 @@ export class FlightDynamicListPage implements OnInit, OnDestroy {
       }
       this.currentProcessStatus = "正在获取航班列表";
       this.apiService.showLoadingView({ msg: this.currentProcessStatus });
-      setTimeout(() => {
-        if (!this.flightDynamicListModel.length) {
-          this.isNoData = true;
-        }
-      }, 1000);
+      this.isNoData = false;
+     
       this.flightDynamicListModel = await this.flightDynamicService.getFlightDynamicList(this.searchDynamicList).then((r) => {
         if (r && r.length) {
           console.log(r);
         }
         return r;
       })
+      setTimeout(() => {
+        if (!this.flightDynamicListModel.length) {
+          this.isNoData = true;
+        }
+      }, 1000);
       if(this.flightDynamicListModel){
         this.flightDynamicListModel.forEach(it=>{
           it.PlanArrivalTime = it.PlanArrivalTime.replace("T", " ").substring(11, 16);
@@ -117,10 +119,12 @@ export class FlightDynamicListPage implements OnInit, OnDestroy {
           it.RealTakeoffTime = it.RealTakeoffTime.replace("T", " ").substring(11, 16);
         })
       }
+     
       this.apiService.hideLoadingView();
       this.isLoading = false;
     } catch (error) {
       console.error(error);
+      this.isNoData = true;
       this.apiService.hideLoadingView();
       this.isLoading = false;
     }

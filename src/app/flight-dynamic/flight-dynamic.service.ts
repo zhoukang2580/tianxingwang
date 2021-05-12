@@ -132,6 +132,18 @@ export class FlightDynamicService {
     });
   }
 
+  onHisCity(data: any) {
+    this.setSearchDynamicModelSource({
+      ...data,
+      fromCity: data.fromCity,
+      toCity: data.toCity,
+      FromAirport: data.FromAirport,
+      ToAirport: data.ToAirport,
+      FromAsAirport: data.FromAsAirport,
+      ToAsAirport: data.ToAsAirport,
+    });
+  }
+
   getFlightDynamicList(d: { Date: string; FromAirport: string; ToAirport: string; FlightNumber: string }) {
     const req = new RequestEntity();
     req.Method = "TmcApiFlightDynamicUrl-Home-Search";

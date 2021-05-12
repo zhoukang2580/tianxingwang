@@ -82,7 +82,7 @@
         <div class="btn-search" (click)="queryFlight()">查询航班</div>
         <div class="history" *ngIf="airportList && airportList.length">
             <ul>
-                <li *ngFor='let s of airportList;let index = index' (click)="onSelectFromToCity($event,s)">{{s?.leaveAirport}}-{{s?.arriveAirport}}<span (click)="ondelete(index)"><ion-icon name="close-outline"></ion-icon></span></li>
+                <li *ngFor='let s of airportList;let index = index' (click)="onSelectFromToCity($event,s)">{{s?.fromCity.Nickname}}-{{s?.toCity.Nickname}}<span (click)="ondelete(index)"><ion-icon name="close-outline"></ion-icon></span></li>
             </ul>
             <ion-icon class="delete-all" name="trash-outline" (click)="onDelAll(airportList)"></ion-icon>
         </div>

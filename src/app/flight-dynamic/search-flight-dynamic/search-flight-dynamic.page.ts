@@ -37,10 +37,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
   departureCity: string;
   arriveCity: string;
 
-  cagAirport: {
-    leaveAirport: string;
-    arriveAirport: string
-  };
+  cagAirport: any;
 
   airportList: any[] = [];
 
@@ -217,8 +214,9 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       evt.stopPropagation();
     }
     if (cites) {
-      this.departureCity = cites.leaveAirport;
-      this.arriveCity = cites.arriveAirport;
+      this.flightDynamicService.onHisCity(cites);
+      this.departureCity = cites.fromCity.Nickname;
+      this.arriveCity = cites.toCity.Nickname;
       // var fromCity = this.searchDynamicModel?.fromCity?.Nickname;
       // var toCity = this.searchDynamicModel?.toCity?.Nickname;
       // fromCity = this.departureCity;
@@ -313,6 +311,8 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
   }
 
   searchFlight(flightNo: string) {
+    const s: SearchDynamicModule =
+      this.searchDynamicModel || new SearchDynamicModule();
     if (flightNo == undefined || flightNo.trim() == "") {
       AppHelper.alert("请输入正确的输入条件")
       this.fliNumber = '';
@@ -325,6 +325,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       return
     }
 
+    s.Date = this.goDate.date;
     this.fliNumber = this.fliNumber;
     const delRepetition = this.histroyList.indexOf(this.fliNumber) == -1;
     if (delRepetition && this.fliNumber.trim().length > 0) {
@@ -332,15 +333,11 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     }
     this.fliNumber = '';
     this.router.navigate([AppHelper.getRoutePath("flight-dynamic-info")], {
-      queryParams: { flightNo: flightNo }
+      queryParams: { flightNo: flightNo ,isFly : true}
     });
   }
   async queryFlight() {
     try {
-      this.cagAirport = {
-        leaveAirport: "",
-        arriveAirport: ""
-      }
       const s: SearchDynamicModule =
         this.searchDynamicModel || new SearchDynamicModule();
       const fromCity = this.searchDynamicModel?.fromCity?.Nickname?.replace('国际', '')?.replace('机场', '');
@@ -349,8 +346,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       const toCode = this.searchDynamicModel?.ToAirport;
       const flightno = this.searchDynamicModel?.FlightNumber;
       console.log(fromCity + "=====" + toCity);
-      this.cagAirport.leaveAirport = fromCity;
-      this.cagAirport.arriveAirport = toCity;
+      this.cagAirport = this.searchDynamicModel;
 
       console.log(this.airportList);
 
