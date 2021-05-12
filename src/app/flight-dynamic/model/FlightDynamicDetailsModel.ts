@@ -1,4 +1,4 @@
-export class FlightDynamicDetailsPage {
+export class FlightDynamicDetailPage {
 
     /// <summary>
     /// 航班号

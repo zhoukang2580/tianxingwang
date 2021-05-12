@@ -32,11 +32,11 @@ export class FlightDynamicService {
   private passengerBookInfoSource: Subject<
     PassengerBookInfo<IFlightSegmentInfo>[]
   >;
-  flightResult: FlightResultEntity; 
+  flightResult: FlightResultEntity;
   constructor(
     private apiService: ApiService,
     private calendarService: CalendarService,
-    private tmcService:TmcService
+    private tmcService: TmcService
   ) {
     this.searchDynamicModel = new SearchDynamicModule();
     this.searchDynamicModelSource = new BehaviorSubject(this.searchDynamicModel);
@@ -170,7 +170,7 @@ export class FlightDynamicService {
     return this.apiService.getPromiseData<any>(req);
   }
 
-  getFlightDynamicDetail(d: { Date: string; FlightNumber: string;distinguish }) {
+  getFlightDynamicDetail(d: { Date: string; FlightNumber: string; distinguish }) {
     const req = new RequestEntity();
     req.Method = "TmcApiFlightDynamicUrl-Home-Detail";
     req.IsShowLoading = true;
@@ -178,7 +178,20 @@ export class FlightDynamicService {
     req.Data = {
       flightNumber: d.FlightNumber,
       date: d.Date,
-      distinguish : d.distinguish
+      distinguish: d.distinguish
+    };
+    return this.apiService.getPromiseData<any>(req);
+  }
+  getFlightDynamicDetailes(d: { Date: string; FlightNumber: string; startDate: string; enDate: string }) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiFlightDynamicUrl-Home-Detail";
+    req.IsShowLoading = true;
+    req.LoadingMsg = "正在获取详情";
+    req.Data = {
+      flightNumber: d.FlightNumber,
+      date: d.Date,
+      startDate: d.startDate,
+      enDate: d.enDate
     };
     return this.apiService.getPromiseData<any>(req);
   }

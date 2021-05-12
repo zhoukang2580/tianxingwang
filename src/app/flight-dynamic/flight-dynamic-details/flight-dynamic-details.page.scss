@@ -1,0 +1,46 @@
+.date {
+    padding: 5px;
+    background: #fff;
+    text-align: center;
+    color: #78de43;
+}
+
+ion-item {
+    border-top: 4px solid #eee;
+    ion-grid {
+        line-height: 1.8;
+        ion-row {
+            .flightNo {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                .airway {
+                    color: #666;
+                    font-size: 14px;
+                    padding-left: 10px;
+                }
+            }
+            ion-col {
+                text-align: center;
+            }
+            .img-logo {
+                display: flex;
+                justify-content: center;
+                img {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+            .arrive {
+                color: #78de43;
+            }
+            .airportName {
+                color: #666;
+            }
+            .time {
+                font-size: 22px;
+            }
+        }
+    }
+}

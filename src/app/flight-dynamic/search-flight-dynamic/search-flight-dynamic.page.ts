@@ -332,8 +332,8 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       this.histroyList.push(this.fliNumber);
     }
     this.fliNumber = '';
-    this.router.navigate([AppHelper.getRoutePath("flight-dynamic-info")], {
-      queryParams: { flightNo: flightNo ,isFly : true}
+    this.router.navigate([AppHelper.getRoutePath("flight-dynamic-details")], {
+      queryParams: { flightNo: flightNo }
     });
   }
   async queryFlight() {

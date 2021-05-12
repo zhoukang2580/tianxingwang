@@ -1,0 +1,54 @@
+<ion-header>
+    <ion-toolbar style="--border-width: 0;">
+        <ion-buttons solt='start'>
+            <app-back-button defaultHref=""></app-back-button>
+        </ion-buttons>
+        <ion-title>查询结果</ion-title>
+    </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+    <div class="date">
+        {{searchDynamicModel.Date}}
+    </div>
+    <ion-list>
+        <!-- <ion-item>
+            <ion-grid>
+                <ion-row>
+                    <div class="flightNo">{{flightNo}}
+                        <span class="airway">东方航空</span>
+                    </div>
+                </ion-row>
+                <ion-row>
+                    <ion-col class="airportName">广州白云机场</ion-col>
+                    <ion-col class="img-logo"><img src="assets/images/airplane.png" alt=""></ion-col>
+                    <ion-col class="airportName">西安咸阳机场</ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col class="time">06:40</ion-col>
+                    <ion-col class="arrive">到达</ion-col>
+                    <ion-col class="time">MU6955</ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item> -->
+        <ion-item *ngFor="let item of flightDynamicListModel" (click)="onSelectFlight(item)">
+            <ion-grid>
+                <ion-row>
+                    <div class="flightNo">{{flightNo}}
+                        <span class="airway">东方航空</span></div>
+                </ion-row>
+                <ion-row>
+                    <ion-col class="airportName">{{item.FromAirportName}}</ion-col>
+                    <ion-col class="img-logo"><img src="assets/images/airplane.png" alt=""></ion-col>
+                    <ion-col class="airportName">{{item.ToAirportName}}</ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col class="time">{{item.PlanTakeoffTime}}</ion-col>
+                    <ion-col class="arrive">到达</ion-col>
+                    <ion-col class="time">{{item.PlanArrivalTime}}</ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+    </ion-list>
+</ion-content>

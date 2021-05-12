@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppHelper } from 'src/app/appHelper';
 import { FlightDynamicService } from '../flight-dynamic.service';
-import { FlightDynamicDetailsPage } from '../model/FlightDynamicDetailsModel';
+import { FlightDynamicDetailPage } from '../model/FlightDynamicDetailsModel';
 
 @Component({
   selector: 'app-flight-dynamic-preorder',
@@ -14,8 +14,10 @@ export class FlightDynamicPreorderPage implements OnInit {
   flightNo:string;
   theFlightNo:string;
   theDatetime:string;
-  flightDynamicDetailsModel:FlightDynamicDetailsPage;
+  flightDynamicDetailsModel:FlightDynamicDetailPage;
   thisFlightDynamicDetails:any;
+  PlanArrivalTime: string;
+  PlanTakeoffTime: string;
   constructor(
     private route:ActivatedRoute,
     private flightDynamicService:FlightDynamicService,
@@ -65,9 +67,9 @@ export class FlightDynamicPreorderPage implements OnInit {
     }
   }
 
-  async onSelectFlight(flightNo: string) {
+  async onSelectFlight(data:any) {
     this.router.navigate([AppHelper.getRoutePath("flight-dynamic-info")], {
-      queryParams: { flightNo: flightNo }
+      queryParams: { flightNoN: data.FlightNumber,startTime: data.PlanTakeoffTime, endTime: data.PlanArrivalTime}
     })
   }
 

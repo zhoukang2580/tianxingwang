@@ -74,7 +74,7 @@
             </div>
             <div *ngFor="let preor of flightDynamicDetailsModel">
                 <ion-item-divider class="divider">{{preor.FromAirportName}}|您查询的前序航班</ion-item-divider>
-                <ion-item class="last" lines="none" (click)="onSelectFlight(preor.FlightNumber)">
+                <ion-item class="last" lines="none" (click)="onSelectFlight(preor)">
                     <ion-grid>
                         <ion-row>
                             <ion-col>{{preor.FlightNumber}}</ion-col>

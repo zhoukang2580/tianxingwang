@@ -37,6 +37,12 @@ const routes: Routes = [
       import("./select-flight-dynamic-city/select-flight-dynamic-city.module").then(
         (m) => m.SelectFlightDynamicCityPageModule
       ),
+  },{
+    path: "flight-dynamic-details",
+    loadChildren: () =>
+      import("./flight-dynamic-details/flight-dynamic-details.module").then(
+        (m) => m.FlightDynamicDetailsPageModule
+      ),
   },
 ];
 
