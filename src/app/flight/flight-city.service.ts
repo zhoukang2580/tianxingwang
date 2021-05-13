@@ -52,20 +52,26 @@ export class FlightCityService {
       }
     }
   }
+
+  private onHideCityName(isCityName = true){
+    
+  }
   async onSelectCity({
     isShowSegs,
     isDomestic,
     isShowPage,
     isShowAirports,
     isFrom,
-    isShowHotCity
+    isShowHotCity,
+    isFlyDynamic
   }: {
     isShowPage: boolean;
     isFrom: boolean;
     isShowAirports?: boolean;
     isDomestic?: boolean;
-    isShowSegs?: boolean
-    isShowHotCity?:boolean
+    isShowSegs?: boolean;
+    isShowHotCity?:boolean;
+    isFlyDynamic?:boolean;
   }) {
     if (!this.cityPage) {
       await this.initPage(isShowSegs);
@@ -85,6 +91,9 @@ export class FlightCityService {
     if (isShowHotCity == undefined) {
       isShowHotCity = true;
     }
+    if (isFlyDynamic == undefined) {
+      isFlyDynamic = true;
+    }
     this.cityPage.isDomestic = isDomestic;
     this.isShowingPage = isShowPage;
     this.cityPage.isShowAirports = isShowAirports;
@@ -93,6 +102,7 @@ export class FlightCityService {
     this.onSearbarClick(isFrom);
     this.cityPage.openPage(isShowPage);
     this.onHideSegments(!isShowSegs,!isShowHotCity)
+    this.onHideCityName(!isFlyDynamic);
     if (!isShowPage) {
       return null;
     }

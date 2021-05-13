@@ -246,7 +246,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       AirportCityCode: "SHA",
       CityCode: "3101",
       CityName: "上海",
-      Code: "PVG",
+      Code: "SHA",
       CountryCode: "CN",
       Description: "",
       EnglishName: "Shanghai",
