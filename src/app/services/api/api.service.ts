@@ -29,6 +29,8 @@ import { IdentityService } from "../identity/identity.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { environment } from "src/environments/environment";
 import { Storage } from "@ionic/storage";
+import { LogService } from "../log/log.service";
+import { CONFIG } from "src/app/config";
 interface ApiConfig {
   Urls: { [key: string]: string };
   Token: string;
@@ -51,7 +53,8 @@ export class ApiService {
     private router: Router,
     private identityService: IdentityService,
     private storage: Storage,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private logService: LogService
   ) {
     this.loadingSubject = new BehaviorSubject({ isLoading: false, msg: "" });
     // this.storage
@@ -266,12 +269,34 @@ export class ApiService {
       this.tryAutoLoginPromise = null;
     });
   }
+  private getNetWorkConnection() {
+    const connection =
+      navigator["connection"] ||
+      navigator["mozConnection"] ||
+      navigator["webkitConnection"];
+    if (connection) {
+      return {
+        网络下行速度: connection.downlink,
+        网络类型: connection.effectiveType,
+        有值代表网络状态变更: connection.onchange,
+        估算的往返时间: connection.rtt,
+        "打开/请求数据保护模式": connection.saveData,
+      };
+    }
+    return {};
+  }
   private post(url: string, req: RequestEntity) {
     req.Token = this.apiConfig.Token;
     const formObj = Object.keys(req)
       .filter((it) => it != "Url" && it != "IsShowLoading")
       .map((k) => `${k}=${encodeURIComponent(req[k])}`)
       .join("&");
+    let st = Date.now();
+    const logTime = CONFIG.apiExcceedlogtime;
+    const logtimeex = new ExceptionEntity();
+    logtimeex.Method = req.Method;
+    const t = new Date().toLocaleDateString();
+    const connection = this.getNetWorkConnection();
     return this.http
       .post(
         url,
@@ -284,6 +309,19 @@ export class ApiService {
         }
       )
       .pipe(
+        tap(() => {
+          const delta = Date.now() - st;
+          logtimeex.Message = `方法：${req.Method},url=${
+            req.Url
+          }耗时：${delta}ms,请求时间：${t},当前网络状态,${Object.keys(
+            connection
+          )
+            .map((k) => `【${k}=${connection[k]}】`)
+            .join("|")}`;
+          if (delta > logTime) {
+            this.logService.addException(logtimeex);
+          }
+        }),
         finalize(() => {
           console.log("reqMethod =" + req.Method, this.reqLoadingStatus);
           this.setLoading({
@@ -373,7 +411,7 @@ export class ApiService {
           return throwError(LanguageHelper.getNetworkErrorTip());
         }
         return throwError(error);
-      }),
+      })
       // map((r) => r)
     );
   }
@@ -520,7 +558,7 @@ export class ApiService {
   getSign(req: RequestEntity) {
     return md5(
       `${typeof req.Data === "string" ? req.Data : JSON.stringify(req.Data)}${
-      req.Timestamp
+        req.Timestamp
       }${req.Token}`
     ) as string;
   }

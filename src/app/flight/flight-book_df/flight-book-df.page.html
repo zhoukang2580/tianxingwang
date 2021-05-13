@@ -150,14 +150,14 @@
                                 </div>
                             </div>
                         </ng-container>
-                        <div class="row" (click)='searchOrganization(combindInfo)'>
+                        <div class="row" (click)='searchOrganization(combindInfo)' *ngIf='isShowOrganizations'>
                             <span class="label">部门</span>
                             <div class="value">
                                 {{combindInfo?.organization?.Name}}
                             </div>
                             <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
                         </div>
-                        <div class="row " (click)='searchCostCenter(combindInfo)'>
+                        <div class="row " (click)='searchCostCenter(combindInfo)' *ngIf='isShowCostCenter'>
                             <span class="label">成本中心</span>
                             <div class="value">
                                 {{combindInfo?.costCenter?.name}}

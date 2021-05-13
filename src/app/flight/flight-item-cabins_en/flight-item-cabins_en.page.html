@@ -119,7 +119,7 @@
             <ion-col size='4'>
               <ion-text color='danger'>￥{{cabin.Cabin?.SalesPrice}}</ion-text>
               <ion-button [color]='cabin.color' class='ion-margin-top' expand='block' [class.disabled]='!cabin?.IsAllowBook'
-                (click)='onBookTicket(cabin.Cabin)'>
+                (click)='onBookTicket(cabin)'>
                 <ion-text color='light'>Book</ion-text>
               </ion-button>
             </ion-col>

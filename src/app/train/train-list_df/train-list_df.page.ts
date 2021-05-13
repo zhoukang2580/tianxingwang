@@ -609,12 +609,12 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   private filterTrains(trains: TrainEntity[]) {
     console.log("this.filterCondition", this.filterCondition, trains);
     let result = trains;
-    result = [];
-    trains.forEach((t) => {
-      if (!result.find((it) => it.TrainNo == t.TrainNo)) {
-        result.push(t);
-      }
-    });
+    // result = [];
+    // trains.forEach((t) => {
+    //   if (!result.find((it) => it.TrainNo == t.TrainNo)) {
+    //     result.push(t);
+    //   }
+    // });
     result = this.filterByTrainType(result);
     result = this.filterByDepartureTimespan(result);
     result = this.filterByDepartureStations(result);

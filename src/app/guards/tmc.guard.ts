@@ -44,6 +44,21 @@ export class TmcGuard implements CanActivate, CanActivateChild {
       .getIdentityAsync()
       .then((identity) => {
         console.log("tmc guard identity ", identity);
+        if (identity && identity.Id && identity.Ticket && identity.Numbers) {
+          if (identity.Numbers.TmcId) {
+            const query = AppHelper.getQueryParamers();
+            const tmcid = query.tmcid || query.TmcId || "";
+            if (tmcid && tmcid != identity.Numbers.TmcId) {
+              this.router
+                .navigate([AppHelper.getRoutePath("login")])
+                .then(() => {
+                  AppHelper.alert("非法登录");
+                });
+
+              return false;
+            }
+          }
+        }
         if (
           !identity ||
           !identity.Id ||
@@ -65,7 +80,10 @@ export class TmcGuard implements CanActivate, CanActivateChild {
           }
           return true;
         }
-        AppHelper.setToPageAfterAuthorize({path:state.url,queryParams:next.queryParams});
+        AppHelper.setToPageAfterAuthorize({
+          path: state.url,
+          queryParams: next.queryParams,
+        });
         this.router.navigate([AppHelper.getRoutePath("login")]);
         return false;
       })

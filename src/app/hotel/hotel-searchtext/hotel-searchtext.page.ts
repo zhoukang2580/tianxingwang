@@ -35,6 +35,8 @@ interface ISearchTextValue {
   CountryId?: string; // Code
   CountryName?: string; // Code
   CountryCode?: string; // Code
+  IsHotel?:boolean;
+  IsAddress?:boolean;
 }
 @Component({
   selector: "app-search-hotel-byText",

@@ -98,7 +98,8 @@ import { FlightService } from "../flight.service";
   animations: [flyInOut],
 })
 export class FlightBookDfPage
-  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
+  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy
+{
   private isShowInsuranceBack = false;
   private isPlaceOrderOk = false;
   private isHasTask = false;
@@ -134,6 +135,8 @@ export class FlightBookDfPage
   isCanSave = false;
   isRoundTrip = false;
   isShowFee = false;
+  isShowCostCenter = true;
+  isShowOrganizations = true;
   appoval: {
     Value: string;
     Text: string;
@@ -480,6 +483,12 @@ export class FlightBookDfPage
         }
       }
       this.initialBookDtoModel = await this.initializeBookDto();
+      this.tmcService.checkIfHasCostCenter().then((has) => {
+        this.isShowCostCenter = has;
+      });
+      this.tmcService.checkIfHasOrganizations().then((has) => {
+        this.isShowOrganizations = has;
+      });
       if (!this.initialBookDtoModel) {
         this.errors = "网络错误";
       }
@@ -1629,7 +1638,7 @@ export class FlightBookDfPage
           combineInfo.expenseType = this.expenseTypes[0];
         }
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
-        combineInfo.insuranceProducts =insurances;
+        combineInfo.insuranceProducts = insurances;
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
