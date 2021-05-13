@@ -51,6 +51,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightCityService } from "../flight-city.service";
+import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list_en.page.html",
@@ -93,6 +94,7 @@ export class FlightListEnPage
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private lastFetchTime = 0;
+  private lastPassengerIds: string[] = [];
   private oldSearchCities: {
     fromCityCode: string;
     toCityCode: string;
@@ -114,6 +116,7 @@ export class FlightListEnPage
   filterCondition: FilterConditionModel;
   showAddPassenger = false;
   isRotateIcon = false;
+  isOpenFilter = false;
   @ViewChild("cnt", { static: true }) public cnt: IonContent;
   @ViewChildren("fli") public liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
@@ -142,11 +145,12 @@ export class FlightListEnPage
   isCanLeave = false;
   get filterConditionIsFiltered() {
     return (
-      this.filterCondition &&
-      this.filterCondition.userOps &&
-      Object.keys(this.filterCondition.userOps).some(
-        (k) => this.filterCondition.userOps[k]
-      )
+      (this.filterCondition && this.filterCondition.onlyDirect) ||
+      (this.filterCondition && this.filterCondition.isAgreement) ||
+      (this.filterCondition.userOps &&
+        Object.keys(this.filterCondition.userOps).some(
+          (k) => this.filterCondition.userOps[k]
+        ))
     );
   }
   constructor(
@@ -211,13 +215,17 @@ export class FlightListEnPage
       this.showAddPassenger = await this.canShowAddPassenger();
       const delta = Math.floor((Date.now() - this.lastFetchTime) / 1000);
       console.log("this.route.queryParamMap deltaTime=", delta);
-      const isFetch = delta >= 60;
+      const isFetch =
+        delta >= 60 * 2 ||
+        this.checkIfCityChanged() ||
+        this.checkIfSelectedPassengerChanged();
       if (
         (d && d.get("doRefresh") == "true") ||
         !this.vmFlights ||
         !this.vmFlights.length ||
         isFetch
       ) {
+        this.lastFetchTime = Date.now();
         this.doRefresh(true, false);
       }
       const filteredBookInfo = this.flightService
@@ -231,17 +239,45 @@ export class FlightListEnPage
   trackById(item: FlightSegmentEntity) {
     return item.Id;
   }
+  private checkIfSelectedPassengerChanged() {
+    try {
+      return (
+        this.lastPassengerIds.join(",") !=
+        this.flightService
+          .getPassengerBookInfos()
+          .map((it) => it.passenger && it.passenger.Id)
+          .join(",")
+      );
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  }
+  private async checkHasLowerSegment() {
+    return {
+      ok: true,
+    };
+  }
   async onBookLowestSegment(evt: CustomEvent, s: FlightSegmentEntity) {
     if (evt) {
       evt.stopPropagation();
       evt.preventDefault();
     }
     if (s) {
-      await this.checkCabinsAndPolicy(s);
-      const cabins =
-        s.Cabins && s.Cabins.filter((it) => it.SalesPrice == s.LowestFare);
+      const ok = await this.checkCabinsAndPolicy(s);
+      if (!ok) {
+        if (!this.tmcService.isAgent) {
+          AppHelper.alert("该航班已无可售座位");
+          return;
+        }
+      }
+      if (!s.Cabins || !s.Cabins.length) {
+        return;
+      }
+      const cabins = s.Cabins.sort((c1, c2) => +c1.SalesPrice - +c2.SalesPrice);
       const cabin =
-        cabins && cabins.find((it) => it.SalesPrice == s.LowestFare);
+        (cabins && cabins.find((it) => it.SalesPrice == s.LowestFare)) ||
+        cabins[0];
       if (cabin) {
         const bookInfos = this.flightService.getPassengerBookInfos();
         if (!bookInfos.length) {
@@ -259,6 +295,8 @@ export class FlightListEnPage
                 a.bookInfo.flightPolicy.Rules.join(",")
               }`
             );
+            const result = await this.checkHasLowerSegment();
+
             return;
           }
           if (r.isProcessOk) {
@@ -304,12 +342,12 @@ export class FlightListEnPage
     }
   }
   async canShowAddPassenger() {
-    const identity = await this.identityService
-      .getIdentityAsync()
-      .catch((_) => null);
     this.showAddPassenger =
-      (identity && identity.Numbers && identity.Numbers.AgentId) ||
-      !(await this.staffService.isSelfBookType());
+      this.tmcService.isAgent ||
+      (!(await this.staffService.isSelfBookType()) &&
+        this.flightService
+          .getPassengerBookInfos()
+          .every((it) => !it.exchangeInfo));
     return this.showAddPassenger;
   }
   private async translateLang(segs: FlightSegmentEntity[]) {
@@ -589,18 +627,39 @@ export class FlightListEnPage
         await this.flightService.initFlightSegmentCabins(fs);
       }
       if (fs.Cabins && fs.Cabins.length) {
-        await this.flightService.initFlightSegmentCabinsPolicy();
+        if (
+          this.flightService.getPassengerBookInfos().map((it) => it.passenger)
+            .length
+        ) {
+          const p = await this.flightService.initFlightSegmentCabinsPolicy();
+          return p && p.length > 0;
+        }
       }
     } catch (e) {
+      console.error(e);
       AppHelper.alert(e);
     }
+    return fs && fs.Cabins && fs.Cabins.length > 0;
   }
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
-    await this.checkCabinsAndPolicy(fs);
-    this.isCanLeave = true;
-    await this.flightService.addOneBookInfoToSelfBookType();
-    this.flightService.currentViewtFlightSegment = fs;
-    this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
+    try {
+      const ok = await this.checkCabinsAndPolicy(fs);
+      if (!ok) {
+        if (!this.tmcService.isAgent) {
+          AppHelper.alert("该航班已无可售座位");
+          return;
+        }
+      }
+      this.isCanLeave = true;
+      await this.flightService.addOneBookInfoToSelfBookType();
+      this.flightService.currentViewtFlightSegment = fs;
+      this.lastPassengerIds = this.flightService
+      .getPassengerBookInfos()
+      .map((it) => it.passenger && it.passenger.Id);
+      this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
+    } catch (e) {
+      console.error(e);
+    }
   }
   onShowSelectedInfos() {
     this.isCanLeave = true;
@@ -782,10 +841,21 @@ export class FlightListEnPage
     }
     console.log("initFilterConditionInfo", this.filterCondition);
   }
+  onCloseFilter() {
+    this.isOpenFilter = false;
+    this.modalCtrl.getTop().then((t) => {
+      if (t) {
+        t.dismiss();
+      }
+    });
+  }
   async onFilter() {
     this.activeTab = "filter";
     const m = await this.modalCtrl.create({
       component: FlyFilterComponent,
+      cssClass: "offset-top-40 top-radius-8",
+      showBackdrop: false,
+      swipeToClose: true,
       componentProps: {
         filterCondition: this.filterCondition,
         langOpt: {
@@ -808,6 +878,10 @@ export class FlightListEnPage
       },
     });
     m.present();
+    this.isOpenFilter = true;
+    m.onWillDismiss().then(() => {
+      this.isOpenFilter = false;
+    });
     const res = await m.onDidDismiss();
     if (res && res.data) {
       const {
@@ -839,7 +913,7 @@ export class FlightListEnPage
     this.isLoading = false;
     // console.timeEnd("price");
   }
-  private async sortFlights(key: "price" | "time") {
+  private sortFlights(key: "price" | "time") {
     if (!this.filterCondition) {
       this.filterCondition = FilterConditionModel.init();
     }
@@ -853,7 +927,7 @@ export class FlightListEnPage
         this.vmFlights,
         this.priceOrderL2H
       );
-      await this.renderFlightList(segments);
+      this.renderFlightList(segments);
     }
     if (key === "time") {
       this.filterCondition.timeFromM2N = this.timeOrdM2N ? "am2pm" : "pm2am";
@@ -862,7 +936,7 @@ export class FlightListEnPage
         this.vmFlights,
         this.timeOrdM2N
       );
-      await this.renderFlightList(segments);
+      this.renderFlightList(segments);
     }
     this.scrollToTop();
   }
@@ -922,13 +996,14 @@ export class FlightListEnPage
     if (!this.filterCondition || !this.filterConditionIsFiltered) {
       return result;
     }
-    result = this.flightService.filterByFlightDirect(result);
     result = this.flightService.filterByFromAirports(result);
     result = this.flightService.filterByToAirports(result);
     result = this.flightService.filterByAirportCompanies(result);
     result = this.flightService.filterByAirTypes(result);
     result = this.flightService.filterByCabins(result);
     result = this.flightService.filterByTakeOffTimeSpan(result);
+    result = this.flightService.filterByFlightDirect(result);
+    result = this.flightService.filterByIsAgreement(result);
     return result;
   }
   canDeactivate() {
@@ -941,7 +1016,7 @@ export class FlightListEnPage
       if (this.isCanLeave) {
         return true;
       }
-      return AppHelper.alert("是否放弃改签?", true, "是", "否");
+      return AppHelper.alert("是否放弃改签？", true, "是", "否");
     }
     return true;
   }

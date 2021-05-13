@@ -17,7 +17,6 @@ import { RequestEntity } from "./api/Request.entity";
 import { App } from "../app.component";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
 const KEY_NEW_VERSION_PAGE_PATH = "key_newVersionPagePath";
-
 interface Hcp {
   getHash: (filePath: string) => Promise<string>;
   getUUID: () => Promise<string>;
@@ -67,6 +66,7 @@ export class FileHelperService {
   app: App;
   readonly updateZipFileName: string = "DongmeiIonic.zip";
   private readonly updateDirectoryName: string = "update";
+  private readonly downloadFileDirName: string = "downloadFileDir";
   private readonly www = "www";
   private readonly md5JsonFileName = "filesHash.json";
   private localVersion: string = AppHelper.isApp() ? null : "1.0.0";
@@ -134,6 +134,7 @@ export class FileHelperService {
       this.fileInfo.externalRootDirectory = this.file.externalRootDirectory;
       // this.logMessage(JSON.stringify(this.fileInfo, null, 2));
       this.createUpdateWwwDirectory();
+      this.createDownloadDirectory();
     });
   }
   // private async loadiosHcpPage(newVersionPagePath = null) {
@@ -237,6 +238,32 @@ export class FileHelperService {
       } else {
         this.logMessage("尚不存在hcpversion 或者本地运行版本get 不到");
       }
+    }
+  }
+  private async createDownloadDirectory() {
+    await this.plt.ready();
+    if (!AppHelper.isApp()) {
+      return Promise.resolve({});
+    }
+    try {
+      this.plt
+        .ready()
+        .then(() => {
+          return this.checkDirExists(
+            this.dataDirectory,
+            this.downloadFileDirName
+          );
+        })
+        .then((exist) => {
+          if (!exist) {
+            return this.createDir(this.dataDirectory, this.downloadFileDirName);
+          } else {
+            this.onClearCache();
+          }
+        });
+    } catch (e) {
+      this.logError(`创建 ${this.downloadFileDirName} 失败, `, e);
+      return Promise.resolve(null);
     }
   }
   private async createUpdateWwwDirectory() {
@@ -741,6 +768,7 @@ export class FileHelperService {
                   });
                   this.logMessage("result ", result);
                   if (result) {
+                    result.url = url;
                     resolve(result);
                   }
                 } else {
@@ -769,6 +797,7 @@ export class FileHelperService {
                     return null as IHcpUpdateModel;
                   });
                   if (result) {
+                    result.url = url;
                     resolve(result);
                   }
                 }
@@ -779,6 +808,7 @@ export class FileHelperService {
                 resolve({
                   hcpUpdateComplete: true,
                   nativePath: ``,
+                  url,
                 } as IHcpUpdateModel);
               }
             }
@@ -852,7 +882,7 @@ export class FileHelperService {
         );
         this.logMessage("文件writeContentToFile 完成", fileEntry);
         if (!fileEntry) {
-          reject(`【${this.updateZipFileName}】文件创建失败`);
+          reject(`【${fileName}】文件创建失败`);
           return;
         }
         fileEntry.createWriter((fw) => {
@@ -903,6 +933,92 @@ export class FileHelperService {
       this.updateZipFileName,
       onprogress
     );
+  }
+  async onClearCache() {
+    try {
+      const fs = await this.getDirectoryFiles(
+        this.dataDirectory,
+        this.downloadFileDirName
+      );
+      let n = fs.length;
+      console.log("onClearCache ", fs);
+      return new Promise<any>((s, rej) => {
+        fs.forEach((f) => {
+          f.remove(
+            () => {
+              n--;
+              if (n <= 0) {
+                this.logMessage(`删除 缓存文件 成功`);
+                s(true);
+              }
+            },
+            (e) => {
+              this.logMessage(f.name + " 删除失败", e);
+              rej(e);
+            }
+          );
+        });
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async getDataDirectorySize() {
+    try {
+      let size = 0;
+      const fs = await this.getDirectoryFiles(
+        this.dataDirectory,
+        this.downloadFileDirName
+      );
+      let n = fs.length;
+      return new Promise<number>((s) => {
+        if (n) {
+          fs.forEach((f) => {
+            f.getMetadata(
+              (m) => {
+                n--;
+                size += m.size;
+                if (n <= 0) {
+                  s(size);
+                }
+                console.log(`getMetadata f${f.name}`, m.size);
+              },
+              (e) => {
+                console.error("getMetadata error", e);
+                s(size);
+              }
+            );
+          });
+        } else {
+          s(0);
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  async downloadFile(
+    url: string,
+    fileName: string,
+    onprogress: (hcp: IHcpUpdateModel) => void
+  ) {
+    const path = `${this.dataDirectory}${this.downloadFileDirName}`;
+    try {
+      const isExist = await this.checkPathFileExists(path, fileName);
+      if (isExist) {
+        const fe = await this.getFileEntry(`${path}/${fileName}`);
+        console.log("fe", fe);
+        return {
+          total: 1,
+          loaded: 1,
+          hcpUpdateComplete: true,
+          nativePath: fe.nativeURL,
+        } as IHcpUpdateModel;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return this.downLoadFile(url, path, fileName, onprogress);
   }
   /**
    * 检查是否有新apk要更新
@@ -1277,18 +1393,17 @@ export class FileHelperService {
     if (!serverVersion || !localVersion) {
       return true;
     }
+    // 假设 svs=10.0.0
+    // localv=13.1.1
     const sVs = serverVersion.split(".");
     const lVs = localVersion.split(".");
     if (sVs.length !== lVs.length) {
       return true;
     }
-    const smain = sVs[0];
-    const sMinor = sVs[1];
-    const lmain = lVs[0];
-    const lMinor = lVs[1];
     // 主版本不等或者次版本不等
-    // this.logMessage(`比较应用主版本，判断是否需要升级,serverVersion=${serverVersion}<=>localVersion=${localVersion} `);
-    return smain !== lmain || sMinor !== lMinor;
+    const svsn = +sVs.slice(0, 2).join("");
+    const lvsn = +lVs.slice(0, 2).join("");
+    return lvsn < svsn;
   }
   private checkPathFileExists(
     path: string,
@@ -1551,7 +1666,7 @@ export class FileHelperService {
   private async getDirectoryFiles(path: string, dir: string) {
     try {
       const files = await this.file.listDir(path, dir);
-      return files;
+      return files || [];
     } catch (e) {
       this.logMessage(
         `读取目录【${dir}】 下的文件异常,: ${JSON.stringify(e, null, 2)}`

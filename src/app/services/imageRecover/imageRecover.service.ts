@@ -136,7 +136,8 @@ export class ImageRecoverService {
       }
       img["nodes"][n.Url] = n.Url;
       const src = img.src.split("?")[0];
-      img.src = src.replace(node.Url, n.Url) + "?v=" + date;
+      img.src = src.replace(node.Url, n.Url);
+      img.src += (img.src.includes("?") ? "&v=" : "?v=") + date;
       isRecover = true;
       break;
     }

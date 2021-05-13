@@ -7,7 +7,16 @@ Winner.ImageRecover.prototype = {
     this.LoadImages(container || document);
   },
   LoadImages: function (content) {
-    var allImages = content.getElementsByTagName("img") || [content];
+    const isInstanceofHTMLDiv = content instanceof HTMLDivElement;
+    const img = document.createElement("img");
+    if (content instanceof HTMLDivElement) {
+      img.onload = _ => {
+        console.log("div background image ", img.src);
+        // content.style.backgroundColor = "#FFCC80";
+        content.style.backgroundImage = `url(${img.src})`;
+      }
+    }
+    var allImages = content instanceof HTMLImageElement ? [content] : isInstanceofHTMLDiv ? [img] : content.getElementsByTagName("img");
     for (var i = 0; i < allImages.length; i++) {
       this.BindErrorEvent(allImages[i]);
     }
@@ -35,8 +44,12 @@ Winner.ImageRecover.prototype = {
       return;
     var date = new Date();
     var node = this.GetNode(img.src);
-    if (node == null) {
-      img.src = this.Failover.DefaultUrl + "?v=" + date;
+    if (node == null && this.Failover.DefaultUrl) {
+      if (img.src.includes("?")) {
+        img.src = this.Failover.DefaultUrl + "&v=" + date;
+      } else {
+        img.src = this.Failover.DefaultUrl + "?v=" + date;
+      }
       return;
     }
     var isRecover = false;
@@ -48,7 +61,12 @@ Winner.ImageRecover.prototype = {
         continue;
       var src = img.src.split("?")[0];
       img.src =
-        src.replace(node.Url, this.Failover.Nodes[i].Url) + "?v=" + date;
+        src.replace(node.Url, this.Failover.Nodes[i].Url)
+      if (img.src.includes("?")) {
+        img.src += "&v=" + date;
+      } else {
+        img.src += "?v=" + date
+      }
       isRecover = true;
       break;
     }
@@ -57,7 +75,11 @@ Winner.ImageRecover.prototype = {
       this.Failover.DefaultUrl != undefined &&
       this.Failover.DefaultUrl != ""
     ) {
-      img.src = this.Failover.DefaultUrl + "?v=" + date;
+      if (img.src.includes("?")) {
+        img.src = this.Failover.DefaultUrl + "&v=" + date;
+      } else {
+        img.src = this.Failover.DefaultUrl + "?v=" + date;
+      }
     }
   },
   GetNode: function (url) {

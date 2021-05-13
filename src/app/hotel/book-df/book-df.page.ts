@@ -139,6 +139,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   checkPayCountIntervalTime = 5 * 1000;
   curSelectedBookInfo: PassengerBookInfo<IHotelInfo>;
   isSelfBookType = true;
+  isShowCostCenter = true;
+  isShowOrganizations = true;
   arrivalDateTimes: string[];
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   dates: { date: string; price: string | number }[] = [];
@@ -419,6 +421,12 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       }
       this.error = "";
+      this.tmcService.checkIfHasCostCenter().then((has) => {
+        this.isShowCostCenter = has;
+      });
+      this.tmcService.checkIfHasOrganizations().then((has) => {
+        this.isShowOrganizations = has;
+      });
       this.identity = await this.identityService.getIdentityAsync();
       this.bookInfos = this.hotelService
         .getBookInfos()
@@ -582,12 +590,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo.roomPlan.Rules &&
-      info.bookInfo.bookInfo.roomPlan.Rules.length
+      Object.keys(info.bookInfo.bookInfo.roomPlan.Rules).length
     ) {
       return true;
     }
     if (
       (!staff.Approvers || staff.Approvers.length == 0) &&
+      Tmc.HotelApprovalType == TmcApprovalType.ExceedPolicyApprover &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo &&
       info.bookInfo.bookInfo.roomPlan.Rules &&
@@ -954,12 +963,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       p.IllegalReason =
         combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
       if (
+        !this.isRoomPlanFreeBook(combindInfo) &&
         !combindInfo.isNotWhitelist &&
         combindInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.roomPlan &&
-        combindInfo.bookInfo.bookInfo.roomPlan.Rules &&
-        !this.isRoomPlanFreeBook(combindInfo)
+        combindInfo.bookInfo.bookInfo.roomPlan.Rules&&
+        Object.keys(combindInfo.bookInfo.bookInfo.roomPlan.Rules).length > 0
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
         if (!p.IllegalReason && this.tmc.IsNeedIllegalReason) {
@@ -970,6 +980,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           );
           return false;
         }
+      }else{
+        p.IllegalReason ='随心住';
       }
       if (!p.Mobile) {
         this.isShowOtherInfo = true;
@@ -1513,9 +1525,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     const bookDto: OrderBookDto = new OrderBookDto();
     const roomPlan =
       this.combindInfos && this.combindInfos[0].bookInfo.bookInfo.roomPlan;
-    if (this.isRoomPlanFreeBook(this.combindInfos[0])) {
-      bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
-    }
+   
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
@@ -1562,7 +1572,16 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         return;
       }
       this.isSubmitDisabled = true;
-
+      // 随心住设置
+      if (this.isRoomPlanFreeBook(this.combindInfos[0])) {
+        bookDto.SelfPayAmount = roomPlan.VariablesJsonObj.SelfPayAmount;
+      } else {
+        // bookDto.IsSelfPayAmount = `0`;
+        if (roomPlan.VariablesJsonObj && roomPlan.Variables) {
+          roomPlan.VariablesJsonObj.IsSelfPayAmount = false;
+          roomPlan.Variables = JSON.stringify(roomPlan.VariablesJsonObj);
+        }
+      }
       const res = await this.hotelService.onBook(bookDto).catch((e) => {
         AppHelper.alert(e);
         return { TradeNo: "", HasTasks: true } as IBookOrderResult;
