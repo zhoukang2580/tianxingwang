@@ -355,38 +355,9 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       if(arrList.length == 0){
         this.airportList.push(this.cagAirport);
       }
-
-      // if(this.airportList && this.airportList.length){
-      //   this.airportList = this.airportList.filter(it =>{
-      //     const airName = it.fromCity.Nickname+'-'+it.toCity.Nickname;
-      //     const asdName = this.cagAirport.fromCity.Nickname+'-'+this.cagAirport.toCity.Nickname;
-      //     if(airName != asdName){
-      //       this.airportList.push(this.cagAirport);
-      //     }
-      //   })
-      // }else{
-      // }
       
       console.log(this.airportList);
       
-
-
-
-      // this.airportList.find(it =>{
-      //   const airName = it.fromCity.Nickname+'-'+it.toCity.Nickname;
-      //   const asdName = this.cagAirport.fromCity.Nickname+'-'
-      // })
-
-      // if(this.airportList && this.airportList.length){
-      //   this.airportList.filter(e=>{
-      //     const airName = e.fromCity.Nickname+'-'+e.toCity.Nickname;
-      //     let arr = [];
-      //     const delRepetition = arr.indexOf(airName) == -1;
-      //     if(airName){
-
-      //     }
-      //   })
-      // }
       // this.removeDuplicate(this.airportList);
       s.Date = this.goDate.date;
       s.FromAirport = fromCode;
