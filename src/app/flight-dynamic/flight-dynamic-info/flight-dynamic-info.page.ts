@@ -41,6 +41,7 @@ export class FlightDynamicInfoPage implements OnInit {
     startDate: string,
     enDate: string,
   }
+  
   hour: string;
   type: string;
   isShow = false;
@@ -88,95 +89,104 @@ export class FlightDynamicInfoPage implements OnInit {
     }
   }
 
-  private loadDetails() {
-    if (this.flightNo) {
-      this.flightDynamicService.getFlightDynamicDetail(this.detailList).then(d => {
-        d.forEach(it => {
-          this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
-          this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
-          it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
-          it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
-          it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
-          it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
+  async customPopoverOptions() {
+    AppHelper.alert('未开通此功能');
+  };
+
+  private async loadDetails() {
+    try {
+      if (this.flightNo) {
+        this.flightDynamicService.getFlightDynamicDetail(this.detailList).then(d => {
+          d.forEach(it => {
+            this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
+            this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
+            it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
+            it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
+            it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
+            it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
+    
+            const fliNo = it.PreviousFlightNumber;
+            this.hour = it.Minute;
+            this.type = it.StatusName;
+            this.FlightName = it.AirlineName;
+            this.isShow = false;
+            if (fliNo && fliNo.length) {
+              this.isShow = true;
+            }
+          });
+          this.flightDynamicDetailsModel = d;
+          const len = this.flightDynamicDetailsModel.length;
+          var pro;
+          if (len > 1) {
+            pro = this.flightDynamicDetailsModel.pop();
+            this.flightDynamicPro = pro;
+          } else {
+            this.flightDynamicPro = d;
+            this.flightDynamicPro = { ...this.flightDynamicPro }[0];
+          }
+          console.log(this.flightDynamicPro, "flight");
+        })
+      }
+      if(this.flightNum){
+        this.flightDynamicService.getFlightDynamicDetailes(this.detailsList).then(d => {
+          d.filter(it => {
+            this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
+            this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
+            it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
+            it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
+            it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
+            it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
   
-          const fliNo = it.PreviousFlightNumber;
-          this.hour = it.Minute;
-          this.type = it.StatusName;
-          this.FlightName = it.AirlineName;
-          this.isShow = false;
-          if (fliNo && fliNo.length) {
-            this.isShow = true;
-          }
-        });
-        this.flightDynamicDetailsModel = d;
-        const len = this.flightDynamicDetailsModel.length;
-        var pro;
-        if (len > 1) {
-          pro = this.flightDynamicDetailsModel.pop();
-          this.flightDynamicPro = pro;
-        } else {
-          this.flightDynamicPro = d;
+            
+            this.hour = it.Minute;
+            this.type = it.StatusName;
+            const fliNo = it.PreviousFlightNumber;
+            this.hour = it.Minute;
+            this.isShow = false;
+            if (fliNo && fliNo.length) {
+              this.isShow = true;
+            }
+          });
+          this.flightDynamicDetailsModel = d;
+          
+          this.flightDynamicPro = this.flightDynamicDetailsModel;
           this.flightDynamicPro = { ...this.flightDynamicPro }[0];
-        }
-        console.log(this.flightDynamicPro, "flight");
-      })
-    }
-    if(this.flightNum){
-      this.flightDynamicService.getFlightDynamicDetailes(this.detailsList).then(d => {
-        d.filter(it => {
-          this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
-          this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
-          it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
-          it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
-          it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
-          it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
-
+         
+          console.log(this.flightDynamicPro, "flight");
+        })
+      }
+      if(this.flightNoN){
+        this.flightDynamicService.getFlightDynamicDetailes(this.detailsLists).then(d => {
+          d.filter(it => {
+            this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
+            this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
+            it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
+            it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
+            it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
+            it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
+  
+            
+            this.hour = it.Minute;
+            this.type = it.StatusName;
+            const fliNo = it.PreviousFlightNumber;
+            this.hour = it.Minute;
+            this.isShow = false;
+            if (fliNo && fliNo.length) {
+              this.isShow = true;
+            }
+          });
+          this.flightDynamicDetailsModel = d;
           
-          this.hour = it.Minute;
-          this.type = it.StatusName;
-          const fliNo = it.PreviousFlightNumber;
-          this.hour = it.Minute;
-          this.isShow = false;
-          if (fliNo && fliNo.length) {
-            this.isShow = true;
-          }
-        });
-        this.flightDynamicDetailsModel = d;
-        
-        this.flightDynamicPro = this.flightDynamicDetailsModel;
-        this.flightDynamicPro = { ...this.flightDynamicPro }[0];
-       
-        console.log(this.flightDynamicPro, "flight");
-      })
+          this.flightDynamicPro = this.flightDynamicDetailsModel;
+          this.flightDynamicPro = { ...this.flightDynamicPro }[0];
+         
+          console.log(this.flightDynamicPro, "flight");
+        })
+      }
+    } catch (error) {
+      AppHelper.alert(error)
     }
-    if(this.flightNoN){
-      this.flightDynamicService.getFlightDynamicDetailes(this.detailsLists).then(d => {
-        d.filter(it => {
-          this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
-          this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
-          it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
-          it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
-          it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
-          it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
-
-          
-          this.hour = it.Minute;
-          this.type = it.StatusName;
-          const fliNo = it.PreviousFlightNumber;
-          this.hour = it.Minute;
-          this.isShow = false;
-          if (fliNo && fliNo.length) {
-            this.isShow = true;
-          }
-        });
-        this.flightDynamicDetailsModel = d;
-        
-        this.flightDynamicPro = this.flightDynamicDetailsModel;
-        this.flightDynamicPro = { ...this.flightDynamicPro }[0];
-       
-        console.log(this.flightDynamicPro, "flight");
-      })
-    }
+    
 
   }
 

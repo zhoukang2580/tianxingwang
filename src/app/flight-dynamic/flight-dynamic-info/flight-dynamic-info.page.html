@@ -9,7 +9,7 @@
                 <span>{{FlightName}}</span>
             </div>
         </ion-title>
-        <img src="assets/images/share.png" alt="">
+        <img (click)="customPopoverOptions()" src="assets/images/share.png" alt="">
     </ion-toolbar>
 </ion-header>
 
@@ -127,7 +127,7 @@
 </ion-content>
 
 <ion-footer>
-    <ion-button class="btn_chare" color="secondary" expand="block">
+    <ion-button (click)="customPopoverOptions()" class="btn_chare" color="secondary" expand="block">
         <ion-text>关注航班</ion-text>
     </ion-button>
 </ion-footer>
