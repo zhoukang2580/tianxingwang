@@ -14,10 +14,10 @@ export class FlightDynamicPreorderPage implements OnInit {
   flightNo:string;
   theFlightNo:string;
   theDatetime:string;
-  flightDynamicDetailsModel:FlightDynamicDetailPage;
+  preDepcity:string;
+  preArrCity:string;
+  flightDynamicDetailsModel:FlightDynamicDetailPage[];
   thisFlightDynamicDetails:any;
-  PlanArrivalTime: string;
-  PlanTakeoffTime: string;
   constructor(
     private route:ActivatedRoute,
     private flightDynamicService:FlightDynamicService,
@@ -31,6 +31,8 @@ export class FlightDynamicPreorderPage implements OnInit {
         this.flightNo = q.get("PreviousFlightNumber");
         this.theDatetime = q.get("FlightDateTime");
         this.theFlightNo = q.get("FlightNumber");
+        this.preDepcity = q.get("preDepCity");
+        this.preArrCity = q.get("preArrCity");
         this.doload();
       })
     } catch (error) {
@@ -47,10 +49,15 @@ export class FlightDynamicPreorderPage implements OnInit {
           it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
           it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
         });
+        d.find(e => e.FromAirport == this.preDepcity && e.ToAirport == this.preArrCity)
         this.flightDynamicDetailsModel = d;
+        this.flightDynamicDetailsModel = this.flightDynamicDetailsModel.filter((it)=>{
+          return it.FromAirport == this.preDepcity && it.ToAirport == this.preArrCity;
+        });
+
 
         console.log(this.flightDynamicDetailsModel, "flight");
-      })
+      }) 
     }
     if (this.theFlightNo) {
       this.flightDynamicService.getFlightDynamicDetails(this.theDatetime, this.theFlightNo).then(d => {
@@ -61,6 +68,7 @@ export class FlightDynamicPreorderPage implements OnInit {
           it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
         });
         this.thisFlightDynamicDetails = d;
+        this.thisFlightDynamicDetails = this.thisFlightDynamicDetails.pop();
 
         console.log(this.thisFlightDynamicDetails, "flight");
       })

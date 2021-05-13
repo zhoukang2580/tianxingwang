@@ -37,7 +37,7 @@
             </div>
         </div>
         <ion-item-group>
-            <div *ngFor="let item of thisFlightDynamicDetails">
+            <div *ngIf="thisFlightDynamicDetails as item">
                 <ion-item-divider class="divider">{{item.FromAirportName}}|本次航班</ion-item-divider>
                 <ion-item lines="none" (click)="onSelectFlight(item.FlightNumber)">
                     <ion-grid>
@@ -107,39 +107,6 @@
                     </ion-grid>
                 </ion-item>
             </div>
-            <!-- <ion-item-divider class="divider">上海浦东|本次航班</ion-item-divider>
-            <ion-item lines="none">
-                <ion-grid>
-                    <ion-row>
-                        <ion-col>FM9069</ion-col>
-                        <ion-col class="end project">
-                            <ion-text class="plan">计划</ion-text>
-                            <ion-icon class="ionc" name="chevron-forward-outline"></ion-icon>
-                        </ion-col>
-                    </ion-row>
-                    <ion-row class="fro-city">
-                        <ion-col>上海浦东</ion-col>
-                        <ion-col class="end">
-                            天津滨海
-                        </ion-col>
-                    </ion-row>
-                    <ion-row class="fly-time">
-                        <ion-col class="timer">22:25</ion-col>
-                        <ion-col class="fly-logo">
-                            <ion-text class="dot">●●●</ion-text>
-                            <ion-text class="img-log">
-                                <img src="assets/images/airplane.png" alt="">
-                            </ion-text>
-                            <ion-text class="dot">●●●</ion-text>
-                        </ion-col>
-                        <ion-col class="end timer">00:55</ion-col>
-                    </ion-row>
-                    <ion-row>
-                        <ion-col>预计起飞22:25</ion-col>
-                        <ion-col class="end">预计到达时间</ion-col>
-                    </ion-row>
-                </ion-grid>
-            </ion-item> -->
             <ion-item-divider class="divider">出发</ion-item-divider>
         </ion-item-group>
     </ion-list>

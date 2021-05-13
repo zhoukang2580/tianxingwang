@@ -131,6 +131,9 @@ export class FlightDynamicInfoPage implements OnInit {
           it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
           it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
 
+          
+          this.hour = it.Minute;
+          this.type = it.StatusName;
           const fliNo = it.PreviousFlightNumber;
           this.hour = it.Minute;
           this.isShow = false;
@@ -156,6 +159,9 @@ export class FlightDynamicInfoPage implements OnInit {
           it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
           it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
 
+          
+          this.hour = it.Minute;
+          this.type = it.StatusName;
           const fliNo = it.PreviousFlightNumber;
           this.hour = it.Minute;
           this.isShow = false;
@@ -188,7 +194,9 @@ export class FlightDynamicInfoPage implements OnInit {
         PreviousFlightDate: previous.PreviousFlightDate.substring(0, 10),
         PreviousFlightNumber: previous.PreviousFlightNumber,
         FlightDateTime: this.searchDynamicModel.Date,
-        FlightNumber: previous.FlightNumber
+        FlightNumber: previous.FlightNumber,
+        preDepCity: previous.PreviousFromAirport,
+        preArrCity: previous.PreviousToAirport
       }
     });
   }

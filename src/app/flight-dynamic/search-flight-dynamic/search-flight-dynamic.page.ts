@@ -318,7 +318,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       this.fliNumber = '';
       return
     }
-    const reg = /^[A-Z\d]{2}\d{4}$/;
+    let reg = /^[A-Za-z\d]{2}\d{4}$/;
     if (!(reg.test(flightNo))) {
       AppHelper.alert("航班号不正确请输入正确的航班号")
       this.fliNumber = '';
@@ -326,7 +326,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     }
 
     s.Date = this.goDate.date;
-    this.fliNumber = this.fliNumber;
+    this.fliNumber = this.fliNumber.toUpperCase();
     const delRepetition = this.histroyList.indexOf(this.fliNumber) == -1;
     if (delRepetition && this.fliNumber.trim().length > 0) {
       this.histroyList.push(this.fliNumber);

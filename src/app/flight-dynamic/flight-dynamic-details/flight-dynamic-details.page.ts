@@ -37,6 +37,7 @@ export class FlightDynamicDetailsPage implements OnInit {
     try {
       this.route.queryParamMap.subscribe((q) => {
         this.flightNo = q.get("flightNo")
+        this.flightNo = this.flightNo.toUpperCase();
         this.initSearchModelParams();
         this.dateTime = this.searchDynamicModel.Date;
         // this.detailList = {
