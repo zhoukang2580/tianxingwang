@@ -92,12 +92,18 @@ ion-header {
                     padding: 0 10px;
                     color: #333;
                 }
-                .end {
+                .boarding_needing {
                     color: #333;
                     font-size: 15px;
                     ion-col:first-child {
                         color: #6699FF;
                     }
+                }
+                .center {
+                    text-align: center;
+                }
+                .end {
+                    text-align: end;
                 }
             }
         }

@@ -40,6 +40,7 @@
                 --background: #fdfbfb;
                 padding: 10px 0;
                 font-weight: 500;
+                border-width: 0;
             }
             .last {
                 --background: #5099FE;
@@ -86,7 +87,7 @@
                         flex: 40%;
                         .dot {
                             font-size: 12px;
-                            letter-spacing: 0.2em;
+                            // letter-spacing: 0.2em;
                         }
                         .img-log {
                             display: flex;

@@ -18,7 +18,7 @@
         <div class="dy-need-to-know">
             <div class="arrive">{{type}}</div>
             <div *ngIf="type=='到达'||type=='起飞'">
-                <div class="distance" *ngIf="hour!='2'">航班提前{{hour}}分钟到达</div>
+                <div class="distance">航班提前{{hour}}分钟到达</div>
             </div>
             <!-- <div class="distance" *ngIf="item.StatusName=='到达'">航班提前{{hour}}小时到达</div> -->
         </div>
@@ -49,24 +49,20 @@
                         </ion-row>
                         <ion-row>
                             <ion-col>
-                                <ion-text *ngIf='item.StatusName=="计划"'>计划起飞</ion-text>
-                                <ion-text *ngIf='item.StatusName=="到达"'>实际起飞</ion-text>
-                                <ion-text *ngIf='item.StatusName=="取消"'>取消起飞</ion-text>
+                                <ion-text>计划起飞</ion-text>
                                 <ion-text class="time">{{item.PlanTakeoffTime}}</ion-text>
                                 <ion-text>{{PlanTakeoffTime}}</ion-text>
                             </ion-col>
                         </ion-row>
                         <ion-row>
-                            <ion-col *ngIf='item.StatusName=="计划"'>预计起飞</ion-col>
-                            <ion-col *ngIf='item.StatusName=="到达"'>原计划</ion-col>
-                            <ion-col *ngIf='item.StatusName=="取消"'>取消起飞</ion-col>
-                            <ion-col>值机柜台</ion-col>
-                            <ion-col>登机口</ion-col>
+                            <ion-col>预计起飞</ion-col>
+                            <ion-col class="center">值机柜台</ion-col>
+                            <ion-col class="end">登机口</ion-col>
                         </ion-row>
-                        <ion-row class="end">
+                        <ion-row class="boarding_needing">
                             <ion-col>{{item.EstimateTakeoffTime}}</ion-col>
-                            <ion-col>{{item.CkiCounter}}</ion-col>
-                            <ion-col>{{item.BoardingGate}}</ion-col>
+                            <ion-col class="center" size='5'>{{item.CkiCounter}}</ion-col>
+                            <ion-col class="end">{{item.BoardingGate}}</ion-col>
                         </ion-row>
                     </ion-grid>
                 </ion-item>
@@ -80,24 +76,20 @@
                         </ion-row>
                         <ion-row>
                             <ion-col>
-                                <ion-text *ngIf='item.StatusName=="计划"'>计划到达</ion-text>
-                                <ion-text *ngIf='item.StatusName=="到达"'>实际到达</ion-text>
-                                <ion-text *ngIf='item.StatusName=="取消"'>取消起飞</ion-text>
+                                <ion-text>计划到达</ion-text>
                                 <ion-text class="time">{{item.PlanArrivalTime}}</ion-text>
                                 <ion-text>{{PlanArrivalTime}}</ion-text>
                             </ion-col>
                         </ion-row>
                         <ion-row>
-                            <ion-col *ngIf='item.StatusName=="计划"'>预计到达</ion-col>
-                            <ion-col *ngIf='item.StatusName=="到达"'>原计划</ion-col>
-                            <ion-col *ngIf='item.StatusName=="取消"'>取消起飞</ion-col>
-                            <ion-col>行李转盘</ion-col>
-                            <ion-col>出口</ion-col>
+                            <ion-col>预计到达</ion-col>
+                            <ion-col class="center">行李转盘</ion-col>
+                            <ion-col class="end">出口</ion-col>
                         </ion-row>
-                        <ion-row class="end">
+                        <ion-row class="boarding_needing">
                             <ion-col>{{item.EstimateArrivalTime}}</ion-col>
-                            <ion-col>{{item.Carousel}}</ion-col>
-                            <ion-col>--</ion-col>
+                            <ion-col class="center" size='5'>{{item.Carousel}}</ion-col>
+                            <ion-col class="end">--</ion-col>
                         </ion-row>
                     </ion-grid>
                 </ion-item>
