@@ -38,7 +38,7 @@
         </div>
         <ion-item-group>
             <div *ngIf="thisFlightDynamicDetails as item">
-                <ion-item-divider class="divider">{{item.FromAirportName}}|本次航班</ion-item-divider>
+                <ion-item-divider class="divider" lines='none'>{{item.FromAirportName}}|本次航班</ion-item-divider>
                 <ion-item lines="none" (click)="onSelectFlight(item.FlightNumber)">
                     <ion-grid>
                         <ion-row>
@@ -73,7 +73,7 @@
                 </ion-item>
             </div>
             <div *ngFor="let preor of flightDynamicDetailsModel">
-                <ion-item-divider class="divider">{{preor.FromAirportName}}|您查询的前序航班</ion-item-divider>
+                <ion-item-divider class="divider" lines='none'>{{preor.FromAirportName}}|您查询的前序航班</ion-item-divider>
                 <ion-item class="last" lines="none" (click)="onSelectFlight(preor)">
                     <ion-grid>
                         <ion-row>
@@ -107,7 +107,7 @@
                     </ion-grid>
                 </ion-item>
             </div>
-            <ion-item-divider class="divider">出发</ion-item-divider>
+            <ion-item-divider class="divider" lines='none'>出发</ion-item-divider>
         </ion-item-group>
     </ion-list>
 </ion-content>
