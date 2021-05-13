@@ -49,7 +49,7 @@
             cityPage.openPage(isShow)
         }
 
-        function CityPage(domesticCities, interCities, lang = 'cn') {
+        function CityPage(domesticCities, interCities, lang = "cn") {
             const tabObj = {
                 推荐: "isHot",
                 港澳台: 11,
@@ -74,6 +74,7 @@
             this.interSidebarsTabs;
             this.pageSize = 40;
             this.isDomestic = true;
+            this.isShowSegs = true;
             this.textSearchResults = [];
             this.openPage = openPage;
             this.onToggleSegmentsPage = onToggleSegmentsPage;
@@ -110,46 +111,32 @@
             }
             function getHeaderHtml() {
                 const header = document.createElement("div");
-                header.classList.add("header");
-                const backIcon = document.createElement("ion-icon");
-                backIcon.setAttribute("name", "chevron-back-outline");
-                backIcon.setAttribute("slot", "start");
-                const cancelBtn = document.createElement("ion-button");
-                cancelBtn.setAttribute("color", "secondary");
-                cancelBtn.setAttribute("fill", "clear");
-                cancelBtn.setAttribute("size", "small");
-                cancelBtn.classList.add("cancel");
-                const label = document.createElement("ion-label");
-                label.textContent = "取消";
-                cancelBtn.append(label);
+                header.innerHTML = `
+                    <div class='header'>
+                        <ion-icon name='chevron-back-outline' slot='start'></ion-icon>
+                        <form action='javascript:void(0)' class='searchbar'>
+                            <ion-searchbar debounce='300' mode='ios' ></ion-searchbar>    
+                        </form>
+                        <ion-button color='secondary' fill='clear' size='small' class='cancel' >
+                            <ion-label >取消<ion-label>    
+                        </ion-button>
+                    </div>
+                `;
+                const searchbar = header.querySelector("ion-searchbar");
+                const backIcon = header.querySelector("ion-icon");
+                const cancelBtn = header.querySelector("ion-button");
                 cancelBtn.onclick = () => {
                     hidePages();
                 };
                 backIcon.onclick = () => {
                     hidePages();
                 };
-                const bform = document.createElement('form');
-                bform.setAttribute("action", 'javascript:void(0)');
-                bform.classList.add("searchbar");
-                const searchbar = document.createElement("ion-searchbar");
-                bform.append(searchbar);
-                bform.onsubmit = function () {
-                    onSearch();
-                }
-                searchbar.setAttribute("debounce", '300');
-                searchbar.setAttribute("mode", 'ios');
                 searchbar.addEventListener("ionFocus", function () {
                     showSearchListPage(true);
-                })
-                // searchbar.addEventListener("ionBlur", function () {
-                //     showSearchListPage(false);
-                // })
+                });
                 searchbar.addEventListener("ionChange", function () {
                     onSearch();
-                })
-                header.append(backIcon);
-                header.append(bform);
-                header.append(cancelBtn);
+                });
                 return header;
             }
             function hidePages() {
@@ -165,21 +152,20 @@
                 }
             }
             function getSegmentHtml() {
+                // that.isShowSegs
                 const seg = document.createElement("div");
-                seg.classList.add("segments");
-                const d = document.createElement("div");
-                const label = document.createElement("label");
-                label.textContent = "国内";
-                d.append(label);
-                d.classList.add("segment");
-                const i = document.createElement("div");
-                i.classList.add("segment");
-                d.classList.add("active");
-                const lb = document.createElement("label");
-                lb.textContent = "国际/港澳台";
-                i.append(lb);
-                seg.append(d);
-                seg.append(i);
+                seg.innerHTML = `
+                    <div class='segments'>
+                        <div class='segment d active'>
+                            <label>国内</label>    
+                        </div>    
+                        <div class='segment i'>
+                            <label>国际/港澳台</label>    
+                        </div>    
+                    </div>
+                `;
+                const d = seg.querySelector(".d");
+                const i = seg.querySelector(".i");
                 d.onclick = () => {
                     i.classList.remove("active");
                     d.classList.add("active");
@@ -193,23 +179,29 @@
                 return seg;
             }
             function onToggleSegmentsPage(isDomestic) {
-                const d = getDomesticPageWrapper();
-                const i = getInternationalWrapper();
+                const dw = getDomesticPageWrapper();
+                const iw = getInternationalWrapper();
+                const dEl = that.page.querySelector(".segment.d");
+                const iEl = that.page.querySelector(".segment.i");
                 that.isDomestic = isDomestic;
                 if (isDomestic) {
-                    d.classList.add("show");
-                    i.classList.remove("show");
+                    dw.classList.add("show");
+                    iw.classList.remove("show");
+                    dEl.classList.add("active");
+                    iEl.classList.remove("active");
                 } else {
-                    i.classList.add("show");
-                    const mainEl = i.querySelector(".main");
+                    dEl.classList.remove("active");
+                    iEl.classList.add("active");
+                    iw.classList.add("show");
+                    const mainEl = iw.querySelector(".main");
                     if (mainEl) {
                         if (!mainEl.firstChild) {
                             if (that.interSidebarsTabs) {
-                                onInterSidebarTabActive(that.interSidebarsTabs[0])
+                                onInterSidebarTabActive(that.interSidebarsTabs[0]);
                             }
                         }
                     }
-                    d.classList.remove("show");
+                    dw.classList.remove("show");
                 }
             }
             function openPage(open) {
@@ -245,24 +237,21 @@
             function getHistoryHtml(cities) {
                 const wrapper = document.createElement("div");
                 try {
-                    wrapper.classList.add("hot-cities-wrapper");
-                    wrapper.classList.add("history-cities-wrapper");
+                    wrapper.innerHTML = `
+                        <div class='hot-cities-wrapper history-cities-wrapper'>
+                            <div class='header'>
+                                <label>历史记录</label>
+                                <ion-icon name='trash-outline' class='icon'></ion-icon>
+                            </div>
+                        </div>
+                    `;
                     if (!cities || !cities.length) {
                         return wrapper;
                     }
-                    const header = document.createElement("div");
-                    header.classList.add("header");
-                    const label = document.createElement("label");
-                    label.textContent = "历史记录";
-                    header.append(label);
-                    const rmicon = document.createElement("ion-icon");
-                    rmicon.classList.add("icon");
-                    rmicon.setAttribute("name", "trash-outline");
+                    const rmicon = wrapper.querySelector("ion-icon");
                     rmicon.onclick = () => {
                         onClearHistories();
                     };
-                    header.append(rmicon);
-                    wrapper.append(header);
                     const list = document.createElement("div");
                     const listWrapper = document.createElement("div");
                     listWrapper.classList.add("list-wrapper");
@@ -282,7 +271,7 @@
                             item.classList.add(`col-${r.length}`);
                             div.append(item);
                         });
-                        list.append(div)
+                        list.append(div);
                     });
                 } catch (e) {
                     console.error(e);
@@ -292,11 +281,17 @@
             function getHistoryOrHotItem(c, isHistory = false, lang = "cn") {
                 const item = document.createElement("div");
                 item.classList.add("city-item");
-                item.textContent = lang == "en" ? c.EnglishName : c.Name;
+                item.textContent =
+                    lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
                 item.setAttribute("Code", c.Code);
-                const label = document.createElement("label");
-                label.textContent = c.Name;
-                if (!label.textContent) {
+                if (that.isShowAirports) {
+                    if (c.IsHide) {
+                        item.classList.add("hidden");
+                    }
+                    item.classList.add("airport-item");
+                    item.textContent = c.Name;
+                }
+                if (!item.textContent) {
                     item.classList.add("empty");
                 }
                 item.onclick = () => {
@@ -324,13 +319,14 @@
             function getHotHtml(cities) {
                 const wrapper = document.createElement("div");
                 try {
-                    wrapper.classList.add("hot-cities-wrapper");
-                    const header = document.createElement("div");
-                    header.classList.add("header");
-                    const label = document.createElement("label");
-                    label.textContent = "热门城市";
-                    header.append(label);
-                    wrapper.append(header);
+                    wrapper.innerHTML = `
+                        <div class='hot-cities-wrapper hot-cities-wrapper1'>
+                            <div class='header'>
+                                <label>热门城市</label>
+                            </div>
+                        </div>
+                    
+                    `;
                     const list = document.createElement("div");
                     const listWrapper = document.createElement("div");
                     listWrapper.classList.add("list-wrapper");
@@ -350,7 +346,7 @@
                             item.classList.add(`col-${r.length}`);
                             div.append(item);
                         });
-                        list.append(div)
+                        list.append(div);
                     });
                 } catch (e) {
                     console.error(e);
@@ -400,9 +396,9 @@
                     if (last) {
                         if (last.length < rowLen) {
                             const lastlen = last.length;
-                            if (!last.some(it => it.isFlag)) {
+                            if (!last.some((it) => it.isFlag)) {
                                 for (let i = 0; i < rowLen - lastlen; i++) {
-                                    last.push({})
+                                    last.push({});
                                 }
                             }
                         }
@@ -427,9 +423,17 @@
                         let histories = that.histories;
                         if (!histories || !histories.length) {
                             histories = [c];
+                            that.histories = histories;
                         }
                         if (histories.length >= 12) {
-                            histories.pop();
+                            const hc = histories.find((it) => it.Code == c.Code);
+                            if (!hc) {
+                                histories.unshift(c);
+                                histories.pop();
+                            } else {
+                                histories.splice(histories.indexOf(hc), 1);
+                                histories.unshift(c);
+                            }
                         } else if (!histories.find((it) => it.Code == c.Code)) {
                             histories.unshift(c);
                         }
@@ -459,7 +463,7 @@
                                 );
                             }
                         }
-                        cacheSelectedCities(histories)
+                        cacheSelectedCities(histories);
                     }
                 } catch (e) {
                     console.error(e);
@@ -561,9 +565,15 @@
                     }
                     if (recommendCities) {
                         const len = 12;
-                        const enLen = 16;
+                        const enLen = 10;
                         const rowLen = 3;
-                        const rows = getListRows(recommendCities, rowLen, enLen, len, that.lang);
+                        const rows = getListRows(
+                            recommendCities,
+                            rowLen,
+                            enLen,
+                            len,
+                            that.lang
+                        );
                         const list = document.createElement("div");
                         list.classList.add("list");
                         allInterItems = [];
@@ -663,7 +673,6 @@
                     tab.setAttribute("name", attrvalue);
                     tab.append(lb);
                     tab.onclick = (evt) => {
-
                         onInterSidebarTabActive(tab);
                     };
                     return tab;
@@ -697,17 +706,20 @@
                 return getPageEle().querySelector(".container");
             }
             function cacheSelectedCities(histories) {
-                window.localStorage.setItem("flight_cached_histories_cities_key", JSON.stringify(histories));
+                window.localStorage.setItem(
+                    "flight_cached_histories_cities_key",
+                    JSON.stringify(histories)
+                );
             }
             function getCachedSelectedCities() {
                 try {
-                    const l = window.localStorage.getItem("flight_cached_histories_cities_key");
+                    const l = window.localStorage.getItem(
+                        "flight_cached_histories_cities_key"
+                    );
                     if (l) {
-                        return JSON.parse(l)
+                        return JSON.parse(l);
                     }
-                } catch (e) {
-
-                }
+                } catch (e) { }
                 return [];
             }
             function clearCachedHistories() {
@@ -754,7 +766,7 @@
                             const segs = page.querySelector(".segments");
                             headerEle = h.clientHeight + segs.clientHeight || 97;
                             let y = 0;
-                            y = rect.top - headerEle;
+                            y = rect.top - headerEle - (h.offsetTop || 0);
                             const ul = getContainerEle();
                             ul.scrollBy(0, y);
                         } catch (e) {
@@ -764,7 +776,7 @@
                 });
                 return divwrapper;
             }
-            function getItem(c) {
+            function getItem(c, lang) {
                 const item = document.createElement("li");
                 item.classList.add("item");
                 item.onclick = (evt) => {
@@ -786,7 +798,19 @@
                     }
                 };
                 const label = document.createElement("label");
-                label.textContent = c.Name;
+                label.textContent =
+                    lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
+                if (that.isShowAirports) {
+                    label.textContent = c.Name;
+                }
+                label.classList.add("notranslate");
+                if (c.CityName) {
+                    const sp = document.createElement("span");
+                    sp.textContent = `(${c.CityName})`;
+                    sp.classList.add("city-name");
+                    sp.classList.add("notranslate");
+                    label.append(sp);
+                }
                 item.append(label);
                 if (!allItems.find((it) => it == item)) {
                     allItems.push(item);
@@ -798,7 +822,7 @@
                 if (cities) {
                     cities.forEach((c) => {
                         if (!c.FirstLetter) {
-                            c.FirstLetter = (c.Initial || "").substr(0, 1).toUpperCase();
+                            c.FirstLetter = (c.Pinyin || "").substr(0, 1).toUpperCase();
                         }
                         const arr = cmap[c.FirstLetter];
                         if (arr) {
@@ -834,7 +858,7 @@
                             const arr = cmap[l];
                             if (arr) {
                                 arr.forEach((c) => {
-                                    const item = getItem(c);
+                                    const item = getItem(c, that.lang);
                                     list.append(item);
                                 });
                             }
@@ -858,10 +882,10 @@
                         if (!that.searchListPage.classList.contains("show")) {
                             clearSearchPageListItems();
                         }
-                        sp.classList.add('show');
+                        sp.classList.add("show");
                     } else {
                         clearSearchBarText();
-                        sp.classList.remove('show');
+                        sp.classList.remove("show");
                         setTimeout(() => {
                             clearSearchPageListItems();
                         }, 200);
@@ -873,8 +897,8 @@
                 const item = document.createElement("div");
                 item.classList.add("item");
                 const lb = document.createElement("label");
-                let lbtextContent = lang == 'en' ? city.EnglishName : city.Name;
-                const n = document.createElement("label")
+                let lbtextContent = lang == "en" ? city.EnglishName : city.Name;
+                const n = document.createElement("label");
                 n.classList.add("name");
                 n.textContent = `${lbtextContent}`;
                 item.append(n);
@@ -892,7 +916,7 @@
                 }
                 item.onclick = () => {
                     onSelectCity(city);
-                }
+                };
                 return item;
             }
             function loadMoreItems(infinite = null) {
@@ -901,14 +925,18 @@
                 let temp = [];
                 if (kw) {
                     let tmpArr;
-                    if (kw.length == 3) {
-                        tmpArr = arr.filter(it => (it.Code || "").toLowerCase() == kw.toLowerCase());
+                    if (kw.length == 3 && kw.match(/[a-z]/ig)) {
+                        tmpArr = arr.filter(
+                            (it) => (it.Code || "").toLowerCase() == kw.toLowerCase()
+                        );
                     }
-                    arr = arr.filter(it => {
+                    arr = arr.filter((it) => {
                         if (tmpArr) {
-                            return tmpArr.some(one => it.matchStr.toLowerCase().includes(one.CityName.toLowerCase()))
+                            return tmpArr.some((one) =>
+                                it.matchStr.toLowerCase().includes(one.CityName.toLowerCase())
+                            );
                         }
-                        return it.matchStr.toLowerCase().includes(kw.toLowerCase())
+                        return it.matchStr.toLowerCase().includes(kw.toLowerCase());
                     });
                     temp = arr.slice(
                         that.textSearchResults.length,
@@ -952,13 +980,13 @@
                 if (container) {
                     const lb = document.createElement("label");
                     lb.classList.add("no-more-data");
-                    lb.textContent = '暂无数据';
+                    lb.textContent = "暂无数据";
                     container.append(lb);
                 }
             }
             function getSearchBarText() {
                 const searchbar = that.page.querySelector("ion-searchbar");
-                return searchbar && searchbar.value || "";
+                return (searchbar && searchbar.value) || "";
             }
             function clearSearchBarText() {
                 const searchbar = that.page.querySelector("ion-searchbar");
@@ -968,13 +996,13 @@
                 try {
                     const list = that.searchListPage.querySelector(".search-list-page__list");
                     const df = document.createDocumentFragment();
-                    arr.forEach(c => {
-                        const item = getSearchPageListItem(c, that.lang)
+                    arr.forEach((c) => {
+                        const item = getSearchPageListItem(c, that.lang);
                         df.append(item);
-                    })
+                    });
                     list.append(df);
                 } catch (e) {
-                    console.error(e)
+                    console.error(e);
                 }
             }
             function getSearchListPage() {
@@ -1004,15 +1032,14 @@
                 infinite.append(ific);
                 content.append(infinite);
                 sp.append(content);
-                infinite.addEventListener('ionInfinite', function (event) {
-                    console.log("ionInfinite")
+                infinite.addEventListener("ionInfinite", function (event) {
+                    console.log("ionInfinite");
                     const arr = loadMoreItems(infinite);
                 });
                 that.searchListPage = sp;
                 return sp;
             }
         }
-
     </script>
 </body>
 

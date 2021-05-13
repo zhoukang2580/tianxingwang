@@ -46,7 +46,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
   flightno: "flightno" | "strip" = "flightno";
   showReturnTrip = true;
   constructor(
-    private flightCityService: FlightCityService,
+    // private flightCityService: FlightCityService,
     // private flightService: FlightService,
     private flightDynamicService: FlightDynamicService,
     private calendarService: CalendarService,
@@ -177,7 +177,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
   async onSelectCity(isFromCity = true) {
     console.log("111");
     this.isCanleave = true;
-    const rs = await this.flightCityService.onSelectCity({
+    const rs = await this.flightDynamicService.onSelectCity({
       isDomestic: true,
       isShowAirports: true,
       isFrom: isFromCity,

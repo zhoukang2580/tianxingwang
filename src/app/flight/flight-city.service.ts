@@ -17,16 +17,22 @@ export class FlightCityService {
     private flightService: FlightService,
     private interFlightService: InternationalFlightService,
     private router: Router
-  ) { }
-  private async initPage(isShowSegs = true) {
+  ) {}
+  private async initPage(hideCityCodes?: string[]) {
     if (!this.cityPage) {
       const dCities = await this.flightService.getDomesticAirports();
       const iCities = await this.interFlightService.getInternationalAirports();
-      // if (isShowSegs) {
-      //   this.cityPage = new CityPage(dCities, []);
-      // } else {
+      if (hideCityCodes && hideCityCodes.length) {
+        hideCityCodes.forEach((hc) => {
+          iCities
+            .concat(dCities)
+            .filter((it) => it.Code == hc)
+            .forEach((c) => {
+              c.isHide = true;
+            });
+        });
+      }
       this.cityPage = new CityPage(dCities, iCities);
-      // }
     }
   }
   private onSearbarClick(isFrom) {
@@ -37,25 +43,24 @@ export class FlightCityService {
       });
     };
   }
-  private onHideSegments(isHide = true,isHotHide = true) {
+  private onHideSegments(isHide = true, isHotHide = true) {
     const page = document.body.querySelector(".flight-city-page-container");
     const page1 = document.body.querySelector(".flight-city-page-container");
-    const seg: HTMLElement = page && page.querySelector('.segments');
-    const seg1: HTMLElement = page1 && page1.querySelector('.hot-cities-wrapper1');
+    const seg: HTMLElement = page && page.querySelector(".segments");
+    const seg1: HTMLElement =
+      page1 && page1.querySelector(".hot-cities-wrapper1");
     if (seg && seg1) {
       if (isHide && isHotHide) {
-        seg.classList.add("hide")
+        seg.classList.add("hide");
         seg1.classList.add("hide");
       } else {
-        seg.classList.remove("hide")
+        seg.classList.remove("hide");
         seg1.classList.remove("hide");
       }
     }
   }
 
-  private onHideCityName(isCityName = true){
-    
-  }
+  private onHideCityName(isCityName = true) {}
   async onSelectCity({
     isShowSegs,
     isDomestic,
@@ -63,18 +68,20 @@ export class FlightCityService {
     isShowAirports,
     isFrom,
     isShowHotCity,
-    isFlyDynamic
+    isFlyDynamic,
+    hideCityCodes,
   }: {
     isShowPage: boolean;
     isFrom: boolean;
     isShowAirports?: boolean;
     isDomestic?: boolean;
     isShowSegs?: boolean;
-    isShowHotCity?:boolean;
-    isFlyDynamic?:boolean;
+    isShowHotCity?: boolean;
+    isFlyDynamic?: boolean;
+    hideCityCodes?: string[];
   }) {
     if (!this.cityPage) {
-      await this.initPage(isShowSegs);
+      await this.initPage(hideCityCodes);
     }
     if (!this.cityPage) {
       return null;
@@ -85,7 +92,7 @@ export class FlightCityService {
     if (isShowSegs == undefined) {
       isShowSegs = true;
     }
-    if(isShowAirports == undefined){
+    if (isShowAirports == undefined) {
       isShowAirports = false;
     }
     if (isShowHotCity == undefined) {
@@ -101,7 +108,7 @@ export class FlightCityService {
     this.cityPage.isShowSegs = isShowSegs;
     this.onSearbarClick(isFrom);
     this.cityPage.openPage(isShowPage);
-    this.onHideSegments(!isShowSegs,!isShowHotCity)
+    this.onHideSegments(!isShowSegs, !isShowHotCity);
     this.onHideCityName(!isFlyDynamic);
     if (!isShowPage) {
       return null;
@@ -153,9 +160,10 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   const internationalCities = this.internationalCities;
   function initData(cities) {
     try {
-      const keys = `Code,Name,Nickname,CityName,Pinyin,AirportCityCode,Initial,FirstLetter,EnglishName`.split(
-        ","
-      );
+      const keys =
+        `Code,Name,Nickname,CityName,Pinyin,AirportCityCode,Initial,FirstLetter,EnglishName`.split(
+          ","
+        );
       cities.sort((c1, c2) => c1.Sequence - c2.Sequence);
       cities = cities
         .filter((it) => it.IsHot)
@@ -180,46 +188,32 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   }
   function getHeaderHtml() {
     const header = document.createElement("div");
-    header.classList.add("header");
-    const backIcon = document.createElement("ion-icon");
-    backIcon.setAttribute("name", "chevron-back-outline");
-    backIcon.setAttribute("slot", "start");
-    const cancelBtn = document.createElement("ion-button");
-    cancelBtn.setAttribute("color", "secondary");
-    cancelBtn.setAttribute("fill", "clear");
-    cancelBtn.setAttribute("size", "small");
-    cancelBtn.classList.add("cancel");
-    const label = document.createElement("ion-label");
-    label.textContent = "取消";
-    cancelBtn.append(label);
+    header.innerHTML = `
+          <div class='header'>
+              <ion-icon name='chevron-back-outline' slot='start'></ion-icon>
+              <form action='javascript:void(0)' class='searchbar'>
+                  <ion-searchbar debounce='300' mode='ios' ></ion-searchbar>    
+              </form>
+              <ion-button color='secondary' fill='clear' size='small' class='cancel' >
+                  <ion-label >取消<ion-label>    
+              </ion-button>
+          </div>
+      `;
+    const searchbar = header.querySelector("ion-searchbar");
+    const backIcon = header.querySelector("ion-icon");
+    const cancelBtn = header.querySelector("ion-button");
     cancelBtn.onclick = () => {
       hidePages();
     };
     backIcon.onclick = () => {
       hidePages();
     };
-    const bform = document.createElement("form");
-    bform.setAttribute("action", "javascript:void(0)");
-    bform.classList.add("searchbar");
-    const searchbar = document.createElement("ion-searchbar");
-    bform.append(searchbar);
-    bform.onsubmit = function () {
-      onSearch();
-    };
-    searchbar.setAttribute("debounce", "300");
-    searchbar.setAttribute("mode", "ios");
     searchbar.addEventListener("ionFocus", function () {
       showSearchListPage(true);
     });
-    // searchbar.addEventListener("ionBlur", function () {
-    //     showSearchListPage(false);
-    // })
     searchbar.addEventListener("ionChange", function () {
       onSearch();
     });
-    header.append(backIcon);
-    header.append(bform);
-    header.append(cancelBtn);
     return header;
   }
   function hidePages() {
@@ -237,22 +231,18 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getSegmentHtml() {
     // that.isShowSegs
     const seg = document.createElement("div");
-    seg.classList.add("segments");
-    const d = document.createElement("div");
-    const label = document.createElement("label");
-    label.textContent = "国内";
-    d.append(label);
-    d.classList.add("segment");
-    d.classList.add("d");
-    const i = document.createElement("div");
-    i.classList.add("segment");
-    i.classList.add("i");
-    d.classList.add("active");
-    const lb = document.createElement("label");
-    lb.textContent = "国际/港澳台";
-    i.append(lb);
-    seg.append(d);
-    seg.append(i);
+    seg.innerHTML = `
+          <div class='segments'>
+              <div class='segment d active'>
+                  <label>国内</label>    
+              </div>    
+              <div class='segment i'>
+                  <label>国际/港澳台</label>    
+              </div>    
+          </div>
+      `;
+    const d = seg.querySelector(".d") as HTMLElement;
+    const i = seg.querySelector(".i") as HTMLElement;
     d.onclick = () => {
       i.classList.remove("active");
       d.classList.add("active");
@@ -324,24 +314,21 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getHistoryHtml(cities) {
     const wrapper = document.createElement("div");
     try {
-      wrapper.classList.add("hot-cities-wrapper");
-      wrapper.classList.add("history-cities-wrapper");
+      wrapper.innerHTML = `
+              <div class='hot-cities-wrapper history-cities-wrapper'>
+                  <div class='header'>
+                      <label>历史记录</label>
+                      <ion-icon name='trash-outline' class='icon'></ion-icon>
+                  </div>
+              </div>
+          `;
       if (!cities || !cities.length) {
         return wrapper;
       }
-      const header = document.createElement("div");
-      header.classList.add("header");
-      const label = document.createElement("label");
-      label.textContent = "历史记录";
-      header.append(label);
-      const rmicon = document.createElement("ion-icon");
-      rmicon.classList.add("icon");
-      rmicon.setAttribute("name", "trash-outline");
+      const rmicon = wrapper.querySelector("ion-icon");
       rmicon.onclick = () => {
         onClearHistories();
       };
-      header.append(rmicon);
-      wrapper.append(header);
       const list = document.createElement("div");
       const listWrapper = document.createElement("div");
       listWrapper.classList.add("list-wrapper");
@@ -373,14 +360,15 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     item.classList.add("city-item");
     item.textContent =
       lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
-      
     item.setAttribute("Code", c.Code);
-    const label = document.createElement("label");
-    label.textContent = c.IsHot ? c.CityName : c.Nickname;
     if (that.isShowAirports) {
-      label.textContent = c.Name;
+      if (c.isHide) {
+        item.classList.add("hide-item");
+      }
+      item.classList.add("airport-item");
+      item.textContent = c.Name;
     }
-    if (!label.textContent) {
+    if (!item.textContent) {
       item.classList.add("empty");
     }
     item.onclick = () => {
@@ -408,14 +396,14 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getHotHtml(cities) {
     const wrapper = document.createElement("div");
     try {
-      wrapper.classList.add("hot-cities-wrapper");
-      wrapper.classList.add("hot-cities-wrapper1");
-      const header = document.createElement("div");
-      header.classList.add("header");
-      const label = document.createElement("label");
-      label.textContent = "热门城市";
-      header.append(label);
-      wrapper.append(header);
+      wrapper.innerHTML = `
+              <div class='hot-cities-wrapper hot-cities-wrapper1'>
+                  <div class='header'>
+                      <label>热门城市</label>
+                  </div>
+              </div>
+          
+          `;
       const list = document.createElement("div");
       const listWrapper = document.createElement("div");
       listWrapper.classList.add("list-wrapper");
@@ -808,7 +796,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       if (l) {
         return JSON.parse(l);
       }
-    } catch (e) { }
+    } catch (e) {}
     return [];
   }
   function clearCachedHistories() {
@@ -868,6 +856,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getItem(c, lang) {
     const item = document.createElement("li");
     item.classList.add("item");
+    if (that.isShowAirports) {
+      item.classList.add("airport-item");
+    }
+    if (c.isHide) {
+      item.classList.add("hide-item");
+    }
     item.onclick = (evt) => {
       onSelectCity(c);
       if (allItems) {
@@ -890,7 +884,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     label.textContent =
       lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
     if (that.isShowAirports) {
-      label.textContent =c.Name;
+      label.textContent = c.Name;
     }
     label.classList.add("notranslate");
     if (c.CityName) {
@@ -1009,12 +1003,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     return item;
   }
   function loadMoreItems(infinite = null) {
-    const kw: string = getSearchBarText();
+    const kw = getSearchBarText();
     let arr = that.isDomestic ? that.cities : that.internationalCities;
     let temp = [];
     if (kw) {
       let tmpArr;
-      if (kw.length == 3 && kw.match(/[a-z]/ig)) {
+      if (kw.length == 3 && kw.match(/[a-z]/gi)) {
         tmpArr = arr.filter(
           (it) => (it.Code || "").toLowerCase() == kw.toLowerCase()
         );

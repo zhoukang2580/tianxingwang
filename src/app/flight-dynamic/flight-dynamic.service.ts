@@ -1,13 +1,18 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { FlightResultEntity } from '../flight/models/FlightResultEntity';
-import { IFlightSegmentInfo } from '../flight/models/PassengerFlightInfo';
-import { ApiService } from '../services/api/api.service';
-import { RequestEntity } from '../services/api/Request.entity';
-import { CalendarService } from '../tmc/calendar.service';
-import { TrafficlineEntity } from '../tmc/models/TrafficlineEntity';
-import { TripType } from '../tmc/models/TripType';
-import { FlightHotelTrainType, PassengerBookInfo, TmcService } from '../tmc/tmc.service';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject, Subject } from "rxjs";
+import { FlightCityService } from "../flight/flight-city.service";
+import { FlightResultEntity } from "../flight/models/FlightResultEntity";
+import { IFlightSegmentInfo } from "../flight/models/PassengerFlightInfo";
+import { ApiService } from "../services/api/api.service";
+import { RequestEntity } from "../services/api/Request.entity";
+import { CalendarService } from "../tmc/calendar.service";
+import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
+import { TripType } from "../tmc/models/TripType";
+import {
+  FlightHotelTrainType,
+  PassengerBookInfo,
+  TmcService,
+} from "../tmc/tmc.service";
 
 export class SearchDynamicModule {
   Date: string;
@@ -20,12 +25,10 @@ export class SearchDynamicModule {
   toCity: TrafficlineEntity;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class FlightDynamicService {
-
   private searchDynamicModel: SearchDynamicModule;
   private searchDynamicModelSource: Subject<SearchDynamicModule>;
   private passengerBookInfos: PassengerBookInfo<IFlightSegmentInfo>[];
@@ -36,15 +39,31 @@ export class FlightDynamicService {
   constructor(
     private apiService: ApiService,
     private calendarService: CalendarService,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private flightCityService: FlightCityService
   ) {
     this.searchDynamicModel = new SearchDynamicModule();
-    this.searchDynamicModelSource = new BehaviorSubject(this.searchDynamicModel);
+    this.searchDynamicModelSource = new BehaviorSubject(
+      this.searchDynamicModel
+    );
     this.passengerBookInfos = [];
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
     this.setSearchDynamicModelSource(new SearchDynamicModule());
   }
-
+  onSelectCity(data: {
+    isShowPage: boolean;
+    isFrom: boolean;
+    isShowAirports?: boolean;
+    isDomestic?: boolean;
+    isShowSegs?: boolean;
+    isShowHotCity?: boolean;
+    isFlyDynamic?: boolean;
+  }) {
+    return this.flightCityService.onSelectCity({
+      ...data,
+      hideCityCodes: ["BJS", "SHA"],
+    });
+  }
   getPassengerBookInfos() {
     this.passengerBookInfos = this.passengerBookInfos || [];
     return this.passengerBookInfos;
@@ -57,7 +76,6 @@ export class FlightDynamicService {
   async getDomesticAirports(forceFetch: boolean = false) {
     return this.tmcService.getDomesticAirports(forceFetch);
   }
-
 
   openCalendar(isMulti: boolean, tripType?: TripType) {
     const goFlight = this.getPassengerBookInfos().find(
@@ -144,14 +162,19 @@ export class FlightDynamicService {
     });
   }
 
-  getFlightDynamicList(d: { Date: string; FromAirport: string; ToAirport: string; FlightNumber: string }) {
+  getFlightDynamicList(d: {
+    Date: string;
+    FromAirport: string;
+    ToAirport: string;
+    FlightNumber: string;
+  }) {
     const req = new RequestEntity();
     req.Method = "TmcApiFlightDynamicUrl-Home-Search";
     req.Data = {
       Date: d.Date,
       FromAirport: d.FromAirport,
       ToAirport: d.ToAirport,
-      FlightNumber: d.FlightNumber
+      FlightNumber: d.FlightNumber,
     };
 
     return this.apiService.getPromiseData<any[]>(req);
@@ -164,13 +187,17 @@ export class FlightDynamicService {
     req.LoadingMsg = "正在获取详情";
     req.Data = {
       date: Date,
-      flightNumber: FlightNumber
+      flightNumber: FlightNumber,
     };
 
     return this.apiService.getPromiseData<any>(req);
   }
 
-  getFlightDynamicDetail(d: { Date: string; FlightNumber: string; distinguish }) {
+  getFlightDynamicDetail(d: {
+    Date: string;
+    FlightNumber: string;
+    distinguish;
+  }) {
     const req = new RequestEntity();
     req.Method = "TmcApiFlightDynamicUrl-Home-Detail";
     req.IsShowLoading = true;
@@ -178,11 +205,16 @@ export class FlightDynamicService {
     req.Data = {
       flightNumber: d.FlightNumber,
       date: d.Date,
-      distinguish: d.distinguish
+      distinguish: d.distinguish,
     };
     return this.apiService.getPromiseData<any>(req);
   }
-  getFlightDynamicDetailes(d: { Date: string; FlightNumber: string; startDate: string; enDate: string }) {
+  getFlightDynamicDetailes(d: {
+    Date: string;
+    FlightNumber: string;
+    startDate: string;
+    enDate: string;
+  }) {
     const req = new RequestEntity();
     req.Method = "TmcApiFlightDynamicUrl-Home-Detail";
     req.IsShowLoading = true;
@@ -191,7 +223,7 @@ export class FlightDynamicService {
       flightNumber: d.FlightNumber,
       date: d.Date,
       startDate: d.startDate,
-      enDate: d.enDate
+      enDate: d.enDate,
     };
     return this.apiService.getPromiseData<any>(req);
   }
