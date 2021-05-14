@@ -302,10 +302,10 @@
   }
 }
 .airports-page {
-  .hot-cities-wrapper1.hide{
+  .header.hot-cities-wrapper1.hide{
     display: none;
   }
-  .airport-item.hide-item {
+  .row .airport-item.hide-item {
     display: none;
   }
 }
