@@ -113,6 +113,7 @@ export class FlightDynamicService {
       isMulti,
       beginDate: s.Date,
       endDate: "",
+      isEnableSelectAllDate:true
     });
   }
 
