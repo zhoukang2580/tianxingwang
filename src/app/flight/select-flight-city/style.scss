@@ -300,6 +300,12 @@
       }
     }
   }
+  .display-air-name {
+    display: none;
+  }
+  .display-city-name {
+    display: initial;
+  }
 }
 .airports-page {
   .header.hot-cities-wrapper1.hide {
@@ -308,6 +314,15 @@
   .row .airport-item.hide-item,
   .airport-item.hide-item {
     display: none;
+  }
+  .row.hide{
+    display: none;
+  }
+  .display-city-name {
+    display: none;
+  }
+  .display-air-name {
+    display: initial;
   }
 }
 .search-list-page {

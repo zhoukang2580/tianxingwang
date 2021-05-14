@@ -18,7 +18,10 @@ export class FlightCityService {
     private interFlightService: InternationalFlightService,
     private router: Router
   ) {}
-  private async initPage(hideCityCodes?: string[]) {
+  private async initPage(
+    hideCityCodes?: string[],
+    extraHotAirports?: string[]
+  ) {
     if (!this.cityPage) {
       const dCities = await this.flightService.getDomesticAirports();
       const iCities = await this.interFlightService.getInternationalAirports();
@@ -28,8 +31,19 @@ export class FlightCityService {
             .concat(dCities)
             .filter((it) => it.Code == hc)
             .forEach((c) => {
-              c.isHide = c.Tag=='AirportCity';
+              c.isHide = (c.Tag || "").toLowerCase() == "airportcity";
             });
+        });
+      }
+      if (extraHotAirports && extraHotAirports.length) {
+        iCities.concat(dCities).forEach((c) => {
+          const one = extraHotAirports.find(
+            (it) => it == c.Code && (c.Tag || "").toLowerCase() == "airport"
+          );
+          if (one) {
+            c.IsHot = true;
+            c.isExtraHot = true;
+          }
         });
       }
       this.cityPage = new CityPage(dCities, iCities);
@@ -68,6 +82,7 @@ export class FlightCityService {
     isShowHotCity,
     isFlyDynamic,
     hideCityCodes,
+    extraHotAirports,
   }: {
     isShowPage: boolean;
     isFrom: boolean;
@@ -77,9 +92,10 @@ export class FlightCityService {
     isShowHotCity?: boolean;
     isFlyDynamic?: boolean;
     hideCityCodes?: string[];
+    extraHotAirports?: string[];
   }) {
     if (!this.cityPage) {
-      await this.initPage(hideCityCodes);
+      await this.initPage(hideCityCodes, extraHotAirports);
     }
     if (!this.cityPage) {
       return null;
@@ -354,6 +370,9 @@ function CityPage(domesticCities, interCities, lang = "cn") {
           item.classList.add(`col-${r.length}`);
           div.append(item);
         });
+        if (r.every((it) => it.isHide)) {
+          div.classList.add("hide");
+        }
         list.append(div);
       });
     } catch (e) {
@@ -364,15 +383,23 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getHistoryOrHotItem(c, isHistory = false, lang = "cn") {
     const item = document.createElement("div");
     item.classList.add("city-item");
-    item.textContent =
-      lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
     item.setAttribute("Code", c.Code);
-    if (that.isShowAirports) {
-      if (c.isHide) {
-        item.classList.add("hide-item");
-      }
-      item.classList.add("airport-item");
-      item.textContent = c.Name;
+    if (c.isHide) {
+      item.classList.add("hide-item");
+    }
+    item.classList.add("airport-item");
+    const label = document.createElement("label");
+    label.innerHTML = `<label class='display-city-name'>${
+      (lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname) || ""
+    }</label>`;
+    const label2 = document.createElement("label");
+    label2.innerHTML = `<label class='display-air-name'>${
+      c.Name || ""
+    }</label>`;
+    item.append(label);
+    item.append(label2);
+    if (c.isExtraHot) {
+      item.classList.add("extra-hot-item");
     }
     if (!item.textContent) {
       item.classList.add("empty");
@@ -429,6 +456,9 @@ function CityPage(domesticCities, interCities, lang = "cn") {
           item.classList.add(`col-${r.length}`);
           div.append(item);
         });
+        if (r.every((it) => it.isHide)) {
+          div.classList.add("hide");
+        }
         list.append(div);
       });
     } catch (e) {
@@ -814,7 +844,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     div.classList.add("domestic-page-container");
     div.classList.add("show");
     const cmap = getLeter2Cities(cities);
-    const hotHtml = getHotHtml(cities.filter((it) => it.IsHot));
+    const hotCities = cities.filter((it) => it.IsHot);
+    const hotHtml = getHotHtml(
+      hotCities
+        .filter((it) => !it.isExtraHot)
+        .concat(hotCities.filter((it) => it.isExtraHot))
+    );
     const historyHtml = getHistoryHtml(that.histories);
     div.append(historyHtml);
     div.append(hotHtml);
@@ -888,11 +923,15 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       }
     };
     const label = document.createElement("label");
+    const label2 = document.createElement("label");
     label.textContent =
       lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
-    if (that.isShowAirports) {
-      label.textContent = c.Name;
-    }
+    label.classList.add("display-city-name");
+    label2.classList.add("display-air-name");
+    label2.innerHTML=`
+      <span class='name notranslate'>${c.Name}</span>
+      <span class='city-name notranslate'>(${c.CityName})</span> 
+    `;
     label.classList.add("notranslate");
     if (c.CityName) {
       const sp = document.createElement("span");
@@ -902,6 +941,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       label.append(sp);
     }
     item.append(label);
+    item.append(label2);
     if (!allItems.find((it) => it == item)) {
       allItems.push(item);
     }

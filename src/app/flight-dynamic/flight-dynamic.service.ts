@@ -61,7 +61,8 @@ export class FlightDynamicService {
   }) {
     return this.flightCityService.onSelectCity({
       ...data,
-      hideCityCodes: ["BJS", "SHA"],
+      hideCityCodes: ["BJS", "SHA", "CAN"],
+      extraHotAirports: ["SHA", "PVG","PKX","PEK"],
     });
   }
   getPassengerBookInfos() {
@@ -113,7 +114,7 @@ export class FlightDynamicService {
       isMulti,
       beginDate: s.Date,
       endDate: "",
-      isEnableSelectAllDate:true
+      isEnableSelectAllDate: true,
     });
   }
 

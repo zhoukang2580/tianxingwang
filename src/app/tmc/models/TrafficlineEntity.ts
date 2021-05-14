@@ -51,6 +51,7 @@ export class TrafficlineEntity extends BaseEntity {
   ///  是否热点
   /// </summary>
   IsHot: boolean;
+  isExtraHot: boolean;
   // 页面上是否隐藏
   isHide: boolean;
 
