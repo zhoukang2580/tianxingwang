@@ -402,12 +402,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getHotHtml(cities) {
     const wrapper = document.createElement("div");
     try {
-      wrapper.classList.add("hot-cities-wrapper")
-      const h=document.createElement("div");
+      wrapper.classList.add("hot-cities-wrapper");
+      const h = document.createElement("div");
       h.classList.add("header");
-      h.classList.add("hot-cities-wrapper1")
-      const lb=document.createElement("label");
-      lb.textContent=that.isShowAirports? '热门机场':"热门城市";
+      h.classList.add("hot-cities-wrapper1");
+      const lb = document.createElement("label");
+      lb.textContent = that.isShowAirports ? "热门机场" : "热门城市";
       h.append(lb);
       wrapper.append(h);
       const list = document.createElement("div");
@@ -499,8 +499,8 @@ function CityPage(domesticCities, interCities, lang = "cn") {
         let wrapper = getHistoryWrapperEl();
         if (!wrapper) {
           wrapper = getHistoryHtml(cities);
-          const p= page.querySelector(".hot-cities-wrapper");
-          p.parentElement.insertBefore(wrapper,p);
+          const p = page.querySelector(".hot-cities-wrapper");
+          p.parentElement.insertBefore(wrapper, p);
         }
         const items = wrapper.querySelectorAll(".b-item");
         const list = wrapper.querySelector(".list");
@@ -986,6 +986,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getSearchPageListItem(city, lang) {
     const item = document.createElement("div");
     item.classList.add("item");
+    if (that.isShowAirports) {
+      item.classList.add("airport-item");
+      if (city.isHide) {
+        item.classList.add("hide-item");
+      }
+    }
     const lb = document.createElement("label");
     let lbtextContent = lang == "en" ? city.EnglishName : city.Name;
     const n = document.createElement("label");
@@ -1098,6 +1104,11 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getSearchListPage() {
     let sp = document.body.querySelector(".search-list-page");
     if (sp) {
+      if (that.isShowAirports) {
+        sp.classList.add("airports-page");
+      } else {
+        sp.classList.remove("airports-page");
+      }
       // const l = sp.querySelector("ion-list");
       // if (l) {
       //     while (l.firstChild) {
@@ -1108,6 +1119,11 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     }
     sp = document.createElement("div");
     sp.classList.add("search-list-page");
+    if (that.isShowAirports) {
+      sp.classList.add("airports-page");
+    } else {
+      sp.classList.remove("airports-page");
+    }
     const content = document.createElement("ion-content");
     const list = document.createElement("ion-list");
     const infinite = document.createElement("ion-infinite-scroll");
