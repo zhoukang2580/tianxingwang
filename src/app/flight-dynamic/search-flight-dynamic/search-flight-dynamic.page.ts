@@ -348,11 +348,9 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       console.log(fromCity + "=====" + toCity);
       this.cagAirport = this.searchDynamicModel;
 
-
-
       const arrList = this.airportList.filter(it => it.fromCity.Nickname == this.cagAirport.fromCity.Nickname && it.toCity.Nickname == this.cagAirport.toCity.Nickname);
       
-      if(arrList.length == 0){
+      if(!arrList.length){
         this.airportList.push(this.cagAirport);
       }
       

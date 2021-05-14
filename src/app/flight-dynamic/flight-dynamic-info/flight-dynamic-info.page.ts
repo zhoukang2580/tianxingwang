@@ -141,6 +141,7 @@ export class FlightDynamicInfoPage implements OnInit {
             this.hour = it.Minute;
             this.type = it.StatusName;
             const fliNo = it.PreviousFlightNumber;
+            this.FlightName = it.AirlineName;
             this.hour = it.Minute;
             this.isShow = false;
             if (fliNo && fliNo.length) {
@@ -168,6 +169,7 @@ export class FlightDynamicInfoPage implements OnInit {
             
             this.hour = it.Minute;
             this.type = it.StatusName;
+            this.FlightName = it.AirlineName;
             const fliNo = it.PreviousFlightNumber;
             this.hour = it.Minute;
             this.isShow = false;

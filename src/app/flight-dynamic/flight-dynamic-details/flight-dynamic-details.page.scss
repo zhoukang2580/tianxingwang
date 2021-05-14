@@ -20,6 +20,10 @@ ion-item {
                     font-size: 14px;
                     padding-left: 10px;
                 }
+                ion-icon {
+                    position: absolute;
+                    right: 10px;
+                }
             }
             ion-col {
                 text-align: center;
