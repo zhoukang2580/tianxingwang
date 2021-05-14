@@ -301,8 +301,13 @@
     }
   }
 }
-.airports-page.airport-item.hide-item {
-  display: none;
+.airports-page {
+  .hot-cities-wrapper1.hide{
+    display: none;
+  }
+  .airport-item.hide-item {
+    display: none;
+  }
 }
 .search-list-page {
   padding-top: var(--ion-safe-area-top);
