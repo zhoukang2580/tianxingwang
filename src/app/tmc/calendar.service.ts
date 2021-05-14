@@ -77,6 +77,7 @@ export class CalendarService {
     isMulti: boolean;
     forType: FlightHotelTrainType;
     tripType?: TripType;
+    isEnableSelectAllDate?: boolean;
   }) {
     const m = await AppHelper.modalController.create({
       component: TmcCalendarComponent,
@@ -679,7 +680,7 @@ export class CalendarService {
       // }
 
       default:
-      }
+    }
     return d.dayOfWeekName;
   }
   getDescOfDay(d: DayModel) {
