@@ -246,7 +246,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       AirportCityCode: "SHA",
       CityCode: "3101",
       CityName: "上海",
-      Code: "SHA",
+      Code: "PVG",
       CountryCode: "CN",
       Description: "",
       EnglishName: "Shanghai",
@@ -259,6 +259,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       Sequence: 22,
       // 出发城市，不是出发城市的那个机场
       Tag: "Airport",
+      
     } as TrafficlineEntity;
     const lastFromCity =
       (await this.storage
@@ -318,7 +319,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       this.fliNumber = '';
       return
     }
-    let reg = /^[A-Za-z\d]{2}\d{4}$/;
+    let reg = /^[A-Za-z\d]{2}\d{3,4}$/;
     if (!(reg.test(flightNo))) {
       AppHelper.alert("航班号不正确请输入正确的航班号")
       this.fliNumber = '';
