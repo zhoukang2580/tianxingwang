@@ -47,15 +47,13 @@ export class FlightCityService {
     const page = document.body.querySelector(".flight-city-page-container");
     const page1 = document.body.querySelector(".flight-city-page-container");
     const seg: HTMLElement = page && page.querySelector(".segments");
-    const seg1: HTMLElement =
-      page1 && page1.querySelector(".hot-cities-wrapper1");
-    if (seg && seg1) {
+    // const seg1: HTMLElement =
+    //   page1 && page1.querySelector(".hot-cities-wrapper1");
+    if (seg) {
       if (isHide && isHotHide) {
         seg.classList.add("hide");
-        seg1.classList.add("hide");
       } else {
         seg.classList.remove("hide");
-        seg1.classList.remove("hide");
       }
     }
   }
@@ -299,6 +297,11 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       };
     }
     if (page) {
+      if (that.isShowAirports) {
+        page.classList.add("airports-page");
+      } else {
+        page.classList.remove("airports-page");
+      }
       if (open) {
         page.classList.add("show");
         if (that.searchListPage) {
@@ -314,21 +317,24 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getHistoryHtml(cities) {
     const wrapper = document.createElement("div");
     try {
-      wrapper.innerHTML = `
-              <div class='hot-cities-wrapper history-cities-wrapper'>
-                  <div class='header'>
-                      <label>历史记录</label>
-                      <ion-icon name='trash-outline' class='icon'></ion-icon>
-                  </div>
-              </div>
-          `;
+      wrapper.classList.add("hot-cities-wrapper");
+      wrapper.classList.add("history-cities-wrapper");
       if (!cities || !cities.length) {
         return wrapper;
       }
-      const rmicon = wrapper.querySelector("ion-icon");
+      const header = document.createElement("div");
+      header.classList.add("header");
+      const label = document.createElement("label");
+      label.textContent = "历史记录";
+      header.append(label);
+      const rmicon = document.createElement("ion-icon");
+      rmicon.classList.add("icon");
+      rmicon.setAttribute("name", "trash-outline");
       rmicon.onclick = () => {
         onClearHistories();
       };
+      header.append(rmicon);
+      wrapper.append(header);
       const list = document.createElement("div");
       const listWrapper = document.createElement("div");
       listWrapper.classList.add("list-wrapper");
@@ -396,14 +402,14 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getHotHtml(cities) {
     const wrapper = document.createElement("div");
     try {
-      wrapper.innerHTML = `
-              <div class='hot-cities-wrapper hot-cities-wrapper1'>
-                  <div class='header'>
-                      <label>热门城市</label>
-                  </div>
-              </div>
-          
-          `;
+      wrapper.classList.add("hot-cities-wrapper")
+      const h=document.createElement("div");
+      h.classList.add("header");
+      h.classList.add("hot-cities-wrapper1")
+      const lb=document.createElement("label");
+      lb.textContent=that.isShowAirports? '热门机场':"热门城市";
+      h.append(lb);
+      wrapper.append(h);
       const list = document.createElement("div");
       const listWrapper = document.createElement("div");
       listWrapper.classList.add("list-wrapper");
@@ -493,7 +499,8 @@ function CityPage(domesticCities, interCities, lang = "cn") {
         let wrapper = getHistoryWrapperEl();
         if (!wrapper) {
           wrapper = getHistoryHtml(cities);
-          page.insertBefore(wrapper, page.querySelector(".hot-cities-wrapper"));
+          const p= page.querySelector(".hot-cities-wrapper");
+          p.parentElement.insertBefore(wrapper,p);
         }
         const items = wrapper.querySelectorAll(".b-item");
         const list = wrapper.querySelector(".list");

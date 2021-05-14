@@ -300,11 +300,15 @@
       }
     }
   }
-  .airport-item.hide-item {
+}
+.airports-page {
+  .header.hot-cities-wrapper1.hide{
+    display: none;
+  }
+  .row .airport-item.hide-item {
     display: none;
   }
 }
-
 .search-list-page {
   padding-top: var(--ion-safe-area-top);
   transform: translate3d(0, 100%, 0);
