@@ -26,7 +26,7 @@ export class FlightCityService {
         hideCityCodes.forEach((hc) => {
           iCities
             .concat(dCities)
-            .filter((it) => it.Code == hc)
+            .filter((it) => it.Code == hc&&it.Tag=='AriportCity')
             .forEach((c) => {
               c.isHide = true;
             });
