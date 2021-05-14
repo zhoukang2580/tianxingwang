@@ -47,15 +47,13 @@ export class FlightCityService {
     const page = document.body.querySelector(".flight-city-page-container");
     const page1 = document.body.querySelector(".flight-city-page-container");
     const seg: HTMLElement = page && page.querySelector(".segments");
-    const seg1: HTMLElement =
-      page1 && page1.querySelector(".hot-cities-wrapper1");
-    if (seg && seg1) {
+    // const seg1: HTMLElement =
+    //   page1 && page1.querySelector(".hot-cities-wrapper1");
+    if (seg) {
       if (isHide && isHotHide) {
         seg.classList.add("hide");
-        seg1.classList.add("hide");
       } else {
         seg.classList.remove("hide");
-        seg1.classList.remove("hide");
       }
     }
   }
@@ -409,7 +407,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       h.classList.add("header");
       h.classList.add("hot-cities-wrapper1")
       const lb=document.createElement("label");
-      lb.textContent='热门城市';
+      lb.textContent=that.isShowAirports? '热门机场':"热门城市";
       h.append(lb);
       wrapper.append(h);
       const list = document.createElement("div");
