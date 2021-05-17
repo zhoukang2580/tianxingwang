@@ -54,8 +54,6 @@ export class FlightDynamicPreorderPage implements OnInit {
         this.flightDynamicDetailsModel = this.flightDynamicDetailsModel.filter((it)=>{
           return it.FromAirport == this.preDepcity && it.ToAirport == this.preArrCity;
         });
-
-
         console.log(this.flightDynamicDetailsModel, "flight");
       }) 
     }
