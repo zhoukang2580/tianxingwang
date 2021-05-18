@@ -179,7 +179,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     // console.log("111");
     this.isCanleave = true;
     const rs = await this.flightDynamicService.onSelectCity({
-      isDomestic: false,
+      isDomestic: true,
       isShowAirports: true,
       isFrom: isFromCity,
       isShowPage: true,
