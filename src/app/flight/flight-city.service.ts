@@ -122,7 +122,7 @@ export class FlightCityService {
     this.cityPage.isShowSegs = isShowSegs;
     this.onSearbarClick(isFrom);
     this.cityPage.openPage(isShowPage);
-    this.onHideSegments(!isShowSegs, !isShowHotCity);
+    // this.onHideSegments(!isShowSegs, !isShowHotCity);
     this.onHideCityName(!isFlyDynamic);
     if (!isShowPage) {
       return null;
@@ -722,7 +722,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     }
     hidePages();
     if (that.onSelectCallback) {
-      that.onSelectCallback({ isDomestic: false, city });
+      that.onSelectCallback({ isDomestic: true, city });
     }
     console.log("city", city);
   }
@@ -745,6 +745,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       div.setAttribute("Code", city.Code);
       div.onclick = () => {
         onSelectInterCity(city);
+        // onSelectCity(city);
       };
       return div;
     }

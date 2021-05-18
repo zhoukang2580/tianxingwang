@@ -13,6 +13,7 @@ import { FlightService, SearchFlightModel } from 'src/app/flight/flight.service'
 import { FlightDynamicService, SearchDynamicModule } from '../flight-dynamic.service';
 import { IdentityService } from 'src/app/services/identity/identity.service';
 import { FlightCityService } from 'src/app/flight/flight-city.service';
+import { ITripInfo } from 'src/app/international-flight/international-flight.service';
 
 @Component({
   selector: 'app-search-flight-dynamic',
@@ -175,15 +176,16 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
 
 
   async onSelectCity(isFromCity = true) {
-    console.log("111");
+    // console.log("111");
     this.isCanleave = true;
     const rs = await this.flightDynamicService.onSelectCity({
-      isDomestic: true,
+      isDomestic: false,
       isShowAirports: true,
       isFrom: isFromCity,
       isShowPage: true,
       isShowSegs: false,
       isShowHotCity: false
+      
     });
     if (rs) {
       const s = this.searchDynamicModel;
