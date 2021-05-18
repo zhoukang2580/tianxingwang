@@ -268,9 +268,8 @@ export class LoginService {
   }
   async checkIfForceAction() {
     let isForceBindMobile = AppHelper.getQueryParamers()["IsForceBindMobile"];
-    let isForceModifyPassword = AppHelper.getQueryParamers()[
-      "IsForceModifyPassword"
-    ];
+    let isForceModifyPassword =
+      AppHelper.getQueryParamers()["IsForceModifyPassword"];
     if (isForceBindMobile == "true") {
       const m = await AppHelper.modalController.create({
         component: AccountMobilePage,
@@ -295,9 +294,8 @@ export class LoginService {
       });
       m.present();
       const d = await m.onDidDismiss();
-      isForceModifyPassword = AppHelper.getQueryParamers()[
-        "IsForceModifyPassword"
-      ];
+      isForceModifyPassword =
+        AppHelper.getQueryParamers()["IsForceModifyPassword"];
       if (isForceModifyPassword == "true") {
         if (!d.data) {
           await this.checkIfForceAction();
@@ -326,18 +324,18 @@ export class LoginService {
     req.IsShowLoading = true;
     req.Method = "ApiHomeUrl-Identity-Check";
     req.Data = JSON.stringify({
-      Ticket: ticket,
       LoginType: this.getLoginType(),
-      [AppHelper.getTicketName()]: ticket,
     });
+    let st = Date.now();
     const url = await this.getUrl(req);
-    console.log("ApiHomeUrl-Identity-Check", url);
+    console.log(`ApiHomeUrl-Identity-Check getUrl ${Date.now() - st}`, url);
     if (!url) {
       return;
     }
     const formObj = Object.keys(req)
       .map((k) => `${k}=${req[k]}`)
       .join("&");
+    st = Date.now();
     return this.http
       .post(url, formObj, {
         headers: { "content-type": "application/x-www-form-urlencoded" },
@@ -345,7 +343,9 @@ export class LoginService {
       })
       .pipe(
         map((r: IResponse<IdentityEntity>) => r),
-        finalize(() => {})
+        finalize(() => {
+          console.log(`用时${Date.now() - st}`);
+        })
       )
       .subscribe((r) => {
         if (r.Status) {
@@ -382,43 +382,53 @@ export class LoginService {
       return this.isAutoLoginPromise;
     }
     try {
-      const device = await AppHelper.getDeviceId();
-      if (AppHelper.getStorage<string>("loginToken")) {
-        const req = new RequestEntity();
-        req.IsShowLoading = !!(showLoading && showLoading.loadingMsg);
-        if (req.IsShowLoading) {
-          req.LoadingMsg = showLoading.loadingMsg;
-        }
-        req.Method = "ApiLoginUrl-Home-DeviceLogin";
-        req.Data = JSON.stringify({
-          Device: device,
-          Token: AppHelper.getStorage("loginToken"),
-        });
-        // 需要注意，判断if(isAutoLoginPromise)...到这里之前，不能有 await的代码，否则并发调用就不能得到有效的控制
-        this.isAutoLoginPromise = this.apiService
-          .getPromiseData<{
-            Ticket: string; // "";
-            Id: string; // ;
-            Name: string; // "";
-            IsShareTicket: boolean; // false;
-            Numbers: { [key: string]: string };
-            Token: string;
-          }>(req)
-          .then((res) => {
-            if (!res) {
-              return false;
-            }
-            this.identityService.setIdentity(res);
-            AppHelper.setStorage("logintoken", res.Token || "");
-            return !!res;
-          })
-          .catch(() => false)
-          .finally(() => {
-            this.isAutoLoginPromise = null;
+      // 需要注意，判断if(isAutoLoginPromise)...到这里之前，不能有 await的代码，否则并发调用就不能得到有效的控制
+      this.isAutoLoginPromise = new Promise<boolean>(async (rsv) => {
+        console.log("autoLogin dddddd");
+        const device = await AppHelper.getDeviceId();
+        if (AppHelper.getStorage<string>("loginToken")) {
+          const req = new RequestEntity();
+          req.IsShowLoading = !!(showLoading && showLoading.loadingMsg);
+          if (req.IsShowLoading) {
+            req.LoadingMsg = showLoading.loadingMsg;
+          }
+          // req.Timeout = 10 * 1000; //十秒钟
+          req.Method = "ApiLoginUrl-Home-DeviceLogin";
+          req.Data = JSON.stringify({
+            Device: device,
+            Token: AppHelper.getStorage("loginToken"),
           });
-      }
+          this.apiService
+            .getPromiseData<{
+              Ticket: string; // "";
+              Id: string; // ;
+              Name: string; // "";
+              IsShareTicket: boolean; // false;
+              Numbers: { [key: string]: string };
+              Token: string;
+            }>(req)
+            .then((res) => {
+              if (!res) {
+                return false;
+              }
+              this.identityService.setIdentity(res);
+              AppHelper.setStorage("logintoken", res.Token || "");
+              return !!res;
+            })
+            .catch((e) => {
+              console.error("autoLogin ApiLoginUrl-Home-DeviceLogin ", e);
+              return false;
+            })
+            .then((r) => {
+              rsv(r);
+            })
+            .finally(() => {
+              this.isAutoLoginPromise = null;
+            });
+        }
+      });
     } catch (e) {
-      console.error(e);
+      console.error("login service autoLogin error", e);
     }
     // 切记，返回一个promise，否则，需要在此之前，await this.isAutoLoginPromise
     return this.isAutoLoginPromise;
