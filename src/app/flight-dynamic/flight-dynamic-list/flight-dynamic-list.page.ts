@@ -96,8 +96,8 @@ export class FlightDynamicListPage implements OnInit, OnDestroy {
           this.refresher.disabled = false;
         }, 100);
       }
-      this.currentProcessStatus = "正在获取航班列表";
-      this.apiService.showLoadingView({ msg: this.currentProcessStatus });
+      // this.currentProcessStatus = "正在获取航班列表";
+      // this.apiService.showLoadingView({ msg: this.currentProcessStatus });
       this.isNoData = false;
      
       this.flightDynamicListModel = await this.flightDynamicService.getFlightDynamicList(this.searchDynamicList).then((r) => {

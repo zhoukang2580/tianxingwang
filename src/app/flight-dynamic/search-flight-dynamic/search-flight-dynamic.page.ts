@@ -332,8 +332,9 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     this.fliNumber = this.fliNumber.toUpperCase();
     const delRepetition = this.histroyList.indexOf(this.fliNumber) == -1;
     if (delRepetition && this.fliNumber.trim().length > 0) {
-      this.histroyList.push(this.fliNumber);
+      this.histroyList.unshift(this.fliNumber);
     }
+    this.histroyList = this.histroyList.slice(0,6);
     this.fliNumber = '';
     this.router.navigate([AppHelper.getRoutePath("flight-dynamic-details")], {
       queryParams: { flightNo: flightNo }

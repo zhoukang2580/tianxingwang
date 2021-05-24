@@ -53,15 +53,19 @@ export class FlightDynamicDetailsPage implements OnInit {
     }
   }
 
-  private loadDetails() {
-    if (this.flightNo) {
-      this.flightService.getFlightDynamicDetails(this.dateTime, this.flightNo).then(d => {
-        d.filter(it => {
-          it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
-          it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
-        });
-        this.flightDynamicListModel = d;
-      })
+  private async loadDetails() {
+    try {
+      if (this.flightNo) {
+        this.flightService.getFlightDynamicDetails(this.dateTime, this.flightNo).then(d => {
+          d.filter(it => {
+            it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
+            it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
+          });
+          this.flightDynamicListModel = d;
+        })
+      }
+    } catch (error) {
+      console.log(error);
     }
   }
 
