@@ -282,16 +282,13 @@ export class TrainService {
       const t = ex && (ex.exchangeInfo.ticket as OrderTrainTicketEntity);
       if (ex.exchangeInfo.isRangeExchange) {
         if (t.OrderTrainTrips && t.OrderTrainTrips.length) {
-          // console.log(
-          //   `t.OrderTrainTrips[0].ToStationCode:${t.OrderTrainTrips[0].ToStationCode},currentViewtTainItem.train.ToStationCode=${currentViewtTainItem.train.ToStationCode}`
-          // );
-          if (ex.exchangeInfo.rangeExchangeDateTip) {
+          const diff =
+            t.OrderTrainTrips[0].ToStationCode.trim().toLowerCase() !=
+            currentViewtTainItem.train.ToStationCode.trim().toLowerCase();
+          if (ex.exchangeInfo.rangeExchangeDateTip && diff) {
             AppHelper.alert(ex.exchangeInfo.rangeExchangeDateTip);
           }
-          return (
-            t.OrderTrainTrips[0].ToStationCode.trim().toLowerCase() !=
-            currentViewtTainItem.train.ToStationCode.trim().toLowerCase()
-          );
+          return diff;
         }
       }
     } catch (e) {
