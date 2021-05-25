@@ -459,11 +459,17 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async onBookTicket(train: TrainEntity, seat: TrainSeatEntity) {
     let showResult = true;
+    const currentViewtTainItem: ICurrentViewtTainItem = {
+      selectedSeat: seat,
+      train,
+    };
+    if (this.trainService.checkIfExchangeDiffStation(currentViewtTainItem)) {
+      AppHelper.alert(
+        "开车前48小时以内，不可变更目的地，可改签当前到开车日期当日24:00之间的列车，不办理票面日期次日及以后的改签！"
+      );
+      return;
+    }
     if (await this.trainService.checkCanAdd()) {
-      const currentViewtTainItem: ICurrentViewtTainItem = {
-        selectedSeat: seat,
-        train,
-      };
       showResult = await this.trainService.addOrReselectBookInfo(
         currentViewtTainItem
       );
