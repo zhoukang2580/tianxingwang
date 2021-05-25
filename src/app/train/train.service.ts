@@ -273,23 +273,26 @@ export class TrainService {
     }
     return true;
   }
-  checkIfExchangeDiffStation(
-    currentViewtTainItem: ICurrentViewtTainItem
-  ) {
+  checkIfExchangeDiffStation(currentViewtTainItem: ICurrentViewtTainItem) {
     try {
       const ex =
         this.bookInfos &&
         this.bookInfos.length &&
         this.bookInfos.find((it) => !!it.exchangeInfo);
       const t = ex && (ex.exchangeInfo.ticket as OrderTrainTicketEntity);
-      if (t.OrderTrainTrips && t.OrderTrainTrips.length) {
-        // console.log(
-        //   `t.OrderTrainTrips[0].ToStationCode:${t.OrderTrainTrips[0].ToStationCode},currentViewtTainItem.train.ToStationCode=${currentViewtTainItem.train.ToStationCode}`
-        // );
-        return (
-          t.OrderTrainTrips[0].ToStationCode.trim().toLowerCase() !=
-          currentViewtTainItem.train.ToStationCode.trim().toLowerCase()
-        );
+      if (ex.exchangeInfo.isRangeExchange) {
+        if (t.OrderTrainTrips && t.OrderTrainTrips.length) {
+          // console.log(
+          //   `t.OrderTrainTrips[0].ToStationCode:${t.OrderTrainTrips[0].ToStationCode},currentViewtTainItem.train.ToStationCode=${currentViewtTainItem.train.ToStationCode}`
+          // );
+          if (ex.exchangeInfo.rangeExchangeDateTip) {
+            AppHelper.alert(ex.exchangeInfo.rangeExchangeDateTip);
+          }
+          return (
+            t.OrderTrainTrips[0].ToStationCode.trim().toLowerCase() !=
+            currentViewtTainItem.train.ToStationCode.trim().toLowerCase()
+          );
+        }
       }
     } catch (e) {
       console.error(e);

@@ -551,9 +551,6 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       train,
     };
     if (this.trainService.checkIfExchangeDiffStation(currentViewtTainItem)) {
-      AppHelper.alert(
-        "开车前48小时以内，不可变更目的地，可改签当前到开车日期当日24:00之间的列车，不办理票面日期次日及以后的改签！"
-      );
       return;
     }
     let showResult = true;
