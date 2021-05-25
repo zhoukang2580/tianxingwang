@@ -1159,6 +1159,7 @@ export class TrainService {
         passenger.Email = info.OrderTrainTicket.Passenger.Email;
       }
       const exchangedInfo = new ExchangeInfo();
+      exchangedInfo.isRangeExchange = info.IsRangeExchange;
       exchangedInfo.ticket = JSON.parse(JSON.stringify(info.OrderTrainTicket));
       exchangedInfo.order = JSON.parse(
         JSON.stringify(info.OrderTrainTicket.Order)
