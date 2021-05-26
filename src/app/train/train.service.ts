@@ -280,7 +280,7 @@ export class TrainService {
         this.bookInfos.length &&
         this.bookInfos.find((it) => !!it.exchangeInfo);
       const t = ex && (ex.exchangeInfo.ticket as OrderTrainTicketEntity);
-      if (ex.exchangeInfo.isRangeExchange) {
+      if (ex && ex.exchangeInfo && ex.exchangeInfo.isRangeExchange) {
         if (t.OrderTrainTrips && t.OrderTrainTrips.length) {
           const diff =
             t.OrderTrainTrips[0].ToStationCode.trim().toLowerCase() !=
