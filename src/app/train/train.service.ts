@@ -284,7 +284,9 @@ export class TrainService {
         if (t.OrderTrainTrips && t.OrderTrainTrips.length) {
           const diff =
             t.OrderTrainTrips[0].ToStationCode.trim().toLowerCase() !=
-            currentViewtTainItem.train.ToStationCode.trim().toLowerCase();
+              currentViewtTainItem.train.ToStationCode.trim().toLowerCase() ||
+            t.OrderTrainTrips[0].FromStationCode.trim().toLowerCase() !=
+              currentViewtTainItem.train.FromStationCode.trim().toLowerCase();
           if (ex.exchangeInfo.rangeExchangeDateTip && diff) {
             AppHelper.alert(ex.exchangeInfo.rangeExchangeDateTip);
           }
