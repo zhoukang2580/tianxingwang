@@ -191,10 +191,42 @@ export class TmcService {
   }
 
   async getTaskReviewed() {
+    // return [
+    //   {
+    //     Title: "测试aaa",
+    //     Id: "1",
+    //   },
+    //   {
+    //     Title: "测试aaa",
+    //     Id: "2",
+    //   },
+    //   {
+    //     Title: "测试aaa",
+    //     Id: "3",
+    //   },
+    //   {
+    //     Title: "测试aaa",
+    //     Id: "4",
+    //   },
+    //   {
+    //     Title: "测试aaa",
+    //     Id: "5",
+    //   },
+    // ];
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TaskReviewed";
     req.Data = {};
     return this.apiService.getPromiseData<any[]>(req);
+  }
+  async SetAccountMessage(task) {
+    // return true;
+    if (!task || !task.Id) {
+      return false;
+    }
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-SetAccountMessage";
+    req.Data = { ...task };
+    return this.apiService.getPromiseData<any>(req);
   }
   private async checkHasAuth(isDomestic = true) {
     try {

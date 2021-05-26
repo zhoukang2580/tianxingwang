@@ -410,11 +410,12 @@ ion-header ion-title {
 }
 
 .warpper-a {
-  height: 32px;
+  height: 37px;
   font-size: 12px;
   margin: 20px;
-  margin-top: 24px;
+  margin-top: 16px;
   border-radius: 4px;
+  // padding: 5px;
   box-shadow: 5px 2px 5px 5px #f7f7f7;
   .swiper {
     display: flex;

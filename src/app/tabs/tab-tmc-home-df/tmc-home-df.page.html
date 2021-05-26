@@ -90,9 +90,10 @@
             <div class="not-jj" (click)="onTaskDetail(task)">
               <div class="not-name" notranslate>{{task.Name}}</div>
               <div calss="not-approvd overflow">
-                <span style="color: crimson" notranslate>{{task.saName}}</span><span notranslate>{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span>
+                <div><span style="color: crimson" notranslate>{{task.Title}}</span></div>
+                <div><span notranslate>过期时间：{{task?.ExpiredTime}}</span></div>
               </div>
-              <div class="view-now" (click)="onTaskDetail(task)" notranslate>立即查看</div>
+              <div class="view-now"  notranslate>立即查看</div>
             </div>
           </div>
         </div>

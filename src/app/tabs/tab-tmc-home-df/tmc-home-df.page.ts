@@ -144,12 +144,13 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }[];
 
   tasklist: {
-    Name: String;
-    saName: String;
-    Hour: String;
-    StatusName: String;
-    Variables: any;
-    VariablesObj: any;
+    Title: String;
+    Detail: String;
+    Url: String;
+    Tag: String;
+    Id: String;
+    ExpiredTime: String;
+    IsRead: boolean;
   }[];
   config: ConfigEntity;
   activeTab: ProductItem;
@@ -405,12 +406,18 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
 
   async onTaskDetail(task) {
     const url = await this.getTaskHandleUrl(task);
+    this.tmcService.SetAccountMessage(task).then(() => {
+      this.tasklist = this.tasklist.filter((it) => it.Id != task.Id);
+      setTimeout(() => {
+        this.taskEleSwiper.update();
+      }, 200);
+    });
     if (url) {
       this.router
         .navigate(["open-url"], {
           queryParams: {
             url,
-            title: task && task.Name,
+            title: task && task.Title,
             // tabId: this.activeTab?.value,
             isOpenInAppBrowser: false,
             isIframeOpen: true,
@@ -434,20 +441,22 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .getIdentityAsync()
       .catch((_) => null);
     let url = this.getTaskUrl(task);
-    if (url.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
-    } else {
-      url = `${url}?taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+    if (url) {
+      if (url.includes("?")) {
+        url = `${url}&taskid=${task.Id}&ticket=${
+          (identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      } else {
+        url = `${url}?taskid=${task.Id}&ticket=${
+          (identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      }
     }
     return url;
   }
 
   getTaskUrl(task) {
-    return task && task.HandleUrl;
+    return task && (task.HandleUrl || task.Url);
   }
 
   ngAfterViewInit() {}
@@ -782,29 +791,21 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       if (!(await this.hasTicket())) {
         return;
       }
-      this.isLoadingReviewedTask = true;
-      this.tasklist = await this.tmcService.getTaskReviewed();
-      this.isLoadingReviewedTask = false;
       try {
-        if (this.tasklist) {
-          for (const e of this.tasklist) {
-            if (e.Name) {
-              const arr = e.Name.split("(");
-              if (arr.length > 1) {
-                e.Name = arr[0].replace("发起", "");
-                e.saName = arr[1].replace(")", "");
-              }
-              try {
-                e.VariablesObj = JSON.parse(e.Variables);
-              } catch (e) {
-                console.log(e);
-              }
-            }
+        this.isLoadingReviewedTask = true;
+        this.tasklist = await this.tmcService.getTaskReviewed();
+        this.tasklist.forEach((t) => {
+          if (t.ExpiredTime) {
+            t.ExpiredTime = t.ExpiredTime.substr(
+              0,
+              "yyyy-mm-ddTHH:mm:ss".length
+            ).replace("T", " ");
           }
-        }
+        });
       } catch (error) {
         console.log(error);
       }
+      this.isLoadingReviewedTask = false;
       setTimeout(() => {
         if (this.taskEleSwiper) {
           this.taskEleSwiper.update();
