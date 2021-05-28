@@ -273,22 +273,34 @@ export class TrainService {
     }
     return true;
   }
-  checkIfExchangeDiffStation(currentViewtTainItem: ICurrentViewtTainItem) {
+  async checkIfExchangeDiffStation(
+    currentViewtTainItem: ICurrentViewtTainItem
+  ) {
     try {
       const ex =
         this.bookInfos &&
         this.bookInfos.length &&
         this.bookInfos.find((it) => !!it.exchangeInfo);
       const t = ex && (ex.exchangeInfo.ticket as OrderTrainTicketEntity);
-      if (ex && ex.exchangeInfo && ex.exchangeInfo.isRangeExchange) {
+      if (ex && ex.exchangeInfo) {
         if (t.OrderTrainTrips && t.OrderTrainTrips.length) {
           const diff =
             t.OrderTrainTrips[0].ToStationCode.trim().toLowerCase() !=
               currentViewtTainItem.train.ToStationCode.trim().toLowerCase() ||
             t.OrderTrainTrips[0].FromStationCode.trim().toLowerCase() !=
               currentViewtTainItem.train.FromStationCode.trim().toLowerCase();
-          if (ex.exchangeInfo.rangeExchangeDateTip && diff) {
-            AppHelper.alert(ex.exchangeInfo.rangeExchangeDateTip);
+          if (
+            ex.exchangeInfo.rangeExchangeDateTip &&
+            diff &&
+            ex.exchangeInfo.isRangeExchange
+          ) {
+            await AppHelper.alert(ex.exchangeInfo.rangeExchangeDateTip);
+          }
+          if (
+            t.OrderTrainTrips[0].FromStationCode.trim().toLowerCase() !=
+            currentViewtTainItem.train.FromStationCode.trim().toLowerCase()
+          ) {
+            AppHelper.alert("不能修改始发站");
           }
           return diff;
         }
