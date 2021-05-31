@@ -273,9 +273,7 @@ export class TrainService {
     }
     return true;
   }
-  async checkIfExchangeDiffStation(
-    currentViewtTainItem: ICurrentViewtTainItem
-  ) {
+  checkIfExchangeDiffStation(currentViewtTainItem: ICurrentViewtTainItem) {
     try {
       const ex =
         this.bookInfos &&
@@ -294,7 +292,8 @@ export class TrainService {
             diff &&
             ex.exchangeInfo.isRangeExchange
           ) {
-            await AppHelper.alert(ex.exchangeInfo.rangeExchangeDateTip);
+            AppHelper.alert(ex.exchangeInfo.rangeExchangeDateTip);
+            return diff;
           }
           if (
             t.OrderTrainTrips[0].FromStationCode.trim().toLowerCase() !=
