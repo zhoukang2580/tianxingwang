@@ -1,5 +1,5 @@
 import { TmcService } from "src/app/tmc/tmc.service";
-import { OrganizationEntity } from "../../../hr/staff.service";
+import { OrganizationEntity } from "../../../hr/hr.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ModalController, IonRefresher } from "@ionic/angular";
 import { Storage } from "@ionic/storage";

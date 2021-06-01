@@ -41,7 +41,7 @@ import { OrderItemHelper } from "src/app/flight/models/flight/OrderItemHelper";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { ORDER_TABS } from "../product-list/product-list.page";
-import { StaffEntity, StaffService } from "src/app/hr/staff.service";
+import { StaffEntity, HrService } from "src/app/hr/hr.service";
 import { FlightService } from "src/app/flight/flight.service";
 import { OrderFlightTripEntity } from "../models/OrderFlightTripEntity";
 import { IFlightSegmentInfo } from "src/app/flight/models/PassengerFlightInfo";
@@ -94,7 +94,7 @@ export class OrderListPage
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
     private langService: LangService,
-    private staffService: StaffService
+    private staffService: HrService
   ) {}
   canDeactivate() {
     console.log("canDeactivate isbackhome=", this.isBackHome);

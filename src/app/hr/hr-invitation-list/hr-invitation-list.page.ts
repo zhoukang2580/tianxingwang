@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { StaffService } from '../staff.service'
+import { HrService } from '../hr.service'
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,7 +13,7 @@ export class HrInvitationListPage implements OnInit {
 
   ifsuccess:''
 
-  constructor(private staffService: StaffService
+  constructor(private staffService: HrService
     , private router: Router,) {
 
   }

@@ -24,7 +24,7 @@ import { HotelSupplierType } from "../models/HotelSupplierType";
 import { RoomPlanRuleType } from "../models/RoomPlanRuleType";
 import { HotelBookType } from "../models/HotelBookType";
 import { HotelService } from "../hotel.service";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { map, tap } from "rxjs/operators";
 @Component({
   selector: "app-room-detail_df",

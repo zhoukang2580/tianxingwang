@@ -1,6 +1,6 @@
 import { LangService } from "../../../services/lang.service";
 import { Subscription } from "rxjs";
-import { StaffService } from "./../../../hr/staff.service";
+import { HrService } from "../../../hr/hr.service";
 import { IonSelect } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";

@@ -12,7 +12,7 @@ import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 
 @Component({
   selector: "app-selected-trip-info",
@@ -31,7 +31,7 @@ export class SelectedTripInfoPage implements OnInit, OnDestroy {
   constructor(
     public router: Router,
     private flightService: InternationalFlightService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private route: ActivatedRoute
   ) {}
   ngOnDestroy() {

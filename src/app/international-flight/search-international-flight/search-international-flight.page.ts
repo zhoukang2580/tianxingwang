@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import {
   InternationalFlightService,
   IInternationalFlightSegmentInfo,
@@ -48,7 +48,7 @@ export class SearchInternationalFlightPage
   isLoadingLevelPolicies = false;
   searchFlightModel: IInternationalFlightSearchModel;
   constructor(
-    private staffService: StaffService,
+    private staffService: HrService,
     private flightService: InternationalFlightService,
     private popoverCtrl: PopoverController,
     public router: Router,

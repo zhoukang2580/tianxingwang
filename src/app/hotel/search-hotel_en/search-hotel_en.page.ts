@@ -19,7 +19,7 @@ import {
   IInterHotelSearchCondition,
   InternationalHotelService,
 } from "src/app/international-hotel/international-hotel.service";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { SelectedPassengersComponent } from "src/app/tmc/components/selected-passengers/selected-passengers.component";
@@ -90,7 +90,7 @@ export class SearchHotelEnPage implements OnInit, OnDestroy {
     private hotelService: HotelService,
     route: ActivatedRoute,
     private modalController: ModalController,
-    private staffService: StaffService,
+    private staffService: HrService,
     private calendarService: CalendarService,
     private popoverCtrl: PopoverController,
     private internationalHotelService: InternationalHotelService

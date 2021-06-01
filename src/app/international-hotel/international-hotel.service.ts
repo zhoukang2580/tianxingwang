@@ -25,7 +25,7 @@ import { HotelQueryEntity } from "../hotel/models/HotelQueryEntity";
 import { HotelConditionModel } from "../hotel/models/ConditionModel";
 import { environment } from "src/environments/environment";
 import { MOCK_HOTEL_DETIAL_INFO } from "./mockData";
-import { StaffService } from "../hr/staff.service";
+import { HrService } from "../hr/hr.service";
 import { RoomPlanEntity } from "../hotel/models/RoomPlanEntity";
 import { AppHelper } from "../appHelper";
 import { HotelPassengerModel } from "../hotel/models/HotelPassengerModel";
@@ -85,7 +85,7 @@ export class InternationalHotelService {
     private storage: Storage,
     private calendarService: CalendarService,
     private modalCtrl: ModalController,
-    private staffService: StaffService,
+    private staffService: HrService,
     private tmcService: TmcService,
     identityService: IdentityService,
     memerService: MemberService

@@ -8,7 +8,7 @@ import {
   SimpleChanges,
 } from "@angular/core";
 import { OrganizationComponent } from "../organization/organization.component";
-import { OrganizationEntity } from "src/app/hr/staff.service";
+import { OrganizationEntity } from "src/app/hr/hr.service";
 
 @Component({
   selector: "app-book-organization-comp-df",

@@ -5,7 +5,7 @@ import { PayService } from "src/app/services/pay/pay.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { RoomPlanEntity } from "./../models/RoomPlanEntity";
-import { StaffService } from "./../../hr/staff.service";
+import { HrService } from "../../hr/hr.service";
 import {
   InitialBookDtoModel,
   TravelUrlInfo,
@@ -50,7 +50,7 @@ import {
   StaffEntity,
   OrganizationEntity,
   StaffApprover,
-} from "src/app/hr/staff.service";
+} from "src/app/hr/hr.service";
 import {
   OrderTravelType,
   OrderTravelPayType,
@@ -133,7 +133,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     private tmcService: TmcService,
     private popoverCtrl: PopoverController,
     private modalCtrl: ModalController,
-    private staffService: StaffService,
+    private staffService: HrService,
     private calendarService: CalendarService,
     private router: Router,
     private payService: PayService,

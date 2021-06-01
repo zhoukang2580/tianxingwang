@@ -29,7 +29,7 @@ import {
   PopoverController,
 } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { map } from "rxjs/operators";
 import * as moment from "moment";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -111,7 +111,7 @@ export class SearchHotelDfPage
     route: ActivatedRoute,
     private hotelCityService: HotelCityService,
     private modalController: ModalController,
-    private staffService: StaffService,
+    private staffService: HrService,
     private calendarService: CalendarService,
     plt: Platform,
     private tmcService: TmcService,

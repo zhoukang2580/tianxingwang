@@ -1,6 +1,6 @@
-import { TmcService } from "src/app/tmc/tmc.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { IonRefresher, ModalController, Platform } from "@ionic/angular";
+import { HrService } from "../../hr.service";
 interface OptionItem {
   Text: string;
   Value: string;
@@ -8,18 +8,19 @@ interface OptionItem {
 @Component({
   selector: "app-search-costcenter",
   templateUrl: "./search-costcenter.component.html",
-  styleUrls: ["./search-costcenter.component.scss"]
+  styleUrls: ["./search-costcenter.component.scss"],
 })
 export class CostcenterComponent implements OnInit {
   private selectedCostCenter: OptionItem;
-  constCenters: OptionItem[];
+  costCenters: OptionItem[];
   loading = false;
   vmKeyword = "";
   isIos = false;
+  private hrId;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
-    private tmcService: TmcService,
+    private hrService: HrService,
     private plt: Platform
   ) {
     this.isIos = plt.is("ios");
@@ -35,7 +36,16 @@ export class CostcenterComponent implements OnInit {
     this.loading = false;
   }
   private async loadMore() {
-    this.constCenters = await this.tmcService.getCostCenter(this.vmKeyword);
+    this.costCenters = await this.hrService
+      .getCostCenter({
+        name: this.vmKeyword,
+        hrId:this.hrId
+      })
+      .then((r) => {
+        return r.map((it) => {
+          return { Text: it.Name, Value: it.Id };
+        });
+      });
   }
   onSelect(item: OptionItem) {
     this.selectedCostCenter = item;
@@ -48,7 +58,7 @@ export class CostcenterComponent implements OnInit {
     }
     const t = await this.modalCtrl.getTop();
     if (t) {
-      t.dismiss(this.selectedCostCenter).catch(_ => {});
+      t.dismiss(this.selectedCostCenter).catch((_) => {});
     }
   }
 }

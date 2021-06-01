@@ -42,11 +42,11 @@ import { SelectComponent } from "src/app/components/select/select.component";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import {
   StaffEntity,
-  StaffService,
+  HrService,
   OrganizationEntity,
   StaffApprover,
   CostCenterEntity,
-} from "src/app/hr/staff.service";
+} from "src/app/hr/hr.service";
 import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
 import { LanguageHelper } from "src/app/languageHelper";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
@@ -167,7 +167,7 @@ export class FlightBookDfPage
 
   constructor(
     private flightService: FlightService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private identityService: IdentityService,
     private tmcService: TmcService,
     private natCtrl: NavController,

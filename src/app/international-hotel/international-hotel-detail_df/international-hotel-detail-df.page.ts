@@ -42,7 +42,7 @@ import {
   PassengerBookInfo,
   FlightHotelTrainType,
 } from "src/app/tmc/tmc.service";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { TripType } from "src/app/tmc/models/TripType";
 import { HotelPassengerModel } from "src/app/hotel/models/HotelPassengerModel";
 import { HotelEntity } from "src/app/hotel/models/HotelEntity";
@@ -110,7 +110,7 @@ export class InternationalHotelDetailDfPage
     private plt: Platform, // private calendarService
     private navCtrl: NavController,
     private popoverController: PopoverController,
-    private staffService: StaffService,
+    private staffService: HrService,
     public modalController: ModalController,
     public langService: LangService
   ) {

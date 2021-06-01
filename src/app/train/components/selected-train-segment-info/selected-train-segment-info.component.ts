@@ -1,4 +1,4 @@
-import { StaffService } from "./../../../hr/staff.service";
+import { HrService } from "../../../hr/hr.service";
 import { TrainSeatEntity } from "./../../models/TrainSeatEntity";
 import { TrainService, TrainPolicyModel } from "./../../train.service";
 import { CalendarService } from "./../../../tmc/calendar.service";
@@ -30,7 +30,7 @@ export class SelectedTrainSegmentInfoComponent implements OnInit {
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
     private trainService: TrainService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private router: Router
   ) { }
   async back() {

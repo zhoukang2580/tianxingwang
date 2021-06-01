@@ -4,7 +4,7 @@ import { Platform, ActionSheetController } from "@ionic/angular";
 import { Subscription, Observable } from "rxjs";
 import { filter } from "rxjs/operators";
 import { AppHelper } from "src/app/appHelper";
-import { StaffEntity, StaffService } from "src/app/hr/staff.service";
+import { StaffEntity, HrService } from "src/app/hr/hr.service";
 import { PageModel } from "src/app/member/member.service";
 import { MessageService } from "src/app/message/message.service";
 import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
@@ -64,7 +64,7 @@ export class MyEnPage implements OnDestroy, OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private messageService: MessageService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private actionSheetCtrl: ActionSheetController,
     private langService: LangService
   ) {

@@ -42,11 +42,11 @@ import {
 } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import {
-  StaffService,
+  HrService,
   StaffApprover,
   OrganizationEntity,
   StaffEntity,
-} from "src/app/hr/staff.service";
+} from "src/app/hr/hr.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { CalendarService } from "src/app/tmc/calendar.service";
@@ -145,7 +145,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     private tmcService: TmcService,
     private popoverCtrl: PopoverController,
     private modalCtrl: ModalController,
-    private staffService: StaffService,
+    private staffService: HrService,
     private calendarService: CalendarService,
     private router: Router,
     route: ActivatedRoute,

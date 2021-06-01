@@ -45,8 +45,8 @@ import {
   StaffApprover,
   CostCenterEntity,
   OrganizationEntity,
-  StaffService,
-} from "src/app/hr/staff.service";
+  HrService,
+} from "src/app/hr/hr.service";
 import { TaskType } from "src/app/workflow/models/TaskType";
 import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
 import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/book-tmc-outnumber.component";
@@ -134,7 +134,7 @@ export class InternationalFlightBookDfPage
     private flightService: InternationalFlightService,
     private route: ActivatedRoute,
     private identityService: IdentityService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private tmcService: TmcService,
     private storage: Storage,
     private plt: Platform,

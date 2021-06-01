@@ -1,6 +1,6 @@
 import { OrderEntity } from 'src/app/order/models/OrderEntity';
 import { CalendarService } from './../../../tmc/calendar.service';
-import { StaffEntity } from './../../../hr/staff.service';
+import { StaffEntity } from '../../../hr/hr.service';
 import { TrainEntity } from './../../models/TrainEntity';
 import { Component, OnInit, Input } from '@angular/core';
 import * as moment from 'moment';

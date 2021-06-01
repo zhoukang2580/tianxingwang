@@ -11,6 +11,9 @@ import { AccountEntity } from "../account/models/AccountEntity";
 import { AppHelper } from "../appHelper";
 import { CountryEntity } from "../tmc/models/CountryEntity";
 import { BaseEntity } from "../models/BaseEntity";
+import { IdentityEntity } from "../services/identity/identity.entity";
+import { Storage } from "@ionic/storage";
+const KEY_WORKBENCHES = "workbenches_cache_key";
 export enum StaffBookType {
   /// <summary>
   /// 秘书
@@ -25,26 +28,150 @@ export enum StaffBookType {
   /// </summary>
   All = "All", // 特殊型
 }
+interface IWb {
+  Name: string;
+  Value: IWorkbench[];
+}
+export interface IWorkbench {
+  Id: string;
+  Name: string;
+  ImageUrl: string;
+  ImageBase64: string;
+  Url: string;
+}
 @Injectable({
   providedIn: "root",
 })
-export class StaffService {
+export class HrService {
   private countries: CountryEntity[];
   private staff: StaffEntity;
   private fetchingReqStaffCredentialsPromise: Promise<MemberCredential[]>;
   private fetchingStaffPromise: Promise<StaffEntity>;
-  private hrInvitation: IHrInvitation;
   private hrInvitationSource: Subject<IHrInvitation>;
+  private workbenchPromise: Promise<any>;
+  private identity: IdentityEntity;
+  hrInvitation: IHrInvitation;
+  workbenchesUpdatedSource: Subject<any>;
+  workbenches: IWb[];
   staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
+    private storage: Storage,
     private identityService: IdentityService
   ) {
     this.hrInvitationSource = new BehaviorSubject(null);
-    this.identityService.getIdentitySource().subscribe((id) => {
+    this.workbenchesUpdatedSource = new BehaviorSubject(null);
+    this.identityService.getIdentitySource().subscribe(async (id) => {
+      this.identity = id;
       this.disposal();
+      this.workbenchesUpdatedSource.next(this.workbenches);
+      if (this.checkHasHrId()) {
+        const k = this.getCacheKey();
+        if (k) {
+          this.workbenches = await this.getWbsFromCache();
+        }
+        this.updateWorkbenches();
+      }
     });
+    identityService.getIdentitySource().subscribe(async (it) => {});
   }
+  private checkHasHrId() {
+    return (
+      this.identity &&
+      this.identity.Numbers &&
+      !!this.identity.Numbers.HrId &&
+      this.identity.Id &&
+      this.identity.Id != "0"
+    );
+  }
+  async getWorkbenches(forceUpdate = false) {
+    const req = new RequestEntity();
+    req.Method = "HrApiUrl-Workbench-Load";
+    req.Data = {};
+    // if (!this.identity || !this.identity.Ticket) {
+    //   return this.workbenches;
+    // }
+    if (!forceUpdate || !this.checkHasHrId()) {
+      if (!this.workbenches) {
+        this.workbenches = await this.getWbsFromCache();
+      }
+      return this.workbenches;
+    }
+    if (this.workbenchPromise) {
+      return this.workbenchPromise;
+    }
+    req.IsShowLoading = !this.workbenches || !this.workbenches.length;
+    this.workbenchPromise = this.apiService
+      .getPromiseData<any>(req)
+      .then((it) => {
+        this.workbenches = Object.keys(it).map((k) => {
+          return {
+            Name: k,
+            Value: it[k],
+          };
+        });
+        if (AppHelper.isApp()) {
+          const ps: Promise<any>[] = [];
+          this.workbenches.forEach((it) => {
+            if (it.Value) {
+              it.Value.forEach((itm) => {
+                if (itm.ImageUrl) {
+                  ps.push(
+                    AppHelper.image2Base64(itm.ImageUrl).then((bs) => {
+                      itm.ImageBase64 = bs;
+                    })
+                  );
+                }
+              });
+            }
+          });
+          Promise.all(ps).then(() => {
+            this.cacheWbs(this.workbenches);
+          });
+        } else {
+          this.cacheWbs(this.workbenches);
+        }
+        return this.workbenches;
+      })
+      .finally(() => {
+        this.workbenchPromise = null;
+      });
+    return this.workbenchPromise;
+  }
+  private updateWorkbenches() {
+    console.log("updateWorkbenches");
+    this.getWorkbenches(true)
+      .then((wb) => {
+        if (wb) {
+          this.workbenchesUpdatedSource.next(wb);
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      });
+  }
+  private cacheWbs(wb: IWb[]) {
+    const k = this.getCacheKey();
+    if (k) {
+      this.storage.set(k, wb);
+    }
+  }
+  private getWbsFromCache() {
+    const k = this.getCacheKey();
+    if (k) {
+      this.storage.get(k);
+    }
+    return null;
+  }
+  private getCacheKey() {
+    try {
+      return `${this.identity.Id}_${KEY_WORKBENCHES}`;
+    } catch (e) {
+      console.error(e);
+    }
+    return "";
+  }
+
   getHrInvitation() {
     // return {...this.hrInvitation,hrId:"163"}
     return this.hrInvitation || ({} as IHrInvitation);
@@ -59,6 +186,7 @@ export class StaffService {
   private disposal() {
     this.staff = null;
     this.staffCredentials = null;
+    this.workbenches = null;
   }
   async isSelfBookType(isShowLoading = true) {
     const t = (await this.getBookType()) === StaffBookType.Self;
@@ -153,13 +281,13 @@ export class StaffService {
       IsModifyCredentials: true,
     });
   }
-  getPolicy(data: { name: string }) {
+  getPolicy(data: { name: string; hrId: string }) {
     const req = new RequestEntity();
     req.Method = `HrApiUrl-Invitation-Policy`;
     // req.IsShowLoading=true;
     req.Data = {
       Name: data.name,
-      HrId: this.getHrInvitation().hrId,
+      HrId: data.hrId,
     };
     return this.apiService.getResponse<IPolicy[]>(req);
   }
@@ -216,23 +344,23 @@ export class StaffService {
       .catch(() => []);
     return this.countries;
   }
-  getCostCenter(data: { name: string }) {
+  getCostCenter(data: { name: string; hrId: string }) {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Invitation-CostCenter";
     req.Data = {
       Name: data.name,
-      HrId: this.getHrInvitation().hrId,
+      HrId: data.hrId,
     };
-    return this.apiService.getResponse<ICostCenter[]>(req);
+    return this.apiService.getPromiseData<ICostCenter[]>(req);
   }
-  getOrganization(data: { parentId: string }) {
+  getOrganization(data: { parentId: string; hrId: string }) {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Invitation-Organization";
     req.Data = {
       ParentId: data.parentId,
-      HrId: this.getHrInvitation().hrId,
+      HrId: data.hrId,
     };
-    return this.apiService.getResponse<IOrganization[]>(req);
+    return this.apiService.getPromiseData<IOrganization[]>(req);
   }
   async getListAsync() {
     const req = new RequestEntity();
@@ -257,10 +385,13 @@ export class StaffService {
     // return Promise.resolve("success")
     return this.apiService.getPromiseData<any>(req);
   }
-  invitationAdd() {
+  invitationAdd(d?: any) {
     const req = new RequestEntity();
     req.Method = "HrApiUrl-Invitation-Add";
-    const data = this.getHrInvitation();
+    const data = {
+      ...this.getHrInvitation(),
+      ...d,
+    };
     req.Data = {
       RoleId: data.roleIds,
       RoleName: data.roleNames,
@@ -279,7 +410,7 @@ export class StaffService {
       Birthday: data.birthday && data.birthday.substr(0, 10),
       HrId: this.getHrInvitation().hrId,
     };
-    return this.apiService.getPromiseData<IOrganization[]>(req);
+    return this.apiService.getPromiseData<any>(req);
   }
   async getStaffCredentials(
     AccountId: string,
@@ -315,14 +446,14 @@ export class StaffService {
 
 export class OrganizationEntity {
   Id: string;
-  ParentId: string;
-  Hr: HrEntity;
-  Parent: OrganizationEntity;
-  Code: string;
   Name: string;
-  Sequence: number;
-  ShortName: string;
-  Children: OrganizationEntity[];
+  ParentId?: string;
+  Hr?: HrEntity;
+  Parent?: OrganizationEntity;
+  Code?: string;
+  Sequence?: number;
+  ShortName?: string;
+  Children?: OrganizationEntity[];
 }
 export class CostCenterEntity extends BaseEntity {
   join(arg0: string): any {
@@ -540,7 +671,12 @@ export interface IOrganization {
   Id: string;
   Name: string;
   ParentId?: string;
-  Children?: IOrganization[];
+  Hr?: HrEntity;
+  Parent?: OrganizationEntity;
+  Code?: string;
+  Sequence?: number;
+  ShortName?: string;
+  Children?: OrganizationEntity[];
 }
 export interface IHrInvitation {
   hrId?: string;

@@ -4,7 +4,7 @@ import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { Subscription } from "rxjs";
 import { finalize, take } from "rxjs/operators";
 import { IonInfiniteScroll } from "@ionic/angular";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { RefresherComponent } from "src/app/components/refresher";
 import { OrderModel } from "src/app/order/models/OrderModel";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";

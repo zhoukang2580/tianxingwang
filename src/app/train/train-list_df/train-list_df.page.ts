@@ -6,7 +6,7 @@ import { TrainFilterComponent } from "../components/train-filter/train-filter.co
 import { TrainscheduleComponent } from "../components/trainschedule/trainschedule.component";
 import { TrainSeatEntity } from "../models/TrainSeatEntity";
 import { ICurrentViewtTainItem, ITrainInfo } from "../train.service";
-import { StaffService } from "../../hr/staff.service";
+import { HrService } from "../../hr/hr.service";
 import { ApiService } from "../../services/api/api.service";
 import { CalendarService } from "../../tmc/calendar.service";
 import { TrafficlineEntity } from "../../tmc/models/TrafficlineEntity";
@@ -128,7 +128,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     private calendarService: CalendarService,
     private route: ActivatedRoute,
     private apiService: ApiService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private popoverController: PopoverController,
     private navCtrl: NavController,
     private modalCtrl: ModalController,

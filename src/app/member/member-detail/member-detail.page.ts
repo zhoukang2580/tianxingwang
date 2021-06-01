@@ -1,6 +1,6 @@
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { MemberService } from "./../member.service";
-import { StaffEntity, StaffService } from "./../../hr/staff.service";
+import { StaffEntity, HrService } from "../../hr/hr.service";
 import { NavController } from "@ionic/angular";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -34,7 +34,7 @@ export class MemberDetailPage implements OnInit, OnDestroy {
     private configService: ConfigService,
     private apiService: ApiService,
     private navCtrl: NavController,
-    private staffService: StaffService,
+    private staffService: HrService,
     private memberService: MemberService
   ) {}
   back() {

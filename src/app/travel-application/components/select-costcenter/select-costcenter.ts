@@ -29,7 +29,7 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 import { RefresherComponent } from "src/app/components/refresher";
 import { TravelService } from "../../travel.service";
 import { finalize } from "rxjs/operators";
-import { CostCenterEntity } from "src/app/hr/staff.service";
+import { CostCenterEntity } from "src/app/hr/hr.service";
 @Component({
   selector: "app-select-costcenter",
   templateUrl: "./select-costcenter.html",

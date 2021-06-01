@@ -1,4 +1,4 @@
-import { StaffService } from "../hr/staff.service";
+import { HrService } from "../hr/hr.service";
 import { Injectable } from "@angular/core";
 import {
   CanActivate,

@@ -1,5 +1,5 @@
 import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { IonRadio } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { FlightService } from "src/app/flight/flight.service";
@@ -33,7 +33,7 @@ export class CabinComponent implements OnInit, OnDestroy, AfterViewInit {
   };
   isSelf = true;
   selectItem: any = "unlimit";
-  constructor(private staffService: StaffService) {
+  constructor(private staffService: HrService) {
     this.filterConditionChange = new EventEmitter();
   }
 

@@ -1,7 +1,7 @@
 import { OrderFlightTicketEntity } from "./../order/models/OrderFlightTicketEntity";
 import { Platform } from "@ionic/angular";
 import { AppHelper } from "./../appHelper";
-import { OrganizationEntity, StaffApprover } from "./../hr/staff.service";
+import { OrganizationEntity, StaffApprover } from "../hr/hr.service";
 import { AgentEntity } from "./models/AgentEntity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
@@ -10,7 +10,7 @@ import { BehaviorSubject } from "rxjs";
 import { Injectable } from "@angular/core";
 import { MemberCredential, MemberService } from "../member/member.service";
 import { OrderTravelPayType } from "../order/models/OrderTravelEntity";
-import { StaffEntity } from "../hr/staff.service";
+import { StaffEntity } from "../hr/hr.service";
 import { CredentialsEntity } from "./models/CredentialsEntity";
 import { TrafficlineEntity } from "./models/TrafficlineEntity";
 import { Storage } from "@ionic/storage";

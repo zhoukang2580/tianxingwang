@@ -1,4 +1,4 @@
-import { StaffEntity } from "src/app/hr/staff.service";
+import { StaffEntity } from "src/app/hr/hr.service";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { AccountEntity } from 'src/app/account/models/AccountEntity';
 

@@ -23,7 +23,7 @@ import {
   IBookOrderResult,
 } from "../tmc/tmc.service";
 import { Subject, combineLatest } from "rxjs";
-import { StaffService } from "../hr/staff.service";
+import { HrService } from "../hr/hr.service";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { ModalController } from "@ionic/angular";
 import { MapService } from "../services/map/map.service";
@@ -106,7 +106,7 @@ export class HotelService {
   constructor(
     private apiService: ApiService,
     identityService: IdentityService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private modalCtrl: ModalController,
     private mapService: MapService,
     private tmcService: TmcService,

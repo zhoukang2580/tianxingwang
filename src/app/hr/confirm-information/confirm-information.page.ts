@@ -2,7 +2,7 @@ import { IdentityService } from "src/app/services/identity/identity.service";
 import { RequestEntity } from "../../services/api/Request.entity";
 import { ApiService } from "../../services/api/api.service";
 import { LanguageHelper } from "../../languageHelper";
-import { StaffService, StaffEntity } from "../staff.service";
+import { HrService, StaffEntity } from "../hr.service";
 import { Component, OnInit, OnDestroy } from "@angular/core";
 
 import { AppHelper } from "src/app/appHelper";
@@ -26,7 +26,7 @@ export class ConfirmInformationPage implements OnInit, OnDestroy {
   identity: IdentityEntity;
   accountName = AppHelper.getStorage("loginname");
   constructor(
-    private staffService: StaffService,
+    private staffService: HrService,
     private apiService: ApiService,
     private navCtrl: NavController,
     private router: Router,

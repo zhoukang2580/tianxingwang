@@ -1,5 +1,5 @@
 import { AppHelper } from 'src/app/appHelper';
-import { StaffService } from "./../../../hr/staff.service";
+import { HrService } from "../../../hr/hr.service";
 import { Component, OnInit, Input, OnDestroy } from "@angular/core";
 import { Observable, Subscription } from "rxjs";
 import { PopoverController } from "@ionic/angular";
@@ -20,7 +20,7 @@ export class FilterPassengersPolicyComponent implements OnInit, OnDestroy {
   };
   constructor(
     private popoverCtrl: PopoverController,
-    private staffService: StaffService
+    private staffService: HrService
   ) { }
   onUnFilterPolicy() {
     if (this.bookInfos) {

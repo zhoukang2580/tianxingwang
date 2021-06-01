@@ -20,7 +20,7 @@ import { ModalController, NavController } from "@ionic/angular";
 
 import { CalendarService } from "src/app/tmc/calendar.service";
 
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 
 import { Router } from "@angular/router";
 
@@ -60,7 +60,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private flightService: FlightService,
     private flydayService: CalendarService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private router: Router,
     private route: ActivatedRoute,
     private calendarService: CalendarService,

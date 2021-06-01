@@ -2,7 +2,7 @@
   <ion-toolbar>
     <ion-buttons slot='start'>
 
-      <app-back-button defaultHref='' (click)='back($event)'></app-back-button>
+      <app-back-button defaultHref='' [backFn]='back.bind(this)'></app-back-button>
     </ion-buttons>
     <ion-title>选择成本中心</ion-title>
   </ion-toolbar>
@@ -21,8 +21,8 @@
     </ion-searchbar>
   </ion-toolbar>
   <ion-list *ngIf='!loading;else loadingTemp'>
-    <ng-container *ngIf='constCenters?.length;else nodata'>
-      <ion-item *ngFor='let item of constCenters' detail (click)='onSelect(item)'>
+    <ng-container *ngIf='costCenters?.length;else nodata'>
+      <ion-item *ngFor='let item of costCenters' detail (click)='onSelect(item)'>
         <ion-label color='medium'>
           {{item?.Text}}
         </ion-label>

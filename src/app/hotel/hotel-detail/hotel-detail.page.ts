@@ -46,7 +46,7 @@ import { Storage } from "@ionic/storage";
 import { ConfigService } from "src/app/services/config/config.service";
 import { RoomEntity } from "../models/RoomEntity";
 import { RoomPlanEntity } from "../models/RoomPlanEntity";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import {
   PassengerBookInfo,
   FlightHotelTrainType,
@@ -116,7 +116,7 @@ export class HotelDetailPage implements OnInit, AfterViewInit, OnDestroy {
     private storage: Storage,
     private configService: ConfigService,
     private tmcService: TmcService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private modalCtrl: ModalController,
     private plt: Platform,
     private apiService: ApiService,

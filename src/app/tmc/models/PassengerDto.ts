@@ -5,7 +5,7 @@ import {
 import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
 import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
 import { FlightCabinEntity } from "src/app/flight/models/flight/FlightCabinEntity";
-import { StaffEntity, PolicyEntity } from "src/app/hr/staff.service";
+import { StaffEntity, PolicyEntity } from "src/app/hr/hr.service";
 import { CredentialsEntity } from "./CredentialsEntity";
 import { OrderCardEntity } from "src/app/order/models/OrderCardEntity";
 import { TrainEntity } from "src/app/train/models/TrainEntity";

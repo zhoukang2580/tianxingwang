@@ -13,7 +13,7 @@ import { TmcEntity, TravelFormEntity } from "src/app/tmc/tmc.service";
 import { finalize } from "rxjs/operators";
 import { RefresherComponent } from "src/app/components/refresher";
 import { IonInfiniteScroll } from "@ionic/angular";
-import { StaffService, StaffEntity } from "src/app/hr/staff.service";
+import { HrService, StaffEntity } from "src/app/hr/hr.service";
 
 @Component({
   selector: "app-business-list",
@@ -41,7 +41,7 @@ export class BusinessListPage implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private service: TravelService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private keyboard: Keyboard
   ) {}
 

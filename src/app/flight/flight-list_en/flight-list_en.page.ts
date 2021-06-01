@@ -12,7 +12,7 @@ import { ApiService } from "src/app/services/api/api.service";
 import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.component";
 import { SearchFlightModel } from "./../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
-import { StaffService } from "../../hr/staff.service";
+import { HrService } from "../../hr/hr.service";
 import { AppHelper } from "src/app/appHelper";
 import { animate } from "@angular/animations";
 import { trigger, state, style, transition } from "@angular/animations";
@@ -158,7 +158,7 @@ export class FlightListEnPage
     private router: Router,
     private flightService: FlightService,
     private flyDayService: CalendarService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private apiService: ApiService,
     private identityService: IdentityService,
     private modalCtrl: ModalController,

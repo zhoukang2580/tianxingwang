@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, IterableDiffers } from "@angular/core";
-import { StaffService, IOrganization } from "../staff.service";
+import { HrService, IOrganization } from "../hr.service";
 import { ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
@@ -14,6 +14,7 @@ interface IItem extends IOrganization {
 })
 export class HrInvitationSearchPage implements OnInit {
   private subscription = Subscription.EMPTY;
+  private hrId: string;
   private type = "";
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   keywords = "";
@@ -23,14 +24,12 @@ export class HrInvitationSearchPage implements OnInit {
   isShowSearch: number;
   deptPaths: IOrganization[] = [{ Name: "部门", Id: "0" }];
   top_title: string;
-  constructor(
-    private staffservice: StaffService,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private hrService: HrService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((q) => {
       this.type = q.get("type");
+      this.hrId = q.get("hrId");
       this.onSearch();
     });
   }
@@ -75,44 +74,44 @@ export class HrInvitationSearchPage implements OnInit {
   onItemsChange(item: IItem) {
     this.subscription.unsubscribe();
     if (this.type == "policy") {
-      this.staffservice.setHrInvitationSource({
-        ...this.staffservice.getHrInvitation(),
-        policy: item,
-      });
+      // this.staffservice.setHrInvitationSource({
+      //   ...this.staffservice.getHrInvitation(),
+      //   policy: item,
+      // });
     } else if (this.type == "costcenter") {
-      this.staffservice.setHrInvitationSource({
-        ...this.staffservice.getHrInvitation(),
+      this.hrService.hrInvitation = {
+        ...this.hrService.hrInvitation,
         constCenter: item,
-      });
+      };
     } else if (this.type == "organization") {
-      this.staffservice.setHrInvitationSource({
-        ...this.staffservice.getHrInvitation(),
+      this.hrService.hrInvitation = {
+        ...this.hrService.hrInvitation,
         organization: item,
-      });
+      };
     } else if (this.type == "countries") {
-      this.staffservice.setHrInvitationSource({
-        ...this.staffservice.getHrInvitation(),
+      this.hrService.hrInvitation = {
+        ...this.hrService.hrInvitation,
         country: {
           Id: item.Id,
           Name: item.Name,
           Code: item.Code,
         } as CountryEntity,
-      });
+      };
     }
     this.back();
   }
   private getOrganization(parentId = "0") {
-    this.subscription = this.staffservice
-      .getOrganization({ parentId })
-      .subscribe((res) => {
-        if (res && res.Data) {
-          this.items = res.Data;
+    this.hrService
+      .getOrganization({ parentId, hrId: this.hrId })
+      .then((res) => {
+        if (res) {
+          this.items = res;
         }
       });
   }
   private async getCountries() {
     // console.log(await this.staffservice.getCountriesAsync(),"11111111111");
-    const arr = await this.staffservice.getCountriesAsync();
+    const arr = await this.hrService.getCountriesAsync();
     this.contries = arr.filter((it) => {
       return !this.keywords
         ? true
@@ -122,17 +121,17 @@ export class HrInvitationSearchPage implements OnInit {
     });
   }
   private getCostCenter() {
-    this.subscription = this.staffservice
-      .getCostCenter({ name: this.keywords })
-      .subscribe((res) => {
-        if (res && res.Data) {
-          this.items = res.Data;
+    this.hrService
+      .getCostCenter({ name: this.keywords, hrId: this.hrId })
+      .then((res) => {
+        if (res) {
+          this.items = res;
         }
       });
   }
   private getPolicy() {
-    this.subscription = this.staffservice
-      .getPolicy({ name: this.keywords })
+    this.subscription = this.hrService
+      .getPolicy({ name: this.keywords, hrId: this.hrId })
       .subscribe((res) => {
         if (res && res.Data) {
           this.items = res.Data;

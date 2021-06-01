@@ -3,8 +3,8 @@ import { NavController, DomController, IonSlides } from "@ionic/angular";
 import { FlightService } from "src/app/flight/flight.service";
 import { HotelService } from "../../hotel/hotel.service";
 import { TrainService } from "src/app/train/train.service";
-import { StaffEntity } from "src/app/hr/staff.service";
-import { StaffService } from "../../hr/staff.service";
+import { StaffEntity } from "src/app/hr/hr.service";
+import { HrService } from "../../hr/hr.service";
 import { Notice, CmsService } from "../../cms/cms.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
@@ -98,7 +98,7 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
     private apiService: ApiService,
     private payService: PayService,
     private cmsService: CmsService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private trainService: TrainService,
     private navCtrl: NavController,
     private memberService: MemberService,

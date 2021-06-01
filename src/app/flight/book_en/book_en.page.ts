@@ -32,12 +32,12 @@ import {
 } from "./../../tmc/tmc.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import {
-  StaffService,
+  HrService,
   StaffEntity,
   CostCenterEntity,
   OrganizationEntity,
   StaffApprover,
-} from "./../../hr/staff.service";
+} from "../../hr/hr.service";
 import { FlightService } from "src/app/flight/flight.service";
 import {
   OnInit,
@@ -151,7 +151,7 @@ export class BookEnPage
   @ViewChild(IonFooter, { static: true }) ionFooter: IonFooter;
   constructor(
     private flightService: FlightService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private identityService: IdentityService,
     private tmcService: TmcService,
     private natCtrl: NavController,

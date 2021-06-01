@@ -1,6 +1,6 @@
 import { IHotelInfo } from "../../hotel/hotel.service";
 import { CalendarService } from "../../tmc/calendar.service";
-import { StaffService } from "../../hr/staff.service";
+import { HrService } from "../../hr/hr.service";
 import { ModalController, PopoverController } from "@ionic/angular";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Subscription } from "rxjs";
@@ -59,7 +59,7 @@ export class SearchInternationalHotelPage implements OnInit, OnDestroy {
     private hotelService: InternationalHotelService,
     public router: Router,
     private modalController: ModalController,
-    private staffService: StaffService,
+    private staffService: HrService,
     private popoverCtrl: PopoverController,
     private route: ActivatedRoute,
     private calendarService: CalendarService

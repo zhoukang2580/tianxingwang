@@ -31,7 +31,7 @@ import {
 import { environment } from "src/environments/environment";
 import { IdentityEntity } from "../services/identity/identity.entity";
 import { FlightRouteEntity } from "../flight/models/flight/FlightRouteEntity";
-import { StaffService } from "../hr/staff.service";
+import { HrService } from "../hr/hr.service";
 import { MemberService } from "../member/member.service";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { CredentialsType } from "../member/pipe/credential.pipe";
@@ -206,7 +206,7 @@ export class InternationalFlightService {
     private tmcService: TmcService,
     private router: Router,
     private modalCtrl: ModalController,
-    private staffService: StaffService,
+    private staffService: HrService,
     private memerService: MemberService,
     private storage: Storage,
     private LangService: LangService

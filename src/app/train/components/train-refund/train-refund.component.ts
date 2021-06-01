@@ -1,5 +1,5 @@
 import { OrderEntity } from 'src/app/order/models/OrderEntity';
-import { StaffEntity } from './../../../hr/staff.service';
+import { StaffEntity } from '../../../hr/hr.service';
 import { TrainEntity } from 'src/app/train/models/TrainEntity';
 import { PopoverController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';

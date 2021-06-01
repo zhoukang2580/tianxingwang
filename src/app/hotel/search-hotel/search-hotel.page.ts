@@ -24,7 +24,7 @@ import {
 } from "@angular/core";
 import { ModalController, PopoverController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { map } from "rxjs/operators";
 import * as moment from "moment";
 import { TripType } from "src/app/tmc/models/TripType";
@@ -96,7 +96,7 @@ export class SearchHotelPage implements OnInit, OnDestroy {
     private hotelService: HotelService,
     route: ActivatedRoute,
     private modalController: ModalController,
-    private staffService: StaffService,
+    private staffService: HrService,
     private calendarService: CalendarService,
     private popoverCtrl: PopoverController,
     private internationalHotelService: InternationalHotelService

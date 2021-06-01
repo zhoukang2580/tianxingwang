@@ -1,5 +1,5 @@
 import { CostcenterComponent } from './../components/costcenter/search-costcenter.component';
-import { OrganizationEntity } from 'src/app/hr/staff.service';
+import { OrganizationEntity } from 'src/app/hr/hr.service';
 import { OrganizationComponent } from '../components/organization/organization.component';
 import { ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';

@@ -10,7 +10,7 @@ import {
 } from "@angular/core";
 import { ModalController, IonContent, Platform } from "@ionic/angular";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
-import { OrganizationEntity, CostCenterEntity } from "src/app/hr/staff.service";
+import { OrganizationEntity, CostCenterEntity } from "src/app/hr/hr.service";
 import {
   Subscription,
   fromEvent,

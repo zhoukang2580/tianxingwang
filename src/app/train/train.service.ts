@@ -5,7 +5,7 @@ import { ExchangeTrainModel } from "./../order/models/ExchangeTrainModel";
 import { AppHelper } from "src/app/appHelper";
 import { ModalController, PopoverController } from "@ionic/angular";
 import { IdentityService } from "./../services/identity/identity.service";
-import { StaffService, StaffEntity } from "./../hr/staff.service";
+import { HrService, StaffEntity } from "../hr/hr.service";
 import { Subject, BehaviorSubject, combineLatest } from "rxjs";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
@@ -76,7 +76,7 @@ export class TrainService {
   constructor(
     private apiService: ApiService,
     private storage: Storage,
-    private staffService: StaffService,
+    private staffService: HrService,
     private tmcService: TmcService,
     private identityService: IdentityService,
     private modalCtrl: ModalController,

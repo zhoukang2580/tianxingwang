@@ -4,7 +4,7 @@ import { TravelFormEntity, TmcEntity } from 'src/app/tmc/tmc.service';
 import { PassengerDto } from 'src/app/tmc/models/PassengerDto';
 import { AgentEntity } from 'src/app/tmc/models/AgentEntity';
 import { IdentityEntity } from 'src/app/services/identity/identity.entity';
-import { StaffEntity, StaffBookType } from 'src/app/hr/staff.service';
+import { StaffEntity, StaffBookType } from 'src/app/hr/hr.service';
 import { OrderTrainTicketEntity } from './OrderTrainTicketEntity';
 import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
 

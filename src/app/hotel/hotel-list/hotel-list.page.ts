@@ -61,7 +61,7 @@ import {
 } from "@angular/animations";
 
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { HotelCityService } from "../hotel-city.service";
 interface ISearchTextValue {
@@ -132,7 +132,7 @@ export class HotelListPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private navCtrl: NavController,
     private configService: ConfigService,
     private identityService: IdentityService,

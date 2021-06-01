@@ -633,7 +633,7 @@ export class AppHelper {
         result = local as T;
       }
     }
-    result = result || (("" as any) as T);
+    result = result || ("" as any as T);
     return result;
   }
   static getTicket() {
@@ -1011,15 +1011,18 @@ export class AppHelper {
     try {
       await AppHelper.platform.ready();
       const MyInAppBrowser = window["MyInAppBrowser"];
+      if(!MyInAppBrowser){
+        return;
+      }
       const obj = {
         location: "no",
         fullscreen: "no",
-        progressbarColor:CONFIG.progressbarColor
+        progressbarColor: CONFIG.progressbarColor,
       };
       const opts = Object.keys(obj)
         .map((it) => `${it}=${obj[it]}`)
         .join(",");
-       MyInAppBrowser(url, "_blank", opts);
+      MyInAppBrowser(url, "_blank", opts);
     } catch (e) {
       console.error(e);
     }
@@ -1183,5 +1186,33 @@ export class AppHelper {
       return true;
     }
     return false;
+  }
+  static image2Base64(d: string | HTMLImageElement) {
+    let st = Date.now();
+    return new Promise<string>((s) => {
+      let img = new Image();
+      img.setAttribute("crossOrigin", "anonymous");
+      if (d instanceof HTMLImageElement) {
+        img.src = d.src;
+      } else {
+        img.src = d;
+      }
+      img.onload = () => {
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        var dataURL = canvas.toDataURL("image/jpg");
+        // console.log("image2Base64 dataURL", dataURL);
+        s(dataURL);
+      };
+      img.onerror = () => {
+        s(null);
+      };
+    }).then((r) => {
+      console.info("image2Base64", Date.now() - st);
+      return r;
+    });
   }
 }

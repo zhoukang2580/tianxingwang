@@ -8,7 +8,7 @@ import {
   UrlTree,
 } from "@angular/router";
 import { Observable } from "rxjs";
-import { StaffService, StaffBookType } from "../hr/staff.service";
+import { HrService, StaffBookType } from "../hr/hr.service";
 import { AppHelper } from "../appHelper";
 
 @Injectable({
@@ -26,7 +26,7 @@ export class ConfirmCredentialInfoGuard
     | Promise<boolean | UrlTree> {
     return this.canActivate(childRoute, state);
   }
-  constructor(private staffService: StaffService, private router: Router) {}
+  constructor(private staffService: HrService, private router: Router) {}
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot

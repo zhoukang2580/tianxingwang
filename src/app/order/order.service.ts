@@ -31,7 +31,7 @@ import { AppHelper } from "../appHelper";
 import { OrderFlightTicketEntity } from "./models/OrderFlightTicketEntity";
 import { OrderTrainTicketEntity } from "./models/OrderTrainTicketEntity";
 import { TravelModel } from "./models/TravelModel";
-import { StaffEntity } from "../hr/staff.service";
+import { StaffEntity } from "../hr/hr.service";
 import { CalendarService } from "../tmc/calendar.service";
 import { OrderPassengerEntity } from "./models/OrderPassengerEntity";
 export class OrderDetailModel {

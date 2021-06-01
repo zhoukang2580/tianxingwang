@@ -6,8 +6,8 @@ import { TrainService, SearchTrainModel } from "./../train.service";
 import { TrafficlineEntity } from "./../../tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
 import { ApiService } from "src/app/services/api/api.service";
-import { StaffEntity, StaffBookType } from "src/app/hr/staff.service";
-import { StaffService } from "../../hr/staff.service";
+import { StaffEntity, StaffBookType } from "src/app/hr/hr.service";
+import { HrService } from "../../hr/hr.service";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
 import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
@@ -54,7 +54,7 @@ export class SearchTrainPage
     public router: Router,
     private route: ActivatedRoute,
     private storage: Storage,
-    private staffService: StaffService,
+    private staffService: HrService,
     private identityService: IdentityService,
     private apiService: ApiService,
     private trainService: TrainService,

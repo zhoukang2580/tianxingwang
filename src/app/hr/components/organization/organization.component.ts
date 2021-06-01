@@ -1,13 +1,12 @@
-import { TmcService } from "src/app/tmc/tmc.service";
-import { OrganizationEntity } from "../../../hr/staff.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ModalController, IonRefresher } from "@ionic/angular";
 import { Storage } from "@ionic/storage";
 import {
   NodeItem,
   TreeOptions,
-  TreeCallbacks
+  TreeCallbacks,
 } from "src/app/components/tree-ngx";
+import { HrService, OrganizationEntity } from "../../hr.service";
 interface LocalOrganizationEntity {
   data: OrganizationEntity[];
   lastUpdateTime: number;
@@ -15,7 +14,7 @@ interface LocalOrganizationEntity {
 @Component({
   selector: "app-organization",
   templateUrl: "./organization.component.html",
-  styleUrls: ["./organization.component.scss"]
+  styleUrls: ["./organization.component.scss"],
 })
 export class OrganizationComponent implements OnInit {
   nodeItems: NodeItem<OrganizationEntity>[] = [];
@@ -31,16 +30,16 @@ export class OrganizationComponent implements OnInit {
   isTreeMode;
   private rootDeptName = "部门";
   private selectedNode: OrganizationEntity;
+  private hrId;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
-    private storage: Storage,
-    private tmcService: TmcService
+    private hrService: HrService
   ) {}
   async back() {
     const t = await this.modalCtrl.getTop();
     if (t) {
-      t.dismiss(this.selectedNode).catch(_ => {});
+      t.dismiss(this.selectedNode).catch((_) => {});
     }
   }
   doSearch() {
@@ -49,7 +48,7 @@ export class OrganizationComponent implements OnInit {
       if (this.filter) {
         this.isLoading = true;
         setTimeout(() => {
-          this.currentSelectedNodeChildren = this.originalNodes.filter(it =>
+          this.currentSelectedNodeChildren = this.originalNodes.filter((it) =>
             it.Name.includes(this.filter)
           );
         }, 100);
@@ -84,7 +83,7 @@ export class OrganizationComponent implements OnInit {
     }
     while (n && n.Parent) {
       const temp = n;
-      n = this.originalNodes.find(it => it.Id == n.ParentId);
+      n = this.originalNodes.find((it) => it.Id == n.ParentId);
       if (!n || !n.Parent) {
         return n ? n : temp && temp.Parent;
       }
@@ -94,7 +93,7 @@ export class OrganizationComponent implements OnInit {
     if (!node) {
       return [];
     }
-    return this.originalNodes.filter(it => it.ParentId == node.Id);
+    return this.originalNodes.filter((it) => it.ParentId == node.Id);
   }
   private getParents(node: OrganizationEntity) {
     const result: OrganizationEntity[] = [];
@@ -113,7 +112,7 @@ export class OrganizationComponent implements OnInit {
     while (p) {
       console.log(p);
       result.unshift(p);
-      p = this.originalNodes.find(it => it.Id == p.Id);
+      p = this.originalNodes.find((it) => it.Id == p.Id);
     }
     root = result[0];
     if (root) {
@@ -139,7 +138,7 @@ export class OrganizationComponent implements OnInit {
       unSelect: (item: NodeItem<OrganizationEntity>) => {
         this.selectedNode = null;
       },
-      toggle: (item: NodeItem<OrganizationEntity>) => {}
+      toggle: (item: NodeItem<OrganizationEntity>) => {},
     };
     await this.doRefresh();
     this.initNodes();
@@ -150,14 +149,19 @@ export class OrganizationComponent implements OnInit {
   }
   async doRefresh(forceFetch = false) {
     this.isLoading = true;
-    if (this.originalNodes.length == 0) {
-      this.originalNodes = (await this.tmcService.getOrganizations()).map(
-        it => {
-          return { ...it, ParentId: it && it.Parent.Id };
-        }
-      );
-    }
-    this.nodeItems = this.originalNodes.map(item => {
+    this.originalNodes = (
+      await this.hrService.getOrganization({
+        parentId: "0",
+        hrId: this.hrId,
+      } as any)
+    ).map((it) => {
+      return {
+        ...it,
+        ParentId: "0",
+        Parent: { Id: "0", Parent: null, ParentId: null, Name: "" },
+      };
+    });
+    this.nodeItems = this.originalNodes.map((item) => {
       return {
         id: item.Id,
         item: item,
@@ -170,9 +174,9 @@ export class OrganizationComponent implements OnInit {
             id: item.Parent.Id,
             name: item.Parent.Name,
             item: item.Parent,
-            parentId: item.Parent.Parent && item.Parent.Parent.Id
-          }
-        }
+            parentId: item.Parent.Parent && item.Parent.Parent.Id,
+          },
+        },
       };
     });
     this.isLoading = false;

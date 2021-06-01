@@ -21,7 +21,7 @@ import { AppHelper } from "src/app/appHelper";
 import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
-import { StaffService, StaffEntity } from "../hr/staff.service";
+import { HrService, StaffEntity } from "../hr/hr.service";
 import { Injectable } from "@angular/core";
 import { Subject, BehaviorSubject, combineLatest } from "rxjs";
 
@@ -85,7 +85,7 @@ export class FlightService {
   }
   constructor(
     private apiService: ApiService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private modalCtrl: ModalController,
     private router: Router,
     identityService: IdentityService,

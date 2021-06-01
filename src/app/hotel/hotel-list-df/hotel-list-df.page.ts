@@ -39,7 +39,7 @@ import { finalize } from "rxjs/operators";
 import { TmcService } from "src/app/tmc/tmc.service";
 
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { ShowFreebookTipComponent } from "../components/show-freebook-tip/show-freebook-tip.component";
 import { HotelCityService } from "../hotel-city.service";
 interface ISearchTextValue {
@@ -114,7 +114,7 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private configService: ConfigService,
     private hotelCityService: HotelCityService,
     plt: Platform

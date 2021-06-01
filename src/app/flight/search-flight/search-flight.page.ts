@@ -5,9 +5,9 @@ import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
 import { ApiService } from "src/app/services/api/api.service";
-import { StaffEntity, StaffBookType } from "src/app/hr/staff.service";
+import { StaffEntity, StaffBookType } from "src/app/hr/hr.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
-import { StaffService } from "../../hr/staff.service";
+import { HrService } from "../../hr/hr.service";
 import {
   FlightService,
   SearchFlightModel,
@@ -62,7 +62,7 @@ export class SearchFlightPage
     private navCtrl: NavController,
     private flightService: FlightService,
     private storage: Storage,
-    private staffService: StaffService,
+    private staffService: HrService,
     private apiService: ApiService,
     private tmcService: TmcService,
     private modalCtrl: ModalController,

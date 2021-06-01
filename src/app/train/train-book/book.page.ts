@@ -15,7 +15,7 @@ import {
   StaffApprover,
   StaffEntity,
   OrganizationEntity,
-} from "../../hr/staff.service";
+} from "../../hr/hr.service";
 import { IdentityService } from "../../services/identity/identity.service";
 import {
   TmcEntity,
@@ -62,7 +62,7 @@ import {
   fromEvent,
 } from "rxjs";
 import { map, tap } from "rxjs/operators";
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { AddContact } from "src/app/tmc/models/AddContact";
@@ -117,7 +117,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     private storage: Storage,
     private navCtrl: NavController,
     private identityService: IdentityService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private modalCtrl: ModalController,
     private tmcService: TmcService,
     private router: Router,

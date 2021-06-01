@@ -9,10 +9,10 @@ import { TmcService } from "../tmc.service";
 import { MemberService, MemberCredential } from "../../member/member.service";
 import { CanComponentDeactivate } from "../../guards/candeactivate.guard";
 import {
-  StaffService,
+  HrService,
   StaffBookType,
   PolicyEntity,
-} from "../../hr/staff.service";
+} from "../../hr/hr.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "../../services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -39,7 +39,7 @@ import {
   IonContent,
 } from "@ionic/angular";
 import { RequestEntity } from "src/app/services/api/Request.entity";
-import { StaffEntity } from "src/app/hr/staff.service";
+import { StaffEntity } from "src/app/hr/hr.service";
 import { Observable, Subscription, fromEvent } from "rxjs";
 import { tap, finalize } from "rxjs/operators";
 import { LanguageHelper } from "src/app/languageHelper";
@@ -108,7 +108,7 @@ export class SelectPassengerDfPage
     private navCtrl: NavController,
     private apiService: ApiService,
     private identityService: IdentityService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private validatorService: ValidatorService,
     private domCtrl: DomController,
     private tmcService: TmcService,

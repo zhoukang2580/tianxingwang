@@ -5,7 +5,7 @@ import {
   CostCenterEntity,
   StaffEntity,
   OrganizationEntity,
-} from "../hr/staff.service";
+} from "../hr/hr.service";
 import { CityEntity } from "../tmc/models/CityEntity";
 import { HistoryEntity } from "../order/models/HistoryEntity";
 import { TmcEntity, TravelFormEntity } from "../tmc/tmc.service";

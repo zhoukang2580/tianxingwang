@@ -1,4 +1,4 @@
-import { StaffService } from "./../../../hr/staff.service";
+import { HrService } from "../../../hr/hr.service";
 import { TrainSeatEntity } from "./../../models/TrainSeatEntity";
 import { TrainService, TrainPolicyModel } from "./../../train.service";
 import { CalendarService } from "./../../../tmc/calendar.service";

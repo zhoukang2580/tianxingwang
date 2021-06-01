@@ -1,5 +1,5 @@
 import { TmcEntity } from '../tmc.service';
-import { HrEntity } from 'src/app/hr/staff.service';
+import { HrEntity } from 'src/app/hr/hr.service';
 import { BaseVariablesEntity } from 'src/app/models/BaseVariablesEntity';
 
 export class TmcDataEntity extends BaseVariablesEntity {
