@@ -300,8 +300,8 @@ export class TrainService {
             currentViewtTainItem.train.FromStationCode.trim().toLowerCase()
           ) {
             AppHelper.alert("不能修改始发站");
+            return diff;
           }
-          return diff;
         }
       }
     } catch (e) {
