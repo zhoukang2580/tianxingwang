@@ -1,0 +1,61 @@
+ion-searchbar {
+    padding-bottom: 0;
+    font-size: 14px;
+    input::placeholder {
+        font-size: 14px;
+    }
+}
+
+ion-toolbar.ios.search {
+    --border-width: 0;
+}
+
+.list {
+    margin: 10px;
+    border-radius: 10px;
+}
+
+.span {
+    font-size: 12px;
+}
+
+.btn_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ion-margin-top {
+    --border-radius: 20px;
+    width: 90%;
+    height: 2.5rem;
+}
+
+ion-item .credential-item {
+    width: 100%;
+    font-size: 14px;
+    ion-row :first-child {
+        max-width: 7em;
+    }
+}
+
+.con-list {
+    margin: 10px;
+    border-radius: 10px;
+    .item-divider {
+        border-bottom: 0.01rem solid #cccccc;
+        background: #fff;
+    }
+    .con-big {
+        display: flex;
+        line-height: 3;
+        flex-wrap: wrap;
+    }
+    .sfz {
+        font-size: 15px;
+    }
+    .name-id {
+        margin-left: 1em;
+        font-size: 14px;
+    }
+}

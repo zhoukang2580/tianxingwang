@@ -1,0 +1,53 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref="" [backFn]='back.bind(this)'></app-back-button>
+        </ion-buttons>
+        <ion-title>乘客信息</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list class="list">
+        <ion-item lines='none' *ngIf="passengerInfo as pass">
+            <ion-grid>
+                <ion-row>
+                    <ion-col size='4'>姓名</ion-col>
+                    <ion-col>
+                        <ion-input [(ngModel)]="pass.Name" clear-input='true'></ion-input>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col size='4'>证件类型</ion-col>
+                    <!-- <ion-input [(ngModel)]="passengerInfo.cardType"></ion-input> -->
+                    <ion-col class="value" (click)="statusSelect.open()">{{pass?.CredentialsTypeName||"请选泽"}}</ion-col>
+                    <ion-item style="display: none">
+                        <ion-select cancelText="取消" okText="确定" backdrop-dismiss="true" #statusSelect translucent="true" [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="pass.CredentialsTypeName" name="status"
+                            (ionChange)="onSearch($event)">
+                            <ion-select-option value="{{cardType.Waiting}}">身份证</ion-select-option>
+                            <ion-select-option value="{{cardType.True}}">护照</ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                    <ion-col class="end" (click)="statusSelect.open()">
+                        <ion-icon name="chevron-forward-outline"></ion-icon>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col size='4'>证件号码</ion-col>
+                    <ion-input [(ngModel)]="pass.Number" clear-input='true'></ion-input>
+                </ion-row>
+                <ion-row>
+                    <ion-col size='4'>公务卡发卡行</ion-col>
+                    <ion-text (click)="onSelectBank()">{{CardName}}</ion-text>
+                    <!-- <ion-text (click)="onSelectBank()">{{pass?.bankCard?.BankName}}</ion-text> -->
+                </ion-row>
+                <ion-row>
+                    <ion-col size='4'>联系号码</ion-col>
+                    <ion-input [(ngModel)]="pass.Mobile" clear-input='true'></ion-input>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+    </ion-list>
+    <div class="finish_btn" (click)="onAddPassInfo()">
+        <ion-button class="btn" slot="end" size="small" fill="clear">完成</ion-button>
+    </div>
+</ion-content>

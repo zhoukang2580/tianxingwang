@@ -306,9 +306,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       const h = Math.floor((seconds - 24 * 3600 * d) / 3600);
       const mm = Math.floor((seconds - 24 * 3600 * d - h * 3600) / 60);
       const ss = seconds - d * 24 * 3600 - h * 3600 - mm * 60;
-      return `${d > 0 ? d + "天" : ""}${
-        d > 0 ? h + "小时" : h > 0 ? h + "小时" : ""
-      }${mm > 0 ? mm + "分钟" : ""}${this.getHHMM(ss)}秒`;
+      return `${d > 0 ? d + "天" : ""}${d > 0 ? h + "小时" : h > 0 ? h + "小时" : ""
+        }${mm > 0 ? mm + "分钟" : ""}${this.getHHMM(ss)}秒`;
     }
     return "";
   }
@@ -421,7 +420,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
             goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
           },
         })
-        .then((_) => {});
+        .then((_) => { });
     }
   }
 
@@ -438,13 +437,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     }
     return url;
   }
@@ -453,7 +450,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     return task && task.HandleUrl;
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   private destroySwiper() {
     if (this.bannersSwiper) {
       this.bannersSwiper.destroy();
@@ -480,7 +477,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   private initSwiperhotels() {
@@ -644,7 +641,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   async goToPage(
-    entry: "flight" | "hotel" | "train" | "rentalCar",
+    entry: "flight" | "hotel" | "train" | "rentalCar" | "flightGp",
     queryParams?: any
   ) {
     const msg = "您没有预订权限";
@@ -685,6 +682,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
       route = "rental-car";
+    }
+    if (entry == "flightGp") {
+      ok = await this.tmcService.hasBookRight("flightGp");
+      if (!ok) {
+        AppHelper.alert(msg);
+        return;
+      }
+      route = "search-flight-gp";
     }
     if (route) {
       if (queryParams) {

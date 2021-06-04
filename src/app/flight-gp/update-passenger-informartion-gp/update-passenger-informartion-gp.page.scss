@@ -1,0 +1,32 @@
+.list {
+    margin: 10px;
+    border-radius: 10px;
+    ion-item {
+        font-size: 15px;
+        ion-grid {
+            ion-row {
+                height: 55px;
+                border-bottom: 1px solid #eee;
+            }
+            ion-row:last-child {
+                border-bottom: 0;
+            }
+            .end {
+                text-align: end;
+                font-size: 22px;
+            }
+        }
+    }
+}
+
+.finish_btn {
+    background: #5099FE;
+    margin: 20px 40px;
+    padding: 5px;
+    text-align: center;
+    border-radius: 25px;
+    .btn {
+        height: 30px;
+        font-size: 22px;
+    }
+}

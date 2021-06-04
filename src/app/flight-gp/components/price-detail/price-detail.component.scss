@@ -1,0 +1,17 @@
+ion-col {
+  align-self: flex-start;
+  padding: 0;
+}
+ion-row ion-col:nth-child(2n) {
+  text-align: end;
+}
+ion-grid.item {
+  &:not(:last-child) {
+    border-right: 1px solid var(--ion-color-dark);
+  }
+  margin: 0.25em;
+  min-width: 60vw;
+}
+:host {
+  display: flex;
+}

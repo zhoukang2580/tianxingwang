@@ -1,0 +1,163 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref="" (click)='back()'></app-back-button>
+        </ion-buttons>
+        <!-- <ion-text>{{getMothDay()}}</ion-text> -->
+        <ion-title>
+            <div class='from-to-city'>
+                <ion-text color='dark'>{{vmFlightSegment?.FromCityName}}</ion-text>
+                <ion-icon name='airplane' color='secondary'></ion-icon>
+                <ion-text color='dark'>{{vmFlightSegment?.ToCityName}}</ion-text>
+            </div>
+        </ion-title>
+        <!-- <ion-buttons slot='end' *ngIf='(showOpenBtn$|async) as num'>
+            <ion-button fill='clear' color='secondary' (click)='onShowSelectedInfosPage()' size='small'>
+                <ion-text class='xs-font-size'>
+                    已选行程
+                </ion-text>
+                <ion-badge color='danger' slot='end'>
+                    <ion-text color='light'>{{num}}</ion-text>
+                </ion-badge>
+            </ion-button>
+        </ion-buttons> -->
+        <!-- <ion-buttons slot='end' *ngIf='!isSelf&&!isExchange'>
+            <ion-button fill='clear' color='secondary' (click)='filterPolicyFlights()' size='small'>
+                <ion-text class='xs-font-size'>过滤差标</ion-text>
+            </ion-button>
+        </ion-buttons> -->
+    </ion-toolbar>
+    <!-- <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo' class='rule'>
+        <ion-col *ngIf='bookInfo.credential as credential' class='ion-text-center'>
+            <ion-text color='secondary'>
+                当前已过滤【{{credential.Name}}】({{credential.HideNumber}})差标
+            </ion-text>
+        </ion-col>
+    </ion-row> -->
+</ion-header>
+<ion-content class="padding-half-c">
+    <div class="b">
+        <div class="trip">
+            <div class="l">
+                <div class="time">{{vmFlightSegment?.TakeoffShortTime}}</div>
+                <div class="airport"> {{vmFlightSegment?.FromAirportName}}
+                    <span *ngIf='vmFlightSegment?.FromTerminal'>({{vmFlightSegment?.FromTerminal}})</span>
+                </div>
+            </div>
+            <div class="c">
+                <div class="fly">
+                    <ion-text name='airplane' class='non-stop' mode='ios' content='直飞' color='dark' *ngIf='!vmFlightSegment?.IsStop'>直飞</ion-text>
+                    <ion-text color='dark' *ngIf='vmFlightSegment?.IsStop' style='font-size: 0.7rem;'>经停</ion-text>
+                </div>
+                <div class="line"></div>
+                <div class="duration">{{vmFlightSegment?.FlyTimeName}}</div>
+            </div>
+            <div class="r">
+                <div class="time">{{vmFlightSegment?.ArrivalShortTime}}</div>
+                <div class="airport">{{vmFlightSegment?.ToAirportName}}
+                    <span *ngIf='vmFlightSegment?.ToTerminal'>({{vmFlightSegment?.ToTerminal}})</span>
+                </div>
+            </div>
+        </div>
+        <div class="aircompany">
+            <img [src]="vmFlightSegment?.AirlineSrc" alt="">
+            <ion-text class='ion-text-nowrap' color='medium'>{{vmFlightSegment?.AirlineName}} {{vmFlightSegment?.Number}}</ion-text>
+            <ion-text color='secondary' *ngIf='vmFlightSegment?.CodeShareNumber'><span class='seperator'>|</span>共享{{vmFlightSegment?.CodeShareNumber}}</ion-text>
+            <ion-text color='medium'> <span class='seperator'>|</span>机型{{vmFlightSegment?.PlaneType}}</ion-text>
+            <ion-text color='medium'> <span class='seperator'>|</span>{{vmFlightSegment?.FlyTimeName}}
+            </ion-text>
+            <ion-text color='secondary'><span class='seperator'>|</span>{{vmFlightSegment?.Meal?"有":"无"}}餐食
+            </ion-text>
+            <!-- <ion-text color='secondary' *ngIf='isAgreement'><span class='seperator'>|</span>协</ion-text> -->
+        </div>
+    </div>
+    <app-or-comp *ngIf='vmCabins?.length==0'>暂无数据</app-or-comp>
+    <ion-item lines='none' *ngFor='let cabin of vmCabins' class="cabin-list-item">
+        <ng-container *ngIf='cabin.Cabin'>
+            <div class='cabin-item'>
+                <ion-row>
+                    <ion-col size='8'>
+                        <div class="price">
+                            <ion-text color='danger'><small>￥</small>{{cabin.Cabin?.SalesPrice}}</ion-text>
+                        </div>
+                        <ion-label (click)='openrules(cabin)'>
+                            <h3 class='discount'>
+                                <ion-text color='dark' *ngIf='identity?.Numbers&&identity.Numbers["AgentId"] else aatemp'>
+                                    <span *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName'></span> {{cabin.Cabin?.TypeName }}({{cabin.Cabin?.Code }})
+                                </ion-text>
+                                <ng-template #aatemp>
+                                    <ion-text color='dark'>{{cabin.Cabin?.TypeName}}</ion-text>
+                                </ng-template>
+                                <ion-text color='dark'>{{cabin.Cabin?.Discount|discount}}</ion-text>
+                            </h3>
+                            <h3 class="remain">
+                                <ng-container *ngIf='cabin.Cabin?.Count<"10"'><span class="ion-margin-end">余票{{cabin.Cabin?.Count}}张</span></ng-container>
+                                <ng-container *ngIf='cabin.Cabin?.Count>="10"'><span class="ion-margin-end">余票充足</span></ng-container>
+                                <ion-text color='secondary'>退改签政策详情 </ion-text>
+                            </h3>
+                        </ion-label>
+                    </ion-col>
+                    <ion-col size='4'>
+                        <ion-button [color]='cabin.color' class='ion-margin-top' expand='block' [class.disabled]='!cabin?.IsAllowBook' (click)='onBookTicket(cabin)'>
+                            <ion-text color='light'>预订</ion-text>
+                        </ion-button>
+                    </ion-col>
+                </ion-row>
+                <ion-row *ngIf='cabin?.Rules' class="rules">
+                    <ion-col>
+                        <ion-label *ngFor='let r of cabin.Rules' color='danger' class='rule ion-text-wrap'>{{r}}</ion-label>
+                        <ion-label *ngIf='cabin.Rules?.length&&getFlightIllegalTip()' color='danger' class='rule ion-text-wrap'>提示：({{getFlightIllegalTip()}})
+                        </ion-label>
+                        <ion-label *ngIf='!cabin.Rules?.length&&getFlightlegalTip()' color='danger' class='rule ion-text-wrap'>提示：({{getFlightlegalTip()}})
+                        </ion-label>
+                    </ion-col>
+                </ion-row>
+            </div>
+        </ng-container>
+    </ion-item>
+    <div class='show-more'>
+        <ion-chip color='secondary' (click)='onShowMoreCabins()' *ngIf='hasMoreCabins'>
+            <ion-label>显示全部</ion-label>
+            <ion-icon name="chevron-forward-outline" mode='ios'></ion-icon>
+        </ion-chip>
+    </div>
+    <ng-template #fakeList>
+        <ion-list>
+            <ion-item *ngFor='let cabin of [1,2,3]'>
+                <div class='cabin-item'>
+                    <ion-row class='ion-margin-top'>
+                        <ion-col size='8'>
+                            <ion-label>
+                                <h3 class='discount'>
+                                    <ion-skeleton-text animated style="width: 25%"></ion-skeleton-text>
+                                    <ion-skeleton-text style="width: 45%"></ion-skeleton-text>
+                                </h3>
+                                <h3>
+                                    <ion-skeleton-text style="width: 650%"></ion-skeleton-text>
+                                </h3>
+                                <h3>
+                                    <ion-skeleton-text style="width: 40%"></ion-skeleton-text>
+                                </h3>
+                            </ion-label>
+                        </ion-col>
+                        <ion-col size='4'>
+                            <ion-label>
+                                <h3 text-end class='book'>
+                                    <ion-skeleton-text style="width: 60%"></ion-skeleton-text>
+                                </h3>
+                                <ion-skeleton-text style="width: 90%;height: 1.5em;--border-radius: 4px;"></ion-skeleton-text>
+                            </ion-label>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row>
+                        <ion-col>
+                            <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+                            <ion-skeleton-text style="width: 65%"></ion-skeleton-text>
+                            <ion-skeleton-text style="width: 80%"></ion-skeleton-text>
+                        </ion-col>
+                    </ion-row>
+                </div>
+            </ion-item>
+        </ion-list>
+    </ng-template>
+</ion-content>

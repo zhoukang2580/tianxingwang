@@ -37,6 +37,8 @@ import {
 } from "../travel-application/travel.service";
 import { CONFIG } from "../config";
 import { AgentRegionType } from "./models/AgentRegionType";
+import { FlightSegmentEntity } from "../flight-gp/models/flight/FlightSegmentEntity";
+import { FlightCabinEntity } from "../flight-gp/models/flight/FlightCabinEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -250,6 +252,7 @@ export class TmcService {
       | "train"
       | "rentalCar"
       | "bulletin"
+      | "flightGp"
   ) {
     if (name) {
       const tmc = await this.getTmc();
@@ -294,6 +297,13 @@ export class TmcService {
       if (name == "rentalCar") {
         route = "rental-car";
         if (!tmcRegionTypeValues.find((it) => it == "car")) {
+          return false;
+        }
+        return true;
+      }
+      if (name == "flightGp") {
+        route = "search-flight-gp";
+        if (!tmcRegionTypeValues.find((it) => it == "gp")) {
           return false;
         }
         return true;
@@ -1061,6 +1071,7 @@ export interface IBookOrderResult {
   Message: string;
   IsCheckPay: boolean;
 }
+
 export class TravelFormEntity extends BaseVariablesEntity {
   Tmc: TmcEntity;
   /// <summary>
@@ -1641,6 +1652,13 @@ export interface PassengerBookInfo<T> {
   // isAllowBookPolicy?: boolean;// 所有可预订
   exchangeInfo?: ExchangeInfo;
 }
+
+export interface PassengerBookInfoGp{
+  Seg:number;
+  flightSegment: FlightSegmentEntity;
+  Cabin: FlightCabinEntity;
+}
+
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };
   Insurances: { [clientId: string]: InsuranceProductEntity[] };
