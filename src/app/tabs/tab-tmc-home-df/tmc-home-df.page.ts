@@ -191,6 +191,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       // console.log("返回到首页 ",p.keys);
       this.langService.translate();
       this.loadTripList();
+      this.loadReviewedTask();
     });
   }
   ngOnDestroy() {
@@ -784,34 +785,32 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private async loadReviewedTask() {
-    if (!this.tasklist || !this.tasklist.length) {
-      if (this.isLoadingReviewedTask) {
-        return;
-      }
-      if (!(await this.hasTicket())) {
-        return;
-      }
-      try {
-        this.isLoadingReviewedTask = true;
-        this.tasklist = await this.tmcService.getTaskReviewed();
-        this.tasklist.forEach((t) => {
-          if (t.ExpiredTime) {
-            t.ExpiredTime = t.ExpiredTime.substr(
-              0,
-              "yyyy-mm-ddTHH:mm:ss".length
-            ).replace("T", " ");
-          }
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      this.isLoadingReviewedTask = false;
-      setTimeout(() => {
-        if (this.taskEleSwiper) {
-          this.taskEleSwiper.update();
-        }
-      }, 200);
+    if (this.isLoadingReviewedTask) {
+      return;
     }
+    if (!(await this.hasTicket())) {
+      return;
+    }
+    try {
+      this.isLoadingReviewedTask = true;
+      this.tasklist = await this.tmcService.getTaskReviewed();
+      this.tasklist.forEach((t) => {
+        if (t.ExpiredTime) {
+          t.ExpiredTime = t.ExpiredTime.substr(
+            0,
+            "yyyy-mm-ddTHH:mm:ss".length
+          ).replace("T", " ");
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    this.isLoadingReviewedTask = false;
+    setTimeout(() => {
+      if (this.taskEleSwiper) {
+        this.taskEleSwiper.update();
+      }
+    }, 200);
   }
   private async loadTripList() {
     if (this.isLoadingTripList) {
