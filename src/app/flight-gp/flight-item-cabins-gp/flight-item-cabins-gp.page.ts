@@ -1,5 +1,3 @@
-import { LanguageHelper } from "src/app/languageHelper";
-import { FlightCabinEntity } from "../models/flight/FlightCabinEntity";
 import { IdentityService } from "../../services/identity/identity.service";
 import {
   StaffService,
@@ -13,30 +11,24 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { Component, OnInit } from "@angular/core";
 import {
   ModalController,
-  AlertController,
   NavController,
   PopoverController,
 } from "@ionic/angular";
 import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
 import * as moment from "moment";
-import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import {
   FlightPolicy,
   IFlightSegmentInfo,
 } from "../models/PassengerFlightInfo";
 import { of, Observable, Subscription } from "rxjs";
-import { map, tap, filter } from "rxjs/operators";
 import { PassengerBookInfo, PassengerBookInfoGp, TmcService } from "src/app/tmc/tmc.service";
 import { AppHelper } from "src/app/appHelper";
 import { FlightFareType } from "../models/flight/FlightFareType";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { SearchTypeModel } from "../models/flight/advanced-search-cond/SearchTypeModel";
 import { FlightCabinType } from "../models/flight/FlightCabinType";
-import { OrderFlightTripEntity } from "src/app/order/models/OrderFlightTripEntity";
 import { OrderService } from "src/app/order/order.service";
-import { TripType } from "src/app/tmc/models/TripType";
 import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
-import { SelectFlightsegmentCabinComponent } from "../components/select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { FlightGpService } from "../flight-gp.service";
 import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
 
@@ -212,90 +204,6 @@ export class FlightItemCabinsGpPage implements OnInit {
       console.error(e);
     }
     return flightPolicyCabin;
-  }
-  private async selectLowerCabin(
-    info: PassengerBookInfo<IFlightSegmentInfo>,
-    cabin: FlightPolicy
-  ) {
-    if (!cabin || !cabin.LowerSegment) {
-      return false;
-    }
-    let fs = this.flightGpService.flightResult.FlightSegments.find(
-      (it) =>
-        it.Number == cabin.LowerSegment.Number &&
-        it.TakeoffTime == cabin.LowerSegment.TakeoffTime
-    );
-    if (!fs) {
-      fs = this.flightGpService.flightResult.FlightSegments.find(
-        (it) => it.Number == cabin.LowerSegment.Number
-      );
-    }
-    if (!cabin.LowerSegment.Cabins || !cabin.LowerSegment.Cabins.length) {
-      await this.flightGpService.initFlightSegmentCabins(fs);
-      cabin.LowerSegment.Cabins = fs.Cabins.map((it) => ({ ...it }));
-    }
-    if (!cabin.LowerSegment.Cabins || !cabin.LowerSegment.Cabins.length) {
-      return false;
-    }
-    const lowestFlightSegment: FlightSegmentEntity = fs;
-    const lowestCabin = await this.getLowestFlightPolicyCabin(fs);
-    const m = await this.modalCtrl.create({
-      component: SelectFlightsegmentCabinComponent,
-      componentProps: {
-        policiedCabins: [lowestCabin],
-        flightSegment: lowestFlightSegment,
-        isAgent: this.isAgent,
-      },
-    });
-    m.backdropDismiss = false;
-    await this.flightGpService.dismissTopOverlay();
-    await m.present();
-    const result = await m.onDidDismiss();
-    // const data = info.bookInfo;
-    if (result.data) {
-      const cbin = result.data;
-      if (!cbin) {
-        await AppHelper.alert(
-          LanguageHelper.Flight.getTheLowestCabinNotFoundTip()
-        );
-      } else {
-        const bookInfo: IFlightSegmentInfo = {
-          flightPolicy: cbin,
-          flightSegment: lowestFlightSegment,
-          // tripType: (data && data.tripType) || TripType.departureTrip,
-          id: AppHelper.uuid(),
-          lowerSegmentInfo: null,
-          originalBookInfo: {
-            ...info,
-            bookInfo: {
-              ...info.bookInfo,
-              lowerSegmentInfo: null,
-            },
-          },
-        };
-        bookInfo.flightPolicy.LowerSegment = null; // 更低价仅能选择一次.
-        const newInfo: PassengerBookInfo<IFlightSegmentInfo> = {
-          id: AppHelper.uuid(),
-          passenger: info.passenger,
-          credential: info.credential,
-          isNotWhitelist: info.isNotWhitelist,
-          bookInfo,
-          exchangeInfo: info.exchangeInfo,
-        };
-        this.flightGpService.replacePassengerBookInfo(info, newInfo);
-        // if (
-        //   this.flightService
-        //     .getPassengerBookInfos()
-        //     .filter((it) => !!it.bookInfo).length
-        // ) {
-        //   await this.onShowSelectedInfosPage();
-        // }
-        return true;
-      }
-    } else {
-      return false;
-    }
-    return true;
   }
 
   async dismissAllTopOverlays() {

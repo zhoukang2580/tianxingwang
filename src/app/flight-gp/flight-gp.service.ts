@@ -1,6 +1,5 @@
 import { environment } from "src/environments/environment";
 import { Storage } from "@ionic/storage";
-import { SelectAndReplacebookinfoComponent } from "./components/select-and-replacebookinfo/select-and-replacebookinfo.component";
 import { CalendarService } from "../tmc/calendar.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { IdentityEntity } from "../services/identity/identity.entity";
@@ -707,73 +706,6 @@ export class FlightGpService {
     );
     return info && !info.isDontAllowBook;
   }
-  private async selectAndReplaceBookInfos(
-    flightCabin: FlightCabinEntity,
-    flightSegment: FlightSegmentEntity,
-    bookInfos: PassengerBookInfo<IFlightSegmentInfo>[]
-  ) {
-    const processResult = {
-      isRePlace: false,
-      bookInfos,
-    };
-    const m = await this.modalCtrl.create({
-      component: SelectAndReplacebookinfoComponent,
-      componentProps: {
-        flightService: this,
-        flightSegment,
-        flightCabin,
-        bookInfos: this.getPassengerBookInfos().map((it) => {
-          return {
-            info: it,
-            isSelected: false,
-          };
-        }),
-      },
-    });
-    await m.present();
-    const result = await m.onDidDismiss();
-    const data =
-      result && (result.data as PassengerBookInfo<IFlightSegmentInfo>[]);
-    if (data && data.length) {
-      processResult.isRePlace = true;
-      const cannotArr: string[] = [];
-      // this.policyFlights = await this.loadPolicyedFlightsAsync(
-      //   this.flightResult
-      // );
-      for (let i = 0; i < data.length; i++) {
-        const item = data[i];
-        const info = this.getPolicyCabinBookInfo(
-          item,
-          flightCabin,
-          flightSegment
-        );
-        if (info && info.isDontAllowBook) {
-          let name: string;
-          if (item.credential) {
-            name = `${item.credential.Surname}${item.credential.Givenname}(${(
-              item.credential.Number || ""
-            ).substr(0, 6)}...)`;
-          }
-          cannotArr.push(name);
-          item.bookInfo = null;
-        } else {
-          item.bookInfo = info;
-        }
-      }
-      if (cannotArr.length) {
-        AppHelper.alert(`${cannotArr.join(",")}，超标不可替换`);
-      }
-    }
-    bookInfos = bookInfos.map((it) => {
-      const item = data.find((d) => d.id == it.id);
-      if (item) {
-        it.bookInfo = item.bookInfo;
-      }
-      return it;
-    });
-    processResult.bookInfos = bookInfos;
-    return processResult;
-  }
   getPolicyCabinBookInfo(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>,
     flightCabin: FlightCabinEntity,
@@ -1338,16 +1270,6 @@ export class FlightGpService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     return this.apiService.getPromiseData<string>(req);
-  }
-  async bookFlight(bookDto: OrderBookDto): Promise<IBookOrderResult> {
-    const req = new RequestEntity();
-    req.Method = "TmcApiBookUrl-Flight-Book";
-
-    bookDto.Channel = await this.tmcService.getChannel();
-    req.Data = bookDto;
-    req.IsShowLoading = true;
-    req.Timeout = 60;
-    return this.apiService.getPromiseData<IBookOrderResult>(req);
   }
 
   async bookGpFlight(bookDto: GpBookReq): Promise<IBookOrderResult> {

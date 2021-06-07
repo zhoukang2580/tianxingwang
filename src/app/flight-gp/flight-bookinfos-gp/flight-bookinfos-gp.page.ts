@@ -12,7 +12,7 @@ import { CredentialsEntity } from 'src/app/tmc/models/CredentialsEntity';
 import { PassengerDto } from 'src/app/tmc/models/PassengerDto';
 import { IBookOrderResult, InitialBookDtoModel, PassengerBookInfo, TmcEntity, TmcService, TravelFormEntity } from 'src/app/tmc/tmc.service';
 import { TaskType } from 'src/app/workflow/models/TaskType';
-import { ITmcOutNumberInfo } from '../components/flight-outnumber/flight-outnumber.component';
+// import { ITmcOutNumberInfo } from '../components/flight-outnumber/flight-outnumber.component';
 import { CardBinsBookInfo, IFlightSegmentInfo } from '../models/PassengerFlightInfo';
 import { FlightGpService } from '../flight-gp.service';
 import { OrderBookDto } from 'src/app/order/models/OrderBookDto';
@@ -33,7 +33,7 @@ import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
 })
 export class FlightBookinfosGpPage implements OnInit {
   passengerListEntity: PassengerListEntity[];
-  vmCombindInfos: ICombindInfo[] = [];
+  // vmCombindInfos: ICombindInfo[] = [];
 
   orderTravelPayTypes: {
     label: string;
@@ -59,12 +59,6 @@ export class FlightBookinfosGpPage implements OnInit {
   passengerServiceFeesObj: { [clientId: string]: string };
   totalPrice = 0;
   isSubmitDisabled = false;
-  // PayTypes = {
-  //   1: "个付",
-  //   2: "公付",
-  //   3: "信用付",
-  //   4: "实时付款"
-  // }
   InsurancePrice = 0;
 
   checkPayCount = 5;
@@ -203,7 +197,7 @@ export class FlightBookinfosGpPage implements OnInit {
           return;
         }
       }
-      this.vmCombindInfos = [];
+      // this.vmCombindInfos = [];
       this.initialBookDtoGpModel = await this.initializeBookDto();
 
       // if (this.selectedFrequent) {
@@ -249,7 +243,7 @@ export class FlightBookinfosGpPage implements OnInit {
       // await this.initCombindInfos();
 
       await this.initOrderTravelPayTypes();
-      console.log("vmCombindInfos", this.vmCombindInfos);
+      // console.log("vmCombindInfos", this.vmCombindInfos);
     } catch (err) {
       // this.errors = err || "please retry";
       console.error(err);
@@ -271,7 +265,7 @@ export class FlightBookinfosGpPage implements OnInit {
 
     console.log(this.orderTravelPayTypes, "orderTravelPayType");
   }
-  
+
 
   getInsuranceDetails(detail: string) {
     return detail && detail.split("\n").join("<br/>");
@@ -341,8 +335,8 @@ export class FlightBookinfosGpPage implements OnInit {
   // }
 
   calcTotalPrice() {
-    console.log('order',this.orderTravelPayTypes+":"+this.orderTravelPayType);
-    
+    console.log('order', this.orderTravelPayTypes + ":" + this.orderTravelPayType);
+
     if (this.initialBookDtoGpModel) {
       let totalPrice = this.initialBookDtoGpModel.InsuranceResult.Products.filter(
         (it) =>
@@ -484,14 +478,6 @@ export class FlightBookinfosGpPage implements OnInit {
 
           this.goToMyOrders();
           // await AppHelper.alert("下单成功!");
-          // this.goToMyOrders({
-          //   isHasTask: this.isHasTask,
-          //   payResult: this.payResult,
-          //   isCheckPay:
-          //     isCheckPay ||
-          //     this.orderTravelPayType == OrderTravelPayType.Person ||
-          //     this.orderTravelPayType == OrderTravelPayType.Credit,
-          // });
         }
       }
     }
@@ -514,29 +500,11 @@ export class FlightBookinfosGpPage implements OnInit {
       ret.Pid = fre.passengerEntity.Id;
       ret.Name = fre.passengerEntity.Name;
       ret.CredentialsType = fre.passengerEntity.CredentialsTypeName;
-      /// <summary>
-      /// 证件号
-      /// </summary>
       ret.Number = fre.passengerEntity.Number;
-      /// <summary>
-      /// 旅客手机号
-      /// </summary>
       ret.Mobile = fre.passengerEntity.Mobile;
-      /// <summary>
-      /// GP公务验真标识；1：公务卡，2：预算单位
-      /// </summary>
       ret.GPValidateStatus = 1;
-      /// <summary>
-      /// GP验真单位
-      /// </summary>
       ret.GPOrganization = "";
-      /// <summary>
-      /// GP公务卡BIN
-      /// </summary>
       ret.GPCardBin = fre.passengerEntity.Variables.BankBin;
-      /// <summary>
-      /// GP公务卡卡名
-      /// </summary>
       ret.GPCardName = fre.passengerEntity.Variables.BankName;
     }
 
@@ -561,24 +529,8 @@ export class FlightBookinfosGpPage implements OnInit {
     }
     bookDto.PayType = this.orderTravelPayType;
     console.log(bookDto, "arr1");
-    
+
     return true;
-    // const Pordu = this.initialBookDtoGpModel.InsuranceResult.Products;
-    //     for (let pro = 0; pro < Pordu.length; pro++) {
-    //       Pordu[pro].showDetail = false;
-    //     }
-    // combindInfos = combindInfos.forEach(it=>{
-    // if (this.selectedFrequent) {
-    //   combindInfos.frequentEntity = this.selectedFrequent;
-    // }
-    // })
-    // if (this.selectedFrequent) {
-    //   this.combindInfos.frequentEntity = this.selectedFrequent;
-    // }
-    // com.Linkman = this.orderLinkmanDto;
-    // for(let com of combindInfos){
-    //   console.log(com);
-    // }
   }
 
   fillBookLinkmans() {
@@ -679,63 +631,3 @@ export class FlightBookinfosGpPage implements OnInit {
 
 }
 
-
-interface ICombindInfo {
-  id: string;
-  vmModal: PassengerBookInfo<IFlightSegmentInfo>;
-  modal: PassengerBookInfo<IFlightSegmentInfo>;
-  passengerDto: PassengerDto;
-  openrules: boolean; // 打开退改签规则
-  vmCredential: CredentialsEntity;
-  credentials: CredentialsEntity[];
-  expenseType: string;
-  credentialsRequested: boolean;
-  appovalStaff: StaffEntity;
-  credentialStaff: StaffEntity;
-  isSkipApprove: boolean;
-  isShowDetail: boolean;
-  isShowCredentialDetail: boolean;
-  isShowTravelDetail: boolean;
-  notifyLanguage: string;
-  serviceFee: number;
-  isShowGroupedInfo: boolean;
-  credentialStaffMobiles: {
-    checked: boolean;
-    mobile: string;
-  }[];
-  credentialStaffOtherMobile: string;
-  credentialStaffApprovers: {
-    Tag: string;
-    Type: TaskType;
-    approvers: StaffApprover[];
-  }[];
-  credentialStaffEmails: {
-    checked: boolean;
-    email: string;
-  }[];
-  credentialStaffOtherEmail: string;
-  showFriendlyReminder: boolean;
-  costCenters: CostCenterEntity[];
-  selectedCostCenter: CostCenterEntity;
-  illegalReason: any;
-  otherIllegalReason: any;
-  isOtherIllegalReason: boolean;
-  isOtherCostCenter: boolean;
-  costCenter: {
-    code: string;
-    name: string;
-  };
-  otherCostCenterName: any;
-  otherCostCenterCode: any;
-  isOtherOrganization: boolean;
-  organization: OrganizationEntity;
-  otherOrganizationName: string;
-  selectedInsuranceProductId: string;
-  insuranceProducts: {
-    insuranceResult: InsuranceProductEntity;
-    disabled: boolean;
-    showDetail?: boolean;
-  }[];
-  tmcOutNumberInfos: ITmcOutNumberInfo[];
-  travelType: OrderTravelType; // 因公、因私
-}

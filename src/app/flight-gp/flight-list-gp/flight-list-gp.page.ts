@@ -1,8 +1,6 @@
-import { SelectFlightPassengerComponent } from "../components/select-flight-passenger/select-flight-passenger.component";
 import { IFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import {
   PassengerBookInfo,
-  FlightHotelTrainType,
   TmcService,
 } from "../../tmc/tmc.service";
 import { environment } from "src/environments/environment";
@@ -31,7 +29,6 @@ import {
   ElementRef,
   QueryList,
   ViewChildren,
-  EventEmitter,
 } from "@angular/core";
 import { delay, map } from "rxjs/operators";
 import * as moment from "moment";
@@ -40,15 +37,12 @@ import { DayModel } from "../../tmc/models/DayModel";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { FlightJourneyEntity } from "../models/flight/FlightJourneyEntity";
 import { FlightCabinType } from "../models/flight/FlightCabinType";
-import { LanguageHelper } from "src/app/languageHelper";
 import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
 
 import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
-import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightCityService } from "../flight-city.service";
-import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 @Component({
   selector: "app-flight-list-gp",
   templateUrl: "./flight-list-gp.page.html",
@@ -376,22 +370,10 @@ export class FlightListGpPage
       const flightJourneyList = await this.flightGpService.getFlightJourneyDetailListAsync(
         loadDataFromServer
       );
-      // if (loadDataFromServer) {
-      //   let segments = this.flightService.getTotalFlySegments();
-      //   if (isSelf) {
-      //     segments = this.filterSegmentsByGoArrivalTime(segments);
-      //   }
-      //   this.vmFlights = segments;
-      //   this.currentProcessStatus = "正在计算差标";
-      //   await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
-      // }
       this.hasDataSource.next(false);
       let segments = this.filterFlightSegments(
         this.flightGpService.getTotalFlySegments()
       );
-      // if (isSelf && this.searchFlightModel.tripType == TripType.returnTrip) {
-      //   segments = this.filterSegmentsByGoArrivalTime(segments);
-      // }
       this.st = Date.now();
       this.renderFlightList(segments);
       this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
@@ -410,23 +392,7 @@ export class FlightListGpPage
       this.isLoading = false;
     }
   }
-  // private filterSegmentsByGoArrivalTime(segments: FlightSegmentEntity[]) {
-  //   let result = segments;
-  //   const goInfo = this.flightService
-  //     .getPassengerBookInfos()
-  //     .find(
-  //       (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
-  //     );
-  //   const goFlight = goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment;
-  //   if (goFlight) {
-  //     const arrivalTime = moment(goFlight.ArrivalTime).add(1, "hours");
-  //     result = segments.filter(
-  //       (it) => AppHelper.getDate(it.TakeoffTime).getTime() >= +arrivalTime
-  //     );
-  //   }
-  //   return result;
-  // }
-
+  
   private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
@@ -459,12 +425,6 @@ export class FlightListGpPage
   async goToFlightCabinsDetails(fs: FlightSegmentEntity) {
     try {
       await this.checkCabinsAndPolicy(fs);
-      // if (!ok) {
-      //   if (!this.tmcService.isAgent) {
-      //     AppHelper.alert("该航班已无可售座位");
-      //     return;
-      //   }
-      // }
       this.isCanLeave = true;
       await this.flightGpService.addOneBookInfoToSelfBookType();
       this.flightGpService.currentViewtFlightSegment = fs;

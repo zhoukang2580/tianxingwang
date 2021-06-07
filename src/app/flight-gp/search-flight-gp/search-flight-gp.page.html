@@ -3,25 +3,12 @@
         <ion-buttons slot='start'>
             <app-back-button defaultHref="" color='light'></app-back-button>
         </ion-buttons>
-        <!-- <ion-buttons slot='end'>
-            <ion-button fill='clear' *ngIf='!isSelf' color='light' size='small' (click)='onSelectPassenger()'>
-                <ion-icon name="person-add-outline"></ion-icon>
-                <ion-badge color='danger'>
-                    <ion-text color='light'>{{selectedPassengers}}</ion-text>
-                </ion-badge>
-            </ion-button>
-        </ion-buttons> -->
     </ion-toolbar>
 </ion-header>
 <img src="assets/images/search-flight.png" alt="" class="bgimg">
 <ion-content class="cnt">
     <ion-card class='ion-padding' [class.hidden]='domestic!="domestic"'>
         <ion-card-content>
-            <!-- <div class="segments" *ngIf='isSelf'>
-                <div class="seg" (click)='segmentChanged("single")' [class.active]='isSingle'>单程</div>
-                <div class="seg"></div>
-                <div class="seg" (click)='segmentChanged("round")' [class.active]='!isSingle'>往返</div>
-            </div> -->
             <ion-buttons class="city">
                 <ion-text class="ion-text-wrap city-name ion-text-start" [class.disabled]='disabled' (click)='onSelectCity(true)' color='{{disabled?"medium":"secondary"}}'>
                     {{isEn?searchFlightModel?.fromCity?.EnglishName|| searchFlightModel?.fromCity?.Nickname:searchFlightModel?.fromCity?.Nickname?.replace('国际','')?.replace('机场','')}}</ion-text>

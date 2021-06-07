@@ -13,18 +13,13 @@ import { AirportsComponent } from "./fly-filter/airports/airports.component";
 import { AirtypeComponent } from "./fly-filter/airtype/airtype.component";
 import { CabinComponent } from "./fly-filter/cabin/cabin.component";
 import { TicketchangingComponent } from "./ticketchanging/ticketchanging.component";
-import { SelectedPassengersComponent } from "../../tmc/components/selected-passengers/selected-passengers.component";
-import { SelectFlightsegmentCabinComponent } from "./select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { SelectFlightPassengerComponent } from "./select-flight-passenger/select-flight-passenger.component";
 import { MemberPipesModule } from "src/app/member/pipe/pipe.module";
-import { PriceDetailComponent } from "./price-detail/price-detail.component";
-import { SelectAndReplacebookinfoComponent } from "./select-and-replacebookinfo/select-and-replacebookinfo.component";
 import { MemberComponentsModule } from "src/app/member/components/components.module";
 import { FlightSegmentItemComponent } from "./flight-segment-item/flight-segment-item.component";
 import { TakeOffTimeSpanDfComponent } from "./fly-filter/take-off-timespan-df/take-off-timespan-df.component";
 import { FlightSegmentItemDfComponent } from "./flight-segment-item-df/flight-segment-item-df.component";
-import { FlightOutNumberComponent } from "./flight-outnumber/flight-outnumber.component";
 import { SelectCardBinsComponent } from "./select-card-bins/select-card-bins.component";
 
 @NgModule({
@@ -38,14 +33,9 @@ import { SelectCardBinsComponent } from "./select-card-bins/select-card-bins.com
     AirtypeComponent,
     CabinComponent,
     TicketchangingComponent,
-    // SelectedPassengersComponent,
-    SelectFlightsegmentCabinComponent,
-    PriceDetailComponent,
     SelectFlightPassengerComponent,
-    SelectAndReplacebookinfoComponent,
     SelectCardBinsComponent,
     FlightSegmentItemComponent,
-    FlightOutNumberComponent,
     FlightSegmentItemDfComponent
   ],
   imports: [
@@ -61,7 +51,6 @@ import { SelectCardBinsComponent } from "./select-card-bins/select-card-bins.com
     MemberComponentsModule,
   ],
   exports: [
-    FlightOutNumberComponent,
     FlightSegmentItemDfComponent,
     AppDirectivesModule,
     TakeOffTimeSpanDfComponent,
@@ -74,8 +63,6 @@ import { SelectCardBinsComponent } from "./select-card-bins/select-card-bins.com
     CabinComponent,
     FlightPipesModule,
     TicketchangingComponent,
-    // SelectedPassengersComponent,
-    SelectAndReplacebookinfoComponent,
     SelectCardBinsComponent,
     FlightSegmentItemComponent,
     AppComponentsModule
