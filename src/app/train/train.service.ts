@@ -274,6 +274,9 @@ export class TrainService {
     return true;
   }
   checkIfExchangeDiffStation(currentViewtTainItem: ICurrentViewtTainItem) {
+    // 火车票改签逻辑（2021年6月7日15:48:08）
+    // 始发站修改，改签进入查询页面，不能选择其他地方，默认由程序带出，查询后，在列表页面出现的同城（不是同一个城市）的始发站可以选择,可以认为，改签可以选择列表中出现的所有始发站
+    // 目的地，48小时内不能修改目的地
     try {
       const ex =
         this.bookInfos &&
@@ -284,23 +287,13 @@ export class TrainService {
         if (t.OrderTrainTrips && t.OrderTrainTrips.length) {
           const diff =
             t.OrderTrainTrips[0].ToStationCode.trim().toLowerCase() !=
-              currentViewtTainItem.train.ToStationCode.trim().toLowerCase() ||
-            t.OrderTrainTrips[0].FromStationCode.trim().toLowerCase() !=
-              currentViewtTainItem.train.FromStationCode.trim().toLowerCase();
+            currentViewtTainItem.train.ToStationCode.trim().toLowerCase();
           if (
             ex.exchangeInfo.rangeExchangeDateTip &&
             diff &&
             ex.exchangeInfo.isRangeExchange
           ) {
             AppHelper.alert(ex.exchangeInfo.rangeExchangeDateTip);
-            return diff;
-          }
-          if (
-            t.OrderTrainTrips[0].FromStationCode.trim().toLowerCase() !=
-              currentViewtTainItem.train.FromStationCode.trim().toLowerCase() &&
-            !ex.exchangeInfo.isRangeExchange
-          ) {
-            AppHelper.alert("不能修改始发站");
             return diff;
           }
         }
