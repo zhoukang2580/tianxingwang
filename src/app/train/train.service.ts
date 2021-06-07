@@ -297,7 +297,8 @@ export class TrainService {
           }
           if (
             t.OrderTrainTrips[0].FromStationCode.trim().toLowerCase() !=
-            currentViewtTainItem.train.FromStationCode.trim().toLowerCase()
+              currentViewtTainItem.train.FromStationCode.trim().toLowerCase() &&
+            !ex.exchangeInfo.isRangeExchange
           ) {
             AppHelper.alert("不能修改始发站");
             return diff;
