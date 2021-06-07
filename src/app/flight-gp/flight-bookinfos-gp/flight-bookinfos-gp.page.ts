@@ -267,10 +267,11 @@ export class FlightBookinfosGpPage implements OnInit {
         });
       }
     });
-    this.orderTravelPayType = OrderTravelPayType.Person;
+    this.orderTravelPayType = OrderTravelPayType.Company;
 
     console.log(this.orderTravelPayTypes, "orderTravelPayType");
   }
+  
 
   getInsuranceDetails(detail: string) {
     return detail && detail.split("\n").join("<br/>");
@@ -438,7 +439,6 @@ export class FlightBookinfosGpPage implements OnInit {
     const bookDto: GpBookReq = new GpBookReq();
     const arr = this.initialBookDtoGpModel;
     const canbook = await this.fillBookLinkmans();
-
     const canbook2 = await this.fillBookPassengers(bookDto, arr);
     // console.log(canbook);
     if (canbook && canbook2) {
@@ -482,18 +482,25 @@ export class FlightBookinfosGpPage implements OnInit {
             );
           }
 
+          this.goToMyOrders();
           // await AppHelper.alert("下单成功!");
-          this.goToMyOrders({
-            isHasTask: this.isHasTask,
-            payResult: this.payResult,
-            isCheckPay:
-              isCheckPay ||
-              this.orderTravelPayType == OrderTravelPayType.Person ||
-              this.orderTravelPayType == OrderTravelPayType.Credit,
-          });
+          // this.goToMyOrders({
+          //   isHasTask: this.isHasTask,
+          //   payResult: this.payResult,
+          //   isCheckPay:
+          //     isCheckPay ||
+          //     this.orderTravelPayType == OrderTravelPayType.Person ||
+          //     this.orderTravelPayType == OrderTravelPayType.Credit,
+          // });
         }
       }
     }
+  }
+
+  private goToMyOrders() {
+    this.router.navigate(["order-list"], {
+      queryParams: { tabId: ProductItemType.plane },
+    });
   }
 
 
@@ -643,32 +650,32 @@ export class FlightBookinfosGpPage implements OnInit {
     });
   }
 
-  private goToMyOrders(data: {
-    isHasTask: boolean;
-    payResult: boolean;
-    isCheckPay: boolean;
-  }) {
-    try {
-      const m = this.flightGpService.getSearchFlightModel();
-      // const cities = await this.flightService.getStationsAsync();
-      // const city = m.toCity;
-      const cities = this.flightGpService.getSearchFlightModel().toCity;
-      // const c = cities.find(it => it.Code == (city && city.Code));
-      this.router.navigate(["checkout-success"], {
-        queryParams: {
-          tabId: ProductItemType.plane,
-          cityCode: cities && cities.CityCode,
-          cityName: cities && cities.CityName,
-          isApproval: data.isHasTask,
-          payResult: data.payResult,
-          isCheckPay: data.isCheckPay,
-          date: m.Date,
-        },
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  // private goToMyOrders(data: {
+  //   isHasTask: boolean;
+  //   payResult: boolean;
+  //   isCheckPay: boolean;
+  // }) {
+  //   try {
+  //     const m = this.flightGpService.getSearchFlightModel();
+  //     // const cities = await this.flightService.getStationsAsync();
+  //     // const city = m.toCity;
+  //     const cities = this.flightGpService.getSearchFlightModel().toCity;
+  //     // const c = cities.find(it => it.Code == (city && city.Code));
+  //     this.router.navigate(["checkout-success"], {
+  //       queryParams: {
+  //         tabId: ProductItemType.plane,
+  //         cityCode: cities && cities.CityCode,
+  //         cityName: cities && cities.CityName,
+  //         isApproval: data.isHasTask,
+  //         payResult: data.payResult,
+  //         isCheckPay: data.isCheckPay,
+  //         date: m.Date,
+  //       },
+  //     });
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
 
 }
 

@@ -6,7 +6,7 @@
         <ion-title>
             <div class="titel">
                 <ion-text><span>{{initialBookDtoGpModel?.Routes[0]?.Segment?.FromCityName}}</span></ion-text>
-                <div class="img"><img src="assets/images/gp-flight-logo.png" alt=""></div>
+                <div class="img"><img src="assets/images/1.png" alt=""></div>
                 <ion-text><span>{{initialBookDtoGpModel?.Routes[0]?.Segment?.ToCityName}}</span></ion-text>
             </div>
         </ion-title>
@@ -73,15 +73,17 @@
                             <div class="name">{{item?.passengerEntity?.Name}}</div>
                             <div class="id">
                                 <span>{{item?.passengerEntity?.CredentialsTypeName}}</span>
-                                <span>{{item?.passengerEntity?.Number}} </span>
+                                <span *ngIf="item?.passengerEntity?.CredentialsTypeName == '身份证'">
+                                    {{item?.passengerEntity?.Number}} 
+                                </span>
+                                <span *ngIf="item?.passengerEntity?.CredentialsTypeName == '护照'">
+                                    {{item?.passengerEntity?.Number}}
+                                </span>
                             </div>
                         </div>
                         <div class="del" (click)="onClose(item,index,$event)">
                             <img src="assets/images/delete.png" alt="">
                         </div>
-                        <!-- <div class="update">
-                            <ion-text color="secondary" >编辑</ion-text>
-                        </div> -->
                     </div>
                 </div>
             </div>

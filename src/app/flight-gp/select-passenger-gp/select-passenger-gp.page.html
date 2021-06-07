@@ -42,8 +42,11 @@
                                     </ion-text>
                                 </div>
                                 <div>
-                                    <ion-text color='medium'>
-                                        <span class="name-id">{{item.Number}}</span>
+                                    <ion-text color='medium' *ngIf="item.CredentialsTypeName == '身份证'">
+                                        <span class="name-id">{{item.Number.substring(0,6)}}********{{item.Number.substring(item.Number.length-4)}}</span>
+                                    </ion-text>
+                                    <ion-text color='medium' *ngIf="item.CredentialsTypeName == '护照'">
+                                        <span class="name-id">{{item.Number.substring(0,4)}}********{{item.Number.substring(item.Number.length-2)}}</span>
                                     </ion-text>
                                 </div>
                             </div>
@@ -62,8 +65,11 @@
                                 <ion-col>
                                     证件号:
                                 </ion-col>
-                                <ion-col>
-                                    {{item?.Number}}
+                                <ion-col *ngIf="item.CredentialsTypeName == '身份证'">
+                                    {{item?.Number.substring(0,6)}}********{{item.Number.substring(item.Number.length-4)}}
+                                </ion-col>
+                                <ion-col *ngIf="item.CredentialsTypeName == '护照'">
+                                    {{item.Number.substring(0,4)}}********{{item.Number.substring(item.Number.length-2)}}
                                 </ion-col>
                             </ion-row>
                             <ion-row>

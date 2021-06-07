@@ -22,8 +22,8 @@ import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
-import { FlightCityService } from "../flight-city.service";
 import { FlightGpService, SearchFlightModel } from "../flight-gp.service";
+import { FlightCityService } from "src/app/flight/flight-city.service";
 @Component({
   selector: "app-search-flight-gp",
   templateUrl: "./search-flight-gp.page.html",
@@ -149,7 +149,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   }
   async canDeactivate() {
     if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity(false, false);
+      this.flightCityService.onSelectCity({ isShowPage: false, isFrom: false });
       return false;
     }
     if (this.isCanleave) {
@@ -314,7 +314,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   }
   async searchFlight() {
     let ok = await this.tmcService.hasBookRight("flight");
-   
+
     if (!ok) {
       AppHelper.alert("您没有预订权限");
       return;
@@ -331,7 +331,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     const staff = await this.staffService.getStaff().catch((_) => null);
     if (staff && staff.BookType == StaffBookType.Self) {
       const exists = this.flightGpService.getPassengerBookInfos();
-      console.log(exists,"exists==============")
+      console.log(exists, "exists==============")
       const go = exists.find(
         (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
       );
@@ -401,7 +401,15 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   }
   async onSelectCity(isFromCity = true) {
     this.isCanleave = true;
-    const rs = await this.flightCityService.onSelectCity(true, isFromCity);
+    const rs = await this.flightCityService.onSelectCity(
+      {
+        isDomestic: true,
+        isFrom: isFromCity,
+        isShowAirports: false,
+        isShowPage: true,
+        isShowSegs: true
+      }
+    );
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {
