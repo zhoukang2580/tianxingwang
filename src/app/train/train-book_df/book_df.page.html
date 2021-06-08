@@ -306,8 +306,8 @@
   </ng-template>
 </ion-content>
 <ion-footer>
-  <ion-toolbar class="toolbar" (click)="isShowFee=!isShowFee">
-    <ion-buttons slot="start" class="buttons">
+  <ion-toolbar class="toolbar" >
+    <ion-buttons slot="start" class="buttons" (click)="isShowFee=!isShowFee">
       <ion-text class="sum" color="danger">总计:&nbsp;</ion-text>
       <ion-text slot="end" color="danger">￥{{(totalPriceSource|async)}}&nbsp;</ion-text>
       <ion-text color="dark" style="font-size: 8px">明细</ion-text>

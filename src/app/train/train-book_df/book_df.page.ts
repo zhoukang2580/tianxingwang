@@ -635,6 +635,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async bookTrain(isSave: boolean = false, event: CustomEvent) {
+    if (this.trainService.checkIfTrainDetailTimeout()) {
+      await this.trainService.showTimeoutPop();
+      this.router.navigate(["train-list"]);
+      return;
+    }
     this.isShowFee = false;
     event.stopPropagation();
     if (this.isSubmitDisabled) {
@@ -953,8 +958,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         exchangeInfo.ticket.Order.VariablesJsonObj ||
         JSON.parse(exchangeInfo.ticket.Order.Variables);
       if (exchangeInfo.ticket.Order.VariablesJsonObj["TravelPayType"]) {
-        this.viewModel.orderTravelPayType = +exchangeInfo.ticket.Order
-          .VariablesJsonObj["TravelPayType"];
+        this.viewModel.orderTravelPayType =
+          +exchangeInfo.ticket.Order.VariablesJsonObj["TravelPayType"];
         this.orderTravelPayTypes = this.orderTravelPayTypes.map((it) => {
           it.checked =
             +it.value ==

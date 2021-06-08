@@ -44,7 +44,7 @@ import { FilterTrainCondition } from "../models/FilterCondition";
 import { TripType } from "src/app/tmc/models/TripType";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
-import { map, tap, switchMap } from "rxjs/operators";
+import { map, tap, switchMap, delay } from "rxjs/operators";
 import { Storage } from "@ionic/storage";
 import { trigger, transition, style, animate } from "@angular/animations";
 import { SelectedTrainSegmentInfoEnComponent } from "../components/selected-train-segment-info_en/selected-train-segment-info_en.component";
@@ -81,6 +81,7 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   private trainCodes: any[];
   private lastSelectFromStation: TrafficlineEntity;
   private lastSelectToStation: TrafficlineEntity;
+  private pageUrl;
   progressName = "";
   trainsCount = 0;
   vmTrains: TrainEntity[] = [];
@@ -117,8 +118,9 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   priceOrderL2H: boolean; // 价格从低到高
   timeOrdM2N: boolean; // 时间从早到晚
   filterCondition: FilterTrainCondition;
-  searchModalSubscription = Subscription.EMPTY;
   tripDate: string;
+  searchModalSubscription = Subscription.EMPTY;
+  pageTimeoutSubscription = Subscription.EMPTY;
   disabledChangeDate = false;
   curFilteredBookInfo$: Observable<PassengerBookInfo<ITrainInfo>>;
   constructor(
@@ -180,8 +182,31 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
         t.OrderTrainTrips[0].StartTime;
     }
   }
+  private startCheckPageTimeout() {
+    this.pageTimeoutSubscription = this.trainService
+      .getPagePopTimeoutSource()
+      .pipe(delay(0))
+      .subscribe((r) => {
+        if (this.isDiffPage()) {
+          return;
+        }
+        if (r && !this.pageTimeoutSubscription.closed) {
+          this.trainService.showTimeoutPop().then(() => {
+            this.doRefresh(true, false);
+          });
+        }
+      });
+  }
+  private isDiffPage() {
+    return !AppHelper.getNormalizedPath(this.router.url).includes(this.pageUrl);
+  }
   ngOnInit() {
+    this.subscriptions.push(this.pageTimeoutSubscription);
     this.route.queryParamMap.subscribe(async (_) => {
+      this.pageTimeoutSubscription.unsubscribe();
+      this.pageUrl = AppHelper.getNormalizedPath(this.router.url);
+      console.log("this.pageUrl", this.pageUrl);
+      this.startCheckPageTimeout();
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       let isDoRefresh = this.checkStationChanged();
       this.checkExchangeDateDisabled();
@@ -540,6 +565,11 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async onBookTicket(train: TrainEntity, seat: TrainSeatEntity) {
+    if (this.trainService.checkIfTrainDetailTimeout()) {
+      await this.trainService.showTimeoutPop();
+      this.doRefresh(true, false);
+      return;
+    }
     const isAdd = await this.trainService.checkIfShouldAddPassenger();
     if (isAdd) {
       await AppHelper.alert("请添加旅客");
@@ -564,11 +594,16 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   private async showSelectedInfos() {
+    this.pageTimeoutSubscription.unsubscribe();
     let c = SelectedTrainSegmentInfoDfComponent;
     const m = await this.modalCtrl.create({
       component: c,
     });
     m.present();
+    await m.onDidDismiss();
+    if (!this.isDiffPage()) {
+      this.startCheckPageTimeout();
+    }
   }
   private filterPassengerPolicyTrains(
     bookInfo: PassengerBookInfo<ITrainInfo>

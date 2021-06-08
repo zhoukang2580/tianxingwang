@@ -197,7 +197,7 @@ export class FlightListPage
     );
     this.route.queryParamMap.subscribe(async (d) => {
       this.flightListTimeoutSubscription = this.flightService
-      .getFlightListTimeoutSource()
+      .getPagePopTimeoutSource()
       .subscribe(async (r) => {
         if (r) {
           await this.flightService.showTimeoutPop();

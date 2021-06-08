@@ -37,6 +37,7 @@ import {
 } from "../travel-application/travel.service";
 import { CONFIG } from "../config";
 import { AgentRegionType } from "./models/AgentRegionType";
+import { TimeoutTipComponent } from "./components/timeout-tip/timeout-tip.component";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -415,7 +416,21 @@ export class TmcService {
     req.IsShowLoading = true;
     return this.apiService.getPromiseData<any>(req);
   }
-
+  async showTimeoutPop() {
+    const t = await AppHelper.popoverController.getTop();
+    if (t) {
+      t.dismiss();
+    }
+    const t2 = await AppHelper.popoverController.create({
+      component: TimeoutTipComponent,
+      componentProps: {
+        ctrl: AppHelper.popoverController,
+      },
+      cssClass: "ticket-changing",
+    });
+    t2.present();
+    return t2;
+  }
   setTravelFormNumber(tn: string) {
     AppHelper.setQueryParamers("TravelNumber", tn);
   }

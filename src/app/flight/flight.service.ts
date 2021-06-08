@@ -1211,9 +1211,7 @@ export class FlightService {
     this.flightDetailTimeoutTime = Date.now();
     return this.apiService.getPromiseData<FlightResultEntity>(req);
   }
-  checkIfFlightDetailTimeout() {
-    return Date.now() - this.flightDetailTimeoutTime >= this.pagePopTimeoutTime;
-  }
+
   private replaceOldFlightSegmentInfo(
     result: FlightResultEntity,
     curSelectedSeg: FlightSegmentEntity
@@ -1544,24 +1542,13 @@ export class FlightService {
         AppHelper.alert(_);
         return null as FlightResultEntity;
       });
-    this.checkIfFlightListTimeout();
+    this.checkIfPageTimeout();
     return serverFlights;
   }
   async showTimeoutPop() {
-    const t = await AppHelper.popoverController.getTop();
-    if (t) {
-      t.dismiss();
-    }
-    const t2 = await AppHelper.popoverController.create({
-      component: TimeoutTipComponent,
-      componentProps: {
-        ctrl: AppHelper.popoverController,
-      },
-      cssClass: "ticket-changing",
-    });
-    t2.present();
-    this.clearSelectedBookInfos();
+    const t2 = await this.tmcService.showTimeoutPop();
     return t2.onDidDismiss().then((r) => {
+      this.clearSelectedBookInfos();
       this.pagePopTimeoutSource.next(false);
       return r;
     });
@@ -1573,16 +1560,19 @@ export class FlightService {
     });
     this.setPassengerBookInfosSource(this.getPassengerBookInfos());
   }
-  getFlightListTimeoutSource() {
+  getPagePopTimeoutSource() {
     return this.pagePopTimeoutSource.asObservable();
   }
-  private checkIfFlightListTimeout() {
+  private checkIfPageTimeout() {
     if (this.pagePopTimeoutId) {
       clearTimeout(this.pagePopTimeoutId);
     }
     this.pagePopTimeoutId = setTimeout(() => {
       this.pagePopTimeoutSource.next(true);
     }, this.pagePopTimeoutTime);
+  }
+  checkIfFlightDetailTimeout() {
+    return Date.now() - this.flightDetailTimeoutTime >= this.pagePopTimeoutTime;
   }
   async getLocalHomeAirports(): Promise<TrafficlineEntity[]> {
     return this.getDomesticAirports();
