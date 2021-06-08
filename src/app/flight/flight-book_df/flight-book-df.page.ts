@@ -462,6 +462,11 @@ export class FlightBookDfPage
         }, 300);
       }
       if (byUser) {
+        if (this.flightService.checkIfFlightDetailTimeout()) {
+          await this.flightService.showTimeoutPop();
+          this.router.navigate(["flight-list"]);
+          return;
+        }
         const ok = await AppHelper.alert(
           "刷新将重新初始化页面，是否刷新？",
           true,
@@ -843,6 +848,11 @@ export class FlightBookDfPage
     return result;
   }
   async bookFlight(isSave: boolean = false, event: CustomEvent) {
+    if (this.flightService.checkIfFlightDetailTimeout()) {
+      await this.flightService.showTimeoutPop();
+      this.router.navigate(["flight-list"]);
+      return;
+    }
     this.isShowFee = false;
     event.stopPropagation();
     if (this.isSubmitDisabled) {

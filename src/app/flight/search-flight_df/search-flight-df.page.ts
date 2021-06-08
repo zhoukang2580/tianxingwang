@@ -42,7 +42,8 @@ import { CONFIG } from "src/app/config";
   styleUrls: ["./search-flight-df.page.scss"],
 })
 export class SearchFlightDfPage
-  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate
+{
   isSelf = false;
   isSingle = true;
   goDate: DayModel;
@@ -141,9 +142,8 @@ export class SearchFlightDfPage
   }
   onRemoveTrip(trip: ITripInfo) {
     if (this.searchInterFlightModel && trip) {
-      this.searchInterFlightModel.trips = this.searchInterFlightModel.trips.filter(
-        (it) => it.id != trip.id
-      );
+      this.searchInterFlightModel.trips =
+        this.searchInterFlightModel.trips.filter((it) => it.id != trip.id);
       this.internationalFlightService.setSearchModelSource(
         this.searchInterFlightModel
       );
@@ -510,8 +510,12 @@ export class SearchFlightDfPage
       s.tripType = TripType.departureTrip;
     }
     s.Date = this.goDate.date;
-    s.ToAsAirport = this.searchFlightModel.toCity.Tag === "Airport"; // Airport 以到达 机场 查询;AirportCity 以城市查询
-    s.FromAsAirport = this.searchFlightModel.fromCity.Tag === "Airport"; // Airport 以出发 机场 查询
+    s.ToAsAirport =
+      this.searchFlightModel.toCity &&
+      this.searchFlightModel.toCity.Tag === "Airport"; // Airport 以到达 机场 查询;AirportCity 以城市查询
+    s.FromAsAirport =
+      this.searchFlightModel.fromCity &&
+      this.searchFlightModel.fromCity.Tag === "Airport"; // Airport 以出发 机场 查询
     s.isRoundTrip = !this.isSingle;
     s.BackDate = this.backDate.date;
     if (this.disabled) {

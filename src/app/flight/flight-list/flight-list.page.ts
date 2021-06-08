@@ -88,11 +88,13 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
   ],
 })
 export class FlightListPage
-  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
+  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate
+{
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private lastFetchTime = 0;
   private lastPassengerIds: string[] = [];
+  private flightListTimeoutSubscription = Subscription.EMPTY;
   private oldSearchCities: {
     fromCityCode: string;
     toCityCode: string;
@@ -194,6 +196,14 @@ export class FlightListPage
       })
     );
     this.route.queryParamMap.subscribe(async (d) => {
+      this.flightListTimeoutSubscription = this.flightService
+      .getFlightListTimeoutSource()
+      .subscribe(async (r) => {
+        if (r) {
+          await this.flightService.showTimeoutPop();
+          this.doRefresh(true, false);
+        }
+      });
       this.isCanLeave = !this.flightService.getSearchFlightModel().isExchange;
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.showAddPassenger = await this.canShowAddPassenger();
@@ -454,9 +464,10 @@ export class FlightListPage
         this.searchFlightModel.fromCity &&
         this.searchFlightModel.fromCity.Code;
       this.oldSearchCities.toCityCode = this.searchFlightModel.toCity.Code;
-      const flightJourneyList = await this.flightService.getFlightJourneyDetailListAsync(
-        loadDataFromServer
-      );
+      const flightJourneyList =
+        await this.flightService.getFlightJourneyDetailListAsync(
+          loadDataFromServer
+        );
       // if (loadDataFromServer) {
       //   let segments = this.flightService.getTotalFlySegments();
       //   if (isSelf) {
@@ -603,8 +614,9 @@ export class FlightListPage
       await this.flightService.addOneBookInfoToSelfBookType();
       this.flightService.currentViewtFlightSegment = fs;
       this.lastPassengerIds = this.flightService
-      .getPassengerBookInfos()
-      .map((it) => it.passenger && it.passenger.Id);
+        .getPassengerBookInfos()
+        .map((it) => it.passenger && it.passenger.Id);
+      this.flightListTimeoutSubscription.unsubscribe();
       this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
     } catch (e) {
       console.error(e);
@@ -678,6 +690,7 @@ export class FlightListPage
     );
   }
   async ngOnInit() {
+    this.subscriptions.push(this.flightListTimeoutSubscription);
     this.subscriptions.push(
       this.flightService
         .getPassengerBookInfoSource()

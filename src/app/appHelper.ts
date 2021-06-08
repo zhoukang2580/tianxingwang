@@ -16,6 +16,7 @@ import {
   ModalController,
   Platform,
   LoadingController,
+  PopoverController,
 } from "@ionic/angular";
 import { LanguageHelper } from "./languageHelper";
 import { BehaviorSubject, TimeoutError } from "rxjs";
@@ -32,6 +33,7 @@ export class AppHelper {
   static toastController: ToastController;
   static alertController: AlertController;
   static modalController: ModalController;
+  static popoverController: PopoverController;
   static fileService: FileHelperService;
   static loadingSubject = new BehaviorSubject({
     isLoading: false,
@@ -56,6 +58,9 @@ export class AppHelper {
   static _callbackHandle: (name: string, data: any) => void;
   static setModalController(modalController: ModalController) {
     this.modalController = modalController;
+  }
+  static setPopoverController(popoverController: PopoverController) {
+    this.popoverController = popoverController;
   }
   static checkNetworkStatus() {
     document.addEventListener("online", onOnline, false);
@@ -1011,7 +1016,7 @@ export class AppHelper {
     try {
       await AppHelper.platform.ready();
       const MyInAppBrowser = window["MyInAppBrowser"];
-      if(!MyInAppBrowser){
+      if (!MyInAppBrowser) {
         return;
       }
       const obj = {

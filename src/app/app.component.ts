@@ -140,11 +140,7 @@ export class AppComponent
     if (this.platform.is("android")) {
       AppHelper.setDeviceName("android");
     }
-    AppHelper.platform = platform;
-    AppHelper.setHttpClient(this.http);
-    AppHelper.setAlertController(this.alertController);
-    AppHelper.setToastController(this.toastController);
-    AppHelper.setModalController(this.modalController);
+    
     this.initializeApp();
     this.platform.ready().then(() => {
       if (this.platform.is("ios") && AppHelper.isApp()) {

@@ -7,7 +7,14 @@ import { hmrBootstrap } from "./hmr";
 import { enableDebugTools } from "@angular/platform-browser";
 import { ThemeService } from "./app/services/theme/theme.service";
 import { AppHelper } from "./app/appHelper";
-import { LoadingController } from "@ionic/angular";
+import {
+  AlertController,
+  LoadingController,
+  ModalController,
+  Platform,
+  PopoverController,
+  ToastController,
+} from "@ionic/angular";
 import { MapService } from "./app/services/map/map.service";
 import { HttpClient } from "@angular/common/http";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -100,6 +107,12 @@ const bootstrap = () =>
       AppHelper.ActivatedRoute = moduleRef.injector.get(ActivatedRoute);
       moduleRef.injector.get(MapService);
       AppHelper.loadingController = moduleRef.injector.get(LoadingController);
+      AppHelper.platform = moduleRef.injector.get(Platform);
+      AppHelper.setHttpClient(moduleRef.injector.get(HttpClient));
+      AppHelper.setAlertController(moduleRef.injector.get(AlertController));
+      AppHelper.setToastController(moduleRef.injector.get(ToastController));
+      AppHelper.setModalController(moduleRef.injector.get(ModalController));
+      AppHelper.setPopoverController(moduleRef.injector.get(PopoverController));
       return moduleRef;
     })
     .catch((err) => {

@@ -44,6 +44,7 @@ import { DayModel } from "../tmc/models/DayModel";
 import { FlightFareEntity } from "./models/FlightFareEntity";
 import { FlightResultEntity } from "./models/FlightResultEntity";
 import { FlightRouteEntity } from "./models/flight/FlightRouteEntity";
+import { TimeoutTipComponent } from "../tmc/components/timeout-tip/timeout-tip.component";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -80,6 +81,10 @@ export class FlightService {
   currentViewtFlightSegment: FlightSegmentEntity;
   policyFlights: PassengerPolicyFlights[];
   flightResult: FlightResultEntity; // 保持和后台返回的数据一致
+  private pagePopTimeoutSource: Subject<boolean>;
+  private pagePopTimeoutTime = 10 * 60 * 1000;
+  private pagePopTimeoutId;
+  private flightDetailTimeoutTime = 0;
   get isAgent() {
     return this.tmcService.isAgent;
   }
@@ -98,6 +103,7 @@ export class FlightService {
     this.searchFlightModelSource = new BehaviorSubject(this.searchFlightModel);
     this.passengerBookInfos = [];
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
+    this.pagePopTimeoutSource = new BehaviorSubject(false);
     this.filterConditionSources = new BehaviorSubject(
       FilterConditionModel.init()
     );
@@ -1202,7 +1208,11 @@ export class FlightService {
     if (req.Language) {
       req.Data.Lang = req.Language;
     }
+    this.flightDetailTimeoutTime = Date.now();
     return this.apiService.getPromiseData<FlightResultEntity>(req);
+  }
+  checkIfFlightDetailTimeout() {
+    return Date.now() - this.flightDetailTimeoutTime >= this.pagePopTimeoutTime;
   }
   private replaceOldFlightSegmentInfo(
     result: FlightResultEntity,
@@ -1534,7 +1544,35 @@ export class FlightService {
         AppHelper.alert(_);
         return null as FlightResultEntity;
       });
+    this.checkIfFlightListTimeout();
     return serverFlights;
+  }
+  async showTimeoutPop() {
+    const t = await AppHelper.popoverController.getTop();
+    if (t) {
+      t.dismiss();
+    }
+    const t2 = await AppHelper.popoverController.create({
+      component: TimeoutTipComponent,
+      componentProps: {
+        ctrl: AppHelper.popoverController,
+      },
+      cssClass: "ticket-changing",
+    });
+    t2.present();
+    this.pagePopTimeoutSource.next(false);
+    return t2.onDidDismiss();
+  }
+  getFlightListTimeoutSource() {
+    return this.pagePopTimeoutSource.asObservable();
+  }
+  private checkIfFlightListTimeout() {
+    if (this.pagePopTimeoutId) {
+      clearTimeout(this.pagePopTimeoutId);
+    }
+    this.pagePopTimeoutId = setTimeout(() => {
+      this.pagePopTimeoutSource.next(true);
+    }, this.pagePopTimeoutTime);
   }
   async getLocalHomeAirports(): Promise<TrafficlineEntity[]> {
     return this.getDomesticAirports();

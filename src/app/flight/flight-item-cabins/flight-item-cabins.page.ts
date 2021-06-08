@@ -2,11 +2,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
 import { FlightCabinEntity } from "./../models/flight/FlightCabinEntity";
 import { IdentityService } from "./../../services/identity/identity.service";
-import {
-  HrService,
-  StaffEntity,
-  StaffBookType,
-} from "../../hr/hr.service";
+import { HrService, StaffEntity, StaffBookType } from "../../hr/hr.service";
 import { DayModel } from "../../tmc/models/DayModel";
 import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
@@ -349,6 +345,11 @@ export class FlightItemCabinsPage implements OnInit {
   }
   async onBookTicket(cabin: FlightPolicy) {
     try {
+      if (this.flightService.checkIfFlightDetailTimeout()) {
+        await this.flightService.showTimeoutPop();
+        this.backbtn.popToPrePage();
+        return;
+      }
       const should = await this.flightService.checkIfShouldAddPassenger();
       if (should) {
         await AppHelper.alert("请您先添加旅客");
