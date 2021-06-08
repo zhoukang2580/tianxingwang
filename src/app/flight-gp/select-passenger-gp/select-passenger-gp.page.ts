@@ -91,6 +91,8 @@ export class SelectPassengerGpPage implements OnInit {
         .deletePassenger(Id)
         .then(() => {
           this.vmPassenger.splice(idx, 1);
+          this.selectedFrequent = this.selectedFrequent.filter(it => it.passengerEntity.Id != Id);
+          this.flightGpService.setfrequentBookInfoSource(this.selectedFrequent);
         })
         .catch((e) => {
           console.error(e);

@@ -200,7 +200,18 @@ export class FlightBookinfosGpPage implements OnInit {
       // this.vmCombindInfos = [];
       this.initialBookDtoGpModel = await this.initializeBookDto();
 
-      // if (this.selectedFrequent) {
+      if (this.selectedFrequent) {
+        for (let s of this.selectedFrequent) {
+          if (s.passengerEntity.Id == undefined) {
+            var end = this.initialBookDtoGpModel.FrequentPassengers.pop();
+            s.passengerEntity.Id = end.Id
+          }
+        }
+      }
+      // if (this.selectedFrequent.length) {
+      //   for (let init of this.initialBookDtoGpModel.FrequentPassengers) {
+      //     this.selectedFrequent.filter(it => it.passengerEntity.Id != init.Id);
+      //   }
       //   for (let price of this.selectedFrequent) {
       //     console.log(this.selectedFrequent, 'price');
       //     let ticketprice = this.initialBookDtoGpModel?.Routes[0]?.Fare.TicketPrice;

@@ -88,8 +88,9 @@ export class AddPassengerInformartionGpPage implements OnInit {
       }
       let credential: PassengerEntity;
       let reg = /^[\u4E00-\u9FA5]{2,4}$/;
-      let reg1 = /^[a-zA-Z0-9]{5,}$/;
-      let reg2 = /^1[0-9]{10}$/;
+      var IdCardNumberReg = /(^\d{15}$)|(^\d{17}([0-9]|X)$)/;
+      var PassportNumberReg = /^1[45][0-9]{7}$|(^[P|p|S|s]\d{7}$)|(^[S|s|G|g|E|e]\d{8}$)|(^[Gg|Tt|Ss|Ll|Qq|Dd|Aa|Ff]\d{8}$)|(^[H|h|M|m]\d{8,10}$)/;
+      let reg1 = /^1[0-9]{10}$/;
       if (obj.name == "") {
         AppHelper.alert("联系人姓名不能为空");
         return
@@ -99,16 +100,19 @@ export class AddPassengerInformartionGpPage implements OnInit {
       } else if (obj.cardId == "") {
         AppHelper.alert("请填写证件号");
         return
-      } else if (!(reg1.test(obj.cardId))) {
-        AppHelper.alert("证件号格式有误");
+      } else if (obj.cardType == "身份证" && !(IdCardNumberReg.test(obj.cardId))) {
+        AppHelper.alert("身份证格式有误");
         return
+      } else if (obj.cardType == "护照" && !(PassportNumberReg.test(obj.cardId))) {
+          AppHelper.alert("护照格式有误")
+          return
       } else if (obj.bankCard == "") {
         AppHelper.alert("请填公务卡所属银行");
         return
       } else if (obj.phone == "") {
         AppHelper.alert("请填写联系人手机号");
         return
-      } else if (!(reg2.test(obj.phone))) {
+      } else if (!(reg1.test(obj.phone))) {
         AppHelper.alert("手机号格式不正确");
         return
       }
@@ -142,7 +146,6 @@ export class AddPassengerInformartionGpPage implements OnInit {
         Mobile: this.passengerInfo.Mobile
       } as PassengerEntity
 
-      await this.onAddPassengerBookInfo(frequentBookInfo);
       const addPassenger = await this.flightGpService.addPassengerSubmit(passengerDate);
       if (addPassenger) {
         const ok = await AppHelper.alert(
@@ -152,12 +155,12 @@ export class AddPassengerInformartionGpPage implements OnInit {
         );
 
         if (ok) {
+          await this.onAddPassengerBookInfo(frequentBookInfo);
           this.back();
         }
       }
     } catch (error) {
       AppHelper.alert(error);
-      this.back();
     }
 
   }

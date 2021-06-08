@@ -235,14 +235,8 @@ export class FlightItemCabinsGpPage implements OnInit {
         this.flightGpService.setPassengerBookInfoGpSource(bookInfogp);
       }
 
-      // if (
-      //   this.flightGpService
-      //     .getPassengerBookInfos()
-      //     .filter((it) => !!it.bookInfo).length
-      // ) {
       this.dismissAllTopOverlays();
       this.router.navigate([AppHelper.getRoutePath("flight-bookinfos-gp")]);
-      // }
 
       // console.log(flightCabin,'====',bookInfos)
     } catch (e) {
