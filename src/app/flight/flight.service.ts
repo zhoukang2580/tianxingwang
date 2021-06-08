@@ -1560,8 +1560,18 @@ export class FlightService {
       cssClass: "ticket-changing",
     });
     t2.present();
-    this.pagePopTimeoutSource.next(false);
-    return t2.onDidDismiss();
+    this.clearSelectedBookInfos();
+    return t2.onDidDismiss().then((r) => {
+      this.pagePopTimeoutSource.next(false);
+      return r;
+    });
+  }
+  private clearSelectedBookInfos() {
+    this.passengerBookInfos = this.passengerBookInfos || [];
+    this.passengerBookInfos.forEach((it) => {
+      it.bookInfo = null;
+    });
+    this.setPassengerBookInfosSource(this.getPassengerBookInfos());
   }
   getFlightListTimeoutSource() {
     return this.pagePopTimeoutSource.asObservable();
