@@ -50,6 +50,7 @@
                 <ion-row class="last" *ngIf="initialBookDtoGpModel?.Routes[0].Fare as segStatus">
                     <span class="logo"><img [src]='segments?.AirlineSrc' alt=""></span>
                     <span>{{segments?.CarrierName}}{{segments?.Number}}</span>
+                    <span>机型{{segments?.PlaneType}}</span>
                     <span>{{segStatus?.TypeName}}</span>
                     <span (click)="onOpenrules(initialBookDtoGpModel?.Routes[0])">退改签政策</span>
                 </ion-row>

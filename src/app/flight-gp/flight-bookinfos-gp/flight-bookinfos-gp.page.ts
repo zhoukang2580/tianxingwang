@@ -208,17 +208,7 @@ export class FlightBookinfosGpPage implements OnInit {
           }
         }
       }
-      // if (this.selectedFrequent.length) {
-      //   for (let init of this.initialBookDtoGpModel.FrequentPassengers) {
-      //     this.selectedFrequent.filter(it => it.passengerEntity.Id != init.Id);
-      //   }
-      //   for (let price of this.selectedFrequent) {
-      //     console.log(this.selectedFrequent, 'price');
-      //     let ticketprice = this.initialBookDtoGpModel?.Routes[0]?.Fare.TicketPrice;
-      //     let tax = this.initialBookDtoGpModel?.Routes[0]?.Fare.Tax;
-      //     this.totalPrice = (ticketprice + tax) * this.selectedFrequent.length
-      //   }
-      // }
+      
       this.getTotalPriceNumber();
       if (this.initialBookDtoGpModel) {
         this.DateTime = this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(0, 10);
