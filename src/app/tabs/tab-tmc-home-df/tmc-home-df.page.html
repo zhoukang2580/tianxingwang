@@ -1,3 +1,4 @@
+<div class="top-d"></div>
 <ion-content class="home">
   <div class="info">
     <div class="name" (click)="onSwitchCustomer()">
@@ -88,7 +89,7 @@
           <div class="swiper-slide swiper" *ngFor="let task of tasklist">
             <img src="assets/home/home-text.png" alt="" />
             <div class="not-jj" (click)="onTaskDetail(task)">
-              <div class="not-name" notranslate>{{task.Name}}</div>
+              <div class="not-name" notranslate>{{task.Title}}</div>
               <div calss="not-approvd overflow">
                 <div><span style="color: crimson" notranslate>{{task.Title}}</span></div>
                 <div><span notranslate>过期时间：{{task?.ExpiredTime}}</span></div>

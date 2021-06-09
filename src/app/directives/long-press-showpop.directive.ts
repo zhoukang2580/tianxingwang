@@ -28,7 +28,7 @@ export class LongPressShowpopDirective {
   @Output() showChange: EventEmitter<any>;
   @Input() showTips: { msg: string; action: (attrdata: any) => any }[];
   @HostListener("touchstart", ["$event"])
-  onTouchStart(evt: TouchEvent) {
+  onTouchStart(evt: any) {
     if (this.timer) {
       clearTimeout(this.timer);
     }
@@ -47,7 +47,7 @@ export class LongPressShowpopDirective {
     }, this.longPressTime);
   }
   @HostListener("touchend", ["$event"])
-  onTouchEnd(evt: TouchEvent) {
+  onTouchEnd(evt: any) {
     try {
       if (this.timer) {
         clearTimeout(this.timer);
