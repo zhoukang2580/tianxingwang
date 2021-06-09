@@ -1,4 +1,3 @@
-import { environment } from "src/environments/environment";
 import { Storage } from "@ionic/storage";
 import { SelectAndReplacebookinfoComponent } from "./components/select-and-replacebookinfo/select-and-replacebookinfo.component";
 import { CalendarService } from "./../tmc/calendar.service";
@@ -12,21 +11,16 @@ import {
   FlightHotelTrainType,
   IBookOrderResult,
 } from "src/app/tmc/tmc.service";
-import {
-  ModalController,
-  NavController,
-  PopoverController,
-} from "@ionic/angular";
+import { ModalController } from "@ionic/angular";
 import { AppHelper } from "src/app/appHelper";
 import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "./../services/identity/identity.service";
 import { HrService, StaffEntity } from "../hr/hr.service";
-import { Injectable } from "@angular/core";
-import { Subject, BehaviorSubject, combineLatest } from "rxjs";
+import { Injectable, EventEmitter } from "@angular/core";
+import { Subject, BehaviorSubject } from "rxjs";
 
 import { ApiService } from "../services/api/api.service";
-import { FlightJourneyEntity } from "./models/flight/FlightJourneyEntity";
 import { FlightSegmentEntity } from "./models/flight/FlightSegmentEntity";
 import { RequestEntity } from "../services/api/Request.entity";
 import { LanguageHelper } from "../languageHelper";
@@ -40,11 +34,8 @@ import {
   FlightSegmentModel,
 } from "./models/PassengerFlightInfo";
 import { OrderBookDto } from "../order/models/OrderBookDto";
-import { DayModel } from "../tmc/models/DayModel";
 import { FlightFareEntity } from "./models/FlightFareEntity";
 import { FlightResultEntity } from "./models/FlightResultEntity";
-import { FlightRouteEntity } from "./models/flight/FlightRouteEntity";
-import { TimeoutTipComponent } from "../tmc/components/timeout-tip/timeout-tip.component";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -81,8 +72,8 @@ export class FlightService {
   currentViewtFlightSegment: FlightSegmentEntity;
   policyFlights: PassengerPolicyFlights[];
   flightResult: FlightResultEntity; // 保持和后台返回的数据一致
-  private pagePopTimeoutSource: Subject<boolean>;
-  private pagePopTimeoutTime = 10 * 60 * 1000;
+  private pagePopTimeoutSource: EventEmitter<boolean>;
+  private pagePopTimeoutTime = 8 * 1000;
   private pagePopTimeoutId;
   private flightDetailTimeoutTime = 0;
   private isFetching = false;
@@ -104,7 +95,7 @@ export class FlightService {
     this.searchFlightModelSource = new BehaviorSubject(this.searchFlightModel);
     this.passengerBookInfos = [];
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
-    this.pagePopTimeoutSource = new BehaviorSubject(false);
+    this.pagePopTimeoutSource = new EventEmitter();
     this.filterConditionSources = new BehaviorSubject(
       FilterConditionModel.init()
     );
@@ -1209,8 +1200,13 @@ export class FlightService {
     if (req.Language) {
       req.Data.Lang = req.Language;
     }
+    this.stopCheckPageTimout();
     this.flightDetailTimeoutTime = Date.now();
-    return this.apiService.getPromiseData<FlightResultEntity>(req);
+    return this.apiService
+      .getPromiseData<FlightResultEntity>(req)
+      .finally(() => {
+        this.startCheckPageTimeout();
+      });
   }
 
   private replaceOldFlightSegmentInfo(
@@ -1551,7 +1547,7 @@ export class FlightService {
       .finally(() => {
         this.isFetching = false;
       });
-    this.checkIfPageTimeout();
+    this.startCheckPageTimeout();
     return serverFlights;
   }
   async showTimeoutPop() {
@@ -1572,21 +1568,24 @@ export class FlightService {
   getPagePopTimeoutSource() {
     return this.pagePopTimeoutSource.asObservable();
   }
-  private checkIfPageTimeout() {
-    if (this.pagePopTimeoutId) {
-      clearTimeout(this.pagePopTimeoutId);
-    }
-    AppHelper.modalController.getTop().then((t) => {
-      if (t) {
-        t.dismiss();
-      }
-    });
+  private startCheckPageTimeout() {
+    this.stopCheckPageTimout();
     this.pagePopTimeoutId = setTimeout(() => {
       if (this.isFetching) {
+        if (this.pagePopTimeoutId) {
+          clearTimeout(this.pagePopTimeoutId);
+          this.pagePopTimeoutId = null;
+        }
         return;
       }
       this.pagePopTimeoutSource.next(true);
     }, this.pagePopTimeoutTime);
+  }
+  private stopCheckPageTimout() {
+    if (this.pagePopTimeoutId) {
+      clearTimeout(this.pagePopTimeoutId);
+      this.pagePopTimeoutId = null;
+    }
   }
   checkIfFlightDetailTimeout() {
     return Date.now() - this.flightDetailTimeoutTime >= this.pagePopTimeoutTime;

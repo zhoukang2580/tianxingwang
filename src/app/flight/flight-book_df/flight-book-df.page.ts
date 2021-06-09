@@ -850,7 +850,7 @@ export class FlightBookDfPage
   async bookFlight(isSave: boolean = false, event: CustomEvent) {
     if (this.flightService.checkIfFlightDetailTimeout()) {
       await this.flightService.showTimeoutPop();
-      this.router.navigate(["flight-list"]);
+      // this.router.navigate(["flight-list"]);
       return;
     }
     this.isShowFee = false;

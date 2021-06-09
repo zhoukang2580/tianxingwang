@@ -8,7 +8,7 @@ import { IdentityService } from "./../services/identity/identity.service";
 import { HrService, StaffEntity } from "../hr/hr.service";
 import { Subject, BehaviorSubject, combineLatest } from "rxjs";
 import { ApiService } from "src/app/services/api/api.service";
-import { Injectable } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { RequestEntity } from "../services/api/Request.entity";
 import { TripType } from "../tmc/models/TripType";
 import { TrainEntity, TrainSeatType } from "./models/TrainEntity";
@@ -69,7 +69,7 @@ export class TrainService {
   private bookInfoSource: Subject<PassengerBookInfo<ITrainInfo>[]>;
   private searchModelSource: Subject<SearchTrainModel>;
   private isInitializingSelfBookInfos = false;
-  private pagePopTimeoutSource: Subject<boolean>;
+  private pagePopTimeoutSource: EventEmitter<boolean>;
   private pagePopTimeoutTime = 10 * 60 * 1000;
   private pagePopTimeoutId;
   private trainDetailTimeoutTime = 0;
@@ -89,7 +89,7 @@ export class TrainService {
     private popoverCtrl: PopoverController
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
-    this.pagePopTimeoutSource = new BehaviorSubject(false);
+    this.pagePopTimeoutSource = new EventEmitter();
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
     identityService.getIdentitySource().subscribe((res) => {
       this.disposal();
@@ -119,10 +119,14 @@ export class TrainService {
   checkIfTrainDetailTimeout() {
     return Date.now() - this.trainDetailTimeoutTime >= this.pagePopTimeoutTime;
   }
-  private checkIfPageTimeout() {
+  private stopCheckPageTimeout() {
     if (this.pagePopTimeoutId) {
       clearTimeout(this.pagePopTimeoutId);
+      this.pagePopTimeoutId = null;
     }
+  }
+  private startCheckPageTimeout() {
+    this.stopCheckPageTimeout();
     this.pagePopTimeoutId = setTimeout(() => {
       this.pagePopTimeoutSource.next(true);
     }, this.pagePopTimeoutTime);
@@ -1066,6 +1070,7 @@ export class TrainService {
       TrainCode: condition.TrainCode,
     };
     req.Version = "1.0";
+    this.stopCheckPageTimeout();
     return this.apiService
       .getPromiseData<TrainEntity[]>(req)
       .then((res) => {
@@ -1087,7 +1092,7 @@ export class TrainService {
         return result;
       })
       .finally(() => {
-        this.checkIfPageTimeout();
+        this.startCheckPageTimeout();
         this.trainDetailTimeoutTime = Date.now();
       });
   }

@@ -227,6 +227,7 @@ export class FlightListPage
     });
   }
   private startCheckPageTimeout() {
+    this.pageTimeoutSubscription.unsubscribe();
     this.pageTimeoutSubscription = this.flightService
       .getPagePopTimeoutSource()
       .pipe(delay(0))
