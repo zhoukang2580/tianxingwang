@@ -85,6 +85,7 @@ export class FlightService {
   private pagePopTimeoutTime = 10 * 60 * 1000;
   private pagePopTimeoutId;
   private flightDetailTimeoutTime = 0;
+  private isFetching = false;
   get isAgent() {
     return this.tmcService.isAgent;
   }
@@ -1504,6 +1505,14 @@ export class FlightService {
     );
   }
   private async getFlightList() {
+    if (this.pagePopTimeoutId) {
+      clearTimeout(this.pagePopTimeoutId);
+      AppHelper.popoverController.getTop().then((t) => {
+        if (t) {
+          t.dismiss();
+        }
+      });
+    }
     await this.checkOrAddSelfBookTypeBookInfo();
     await this.setDefaultFilterInfo();
     const req = new RequestEntity();
@@ -1519,6 +1528,7 @@ export class FlightService {
     req.Version = "2.0";
     req.IsShowLoading = true;
     req.Timeout = 60;
+    this.isFetching = true;
     const serverFlights = await this.apiService
       .getPromiseData<FlightResultEntity>(req)
       .then((r) => {
@@ -1538,9 +1548,8 @@ export class FlightService {
         }
         return r;
       })
-      .catch((_) => {
-        AppHelper.alert(_);
-        return null as FlightResultEntity;
+      .finally(() => {
+        this.isFetching = false;
       });
     this.checkIfPageTimeout();
     return serverFlights;
@@ -1567,7 +1576,15 @@ export class FlightService {
     if (this.pagePopTimeoutId) {
       clearTimeout(this.pagePopTimeoutId);
     }
+    AppHelper.modalController.getTop().then((t) => {
+      if (t) {
+        t.dismiss();
+      }
+    });
     this.pagePopTimeoutId = setTimeout(() => {
+      if (this.isFetching) {
+        return;
+      }
       this.pagePopTimeoutSource.next(true);
     }, this.pagePopTimeoutTime);
   }

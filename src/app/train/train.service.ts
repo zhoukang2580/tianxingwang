@@ -70,7 +70,7 @@ export class TrainService {
   private searchModelSource: Subject<SearchTrainModel>;
   private isInitializingSelfBookInfos = false;
   private pagePopTimeoutSource: Subject<boolean>;
-  private pagePopTimeoutTime = 60 * 10 * 1000;
+  private pagePopTimeoutTime = 10 * 60 * 1000;
   private pagePopTimeoutId;
   private trainDetailTimeoutTime = 0;
   totalPolicies: TrainPassengerModel[];

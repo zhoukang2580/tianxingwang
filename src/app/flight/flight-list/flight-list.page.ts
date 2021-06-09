@@ -92,9 +92,10 @@ export class FlightListPage
 {
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
+  private pageUrl;
   private lastFetchTime = 0;
   private lastPassengerIds: string[] = [];
-  private flightListTimeoutSubscription = Subscription.EMPTY;
+  private pageTimeoutSubscription = Subscription.EMPTY;
   private oldSearchCities: {
     fromCityCode: string;
     toCityCode: string;
@@ -196,14 +197,9 @@ export class FlightListPage
       })
     );
     this.route.queryParamMap.subscribe(async (d) => {
-      this.flightListTimeoutSubscription = this.flightService
-      .getPagePopTimeoutSource()
-      .subscribe(async (r) => {
-        if (r) {
-          await this.flightService.showTimeoutPop();
-          this.doRefresh(true, false);
-        }
-      });
+      this.pageTimeoutSubscription.unsubscribe();
+      this.startCheckPageTimeout();
+      this.pageUrl = AppHelper.getNormalizedPath(this.router.url);
       this.isCanLeave = !this.flightService.getSearchFlightModel().isExchange;
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.showAddPassenger = await this.canShowAddPassenger();
@@ -229,6 +225,24 @@ export class FlightListPage
         this.doRefresh(false, true);
       }
     });
+  }
+  private startCheckPageTimeout() {
+    this.pageTimeoutSubscription = this.flightService
+      .getPagePopTimeoutSource()
+      .pipe(delay(0))
+      .subscribe((r) => {
+        if (this.isDiffPage()) {
+          return;
+        }
+        if (r && !this.pageTimeoutSubscription.closed) {
+          this.flightService.showTimeoutPop().then(() => {
+            this.doRefresh(true, false);
+          });
+        }
+      });
+  }
+  private isDiffPage() {
+    return !AppHelper.getNormalizedPath(this.router.url).includes(this.pageUrl);
   }
   trackById(item: FlightSegmentEntity) {
     return item.Id;
@@ -559,6 +573,7 @@ export class FlightListPage
     const oldBookInfos = this.flightService
       .getPassengerBookInfos()
       .map((it) => it.id);
+    this.pageTimeoutSubscription.unsubscribe();
     await m.present();
     await m.onDidDismiss();
     if (sub) {
@@ -579,7 +594,8 @@ export class FlightListPage
       newBookInfos.some((n) => !oldBookInfos.find((it) => it == n));
     if (isChange) {
       this.doRefresh(true, false);
-    }
+    } 
+    this.startCheckPageTimeout();
   }
   private async checkCabinsAndPolicy(fs: FlightSegmentEntity) {
     try {
@@ -616,7 +632,7 @@ export class FlightListPage
       this.lastPassengerIds = this.flightService
         .getPassengerBookInfos()
         .map((it) => it.passenger && it.passenger.Id);
-      this.flightListTimeoutSubscription.unsubscribe();
+      this.pageTimeoutSubscription.unsubscribe();
       this.router.navigate([AppHelper.getRoutePath("flight-item-cabins")]);
     } catch (e) {
       console.error(e);
@@ -624,6 +640,7 @@ export class FlightListPage
   }
   onShowSelectedInfos() {
     this.isCanLeave = true;
+    this.pageTimeoutSubscription.unsubscribe();
     this.flightService.showSelectedBookInfosPage();
   }
 
@@ -690,7 +707,7 @@ export class FlightListPage
     );
   }
   async ngOnInit() {
-    this.subscriptions.push(this.flightListTimeoutSubscription);
+    this.subscriptions.push(this.pageTimeoutSubscription);
     this.subscriptions.push(
       this.flightService
         .getPassengerBookInfoSource()
