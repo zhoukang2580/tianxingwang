@@ -1,6 +1,7 @@
 .bg {
   height             : 30vh;
   width              : 100%;
+  max-width          : 100%;
   min-height         : 30vh;
   background-repeat  : no-repeat;
   background-size    : cover;
@@ -12,7 +13,7 @@
   .back-button {
     position        : absolute;
     left            : 1em;
-    top             : 2em;
+    top             : calc(2em + var(--ion-safe-area-top));
     width           : 2em;
     height          : 2em;
     z-index         : 100;
@@ -46,15 +47,18 @@ ion-header {
   z-index : 999;
 }
 
-// .div-for-scroll {
-//   min-height: 60vh;
-// }
-app-swiper-slides {
-  display: block;
-  width  : 100%;
+.slides {
   height: 100%;
 }
 
+.div-for-scroll {
+  padding-bottom: var(--ion-safe-area-bottom);
+}
+app-swiper-slides {
+  display: block;
+  width  : 100%;
+  height : 100%;
+}
 .info {
   background-color: var(--ion-color-light);
   padding         : 1em;
@@ -185,6 +189,7 @@ app-swiper-slides {
 
   .item-wrapper {
     width: 100%;
+    padding: 0.2em 0.6em;
   }
 
   .item-wrapper,
@@ -353,4 +358,10 @@ ion-row {
   .desc-detail {
     flex: 1;
   }
+}
+.cnt{
+  max-height: 100%;
+  overflow-y: auto;
+  padding-bottom: var(--ion-safe-area-bottom);
+  -webkit-overflow-scrolling: touch;
 }

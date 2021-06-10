@@ -79,7 +79,8 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   private lastSelectPassengers: string[];
   @ViewChild(IonHeader) ionHeader: IonHeader;
   @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
-  @ViewChild(IonContent) content: IonContent;
+  @ViewChild("cnt",{static:true}) cnt: ElementRef<HTMLElement>;
+  // @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   @ViewChild("houseInfo") private houseInfoEle: IonList;
   @ViewChild("hotelInfo") private hotelInfoEle: IonList;
@@ -354,7 +355,8 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
                 .map((it) => it.passenger && it.passenger.Id);
               this.hotelDayPrice = { Hotel: this.hotel } as any;
               this.hotelPolicy = await this.getPolicy();
-              this.content.scrollToTop();
+              // this.content.scrollToTop();
+              this.cnt.nativeElement.scrollTop=0;
               this.initFilterPolicy();
               this.checkIfBookedRoomPlan();
               this.initHotelDetailInfos();
@@ -528,7 +530,8 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   private async scrollToPoint(tab: ClientRect | DOMRect) {
     // console.log("scrollToPoint", rect);
     if (tab) {
-      const scrollEle = await this.content.getScrollElement();
+      // const scrollEle = await this.content.getScrollElement();
+      const scrollEle = this.cnt.nativeElement;
       scrollEle.scrollBy({
         behavior: "smooth",
         top: tab.top - this.headerHeight,
@@ -1000,7 +1003,8 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private checkScroll() {
     this.domCtrl.write(async (_) => {
-      const scroll = await this.content.getScrollElement();
+      // const scroll = await this.content.getScrollElement();
+      const scroll = this.cnt.nativeElement;
       const sub = fromEvent(scroll, "scroll")
         .pipe(debounceTime(10))
         .subscribe(() => {
