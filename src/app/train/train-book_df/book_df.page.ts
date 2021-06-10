@@ -635,11 +635,6 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async bookTrain(isSave: boolean = false, event: CustomEvent) {
-    if (this.trainService.checkIfTrainDetailTimeout()) {
-      await this.trainService.showTimeoutPop();
-      this.router.navigate(["train-list"]);
-      return;
-    }
     this.isShowFee = false;
     event.stopPropagation();
     if (this.isSubmitDisabled) {

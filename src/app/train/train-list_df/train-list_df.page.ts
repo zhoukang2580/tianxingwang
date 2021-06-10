@@ -182,21 +182,6 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
         t.OrderTrainTrips[0].StartTime;
     }
   }
-  private startCheckPageTimeout() {
-    this.pageTimeoutSubscription = this.trainService
-      .getPagePopTimeoutSource()
-      .pipe(delay(0))
-      .subscribe((r) => {
-        if (this.isDiffPage()) {
-          return;
-        }
-        if (r && !this.pageTimeoutSubscription.closed) {
-          this.trainService.showTimeoutPop().then(() => {
-            this.doRefresh(true, false);
-          });
-        }
-      });
-  }
   private isDiffPage() {
     return !AppHelper.getNormalizedPath(this.router.url).includes(this.pageUrl);
   }
@@ -206,7 +191,6 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.pageTimeoutSubscription.unsubscribe();
       this.pageUrl = AppHelper.getNormalizedPath(this.router.url);
       console.log("this.pageUrl", this.pageUrl);
-      this.startCheckPageTimeout();
       this.isShowRoundtripTip = await this.staffService.isSelfBookType();
       let isDoRefresh = this.checkStationChanged();
       this.checkExchangeDateDisabled();
@@ -565,11 +549,6 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
   }
   async onBookTicket(train: TrainEntity, seat: TrainSeatEntity) {
-    if (this.trainService.checkIfTrainDetailTimeout()) {
-      await this.trainService.showTimeoutPop();
-      this.doRefresh(true, false);
-      return;
-    }
     const isAdd = await this.trainService.checkIfShouldAddPassenger();
     if (isAdd) {
       await AppHelper.alert("请添加旅客");
@@ -601,9 +580,6 @@ export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
     });
     m.present();
     await m.onDidDismiss();
-    if (!this.isDiffPage()) {
-      this.startCheckPageTimeout();
-    }
   }
   private filterPassengerPolicyTrains(
     bookInfo: PassengerBookInfo<ITrainInfo>

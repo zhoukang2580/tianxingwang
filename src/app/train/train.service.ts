@@ -69,10 +69,6 @@ export class TrainService {
   private bookInfoSource: Subject<PassengerBookInfo<ITrainInfo>[]>;
   private searchModelSource: Subject<SearchTrainModel>;
   private isInitializingSelfBookInfos = false;
-  private pagePopTimeoutSource: EventEmitter<boolean>;
-  private pagePopTimeoutTime = 10 * 60 * 1000;
-  private pagePopTimeoutId;
-  private trainDetailTimeoutTime = 0;
   totalPolicies: TrainPassengerModel[];
   get isAgent() {
     return this.tmcService.isAgent;
@@ -89,7 +85,6 @@ export class TrainService {
     private popoverCtrl: PopoverController
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
-    this.pagePopTimeoutSource = new EventEmitter();
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
     identityService.getIdentitySource().subscribe((res) => {
       this.disposal();
@@ -98,38 +93,12 @@ export class TrainService {
       }
     });
   }
-  async showTimeoutPop() {
-    const t2 = await this.tmcService.showTimeoutPop();
-    return t2.onDidDismiss().then((r) => {
-      this.pagePopTimeoutSource.next(false);
-      this.clearSelectedBookInfos();
-      return r;
-    });
-  }
   private clearSelectedBookInfos() {
     this.bookInfos = this.bookInfos || [];
     this.bookInfos.forEach((it) => {
       it.bookInfo = null;
     });
     this.setBookInfoSource(this.getBookInfos());
-  }
-  getPagePopTimeoutSource() {
-    return this.pagePopTimeoutSource.asObservable();
-  }
-  checkIfTrainDetailTimeout() {
-    return Date.now() - this.trainDetailTimeoutTime >= this.pagePopTimeoutTime;
-  }
-  private stopCheckPageTimeout() {
-    if (this.pagePopTimeoutId) {
-      clearTimeout(this.pagePopTimeoutId);
-      this.pagePopTimeoutId = null;
-    }
-  }
-  private startCheckPageTimeout() {
-    this.stopCheckPageTimeout();
-    this.pagePopTimeoutId = setTimeout(() => {
-      this.pagePopTimeoutSource.next(true);
-    }, this.pagePopTimeoutTime);
   }
   private async initSearchTrainModel() {
     const { fromStation, toStation } = await this.initTrainCities();
@@ -1056,9 +1025,6 @@ export class TrainService {
   async searchAsync(condition: SearchTrainModel) {
     await this.initSelfBookTypeBookInfos();
     await this.setDefaultFilterInfo();
-    if (this.pagePopTimeoutId) {
-      clearTimeout(this.pagePopTimeoutId);
-    }
     const req = new RequestEntity();
     req.Method = `TmcApiTrainUrl-Home-Search`;
     req.IsShowLoading = true;
@@ -1070,7 +1036,6 @@ export class TrainService {
       TrainCode: condition.TrainCode,
     };
     req.Version = "1.0";
-    this.stopCheckPageTimeout();
     return this.apiService
       .getPromiseData<TrainEntity[]>(req)
       .then((res) => {
@@ -1091,10 +1056,6 @@ export class TrainService {
         }
         return result;
       })
-      .finally(() => {
-        this.startCheckPageTimeout();
-        this.trainDetailTimeoutTime = Date.now();
-      });
   }
   async dismissAllTopOverlays() {
     let i = 10;
