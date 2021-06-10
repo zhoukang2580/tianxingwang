@@ -176,7 +176,7 @@
         </div>
     </div>
 </ion-content>
-
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍候...</app-waiting-check-pay>
 <ion-footer>
     <div class="price-detail">
         <div class="left" (click)="onToggleIsShowFee()">

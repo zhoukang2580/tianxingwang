@@ -10,6 +10,7 @@ import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
 import { RouterModule, Routes } from '@angular/router';
+import { TmcComponentsModule } from 'src/app/tmc/components/tmcComponents.module';
 
 const routes: Routes = [
   {
@@ -26,7 +27,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule
+    AppComponentsModule,
+    TmcComponentsModule
   ],
   declarations: [FlightBookinfosGpPage]
 })
