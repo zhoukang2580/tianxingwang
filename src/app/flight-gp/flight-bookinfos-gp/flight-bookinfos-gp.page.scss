@@ -73,6 +73,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            ion-icon {
+                font-size: 26px;
+                padding-right: 10px;
+            }
         }
     }
     .item {

@@ -313,7 +313,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     });
   }
   async searchFlight() {
-    let ok = await this.tmcService.hasBookRight("flight");
+    let ok = await this.tmcService.hasBookRight("flightGp");
 
     if (!ok) {
       AppHelper.alert("您没有预订权限");

@@ -171,7 +171,7 @@ export class SelectPassengerGpPage implements OnInit {
   private async onAddPassengerBookInfo(
     frequentBookInfo: FrequentBookInfo
   ) {
-    const can = this.flightGpService.getfrequentBookInfo().length < 6;
+    const can = this.selectedFrequent.length < 6;
     if (!can) {
       AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
       return false;
