@@ -207,6 +207,7 @@ export class FlightListPage
       console.log("this.route.queryParamMap deltaTime=", delta);
       const isFetch =
         delta >= 60 * 2 ||
+        this.flightService.checkIfFlightDetailTimeout() ||
         this.checkIfCityChanged() ||
         this.checkIfSelectedPassengerChanged();
       if (
@@ -595,7 +596,7 @@ export class FlightListPage
       newBookInfos.some((n) => !oldBookInfos.find((it) => it == n));
     if (isChange) {
       this.doRefresh(true, false);
-    } 
+    }
     this.startCheckPageTimeout();
   }
   private async checkCabinsAndPolicy(fs: FlightSegmentEntity) {
