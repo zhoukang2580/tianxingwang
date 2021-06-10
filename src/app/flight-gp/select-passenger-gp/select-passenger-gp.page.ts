@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { IonInfiniteScroll, ModalController, NavController } from '@ionic/angular';
+import { IonContent, IonInfiniteScroll, IonRefresher, ModalController, NavController } from '@ionic/angular';
 import { Observable, Subscription } from 'rxjs';
 import { flyInOut } from 'src/app/animations/flyInOut';
 import { AppHelper } from 'src/app/appHelper';
+import { RefresherComponent } from 'src/app/components/refresher';
 import { StaffEntity } from 'src/app/hr/staff.service';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
@@ -30,6 +31,8 @@ export class SelectPassengerGpPage implements OnInit {
   selectedFrequent: FrequentBookInfo[];
 
   private subscription = Subscription.EMPTY;
+  @ViewChild(RefresherComponent, { static: true }) refresher: RefresherComponent;
+  @ViewChild(IonContent, { static: true }) content: IonContent;
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   constructor(
     public modalController: ModalController,
@@ -55,19 +58,31 @@ export class SelectPassengerGpPage implements OnInit {
   }
 
   doRefresh() {
-    if (this.scroller) {
-      this.scroller.disabled = true;
-    }
-    this.flightGpService.getFrequentFlyer().then((r) => {
-      if (r) {
-        console.log(r);
-        r.forEach(it => {
-          it.Variables = JSON.parse(it.Variables);
-        })
-        this.vmPassenger = r;
+    try {
+      if (this.scroller) {
+        this.scroller.disabled = true;
       }
-    })
-    
+      this.flightGpService.getFrequentFlyer().then((r) => {
+        if (r) {
+          console.log(r);
+          r.forEach(it => {
+            it.Variables = JSON.parse(it.Variables);
+          })
+          this.vmPassenger = r;
+        }
+      })
+
+      setTimeout(() => {
+        this.loading = false;
+        if (this.refresher) {
+          this.refresher.complete();
+          this.content.scrollToTop();
+        }
+      }, 200);
+    } catch (error) {
+      console.error(error);
+    }
+
     this.subscription.unsubscribe();
     console.log(this.vmPassenger, "vmPassenger");
   }
@@ -80,11 +95,11 @@ export class SelectPassengerGpPage implements OnInit {
 
   }
 
-  async onDelete(Id,idx,evt :CustomEvent){
-    if(evt){
+  async onDelete(Id, idx, evt: CustomEvent) {
+    if (evt) {
       evt.stopPropagation();
     }
-    console.log(Id,'id');
+    console.log(Id, 'id');
     const ok = await AppHelper.alert("确定删除吗?", true, "确定", "取消");
     if (ok == true) {
       this.flightGpService
@@ -177,9 +192,9 @@ export class SelectPassengerGpPage implements OnInit {
       return false;
     }
     if (this.selectedFrequent) {
-      if(!this.selectedFrequent.find(it=>it.passengerEntity.Id==this.selectedCredentialId)){
+      if (!this.selectedFrequent.find(it => it.passengerEntity.Id == this.selectedCredentialId)) {
         this.flightGpService.addFrequentBookInfo(frequentBookInfo);
-      }else{
+      } else {
         AppHelper.alert("已添加该乘客");
       }
     }
