@@ -17,18 +17,18 @@
 }
 
 .first {
+    .go,
+    .back {
+        background: #5099FE;
+        padding: 2px 10px;
+        color: #fff;
+    }
     ion-item {
         font-size: 12px;
         margin: 10px 0;
         .left {
             height: 100%;
             padding-top: 8px;
-            .go,
-            .back {
-                background: #5099FE;
-                padding: 2px 10px;
-                color: #fff;
-            }
         }
         ion-grid ion-row:first-child {
             font-size: 14px;
@@ -78,27 +78,34 @@
     .item {
         display: flex;
         align-items: center;
+        border-bottom: 1px solid #eee;
+        line-height: 1.7;
         .check-all {
-            flex: 90%;
             .inside {
                 display: flex;
                 align-items: center;
-                height: 55px;
                 .name {
                     font-size: 18px;
                     font-weight: 500;
                     color: #333333;
                 }
-                .id {
+                .id,
+                .card {
                     color: #666666;
                     font-size: 14px;
+                    display: flex;
                     span:first-child {
                         padding-right: 10px;
                     }
+                    .idcard {
+                        letter-spacing: 0.1em;
+                        min-width: 75px;
+                    }
                 }
                 .left {
-                    position: absolute;
-                    left: 68px;
+                    //     position: absolute;
+                    //     left: 68px;
+                    margin-left: 20px;
                 }
                 .del {
                     position: absolute;

@@ -24,16 +24,25 @@ export class AddPassengerInformartionGpPage implements OnInit {
   passenger: PassengerEntity[] = [];
   cardType = CardType;
   credentialsType = CredentialsType;
-  passengerList: PassengerListEntity[] = [];
   CardName: string;
   CardNumber: string;
+  IsShareTicket = false;
+
+  bankType = BankType;
+
+  isStatus: any;
+  Organization: string;
 
   Cardbins: any[] = [];
-
 
   customPopoverOptions: any = {
     header: "选择证件类型",
   }
+
+  customPopovertype: any = {
+    header: "选择验证类型",
+  }
+
 
   constructor(
     private router: Router,
@@ -54,22 +63,34 @@ export class AddPassengerInformartionGpPage implements OnInit {
 
   ngOnInit() {
     try {
-      this.CardName = "中国建设银行";
-      this.CardNumber = "628366";
-      this.passengerInfo = {
-        Name: "",
-        CredentialsTypeName: this.cardType.Waiting,
-        CredentialsType: this.credentialsType.IdCard,
-        Number: "",
-        bankCard: {
-          BankBin: "",
-          BankName: "",
-          Tag: ""
-        },
-        Mobile: "",
-      }
-      // this.passengerInfo = {} as any;
-      this.initSearchModelParams();
+      this.route.queryParamMap.subscribe(async (q) => {
+        // this.isShareType = Boolean(q.get("isShareType"));
+        const type = q.get("isShareType");
+        console.log('ShareType', type);
+        if (type == "true") {
+          this.IsShareTicket = true;
+        }
+        // this.initSearchModelParams();
+        this.CardName = "中国建设银行";
+        this.CardNumber = "628366";
+        this.passengerInfo = {
+          Name: "",
+          CredentialsTypeName: this.cardType.Waiting,
+          CredentialsType: this.credentialsType.IdCard,
+          Number: "",
+          bankCard: {
+            BankBin: "",
+            BankName: "",
+            Tag: ""
+          },
+          Mobile: "",
+        }
+
+        this.isStatus = this.bankType.official;
+
+        // this.passengerInfo = {} as any;
+        this.initSearchModelParams();
+      });
     } catch (error) {
       console.log(error);
     }
@@ -104,8 +125,8 @@ export class AddPassengerInformartionGpPage implements OnInit {
         AppHelper.alert("身份证格式有误");
         return
       } else if (obj.cardType == "护照" && !(PassportNumberReg.test(obj.cardId))) {
-          AppHelper.alert("护照格式有误")
-          return
+        AppHelper.alert("护照格式有误")
+        return
       } else if (obj.bankCard == "") {
         AppHelper.alert("请填公务卡所属银行");
         return
@@ -123,10 +144,17 @@ export class AddPassengerInformartionGpPage implements OnInit {
           CredentialsTypeName: this.passengerInfo.CredentialsTypeName,
           CredentialsType: this.passengerInfo.CredentialsType,
           Number: this.passengerInfo.Number,
-          Variables: {
+          Variables: !this.IsShareTicket ? {
             BankBin: this.CardNumber,
             BankName: this.CardName,
             Tag: "1"
+          } :this.isStatus == "公务卡" ? {
+            BankBin: this.CardNumber,
+            BankName: this.CardName,
+            Tag: "1"
+          } :{
+            Organization: this.Organization,
+            Tag: "2"
           },
           Mobile: this.passengerInfo.Mobile
         } as any)
@@ -138,10 +166,17 @@ export class AddPassengerInformartionGpPage implements OnInit {
         CredentialsTypeName: this.passengerInfo.CredentialsTypeName,
         CredentialsType: this.passengerInfo.CredentialsTypeName ? 1 : 2,
         Number: this.passengerInfo.Number,
-        Variables: JSON.stringify({
+        Variables: JSON.stringify(!this.IsShareTicket ? {
           BankBin: this.CardNumber,
           BankName: this.CardName,
           Tag: "1"
+        } : this.isStatus == "公务卡" ? {
+          BankBin: this.CardNumber,
+          BankName: this.CardName,
+          Tag: "1"
+        } : {
+          Organization: this.Organization,
+          Tag: "2"
         }),
         Mobile: this.passengerInfo.Mobile
       } as PassengerEntity
@@ -208,7 +243,8 @@ export class AddPassengerInformartionGpPage implements OnInit {
     if (evt) {
       evt.stopPropagation();
     }
-    console.log(evt, 'evt');
+    console.log(evt, 'evt', this.isStatus);
+
   }
 
   back(evt?: CustomEvent) {
@@ -237,13 +273,6 @@ export class PassengerInfoEntity {
   Mobile: string;
 };
 
-export class PassengerListEntity {
-  name: string;
-  cardType: CardType;
-  cardId: string;
-  bankCard: string;
-  phone: string;
-} [];
 
 export enum CardType {
   // [Description("等待验证")]
@@ -252,7 +281,27 @@ export enum CardType {
   True = "护照",
 }
 
+export enum BankType {
+  // [Description("等待验证")]
+  official = "公务卡",
+  // [Description("真实")]
+  unit = "单位",
+}
+
 export enum CredentialsType {
+  /// <summary>
+  /// 身份证
+  /// </summary>
+  /// [Description("身份证")]
+  IdCard = 1,
+  /// <summary>
+  /// 护照
+  /// </summary>
+  /// [Description("护照")]
+  Passport = 2,
+}
+
+export enum Type {
   /// <summary>
   /// 身份证
   /// </summary>

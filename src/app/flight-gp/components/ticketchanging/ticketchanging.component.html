@@ -10,7 +10,7 @@
     <p *ngIf='cabin?.Cabin?.FlightPolicy?.OrderTravelPayNames as n'>
         <ion-text color='danger' class="ion-margin-end">支付方式</ion-text>{{n}}
     </p>
-    <div>
+    <div class="container">
         <div class="tui">退票规则</div>
         <p [innerHTML]='explains'></p>
         <div>改签规则</div>

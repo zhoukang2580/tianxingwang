@@ -35,10 +35,26 @@
                     <ion-col size='4'>证件号码</ion-col>
                     <ion-input [(ngModel)]="select.passengerEntity&&select.passengerEntity.Number" clear-input='true'></ion-input>
                 </ion-row>
-                <ion-row>
+                <ion-row *ngIf="!IsShareTicket">
                     <ion-col size='4'>公务卡发卡行</ion-col>
                     <ion-text (click)="onSelectBank()">{{select.passengerEntity&&select.passengerEntity.Variables.BankName}}</ion-text>
-                    <!-- <ion-text (click)="onSelectBank()">{{pass?.bankCard?.BankName}}</ion-text> -->
+                </ion-row>
+                <ion-row *ngIf="IsShareTicket">
+                    <ion-col size='4'>
+                        <div (click)="shareTicket.open()">
+                            <span>{{isStatus}}</span>
+                            <ion-icon name="caret-down-outline"></ion-icon>
+                        </div>
+                        <ion-item style="display: none">
+                            <ion-select cancelText="取消" okText="确定" backdrop-dismiss="true" #shareTicket translucent="true" [interfaceOptions]="customPopovertype" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="isStatus" name="status">
+                                <ion-select-option value="{{bankType.official}}">公务卡</ion-select-option>
+                                <ion-select-option value="{{bankType.unit}}">单位</ion-select-option>
+                            </ion-select>
+                        </ion-item>
+
+                    </ion-col>
+                    <ion-text (click)="onSelectBank()" *ngIf="isStatus=='公务卡'">{{select.passengerEntity&&select.passengerEntity.Variables.BankName}}</ion-text>
+                    <ion-input *ngIf="isStatus=='单位'" [(ngModel)]="select.passengerEntity&&select.passengerEntity.Variables.Organization" clear-input='true'></ion-input>
                 </ion-row>
                 <ion-row>
                     <ion-col size='4'>联系号码</ion-col>

@@ -16,12 +16,12 @@
 <ion-content>
     <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
     <ion-list class="list first">
-        <ion-item *ngIf="initialBookDtoGpModel?.Routes[0]?.Segment as segments">
-            <div class="left">
-                <div class="go">
-                    <span>去程</span>
-                </div>
+        <div class="left">
+            <div class="go">
+                <span>去程</span>
             </div>
+        </div>
+        <ion-item *ngIf="initialBookDtoGpModel?.Routes[0]?.Segment as segments">
             <ion-grid>
                 <ion-row>
                     <ion-col class="start"><span>{{DateTime}}</span></ion-col>
@@ -29,9 +29,9 @@
                     <ion-col class="end"></ion-col>
                 </ion-row>
                 <ion-row>
-                    <ion-col class="start time">{{segments?.TakeoffTime}}</ion-col>
+                    <ion-col class="start time">{{goOff}}</ion-col>
                     <ion-col class="center">{{segments?.FlyTimeName}}</ion-col>
-                    <ion-col class="end time">{{segments?.ArrivalTime}}</ion-col>
+                    <ion-col class="end time">{{endOff}}</ion-col>
                 </ion-row>
                 <ion-row>
                     <ion-col>
@@ -66,20 +66,28 @@
         </ion-item-divider>
         <div *ngIf="selectedFrequent && selectedFrequent.length">
             <div class="item" *ngFor="let item of selectedFrequent;let index=index">
-                <ion-checkbox color="secondary" style="margin-left: 1.3em;">
-                </ion-checkbox>
+                <!-- <ion-checkbox color="secondary" style="margin-left: 1.3em;">
+                </ion-checkbox> -->
                 <div class="check-all" (click)="onUpdate($event,item)">
                     <div class="inside">
                         <div class="left">
                             <div class="name">{{item?.passengerEntity?.Name}}</div>
                             <div class="id">
-                                <span>{{item?.passengerEntity?.CredentialsTypeName}}</span>
+                                <div class="idcard">{{item?.passengerEntity?.CredentialsTypeName}}</div>
                                 <span *ngIf="item?.passengerEntity?.CredentialsTypeName == '身份证'">
-                                    {{item?.passengerEntity?.Number}} 
+                                    {{item?.passengerEntity?.Number.substring(0,6)}}********{{item?.passengerEntity?.Number.substring(item?.passengerEntity?.Number.length - 4)}}
                                 </span>
                                 <span *ngIf="item?.passengerEntity?.CredentialsTypeName == '护照'">
-                                    {{item?.passengerEntity?.Number}}
+                                    {{item?.passengerEntity?.Number.substring(0,4)}}********{{item?.passengerEntity?.Number.substring(item?.passengerEntity?.Number.length - 2)}}
                                 </span>
+                            </div>
+                            <div class="card" *ngIf="item?.passengerEntity?.Variables?.Tag == '1'">
+                                <div class="idcard">卡行</div>
+                                <span>{{item?.passengerEntity?.Variables?.BankName}}</span>
+                            </div>
+                            <div class="card" *ngIf="item?.passengerEntity?.Variables?.Tag == '2'">
+                                <div class="idcard">单位</div>
+                                <span>{{item?.passengerEntity?.Variables?.Organization}}</span>
                             </div>
                         </div>
                         <div class="del" (click)="onClose(item,index,$event)">

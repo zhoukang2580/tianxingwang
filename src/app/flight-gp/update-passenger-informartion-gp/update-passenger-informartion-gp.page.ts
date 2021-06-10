@@ -4,6 +4,7 @@ import { ModalController, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AppHelper } from 'src/app/appHelper';
 import { LanguageHelper } from 'src/app/languageHelper';
+import { BankType } from '../add-passenger-informartion-gp/add-passenger-informartion-gp.page';
 import { SelectCardBinsComponent } from '../components/select-card-bins/select-card-bins.component';
 import { FlightGpService } from '../flight-gp.service';
 import { PassengerEntity } from '../models/flightgp/PassengerEntity';
@@ -23,10 +24,20 @@ export class UpdatePassengerInformartionGpPage implements OnInit {
   customPopoverOptions: any = {
     header: "选择证件类型",
   }
+
+
+  customPopovertype: any = {
+    header: "选择验证类型",
+  }
   cardType = CardType;
   CardName: string;
   CardNumber: string;
   Id: string;
+
+  IsShareTicket = false;
+  isStatus: any;
+  Organization: string;
+  bankType = BankType;
   // flightGpService: any;
   constructor(
     private flightGpService: FlightGpService,
@@ -48,10 +59,27 @@ export class UpdatePassengerInformartionGpPage implements OnInit {
     try {
       this.route.queryParamMap.subscribe(async (q) => {
         this.Id = q.get("id");
+        const type = q.get("isShareType");
+        if (type == "true") {
+          this.IsShareTicket = true;
+        }
         this.initSearchModelParams();
-        console.log(this.selectedFrequent, "selectedFrequent");
         this.selectedFrequent = this.selectedFrequent.filter(it => it.passengerEntity?.Id == this.Id);
+        console.log(this.selectedFrequent, "selectedFrequent");
 
+        let tag = this.selectedFrequent.map((it) => {
+          return it?.passengerEntity?.Variables?.Tag
+        });
+
+        console.log(tag, 'tag');
+
+        if (tag[0] == "1") {
+          this.isStatus = this.bankType.official;
+        } else {
+          this.isStatus = this.bankType.unit;
+        }
+
+        // this.isStatus = tag ? this.bankType.official : this.bankType.unit;
       });
     } catch (error) {
       console.log(error);
@@ -109,9 +137,6 @@ export class UpdatePassengerInformartionGpPage implements OnInit {
         } else if (!(reg1.test(obj.cardId))) {
           AppHelper.alert("证件号格式有误");
           return
-        } else if (obj.bankCard == "") {
-          AppHelper.alert("请填公务卡所属银行");
-          return
         } else if (obj.phone == "") {
           AppHelper.alert("请填写联系人手机号");
           return
@@ -127,10 +152,17 @@ export class UpdatePassengerInformartionGpPage implements OnInit {
             Name: it.passengerEntity.Name,
             CredentialsTypeName: it.passengerEntity.CredentialsTypeName,
             Number: it.passengerEntity.Number,
-            Variables: {
-              BankBin: it.passengerEntity.Variables.BankBin,
-              BankName: it.passengerEntity.Variables.BankName,
+            Variables: !this.IsShareTicket ? {
+              BankBin: this.CardNumber,
+              BankName: this.CardName,
               Tag: "1"
+            } :this.isStatus == "公务卡" ? {
+              BankBin: this.CardNumber,
+              BankName: this.CardName,
+              Tag: "1"
+            } :{
+              Organization: this.Organization,
+              Tag: "2"
             },
             Mobile: it.passengerEntity.Mobile
           } as any)
@@ -142,10 +174,17 @@ export class UpdatePassengerInformartionGpPage implements OnInit {
           CredentialsTypeName: it.passengerEntity.CredentialsTypeName,
           Number: it.passengerEntity.Number,
           Id: it.passengerEntity.Id,
-          Variables: JSON.stringify({
+          Variables: JSON.stringify(!this.IsShareTicket ? {
             BankBin: it.passengerEntity.Variables.BankBin,
             BankName: it.passengerEntity.Variables.BankName,
             Tag: "1"
+          } :this.isStatus == "公务卡" ? {
+            BankBin: this.CardNumber,
+            BankName: this.CardName,
+            Tag: "1"
+          } :{
+            Organization: this.Organization,
+            Tag: "2"
           }),
           Mobile: it.passengerEntity.Mobile
         } as PassengerEntity

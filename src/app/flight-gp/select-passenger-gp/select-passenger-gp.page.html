@@ -80,12 +80,20 @@
                                     {{item?.Name}}
                                 </ion-col>
                             </ion-row>
-                            <ion-row>
+                            <ion-row *ngIf="item?.Variables?.Tag == '1'">
                                 <ion-col>
                                     卡行:
                                 </ion-col>
                                 <ion-col>
                                     {{item?.Variables?.BankName}}
+                                </ion-col>
+                            </ion-row>
+                            <ion-row *ngIf="item?.Variables?.Tag == '2'">
+                                <ion-col>
+                                    单位:
+                                </ion-col>
+                                <ion-col>
+                                    {{item?.Variables?.Organization}}
                                 </ion-col>
                             </ion-row>
                             <ion-row>

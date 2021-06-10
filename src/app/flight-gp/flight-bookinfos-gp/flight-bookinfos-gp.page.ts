@@ -20,7 +20,6 @@ import { BookGpDto } from '../models/flightgp/BookGpDto';
 import { Routes } from '../models/flightgp/Routes';
 import { TicketchangingComponent } from '../components/ticketchanging/ticketchanging.component';
 import { IonCheckbox, PopoverController } from '@ionic/angular';
-import { PassengerListEntity } from '../add-passenger-informartion-gp/add-passenger-informartion-gp.page';
 import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 import { GpBookReq, GpPassengerDto } from 'src/app/order/models/GpBookReq';
 import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
@@ -32,7 +31,6 @@ import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
   animations: [flyInOut],
 })
 export class FlightBookinfosGpPage implements OnInit {
-  passengerListEntity: PassengerListEntity[];
   // vmCombindInfos: ICombindInfo[] = [];
 
   orderTravelPayTypes: {
@@ -72,6 +70,8 @@ export class FlightBookinfosGpPage implements OnInit {
   tmc: TmcEntity;
   bookGpDto: BookGpDto[];
   DateTime: string;
+  goOff: string;
+  endOff: string;
   selectedFrequent: any[];
   orderLinkmanDto: OrderLinkmanDto;
   isCheckingPay: boolean;
@@ -112,6 +112,7 @@ export class FlightBookinfosGpPage implements OnInit {
       })
     );
     try {
+
       await this.initSearchModelParams();
       this.orderLinkmanDto = {
         Name: "",
@@ -119,7 +120,6 @@ export class FlightBookinfosGpPage implements OnInit {
         Email: "",
       }
       // this.refresh(false);
-      console.log(this.passengerListEntity, 'pass');
     } catch (error) {
       console.error(error);
     }
@@ -130,7 +130,9 @@ export class FlightBookinfosGpPage implements OnInit {
   }
 
   onAddLinkman() {
-    this.router.navigate([AppHelper.getRoutePath("add-passenger-informartion-gp")]);
+    this.router.navigate([AppHelper.getRoutePath("add-passenger-informartion-gp")], {
+      queryParams: { isShareType: this.initialBookDtoGpModel.Identity.IsShareTicket }
+    });
   }
 
   onUpdate(evt: CustomEvent, item) {
@@ -146,7 +148,8 @@ export class FlightBookinfosGpPage implements OnInit {
     // );
     this.router.navigate([AppHelper.getRoutePath("update-passenger-informartion-gp")], {
       queryParams: {
-        id: Id
+        id: Id,
+        isShareType: this.initialBookDtoGpModel.Identity.IsShareTicket
       }
     });
   }
@@ -162,7 +165,6 @@ export class FlightBookinfosGpPage implements OnInit {
     let ok = await AppHelper.alert("你要删除这段信息嘛", true, "确定", "取消");
 
     if (ok) {
-
       this.subscriptions.push(
         this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
           m.splice(id, 1);
@@ -208,18 +210,20 @@ export class FlightBookinfosGpPage implements OnInit {
           }
         }
       }
-      
+
       this.getTotalPriceNumber();
       if (this.initialBookDtoGpModel) {
         this.DateTime = this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(0, 10);
-        this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime = this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(11, 16);
-        this.initialBookDtoGpModel.Routes[0].Segment.ArrivalTime = this.initialBookDtoGpModel.Routes[0].Segment.ArrivalTime.substring(11, 16);
-        const Pordu = this.initialBookDtoGpModel.InsuranceResult.Products;
-        for (let pro = 0; pro < Pordu.length; pro++) {
-          Pordu[pro].showDetail = false;
+        this.goOff = this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(11, 16);
+        this.endOff = this.initialBookDtoGpModel.Routes[0].Segment.ArrivalTime.substring(11, 16);
+        const Pordu = this.initialBookDtoGpModel?.InsuranceResult?.Products;
+        if (Pordu) {
+          for (let pro = 0; pro < Pordu.length; pro++) {
+            Pordu[pro].showDetail = false;
+          }
         }
 
-        console.log(this.initialBookDtoGpModel.InsuranceResult.Products, "Products");
+        // console.log(this.initialBookDtoGpModel.InsuranceResult.Products, "Products");
 
         let cardInfo = this.initialBookDtoGpModel.CardBins;
         let cardBins = this.flightGpService.getCardBinsBookInfo();
@@ -262,7 +266,7 @@ export class FlightBookinfosGpPage implements OnInit {
         });
       }
     });
-    this.orderTravelPayType = OrderTravelPayType.Company;
+    this.orderTravelPayType = OrderTravelPayType.Person;
 
     console.log(this.orderTravelPayTypes, "orderTravelPayType");
   }
@@ -339,20 +343,22 @@ export class FlightBookinfosGpPage implements OnInit {
     console.log('order', this.orderTravelPayTypes + ":" + this.orderTravelPayType);
 
     if (this.initialBookDtoGpModel) {
-      let totalPrice = this.initialBookDtoGpModel.InsuranceResult.Products.filter(
-        (it) =>
-          it &&
-          it.Id == this.selectedInsuranceProductId
-      ).reduce((sum, it) => {
-        sum = AppHelper.add(+it.Price, sum);
-        return sum;
-      }, 0);
-      console.log("totalPrice ", totalPrice);
-      // const fees = this.getTotalServiceFees();
-      const feestotalPrice = this.getTotalPriceNumber();
-      totalPrice = AppHelper.add(feestotalPrice, totalPrice * (this.selectedFrequent.length == 0 ? 1 : this.selectedFrequent.length));
+      if (this.initialBookDtoGpModel?.InsuranceResult?.Products) {
+        let totalPrice = this.initialBookDtoGpModel?.InsuranceResult?.Products.filter(
+          (it) =>
+            it &&
+            it.Id == this.selectedInsuranceProductId
+        ).reduce((sum, it) => {
+          sum = AppHelper.add(+it.Price, sum);
+          return sum;
+        }, 0);
+        console.log("totalPrice ", totalPrice);
+        // const fees = this.getTotalServiceFees();
+        const feestotalPrice = this.getTotalPriceNumber();
+        totalPrice = AppHelper.add(feestotalPrice, totalPrice * (this.selectedFrequent.length == 0 ? 1 : this.selectedFrequent.length));
 
-      this.totalPriceSource.next(totalPrice);
+        this.totalPriceSource.next(totalPrice);
+      }
     }
   }
 
@@ -445,7 +451,6 @@ export class FlightBookinfosGpPage implements OnInit {
         });
       if (res) {
         if (res.TradeNo) {
-          // AppHelper.toast("下单成功!", 1400, "top");
           this.isSubmitDisabled = true;
           this.isHasTask = res.HasTasks;
           this.payResult = false;
@@ -477,8 +482,15 @@ export class FlightBookinfosGpPage implements OnInit {
             );
           }
 
+          await AppHelper.alert("下单成功");
+          this.subscriptions.push(
+            this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
+              m.splice(0);
+              this.getTotalPriceNumber();
+              this.calcTotalPrice();
+            })
+          );
           this.goToMyOrders();
-          // await AppHelper.alert("下单成功!");
         }
       }
     }
@@ -495,18 +507,20 @@ export class FlightBookinfosGpPage implements OnInit {
     console.log(combindInfos, 'arr');
     bookDto.PassengerDtos = [];
 
-    const ret: GpPassengerDto = new GpPassengerDto();
 
+    let rets: GpPassengerDto[] = [];
     for (let fre of this.selectedFrequent) {
+      const ret = new GpPassengerDto();
       ret.Pid = fre.passengerEntity.Id;
       ret.Name = fre.passengerEntity.Name;
-      ret.CredentialsType = fre.passengerEntity.CredentialsTypeName;
+      ret.CredentialsType = fre.passengerEntity.CredentialsType;
       ret.Number = fre.passengerEntity.Number;
       ret.Mobile = fre.passengerEntity.Mobile;
-      ret.GPValidateStatus = 1;
-      ret.GPOrganization = "";
-      ret.GPCardBin = fre.passengerEntity.Variables.BankBin;
-      ret.GPCardName = fre.passengerEntity.Variables.BankName;
+      ret.GPValidateStatus = fre?.passengerEntity?.Variables?.Tag;
+      ret.GPOrganization = fre?.passengerEntity?.Variables?.Organization || "";
+      ret.GPCardBin = fre?.passengerEntity?.Variables?.BankBin || "";
+      ret.GPCardName = fre?.passengerEntity?.Variables?.BankName || "";
+      bookDto.PassengerDtos.push(ret);
     }
 
     const Linkman = {
@@ -517,14 +531,15 @@ export class FlightBookinfosGpPage implements OnInit {
       MessageLang: this.orderLinkmanDto.MessageLang
     };
 
-    bookDto.PassengerDtos.push(ret);
     bookDto.Linkman = Linkman;
     bookDto.FlightCabin = combindInfos.Routes[0].Fare;
     bookDto.FlightSegment = combindInfos.Routes[0].Segment;
-    for (let insur of combindInfos?.InsuranceResult?.Products) {
-      if (insur.Id == this.selectedInsuranceProductId) {
-        bookDto.Insurance = {
-          ...insur
+    if (combindInfos?.InsuranceResult?.Products) {
+      for (let insur of combindInfos?.InsuranceResult?.Products) {
+        if (insur.Id == this.selectedInsuranceProductId) {
+          bookDto.Insurance = {
+            ...insur
+          }
         }
       }
     }
@@ -542,10 +557,10 @@ export class FlightBookinfosGpPage implements OnInit {
         return
       }
 
-      if (!this.selectedInsuranceProductId) {
-        AppHelper.alert("必须选择一个保险信息");
-        return;
-      }
+      // if (!this.selectedInsuranceProductId) {
+      //   AppHelper.alert("必须选择一个保险信息");
+      //   return;
+      // }
       const orderLinkman = {
         Name: this.orderLinkmanDto.Name,
         Mobile: this.orderLinkmanDto.Mobile,
@@ -567,13 +582,14 @@ export class FlightBookinfosGpPage implements OnInit {
       } else if (!reg1.test(orderLinkman.Mobile)) {
         AppHelper.alert("手机号输入有误")
         return
-      } else if (!orderLinkman.Email) {
-        AppHelper.alert("请输入邮箱");
-        return
-      } else if (!reg2.test(orderLinkman.Email)) {
-        AppHelper.alert("邮箱格式不正确")
-        return
       }
+      // else if (!orderLinkman.Email) {
+      //   AppHelper.alert("请输入邮箱");
+      //   return
+      // } else if (!reg2.test(orderLinkman.Email)) {
+      //   AppHelper.alert("邮箱格式不正确")
+      //   return
+      // }
     }
 
     return isture;
