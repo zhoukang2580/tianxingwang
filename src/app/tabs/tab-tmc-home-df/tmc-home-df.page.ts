@@ -407,12 +407,17 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
 
   async onTaskDetail(task) {
     const url = await this.getTaskHandleUrl(task);
-    this.tmcService.SetAccountMessage(task).then(() => {
-      this.tasklist = this.tasklist.filter((it) => it.Id != task.Id);
-      setTimeout(() => {
-        this.taskEleSwiper.update();
-      }, 200);
-    });
+    this.tmcService
+      .SetAccountMessage(task)
+      .then(() => {
+        this.tasklist = this.tasklist.filter((it) => it.Id != task.Id);
+        setTimeout(() => {
+          this.taskEleSwiper.update();
+        }, 200);
+      })
+      .catch((e) => {
+        console.error(e);
+      });
     if (url) {
       this.router
         .navigate(["open-url"], {
@@ -437,20 +442,24 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private async getTaskHandleUrl(task) {
+  private async getTaskHandleUrl(task, isAppendTicket = true) {
     const identity: IdentityEntity = await this.identityService
       .getIdentityAsync()
       .catch((_) => null);
+    const ticket = identity && identity.Ticket;
     let url = this.getTaskUrl(task);
     if (url) {
       if (url.includes("?")) {
-        url = `${url}&taskid=${task.Id}&ticket=${
-          (identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+        url = `${url}&isApp=true&lang=${
+          AppHelper.getLanguage() || ""
+        }`;
       } else {
-        url = `${url}?taskid=${task.Id}&ticket=${
-          (identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+        url = `${url}?isApp=true&lang=${
+          AppHelper.getLanguage() || ""
+        }`;
+      }
+      if (isAppendTicket && ticket) {
+        url = `${url}&ticket=${ticket}`;
       }
     }
     return url;

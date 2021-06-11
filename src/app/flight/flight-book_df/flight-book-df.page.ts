@@ -109,6 +109,7 @@ export class FlightBookDfPage
   private isPageTimeout = false;
   private subscriptions: Subscription[] = [];
   private totalPriceSource: Subject<number>;
+  private pageUrl;
   totalPrice = 0;
   vmCombindInfos: ICombindInfo[] = [];
   isSubmitDisabled = false;
@@ -198,7 +199,8 @@ export class FlightBookDfPage
     );
     // 秘书和特殊角色可以跳过审批(如果有审批人)
     this.route.queryParamMap.subscribe(async () => {
-      this.isPageTimeout = this.flightService.checkIfFlightDetailTimeout();
+      this.pageUrl = this.router.url;
+      this.isPageTimeout = this.flightService.checkIfTimeout();
       this.isCanSave = await this.identityService
         .getIdentityAsync()
         .catch((_) => null as IdentityEntity)
@@ -471,8 +473,8 @@ export class FlightBookDfPage
         }, 300);
       }
       if (byUser) {
-        if (this.flightService.checkIfFlightDetailTimeout()) {
-          await this.flightService.showTimeoutPop(false);
+        if (this.flightService.checkIfTimeout()) {
+          await this.flightService.showTimeoutPop(false, this.pageUrl);
           this.router.navigate(["flight-list"]);
           return;
         }
@@ -857,9 +859,9 @@ export class FlightBookDfPage
     return result;
   }
   async bookFlight(isSave: boolean = false, event: CustomEvent) {
-    this.isPageTimeout = this.flightService.checkIfFlightDetailTimeout();
-    if (this.flightService.checkIfFlightDetailTimeout()) {
-      await this.flightService.showTimeoutPop(false);
+    this.isPageTimeout = this.flightService.checkIfTimeout();
+    if (this.flightService.checkIfTimeout()) {
+      await this.flightService.showTimeoutPop(false, this.pageUrl);
       // this.router.navigate(["flight-list"]);
       return;
     }

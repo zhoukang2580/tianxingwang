@@ -51,6 +51,7 @@ export class FlightItemCabinsPage implements OnInit {
   private cabins: FlightPolicy[] = [];
   private economyClassCabins: FlightPolicy[] = []; // 显示经济舱的最低价、协议价、全价
   private moreCabins: FlightPolicy[] = []; // 显示更多价格
+  private pageUrl;
   @ViewChild(BackButtonComponent, { static: true })
   backbtn: BackButtonComponent;
   vmCabins: FlightPolicy[] = [];
@@ -70,7 +71,7 @@ export class FlightItemCabinsPage implements OnInit {
   isExchange = false;
   constructor(
     private flightService: FlightService,
-    activatedRoute: ActivatedRoute,
+    private route: ActivatedRoute,
     private modalCtrl: ModalController,
     private flydayService: CalendarService,
     private staffService: HrService,
@@ -81,7 +82,8 @@ export class FlightItemCabinsPage implements OnInit {
     private navCtrl: NavController,
     private tmcService: TmcService
   ) {
-    activatedRoute.queryParamMap.subscribe(async (p) => {
+    route.queryParamMap.subscribe(async (p) => {
+      this.pageUrl=this.router.url;
       try {
         this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
         if (
@@ -345,8 +347,11 @@ export class FlightItemCabinsPage implements OnInit {
   }
   async onBookTicket(cabin: FlightPolicy) {
     try {
-      if (this.flightService.checkIfFlightDetailTimeout()) {
-        await this.flightService.showTimeoutPop(true);
+      if (this.flightService.checkIfTimeout()) {
+        await this.flightService.showTimeoutPop(
+          true,
+          this.pageUrl
+        );
         this.backbtn.popToPrePage();
         return;
       }

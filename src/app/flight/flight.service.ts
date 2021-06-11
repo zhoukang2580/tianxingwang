@@ -73,10 +73,11 @@ export class FlightService {
   policyFlights: PassengerPolicyFlights[];
   flightResult: FlightResultEntity; // 保持和后台返回的数据一致
   private pagePopTimeoutSource: EventEmitter<boolean>;
-  private pagePopTimeoutTime = 10 * 60 * 1000;
+  private pagePopTimeoutTime = 2 * 1000;
   private pagePopTimeoutId;
-  private flightDetailTimeoutTime = 0;
+  private lastRefreshTime = 0;
   private isFetching = false;
+  private isPresent = false;
   get isAgent() {
     return this.tmcService.isAgent;
   }
@@ -1201,7 +1202,7 @@ export class FlightService {
       req.Data.Lang = req.Language;
     }
     this.stopCheckPageTimout();
-    this.flightDetailTimeoutTime = Date.now();
+    this.lastRefreshTime = Date.now();
     return this.apiService
       .getPromiseData<FlightResultEntity>(req)
       .finally(() => {
@@ -1501,14 +1502,8 @@ export class FlightService {
     );
   }
   private async getFlightList() {
-    if (this.pagePopTimeoutId) {
-      clearTimeout(this.pagePopTimeoutId);
-      AppHelper.popoverController.getTop().then((t) => {
-        if (t) {
-          t.dismiss();
-        }
-      });
-    }
+    this.stopCheckPageTimout();
+    await this.dismissAllTopOverlays();
     await this.checkOrAddSelfBookTypeBookInfo();
     await this.setDefaultFilterInfo();
     const req = new RequestEntity();
@@ -1542,21 +1537,55 @@ export class FlightService {
             };
           });
         }
+        this.startCheckPageTimeout();
         return r;
       })
       .finally(() => {
         this.isFetching = false;
       });
-    this.startCheckPageTimeout();
     return serverFlights;
   }
-  async showTimeoutPop(isClearSelectedBookInfos: boolean) {
-    const t2 = await this.tmcService.showTimeoutPop();
-    await t2.onDidDismiss();
-    if (isClearSelectedBookInfos) {
-      this.clearSelectedBookInfos([]);
+  private checkIfCurPageShouldShowTimeoutPop(curShowTipPageRouteUrl: string) {
+    if (curShowTipPageRouteUrl && curShowTipPageRouteUrl.startsWith("/")) {
+      curShowTipPageRouteUrl = AppHelper.getNormalizedPath(
+        curShowTipPageRouteUrl
+      );
     }
-    this.pagePopTimeoutSource.next(false);
+    return (
+      AppHelper.getNormalizedPath(this.router.url).toLowerCase() ==
+      (curShowTipPageRouteUrl || "").toLowerCase()
+    );
+  }
+  async showTimeoutPop(
+    isClearSelectedBookInfos: boolean,
+    curShowTipPageRouteUrl: string
+  ) {
+    this.stopCheckPageTimout();
+    const isShow = this.checkIfCurPageShouldShowTimeoutPop(
+      curShowTipPageRouteUrl
+    );
+    if (!isShow) {
+      return false;
+    }
+    const t = await AppHelper.popoverController.getTop();
+    if (t) {
+      if (this.isFetching || t.classList.contains("page-timeout")) {
+        return false;
+      }
+    } else {
+      if (!this.isPresent) {
+        const t2 = await this.tmcService.showTimeoutPop();
+        t2.present();
+        this.isPresent = true;
+        await t2.onDidDismiss();
+        this.isPresent = false;
+      }
+      if (isClearSelectedBookInfos) {
+        this.clearSelectedBookInfos([]);
+      }
+      return true;
+    }
+    return false;
   }
   clearSelectedBookInfos(
     selectedBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]
@@ -1579,14 +1608,9 @@ export class FlightService {
   private startCheckPageTimeout() {
     this.stopCheckPageTimout();
     this.pagePopTimeoutId = setTimeout(() => {
-      if (this.isFetching) {
-        if (this.pagePopTimeoutId) {
-          clearTimeout(this.pagePopTimeoutId);
-          this.pagePopTimeoutId = null;
-        }
-        return;
+      if (!this.isFetching) {
+        this.pagePopTimeoutSource.next(true);
       }
-      this.pagePopTimeoutSource.next(true);
     }, this.pagePopTimeoutTime);
   }
   private stopCheckPageTimout() {
@@ -1595,8 +1619,8 @@ export class FlightService {
       this.pagePopTimeoutId = null;
     }
   }
-  checkIfFlightDetailTimeout() {
-    return Date.now() - this.flightDetailTimeoutTime >= this.pagePopTimeoutTime;
+  checkIfTimeout() {
+    return Date.now() - this.lastRefreshTime >= this.pagePopTimeoutTime;
   }
   async getLocalHomeAirports(): Promise<TrafficlineEntity[]> {
     return this.getDomesticAirports();

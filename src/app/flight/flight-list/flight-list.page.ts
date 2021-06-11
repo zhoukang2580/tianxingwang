@@ -33,7 +33,7 @@ import {
   ViewChildren,
   EventEmitter,
 } from "@angular/core";
-import { delay, map } from "rxjs/operators";
+import { delay, last, map } from "rxjs/operators";
 import * as moment from "moment";
 import { CalendarService } from "../../tmc/calendar.service";
 import { DayModel } from "../../tmc/models/DayModel";
@@ -88,7 +88,8 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
   ],
 })
 export class FlightListPage
-  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
+  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate
+{
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private pageUrl;
@@ -180,28 +181,28 @@ export class FlightListPage
           goArrivalDateTime:
             goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
               ? moment(goInfo.bookInfo.flightSegment.ArrivalTime).format(
-                "YYYY-MM-DD HH:mm"
-              )
+                  "YYYY-MM-DD HH:mm"
+                )
               : "",
           backTakeOffDateTime:
             backInfo &&
-              backInfo.bookInfo &&
-              backInfo.bookInfo.flightSegment &&
-              backInfo.bookInfo.tripType == TripType.returnTrip
+            backInfo.bookInfo &&
+            backInfo.bookInfo.flightSegment &&
+            backInfo.bookInfo.tripType == TripType.returnTrip
               ? moment(backInfo.bookInfo.flightSegment.TakeoffTime).format(
-                "YYYY-MM-DD HH:mm"
-              )
+                  "YYYY-MM-DD HH:mm"
+                )
               : "",
         };
       })
     );
     this.route.queryParamMap.subscribe(async (d) => {
+      this.pageUrl = this.router.url;
       if (d.get("isClearBookInfos") == "true") {
         this.flightService.clearSelectedBookInfos([]);
       }
       this.pageTimeoutSubscription.unsubscribe();
       this.startCheckPageTimeout();
-      this.pageUrl = AppHelper.getNormalizedPath(this.router.url);
       this.isCanLeave = !this.flightService.getSearchFlightModel().isExchange;
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.showAddPassenger = await this.canShowAddPassenger();
@@ -209,7 +210,7 @@ export class FlightListPage
       console.log("this.route.queryParamMap deltaTime=", delta);
       const isFetch =
         delta >= 60 * 2 ||
-        this.flightService.checkIfFlightDetailTimeout() ||
+        this.flightService.checkIfTimeout() ||
         this.checkIfCityChanged() ||
         this.checkIfSelectedPassengerChanged();
       if (
@@ -233,19 +234,17 @@ export class FlightListPage
     this.pageTimeoutSubscription.unsubscribe();
     this.pageTimeoutSubscription = this.flightService
       .getPagePopTimeoutSource()
-      .pipe(delay(0))
       .subscribe(async (r) => {
-        if (this.isDiffPage()) {
-          return;
-        }
-        if (r && !this.pageTimeoutSubscription.closed) {
-          await this.flightService.showTimeoutPop(true);
-          this.doRefresh(true, false);
+        if (r) {
+          const ok = await this.flightService.showTimeoutPop(
+            true,
+            this.pageUrl
+          );
+          if (ok) {
+            this.doRefresh(true, false);
+          }
         }
       });
-  }
-  private isDiffPage() {
-    return !AppHelper.getNormalizedPath(this.router.url).includes(this.pageUrl);
   }
   trackById(item: FlightSegmentEntity) {
     return item.Id;
@@ -254,7 +253,7 @@ export class FlightListPage
     try {
       return (
         this.searchFlightModel.fromCity.Code !=
-        this.oldSearchCities.fromCityCode ||
+          this.oldSearchCities.fromCityCode ||
         this.searchFlightModel.toCity.Code != this.oldSearchCities.toCityCode
       );
     } catch (e) {
@@ -314,8 +313,8 @@ export class FlightListPage
           if (a) {
             AppHelper.alert(
               `超标不可预订,${
-              a.bookInfo.flightPolicy &&
-              a.bookInfo.flightPolicy.Rules.join(",")
+                a.bookInfo.flightPolicy &&
+                a.bookInfo.flightPolicy.Rules.join(",")
               }`
             );
             const result = await this.checkHasLowerSegment();
@@ -354,7 +353,7 @@ export class FlightListPage
         if (
           arrival.replace("T", " ").substring(0, 10) == this.day ||
           this.searchFlightModel.Date ==
-          arrival.replace("T", " ").substring(0, 10)
+            arrival.replace("T", " ").substring(0, 10)
         ) {
           return `${arrival.replace("T", " ")}之后已无航班`;
         }

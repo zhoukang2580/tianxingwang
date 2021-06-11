@@ -426,9 +426,8 @@ export class TmcService {
       componentProps: {
         ctrl: AppHelper.popoverController,
       },
-      cssClass: "ticket-changing",
+      cssClass: "ticket-changing page-timeout",
     });
-    t2.present();
     return t2;
   }
   setTravelFormNumber(tn: string) {

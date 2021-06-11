@@ -89,12 +89,13 @@
           <div class="swiper-slide swiper" *ngFor="let task of tasklist">
             <img src="assets/home/home-text.png" alt="" />
             <div class="not-jj" (click)="onTaskDetail(task)">
-              <div class="not-name" notranslate>{{task.Title}}</div>
-              <div calss="not-approvd overflow">
-                <div><span style="color: crimson" notranslate>{{task.Title}}</span></div>
-                <div><span notranslate>过期时间：{{task?.ExpiredTime}}</span></div>
+              <div class="not-name" notranslate>
+                <span style="color: crimson " notranslate>{{task.Title}}</span>
               </div>
-              <div class="view-now"  notranslate>立即查看</div>
+              <div class="not-approvd">
+                <div><span notranslate>过期时间：{{task?.ExpiredTime}}</span></div>
+                <div class="view-now" notranslate>立即查看</div>
+              </div>
             </div>
           </div>
         </div>
