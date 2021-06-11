@@ -1552,13 +1552,11 @@ export class FlightService {
   }
   async showTimeoutPop(isClearSelectedBookInfos: boolean) {
     const t2 = await this.tmcService.showTimeoutPop();
-    return t2.onDidDismiss().then((r) => {
-      if (isClearSelectedBookInfos) {
-        this.clearSelectedBookInfos([]);
-      }
-      this.pagePopTimeoutSource.next(false);
-      return r;
-    });
+    await t2.onDidDismiss();
+    if (isClearSelectedBookInfos) {
+      this.clearSelectedBookInfos([]);
+    }
+    this.pagePopTimeoutSource.next(false);
   }
   clearSelectedBookInfos(
     selectedBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]

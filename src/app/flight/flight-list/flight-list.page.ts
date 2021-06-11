@@ -88,8 +88,7 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
   ],
 })
 export class FlightListPage
-  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate
-{
+  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private pageUrl;
@@ -181,17 +180,17 @@ export class FlightListPage
           goArrivalDateTime:
             goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
               ? moment(goInfo.bookInfo.flightSegment.ArrivalTime).format(
-                  "YYYY-MM-DD HH:mm"
-                )
+                "YYYY-MM-DD HH:mm"
+              )
               : "",
           backTakeOffDateTime:
             backInfo &&
-            backInfo.bookInfo &&
-            backInfo.bookInfo.flightSegment &&
-            backInfo.bookInfo.tripType == TripType.returnTrip
+              backInfo.bookInfo &&
+              backInfo.bookInfo.flightSegment &&
+              backInfo.bookInfo.tripType == TripType.returnTrip
               ? moment(backInfo.bookInfo.flightSegment.TakeoffTime).format(
-                  "YYYY-MM-DD HH:mm"
-                )
+                "YYYY-MM-DD HH:mm"
+              )
               : "",
         };
       })
@@ -235,14 +234,13 @@ export class FlightListPage
     this.pageTimeoutSubscription = this.flightService
       .getPagePopTimeoutSource()
       .pipe(delay(0))
-      .subscribe((r) => {
+      .subscribe(async (r) => {
         if (this.isDiffPage()) {
           return;
         }
         if (r && !this.pageTimeoutSubscription.closed) {
-          this.flightService.showTimeoutPop(true).then(() => {
-            this.doRefresh(true, false);
-          });
+          await this.flightService.showTimeoutPop(true);
+          this.doRefresh(true, false);
         }
       });
   }
@@ -256,7 +254,7 @@ export class FlightListPage
     try {
       return (
         this.searchFlightModel.fromCity.Code !=
-          this.oldSearchCities.fromCityCode ||
+        this.oldSearchCities.fromCityCode ||
         this.searchFlightModel.toCity.Code != this.oldSearchCities.toCityCode
       );
     } catch (e) {
@@ -316,8 +314,8 @@ export class FlightListPage
           if (a) {
             AppHelper.alert(
               `超标不可预订,${
-                a.bookInfo.flightPolicy &&
-                a.bookInfo.flightPolicy.Rules.join(",")
+              a.bookInfo.flightPolicy &&
+              a.bookInfo.flightPolicy.Rules.join(",")
               }`
             );
             const result = await this.checkHasLowerSegment();
@@ -356,7 +354,7 @@ export class FlightListPage
         if (
           arrival.replace("T", " ").substring(0, 10) == this.day ||
           this.searchFlightModel.Date ==
-            arrival.replace("T", " ").substring(0, 10)
+          arrival.replace("T", " ").substring(0, 10)
         ) {
           return `${arrival.replace("T", " ")}之后已无航班`;
         }
