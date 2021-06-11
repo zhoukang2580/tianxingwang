@@ -346,7 +346,7 @@ export class FlightItemCabinsPage implements OnInit {
   async onBookTicket(cabin: FlightPolicy) {
     try {
       if (this.flightService.checkIfFlightDetailTimeout()) {
-        await this.flightService.showTimeoutPop();
+        await this.flightService.showTimeoutPop(true);
         this.backbtn.popToPrePage();
         return;
       }

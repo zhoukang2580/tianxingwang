@@ -1550,18 +1550,28 @@ export class FlightService {
     this.startCheckPageTimeout();
     return serverFlights;
   }
-  async showTimeoutPop() {
+  async showTimeoutPop(isClearSelectedBookInfos: boolean) {
     const t2 = await this.tmcService.showTimeoutPop();
     return t2.onDidDismiss().then((r) => {
-      this.clearSelectedBookInfos();
+      if (isClearSelectedBookInfos) {
+        this.clearSelectedBookInfos([]);
+      }
       this.pagePopTimeoutSource.next(false);
       return r;
     });
   }
-  private clearSelectedBookInfos() {
+  clearSelectedBookInfos(
+    selectedBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]
+  ) {
     this.passengerBookInfos = this.passengerBookInfos || [];
     this.passengerBookInfos.forEach((it) => {
-      it.bookInfo = null;
+      if (selectedBookInfos && selectedBookInfos.length) {
+        if (selectedBookInfos.find((it) => it.id == it.id)) {
+          it.bookInfo = null;
+        }
+      } else {
+        it.bookInfo = null;
+      }
     });
     this.setPassengerBookInfosSource(this.getPassengerBookInfos());
   }

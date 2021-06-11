@@ -197,6 +197,9 @@ export class FlightListPage
       })
     );
     this.route.queryParamMap.subscribe(async (d) => {
+      if (d.get("isClearBookInfos") == "true") {
+        this.flightService.clearSelectedBookInfos([]);
+      }
       this.pageTimeoutSubscription.unsubscribe();
       this.startCheckPageTimeout();
       this.pageUrl = AppHelper.getNormalizedPath(this.router.url);
@@ -237,7 +240,7 @@ export class FlightListPage
           return;
         }
         if (r && !this.pageTimeoutSubscription.closed) {
-          this.flightService.showTimeoutPop().then(() => {
+          this.flightService.showTimeoutPop(true).then(() => {
             this.doRefresh(true, false);
           });
         }

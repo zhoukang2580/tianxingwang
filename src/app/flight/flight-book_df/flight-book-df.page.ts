@@ -106,6 +106,7 @@ export class FlightBookDfPage
   private payResult = false;
   private isCheckPay = false;
   private isManagentCredentails = false;
+  private isPageTimeout = false;
   private subscriptions: Subscription[] = [];
   private totalPriceSource: Subject<number>;
   totalPrice = 0;
@@ -197,6 +198,7 @@ export class FlightBookDfPage
     );
     // 秘书和特殊角色可以跳过审批(如果有审批人)
     this.route.queryParamMap.subscribe(async () => {
+      this.isPageTimeout = this.flightService.checkIfFlightDetailTimeout();
       this.isCanSave = await this.identityService
         .getIdentityAsync()
         .catch((_) => null as IdentityEntity)
@@ -271,6 +273,13 @@ export class FlightBookDfPage
     //   this.isPlaceOrderOk = false;
     //   return false;
     // }
+    if (this.isPageTimeout) {
+      this.isPageTimeout = false;
+      this.router.navigate(["flight-list"], {
+        queryParams: { isClearBookInfos: true },
+      });
+      return false;
+    }
     if (
       // this.isPlaceOrderOk &&
       nextState.url.includes("selected-flight-bookinfos")
@@ -463,7 +472,7 @@ export class FlightBookDfPage
       }
       if (byUser) {
         if (this.flightService.checkIfFlightDetailTimeout()) {
-          await this.flightService.showTimeoutPop();
+          await this.flightService.showTimeoutPop(false);
           this.router.navigate(["flight-list"]);
           return;
         }
@@ -848,8 +857,9 @@ export class FlightBookDfPage
     return result;
   }
   async bookFlight(isSave: boolean = false, event: CustomEvent) {
+    this.isPageTimeout = this.flightService.checkIfFlightDetailTimeout();
     if (this.flightService.checkIfFlightDetailTimeout()) {
-      await this.flightService.showTimeoutPop();
+      await this.flightService.showTimeoutPop(false);
       // this.router.navigate(["flight-list"]);
       return;
     }
