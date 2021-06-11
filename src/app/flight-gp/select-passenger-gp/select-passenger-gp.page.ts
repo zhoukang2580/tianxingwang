@@ -30,6 +30,8 @@ export class SelectPassengerGpPage implements OnInit {
   VariablesJsonObj: any;
   selectedFrequent: FrequentBookInfo[];
 
+  Count: number;
+
   private subscription = Subscription.EMPTY;
   @ViewChild(RefresherComponent, { static: true }) refresher: RefresherComponent;
   @ViewChild(IonContent, { static: true }) content: IonContent;
@@ -47,10 +49,16 @@ export class SelectPassengerGpPage implements OnInit {
       })
     );
   }
+  private async initSearchModelCabin() {
+    this.subscriptions.push(
+      this.flightGpService.getPassengerBookInfoGpSource().subscribe((m) => {
+        m.find(it => this.Count = it.Cabin.Count);
+      })
+    );
+  }
 
   ngOnInit() {
     try {
-      this.initSearchModelParams();
       this.doRefresh();
     } catch (error) {
       console.log(error);
@@ -62,6 +70,8 @@ export class SelectPassengerGpPage implements OnInit {
       if (this.scroller) {
         this.scroller.disabled = true;
       }
+      this.initSearchModelParams();
+      this.initSearchModelCabin();
       this.flightGpService.getFrequentFlyer().then((r) => {
         if (r) {
           console.log(r);
@@ -186,8 +196,14 @@ export class SelectPassengerGpPage implements OnInit {
   private async onAddPassengerBookInfo(
     frequentBookInfo: FrequentBookInfo
   ) {
-    const can = this.selectedFrequent.length < 6;
+    const can = this.selectedFrequent.length < this.Count;
     if (!can) {
+      AppHelper.alert("余票不足");
+      return false;
+    }
+
+    const can1 = this.selectedFrequent.length < 6;
+    if (!can1) {
       AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
       return false;
     }

@@ -34,6 +34,7 @@ export class AddPassengerInformartionGpPage implements OnInit {
   Organization: string;
 
   Cardbins: any[] = [];
+  Count: number;
 
   customPopoverOptions: any = {
     header: "选择证件类型",
@@ -52,6 +53,14 @@ export class AddPassengerInformartionGpPage implements OnInit {
     private navCtrl: NavController
   ) { }
 
+  
+  private async initSearchModelCabin() {
+    this.subscriptions.push(
+      this.flightGpService.getPassengerBookInfoGpSource().subscribe((m) => {
+        m.find(it => this.Count = it.Cabin.Count);
+      })
+    );
+  }
 
   private async initSearchModelParams() {
     this.subscriptions.push(
@@ -90,6 +99,7 @@ export class AddPassengerInformartionGpPage implements OnInit {
 
         // this.passengerInfo = {} as any;
         this.initSearchModelParams();
+        this.initSearchModelCabin();
       });
     } catch (error) {
       console.log(error);
@@ -203,8 +213,13 @@ export class AddPassengerInformartionGpPage implements OnInit {
   private async onAddPassengerBookInfo(
     frequentBookInfo: FrequentBookInfo
   ) {
-    const can = this.flightGpService.getfrequentBookInfo().length < 6;
+    const can = this.Cardbins.length < this.Count;
     if (!can) {
+      AppHelper.alert("余票不足")
+    }
+
+    const can1 = this.Cardbins.length < 6;
+    if (!can1) {
       AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
       return false;
     }

@@ -19,7 +19,7 @@ import { OrderBookDto } from 'src/app/order/models/OrderBookDto';
 import { BookGpDto } from '../models/flightgp/BookGpDto';
 import { Routes } from '../models/flightgp/Routes';
 import { TicketchangingComponent } from '../components/ticketchanging/ticketchanging.component';
-import { IonCheckbox, PopoverController } from '@ionic/angular';
+import { IonCheckbox, ModalController, NavController, PopoverController } from '@ionic/angular';
 import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 import { GpBookReq, GpPassengerDto } from 'src/app/order/models/GpBookReq';
 import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
@@ -72,7 +72,7 @@ export class FlightBookinfosGpPage implements OnInit {
   DateTime: string;
   goOff: string;
   endOff: string;
-  selectedFrequent: any[];
+  selectedFrequent: any[] = [];
   orderLinkmanDto: OrderLinkmanDto;
   isCheckingPay: boolean;
 
@@ -86,6 +86,8 @@ export class FlightBookinfosGpPage implements OnInit {
     private flightGpService: FlightGpService,
     private staffService: StaffService,
     private popoverController: PopoverController,
+    public modalController: ModalController,
+    private navCtrl: NavController
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -94,14 +96,26 @@ export class FlightBookinfosGpPage implements OnInit {
     this.subscriptions.push(
       this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
         this.selectedFrequent = m;
+        this.getTotalPriceNumber();
+        this.calcTotalPrice();
+      })
+    );
+  }
+
+  private async empty() {
+    this.subscriptions.push(
+      this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
+        m.splice(0);
+        this.getTotalPriceNumber();
+        this.calcTotalPrice();
       })
     );
   }
 
   async ngOnInit() {
-    this.route.queryParamMap.subscribe(() => {
+    // this.route.queryParamMap.subscribe(() => {
       this.refresh(false);
-    })
+    // })
     this.isRoundTrip = this.flightGpService.getSearchFlightModel().isRoundTrip;
     this.flightGpService.setPassengerBookInfosSource(
       this.flightGpService.getPassengerBookInfos().filter((it) => !!it.bookInfo)
@@ -112,7 +126,7 @@ export class FlightBookinfosGpPage implements OnInit {
       })
     );
     try {
-
+      // await this.empty();
       await this.initSearchModelParams();
       this.orderLinkmanDto = {
         Name: "",
@@ -266,7 +280,7 @@ export class FlightBookinfosGpPage implements OnInit {
         });
       }
     });
-    this.orderTravelPayType = OrderTravelPayType.Person;
+    this.orderTravelPayType = this.initialBookDtoGpModel.DefaultPayType.Key;
 
     console.log(this.orderTravelPayTypes, "orderTravelPayType");
   }
@@ -360,6 +374,21 @@ export class FlightBookinfosGpPage implements OnInit {
         this.totalPriceSource.next(totalPrice);
       }
     }
+  }
+
+  back(evt?: CustomEvent) {
+    if (evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
+    this.navCtrl.pop();
+    this.empty();
+    this.modalController.getTop().then((t) => {
+      if (t) {
+        t.dismiss();
+      }
+    });
+
   }
 
 
@@ -483,13 +512,7 @@ export class FlightBookinfosGpPage implements OnInit {
           }
 
           await AppHelper.alert("下单成功");
-          this.subscriptions.push(
-            this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
-              m.splice(0);
-              this.getTotalPriceNumber();
-              this.calcTotalPrice();
-            })
-          );
+          await this.empty();
           this.goToMyOrders();
         }
       }
@@ -557,10 +580,12 @@ export class FlightBookinfosGpPage implements OnInit {
         return
       }
 
-      // if (!this.selectedInsuranceProductId) {
-      //   AppHelper.alert("必须选择一个保险信息");
-      //   return;
-      // }
+      if (this.initialBookDtoGpModel.IsCompelBuyIns) {
+        if (!this.selectedInsuranceProductId) {
+          AppHelper.alert("必须选择一个保险信息");
+          return;
+        }
+      }
       const orderLinkman = {
         Name: this.orderLinkmanDto.Name,
         Mobile: this.orderLinkmanDto.Mobile,
@@ -569,7 +594,7 @@ export class FlightBookinfosGpPage implements OnInit {
       let reg = /^[\u4E00-\u9FA5]{1,8}$/;
       let reg1 = /^1[0-9]{10}$/;
       let reg2 = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[com,cn,net]{1,3})+$/
-
+      console.log(!reg2.test(orderLinkman.Email)||orderLinkman.Email == "" , "sas")
       if (!orderLinkman.Name) {
         AppHelper.alert("请输入姓名");
         return
@@ -582,14 +607,12 @@ export class FlightBookinfosGpPage implements OnInit {
       } else if (!reg1.test(orderLinkman.Mobile)) {
         AppHelper.alert("手机号输入有误")
         return
+      } else if (orderLinkman.Email != "") {
+        if (!reg2.test(orderLinkman.Email) || orderLinkman.Email == "") {
+          AppHelper.alert("邮箱格式不正确")
+          return
+        }
       }
-      // else if (!orderLinkman.Email) {
-      //   AppHelper.alert("请输入邮箱");
-      //   return
-      // } else if (!reg2.test(orderLinkman.Email)) {
-      //   AppHelper.alert("邮箱格式不正确")
-      //   return
-      // }
     }
 
     return isture;
