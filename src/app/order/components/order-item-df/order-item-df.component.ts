@@ -61,6 +61,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   @Output() exchangeFlightTicket: EventEmitter<{
     orderId: string;
     ticketId: string;
+    ticketType: number;
     trip: OrderFlightTripEntity;
   }>;
   @Output() abolishOrder: EventEmitter<{
@@ -419,6 +420,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     this.exchangeFlightTicket.emit({
       orderId: this.order.Id,
       ticketId: ticket.Id,
+      ticketType: ticket.TicketType,
       trip,
     });
   }
