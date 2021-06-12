@@ -73,7 +73,7 @@ export class FlightService {
   policyFlights: PassengerPolicyFlights[];
   flightResult: FlightResultEntity; // 保持和后台返回的数据一致
   private pagePopTimeoutSource: EventEmitter<boolean>;
-  private pagePopTimeoutTime = 2 * 1000;
+  private pagePopTimeoutTime = 30 * 1000;
   private pagePopTimeoutId;
   private lastRefreshTime = 0;
   private pagePopPromise: Promise<boolean>;
