@@ -230,7 +230,9 @@ export class OpenUrlPage
   private reloadPage() {
     console.log("reloadpage", this.appenVersion(this.orgOpenUrl));
     setTimeout(() => {
-      window["__OpenPageUrlObj"].isDorefreshList = false;
+      if(window["__OpenPageUrlObj"]){
+        window["__OpenPageUrlObj"].isDorefreshList = false;
+      }
       this.openInIframe(this.appenVersion(this.orgOpenUrl));
     }, 200);
   }
