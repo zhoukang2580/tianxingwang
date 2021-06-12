@@ -1,0 +1,64 @@
+<ion-grid *ngIf='!hasDot' (click)='preventDefault($event)'>
+  <ng-content select='.header'></ng-content>
+  <ion-row class="ion-text-center">
+    <ion-col size='4' *ngFor='let k of keys'>
+      <ion-button fill='clear' (click)='onNumber(k,$event)'>
+        <ion-text color='dark'>
+          {{k}}
+        </ion-text>
+      </ion-button>
+    </ion-col>
+    <ion-col size='4'>
+      <ion-button fill='clear' (click)='onClear($event)'>
+        <span style="color: var(--ion-color-dark);">清空</span>
+      </ion-button>
+    </ion-col>
+    <ion-col size='4'>
+      <ion-button fill='clear' (click)='onNumber(0,$event)'>
+        <ion-text color='dark'>
+          0
+        </ion-text>
+      </ion-button>
+    </ion-col>
+    <ion-col size='4'>
+      <ion-button (click)='onDone($event)' color='secondary'>完成</ion-button>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+<ion-grid *ngIf='hasDot'>
+  <ng-content select='.header'></ng-content>
+  <ion-row class="ion-text-end">
+    <ion-col size='9'></ion-col>
+    <ion-col size='3'>
+      <ion-button (click)='onDone($event)' color='secondary' fill='clear'>完成</ion-button>
+    </ion-col>
+  </ion-row>
+  <ion-row>
+    <ion-col size='4' *ngFor='let k of keys'>
+      <ion-button fill='clear' (click)='onNumber(k,$event)'>
+        <ion-text color='dark'>
+          {{k}}
+        </ion-text>
+      </ion-button>
+    </ion-col>
+    <ion-col size='4'>
+      <ion-button fill='clear' (click)='onClear($event)'>
+        <span style="color: var(--ion-color-dark);">清空</span>
+      </ion-button>
+    </ion-col>
+    <ion-col size='4'>
+      <ion-button fill='clear' (click)='onNumber(0,$event)'>
+        <ion-text color='dark'>
+          0
+        </ion-text>
+      </ion-button>
+    </ion-col>
+    <ion-col size='4'>
+      <ion-button fill='clear' (click)='onNumber(".",$event)'>
+        <ion-text color='dark'>
+          .
+        </ion-text>
+      </ion-button>
+    </ion-col>
+  </ion-row>
+</ion-grid>

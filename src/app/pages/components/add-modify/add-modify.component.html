@@ -1,0 +1,60 @@
+<div #container class="container" [style.padding-bottom.px]='(keybord.height&&hasFocus?keybord.height:0)'
+  (click)='onBlur()'>
+  <ion-list>
+    <ng-container *ngFor='let itm of items'>
+      <ion-item *ngIf='itm.type=="text"||itm.type=="email"||itm.type=="tel"'>
+        <ion-label>{{itm.label}}</ion-label>
+        <ion-input [attr.validatename]='itm.validateName' class="ion-text-end" [type]='itm.type'
+          [(ngModel)]='obj[itm.objPro]'></ion-input>
+      </ion-item>
+      <ion-item *ngIf='itm.type=="number"' (click)='onInputNumber(itm,ele)' #ele
+        color='{{(curModifyObjPro?.objPro==itm.objPro&&hasFocus)?"warning":""}}'>
+        <ion-buttons style="width: 100%;">
+          <ion-label>{{itm.label}}</ion-label>
+          <div class="ion-text-end" style="flex:1;padding-right: 1em;">{{obj[itm.objPro]}}
+            <ion-input [attr.validatename]='itm.validateName' class="ion-text-end" [type]='itm.type'
+              [(ngModel)]='obj[itm.objPro]'
+              style="display: none;pointer-events: none;touch-action: none;user-select: none;"></ion-input>
+          </div>
+        </ion-buttons>
+      </ion-item>
+      <ng-container *ngIf='itm.type=="tpmRef"'>
+        <ng-container *ngTemplateOutlet='itm.tplRef'></ng-container>
+      </ng-container>
+      <ion-item *ngIf='itm.type=="textarea"'>
+        <ion-label position="floating">{{itm.label}}</ion-label>
+        <ion-textarea [attr.validatename]='itm.validateName' [(ngModel)]='obj[itm.objPro]' rows="3" cols="20"
+          placeholder="请输入{{itm.label}}"></ion-textarea>
+      </ion-item>
+      <ion-item *ngIf='itm.type=="openmodal"' (click)='onOpenModal(itm)' detail>
+        <ion-label>{{itm.label}}</ion-label>
+        <ion-label style="flex: 8;" class="ion-text-end">{{obj[itm.objPro]}}</ion-label>
+      </ion-item>
+      <ion-item *ngIf='itm.type=="select"'>
+        <ion-label>{{itm.label}}</ion-label>
+        <ion-select okText='确定' cancelText='取消' [(ngModel)]='obj[itm.objPro]' [compareWith]='itm.compareWith' >
+          <ion-select-option *ngFor='let opt of itm.selectDataList' [value]='opt.value'>{{opt.text}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div class="file" *ngIf='itm.type=="file"'>
+        <ion-icon name="close-circle" color='danger' *ngIf='obj[itm.objPro]?.fileValue' (click)='obj[itm.objPro]=null'>
+        </ion-icon>
+        <img [src]="obj[itm.objPro]?.fileValue" #imgel *ngIf='obj[itm.objPro]?.fileValue else addImage'
+          (click)='onViewPic(imgel.src)' alt="">
+        <ng-template #addImage>
+          <app-img-control style="padding: .25em;" [(file)]='obj[itm.objPro]'></app-img-control>
+        </ng-template>
+      </div>
+    </ng-container>
+  </ion-list>
+</div>
+
+<ion-footer>
+  <div style="display: flex;align-items: center;">
+    <ion-button style="flex: 1;" expand='block' (click)='onCancel()'>取消</ion-button>
+    <ion-button style="flex: 1;" expand='block' (click)='onConfirm()'>确定</ion-button>
+  </div>
+</ion-footer>
+<app-custome-keyboard #keybord [(hasFocus)]='hasFocus' [hasFocusEle]='hasFocusEle' [hasDot]='true'
+  (change)="onKey($event)" (clear)="onClear()" (done)="onDone()"></app-custome-keyboard>

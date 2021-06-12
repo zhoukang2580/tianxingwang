@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button [backFn]='back.bind(this)'></app-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor='let f of downloadItems' (click)='onOpenFile(f)' [class.disabled]='!f.isCompleted'>
+      <div class="d-item">
+        <span>{{!f.isCompleted?f.name+" "+f.progressPercent:f.name+"下载完成"}}</span>
+        <ion-progress-bar color="secondary" [value]="f.progress"></ion-progress-bar>
+      </div>
+    </ion-item>
+  </ion-list>
+</ion-content>

@@ -19,17 +19,19 @@ import {
   PopoverController,
 } from "@ionic/angular";
 import { LanguageHelper } from "./languageHelper";
-import { BehaviorSubject, TimeoutError } from "rxjs";
+import { BehaviorSubject, Subject, TimeoutError } from "rxjs";
 import * as uuidJs from "uuid-js";
 import { FileHelperService } from "./services/file-helper.service";
 import { CONFIG } from "src/app/config";
-import { finalize } from "rxjs/operators";
+import { filter, finalize } from "rxjs/operators";
+import { EventEmitter } from '@angular/core';
 export class AppHelper {
   static httpClient: HttpClient;
   private static _deviceName: "ios" | "android";
   private static _routeData: any;
   private static configXmlText: string;
   private static toPage: { path: string; queryParams?: any };
+  static windowMsgSource: EventEmitter<any> = new EventEmitter();
   static toastController: ToastController;
   static alertController: AlertController;
   static modalController: ModalController;
@@ -54,13 +56,16 @@ export class AppHelper {
     name: string;
     handle: (name: string, data: any) => void;
   }[] = [];
-
   static _callbackHandle: (name: string, data: any) => void;
   static setModalController(modalController: ModalController) {
     this.modalController = modalController;
   }
   static setPopoverController(popoverController: PopoverController) {
     this.popoverController = popoverController;
+  }
+  static getWindowMsgSource() {
+    // 此方法在main.ts里面监听了message消息  
+    return AppHelper.windowMsgSource.pipe(filter((it) => !!it));
   }
   static checkNetworkStatus() {
     document.addEventListener("online", onOnline, false);

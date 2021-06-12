@@ -42,6 +42,9 @@ try {
     "initlizeQueryParamers getQueryParamers ",
     AppHelper.getQueryParamers()
   );
+  window.addEventListener("message", (evt) => {
+    AppHelper.windowMsgSource.emit(evt);
+  });
 } catch (e) {
   console.error(e);
 }
@@ -103,9 +106,10 @@ const bootstrap = () =>
       AppHelper.setHttpClient(moduleRef.injector.get(HttpClient));
       // 为了设置模式
       moduleRef.injector.get(ThemeService);
+      // 加载地图
+      moduleRef.injector.get(MapService);
       AppHelper.Router = moduleRef.injector.get(Router);
       AppHelper.ActivatedRoute = moduleRef.injector.get(ActivatedRoute);
-      moduleRef.injector.get(MapService);
       AppHelper.loadingController = moduleRef.injector.get(LoadingController);
       AppHelper.platform = moduleRef.injector.get(Platform);
       AppHelper.setHttpClient(moduleRef.injector.get(HttpClient));

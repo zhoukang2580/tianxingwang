@@ -51,20 +51,23 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     private identityService: IdentityService,
     private router: Router,
     private route: ActivatedRoute
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.queryparamSub = this.route.queryParamMap.subscribe((q) => {
-      const goPathQueryParams = q.get("goPathQueryParams")
+      const goPathQueryParams = q.get("goPathQueryParams");
       if (goPathQueryParams) {
         const p = JSON.parse(goPathQueryParams);
-        if (p.tab == '已审任务') {
+        if (p.tab == "已审任务") {
           // this.isactivename = '已审任务';
           this.onTaskReviewed();
         }
       }
-
-    })
+      if(this.isOpenUrl){
+        this.doRefresh()
+      }
+      this.isOpenUrl=false;
+    });
     this.doRefresh();
   }
   ngOnDestroy() {
@@ -79,10 +82,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
         {
           PageSize: this.pageSize,
           PageIndex: this.curTaskPageIndex,
-          Type:
-            this.isactivename == "已审任务"
-              ? 2
-              : 1,
+          Type: this.isactivename == "已审任务" ? 2 : 1,
         } as TaskModel,
         this.curTaskPageIndex < 1
       )
@@ -125,55 +125,57 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url?.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}&taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
-        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}?taskid=${task.Id}&ticket=${
+        (identity && identity.Ticket) || ""
+      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     }
     return url;
   }
   private initImageStatus(tasks: TaskEntity[]) {
     if (tasks) {
-      tasks.forEach(task => {
+      tasks.forEach((task) => {
         if (task.IsOverdue) {
-          task.imageStatus = 'isOverdue';
+          task.imageStatus = "isOverdue";
         } else if (task.Status == TaskStatusType.Passed) {
-          task.imageStatus = 'isPassed'
+          task.imageStatus = "isPassed";
         } else if (task.Status == TaskStatusType.Rejected) {
-          task.imageStatus = 'isRejected'
+          task.imageStatus = "isRejected";
         } else if (task.Status == TaskStatusType.Closed) {
-          task.imageStatus = 'isClosed'
+          task.imageStatus = "isClosed";
         }
-      })
+      });
     }
-
   }
   async onTaskDetail(task: TaskEntity) {
     const url = await this.getTaskHandleUrl(task);
     if (url) {
-      this.router
-        .navigate(["open-url"], {
-          queryParams: {
-            url,
-            title: task && task.Name,
-            tabId: this.activeTab?.value,
-            // isOpenInAppBrowser: AppHelper.isApp(),
-            isOpenInAppBrowser: false,
-            isIframeOpen: true,
-            isHideTitle: false,
-            goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
-            goPathQueryParams: JSON.stringify({
-              tab: "已审任务"
-            })
-          },
-        })
-        .then((_) => {
-          this.isOpenUrl = true;
-        });
+      // this.router
+      //   .navigate(["open-url"], {
+      //     queryParams: {
+      //       url,
+      //       title: task && task.Name,
+      //       tabId: this.activeTab?.value,
+      //       // isOpenInAppBrowser: AppHelper.isApp(),
+      //       isOpenInAppBrowser: false,
+      //       isIframeOpen: true,
+      //       isHideTitle: false,
+      //       goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
+      //       goPathQueryParams: JSON.stringify({
+      //         tab: "已审任务"
+      //       })
+      //     },
+      //   })
+      //   .then((_) => {
+      //     this.isOpenUrl = true;
+      //   });
+      AppHelper.jump(this.router, url, {});
+      this.isOpenUrl = true;
     }
   }
-
 
   onTaskApp() {
     this.curTaskPageIndex = 0;
