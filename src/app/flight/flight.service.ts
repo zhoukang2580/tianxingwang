@@ -76,8 +76,7 @@ export class FlightService {
   private pagePopTimeoutTime = 2 * 1000;
   private pagePopTimeoutId;
   private lastRefreshTime = 0;
-  private isFetching = false;
-  private isPresent = false;
+  private pagePopPromise: Promise<boolean>;
   get isAgent() {
     return this.tmcService.isAgent;
   }
@@ -1203,11 +1202,7 @@ export class FlightService {
     }
     this.stopCheckPageTimout();
     this.lastRefreshTime = Date.now();
-    return this.apiService
-      .getPromiseData<FlightResultEntity>(req)
-      .finally(() => {
-        this.startCheckPageTimeout();
-      });
+    return this.apiService.getPromiseData<FlightResultEntity>(req);
   }
 
   private replaceOldFlightSegmentInfo(
@@ -1519,7 +1514,6 @@ export class FlightService {
     req.Version = "2.0";
     req.IsShowLoading = true;
     req.Timeout = 60;
-    this.isFetching = true;
     const serverFlights = await this.apiService
       .getPromiseData<FlightResultEntity>(req)
       .then((r) => {
@@ -1539,9 +1533,6 @@ export class FlightService {
         }
         this.startCheckPageTimeout();
         return r;
-      })
-      .finally(() => {
-        this.isFetching = false;
       });
     return serverFlights;
   }
@@ -1567,25 +1558,23 @@ export class FlightService {
     if (!isShow) {
       return false;
     }
-    const t = await AppHelper.popoverController.getTop();
-    if (t) {
-      if (this.isFetching || t.classList.contains("page-timeout")) {
-        return false;
-      }
-    } else {
-      if (!this.isPresent) {
-        const t2 = await this.tmcService.showTimeoutPop();
-        t2.present();
-        this.isPresent = true;
-        await t2.onDidDismiss();
-        this.isPresent = false;
-      }
-      if (isClearSelectedBookInfos) {
-        this.clearSelectedBookInfos([]);
-      }
-      return true;
+    if (!this.pagePopPromise) {
+      this.pagePopPromise = this.tmcService
+        .showTimeoutPop()
+        .then((r) => {
+          r.present();
+          return r.onDidDismiss().then(() => {
+            if (isClearSelectedBookInfos) {
+              this.clearSelectedBookInfos([]);
+            }
+            return true;
+          });
+        })
+        .finally(() => {
+          this.pagePopPromise = null;
+        });
     }
-    return false;
+    return this.pagePopPromise;
   }
   clearSelectedBookInfos(
     selectedBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]
@@ -1608,9 +1597,7 @@ export class FlightService {
   private startCheckPageTimeout() {
     this.stopCheckPageTimout();
     this.pagePopTimeoutId = setTimeout(() => {
-      if (!this.isFetching) {
-        this.pagePopTimeoutSource.next(true);
-      }
+      this.pagePopTimeoutSource.next(true);
     }, this.pagePopTimeoutTime);
   }
   private stopCheckPageTimout() {
