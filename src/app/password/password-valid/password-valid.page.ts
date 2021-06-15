@@ -62,10 +62,9 @@ export class PasswordValidPage implements OnInit {
             return of(r.Data);
           }
           if (r.Data) {
-            this.router.navigate([
-              AppHelper.getRoutePath("password-reset"),
-              { Name: this.name },
-            ]);
+            this.router.navigate([AppHelper.getRoutePath("password-reset")], {
+              queryParams: { Name: this.name },
+            });
           }
           return of(r.Data);
         })
