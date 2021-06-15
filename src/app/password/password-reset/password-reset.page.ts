@@ -24,7 +24,7 @@ export class PasswordResetPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe(p => {
+    this.activatedRoute.queryParamMap.subscribe(p => {
       this.name = p.get("Name");
     });
   }
@@ -41,7 +41,7 @@ export class PasswordResetPage implements OnInit {
       .getResponse<{}>(req)
       .pipe(
         switchMap(r => {
-          debugger;
+          // debugger;
           if (!r.Status) {
             this.message = r.Message;
             return of(r.Data);
