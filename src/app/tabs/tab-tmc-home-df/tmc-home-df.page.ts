@@ -47,13 +47,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private curCity: TrafficlineEntity;
   private isLoadingHotHotels = false;
   private isLoadingReviewedTask = false;
-  @ViewChild("container", { static: true })
-  containerEl: ElementRef<HTMLElement>;
+  @ViewChild("bannersEl", { static: true })  bannersEl: ElementRef<HTMLElement>;
   @ViewChild("hothotel", { static: true }) hothotelEl: ElementRef<HTMLElement>;
-  @ViewChild("announcementEl", { static: true })
-  announcementEl: ElementRef<HTMLElement>;
-  @ViewChild("taskEle", { static: true }) taskEle: ElementRef<HTMLElement>;
-  @ViewChild("tripEle", { static: true }) tripEle: ElementRef<HTMLElement>;
+  @ViewChild("announcementEl", { static: true })  announcementEl: ElementRef<HTMLElement>;
+  @ViewChild("taskEle", { static: true }) taskEl: ElementRef<HTMLElement>;
+  @ViewChild("tripEle", { static: true }) tripEl: ElementRef<HTMLElement>;
   private bannersSwiper: any;
   private hotelsSwiper: any;
   private announcementElSwiper: any;
@@ -226,13 +224,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private async loadBanners() {
     if (!this.banners || !this.banners.length) {
-      if (!(await this.hasTicket())) {
-        return;
-      }
       if (this.isLoadingBanners) {
         return;
       }
       this.isLoadingBanners = true;
+      if (!(await this.hasTicket())) {
+        this.isLoadingBanners = false;
+        return;
+      }
       this.tmcService
         .getBanners()
         .catch(() => [])
@@ -414,7 +413,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       .then(() => {
         this.tasklist = this.tasklist.filter((it) => it.Id != task.Id);
         setTimeout(() => {
-          this.taskEleSwiper.update();
+          if(!this.taskEleSwiper){
+            this.initTaskSpwiper()
+          }else{
+            this.taskEleSwiper.update();
+          }
         }, 200);
       })
       .catch((e) => {
@@ -517,13 +520,13 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private initSwiper() {
     this.initBannerSwiper();
     this.initAnnouncementSwiper();
-    this.initTaskSpwiper();
     this.initTripSpwiper();
     this.initSwiperhotels();
+    // this.initTaskSpwiper();
   }
   private initBannerSwiper() {
-    if (this.containerEl && this.containerEl.nativeElement) {
-      this.bannersSwiper = new Swiper(this.containerEl.nativeElement, {
+    if (this.bannersEl && this.bannersEl.nativeElement) {
+      this.bannersSwiper = new Swiper(this.bannersEl.nativeElement, {
         autoplay: {
           disableOnInteraction: false,
         },
@@ -535,18 +538,17 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private initTaskSpwiper() {
-    const mySwiper: any = {
-      circular: true,
+    const opts: any = {
+      // circular: true,
       autoplay: {
         disableOnInteraction: false,
       },
-      speed: 1000,
-      direction: "vertical",
+      // speed: 1000,
+      // direction: "vertical",
     };
-    if (this.taskEle && this.taskEle.nativeElement) {
-      setTimeout(() => {
-        this.taskEleSwiper = new Swiper(this.taskEle.nativeElement, mySwiper);
-      }, 200);
+    console.log("taskel",this.taskEl)
+    if (this.taskEl && this.taskEl.nativeElement) {
+      this.taskEleSwiper = new Swiper(this.taskEl.nativeElement, opts);
     }
   }
   private initTripSpwiper() {
@@ -557,8 +559,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       },
       speed: 1000,
     };
-    if (this.tripEle && this.tripEle.nativeElement) {
-      this.tripEleSwiper = new Swiper(this.tripEle.nativeElement, mySwiper);
+    if (this.tripEl && this.tripEl.nativeElement) {
+      this.tripEleSwiper = new Swiper(this.tripEl.nativeElement, mySwiper);
     }
   }
 
@@ -807,7 +809,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.isLoadingReviewedTask) {
       return;
     }
+    this.isLoadingReviewedTask = true;
     if (!(await this.hasTicket())) {
+      this.isLoadingReviewedTask = false;  
       return;
     }
     try {
@@ -835,11 +839,12 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (this.isLoadingTripList) {
       return;
     }
+    this.isLoadingTripList = true;
     if (!(await this.hasTicket())) {
+      this.isLoadingTripList = false;
       return;
     }
     this.tripList = [];
-    this.isLoadingTripList = true;
     this.tripList = await this.tmcService
       .getTripList()
       .then((r) => {
@@ -926,11 +931,12 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       if (this.isLoadingNotice) {
         return;
       }
+      this.isLoadingNotice = true;
       if (!(await this.hasTicket())) {
+        this.isLoadingNotice = false;
         return;
       }
       this.agentNotices = [];
-      this.isLoadingNotice = true;
       this.getAgentNotices().finally(() => {
         this.isLoadingNotice = false;
         setTimeout(() => {

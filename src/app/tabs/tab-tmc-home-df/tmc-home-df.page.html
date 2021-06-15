@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="banners">
-        <div class="swiper-container" #container>
+        <div class="swiper-container" #bannersEl>
             <div class="swiper-wrapper">
                 <ng-container *ngIf="banners?.length else deftpl">
                     <div class="swiper-slide" *ngFor="let pic of banners" (click)='onJump(pic)'>
@@ -90,20 +90,18 @@
                 <div class="txt" notranslate>航班动态</div>
             </div>
         </div>
-
         <div class="notice">
             <div class="swiper-container warpper-a" [class.hidden]="!tasklist || !tasklist.length" #taskEle>
                 <div class="swiper-wrapper" *ngFor="let task of tasklist">
                     <div class="swiper-slide swiper">
                         <img src="assets/home/home-text.png" alt="" />
                         <div class="not-jj" (click)="onTaskDetail(task)">
-                            <div class="not-name" notranslate>{{task.Name}}</div>
-                            <div calss="not-approvd overflow">
-                                <span style="color: crimson" notranslate>{{task.saName}}</span><span notranslate>{{task?.VariablesObj?.OrderTypeName}}{{task.StatusName}}</span>
+                            <div class="not-name" notranslate>{{task.Title}}</div>
+                            <div class="not-name" notranslate>
+                                <div>过期时间:{{task.ExpiredTime}}</div>
+                                <div class="view-now" (click)="onTaskDetail(task)" notranslate>立即查看</div>
                             </div>
-                            <div class="view-now" (click)="onTaskDetail(task)" notranslate>立即查看</div>
                         </div>
-                        <!-- <div class="view-now">{{task?.Detail}}</div> -->
                     </div>
                 </div>
             </div>
