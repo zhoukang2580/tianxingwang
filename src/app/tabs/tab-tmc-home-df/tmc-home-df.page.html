@@ -51,23 +51,23 @@
             </div>
         </div>
         <div class="products">
-            <div class="plane" (click)='goToPage("flight")'>
+            <div class="plane item" (click)='goToPage("flight")'>
                 <img src="assets/home/home-plane.png" alt="" />
                 <span class="txt" notranslate>机票</span>
             </div>
-            <div class="hotel" (click)='goToPage("hotel")'>
+            <div class="hotel item" (click)='goToPage("hotel")'>
                 <img src="assets/home/home-hotel.png" alt="" />
                 <span class="txt" notranslate>酒店</span>
             </div>
-            <div class="train" (click)='goToPage("train")'>
+            <div class="train item" (click)='goToPage("train")'>
                 <img src="assets/home/home-train.png" alt="" />
                 <span class="txt" notranslate>火车票</span>
             </div>
-            <div class="car" (click)='goToPage("rentalCar")' *ngIf="isShowRentalCar&&(!identity?.Numbers?.AgentId)">
+            <div class="car item" (click)='goToPage("rentalCar")' *ngIf="isShowRentalCar&&(!identity?.Numbers?.AgentId)">
                 <img src="assets/home/home-car.png" alt="" />
                 <span class="txt" notranslate>用车</span>
             </div>
-            <div class="gp" (click)='goToPage("flightGp")'>
+            <div class="gp item" (click)='goToPage("flightGp")'>
                 <img src="assets/home/gp-ticket.png" alt="">
                 <span class="txt" notranslate>GP机票</span>
             </div>
