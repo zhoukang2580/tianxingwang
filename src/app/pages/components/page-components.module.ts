@@ -7,9 +7,10 @@ import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { CustomeKeyboardComponent } from "./custome-keyboard/custome-keyboard.component";
 import { DownloadFileComponent } from "./download-file/download-file.component";
 import { AddModifyComponent } from "./add-modify/add-modify.component";
+import { OpenUrlComponent } from "./open-url-comp/open-url.component";
 
 @NgModule({
-  declarations: [TreeDataComponent,CustomeKeyboardComponent,DownloadFileComponent,AddModifyComponent],
+  declarations: [TreeDataComponent,CustomeKeyboardComponent,DownloadFileComponent,AddModifyComponent,OpenUrlComponent],
   imports: [CommonModule, IonicModule, FormsModule, AppComponentsModule],
   exports:[
     AppComponentsModule ,
