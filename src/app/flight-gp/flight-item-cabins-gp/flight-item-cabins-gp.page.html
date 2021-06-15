@@ -11,29 +11,7 @@
                 <ion-text color='dark'>{{vmFlightSegment?.ToCityName}}</ion-text>
             </div>
         </ion-title>
-        <!-- <ion-buttons slot='end' *ngIf='(showOpenBtn$|async) as num'>
-            <ion-button fill='clear' color='secondary' (click)='onShowSelectedInfosPage()' size='small'>
-                <ion-text class='xs-font-size'>
-                    已选行程
-                </ion-text>
-                <ion-badge color='danger' slot='end'>
-                    <ion-text color='light'>{{num}}</ion-text>
-                </ion-badge>
-            </ion-button>
-        </ion-buttons> -->
-        <!-- <ion-buttons slot='end' *ngIf='!isSelf&&!isExchange'>
-            <ion-button fill='clear' color='secondary' (click)='filterPolicyFlights()' size='small'>
-                <ion-text class='xs-font-size'>过滤差标</ion-text>
-            </ion-button>
-        </ion-buttons> -->
     </ion-toolbar>
-    <!-- <ion-row *ngIf='(filteredPolicyPassenger$|async) as bookInfo' class='rule'>
-        <ion-col *ngIf='bookInfo.credential as credential' class='ion-text-center'>
-            <ion-text color='secondary'>
-                当前已过滤【{{credential.Name}}】({{credential.HideNumber}})差标
-            </ion-text>
-        </ion-col>
-    </ion-row> -->
 </ion-header>
 <ion-content class="padding-half-c">
     <div class="b">

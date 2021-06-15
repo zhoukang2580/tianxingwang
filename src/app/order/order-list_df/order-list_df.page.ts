@@ -9,6 +9,7 @@ import {
   TmcEntity,
   TmcService,
   PassengerBookInfo,
+  PassengerBookInfoGp,
 } from "../../tmc/tmc.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -54,6 +55,7 @@ import { RefresherComponent } from "src/app/components/refresher";
 import { OrderHotelEntity } from "../models/OrderHotelEntity";
 import { GetsmscodeComponent } from "../components/getsmscode/getsmscode.component";
 import { OrderFlightTicketType } from "../models/OrderFlightTicketType";
+import { FlightGpService } from "src/app/flight-gp/flight-gp.service";
 @Component({
   selector: "app-order-list_df",
   templateUrl: "./order-list_df.page.html",
@@ -100,12 +102,13 @@ export class OrderListDfPage
     public orderService: OrderService,
     private identityService: IdentityService,
     private flightService: FlightService,
+    private flightGpService: FlightGpService,
     private pickerCtrl: PickerController,
     private cdref: ChangeDetectorRef,
     private langService: LangService,
     private staffService: HrService,
     private popController: PopoverController
-  ) {}
+  ) { }
   canDeactivate() {
     console.log("canDeactivate isbackhome=", this.isBackHome);
     if (this.isBackHome && !this.isGoDetail) {
@@ -232,8 +235,8 @@ export class OrderListDfPage
       this.activeTab.value == ProductItemType.plane
         ? "Flight"
         : this.activeTab.value == ProductItemType.hotel
-        ? "Hotel"
-        : "Train";
+          ? "Hotel"
+          : "Train";
     this.isLoading = this.condition.pageIndex <= 1;
     this.loadDataSub = this.orderService
       .getMyTrips(m)
@@ -350,10 +353,9 @@ export class OrderListDfPage
           text: "确定",
           handler: (data: { year: TV; month: TV; day: TV }) => {
             this.selectDateChange.emit(
-              `${data.year.value}-${
-                +data.month.value < 10
-                  ? "0" + data.month.value
-                  : data.month.value
+              `${data.year.value}-${+data.month.value < 10
+                ? "0" + data.month.value
+                : data.month.value
               }-${+data.day.value < 10 ? "0" + data.day.value : data.day.value}`
             );
           },
@@ -374,12 +376,9 @@ export class OrderListDfPage
   async onExchangeFlightTicket(data: {
     orderId: string;
     ticketId: string;
-    ticketType: number;
     trip: OrderFlightTripEntity;
   }) {
     try {
-
-      console.log(data.ticketType,'type');
       this.datetime.yearValues = [
         new Date().getFullYear(),
         new Date().getFullYear() + 1,
@@ -480,17 +479,124 @@ export class OrderListDfPage
       this.isGoDetail = true;
       this.flightService.setPassengerBookInfosSource(bookInfos);
 
-      if (data.ticketType == OrderFlightTicketType.Domestic) {
-        this.router.navigate(["flight-list"], {
-          queryParams: { doRefresh: true },
-        });
-      }else if(data.ticketType == OrderFlightTicketType.GP){
-        this.router.navigate(["flight-list-gp"], {
-          queryParams: { doRefresh: true },
-        });
-      }
+      this.router.navigate(["flight-list"], {
+        queryParams: { doRefresh: true },
+      });
+
     } catch (e) {
       AppHelper.alert(e);
+    }
+  }
+  async onExchangeFlightGpTicket(data: {
+    orderId: string;
+    ticketId: string;
+    trip: OrderFlightTripEntity;
+  }) {
+    try {
+      this.datetime.yearValues = [
+        new Date().getFullYear(),
+        new Date().getFullYear() + 1,
+      ];
+      if (!data) {
+        AppHelper.alert("改签失败，请联系客服人员");
+        return;
+      }
+      const date = await this.getExchangeDate(data.trip.TakeoffDate);
+      if (!date) {
+        AppHelper.alert("请选择改签日期");
+      }
+      // console.log("改签日期", date);
+      const res = await this.orderService.getExchangeFlightTrip({
+        OrderId: data.orderId,
+        TicketId: data.ticketId,
+        ExchangeDate: date,
+      });
+      if (
+        !res ||
+        !res.trip ||
+        !res.order ||
+        !res.order.OrderFlightTickets ||
+        !res.order.OrderFlightTickets.length
+      ) {
+        AppHelper.alert("改签失败，请联系客服人员");
+        return;
+      }
+      const ticket = res.order.OrderFlightTickets.find(
+        (it) => it.Id == data.ticketId
+      );
+      if (!ticket) {
+        AppHelper.alert("改签失败，请联系客服人员");
+        return;
+      }
+      const orderPassenger = ticket.Passenger;
+      const credentails = res.credentails || [];
+      const hideCredential = credentails.find(
+        (it) => it.CredentialsNumber == orderPassenger.CredentialsNumber
+      );
+      // setSearchFlightModelSource
+      this.flightGpService.removeAllBookInfos();
+      await this.flightGpService.initSelfBookTypeBookInfos();
+      const isSelf = await this.staffService.isSelfBookType();
+      let bookInfos = this.flightGpService.getPassengerBookInfosGp();
+      if (!bookInfos.length) {
+        if (isSelf) {
+          await AppHelper.alert("改签失败，请联系客服人员");
+          return;
+        } else {
+          bookInfos.push({
+            passenger: {
+              Name: orderPassenger.Name,
+              Mobile: orderPassenger.Mobile,
+              Email: orderPassenger.Email,
+              // isNotWhiteList: !isSelf,
+            } as StaffEntity,
+            credential: {
+              Number: orderPassenger.CredentialsNumber,
+              HideNumber:
+                hideCredential && hideCredential.HideCredentialsNumber,
+              Type: orderPassenger.CredentialsType,
+              TypeName: orderPassenger.CredentialsTypeName,
+              Name: orderPassenger.Name,
+            } as CredentialsEntity,
+            id: AppHelper.uuid(),
+          });
+        }
+      }
+      let passenger: StaffEntity = bookInfos[0].passenger;
+      let credential: CredentialsEntity = bookInfos[0].credential;
+      const info: PassengerBookInfoGp = {
+        passenger,
+        credential,
+      } as any;
+      // this.flightGpService.addPassengerBookInfo(info);
+      bookInfos = [info];
+      console.log(bookInfos,"bookInfos");
+      bookInfos[0].exchangeInfo = {
+        order: { Id: data.orderId } as any,
+        ticket: { Id: data.ticketId } as any,
+        trip: res.trip,
+      };
+      // setSearchFlightModelSource
+      this.flightGpService.setSearchFlightModelSource({
+        ...this.flightGpService.getSearchFlightModel(),
+        FromCode: res.trip.FromAirport,
+        ToCode: res.trip.ToAirport,
+        FromAsAirport: false,
+        ToAsAirport: false,
+        fromCity: res.fromCity,
+        toCity: res.toCity,
+        isExchange: true,
+        isRoundTrip: false,
+        Date: date.substr(0, 10),
+      });
+      this.isGoDetail = true;
+      this.flightGpService.setPassengerBookInfoGpSource(bookInfos);
+
+      this.router.navigate(["flight-list-gp"], {
+        queryParams: { doRefresh: true },
+      });
+    } catch (e) {
+      console.log(e);
     }
   }
   async abolishHotelOrder(data: { orderId: string; orderHotelId: string }) {
@@ -555,7 +661,7 @@ export class OrderListDfPage
     });
     m.present();
     const d = await m.onDidDismiss();
-    if (d && data&&d.data) {
+    if (d && data && d.data) {
       data.orderHotel.VariablesJsonObj = data.orderHotel.VariablesJsonObj || {};
       data.orderHotel.VariablesJsonObj.VerifySmsCodeMobile = d.data.mobile;
       if (d.data.smsCode) {
@@ -734,10 +840,10 @@ export class OrderListDfPage
           this.activeTab.value == ProductItemType.plane
             ? "Flight"
             : this.activeTab.value == ProductItemType.train
-            ? "Train"
-            : this.activeTab.value == ProductItemType.car
-            ? "Car"
-            : "Hotel";
+              ? "Train"
+              : this.activeTab.value == ProductItemType.car
+                ? "Car"
+                : "Hotel";
       }
       this.orderModel.Type = m.Type;
       if (
@@ -801,13 +907,11 @@ export class OrderListDfPage
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }`;
+      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }`;
+      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }`;
     }
     return url;
   }
@@ -1034,7 +1138,7 @@ export class OrderListDfPage
       ((order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
         OrderTravelPayType.Credit ||
         (order.VariablesJsonObj["TravelPayType"] as OrderTravelPayType) ==
-          OrderTravelPayType.Person) &&
+        OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;

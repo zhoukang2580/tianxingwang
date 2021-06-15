@@ -69,7 +69,10 @@
                                             </ion-text>
                                             <ion-icon name="help-circle-outline" color="secondary" (click)="onHelp($event)"></ion-icon>
                                         </ng-container>
-                                        <ion-button *ngIf="ticket.VariablesJsonObj.isShowExchangeButton" size="small" (click)="onExchangeFlightTicket($event, ticket, trip)" color="secondary">
+                                        <ion-button *ngIf="ticket.VariablesJsonObj.isShowExchangeButton && ticket.TicketType != OrderFlightTicketType.GP " size="small" (click)="onExchangeFlightTicket($event, ticket, trip)" color="secondary">
+                                            <ion-text color="light">改签</ion-text>
+                                        </ion-button>
+                                        <ion-button *ngIf="ticket.VariablesJsonObj.isShowExchangeButton && ticket.TicketType == OrderFlightTicketType.GP" size="small" (click)="onExchangeFlightGpTicket($event, ticket, trip)" color="secondary">
                                             <ion-text color="light">改签</ion-text>
                                         </ion-button>
                                         <ng-container *ngIf="ticket.VariablesJsonObj.isCustomApplyExchanging">

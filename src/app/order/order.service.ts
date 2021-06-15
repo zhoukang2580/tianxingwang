@@ -22,6 +22,7 @@ import { TripType } from "../tmc/models/TripType";
 import {
   FlightHotelTrainType,
   PassengerBookInfo,
+  PassengerBookInfoGp,
   TmcEntity,
 } from "../tmc/tmc.service";
 import { DayModel } from "../tmc/models/DayModel";
@@ -262,6 +263,24 @@ export class OrderService {
       FlightNumber: bookInfo.bookInfo.flightSegment.Number,
       CabinName: bookInfo.bookInfo.flightPolicy.Cabin.TypeName,
       SalesPrice: bookInfo.bookInfo.flightPolicy.Cabin.SalesPrice,
+    };
+    req.Method = `TmcApiOrderUrl-Order-ExchangeInfo`;
+    return this.apiService.getPromiseData<{
+      trip: OrderFlightTripEntity;
+      fromCity: TrafficlineEntity;
+      toCity: TrafficlineEntity;
+    }>(req);
+  }
+  exchangeInfoFlightGpTrip(bookInfo: PassengerBookInfoGp) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Data = {
+      OrderId: bookInfo.exchangeInfo.order.Id,
+      OrderFlightTicketId: bookInfo.exchangeInfo.ticket.Id,
+      ExchangeDate: bookInfo.flightSegment.TakeoffTime.substr(0, 10),
+      FlightNumber: bookInfo.flightSegment.Number,
+      CabinName: bookInfo.Cabin.TypeName,
+      SalesPrice: bookInfo.Cabin.SalesPrice,
     };
     req.Method = `TmcApiOrderUrl-Order-ExchangeInfo`;
     return this.apiService.getPromiseData<{

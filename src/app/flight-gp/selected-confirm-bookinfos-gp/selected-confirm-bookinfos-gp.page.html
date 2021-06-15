@@ -1,0 +1,71 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref=''></app-back-button>
+        </ion-buttons>
+        <ion-title>当前已选择航班信息</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-item-group *ngFor='let bookInfo of passengerAndBookInfos$|async'>
+        <ng-container>
+            <!-- <ion-item-divider color='primary' sticky>
+                <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;&nbsp;{{bookInfo?.credential?.HideNumber}}</ion-label>
+            </ion-item-divider> -->
+            <ion-item>
+                <div class='detail'>
+                    <div class='date'>
+                        <strong>
+              <div *ngIf='bookInfo?.flightSegment?.FromCityName&&bookInfo?.flightSegment?.ToCityName'>
+                <ion-text color='secondary'>{{bookInfo?.flightSegment?.FromCityName}}</ion-text>
+                <small style="font-size: .7rem;margin: 0 0.25em;">到</small>
+                <ion-text color='secondary'>{{bookInfo?.flightSegment?.ToCityName}}</ion-text>
+              </div>
+              {{getDate(bookInfo?.flightSegment)}} 
+              <!-- <ion-text color='secondary'>
+                {{getTripTypeTip(bookInfo.bookInfo)}}</ion-text> -->
+            </strong>
+
+                        <!-- <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
+                            <ion-icon name="trash" color='danger' mode='ios'>
+                            </ion-icon>
+                        </ion-button> -->
+                        <!-- <div class='reset'>
+                            <ion-button expand='block' color='secondary' size='small' fill='clear' (click)='reelect(bookInfo[0])'>重选
+                            </ion-button>
+                        </div> -->
+                    </div>
+                    <app-fly-list-item [flightSegment]='bookInfo?.flightSegment' [showDetails]='true' [isAgreement]='bookInfo?.Cabin?.FareType==FlightCabinFareType.Agreement'>
+                    </app-fly-list-item>
+                    <div>
+                        <ion-row>
+                            <ion-col class='ion-text-end'>
+                                <div style="display: flex;align-items: center;justify-content: flex-end;width: 100%;">
+                                    <ion-label color='danger'>机票票价:￥{{bookInfo?.Cabin?.SalesPrice}}</ion-label>
+                                    <ion-label color='danger' class='ion-margin-start'>税费:￥{{bookInfo?.Cabin?.Tax}}
+                                    </ion-label>
+                                </div>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                    <ion-label class='rules ion-text-wrap' color='danger'>
+                        {{bookInfo.bookInfo?.flightPolicy?.Rules?.join("; ")}}
+                    </ion-label>
+                    <ion-label *ngIf='getFlightIllegalTip(bookInfo) as tip' color='danger' class='rules ion-text-wrap'>
+                        提示：({{tip}})
+                    </ion-label>
+                    <ion-label *ngIf='getFlightlegalTip(bookInfo) as tip' color='danger' class='rules ion-text-wrap'>提示：({{tip}})
+                    </ion-label>
+                </div>
+            </ion-item>
+        </ng-container>
+    </ion-item-group>
+</ion-content>
+<ion-footer>
+    <ion-toolbar>
+        <ion-button *ngIf='!searchModel?.isExchange' slot='end' (click)='nextStep()' color='secondary' [disabled]='bookInfos?.length <= 0'>下一步
+        </ion-button>
+        <ion-button *ngIf='searchModel?.isExchange' slot='end' (click)='onExchange()' color='secondary' [disabled]='bookInfos?.length <= 0'>确认改签
+        </ion-button>
+    </ion-toolbar>
+</ion-footer>

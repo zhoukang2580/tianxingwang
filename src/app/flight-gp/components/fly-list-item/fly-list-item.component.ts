@@ -73,17 +73,17 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
     )} ${this.calendarService.getWeekName(d)}`;
   }
   ngOnInit() {
-    // if (!this.isAgreement) {
-    //   if (
-    //     this.flightSegment &&
-    //     this.flightSegment.Cabins &&
-    //     this.flightSegment.Cabins.some(
-    //       (it) => it.FareType == FlightCabinFareType.Agreement
-    //     )
-    //   ) {
-    //     this.isAgreement = true;
-    //   }
-    // }
+    if (!this.isAgreement) {
+      if (
+        this.flightSegment &&
+        this.flightSegment.Cabins &&
+        this.flightSegment.Cabins.some(
+          (it) => it.FareType == FlightCabinFareType.Agreement
+        )
+      ) {
+        this.isAgreement = true;
+      }
+    }
   }
   onShowAgreement(evt: CustomEvent) {
     evt.stopPropagation();

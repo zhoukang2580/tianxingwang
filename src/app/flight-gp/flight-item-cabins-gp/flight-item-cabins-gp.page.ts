@@ -227,6 +227,7 @@ export class FlightItemCabinsGpPage implements OnInit {
       // const res = await this.flightGpService.addOrReplaceSegmentInfo(
       if (bookInfos) {
         const info = {
+          ...bookInfogp[0],
           Seg: 0,
           Cabin: flightCabin,
           flightSegment: this.vmFlightSegment,
@@ -236,7 +237,7 @@ export class FlightItemCabinsGpPage implements OnInit {
       }
 
       this.dismissAllTopOverlays();
-      this.router.navigate([AppHelper.getRoutePath("flight-bookinfos-gp")]);
+      this.router.navigate([AppHelper.getRoutePath("selected-confirm-bookinfos-gp")]);
 
       // console.log(flightCabin,'====',bookInfos)
     } catch (e) {

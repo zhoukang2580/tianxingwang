@@ -53,7 +53,7 @@ export class AddPassengerInformartionGpPage implements OnInit {
     private navCtrl: NavController
   ) { }
 
-  
+
   private async initSearchModelCabin() {
     this.subscriptions.push(
       this.flightGpService.getPassengerBookInfoGpSource().subscribe((m) => {
@@ -152,17 +152,17 @@ export class AddPassengerInformartionGpPage implements OnInit {
           ...credential,
           Name: this.passengerInfo.Name,
           CredentialsTypeName: this.passengerInfo.CredentialsTypeName,
-          CredentialsType: this.passengerInfo.CredentialsType,
+          CredentialsType: this.passengerInfo.CredentialsTypeName == "身份证" ? 1 : 2,
           Number: this.passengerInfo.Number,
           Variables: !this.IsShareTicket ? {
             BankBin: this.CardNumber,
             BankName: this.CardName,
             Tag: "1"
-          } :this.isStatus == "公务卡" ? {
+          } : this.isStatus == "公务卡" ? {
             BankBin: this.CardNumber,
             BankName: this.CardName,
             Tag: "1"
-          } :{
+          } : {
             Organization: this.Organization,
             Tag: "2"
           },
@@ -174,7 +174,7 @@ export class AddPassengerInformartionGpPage implements OnInit {
         ...credential,
         Name: this.passengerInfo.Name,
         CredentialsTypeName: this.passengerInfo.CredentialsTypeName,
-        CredentialsType: this.passengerInfo.CredentialsTypeName ? 1 : 2,
+        CredentialsType: this.passengerInfo.CredentialsTypeName == "身份证" ? 1 : 2,
         Number: this.passengerInfo.Number,
         Variables: JSON.stringify(!this.IsShareTicket ? {
           BankBin: this.CardNumber,

@@ -61,7 +61,11 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   @Output() exchangeFlightTicket: EventEmitter<{
     orderId: string;
     ticketId: string;
-    ticketType: number;
+    trip: OrderFlightTripEntity;
+  }>;
+  @Output() exchangeFlightGpTicket: EventEmitter<{
+    orderId: string;
+    ticketId: string;
     trip: OrderFlightTripEntity;
   }>;
   @Output() abolishOrder: EventEmitter<{
@@ -108,6 +112,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     this.verifySMSCode = new EventEmitter();
     this.getVerifySMSCode = new EventEmitter();
     this.exchangeFlightTicket = new EventEmitter();
+    this.exchangeFlightGpTicket = new EventEmitter();
   }
   onPay(evt: CustomEvent) {
     if (this.order) {
@@ -420,7 +425,18 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     this.exchangeFlightTicket.emit({
       orderId: this.order.Id,
       ticketId: ticket.Id,
-      ticketType: ticket.TicketType,
+      trip,
+    });
+  }
+  async onExchangeFlightGpTicket(
+    evt: CustomEvent,
+    ticket: OrderFlightTicketEntity,
+    trip: OrderFlightTripEntity
+  ) {
+    evt.stopPropagation();
+    this.exchangeFlightGpTicket.emit({
+      orderId: this.order.Id,
+      ticketId: ticket.Id,
       trip,
     });
   }
@@ -517,7 +533,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   isSelfBook(channal: string) {
     return this.selfBookChannals.includes(channal);
   }
-  async ngOnInit() {}
+  async ngOnInit() { }
   getHHmm(time: string) {
     if (time) {
       return this.calendarService.getHHmm(time);

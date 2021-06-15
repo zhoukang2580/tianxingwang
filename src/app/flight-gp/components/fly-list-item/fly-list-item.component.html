@@ -1,44 +1,44 @@
 <div class='fly-item ion-no-margin ion-no-padding'>
-  <div class='info'>
-    <h3 class='time'>
-      <strong>{{flightSegment?.TakeoffShortTime}}</strong>
-      <ion-icon name='airplane' class='non-stop' mode='ios' content='直飞' color='secondary' *ngIf='!flightSegment?.IsStop'></ion-icon>
-      <ion-text color='secondary' *ngIf='flightSegment?.IsStop' style='font-size: 0.7rem;'>{{langOpt?.isStop}}</ion-text>
-      <strong class='end-time' [attr.addoneday]='addoneday()'>{{flightSegment?.ArrivalShortTime}}</strong>
-    </h3>
-    <h3 class='airports'>
-      <ion-text color='medium' class="from-city ion-text-nowrap">
-        {{flightSegment?.FromAirportName}}
-        <span *ngIf='flightSegment?.FromTerminal'>({{flightSegment?.FromTerminal}})</span>
-      </ion-text>
+    <div class='info'>
+        <h3 class='time'>
+            <strong>{{flightSegment?.TakeoffShortTime}}</strong>
+            <ion-icon name='airplane' class='non-stop' mode='ios' content='直飞' color='secondary' *ngIf='!flightSegment?.IsStop'></ion-icon>
+            <ion-text color='secondary' *ngIf='flightSegment?.IsStop' style='font-size: 0.7rem;'>{{langOpt?.isStop}}</ion-text>
+            <strong class='end-time' [attr.addoneday]='addoneday()'>{{flightSegment?.ArrivalShortTime}}</strong>
+        </h3>
+        <h3 class='airports'>
+            <ion-text color='medium' class="from-city ion-text-nowrap">
+                {{flightSegment?.FromAirportName}}
+                <span *ngIf='flightSegment?.FromTerminal'>({{flightSegment?.FromTerminal}})</span>
+            </ion-text>
 
-      <ion-text color='medium' class="to-city ion-text-nowrap">
-        {{flightSegment?.ToAirportName}} <span *ngIf='flightSegment?.ToTerminal'>
+            <ion-text color='medium' class="to-city ion-text-nowrap">
+                {{flightSegment?.ToAirportName}} <span *ngIf='flightSegment?.ToTerminal'>
           ({{flightSegment?.ToTerminal}})
         </span>
-      </ion-text>
-    </h3>
-    <h4 class='air'>
-      <ion-thumbnail size='small'>
-        <img [src]='flightSegment?.AirlineSrc' />
-      </ion-thumbnail>
-      <label (click)="onShowAgreement($event)" *ngIf='isAgreement' class="agreement">
+            </ion-text>
+        </h3>
+        <h4 class='air'>
+            <ion-thumbnail size='small'>
+                <img [src]='flightSegment?.AirlineSrc' />
+            </ion-thumbnail>
+            <label (click)="onShowAgreement($event)" *ngIf='isAgreement' class="agreement">
         <span style="color: red;">{{langOpt.agreement}}</span>
         <span style="color: black;">|</span>
       </label>
-      <ion-text class='ion-text-nowrap' color='medium'>{{flightSegment?.Number}}</ion-text>
-      <ion-text color='secondary' *ngIf='flightSegment?.CodeShareNumber'><span class='seperator'></span>|{{langOpt.common}}{{flightSegment?.CodeShareNumber}}</ion-text>
-      <ion-text color='medium'> <span class='seperator'>|</span>{{langOpt.planeType}}{{flightSegment?.PlaneType}}</ion-text>
-      <ion-text color='medium'> <span class='seperator'>|</span>{{flightSegment?.FlyTimeName}}
-      </ion-text>
-      <ion-text color='secondary'><span class='seperator'>|</span>{{flightSegment.Meal?langOpt.has:langOpt.no}}{{langOpt.meal}}
-      </ion-text>
-      <!-- <ion-text color='secondary' *ngIf='isAgreement'><span class='seperator' >|</span>{{langOpt.agreement}}</ion-text> -->
-    </h4>
-  </div>
-  <div class="price" class='ion-text-center ion-no-margin ion-no-padding' *ngIf='!showDetails'>
-    <h3>
-      <ion-text class='jiage'>￥{{(flightPolicy?.Cabin?.SalesPrice)|flightprice}}</ion-text>
-    </h3>
-  </div>
+            <ion-text class='ion-text-nowrap' color='medium'>{{flightSegment?.Number}}</ion-text>
+            <ion-text color='secondary' *ngIf='flightSegment?.CodeShareNumber'><span class='seperator'></span>|{{langOpt.common}}{{flightSegment?.CodeShareNumber}}</ion-text>
+            <ion-text color='medium'> <span class='seperator'>|</span>{{langOpt.planeType}}{{flightSegment?.PlaneType}}</ion-text>
+            <ion-text color='medium'> <span class='seperator'>|</span>{{flightSegment?.FlyTimeName}}
+            </ion-text>
+            <ion-text color='secondary'><span class='seperator'>|</span>{{langOpt.meal}}
+            </ion-text>
+            <!-- <ion-text color='secondary' *ngIf='isAgreement'><span class='seperator' >|</span>{{langOpt.agreement}}</ion-text>{{flightSegment.Meal?langOpt.has:langOpt.no}} -->
+        </h4>
+    </div>
+    <!-- <div class="price" class='ion-text-center ion-no-margin ion-no-padding' *ngIf='!showDetails'>
+        <h3>
+            <ion-text class='jiage'>￥{{(flightPolicy?.Cabin?.SalesPrice)|flightprice}}</ion-text>
+        </h3>
+    </div> -->
 </div>

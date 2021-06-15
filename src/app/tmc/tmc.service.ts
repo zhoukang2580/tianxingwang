@@ -1700,9 +1700,13 @@ export interface PassengerBookInfo<T> {
 }
 
 export interface PassengerBookInfoGp{
-  Seg:number;
-  flightSegment: FlightSegmentEntity;
-  Cabin: FlightCabinEntity;
+  passenger?: StaffEntity;
+  credential?: CredentialsEntity;
+  id?: string;
+  Seg?:number;
+  flightSegment?: FlightSegmentEntity;
+  Cabin?: FlightCabinEntity;
+  exchangeInfo?: ExchangeInfo;
 }
 
 export class InitialBookDtoModel {

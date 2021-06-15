@@ -1,0 +1,25 @@
+.detail {
+  width: 100%;
+}
+.date {
+  margin-top: 0.5em;
+  margin-bottom: -0.5em;
+}
+.date {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.rules {
+  font-size: 0.8rem;
+}
+.lowest-segment{
+  font-size: 0.9rem;
+}
+.reset {
+  display: flex;
+  justify-content: flex-end;
+}
+ion-item-divider{
+  border-left: 4px solid var(--ion-color-secondary);
+}

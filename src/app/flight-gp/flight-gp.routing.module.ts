@@ -66,6 +66,13 @@ const routes: Routes = [
       import("./select-flight-bank-gp/select-flight-bank-gp.module").then(
         (m) => m.SelectFlightBankGpPageModule
       ),
+  },
+  {
+    path: "selected-confirm-bookinfos-gp",
+    loadChildren: () =>
+      import("./selected-confirm-bookinfos-gp/selected-confirm-bookinfos-gp.module").then(
+        (m) => m.SelectedConfirmBookInfosGpPageModule
+      ),
   }
 ];
 @NgModule({
