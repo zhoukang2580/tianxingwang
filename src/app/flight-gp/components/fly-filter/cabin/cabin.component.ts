@@ -1,4 +1,4 @@
-import { StaffService } from "src/app/hr/staff.service";
+import { HrService } from "src/app/hr/hr.service";
 import { IonRadio } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import {
@@ -29,7 +29,7 @@ export class CabinComponent implements OnInit, OnDestroy, AfterViewInit {
   };
   isSelf = true;
   selectItem: any = "unlimit";
-  constructor(private staffService: StaffService) {
+  constructor(private staffService: HrService) {
     this.filterConditionChange = new EventEmitter();
   }
 

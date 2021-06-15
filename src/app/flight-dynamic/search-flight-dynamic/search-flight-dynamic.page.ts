@@ -4,7 +4,7 @@ import { Platform } from '@ionic/angular';
 import { of, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AppHelper } from 'src/app/appHelper';
-import { StaffService } from 'src/app/hr/staff.service';
+import { HrService } from 'src/app/hr/hr.service';
 import { Storage } from "@ionic/storage";
 import { CalendarService } from 'src/app/tmc/calendar.service';
 import { DayModel } from 'src/app/tmc/models/DayModel';
@@ -52,7 +52,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     private flightDynamicService: FlightDynamicService,
     private calendarService: CalendarService,
     private identityService: IdentityService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private storage: Storage,
     private router: Router,
     private plt: Platform

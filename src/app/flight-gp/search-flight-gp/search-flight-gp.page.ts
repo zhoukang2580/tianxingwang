@@ -4,8 +4,8 @@ import { TmcService, FlightHotelTrainType } from "src/app/tmc/tmc.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { IdentityService } from "../../services/identity/identity.service";
 import { ApiService } from "src/app/services/api/api.service";
-import { StaffEntity, StaffBookType } from "src/app/hr/staff.service";
-import { StaffService } from "../../hr/staff.service";
+import { StaffEntity, StaffBookType } from "src/app/hr/hr.service";
+import { HrService } from "../../hr/hr.service";
 import { CalendarService } from "../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
@@ -63,7 +63,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     private flightCityService: FlightCityService,
     private flightGpService: FlightGpService,
     private storage: Storage,
-    private staffService: StaffService,
+    private staffService: HrService,
     private apiService: ApiService,
     private tmcService: TmcService,
     private modalCtrl: ModalController,

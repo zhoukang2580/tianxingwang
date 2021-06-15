@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { flyInOut } from 'src/app/animations/flyInOut';
 import { AppHelper } from 'src/app/appHelper';
 import { RefresherComponent } from 'src/app/components/refresher';
-import { StaffEntity } from 'src/app/hr/staff.service';
+import { StaffEntity } from 'src/app/hr/hr.service';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { PassengerBookInfo } from 'src/app/tmc/tmc.service';
 import { FlightGpService } from '../flight-gp.service';

@@ -4,7 +4,7 @@ import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { flyInOut } from 'src/app/animations/flyInOut';
 import { AppHelper } from 'src/app/appHelper';
 import { RefresherComponent } from 'src/app/components/refresher/refresher.component';
-import { CostCenterEntity, OrganizationEntity, StaffApprover, StaffEntity, StaffService } from 'src/app/hr/staff.service';
+import { CostCenterEntity, OrganizationEntity, StaffApprover, StaffEntity, HrService } from 'src/app/hr/hr.service';
 import { InsuranceProductEntity } from 'src/app/insurance/models/InsuranceProductEntity';
 import { LanguageHelper } from 'src/app/languageHelper';
 import { OrderTravelPayType, OrderTravelType } from 'src/app/order/models/OrderTravelEntity';
@@ -84,7 +84,7 @@ export class FlightBookinfosGpPage implements OnInit {
     private route: ActivatedRoute,
     private tmcService: TmcService,
     private flightGpService: FlightGpService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private popoverController: PopoverController,
     public modalController: ModalController,
     private navCtrl: NavController

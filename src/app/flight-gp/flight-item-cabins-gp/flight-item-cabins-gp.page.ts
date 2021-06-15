@@ -1,9 +1,9 @@
 import { IdentityService } from "../../services/identity/identity.service";
 import {
-  StaffService,
+  HrService,
   StaffEntity,
   StaffBookType,
-} from "../../hr/staff.service";
+} from "../../hr/hr.service";
 import { DayModel } from "../../tmc/models/DayModel";
 import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
@@ -62,7 +62,7 @@ export class FlightItemCabinsGpPage implements OnInit {
     activatedRoute: ActivatedRoute,
     private modalCtrl: ModalController,
     private flydayService: CalendarService,
-    private staffService: StaffService,
+    private staffService: HrService,
     private identityService: IdentityService,
     private router: Router,
     private popoverController: PopoverController,
