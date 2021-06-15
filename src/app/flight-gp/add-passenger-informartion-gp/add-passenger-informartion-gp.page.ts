@@ -216,6 +216,7 @@ export class AddPassengerInformartionGpPage implements OnInit {
     const can = this.Cardbins.length < this.Count;
     if (!can) {
       AppHelper.alert("余票不足")
+      return false;
     }
 
     const can1 = this.Cardbins.length < 6;

@@ -103,18 +103,15 @@ export class FlightBookinfosGpPage implements OnInit {
   }
 
   private async empty() {
-    this.subscriptions.push(
-      this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
-        m.splice(0);
-        this.getTotalPriceNumber();
-        this.calcTotalPrice();
-      })
-    );
+    this.selectedFrequent = [];
+    this.flightGpService.setfrequentBookInfoSource(this.selectedFrequent);
+    this.getTotalPriceNumber();
+    this.calcTotalPrice();
   }
 
   async ngOnInit() {
     // this.route.queryParamMap.subscribe(() => {
-      this.refresh(false);
+    this.refresh(false);
     // })
     this.isRoundTrip = this.flightGpService.getSearchFlightModel().isRoundTrip;
     this.flightGpService.setPassengerBookInfosSource(
@@ -594,7 +591,7 @@ export class FlightBookinfosGpPage implements OnInit {
       let reg = /^[\u4E00-\u9FA5]{1,8}$/;
       let reg1 = /^1[0-9]{10}$/;
       let reg2 = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[com,cn,net]{1,3})+$/
-      console.log(!reg2.test(orderLinkman.Email)||orderLinkman.Email == "" , "sas")
+      console.log(!reg2.test(orderLinkman.Email) || orderLinkman.Email == "", "sas")
       if (!orderLinkman.Name) {
         AppHelper.alert("请输入姓名");
         return
