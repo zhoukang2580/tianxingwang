@@ -73,7 +73,7 @@ export class FlightService {
   policyFlights: PassengerPolicyFlights[];
   flightResult: FlightResultEntity; // 保持和后台返回的数据一致
   private pagePopTimeoutSource: EventEmitter<boolean>;
-  private pagePopTimeoutTime = 30 * 1000;
+  private pagePopTimeoutTime = 10 * 60 * 1000;
   private pagePopTimeoutId;
   private lastRefreshTime = 0;
   private pagePopPromise: Promise<boolean>;
@@ -1201,7 +1201,7 @@ export class FlightService {
       req.Data.Lang = req.Language;
     }
     this.stopCheckPageTimout();
-    return this.apiService.getPromiseData<FlightResultEntity>(req).then(r=>{
+    return this.apiService.getPromiseData<FlightResultEntity>(req).then((r) => {
       this.lastRefreshTime = Date.now();
       return r;
     });
