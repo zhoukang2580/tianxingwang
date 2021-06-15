@@ -1,0 +1,32 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref="" color='light'></app-back-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<img src="assets/images/search-flight.png" alt="" class="bgimg">
+<ion-content class="cnt">
+    <ion-card class='ion-padding' [class.hidden]='domestic!="domestic"'>
+        <ion-card-content>
+            <ion-buttons class="city">
+                <ion-text class="ion-text-wrap city-name ion-text-start" [class.disabled]='disabled' (click)='onSelectCity(true)' color='{{disabled?"medium":"secondary"}}'>
+                    {{isEn?searchFlightModel?.fromCity?.EnglishName|| searchFlightModel?.fromCity?.Nickname:searchFlightModel?.fromCity?.Nickname?.replace('国际','')?.replace('机场','')}}</ion-text>
+                <ion-button color='{{disabled?"medium":"secondary"}}' [disabled]='disabled' (click)='onSwapCity()'>
+                    <img src='assets/images/flight-rotate.png' [class.rotate]='isSwapingCity' />
+                </ion-button>
+                <ion-text class="ion-text-wrap city-name ion-text-end" [class.disabled]='disabled' (click)='onSelectCity(false)' color='{{disabled?"medium":"secondary"}}'>
+                    {{isEn?searchFlightModel?.toCity?.EnglishName|| searchFlightModel?.toCity?.Nickname:searchFlightModel?.toCity?.Nickname?.replace('国际','')?.replace('机场','')}}</ion-text>
+            </ion-buttons>
+            <section class="flight-date">
+                <app-search-day-comp [day]='goDate' (click)="onSelecFlyDate(true,false)" [disabled]='disabled'>
+                </app-search-day-comp>
+                <div *ngIf="">{{ totalFlyDays }}天</div>
+                <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
+                </app-search-day-comp>
+            </section>
+        </ion-card-content>
+        <div class="btn-search" (click)="searchFlight()">查询航班</div>
+        <!-- <div class="btn-search" (click)="onSelectPassenger()" *ngIf='(!isSelf && selectedPassengers==0)'>请添加乘客</div> -->
+    </ion-card>
+</ion-content>

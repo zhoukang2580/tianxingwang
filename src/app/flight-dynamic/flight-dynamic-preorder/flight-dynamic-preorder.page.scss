@@ -1,0 +1,105 @@
+.cnt {
+    .sec-head {
+        background: #fff;
+        display: flex;
+        padding-bottom: 10px;
+        font-size: 14px;
+        .flight-time,
+        .flights {
+            flex: 1;
+            text-align: center;
+            .plan-time,
+            .several {
+                padding: 6px 0;
+            }
+        }
+    }
+    .list {
+        display: flex;
+        padding: 10px;
+        background: #fbfbfb;
+        .left_nav {
+            flex: 0.3;
+            margin-top: 20px;
+            .item-img {
+                display: flex;
+                justify-content: center;
+                .oval {
+                    width: 10px;
+                    height: 10px;
+                }
+                .shape {
+                    width: 1px;
+                    height: 204px;
+                }
+            }
+        }
+        ion-item-group {
+            flex: 2;
+            .divider {
+                --background: #fdfbfb;
+                padding: 10px 0;
+                font-weight: 500;
+                border-width: 0;
+            }
+            .last {
+                --background: #5099FE;
+                color: #fff;
+            }
+            ion-item {
+                border-radius: 12px;
+                color: #333;
+                margin-bottom: 25px;
+                .end {
+                    text-align: end;
+                }
+                .project {
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                }
+                .plan {
+                    font-size: 13px;
+                    padding-right: 12px;
+                }
+                .ionc {
+                    font-size: 20px;
+                }
+                ion-grid ion-row:first-child {
+                    height: 37px;
+                    border-bottom: 1px dashed #eee;
+                }
+                ion-grid ion-row:last-child {
+                    font-size: 12px;
+                }
+                .fly-time {
+                    display: flex;
+                    font-size: 20px;
+                    font-weight: 600;
+                    .timer {
+                        flex: 30%;
+                    }
+                    .fly-logo {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #dcdcdc;
+                        flex: 40%;
+                        .dot {
+                            font-size: 12px;
+                            // letter-spacing: 0.2em;
+                        }
+                        .img-log {
+                            display: flex;
+                            padding: 0 5px;
+                            img {
+                                width: 25px;
+                                height: 25px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

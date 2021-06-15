@@ -61,6 +61,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
   @Output() exchangeFlightTicket: EventEmitter<{
     orderId: string;
     ticketId: string;
+    ticketType: number;
     trip: OrderFlightTripEntity;
   }>;
   @Output() abolishOrder: EventEmitter<{
@@ -203,18 +204,18 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
                   );
                 });
               }
-              ticket.VariablesJsonObj.isShowBtnByTimeAndTicketType = this.showBtnByTimeAndTicketType(
-                ticket
-              );
-              ticket.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(
-                ticket
-              );
-              ticket.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(
-                ticket
-              );
-              ticket.VariablesJsonObj.isShowCancelButton = this.isShowFlightCancelBtn(
-                ticket
-              );
+              // ticket.VariablesJsonObj.isShowBtnByTimeAndTicketType = this.showBtnByTimeAndTicketType(
+              //   ticket
+              // );
+              // ticket.VariablesJsonObj.isTicketCanRefund = this.isTicketCanRefund(
+              //   ticket
+              // );
+              // ticket.VariablesJsonObj.isShowExchangeBtn = this.isShowExchangeBtn(
+              //   ticket
+              // );
+              // ticket.VariablesJsonObj.isShowCancelButton = this.isShowFlightCancelBtn(
+              //   ticket
+              // );
               return ticket;
             }
           );
@@ -324,18 +325,18 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     // console.log(tomorrow.format("YYYY-MM-DD"), dm.format("YYYY-MM-DD"));
     return +dm - +tomorrow >= 0;
   }
-  private isShowFlightCancelBtn(orderFlightTicket: OrderFlightTicketEntity) {
-    if (
-      !orderFlightTicket ||
-      !this.showBtnByTimeAndTicketType(orderFlightTicket)
-    ) {
-      return false;
-    }
-    return [
-      OrderFlightTicketStatusType.Booked,
-      OrderFlightTicketStatusType.BookExchanged,
-    ].includes(orderFlightTicket.Status);
-  }
+  // private isShowFlightCancelBtn(orderFlightTicket: OrderFlightTicketEntity) {
+  //   if (
+  //     !orderFlightTicket ||
+  //     !this.showBtnByTimeAndTicketType(orderFlightTicket)
+  //   ) {
+  //     return false;
+  //   }
+  //   return [
+  //     OrderFlightTicketStatusType.Booked,
+  //     OrderFlightTicketStatusType.BookExchanged,
+  //   ].includes(orderFlightTicket.Status);
+  // }
   private isShowRefundOrExchangeBtn(orderTrainTicket: OrderTrainTicketEntity) {
     if (!orderTrainTicket) {
       return false;
@@ -419,6 +420,7 @@ export class OrderItemDfComponent implements OnInit, OnChanges {
     this.exchangeFlightTicket.emit({
       orderId: this.order.Id,
       ticketId: ticket.Id,
+      ticketType: ticket.TicketType,
       trip,
     });
   }

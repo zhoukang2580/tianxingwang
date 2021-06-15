@@ -1,0 +1,222 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot='start'>
+            <app-back-button defaultHref="" [backFn]='back.bind(this)'></app-back-button>
+        </ion-buttons>
+        <ion-title>
+            <div class="titel">
+                <ion-text><span>{{initialBookDtoGpModel?.Routes[0]?.Segment?.FromCityName}}</span></ion-text>
+                <div class="img"><img src="assets/images/1.png" alt=""></div>
+                <ion-text><span>{{initialBookDtoGpModel?.Routes[0]?.Segment?.ToCityName}}</span></ion-text>
+            </div>
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <app-refresher slot='fixed' (ionRefresh)='refresh(true)'></app-refresher>
+    <ion-list class="list first">
+        <div class="left">
+            <div class="go">
+                <span>去程</span>
+            </div>
+        </div>
+        <ion-item *ngIf="initialBookDtoGpModel?.Routes[0]?.Segment as segments">
+            <ion-grid>
+                <ion-row>
+                    <ion-col class="start"><span>{{DateTime}}</span></ion-col>
+                    <ion-col size='3.5' class="center"><span>{{segments?.FromCityName}}</span>-<span>{{segments?.ToCityName}}</span></ion-col>
+                    <ion-col class="end"></ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col class="start time">{{goOff}}</ion-col>
+                    <ion-col class="center">{{segments?.FlyTimeName}}</ion-col>
+                    <ion-col class="end time">{{endOff}}</ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col>
+                    </ion-col>
+                    <ion-col>
+                        <div class="line"></div>
+                    </ion-col>
+                    <ion-col>
+                    </ion-col>
+                </ion-row>
+                <ion-row>
+                    <ion-col class="start">{{segments.FromAirportName}}{{segments?.FromTerminal}}</ion-col>
+                    <ion-col size='2' class="center fly">{{segments?.IsStop?"经停":"直飞"}}</ion-col>
+                    <ion-col class="end">{{segments?.ToAirportName}}{{segments?.ToTerminal}}</ion-col>
+                </ion-row>
+                <ion-row class="last" *ngIf="initialBookDtoGpModel?.Routes[0].Fare as segStatus">
+                    <span class="logo"><img [src]='segments?.AirlineSrc' alt=""></span>
+                    <span>{{segments?.CarrierName}}{{segments?.Number}}</span>
+                    <span>机型{{segments?.PlaneType}}</span>
+                    <span>{{segStatus?.TypeName}}</span>
+                    <span (click)="onOpenrules(initialBookDtoGpModel?.Routes[0])">退改签政策</span>
+                </ion-row>
+            </ion-grid>
+        </ion-item>
+    </ion-list>
+    <ion-list class="list next">
+        <ion-item-divider>
+            <div class="travesInfoTitle">
+                <h3>旅客信息</h3>
+                <ion-icon name="person-add-outline" (click)="addPassengerGp()"></ion-icon>
+            </div>
+        </ion-item-divider>
+        <div *ngIf="selectedFrequent && selectedFrequent.length">
+            <div class="item" *ngFor="let item of selectedFrequent;let index=index">
+                <!-- <ion-checkbox color="secondary" style="margin-left: 1.3em;">
+                </ion-checkbox> -->
+                <div class="check-all" (click)="onUpdate($event,item)">
+                    <div class="inside">
+                        <div class="left">
+                            <div class="name">{{item?.passengerEntity?.Name}}</div>
+                            <div class="id">
+                                <div class="idcard">{{item?.passengerEntity?.CredentialsTypeName}}</div>
+                                <span *ngIf="item?.passengerEntity?.CredentialsTypeName == '身份证'">
+                                    {{item?.passengerEntity?.Number.substring(0,6)}}********{{item?.passengerEntity?.Number.substring(item?.passengerEntity?.Number.length - 4)}}
+                                </span>
+                                <span *ngIf="item?.passengerEntity?.CredentialsTypeName == '护照'">
+                                    {{item?.passengerEntity?.Number.substring(0,4)}}********{{item?.passengerEntity?.Number.substring(item?.passengerEntity?.Number.length - 2)}}
+                                </span>
+                            </div>
+                            <div class="card" *ngIf="item?.passengerEntity?.Variables?.Tag == '1'">
+                                <div class="idcard">卡行</div>
+                                <span>{{item?.passengerEntity?.Variables?.BankName}}</span>
+                            </div>
+                            <div class="card" *ngIf="item?.passengerEntity?.Variables?.Tag == '2'">
+                                <div class="idcard">单位</div>
+                                <span>{{item?.passengerEntity?.Variables?.Organization}}</span>
+                            </div>
+                        </div>
+                        <div class="del" (click)="onClose(item,index,$event)">
+                            <img src="assets/images/delete.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="btn_add" (click)="onAddLinkman()">
+            <ion-text>添加乘机人</ion-text>
+        </div>
+    </ion-list>
+    <ng-container>
+        <div class="insurances" *ngIf="initialBookDtoGpModel?.InsuranceResult?.Products as insurance">
+            <ion-radio-group mode="md" allow-empty-selection='true' [value]='selectedInsuranceProductId' [(ngModel)]='selectedInsuranceProductId' (ionChange)='calcTotalPrice()'>
+                <div class='ins' *ngFor='let insur of insurance'>
+                    <div class="ins-item">
+                        <ion-item lines='none'>
+                            <ion-radio mode="md" [value]="insur.Id" [disabled]='disabled'></ion-radio>
+                            <ion-label class="name">
+                                {{insur?.Name}} <span class="price"><small>￥</small> {{insur?.Price}}/人</span>
+                            </ion-label>
+                        </ion-item>
+                        <ion-label color='secondary' (click)='onShowInsuranceDetail(insur,$event)'>
+                            详情
+                            <ion-icon name="caret-up-outline" *ngIf='insur.showDetail'>
+                            </ion-icon>
+                            <ion-icon name="caret-down-outline" *ngIf='!insur.showDetail'>
+                            </ion-icon>
+                        </ion-label>
+                    </div>
+                    <div [@flyInOut] *ngIf='insur.showDetail' class="ins-detail" (click)='insur.showDetail=!insur.showDetail'>
+                        <ion-row>
+                            <ion-col>
+                                <ion-label color='medium' class='small-font ion-text-wrap'>
+                                    <div style="user-select: text;" [innerHtml]='getInsuranceDetails(insur?.Detail)'></div>
+                                </ion-label>
+                            </ion-col>
+                        </ion-row>
+                    </div>
+                </div>
+            </ion-radio-group>
+        </div>
+    </ng-container>
+    <div class="contact_Info">
+        <div class="divider">联系人信息</div>
+        <div class="name">
+            <div class="label">联系人姓名</div>
+            <div class="ipt">
+                <ion-input clear-input='true' placeholder="请输入" [(ngModel)]="orderLinkmanDto&&orderLinkmanDto.Name"></ion-input>
+            </div>
+        </div>
+        <div class="phone">
+            <div class="label">联系电话</div>
+            <div class="ipt">
+                <ion-input clear-input='true' placeholder="请输入" [(ngModel)]="orderLinkmanDto&&orderLinkmanDto.Mobile"></ion-input>
+            </div>
+        </div>
+        <div class="e-mail">
+            <div class="label">E-mail</div>
+            <div class="ipt">
+                <ion-input clear-input='true' placeholder="请输入" [(ngModel)]="orderLinkmanDto&&orderLinkmanDto.Email"></ion-input>
+            </div>
+        </div>
+    </div>
+
+    <div class="payways">
+        <div class="title">
+            <div class="name">
+                支付方式
+            </div>
+        </div>
+        <div class="info">
+            <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' mode='md' (ionChange)='calcTotalPrice()'>
+                <ion-item *ngFor='let pt of orderTravelPayTypes'>
+                    <ion-label>{{pt.label}}
+                        <ng-container *ngIf='pt.value==OrderTravelPayType.Person'>
+                            (请在20分钟内完成支付)
+                        </ng-container>
+                    </ion-label>
+                    <ion-radio [value]="pt.value">
+                    </ion-radio>
+                </ion-item>
+            </ion-radio-group>
+        </div>
+    </div>
+</ion-content>
+<app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍候...</app-waiting-check-pay>
+<ion-footer>
+    <div class="price-detail">
+        <div class="left" (click)="onToggleIsShowFee()">
+            <div class="total "><span class="">总计：</span><span class="price ">￥{{totalPrice}}</span></div><span class="detail ">明细</span>
+            <ion-icon name="chevron-down-outline" *ngIf="isShowFee"></ion-icon>
+            <ion-icon name="chevron-up-outline" *ngIf="!isShowFee"></ion-icon>
+        </div>
+        <div class="submit-btn">
+            <ion-button class="btn" slot="end" size="small" fill="clear" (click)="onSubmit($event)">提交订单</ion-button>
+        </div>
+    </div>
+</ion-footer>
+<div class="zz" *ngIf="isShowFee" (click)="onToggleIsShowFee()"></div>
+<div [class.show]="isShowFee" *ngIf="selectedFrequent && selectedFrequent.length" class="transfrom" #transfromEle>
+    <div class="wrapper" *ngFor="let infos of selectedFrequent">
+        <div class="fee itm" *ngIf="initialBookDtoGpModel?.Routes[0]?.Fare as fare">
+            <div class="name-num">{{infos?.passengerEntity?.Name}}{{infos?.passengerEntity?.Number}}
+            </div>
+            <div class="spacebetween f-t-c" *ngIf="initialBookDtoGpModel?.Routes[0]?.Segment as segments">
+                <ion-text color="secondary">{{segments?.FromCityName}}</ion-text>
+                <ion-text color="secondary">{{segments?.ToCityName}}</ion-text>
+            </div>
+            <div class="spacebetween">
+                <ion-text>机票票价</ion-text>
+                <ion-text>{{fare.TicketPrice}}元</ion-text>
+            </div>
+            <div class="spacebetween">
+                <ion-text>税费</ion-text>
+                <ion-text>{{fare?.Tax}}元</ion-text>
+            </div>
+            <div *ngFor="let insurance of initialBookDtoGpModel?.InsuranceResult?.Products">
+                <div class="spacebetween" *ngIf="insurance.Id == selectedInsuranceProductId">
+                    <ion-text>{{insurance.Name}}</ion-text>
+                    <ion-text>{{insurance.Price}}元</ion-text>
+                </div>
+            </div>
+            <!-- <div class="spacebetween">
+                <ion-text>服务费</ion-text>
+                <ion-text>0元</ion-text>
+            </div> -->
+        </div>
+    </div>
+</div>

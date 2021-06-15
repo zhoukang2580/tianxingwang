@@ -1,0 +1,129 @@
+<ion-header>
+    <ion-toolbar style="--border-width:0">
+        <ion-buttons slot='start' style="height: 55px;">
+            <app-back-button defaultHref="" [backFn]='back.bind(this)'></app-back-button>
+        </ion-buttons>
+        <ion-toolbar #toolbar class="search">
+            <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding smfont" mode='ios' placeholder="请输入员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'></ion-searchbar>
+        </ion-toolbar>
+        <ion-buttons slot='end' style="height: 55px;">
+            <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
+                已选
+                <ion-badge color='danger'>
+                    <ion-text color='light'>{{selectedFrequent.length}}</ion-text>
+                </ion-badge>
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
+        <ion-refresher-content refreshingText="正在加载...">
+        </ion-refresher-content>
+    </app-refresher>
+
+    <ng-container>
+        <ion-radio-group mode='md' [allowEmptySelection]="true">
+            <ion-list class="con-list">
+                <ng-container *ngFor="let item of vmPassenger;let index=index" class="ion-margin-bottom">
+                    <ion-item-sliding id="item100" class="padding-up">
+                        <ion-item lines='none' color='primary' (click)='onSelectCredential(item.Id)' class="item-divider">
+                            <div class="con-big">
+                                <div>
+                                    <ion-text color='medium'>
+                                        <span class="sfz">{{item?.CredentialsTypeName}}</span>
+                                    </ion-text>
+                                </div>
+                                <div>
+                                    <ion-text color='medium'>
+                                        <span class="name-id">{{item.Name}}</span>
+                                    </ion-text>
+                                </div>
+                                <div>
+                                    <ion-text color='medium' *ngIf="item.CredentialsTypeName == '身份证'">
+                                        <span class="name-id">{{item.Number.substring(0,6)}}********{{item.Number.substring(item.Number.length-4)}}</span>
+                                    </ion-text>
+                                    <ion-text color='medium' *ngIf="item.CredentialsTypeName == '护照'">
+                                        <span class="name-id">{{item.Number.substring(0,4)}}********{{item.Number.substring(item.Number.length-2)}}</span>
+                                    </ion-text>
+                                </div>
+                            </div>
+                            <ion-radio slot='end' name='credentialType' [disabled]='selectedCredentialId == item.Id' style="opacity:1" mode='md' class="ion-margin-end" value="{{item.Id}}">
+                            </ion-radio>
+                        </ion-item>
+                        <ion-item-options side="end">
+                            <ion-item-option color="danger" (click)="onDelete(item.Id,index,$event)">
+                                <ion-icon slot="icon-only" name="trash" color="light"></ion-icon>
+                            </ion-item-option>
+                        </ion-item-options>
+                    </ion-item-sliding>
+                    <ion-item lines='none' [@flyInOut] *ngIf="selectedCredentialId == item.Id">
+                        <div class="credential-item">
+                            <ion-row>
+                                <ion-col>
+                                    证件号:
+                                </ion-col>
+                                <ion-col *ngIf="item.CredentialsTypeName == '身份证'">
+                                    {{item?.Number.substring(0,6)}}********{{item.Number.substring(item.Number.length-4)}}
+                                </ion-col>
+                                <ion-col *ngIf="item.CredentialsTypeName == '护照'">
+                                    {{item.Number.substring(0,4)}}********{{item.Number.substring(item.Number.length-2)}}
+                                </ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <ion-col>
+                                    姓名:
+                                </ion-col>
+                                <ion-col>
+                                    {{item?.Name}}
+                                </ion-col>
+                            </ion-row>
+                            <ion-row *ngIf="item?.Variables?.Tag == '1'">
+                                <ion-col>
+                                    卡行:
+                                </ion-col>
+                                <ion-col>
+                                    {{item?.Variables?.BankName}}
+                                </ion-col>
+                            </ion-row>
+                            <ion-row *ngIf="item?.Variables?.Tag == '2'">
+                                <ion-col>
+                                    单位:
+                                </ion-col>
+                                <ion-col>
+                                    {{item?.Variables?.Organization}}
+                                </ion-col>
+                            </ion-row>
+                            <ion-row>
+                                <ion-col>
+                                    电话:
+                                </ion-col>
+                                <ion-col>
+                                    {{item?.Mobile}}
+                                </ion-col>
+                            </ion-row>
+                        </div>
+                    </ion-item>
+                </ng-container>
+            </ion-list>
+        </ion-radio-group>
+        <!-- <ng-template #loadingTemp>
+            <ion-list>
+                <ion-item *ngFor='let it of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];let odd=odd;'>
+                    <ion-skeleton-text style="width: 80%;height: 1em;" [animated]='odd'></ion-skeleton-text>
+                </ion-item>
+            </ion-list>
+        </ng-template> -->
+    </ng-container>
+</ion-content>
+
+<ion-footer>
+    <ion-toolbar>
+        <div class="btn_container">
+            <ion-button class='ion-margin-top' fill='solid' (click)='onAddPassenger()' color="secondary" expand="block">
+                <ion-text class="text_search">确 定</ion-text>
+            </ion-button>
+        </div>
+    </ion-toolbar>
+</ion-footer>

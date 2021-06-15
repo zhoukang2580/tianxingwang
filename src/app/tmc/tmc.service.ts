@@ -38,6 +38,8 @@ import {
 import { CONFIG } from "../config";
 import { AgentRegionType } from "./models/AgentRegionType";
 import { TimeoutTipComponent } from "./components/timeout-tip/timeout-tip.component";
+import { FlightSegmentEntity } from "../flight-gp/models/flight/FlightSegmentEntity";
+import { FlightCabinEntity } from "../flight-gp/models/flight/FlightCabinEntity";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -283,6 +285,7 @@ export class TmcService {
       | "train"
       | "rentalCar"
       | "bulletin"
+      | "flightGp"
   ) {
     if (name) {
       const tmc = await this.getTmc();
@@ -331,6 +334,13 @@ export class TmcService {
         }
         return true;
       }
+      if (name == "flightGp") {
+        route = "search-flight-gp";
+        if (!tmcRegionTypeValues.find((it) => it == "gp")) {
+          return false;
+        }
+        return true;
+      }
       if (name == "bulletin") {
         route = "bulletin-list";
       }
@@ -341,32 +351,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TripList";
     req.Data = {};
-    // return [
-    //   {
-    //     Type: "Hotel",
-    //     StartTime: "2021-03-22",
-    //     Second: 200,
-    //     Name: "测试",
-    //     FromName: "上海",
-    //     ToName: "北京",
-    //   },
-    //   {
-    //     Type: "Train",
-    //     StartTime: "2021-03-22",
-    //     Second: 200000,
-    //     Name: "测试",
-    //     FromName: "上海",
-    //     ToName: "北京",
-    //   },
-    //   {
-    //     Type: "Flight",
-    //     StartTime: "2021-03-22",
-    //     Second: 100000,
-    //     Name: "测试",
-    //     FromName: "上海",
-    //     ToName: "北京",
-    //   },
-    // ];
+    
     return this.apiService.getPromiseData<any[]>(req);
   }
 
@@ -1132,6 +1117,7 @@ export interface IBookOrderResult {
   Message: string;
   IsCheckPay: boolean;
 }
+
 export class TravelFormEntity extends BaseVariablesEntity {
   Tmc: TmcEntity;
   /// <summary>
@@ -1712,6 +1698,13 @@ export interface PassengerBookInfo<T> {
   // isAllowBookPolicy?: boolean;// 所有可预订
   exchangeInfo?: ExchangeInfo;
 }
+
+export interface PassengerBookInfoGp{
+  Seg:number;
+  flightSegment: FlightSegmentEntity;
+  Cabin: FlightCabinEntity;
+}
+
 export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };
   Insurances: { [clientId: string]: InsuranceProductEntity[] };

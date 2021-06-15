@@ -1,0 +1,65 @@
+.icon-flight-plane {
+    color: #36abe0;
+    font-size: 14px;
+    margin: 0 0.5em;
+}
+
+.navigation {
+    background: #eee;
+    ul {
+        padding: 8px;
+        margin: 0;
+        display: flex;
+        height: 40px;
+        font-size: 12px;
+        color: #333;
+        li {
+            list-style-type: none;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            span {
+                padding: 12px;
+                text-align: center;
+            }
+        }
+    }
+}
+
+.time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 30px;
+    .date {
+        padding-right: 20px;
+        font-size: 1.2rem;
+        color: #333333;
+    }
+}
+
+.list {
+    background: #fff;
+    .item {
+        border-bottom: 1px solid #988c8c;
+        ul {
+            margin: 0;
+            padding: 14px 5px;
+            display: flex;
+            font-size: 13px;
+            li.label {
+                list-style: none;
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    }
+}
+
+.none {
+    text-align: center;
+    padding: 10px;
+}

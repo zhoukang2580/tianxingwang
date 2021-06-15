@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-toolbar color='secondary'>
+        <!-- <ion-buttons slot='start'>
+      <ion-button fill='clear' color='light' (click)='cancel()'>取消</ion-button>
+    </ion-buttons> -->
+        <ion-title class='ion-text-center'>退改签</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <p *ngIf='cabin?.Cabin?.FlightPolicy?.OrderTravelPayNames as n'>
+        <ion-text color='danger' class="ion-margin-end">支付方式</ion-text>{{n}}
+    </p>
+    <div class="container">
+        <div class="tui">退票规则</div>
+        <p [innerHTML]='explains'></p>
+        <div>改签规则</div>
+        <p [innerHTML]='explain'></p>
+    </div>
+</ion-content>

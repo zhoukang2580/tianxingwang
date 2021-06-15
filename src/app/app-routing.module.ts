@@ -27,6 +27,8 @@ import { LoginEnModule } from "./login_en/login_en.module";
 import { RegisterEnPageModule } from './register_en/register_en.page.module';
 import { RegisterEnModule } from './register_en/register_en.module';
 import { DemandModule } from "./demand/demand.module";
+import { FlightDynamicModule } from "./flight-dynamic/flight-dynamic.module";
+import { FlightGpModule } from "./flight-gp/flight-gp.module";
 
 const routes: Routes = [
   {
@@ -130,6 +132,8 @@ const routes: Routes = [
     LoginModule,
     LoginEnModule,
     FlightModule,
+    FlightDynamicModule,
+    FlightGpModule,
     FlightInternationalModule,
     AccountModule,
     HrModule,

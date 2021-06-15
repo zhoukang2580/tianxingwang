@@ -1,0 +1,63 @@
+<ion-header>
+    <ion-toolbar style="--border-width:0">
+        <ion-buttons slot="start">
+            <app-back-button defaultHref="">
+            </app-back-button>
+        </ion-buttons>
+        <ion-title>
+            {{searchDynamicModel?.fromCity?.Nickname}}
+            <i class='icon icon-flight-plane'></i> {{ searchDynamicModel?.toCity?.Nickname}}
+
+        </ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <div class="navigation">
+        <ul>
+            <li><span>航班</span></li>
+            <li><span>计划起飞</span></li>
+            <li><span>实际起飞</span></li>
+            <li><span>乘机楼</span></li>
+            <li><span>计划到达</span></li>
+            <li><span>实际到达</span></li>
+            <li><span>状态</span></li>
+        </ul>
+    </div>
+    <div class="list">
+        <app-or-comp *ngIf='isLoading'>
+            {{currentProcessStatus||"数据即将加载完成"}}
+        </app-or-comp>
+
+        <ion-refresher slot="fixed" (ionRefresh)="doRefresh(true)">
+        </ion-refresher>
+        <div class="item" *ngFor="let item of flightDynamicListModel" (click)="onFlightDetails(item.FlightNumber)">
+            <ul class="row">
+                <li class="label">{{item.FlightNumber}}</li>
+                <li class="label">{{item.PlanTakeoffTime}}</li>
+                <li class="label">{{item.RealTakeoffTime}}</li>
+                <li class="label">{{item.FromTerminal}}</li>
+                <li class="label">{{item.PlanArrivalTime}}</li>
+                <li class="label">{{item.RealArrivalTime}}</li>
+                <li class="label">
+                    <ion-text class="plan" *ngIf="item.StatusName == '到达'||item.StatusName == '计划'||item.StatusName == '起飞'" color="success">{{item.StatusName}}</ion-text>
+                    <ion-text class="plan" *ngIf="item.StatusName == '取消'" color="danger">{{item.StatusName}}</ion-text>
+                    <ion-text class="plan" *ngIf="item.StatusName == '预警'" color="warning">{{item.StatusName}}</ion-text>
+                    <ion-text class="plan" *ngIf="item.StatusName == '延误'" color="danger">{{item.StatusName}}</ion-text>
+                    <ion-icon class="ionc" name="chevron-forward-outline"></ion-icon>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div *ngIf="isNoData" class="none">
+        暂无数据
+    </div>
+</ion-content>
+
+<ion-footer>
+    <div class="time">
+        <span class="date">{{searchDynamicModel.Date}}</span>
+        <span class="week">{{getWeekName(searchDynamicModel.Date)}}</span>
+    </div>
+</ion-footer>

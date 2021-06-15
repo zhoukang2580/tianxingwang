@@ -76,6 +76,9 @@
     font-weight: 500;
     color: hsl(0, 0%, 60%);
   }
+  .hot-cities-wrapper1.hide {
+    display: none;
+  }
   .hot-cities-wrapper .header {
     display: flex;
     align-items: center;
@@ -129,6 +132,9 @@
     }
   }
   .segments {
+    &.hide {
+      display: none;
+    }
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -240,7 +246,6 @@
       transform: translate3d(0, 0, 0);
     }
   }
-
   .row {
     display: flex;
     justify-content: space-between;
@@ -294,6 +299,30 @@
         font-size: 12px;
       }
     }
+  }
+  .display-air-name {
+    display: none;
+  }
+  .display-city-name {
+    display: initial;
+  }
+}
+.airports-page {
+  .header.hot-cities-wrapper1.hide {
+    display: none;
+  }
+  .row .airport-item.hide-item,
+  .airport-item.hide-item {
+    display: none;
+  }
+  .row.hide{
+    display: none;
+  }
+  .display-city-name {
+    display: none;
+  }
+  .display-air-name {
+    display: initial;
   }
 }
 .search-list-page {

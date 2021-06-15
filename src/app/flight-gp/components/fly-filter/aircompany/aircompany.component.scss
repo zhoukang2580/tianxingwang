@@ -1,0 +1,8 @@
+ion-thumbnail {
+  max-width: 1.5rem;
+  max-height: 1.5rem;
+  margin: 1rem;
+}
+ion-radio,ion-checkbox{
+  --ion-color-primary:var(--ion-color-secondary);
+}

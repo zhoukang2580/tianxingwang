@@ -1,0 +1,41 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons solt='start'>
+            <app-back-button defaultHref=""></app-back-button>
+        </ion-buttons>
+        <ion-title>请选择公务卡发卡行</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content class="content" #maincnt>
+    <div class="container">
+        <div class="hot">
+            <div class="head"><label>热门</label></div>
+            <div class="list-wrapper" tag="hot">
+                <div class="list" tag="link" *ngFor="let hot of hotList" (click)="onSelect(hot)">{{hot.Name}}</div>
+            </div>
+        </div>
+        <div class="am-tabs-xf">
+            <div class="am-tabs-zm">
+                <ul>
+                    <li class="li" *ngFor="let l of letterList">
+                        <a href="javascript:void(0);" (click)="onLetterClick(l,$event)">{{l}}</a>
+                    </li>
+                </ul>
+            </div>
+            <ion-list class="am-tabs-bd">
+                <div class="am-fade">
+                    <div *ngFor="let l of letterList">
+                        <ion-item-divider #letter [attr.letter]='l'>
+                            <div class="letter">{{l}}</div>
+                        </ion-item-divider>
+                        <!-- <div class="letter" #layout>{{l}}</div> -->
+                        <ion-item lines='none' *ngFor="let item of businessList[l]" (click)="onSelect(item)">
+                            <div class="item">{{item.Name}}</div>
+                        </ion-item>
+                    </div>
+                </div>
+            </ion-list>
+        </div>
+    </div>
+</ion-content>

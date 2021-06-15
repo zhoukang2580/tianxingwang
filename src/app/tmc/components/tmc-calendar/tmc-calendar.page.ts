@@ -40,6 +40,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
   private endDate: string;
   private disabledSelectDateReason: string;
   private st = 0;
+  private isEnableSelectAllDate = false;
   @ViewChild(RefresherComponent, { static: true })
   refresher: RefresherComponent;
   @ViewChild(IonContent, { static: true }) content: IonContent;
@@ -94,7 +95,10 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
         first.dayList.filter((it) => !it.isLastMonthDay)[0].date
       );
       const current = this.calendarService.getMoment(0);
-      const m = this.calendarService.getMoment(0, current.format("YYYY-MM-DD"));
+      let m = this.calendarService.getMoment(0, current.format("YYYY-MM-DD"));
+      if(this.isEnableSelectAllDate){
+        m= mm.clone().add(-3, "months");
+      }
       for (let i = 1; ; i++) {
         const temp = mm.clone().add(-i, "months");
         const c = this.calendarService.generateYearNthMonthCalendar(
@@ -110,7 +114,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
         this.calendars.unshift(c);
         if (+temp < +m) {
           if (this.refresher) {
-            this.refresher.disabled = true;
+            this.refresher.disabled = !this.isEnableSelectAllDate;
             this.refresher.complete();
           }
           break;
@@ -124,7 +128,7 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
     this.st = Date.now();
     this.weeks = new Array(7)
       .fill(0)
-      .map((i,k) => this.calendarService.getDayOfWeekNames(k));
+      .map((i, k) => this.calendarService.getDayOfWeekNames(k));
     this.initCalendars();
   }
   private initCalendars() {
@@ -338,6 +342,13 @@ export class TmcCalendarComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     }
     console.log(`checkYms ${Date.now() - st} ms`);
+    if (this.isEnableSelectAllDate) {
+      this.calendars.forEach((c) => {
+        c.dayList.forEach((d) => {
+          d.enabled = true;
+        });
+      });
+    }
   }
   onDaySelected(d: DayModel) {
     if (!d || !d.date || this.isCurrentSelectedOk) {

@@ -18,10 +18,34 @@ export class FlightCityService {
     private interFlightService: InternationalFlightService,
     private router: Router
   ) {}
-  private async initPage() {
+  private async initPage(
+    hideCityCodes?: string[],
+    extraHotAirports?: string[]
+  ) {
     if (!this.cityPage) {
       const dCities = await this.flightService.getDomesticAirports();
       const iCities = await this.interFlightService.getInternationalAirports();
+      if (hideCityCodes && hideCityCodes.length) {
+        hideCityCodes.forEach((hc) => {
+          iCities
+            .concat(dCities)
+            .filter((it) => it.Code == hc)
+            .forEach((c) => {
+              c.isHide = (c.Tag || "").toLowerCase() == "airportcity";
+            });
+        });
+      }
+      if (extraHotAirports && extraHotAirports.length) {
+        iCities.concat(dCities).forEach((c) => {
+          const one = extraHotAirports.find(
+            (it) => it == c.Code && (c.Tag || "").toLowerCase() == "airport"
+          );
+          if (one) {
+            c.IsHot = true;
+            c.isExtraHot = true;
+          }
+        });
+      }
       this.cityPage = new CityPage(dCities, iCities);
     }
   }
@@ -33,18 +57,74 @@ export class FlightCityService {
       });
     };
   }
-  async onSelectCity(isShow, isFrom, isDomestic = true) {
+  private onHideSegments(isHide = true, isHotHide = true) {
+    const page = document.body.querySelector(".flight-city-page-container");
+    const page1 = document.body.querySelector(".flight-city-page-container");
+    const seg: HTMLElement = page && page.querySelector(".segments");
+    // const seg1: HTMLElement =
+    //   page1 && page1.querySelector(".hot-cities-wrapper1");
+    if (seg) {
+      if (isHide && isHotHide) {
+        seg.classList.add("hide");
+      } else {
+        seg.classList.remove("hide");
+      }
+    }
+  }
+
+  private onHideCityName(isCityName = true) {}
+  async onSelectCity({
+    isShowSegs,
+    isDomestic,
+    isShowPage,
+    isShowAirports,
+    isFrom,
+    isShowHotCity,
+    isFlyDynamic,
+    hideCityCodes,
+    extraHotAirports,
+  }: {
+    isShowPage: boolean;
+    isFrom: boolean;
+    isShowAirports?: boolean;
+    isDomestic?: boolean;
+    isShowSegs?: boolean;
+    isShowHotCity?: boolean;
+    isFlyDynamic?: boolean;
+    hideCityCodes?: string[];
+    extraHotAirports?: string[];
+  }) {
     if (!this.cityPage) {
-      await this.initPage();
+      await this.initPage(hideCityCodes, extraHotAirports);
     }
     if (!this.cityPage) {
       return null;
     }
+    if (isDomestic == undefined) {
+      isDomestic = true;
+    }
+    if (isShowSegs == undefined) {
+      isShowSegs = true;
+    }
+    if (isShowAirports == undefined) {
+      isShowAirports = false;
+    }
+    if (isShowHotCity == undefined) {
+      isShowHotCity = true;
+    }
+    if (isFlyDynamic == undefined) {
+      isFlyDynamic = true;
+    }
     this.cityPage.isDomestic = isDomestic;
-    this.isShowingPage = isShow;
+    this.isShowingPage = isShowPage;
+    this.cityPage.isShowAirports = isShowAirports;
+    this.cityPage.isShowHotCity = isShowHotCity;
+    this.cityPage.isShowSegs = isShowSegs;
     this.onSearbarClick(isFrom);
-    this.cityPage.openPage(isShow);
-    if (!isShow) {
+    this.cityPage.openPage(isShowPage);
+    // this.onHideSegments(!isShowSegs, !isShowHotCity);
+    this.onHideCityName(!isFlyDynamic);
+    if (!isShowPage) {
       return null;
     }
     this.cityPage.onToggleSegmentsPage(isDomestic);
@@ -84,6 +164,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   this.interSidebarsTabs;
   this.pageSize = 40;
   this.isDomestic = true;
+  this.isShowSegs = true;
   this.textSearchResults = [];
   this.openPage = openPage;
   this.onToggleSegmentsPage = onToggleSegmentsPage;
@@ -93,9 +174,10 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   const internationalCities = this.internationalCities;
   function initData(cities) {
     try {
-      const keys = `Code,Name,Nickname,CityName,Pinyin,AirportCityCode,Initial,FirstLetter,EnglishName`.split(
-        ","
-      );
+      const keys =
+        `Code,Name,Nickname,CityName,Pinyin,AirportCityCode,Initial,FirstLetter,EnglishName`.split(
+          ","
+        );
       cities.sort((c1, c2) => c1.Sequence - c2.Sequence);
       cities = cities
         .filter((it) => it.IsHot)
@@ -120,46 +202,32 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   }
   function getHeaderHtml() {
     const header = document.createElement("div");
-    header.classList.add("header");
-    const backIcon = document.createElement("ion-icon");
-    backIcon.setAttribute("name", "chevron-back-outline");
-    backIcon.setAttribute("slot", "start");
-    const cancelBtn = document.createElement("ion-button");
-    cancelBtn.setAttribute("color", "secondary");
-    cancelBtn.setAttribute("fill", "clear");
-    cancelBtn.setAttribute("size", "small");
-    cancelBtn.classList.add("cancel");
-    const label = document.createElement("ion-label");
-    label.textContent = "取消";
-    cancelBtn.append(label);
+    header.innerHTML = `
+          <div class='header'>
+              <ion-icon name='chevron-back-outline' slot='start'></ion-icon>
+              <form action='javascript:void(0)' class='searchbar'>
+                  <ion-searchbar debounce='300' mode='ios' ></ion-searchbar>    
+              </form>
+              <ion-button color='secondary' fill='clear' size='small' class='cancel' >
+                  <ion-label >取消<ion-label>    
+              </ion-button>
+          </div>
+      `;
+    const searchbar = header.querySelector("ion-searchbar");
+    const backIcon = header.querySelector("ion-icon");
+    const cancelBtn = header.querySelector("ion-button");
     cancelBtn.onclick = () => {
       hidePages();
     };
     backIcon.onclick = () => {
       hidePages();
     };
-    const bform = document.createElement("form");
-    bform.setAttribute("action", "javascript:void(0)");
-    bform.classList.add("searchbar");
-    const searchbar = document.createElement("ion-searchbar");
-    bform.append(searchbar);
-    bform.onsubmit = function () {
-      onSearch();
-    };
-    searchbar.setAttribute("debounce", "300");
-    searchbar.setAttribute("mode", "ios");
     searchbar.addEventListener("ionFocus", function () {
       showSearchListPage(true);
     });
-    // searchbar.addEventListener("ionBlur", function () {
-    //     showSearchListPage(false);
-    // })
     searchbar.addEventListener("ionChange", function () {
       onSearch();
     });
-    header.append(backIcon);
-    header.append(bform);
-    header.append(cancelBtn);
     return header;
   }
   function hidePages() {
@@ -175,23 +243,20 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     }
   }
   function getSegmentHtml() {
+    // that.isShowSegs
     const seg = document.createElement("div");
-    seg.classList.add("segments");
-    const d = document.createElement("div");
-    const label = document.createElement("label");
-    label.textContent = "国内";
-    d.append(label);
-    d.classList.add("segment");
-    d.classList.add("d");
-    const i = document.createElement("div");
-    i.classList.add("segment");
-    i.classList.add("i");
-    d.classList.add("active");
-    const lb = document.createElement("label");
-    lb.textContent = "国际/港澳台";
-    i.append(lb);
-    seg.append(d);
-    seg.append(i);
+    seg.innerHTML = `
+          <div class='segments'>
+              <div class='segment d active'>
+                  <label>国内</label>    
+              </div>    
+              <div class='segment i'>
+                  <label>国际/港澳台</label>    
+              </div>    
+          </div>
+      `;
+    const d = seg.querySelector(".d") as HTMLElement;
+    const i = seg.querySelector(".i") as HTMLElement;
     d.onclick = () => {
       i.classList.remove("active");
       d.classList.add("active");
@@ -248,6 +313,11 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       };
     }
     if (page) {
+      if (that.isShowAirports) {
+        page.classList.add("airports-page");
+      } else {
+        page.classList.remove("airports-page");
+      }
       if (open) {
         page.classList.add("show");
         if (that.searchListPage) {
@@ -300,6 +370,9 @@ function CityPage(domesticCities, interCities, lang = "cn") {
           item.classList.add(`col-${r.length}`);
           div.append(item);
         });
+        if (r.every((it) => it.isHide)) {
+          div.classList.add("hide");
+        }
         list.append(div);
       });
     } catch (e) {
@@ -310,12 +383,25 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getHistoryOrHotItem(c, isHistory = false, lang = "cn") {
     const item = document.createElement("div");
     item.classList.add("city-item");
-    item.textContent =
-      lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
     item.setAttribute("Code", c.Code);
+    if (c.isHide) {
+      item.classList.add("hide-item");
+    }
+    item.classList.add("airport-item");
     const label = document.createElement("label");
-    label.textContent = c.IsHot ? c.CityName : c.Nickname;
-    if (!label.textContent) {
+    label.innerHTML = `<label class='display-city-name'>${
+      (lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname) || ""
+    }</label>`;
+    const label2 = document.createElement("label");
+    label2.innerHTML = `<label class='display-air-name'>${
+      c.Name || ""
+    }</label>`;
+    item.append(label);
+    item.append(label2);
+    if (c.isExtraHot) {
+      item.classList.add("extra-hot-item");
+    }
+    if (!item.textContent) {
       item.classList.add("empty");
     }
     item.onclick = () => {
@@ -344,12 +430,13 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     const wrapper = document.createElement("div");
     try {
       wrapper.classList.add("hot-cities-wrapper");
-      const header = document.createElement("div");
-      header.classList.add("header");
-      const label = document.createElement("label");
-      label.textContent = "热门城市";
-      header.append(label);
-      wrapper.append(header);
+      const h = document.createElement("div");
+      h.classList.add("header");
+      h.classList.add("hot-cities-wrapper1");
+      const lb = document.createElement("label");
+      lb.textContent = that.isShowAirports ? "热门机场" : "热门城市";
+      h.append(lb);
+      wrapper.append(h);
       const list = document.createElement("div");
       const listWrapper = document.createElement("div");
       listWrapper.classList.add("list-wrapper");
@@ -369,6 +456,9 @@ function CityPage(domesticCities, interCities, lang = "cn") {
           item.classList.add(`col-${r.length}`);
           div.append(item);
         });
+        if (r.every((it) => it.isHide)) {
+          div.classList.add("hide");
+        }
         list.append(div);
       });
     } catch (e) {
@@ -439,7 +529,8 @@ function CityPage(domesticCities, interCities, lang = "cn") {
         let wrapper = getHistoryWrapperEl();
         if (!wrapper) {
           wrapper = getHistoryHtml(cities);
-          page.insertBefore(wrapper, page.querySelector(".hot-cities-wrapper"));
+          const p = page.querySelector(".hot-cities-wrapper");
+          p.parentElement.insertBefore(wrapper, p);
         }
         const items = wrapper.querySelectorAll(".b-item");
         const list = wrapper.querySelector(".list");
@@ -631,7 +722,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     }
     hidePages();
     if (that.onSelectCallback) {
-      that.onSelectCallback({ isDomestic: false, city });
+      that.onSelectCallback({ isDomestic: true, city });
     }
     console.log("city", city);
   }
@@ -654,6 +745,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       div.setAttribute("Code", city.Code);
       div.onclick = () => {
         onSelectInterCity(city);
+        // onSelectCity(city);
       };
       return div;
     }
@@ -753,7 +845,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     div.classList.add("domestic-page-container");
     div.classList.add("show");
     const cmap = getLeter2Cities(cities);
-    const hotHtml = getHotHtml(cities.filter((it) => it.IsHot));
+    const hotCities = cities.filter((it) => it.IsHot);
+    const hotHtml = getHotHtml(
+      hotCities
+        .filter((it) => !it.isExtraHot)
+        .concat(hotCities.filter((it) => it.isExtraHot))
+    );
     const historyHtml = getHistoryHtml(that.histories);
     div.append(historyHtml);
     div.append(hotHtml);
@@ -802,6 +899,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getItem(c, lang) {
     const item = document.createElement("li");
     item.classList.add("item");
+    if (that.isShowAirports) {
+      item.classList.add("airport-item");
+    }
+    if (c.isHide) {
+      item.classList.add("hide-item");
+    }
     item.onclick = (evt) => {
       onSelectCity(c);
       if (allItems) {
@@ -821,8 +924,15 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       }
     };
     const label = document.createElement("label");
+    const label2 = document.createElement("label");
     label.textContent =
       lang == "en" ? c.EnglishName : c.IsHot ? c.CityName : c.Nickname;
+    label.classList.add("display-city-name");
+    label2.classList.add("display-air-name");
+    label2.innerHTML=`
+      <span class='name notranslate'>${c.Name}</span>
+      <span class='city-name notranslate'>(${c.CityName})</span> 
+    `;
     label.classList.add("notranslate");
     if (c.CityName) {
       const sp = document.createElement("span");
@@ -832,6 +942,7 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       label.append(sp);
     }
     item.append(label);
+    item.append(label2);
     if (!allItems.find((it) => it == item)) {
       allItems.push(item);
     }
@@ -916,6 +1027,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getSearchPageListItem(city, lang) {
     const item = document.createElement("div");
     item.classList.add("item");
+    if (that.isShowAirports) {
+      item.classList.add("airport-item");
+      if (city.isHide) {
+        item.classList.add("hide-item");
+      }
+    }
     const lb = document.createElement("label");
     let lbtextContent = lang == "en" ? city.EnglishName : city.Name;
     const n = document.createElement("label");
@@ -940,12 +1057,12 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     return item;
   }
   function loadMoreItems(infinite = null) {
-    const kw :string= getSearchBarText();
+    const kw = getSearchBarText();
     let arr = that.isDomestic ? that.cities : that.internationalCities;
     let temp = [];
     if (kw) {
       let tmpArr;
-      if (kw.length == 3&&kw.match(/[a-z]/ig)) {
+      if (kw.length == 3 && kw.match(/[a-z]/gi)) {
         tmpArr = arr.filter(
           (it) => (it.Code || "").toLowerCase() == kw.toLowerCase()
         );
@@ -1028,6 +1145,11 @@ function CityPage(domesticCities, interCities, lang = "cn") {
   function getSearchListPage() {
     let sp = document.body.querySelector(".search-list-page");
     if (sp) {
+      if (that.isShowAirports) {
+        sp.classList.add("airports-page");
+      } else {
+        sp.classList.remove("airports-page");
+      }
       // const l = sp.querySelector("ion-list");
       // if (l) {
       //     while (l.firstChild) {
@@ -1038,6 +1160,11 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     }
     sp = document.createElement("div");
     sp.classList.add("search-list-page");
+    if (that.isShowAirports) {
+      sp.classList.add("airports-page");
+    } else {
+      sp.classList.remove("airports-page");
+    }
     const content = document.createElement("ion-content");
     const list = document.createElement("ion-list");
     const infinite = document.createElement("ion-infinite-scroll");

@@ -6,5 +6,7 @@ export enum OrderFlightTicketType {
   /// <summary>
   /// 国际机票
   /// </summary>
-  International = 2
+  International = 2,
+  // [Description("公务机票")]
+  GP = 3,
 }

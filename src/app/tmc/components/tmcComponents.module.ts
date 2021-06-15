@@ -38,6 +38,8 @@ import { BookAddcontactsCompDfComponent } from './book-addcontacts-comp-df/book-
 import { SearchDayDfComponent } from './search-day-df/search-day-df.component';
 import { AddcontactsModalDfComponent } from './addcontacts-modal-df/addcontacts-modal-df.component';
 import { DaysCalendarDfComponent } from "./days-calendar-df/days-calendar-df.component";
+import { SearchDayDyComponent } from "./search-day-dy/search-day-dy.component";
+import { DaysCalendarGpComponent } from "./days-calendar-gp/days-calendar-gp.component";
 
 @NgModule({
   declarations: [
@@ -68,8 +70,10 @@ import { DaysCalendarDfComponent } from "./days-calendar-df/days-calendar-df.com
     DateSelectWheelPopoverComponent,
     SearchDayComponent,
     SearchDayDfComponent,
+    SearchDayDyComponent,
     DaysCalendarComponent,
     DaysCalendarDfComponent,
+    DaysCalendarGpComponent,
     BookTmcOutnumberComponent,
     WaitingCheckPayComponent,
     ShowStandardDetailsComponent,
@@ -101,8 +105,10 @@ import { DaysCalendarDfComponent } from "./days-calendar-df/days-calendar-df.com
     SelectWheelComponent,
     SearchDayComponent,
     SearchDayDfComponent,
+    SearchDayDyComponent,
     DaysCalendarComponent,
     DaysCalendarDfComponent,
+    DaysCalendarGpComponent,
     WaitingCheckPayComponent,
     BookExpenseTypesCompComponent,
   ],

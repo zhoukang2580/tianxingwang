@@ -53,6 +53,7 @@ import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { RefresherComponent } from "src/app/components/refresher";
 import { OrderHotelEntity } from "../models/OrderHotelEntity";
 import { GetsmscodeComponent } from "../components/getsmscode/getsmscode.component";
+import { OrderFlightTicketType } from "../models/OrderFlightTicketType";
 @Component({
   selector: "app-order-list_df",
   templateUrl: "./order-list_df.page.html",
@@ -69,6 +70,7 @@ export class OrderListDfPage
   private selectDateChange = new EventEmitter();
   private selectDateSubscription = Subscription.EMPTY;
   productItemType = ProductItemType;
+  OrderFlightTicketType = OrderFlightTicketType;
   activeTab: ProductItem;
   tabs: ProductItem[] = [];
   tmc: TmcEntity;
@@ -372,9 +374,12 @@ export class OrderListDfPage
   async onExchangeFlightTicket(data: {
     orderId: string;
     ticketId: string;
+    ticketType: number;
     trip: OrderFlightTripEntity;
   }) {
     try {
+
+      console.log(data.ticketType,'type');
       this.datetime.yearValues = [
         new Date().getFullYear(),
         new Date().getFullYear() + 1,
@@ -474,9 +479,16 @@ export class OrderListDfPage
       });
       this.isGoDetail = true;
       this.flightService.setPassengerBookInfosSource(bookInfos);
-      this.router.navigate(["flight-list"], {
-        queryParams: { doRefresh: true },
-      });
+
+      if (data.ticketType == OrderFlightTicketType.Domestic) {
+        this.router.navigate(["flight-list"], {
+          queryParams: { doRefresh: true },
+        });
+      }else if(data.ticketType == OrderFlightTicketType.GP){
+        this.router.navigate(["flight-list-gp"], {
+          queryParams: { doRefresh: true },
+        });
+      }
     } catch (e) {
       AppHelper.alert(e);
     }

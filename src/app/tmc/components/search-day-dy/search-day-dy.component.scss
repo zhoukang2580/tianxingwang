@@ -1,0 +1,35 @@
+section {
+    display: flex;
+    align-items: center;
+    .day {
+        margin: 0 0.2em;
+        font-family: sans-serif;
+        font-size: 1.5rem;
+    }
+    h5 {
+        margin: 10px 0;
+        padding: 0px 10px 0 0;
+        font-size: 1.2rem;
+        color: #333333;
+    }
+    .week {
+        font-size: 1rem;
+    }
+}
+
+:host.disabled {
+    section {
+        color: var(--ion-color-medium);
+        i {
+            color: var(--ion-color-medium);
+        }
+    }
+}
+
+.date {
+    display: flex;
+    align-items: baseline;
+    &.start {
+        text-align: start;
+    }
+}

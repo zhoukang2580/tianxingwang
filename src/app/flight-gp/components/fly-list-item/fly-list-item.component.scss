@@ -1,0 +1,118 @@
+:host {
+  width: 100%;
+}
+.fly-item {
+  h2,
+  h3,
+  h4 {
+    margin: 0;
+    margin-bottom: 0.5em;
+    padding: 0;
+  }
+  padding: 1em 0 0.5em 0;
+  // display: flex;
+  // align-items: center;
+  .info {
+    flex: 1;
+    margin-right: 0.5em;
+  }
+}
+.airports {
+  font-size: 0.8rem;
+}
+.air,
+.airports,
+.time {
+  display: flex;
+  align-items: center;
+}
+.air {
+  font-size: 0.7rem;
+  ion-text{
+    white-space: nowrap;
+  }
+}
+.airports,
+.time {
+  justify-content: space-between;
+}
+.time {
+  position: relative;
+  &::after,
+  &::before {
+    position: absolute;
+    content: "";
+    display: inline-block;
+    display: inline-block;
+    border-top: 2px dotted rgba(var(--ion-color-dark-rgb), 0.5);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  &::after {
+    align-self: flex-end;
+    right: 21%;
+    left: 55%;
+  }
+  &::before {
+    align-self: flex-start;
+    left: 21%;
+    right: 55%;
+  }
+}
+.discount {
+  ion-text + ion-text {
+    margin-left: 0.5em;
+  }
+}
+.seperator {
+  margin: 0 0.1em;
+  color: var(--ion-color-medium);
+}
+.end-time {
+  position: relative;
+  &[addoneday]::before {
+    position: absolute;
+    top: -1em;
+    width: 100%;
+    color: var(--ion-color-secondary);
+    font-size: 0.7rem;
+    content: attr(addoneday);
+  }
+}
+.jiage {
+  font-size: 0.8rem;
+}
+.price {
+  margin-left: auto;
+}
+ion-thumbnail {
+  --size: 1em;
+  margin-right: 0.2em;
+}
+
+.cabins {
+  width: 100%;
+  margin: 0;
+  // transition: opacity ease-in-out 500ms;
+  contain: layout;
+  .cabin-item {
+    border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.12);
+    padding: 0.5em;
+    ion-label {
+      flex: 1;
+    }
+    display: flex;
+    align-items: center;
+    h2 {
+      font-size: 0.9rem;
+    }
+    .book {
+      justify-content: flex-end;
+      display: flex;
+      align-items: center;
+      ion-button {
+        margin: 0 0 0 1em;
+      }
+    }
+  }
+}
