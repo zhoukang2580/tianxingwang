@@ -44,9 +44,9 @@ import { TripType } from "src/app/tmc/models/TripType";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightCityService } from "../flight-city.service";
 @Component({
-  selector: "app-flight-list-gp",
-  templateUrl: "./flight-list-gp.page.html",
-  styleUrls: ["./flight-list-gp.page.scss"],
+  selector: "app-flight-gp-list",
+  templateUrl: "./flight-gp-list.page.html",
+  styleUrls: ["./flight-gp-list.page.scss"],
   animations: [
     trigger("showFooterAnimate", [
       state("true", style({ height: "*" })),
@@ -80,7 +80,7 @@ import { FlightCityService } from "../flight-city.service";
     ]),
   ],
 })
-export class FlightListGpPage
+export class FlightGpListPage
   implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
@@ -428,7 +428,7 @@ export class FlightListGpPage
       this.isCanLeave = true;
       await this.flightGpService.addOneBookInfoToSelfBookType();
       this.flightGpService.currentViewtFlightSegment = fs;
-      this.router.navigate([AppHelper.getRoutePath("flight-item-cabins-gp")]);
+      this.router.navigate([AppHelper.getRoutePath("flight-gp-item-cabins")]);
     } catch (e) {
       console.error(e);
     }
@@ -495,7 +495,7 @@ export class FlightListGpPage
     this.subscriptions.push(filterConditionSubscription);
   }
   private isStillOnCurrentPage() {
-    return this.router.routerState.snapshot.url.includes("flight-list-gp");
+    return this.router.routerState.snapshot.url.includes("flight-gp-list");
   }
   ngOnDestroy() {
     console.log("ngOnDestroy");

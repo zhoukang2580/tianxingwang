@@ -10,12 +10,12 @@ import { FlightGpComponentsModule } from "../components/components.module";
 import { TmcComponentsModule } from "src/app/tmc/components/tmcComponents.module";
 import { CandeactivateGuard } from "src/app/guards/candeactivate.guard";
 import { StylePageGuard } from "src/app/guards/style-page.guard";
-import { FlightListGpPage } from "./flight-list-gp.page";
+import { FlightGpListPage } from "./flight-gp-list.page";
 
 const routes: Routes = [
   {
     path: "",
-    component: FlightListGpPage,
+    component: FlightGpListPage,
     canDeactivate: [CandeactivateGuard],
     canActivate:[StylePageGuard]
   },
@@ -34,6 +34,6 @@ const routes: Routes = [
   exports:[
 
   ],
-  declarations: [FlightListGpPage],
+  declarations: [FlightGpListPage],
 })
-export class FlightListGpPageModule {}
+export class FlightGpListPageModule {}

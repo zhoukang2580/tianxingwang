@@ -25,12 +25,12 @@ import { GpBookReq, GpPassengerDto } from 'src/app/order/models/GpBookReq';
 import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
 
 @Component({
-  selector: 'app-flight-bookinfos-gp',
-  templateUrl: './flight-bookinfos-gp.page.html',
-  styleUrls: ['./flight-bookinfos-gp.page.scss'],
+  selector: 'app-flight-gp-bookinfos',
+  templateUrl: './flight-gp-bookinfos.page.html',
+  styleUrls: ['./flight-gp-bookinfos.page.scss'],
   animations: [flyInOut],
 })
-export class FlightBookinfosGpPage implements OnInit {
+export class FlightGpBookinfosPage implements OnInit {
   // vmCombindInfos: ICombindInfo[] = [];
 
   orderTravelPayTypes: {
@@ -141,7 +141,7 @@ export class FlightBookinfosGpPage implements OnInit {
   }
 
   onAddLinkman() {
-    this.router.navigate([AppHelper.getRoutePath("add-passenger-informartion-gp")], {
+    this.router.navigate([AppHelper.getRoutePath("flight-gp-add-passenger")], {
       queryParams: { isShareType: this.initialBookDtoGpModel.Identity.IsShareTicket }
     });
   }
@@ -157,7 +157,7 @@ export class FlightBookinfosGpPage implements OnInit {
     //     m.splice(idx, 1);
     //   })
     // );
-    this.router.navigate([AppHelper.getRoutePath("update-passenger-informartion-gp")], {
+    this.router.navigate([AppHelper.getRoutePath("flight-gp-update-passenger")], {
       queryParams: {
         id: Id,
         isShareType: this.initialBookDtoGpModel.Identity.IsShareTicket

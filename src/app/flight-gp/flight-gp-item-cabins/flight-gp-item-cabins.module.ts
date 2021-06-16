@@ -6,12 +6,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
-import { FlightItemCabinsGpPage } from './flight-item-cabins-gp.page';
+import { FlightGpItemCabinsPage } from './flight-gp-item-cabins.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: FlightItemCabinsGpPage,
+    component: FlightGpItemCabinsPage,
     canActivate:[StylePageGuard]
   }
 ];
@@ -24,6 +24,6 @@ const routes: Routes = [
     FlightGpComponentsModule,
     RouterModule.forChild(routes),
   ],
-  declarations: [FlightItemCabinsGpPage]
+  declarations: [FlightGpItemCabinsPage]
 })
-export class FlightItemCabinsGpPageModule { }
+export class FlightGpItemCabinsPageModule { }

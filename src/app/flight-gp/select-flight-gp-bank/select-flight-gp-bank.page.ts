@@ -7,11 +7,11 @@ import { FlightGpService } from '../flight-gp.service';
 import { AccountCardEntity } from '../models/AccountCardEntity';
 
 @Component({
-  selector: 'app-select-flight-bank-gp',
-  templateUrl: './select-flight-bank-gp.page.html',
-  styleUrls: ['./select-flight-bank-gp.page.scss'],
+  selector: 'app-select-flight-gp-bank',
+  templateUrl: './select-flight-gp-bank.page.html',
+  styleUrls: ['./select-flight-gp-bank.page.scss'],
 })
-export class SelectFlightBankGpPage implements OnInit {
+export class SelectFlightGpBankPage implements OnInit {
 
   @ViewChild("maincnt", { static: true }) ionContent: IonContent;
   @ViewChild(IonHeader) headerEle: IonHeader;

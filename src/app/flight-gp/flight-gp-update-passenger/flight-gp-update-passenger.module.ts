@@ -1,24 +1,21 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import { Routes, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-
-
-import { FlightBookinfosGpPage } from './flight-bookinfos-gp.page';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
-import { RouterModule, Routes } from '@angular/router';
-import { TmcComponentsModule } from 'src/app/tmc/components/tmcComponents.module';
+import { FlightGpUpdatePassengerPage } from './flight-gp-update-passenger.page';
+
 
 const routes: Routes = [
   {
-    path: "",
-    component: FlightBookinfosGpPage,
+    path: '',
+    component: FlightGpUpdatePassengerPage,
     canDeactivate: [CandeactivateGuard],
     canActivate:[StylePageGuard]
-  },
+  }
 ];
 
 @NgModule({
@@ -27,9 +24,9 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule,
-    TmcComponentsModule
+    AppComponentsModule
   ],
-  declarations: [FlightBookinfosGpPage]
+  
+  declarations: [FlightGpUpdatePassengerPage]
 })
-export class FlightBookinfosGpPageModule {}
+export class FlightGpUpdatePassengerPagePageModule {}

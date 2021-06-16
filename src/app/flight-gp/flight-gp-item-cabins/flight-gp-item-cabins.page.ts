@@ -33,11 +33,11 @@ import { FlightGpService } from "../flight-gp.service";
 import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
 
 @Component({
-  selector: "app-flight-item-cabins-gp",
-  templateUrl: "./flight-item-cabins-gp.page.html",
-  styleUrls: ["./flight-item-cabins-gp.page.scss"],
+  selector: "app-flight-gp-item-cabins",
+  templateUrl: "./flight-gp-item-cabins.page.html",
+  styleUrls: ["./flight-gp-item-cabins.page.scss"],
 })
-export class FlightItemCabinsGpPage implements OnInit {
+export class FlightGpItemCabinsPage implements OnInit {
   private cabins: FlightPolicy[] = [];
   private economyClassCabins: FlightPolicy[] = []; // 显示经济舱的最低价、协议价、全价
   private moreCabins: FlightPolicy[] = []; // 显示更多价格

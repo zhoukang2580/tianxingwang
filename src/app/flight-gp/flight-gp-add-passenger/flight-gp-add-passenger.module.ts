@@ -4,17 +4,16 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-
-import {AddPassengerInformartionGpPage } from './add-passenger-informartion-gp.page';
 import { RouterModule, Routes } from '@angular/router';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
+import { FlightGpAddPassengerPage } from './flight-gp-add-passenger.page';
 
 const routes: Routes = [
   {
     path: "",
-    component: AddPassengerInformartionGpPage,
+    component: FlightGpAddPassengerPage,
     canDeactivate: [CandeactivateGuard],
     canActivate:[StylePageGuard]
   },
@@ -28,6 +27,6 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     AppComponentsModule
   ],
-  declarations: [AddPassengerInformartionGpPage]
+  declarations: [FlightGpAddPassengerPage]
 })
-export class AddPassengerInformartionGpPageModule {}
+export class FlightGpAddPassengerPageModule {}

@@ -374,7 +374,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     console.log("search-flight", s);
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightGpService.setSearchFlightModelSource(s);
-    this.router.navigate([AppHelper.getRoutePath("flight-list-gp")]);
+    this.router.navigate([AppHelper.getRoutePath("flight-gp-list")]);
     this.cachLastSelectedFlightGoDate(s.Date);
   }
   private async cachLastSelectedFlightGoDate(date: string) {

@@ -10,12 +10,12 @@ import { PassengerEntity } from '../models/flightgp/PassengerEntity';
 import { FrequentBookInfo } from '../models/PassengerFlightInfo';
 
 @Component({
-  selector: 'app-add-passenger-informartion-gp',
-  templateUrl: './add-passenger-informartion-gp.page.html',
-  styleUrls: ['./add-passenger-informartion-gp.page.scss'],
+  selector: 'app-flight-gp-add-passenger',
+  templateUrl: './flight-gp-add-passenger.page.html',
+  styleUrls: ['./flight-gp-add-passenger.page.scss'],
 })
 
-export class AddPassengerInformartionGpPage implements OnInit {
+export class FlightGpAddPassengerPage implements OnInit {
 
   passengerInfo: PassengerInfoEntity;
   private subscriptions: Subscription[] = [];

@@ -220,7 +220,7 @@ export class SelectedConfirmBookInfosGpPage implements OnInit, OnDestroy {
     // }
     // }
     this.flightGpService.dismissAllTopOverlays();
-    this.router.navigate([AppHelper.getRoutePath("flight-bookinfos-gp")]);
+    this.router.navigate([AppHelper.getRoutePath("flight-gp-bookinfos")]);
   }
   // async reelect(info: PassengerBookInfoGp) {
   //   await this.flightService.reselectPassengerFlightSegments(info);

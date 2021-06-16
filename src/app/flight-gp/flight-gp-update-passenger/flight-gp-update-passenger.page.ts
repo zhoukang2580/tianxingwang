@@ -4,18 +4,18 @@ import { ModalController, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AppHelper } from 'src/app/appHelper';
 import { LanguageHelper } from 'src/app/languageHelper';
-import { BankType } from '../add-passenger-informartion-gp/add-passenger-informartion-gp.page';
+import { BankType } from '../flight-gp-add-passenger/flight-gp-add-passenger.page';
 import { SelectCardBinsComponent } from '../components/select-card-bins/select-card-bins.component';
 import { FlightGpService } from '../flight-gp.service';
 import { PassengerEntity } from '../models/flightgp/PassengerEntity';
 import { FrequentBookInfo } from '../models/PassengerFlightInfo';
 
 @Component({
-  selector: 'app-update-passenger-informartion-gp',
-  templateUrl: './update-passenger-informartion-gp.page.html',
-  styleUrls: ['./update-passenger-informartion-gp.page.scss'],
+  selector: 'app-flight-gp-update-passenger',
+  templateUrl: './flight-gp-update-passenger.page.html',
+  styleUrls: ['./flight-gp-update-passenger.page.scss'],
 })
-export class UpdatePassengerInformartionGpPage implements OnInit {
+export class FlightGpUpdatePassengerPage implements OnInit {
   private isOpenPageAsModal = false;
   passengerInfo: PassengerInfoEntity;
   private subscriptions: Subscription[] = [];

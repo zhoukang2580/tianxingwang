@@ -5,16 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 
-import { SelectFlightBankGpPage } from './select-flight-bank-gp.page';
 import { RouterModule, Routes } from '@angular/router';
 import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
+import { SelectFlightGpBankPage } from './select-flight-gp-bank.page';
 
 const routes: Routes = [
   {
     path: "",
-    component: SelectFlightBankGpPage,
+    component: SelectFlightGpBankPage,
     canDeactivate: [CandeactivateGuard],
     canActivate:[StylePageGuard]
   },
@@ -27,8 +27,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     AppComponentsModule
   ],
-  declarations: [SelectFlightBankGpPage]
+  declarations: [SelectFlightGpBankPage]
 })
-export class SelectFlightBankGpPageModule {}
+export class SelectFlightGpBankPageModule {}
 
 

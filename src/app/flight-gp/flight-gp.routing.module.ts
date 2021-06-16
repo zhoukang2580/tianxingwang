@@ -11,10 +11,10 @@ const routes: Routes = [
       ),
   },
   {
-    path: "flight-list-gp",
+    path: "flight-gp-list",
     loadChildren: () =>
-      import("./flight-list-gp/flight-list-gp.module").then(
-        (m) => m.FlightListGpPageModule
+      import("./flight-gp-list/flight-gp-list.module").then(
+        (m) => m.FlightGpListPageModule
       ),
   },
   {
@@ -25,32 +25,32 @@ const routes: Routes = [
       ),
   },
   {
-    path: "flight-item-cabins-gp",
+    path: "flight-gp-item-cabins",
     loadChildren: () =>
-      import("./flight-item-cabins-gp/flight-item-cabins-gp.module").then(
-        (m) => m.FlightItemCabinsGpPageModule
+      import("./flight-gp-item-cabins/flight-gp-item-cabins.module").then(
+        (m) => m.FlightGpItemCabinsPageModule
       ),
     canActivate: [TmcGuard],
   },
   {
-    path: "flight-bookinfos-gp",
+    path: "flight-gp-bookinfos",
     loadChildren: () =>
-      import("./flight-bookinfos-gp/flight-bookinfos-gp.module").then(
-        (m) => m.FlightBookinfosGpPageModule
+      import("./flight-gp-bookinfos/flight-gp-bookinfos.module").then(
+        (m) => m.FlightGpBookinfosPageModule
       ),
   },
   {
-    path: "add-passenger-informartion-gp",
+    path: "flight-gp-add-passenger",
     loadChildren: () =>
-      import("./add-passenger-informartion-gp/add-passenger-informartion-gp.module").then(
-        (m) => m.AddPassengerInformartionGpPageModule
+      import("./flight-gp-add-passenger/flight-gp-add-passenger.module").then(
+        (m) => m.FlightGpAddPassengerPageModule
       ),
   },
   {
-    path: "update-passenger-informartion-gp",
+    path: "flight-gp-update-passenger",
     loadChildren: () =>
-      import("./update-passenger-informartion-gp/update-passenger-informartion-gp.module").then(
-        (m) => m.UpdatePassengerInformartionGpPageModule
+      import("./flight-gp-update-passenger/flight-gp-update-passenger.module").then(
+        (m) => m.FlightGpUpdatePassengerPagePageModule
       ),
   },
   {
@@ -61,10 +61,10 @@ const routes: Routes = [
       ),
   },
   {
-    path: "select-flight-bank-gp",
+    path: "select-flight-gp-bank",
     loadChildren: () =>
-      import("./select-flight-bank-gp/select-flight-bank-gp.module").then(
-        (m) => m.SelectFlightBankGpPageModule
+      import("./select-flight-gp-bank/select-flight-gp-bank.module").then(
+        (m) => m.SelectFlightGpBankPageModule
       ),
   },
   {
