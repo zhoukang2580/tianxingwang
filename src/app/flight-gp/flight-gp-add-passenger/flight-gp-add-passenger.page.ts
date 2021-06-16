@@ -4,6 +4,7 @@ import { ModalController, NavController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { AppHelper } from 'src/app/appHelper';
 import { LanguageHelper } from 'src/app/languageHelper';
+import { CredentialPipe } from 'src/app/member/pipe/credential.pipe';
 import { SelectCardBinsComponent } from '../components/select-card-bins/select-card-bins.component';
 import { FlightGpService } from '../flight-gp.service';
 import { PassengerEntity } from '../models/flightgp/PassengerEntity';
@@ -112,7 +113,7 @@ export class FlightGpAddPassengerPage implements OnInit {
     try {
       const obj = {
         name: this.passengerInfo.Name,
-        cardType: this.passengerInfo.CredentialsTypeName,
+        cardType: this.passengerInfo.CredentialsType,
         cardId: this.passengerInfo.Number,
         bankCard: this.passengerInfo.bankCard,
         phone: this.passengerInfo.Mobile
@@ -122,37 +123,41 @@ export class FlightGpAddPassengerPage implements OnInit {
       var IdCardNumberReg = /(^\d{15}$)|(^\d{17}([0-9]|X)$)/;
       var PassportNumberReg = /^1[45][0-9]{7}$|(^[P|p|S|s]\d{7}$)|(^[S|s|G|g|E|e]\d{8}$)|(^[Gg|Tt|Ss|Ll|Qq|Dd|Aa|Ff]\d{8}$)|(^[H|h|M|m]\d{8,10}$)/;
       let reg1 = /^1[0-9]{10}$/;
-      if (obj.name == "") {
+      if (!obj.name) {
         AppHelper.alert("联系人姓名不能为空");
         return
-      } else if (!(reg.test(obj.name))) {
+      }
+      if (!(reg.test(obj.name))) {
         AppHelper.alert("请正确填写乘客姓名");
         return
-      } else if (obj.cardId == "") {
+      }
+      if (!obj.cardId) {
         AppHelper.alert("请填写证件号");
         return
-      } else if (obj.cardType == "身份证" && !(IdCardNumberReg.test(obj.cardId))) {
+      }
+      if (obj.cardType == CredentialsType.IdCard && !(IdCardNumberReg.test(obj.cardId))) {
         AppHelper.alert("身份证格式有误");
         return
-      } else if (obj.cardType == "护照" && !(PassportNumberReg.test(obj.cardId))) {
+      }
+      if (obj.cardType == CredentialsType.Passport && !(PassportNumberReg.test(obj.cardId))) {
         AppHelper.alert("护照格式有误")
         return
-      } else if (obj.bankCard == "") {
-        AppHelper.alert("请填公务卡所属银行");
-        return
-      } else if (obj.phone == "") {
+      }
+      if (!obj.phone) {
         AppHelper.alert("请填写联系人手机号");
         return
-      } else if (!(reg1.test(obj.phone))) {
+      }
+      if (!(reg1.test(obj.phone))) {
         AppHelper.alert("手机号格式不正确");
         return
       }
+      this.passengerInfo.CredentialsTypeName = new CredentialPipe().transform(this.passengerInfo.CredentialsType)
       const frequentBookInfo: FrequentBookInfo = {
         passengerEntity: ({
           ...credential,
           Name: this.passengerInfo.Name,
           CredentialsTypeName: this.passengerInfo.CredentialsTypeName,
-          CredentialsType: this.passengerInfo.CredentialsTypeName == "身份证" ? 1 : 2,
+          CredentialsType: this.passengerInfo.CredentialsType,
           Number: this.passengerInfo.Number,
           Variables: !this.IsShareTicket ? {
             BankBin: this.CardNumber,
@@ -174,7 +179,7 @@ export class FlightGpAddPassengerPage implements OnInit {
         ...credential,
         Name: this.passengerInfo.Name,
         CredentialsTypeName: this.passengerInfo.CredentialsTypeName,
-        CredentialsType: this.passengerInfo.CredentialsTypeName == "身份证" ? 1 : 2,
+        CredentialsType: this.passengerInfo.CredentialsType,
         Number: this.passengerInfo.Number,
         Variables: JSON.stringify(!this.IsShareTicket ? {
           BankBin: this.CardNumber,
@@ -317,15 +322,3 @@ export enum CredentialsType {
   Passport = 2,
 }
 
-export enum Type {
-  /// <summary>
-  /// 身份证
-  /// </summary>
-  /// [Description("身份证")]
-  IdCard = 1,
-  /// <summary>
-  /// 护照
-  /// </summary>
-  /// [Description("护照")]
-  Passport = 2,
-}

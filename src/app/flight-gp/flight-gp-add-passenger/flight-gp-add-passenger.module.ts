@@ -9,6 +9,7 @@ import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
 import { FlightGpAddPassengerPage } from './flight-gp-add-passenger.page';
+import { MemberPipesModule } from 'src/app/member/pipe/pipe.module';
 
 const routes: Routes = [
   {
@@ -25,7 +26,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule
+    AppComponentsModule,
+    MemberPipesModule
   ],
   declarations: [FlightGpAddPassengerPage]
 })

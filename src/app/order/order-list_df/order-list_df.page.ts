@@ -592,7 +592,7 @@ export class OrderListDfPage
       this.isGoDetail = true;
       this.flightGpService.setPassengerBookInfoGpSource(bookInfos);
 
-      this.router.navigate(["flight-list-gp"], {
+      this.router.navigate(["flight-gp-list"], {
         queryParams: { doRefresh: true },
       });
     } catch (e) {

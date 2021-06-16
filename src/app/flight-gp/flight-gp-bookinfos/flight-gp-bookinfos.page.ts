@@ -346,9 +346,6 @@ export class FlightGpBookinfosPage implements OnInit {
     }
   }
 
-  // airFare() {
-
-  // }
 
   calcTotalPrice() {
     console.log('order', this.orderTravelPayTypes + ":" + this.orderTravelPayType);
@@ -436,7 +433,8 @@ export class FlightGpBookinfosPage implements OnInit {
         console.log(this.selectedFrequent, 'price');
         let ticketprice = this.initialBookDtoGpModel?.Routes[0]?.Fare.TicketPrice;
         let tax = this.initialBookDtoGpModel?.Routes[0]?.Fare.Tax;
-        feestotalPrice = (ticketprice + tax) * this.selectedFrequent.length
+        // feestotalPrice = (ticketprice + tax) * this.selectedFrequent.length
+        feestotalPrice = AppHelper.multiply(AppHelper.add(ticketprice, tax), this.selectedFrequent.length);
         this.totalPrice = feestotalPrice;
       }
     }
@@ -638,33 +636,5 @@ export class FlightGpBookinfosPage implements OnInit {
       }, this.checkPayCountIntervalTime);
     });
   }
-
-  // private goToMyOrders(data: {
-  //   isHasTask: boolean;
-  //   payResult: boolean;
-  //   isCheckPay: boolean;
-  // }) {
-  //   try {
-  //     const m = this.flightGpService.getSearchFlightModel();
-  //     // const cities = await this.flightService.getStationsAsync();
-  //     // const city = m.toCity;
-  //     const cities = this.flightGpService.getSearchFlightModel().toCity;
-  //     // const c = cities.find(it => it.Code == (city && city.Code));
-  //     this.router.navigate(["checkout-success"], {
-  //       queryParams: {
-  //         tabId: ProductItemType.plane,
-  //         cityCode: cities && cities.CityCode,
-  //         cityName: cities && cities.CityName,
-  //         isApproval: data.isHasTask,
-  //         payResult: data.payResult,
-  //         isCheckPay: data.isCheckPay,
-  //         date: m.Date,
-  //       },
-  //     });
-  //   } catch (e) {
-  //     console.error(e);
-  //   }
-  // }
-
 }
 

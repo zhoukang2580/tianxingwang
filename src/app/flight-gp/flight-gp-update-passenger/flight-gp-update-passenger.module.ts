@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { AppComponentsModule } from 'src/app/components/appcomponents.module';
 import { CandeactivateGuard } from 'src/app/guards/candeactivate.guard';
 import { StylePageGuard } from 'src/app/guards/style-page.guard';
+import { MemberPipesModule } from 'src/app/member/pipe/pipe.module';
 import { FlightGpUpdatePassengerPage } from './flight-gp-update-passenger.page';
 
 
@@ -24,7 +25,8 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    AppComponentsModule
+    AppComponentsModule,
+    MemberPipesModule
   ],
   
   declarations: [FlightGpUpdatePassengerPage]

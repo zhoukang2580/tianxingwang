@@ -19,12 +19,12 @@
                 <ion-row>
                     <ion-col size='4'>证件类型</ion-col>
                     <!-- <ion-input [(ngModel)]="passengerInfo.cardType"></ion-input> -->
-                    <ion-col class="value" (click)="statusSelect.open()">{{pass?.CredentialsTypeName||"请选泽"}}</ion-col>
+                    <ion-col class="value" (click)="statusSelect.open()">{{(pass?.CredentialsType|credential)||"请选泽"}}</ion-col>
                     <ion-item style="display: none">
-                        <ion-select cancelText="取消" okText="确定" backdrop-dismiss="true" #statusSelect translucent="true" [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="pass.CredentialsTypeName" name="status"
+                        <ion-select cancelText="取消" okText="确定" backdrop-dismiss="true" #statusSelect translucent="true" [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="pass.CredentialsType" name="status"
                             (ionChange)="onSearch($event)">
-                            <ion-select-option value="{{cardType.Waiting}}">身份证</ion-select-option>
-                            <ion-select-option value="{{cardType.True}}">护照</ion-select-option>
+                            <ion-select-option value="{{credentialsType.IdCard}}">身份证</ion-select-option>
+                            <ion-select-option value="{{credentialsType.Passport}}">护照</ion-select-option>
                         </ion-select>
                     </ion-item>
                     <ion-col class="end" (click)="statusSelect.open()">

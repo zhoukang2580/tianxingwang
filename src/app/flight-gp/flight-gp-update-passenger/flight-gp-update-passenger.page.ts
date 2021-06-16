@@ -9,6 +9,7 @@ import { SelectCardBinsComponent } from '../components/select-card-bins/select-c
 import { FlightGpService } from '../flight-gp.service';
 import { PassengerEntity } from '../models/flightgp/PassengerEntity';
 import { FrequentBookInfo } from '../models/PassengerFlightInfo';
+import { CredentialPipe } from 'src/app/member/pipe/credential.pipe';
 
 @Component({
   selector: 'app-flight-gp-update-passenger',
@@ -25,11 +26,11 @@ export class FlightGpUpdatePassengerPage implements OnInit {
     header: "选择证件类型",
   }
 
-
   customPopovertype: any = {
     header: "选择验证类型",
   }
   cardType = CardType;
+  CredentialsType = CredentialsType;
   CardName: string;
   CardNumber: string;
   Id: string;
@@ -64,7 +65,7 @@ export class FlightGpUpdatePassengerPage implements OnInit {
           this.IsShareTicket = true;
         }
         this.initSearchModelParams();
-        this.selectedFrequent = this.selectedFrequent.filter(it => it.passengerEntity?.Id == this.Id);
+        this.selectedFrequent = (this.selectedFrequent || []).filter(it => it.passengerEntity?.Id == this.Id);
         console.log(this.selectedFrequent, "selectedFrequent");
 
         let tag = this.selectedFrequent.map((it) => {
@@ -117,50 +118,61 @@ export class FlightGpUpdatePassengerPage implements OnInit {
         console.log(it.passengerEntity, "select");
         const obj = {
           name: it.passengerEntity.Name,
-          cardType: it.passengerEntity.CredentialsTypeName,
+          cardType: it.passengerEntity.CredentialsType,
           cardId: it.passengerEntity.Number,
           bankCard: it.passengerEntity.Variables.BankName,
           phone: it.passengerEntity.Mobile
         }
         let reg = /^[\u4E00-\u9FA5]{2,4}$/;
-        let reg1 = /^[a-zA-Z0-9]{5,}$/;
-        let reg2 = /^1[0-9]{10}$/;
-        if (obj.name == "") {
+        var IdCardNumberReg = /(^\d{15}$)|(^\d{17}([0-9]|X)$)/;
+        var PassportNumberReg = /^1[45][0-9]{7}$|(^[P|p|S|s]\d{7}$)|(^[S|s|G|g|E|e]\d{8}$)|(^[Gg|Tt|Ss|Ll|Qq|Dd|Aa|Ff]\d{8}$)|(^[H|h|M|m]\d{8,10}$)/;
+        let reg1 = /^1[0-9]{10}$/;
+        if (!obj.name) {
           AppHelper.alert("联系人姓名不能为空");
           return
-        } else if (!(reg.test(obj.name))) {
+        }
+        if (!(reg.test(obj.name))) {
           AppHelper.alert("请正确填写乘客姓名");
           return
-        } else if (obj.cardId == "") {
+        }
+        if (!obj.cardId) {
           AppHelper.alert("请填写证件号");
           return
-        } else if (!(reg1.test(obj.cardId))) {
-          AppHelper.alert("证件号格式有误");
+        }
+        if (obj.cardType == CredentialsType.IdCard && !(IdCardNumberReg.test(obj.cardId))) {
+          AppHelper.alert("身份证格式有误");
           return
-        } else if (obj.phone == "") {
+        }
+        if (obj.cardType == CredentialsType.Passport && !(PassportNumberReg.test(obj.cardId))) {
+          AppHelper.alert("护照格式有误")
+          return
+        }
+        if (!obj.phone) {
           AppHelper.alert("请填写联系人手机号");
           return
-        } else if (!(reg2.test(obj.phone))) {
+        }
+        if (!(reg1.test(obj.phone))) {
           AppHelper.alert("手机号格式不正确");
           return
         }
-
+        it.passengerEntity.CredentialsTypeName = new CredentialPipe().transform(it.passengerEntity.CredentialsType)
         let credential: PassengerEntity;
         const frequentBookInfo: FrequentBookInfo = {
           passengerEntity: ({
             ...credential,
             Name: it.passengerEntity.Name,
             CredentialsTypeName: it.passengerEntity.CredentialsTypeName,
+            CredentialsType: it.passengerEntity.CredentialsType,
             Number: it.passengerEntity.Number,
             Variables: !this.IsShareTicket ? {
               BankBin: this.CardNumber,
               BankName: this.CardName,
               Tag: "1"
-            } :this.isStatus == "公务卡" ? {
+            } : this.isStatus == "公务卡" ? {
               BankBin: this.CardNumber,
               BankName: this.CardName,
               Tag: "1"
-            } :{
+            } : {
               Organization: this.Organization,
               Tag: "2"
             },
@@ -172,17 +184,18 @@ export class FlightGpUpdatePassengerPage implements OnInit {
           ...credential,
           Name: it.passengerEntity.Name,
           CredentialsTypeName: it.passengerEntity.CredentialsTypeName,
+          CredentialsType: it.passengerEntity.CredentialsType,
           Number: it.passengerEntity.Number,
           Id: it.passengerEntity.Id,
           Variables: JSON.stringify(!this.IsShareTicket ? {
             BankBin: it.passengerEntity.Variables.BankBin,
             BankName: it.passengerEntity.Variables.BankName,
             Tag: "1"
-          } :this.isStatus == "公务卡" ? {
+          } : this.isStatus == "公务卡" ? {
             BankBin: this.CardNumber,
             BankName: this.CardName,
             Tag: "1"
-          } :{
+          } : {
             Organization: this.Organization,
             Tag: "2"
           }),
@@ -244,4 +257,17 @@ export enum CardType {
   Waiting = "身份证",
   // [Description("真实")]
   True = "护照",
+}
+
+export enum CredentialsType {
+  /// <summary>
+  /// 身份证
+  /// </summary>
+  /// [Description("身份证")]
+  IdCard = 1,
+  /// <summary>
+  /// 护照
+  /// </summary>
+  /// [Description("护照")]
+  Passport = 2,
 }
