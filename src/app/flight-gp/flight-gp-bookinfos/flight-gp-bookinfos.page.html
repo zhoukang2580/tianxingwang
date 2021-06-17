@@ -78,7 +78,7 @@
                                     {{item?.passengerEntity?.Number.substring(0,6)}}********{{item?.passengerEntity?.Number.substring(item?.passengerEntity?.Number.length - 4)}}
                                 </span>
                                 <span *ngIf="item?.passengerEntity?.CredentialsTypeName == '护照'">
-                                    {{item?.passengerEntity?.Number.substring(0,4)}}********{{item?.passengerEntity?.Number.substring(item?.passengerEntity?.Number.length - 2)}}
+                                    {{item?.passengerEntity?.Number.substring(0,4)}}*****{{item?.passengerEntity?.Number.substring(item?.passengerEntity?.Number.length - 2)}}
                                 </span>
                             </div>
                             <div class="card" *ngIf="item?.passengerEntity?.Variables?.Tag == '1'">

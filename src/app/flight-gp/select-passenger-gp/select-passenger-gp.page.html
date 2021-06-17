@@ -45,7 +45,7 @@
                                         <span class="name-id">{{item.Number.substring(0,6)}}********{{item.Number.substring(item.Number.length-4)}}</span>
                                     </ion-text>
                                     <ion-text color='medium' *ngIf="item.CredentialsTypeName == '护照'">
-                                        <span class="name-id">{{item.Number.substring(0,4)}}********{{item.Number.substring(item.Number.length-2)}}</span>
+                                        <span class="name-id">{{item.Number.substring(0,4)}}*****{{item.Number.substring(item.Number.length-2)}}</span>
                                     </ion-text>
                                 </div>
                             </div>
@@ -68,7 +68,7 @@
                                     {{item?.Number.substring(0,6)}}********{{item.Number.substring(item.Number.length-4)}}
                                 </ion-col>
                                 <ion-col *ngIf="item.CredentialsTypeName == '护照'">
-                                    {{item.Number.substring(0,4)}}********{{item.Number.substring(item.Number.length-2)}}
+                                    {{item.Number.substring(0,4)}}*****{{item.Number.substring(item.Number.length-2)}}
                                 </ion-col>
                             </ion-row>
                             <ion-row>
