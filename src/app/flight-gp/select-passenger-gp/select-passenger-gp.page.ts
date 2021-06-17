@@ -127,7 +127,6 @@ export class SelectPassengerGpPage implements OnInit {
   }
 
   onSelectCredential(credentialId: string) {
-
     console.log("credentialId", credentialId);
     if (this.selectedCredentialId != credentialId) {
       this.selectedCredentialId = credentialId;
