@@ -73,6 +73,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   companies: any[];
   agentNotices: { text: string; active?: boolean; id: number }[];
   canSelectCompany = false;
+  isShowFlightGp = false;
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   recommendHotelDefaultImg: string;
@@ -604,6 +605,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
             return;
           }
 
+          this.isShowGp();
           this.checkIfCanDailySigned();
           this.loadBanners();
           this.loadHotHotels();
@@ -663,6 +665,14 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       };
     });
   }
+
+  async isShowGp(){
+    const isShow = await this.tmcService.hasBookRight("flightGp");
+    if (isShow) {
+      this.isShowFlightGp = true;
+    }
+  }
+
   async goToPage(
     entry: "flight" | "hotel" | "train" | "rentalCar" | "flightGp",
     queryParams?: any

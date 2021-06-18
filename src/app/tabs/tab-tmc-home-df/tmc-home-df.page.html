@@ -67,7 +67,7 @@
                 <img src="assets/home/home-car.png" alt="" />
                 <span class="txt" notranslate>用车</span>
             </div>
-            <div class="gp item" (click)='goToPage("flightGp")'>
+            <div *ngIf="isShowFlightGp" class="gp item" (click)='goToPage("flightGp")'>
                 <img src="assets/home/gp-ticket.png" alt="">
                 <span class="txt" notranslate>GP机票</span>
             </div>

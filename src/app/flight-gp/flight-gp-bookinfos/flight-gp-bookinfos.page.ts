@@ -96,7 +96,7 @@ export class FlightGpBookinfosPage implements OnInit {
     this.subscriptions.push(
       this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
         this.selectedFrequent = m;
-        this.getTotalPriceNumber();
+        // this.getTotalPriceNumber();
         this.calcTotalPrice();
       })
     );
@@ -105,7 +105,7 @@ export class FlightGpBookinfosPage implements OnInit {
   private async empty() {
     this.selectedFrequent = [];
     this.flightGpService.setfrequentBookInfoSource(this.selectedFrequent);
-    this.getTotalPriceNumber();
+    // this.getTotalPriceNumber();
     this.calcTotalPrice();
   }
 
@@ -152,11 +152,6 @@ export class FlightGpBookinfosPage implements OnInit {
     }
     const Id = item.passengerEntity.Id;
     console.log(Id, "id");
-    // this.subscriptions.push(
-    //   this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
-    //     m.splice(idx, 1);
-    //   })
-    // );
     this.router.navigate([AppHelper.getRoutePath("flight-gp-update-passenger")], {
       queryParams: {
         id: Id,
@@ -175,16 +170,10 @@ export class FlightGpBookinfosPage implements OnInit {
     }
     let ok = await AppHelper.alert("你要删除这段信息嘛", true, "确定", "取消");
 
-    if (ok) {
-      this.subscriptions.push(
-        this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
-          m.splice(id, 1);
-          // this.refresh(false);
-          this.getTotalPriceNumber();
-          this.calcTotalPrice();
-        })
-      );
-
+    if (ok) {   
+      this.selectedFrequent.splice(id, 1);
+      await this.flightGpService.setfrequentBookInfoSource(this.selectedFrequent);
+      this.calcTotalPrice();
     }
 
   }
