@@ -667,10 +667,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async isShowGp(){
-    const isShow = await this.tmcService.hasBookRight("flightGp");
-    if (isShow) {
-      this.isShowFlightGp = true;
-    }
+    this.isShowFlightGp = await this.tmcService.hasBookRight("flightGp");
   }
 
   async goToPage(
