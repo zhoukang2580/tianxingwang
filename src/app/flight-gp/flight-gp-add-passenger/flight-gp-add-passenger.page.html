@@ -11,13 +11,13 @@
         <ion-item lines='none' *ngIf="passengerInfo as pass">
             <ion-grid>
                 <ion-row>
-                    <ion-col size='4'>姓名</ion-col>
+                    <ion-col size='4.3'>姓名</ion-col>
                     <ion-col>
                         <ion-input [(ngModel)]="pass.Name" clear-input='true'></ion-input>
                     </ion-col>
                 </ion-row>
                 <ion-row>
-                    <ion-col size='4'>证件类型</ion-col>
+                    <ion-col size='4.3'>证件类型</ion-col>
                     <!-- <ion-input [(ngModel)]="passengerInfo.cardType"></ion-input> -->
                     <ion-col class="value" (click)="statusSelect.open()">{{(pass?.CredentialsType|credential)||"请选泽"}}</ion-col>
                     <ion-item style="display: none">
@@ -32,19 +32,19 @@
                     </ion-col>
                 </ion-row>
                 <ion-row>
-                    <ion-col size='4'>证件号码</ion-col>
+                    <ion-col size='4.3'>证件号码</ion-col>
                     <ion-input [(ngModel)]="pass.Number" clear-input='true'></ion-input>
                 </ion-row>
                 <ion-row *ngIf="!IsShareTicket">
-                    <ion-col size='4'>
+                    <ion-col size='4.3'>
                         <span>公务卡发卡行</span>
                     </ion-col>
-                    <!-- <ion-col size='4'>单位卡验证</ion-col> -->
+                    <!-- <ion-col size='4.3'>单位卡验证</ion-col> -->
                     <ion-text (click)="onSelectBank()">{{CardName}}</ion-text>
                     <!-- <ion-text (click)="onSelectBank()">{{pass?.bankCard?.BankName}}</ion-text> -->
                 </ion-row>
                 <ion-row *ngIf="IsShareTicket">
-                    <ion-col size='4'>
+                    <ion-col size='4.3'>
                         <div (click)="shareTicket.open()">
                             <span>{{isStatus}}</span>
                             <ion-icon name="caret-down-outline"></ion-icon>
@@ -62,7 +62,7 @@
                 </ion-row>
 
                 <ion-row>
-                    <ion-col size='4'>联系号码</ion-col>
+                    <ion-col size='4.3'>联系号码</ion-col>
                     <ion-input [(ngModel)]="pass.Mobile" clear-input='true'></ion-input>
                 </ion-row>
             </ion-grid>
