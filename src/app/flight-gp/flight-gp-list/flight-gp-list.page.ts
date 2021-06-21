@@ -43,6 +43,7 @@ import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightCityService } from "../flight-city.service";
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
 @Component({
   selector: "app-flight-gp-list",
   templateUrl: "./flight-gp-list.page.html",
@@ -95,10 +96,12 @@ export class FlightGpListPage
   showAddPassenger = false;
   isRotateIcon = false;
   isOpenFilter = false;
+  identity: IdentityEntity;
   @ViewChild("cnt", { static: true }) public cnt: IonContent;
   @ViewChildren("fli") public liEles: QueryList<ElementRef<HTMLElement>>;
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmFlightJourneyList: FlightJourneyEntity[];
+  identitySubscription = Subscription.EMPTY;
   get flightResult() {
     return this.flightGpService.flightResult;
   }
@@ -318,6 +321,19 @@ export class FlightGpListPage
     this.isRotatingIcon = false;
     console.log("onRotateIconDone");
   }
+
+  async getIdentity(){
+    this.identitySubscription = this.identityService
+      .getIdentitySource()
+      .subscribe((r) => {
+        this.identity = r;
+      });
+  }
+
+  // isShowIdentity(){
+  //   return this.identity.IsShareTicket
+  // }
+
   async doRefresh(loadDataFromServer: boolean, keepSearchCondition: boolean) {
     console.log(
       `doRefresh:loadDataFromServer=${loadDataFromServer},keepSearchCondition=${keepSearchCondition}`
@@ -358,6 +374,7 @@ export class FlightGpListPage
           this.activeTab = "none";
         }, 0);
       }
+      this.getIdentity();
       this.vmFlights = [];
       this.isLoading = true;
       this.currentProcessStatus = "正在获取航班列表";

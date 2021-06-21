@@ -100,6 +100,11 @@
         <div class="btn_add" (click)="onAddLinkman()">
             <ion-text>添加乘机人</ion-text>
         </div>
+        <div class="hint" *ngIf="!identity?.IsShareTicket">
+            <svg class="bi bi-exclamation-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"></path>
+            </svg>政府采购机票仅支持公务卡验证,如需预算单位验证,请致电400-66-88868,给您带来不便敬请谅解！
+        </div>
     </ion-list>
     <ng-container>
         <div class="insurances" *ngIf="initialBookDtoGpModel?.InsuranceResult?.Products as insurance">

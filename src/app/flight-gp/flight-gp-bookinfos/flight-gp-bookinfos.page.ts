@@ -23,6 +23,8 @@ import { IonCheckbox, ModalController, NavController, PopoverController } from '
 import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 import { GpBookReq, GpPassengerDto } from 'src/app/order/models/GpBookReq';
 import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
+import { IdentityEntity } from 'src/app/services/identity/identity.entity';
+import { IdentityService } from 'src/app/services/identity/identity.service';
 
 @Component({
   selector: 'app-flight-gp-bookinfos',
@@ -75,6 +77,8 @@ export class FlightGpBookinfosPage implements OnInit {
   selectedFrequent: any[] = [];
   orderLinkmanDto: OrderLinkmanDto;
   isCheckingPay: boolean;
+  identitySubscription = Subscription.EMPTY;
+  identity: IdentityEntity;
 
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
@@ -87,7 +91,8 @@ export class FlightGpBookinfosPage implements OnInit {
     private staffService: HrService,
     private popoverController: PopoverController,
     public modalController: ModalController,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private identityService:IdentityService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -246,13 +251,21 @@ export class FlightGpBookinfosPage implements OnInit {
       this.expenseTypes = this.initialBookDtoModel.ExpenseTypes || [];
 
       // await this.initCombindInfos();
-
+      await this.getIdentity();
       await this.initOrderTravelPayTypes();
       // console.log("vmCombindInfos", this.vmCombindInfos);
     } catch (err) {
       // this.errors = err || "please retry";
       console.error(err);
     }
+  }
+
+  async getIdentity(){
+    this.identitySubscription = this.identityService
+      .getIdentitySource()
+      .subscribe((r) => {
+        this.identity = r;
+      });
   }
 
   private async initOrderTravelPayTypes() {
