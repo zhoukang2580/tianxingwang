@@ -140,7 +140,13 @@
         font-size: 12px;
         padding: 0 10px 10px 10px;
         .bi {
-            color: rgb(255, 151, 59);
+            color: #ff973b;
+            position: absolute;
+            left: 10px;
+            font-size: 16px;
+        }
+        span {
+            padding-left: 20px;
         }
     }
 }
