@@ -24,6 +24,7 @@ import { map } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
 import { FlightGpService, SearchFlightModel } from "../flight-gp.service";
 import { FlightCityService } from "src/app/flight/flight-city.service";
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
 @Component({
   selector: "app-search-flight-gp",
   templateUrl: "./search-flight-gp.page.html",
@@ -35,6 +36,8 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   goDate: DayModel;
   backDate: DayModel;
   searchConditionSubscription = Subscription.EMPTY;
+  identitySubscription = Subscription.EMPTY;
+  identity: IdentityEntity;
   searchFlightModel: SearchFlightModel;
   isMoving: boolean;
   showReturnTrip: boolean;
@@ -169,10 +172,21 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     return true;
   }
 
+  async getIdentity(){
+    this.identitySubscription = this.identityService
+      .getIdentitySource()
+      .subscribe((r) => {
+        this.identity = r;
+      });
+  }
+
   back() {
     this.isleave = true;
     this.flightGpService.removeAllBookInfos();
-    this.router.navigate([""]);
+    // this.router.navigate([""]);
+
+
+    
   }
   private onRoundTrip(single: boolean) {
     // console.log("onRoundTrip isSingle", single);
