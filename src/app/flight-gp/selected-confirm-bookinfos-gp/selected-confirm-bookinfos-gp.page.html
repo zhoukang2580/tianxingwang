@@ -21,19 +21,8 @@
                 <small style="font-size: .7rem;margin: 0 0.25em;">到</small>
                 <ion-text color='secondary'>{{bookInfo?.flightSegment?.ToCityName}}</ion-text>
               </div>
-              {{getDate(bookInfo?.flightSegment)}} 
-              <!-- <ion-text color='secondary'>
-                {{getTripTypeTip(bookInfo.bookInfo)}}</ion-text> -->
+              {{getDate(bookInfo?.flightSegment)}}
             </strong>
-
-                        <!-- <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
-                            <ion-icon name="trash" color='danger' mode='ios'>
-                            </ion-icon>
-                        </ion-button> -->
-                        <!-- <div class='reset'>
-                            <ion-button expand='block' color='secondary' size='small' fill='clear' (click)='reelect(bookInfo[0])'>重选
-                            </ion-button>
-                        </div> -->
                     </div>
                     <app-fly-list-item [flightSegment]='bookInfo?.flightSegment' [showDetails]='true' [isAgreement]='bookInfo?.Cabin?.FareType==FlightCabinFareType.Agreement'>
                     </app-fly-list-item>
