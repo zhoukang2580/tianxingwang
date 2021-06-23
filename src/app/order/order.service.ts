@@ -21,7 +21,7 @@ import { ModalController } from "@ionic/angular";
 import { TripType } from "../tmc/models/TripType";
 import {
   FlightHotelTrainType,
-  PassengerBookInfo,
+  PassengerBookInfo, 
   PassengerBookInfoGp,
   TmcEntity,
 } from "../tmc/tmc.service";
@@ -35,6 +35,8 @@ import { TravelModel } from "./models/TravelModel";
 import { StaffEntity } from "../hr/hr.service";
 import { CalendarService } from "../tmc/calendar.service";
 import { OrderPassengerEntity } from "./models/OrderPassengerEntity";
+import { IPayWayItem, PayComponent } from "../components/pay/pay.component";
+import { PayService } from "../services/pay/pay.service";
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -52,6 +54,7 @@ export class OrderService {
   constructor(
     private apiService: ApiService,
     private modalCtrl: ModalController,
+    private payService: PayService,
     private calendarService: CalendarService
   ) {}
   getOrderList(searchCondition: OrderModel) {
@@ -142,6 +145,150 @@ export class OrderService {
         return it;
       })
     );
+  }
+  async payOrder(
+    orderId: string,
+    key = "",
+    giveup = false,
+    payways?: { label: string; value: string }[]
+  ): Promise<boolean> {
+    if (giveup) {
+      return Promise.resolve(false);
+    }
+    let payResult = false;
+    const payWay = await this.selectPayWay(payways);
+    console.log("payway", payWay);
+    if (!payWay) {
+      return payResult;
+    } else {
+      if (payWay.value.toLowerCase().includes("ali")) {
+        payResult = await this.aliPay(orderId, key);
+      }
+      if (payWay.value.toLowerCase().includes("wechat")) {
+        payResult = await this.wechatPay(orderId, key);
+      }
+      if (payWay.value.toLowerCase().includes("quickexpress")) {
+        const req = new RequestEntity();
+        req.IsShowLoading = true;
+        this.payService.payMobile(req, "");
+      }
+    }
+    return payResult;
+  }
+  private async wechatPay(
+    tradeNo: string,
+    key: string = "",
+    method: string = "TmcApiOrderUrl-Pay-Create"
+  ) {
+    let res = false;
+    const req = new RequestEntity();
+    req.Method = method;
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "3",
+      OrderId: tradeNo,
+      IsApp: AppHelper.isApp(),
+    };
+    if (key) {
+      req.Data["Key"] = key;
+    }
+    const r = await this.payService.wechatpay(req, "").catch((_) => {
+      AppHelper.alert(_);
+    });
+    if (r) {
+      const req1 = new RequestEntity();
+      req1.Method = "TmcApiOrderUrl-Pay-Process";
+      req1.Version = "2.0";
+      req1.Data = {
+        OutTradeNo: r,
+        Type: "3",
+      };
+      const result = await this.payService.process(req1).catch((_) => {
+        AppHelper.alert(_);
+      });
+      if (result) {
+        // AppHelper.alert("支付完成");
+        res = true;
+      } else {
+        // AppHelper.alert("订单处理支付失败");
+        res = false;
+      }
+    } else {
+      // AppHelper.alert("微信支付失败");
+      res = false;
+    }
+    return res;
+  }
+  private async aliPay(
+    tradeNo: string,
+    key: string = "",
+    method: string = "TmcApiOrderUrl-Pay-Create"
+  ) {
+    let res = false;
+    const req = new RequestEntity();
+    req.Method = method;
+    req.Version = "2.0";
+    req.Data = {
+      Channel: "App",
+      Type: "2",
+      IsApp: AppHelper.isApp(),
+      OrderId: tradeNo,
+    };
+    if (key) {
+      req.Data["Key"] = key;
+    }
+    const r = await this.payService.alipay(req, "").catch((e) => {
+      AppHelper.alert(e);
+    });
+    if (r) {
+      const req1 = new RequestEntity();
+      req1.Method = "TmcApiOrderUrl-Pay-Process";
+      req1.Version = "2.0";
+      req1.Data = {
+        OutTradeNo: tradeNo,
+        Type: "2",
+      };
+      const result = await this.payService.process(req1).catch((_) => {
+        AppHelper.alert(_);
+      });
+      if (result) {
+        res = true;
+        // AppHelper.alert("支付完成");
+      } else {
+        res = false;
+        // AppHelper.alert("订单处理支付失败");
+      }
+    } else {
+      // AppHelper.alert("支付宝支付失败");
+      res = false;
+    }
+    return res;
+  }
+  async selectPayWay(
+    paytypes?: { label: string; value: string }[]
+  ): Promise<IPayWayItem> {
+    const m = await AppHelper.popoverController.create({
+      component: PayComponent,
+      componentProps: {
+        payWays: paytypes,
+      },
+    });
+    m.backdropDismiss = false;
+    await m.present();
+    const result = await m.onDidDismiss();
+    return result && result.data;
+  }
+  getOrderPays(orderId: string) {
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = `TmcApiOrderUrl-Pay-GetOrderPays`;
+    req.Data = {
+      Id: orderId,
+    };
+    return this.apiService.getPromiseData<any>(req).then((r) => {
+      return Object.keys(r).map((k) => ({ Name: r[k], Value: k }));
+    });
   }
   getOrderTasks(
     data: TaskModel,
