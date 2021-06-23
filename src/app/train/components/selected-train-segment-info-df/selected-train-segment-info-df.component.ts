@@ -2,7 +2,7 @@ import { HrService } from "../../../hr/hr.service";
 import { TrainSeatEntity } from "../../models/TrainSeatEntity";
 import { TrainService, TrainPolicyModel } from "../../train.service";
 import { CalendarService } from "../../../tmc/calendar.service";
-import { ModalController } from "@ionic/angular";
+import { ModalController, PopoverController } from "@ionic/angular";
 import { Observable, of, combineLatest, from } from "rxjs";
 import { EventEmitter } from "@angular/core";
 import { Component, OnInit } from "@angular/core";
@@ -15,6 +15,7 @@ import { LanguageHelper } from "src/app/languageHelper";
 import { tap, map, filter } from "rxjs/operators";
 import { AppHelper } from "src/app/appHelper";
 import { Router } from "@angular/router";
+import { WarmPromptComponent } from "../warm-prompt/warm-prompt.component";
 @Component({
   selector: "app-selected-train-segment-info-df",
   templateUrl: "./selected-train-segment-info-df.component.html",
@@ -29,6 +30,7 @@ export class SelectedTrainSegmentInfoDfComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
+    private popoverController: PopoverController,
     private trainService: TrainService,
     private staffService: HrService,
     private router: Router
@@ -119,6 +121,21 @@ export class SelectedTrainSegmentInfoDfComponent implements OnInit {
   async reelect(bookInfo: PassengerBookInfo<ITrainInfo>) {
     await this.trainService.reelectBookInfo(bookInfo);
     return true;
+  }
+
+  // onOpenrules(){
+    
+  // }
+
+  async onOpenrules() {
+    const m = await this.popoverController.create({
+      component: WarmPromptComponent,
+      showBackdrop: true,
+      cssClass: "warm-prompt",
+      // animated: false
+    });
+    m.backdropDismiss = true;
+    await m.present();
   }
 
 }

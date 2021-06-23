@@ -19,6 +19,7 @@ import { SelectedTrainSegmentInfoEnComponent } from './selected-train-segment-in
 import { SelectedTrainSegmentInfoDfComponent } from './selected-train-segment-info-df/selected-train-segment-info-df.component';
 import { TrainListItemDfComponent } from './train-list-item-df/train-list-item-df.component';
 import { SeatPickerDfComponent } from './seat-picker-df/seat-picker-df.component';
+import { WarmPromptComponent } from './warm-prompt/warm-prompt.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { SeatPickerDfComponent } from './seat-picker-df/seat-picker-df.component
     SeatPickerDfComponent,
     TrainRefundComponent,
     TrainTicketComponent,
-    SelectAndReplaceTrainInfoComponent
+    SelectAndReplaceTrainInfoComponent,
+    WarmPromptComponent
   ],
   imports: [
     CommonModule,
@@ -58,7 +60,8 @@ import { SeatPickerDfComponent } from './seat-picker-df/seat-picker-df.component
     SelectedTrainSegmentInfoDfComponent,
     SeatPickerComponent,
     SeatPickerDfComponent,
-    TrainTicketComponent
+    TrainTicketComponent,
+    WarmPromptComponent
   ],
   entryComponents: [
     SeatPickerDfComponent,

@@ -1,63 +1,83 @@
 ion-item {
-  margin: 10px;
-  border-radius: 10px;
+    margin: 10px;
+    border-radius: 10px;
 }
+
 .detail {
-  width: 100%;
-  padding-top: 15px;
+    width: 100%;
+    padding-top: 15px;
 }
+
 .date {
-  margin-top: 0.5em;
-  margin-bottom: -1em;
+    margin-top: 0.5em;
+    margin-bottom: -1em;
 }
+
 strong {
-  font: inherit;
+    font: inherit;
 }
+
 .date,
 .info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
 }
+
 .rules {
-  font-size: 0.8rem;
-  padding-bottom: 10px;
+    font-size: 0.8rem;
+    padding-bottom: 10px;
 }
+
 .lowest-segment {
-  font-size: 0.9rem;
+    font-size: 0.9rem;
 }
+
 .reset {
-  display: flex;
-  justify-content: flex-end;
+    display: flex;
+    justify-content: flex-end;
 }
+
 ion-item-divider {
-  border-left: 4px solid var(--ion-color-secondary);
+    border-left: 4px solid var(--ion-color-secondary);
 }
+
 .train-item {
-  // border: 1px dashed var(--ion-color-secondary);
-  border-radius: 0.5em;
-  padding: 0.5em;
-  margin: 0.5em 0;
-  background: #fff;
+    // border: 1px dashed var(--ion-color-secondary);
+    border-radius: 0.5em;
+    padding: 0.5em;
+    margin: 0.5em 0;
+    background: #fff;
+}
+
+.warm_prompt {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    img {
+        margin-right: 8px;
+        width: 15px;
+        height: 15px;
+    }
 }
 
 ion-item {
-  --background: #f5f7f9;
+    --background: #f5f7f9;
 }
 
 .ion-margin-top {
-  --border-radius: 20px;
-  width: 90%;
-  height: 2.5rem;
+    --border-radius: 20px;
+    width: 90%;
+    height: 2.5rem;
 }
 
 .toolbar {
-  --background: #f5f7f9;
+    --background: #f5f7f9;
 }
 
 .btn_container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
