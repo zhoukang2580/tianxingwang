@@ -71,14 +71,13 @@ export class LoginService {
         console.log("checkIsDeviceBinded " + JSON.stringify(res, null, 2));
         if (res.Status && res.Data) {
           // 需要绑定
-          this.router.navigate([
-            AppHelper.getRoutePath("account-bind"),
-            {
+          this.router.navigate([AppHelper.getRoutePath("account-bind")], {
+            queryParams: {
               IsActiveMobile: res.Data.IsActiveMobile,
               Mobile: res.Data.Mobile,
               Path: AppHelper.getToPageAfterAuthorize(),
             },
-          ]);
+          });
         }
         // else if (res.Message) {
         //   AppHelper.alert(res.Message);
