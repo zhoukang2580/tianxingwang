@@ -25,6 +25,7 @@ import { GpBookReq, GpPassengerDto } from 'src/app/order/models/GpBookReq';
 import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
 import { IdentityEntity } from 'src/app/services/identity/identity.entity';
 import { IdentityService } from 'src/app/services/identity/identity.service';
+import { OrderService } from 'src/app/order/order.service';
 
 @Component({
   selector: 'app-flight-gp-bookinfos',
@@ -87,6 +88,7 @@ export class FlightGpBookinfosPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
+    private orderService:OrderService,
     private flightGpService: FlightGpService,
     private staffService: HrService,
     private popoverController: PopoverController,
@@ -498,7 +500,7 @@ export class FlightGpBookinfosPage implements OnInit {
               );
             } else {
               if (isCheckPay) {
-                this.payResult = await this.tmcService.payOrder(res.TradeNo);
+                this.payResult = await this.orderService.payOrder(res.TradeNo,null,false,[{label:"快钱",value:"quickexpress"}]);
               }
             }
           } else {

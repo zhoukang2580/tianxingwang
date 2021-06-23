@@ -47,52 +47,47 @@ export class PayComponent implements OnInit {
   ngOnInit() {
     if (!this.payWays) {
       this.payWays = [];
-      if (AppHelper.isApp() || AppHelper.isH5()) {
-        this.payWays.push({
-          label: LanguageHelper.PayWays.getAliPayTip(),
-          value: "ali",
-        });
-        this.payWays.push({
-          label: LanguageHelper.PayWays.getWechatPayTip(),
-          value: "wechat",
-        });
-      }
-      if (AppHelper.isDingtalkH5()) {
-        this.payWays = [
-          {
-            label: LanguageHelper.PayWays.getAliPayTip(),
-            value: "ali",
-          },
-        ];
-      }
-      if (AppHelper.isWechatH5() || AppHelper.isWechatMini()) {
-        this.payWays = [
-          {
-            label: LanguageHelper.PayWays.getWechatPayTip(),
-            value: "wechat",
-          },
-        ];
-      }
-    } else {
-      if (AppHelper.isWechatH5() || AppHelper.isWechatMini()) {
-        this.payWays = this.payWays.filter(
-          (it) =>
-            !(
-              it.label.includes("支付宝") ||
-              it.value.toLowerCase().includes("ali")
-            )
-        );
-      }
-      if (AppHelper.isDingtalkH5()) {
-        this.payWays = this.payWays.filter(
-          (it) =>
-            !(
-              it.label.includes("微信") ||
-              it.value.includes("weixin") ||
-              it.value.includes("wechat")
-            )
-        );
-      }
+    }
+    if (AppHelper.isApp() || AppHelper.isH5()) {
+      this.payWays.push({
+        label: LanguageHelper.PayWays.getAliPayTip(),
+        value: "ali",
+      });
+      this.payWays.push({
+        label: LanguageHelper.PayWays.getWechatPayTip(),
+        value: "wechat",
+      });
+    }
+    if (AppHelper.isDingtalkH5()) {
+      this.payWays.push({
+        label: LanguageHelper.PayWays.getAliPayTip(),
+        value: "ali",
+      });
+    }
+    if (AppHelper.isWechatH5() || AppHelper.isWechatMini()) {
+      this.payWays.push({
+        label: LanguageHelper.PayWays.getWechatPayTip(),
+        value: "wechat",
+      });
+    }
+    if (AppHelper.isWechatH5() || AppHelper.isWechatMini()) {
+      this.payWays = this.payWays.filter(
+        (it) =>
+          !(
+            it.label.includes("支付宝") ||
+            it.value.toLowerCase().includes("ali")
+          )
+      );
+    }
+    if (AppHelper.isDingtalkH5()) {
+      this.payWays = this.payWays.filter(
+        (it) =>
+          !(
+            it.label.includes("微信") ||
+            it.value.includes("weixin") ||
+            it.value.includes("wechat")
+          )
+      );
     }
     if (this.payWays && this.payWays.length) {
       this.payWays[0].isChecked = true;
