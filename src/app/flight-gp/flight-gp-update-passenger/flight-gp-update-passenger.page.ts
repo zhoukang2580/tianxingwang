@@ -147,6 +147,12 @@ export class FlightGpUpdatePassengerPage implements OnInit {
           AppHelper.alert("护照格式有误")
           return
         }
+        if (this.isStatus == "公务卡") {
+          if(!obj.bankCard){
+            AppHelper.alert("请选择公务卡");
+            return
+          }
+        }
         if (!obj.phone) {
           AppHelper.alert("请填写联系人手机号");
           return
@@ -156,24 +162,24 @@ export class FlightGpUpdatePassengerPage implements OnInit {
           return
         }
         it.passengerEntity.CredentialsTypeName = new CredentialPipe().transform(it.passengerEntity.CredentialsType)
-        let credential: PassengerEntity;
+        // let credential: PassengerEntity;
         const frequentBookInfo: FrequentBookInfo = {
           passengerEntity: ({
-            ...credential,
+            Id:it.passengerEntity.Id,
             Name: it.passengerEntity.Name,
             CredentialsTypeName: it.passengerEntity.CredentialsTypeName,
             CredentialsType: it.passengerEntity.CredentialsType,
             Number: it.passengerEntity.Number,
             Variables: !this.IsShareTicket ? {
-              BankBin: this.CardNumber,
-              BankName: this.CardName,
+              BankBin: it.passengerEntity.Variables.BankBin,
+              BankName: it.passengerEntity.Variables.BankName,
               Tag: "1"
             } : this.isStatus == "公务卡" ? {
-              BankBin: this.CardNumber,
-              BankName: this.CardName,
+              BankBin: it.passengerEntity.Variables.BankBin,
+              BankName: it.passengerEntity.Variables.BankName,
               Tag: "1"
             } : {
-              Organization: this.Organization,
+              Organization: it.passengerEntity.Variables.Organization,
               Tag: "2"
             },
             Mobile: it.passengerEntity.Mobile
@@ -181,7 +187,6 @@ export class FlightGpUpdatePassengerPage implements OnInit {
         }
 
         const passengerDate = {
-          ...credential,
           Name: it.passengerEntity.Name,
           CredentialsTypeName: it.passengerEntity.CredentialsTypeName,
           CredentialsType: it.passengerEntity.CredentialsType,
@@ -192,11 +197,11 @@ export class FlightGpUpdatePassengerPage implements OnInit {
             BankName: it.passengerEntity.Variables.BankName,
             Tag: "1"
           } : this.isStatus == "公务卡" ? {
-            BankBin: this.CardNumber,
-            BankName: this.CardName,
+            BankBin: it.passengerEntity.Variables.BankBin,
+            BankName: it.passengerEntity.Variables.BankName,
             Tag: "1"
           } : {
-            Organization: this.Organization,
+            Organization: it.passengerEntity.Variables.Organization,
             Tag: "2"
           }),
           Mobile: it.passengerEntity.Mobile

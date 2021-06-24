@@ -53,8 +53,8 @@
                         </ion-item>
 
                     </ion-col>
-                    <ion-text (click)="onSelectBank()" *ngIf="isStatus=='公务卡'">{{select.passengerEntity&&select.passengerEntity.Variables.BankName}}</ion-text>
-                    <ion-input *ngIf="isStatus=='单位'" [(ngModel)]="select.passengerEntity&&select.passengerEntity.Variables.Organization" clear-input='true'></ion-input>
+                    <ion-text (click)="onSelectBank()" *ngIf="isStatus=='公务卡'">{{select.passengerEntity&&select.passengerEntity.Variables.BankName || "请选择公务卡"}}</ion-text>
+                    <ion-input *ngIf="isStatus=='单位'" [(ngModel)]="select.passengerEntity&&select.passengerEntity.Variables&&select.passengerEntity.Variables.Organization" clear-input='true'></ion-input>
                 </ion-row>
                 <ion-row>
                     <ion-col size='4'>联系号码</ion-col>

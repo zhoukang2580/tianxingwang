@@ -414,8 +414,9 @@ export class FlightGpService {
     arg: FrequentBookInfo
   ) {
     console.log("addPassengerFlightSegments", arg);
-    const infos = this.getfrequentBookInfo();
-    // infos.push(arg);
+    let infos = this.getfrequentBookInfo();
+    infos = [];
+    infos.push(arg);
     console.log("addPassengerFlightSegments added", arg);
     this.setfrequentBookInfoSource(infos);
   }
