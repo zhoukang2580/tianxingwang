@@ -21,7 +21,7 @@ import { ModalController } from "@ionic/angular";
 import { TripType } from "../tmc/models/TripType";
 import {
   FlightHotelTrainType,
-  PassengerBookInfo, 
+  PassengerBookInfo,
   PassengerBookInfoGp,
   TmcEntity,
 } from "../tmc/tmc.service";
@@ -37,6 +37,7 @@ import { CalendarService } from "../tmc/calendar.service";
 import { OrderPassengerEntity } from "./models/OrderPassengerEntity";
 import { IPayWayItem, PayComponent } from "../components/pay/pay.component";
 import { PayService } from "../services/pay/pay.service";
+import { OpenUrlComponent } from "../pages/components/open-url-comp/open-url.component";
 export class OrderDetailModel {
   Histories: HistoryEntity[];
   Tasks: TaskEntity[];
@@ -56,7 +57,7 @@ export class OrderService {
     private modalCtrl: ModalController,
     private payService: PayService,
     private calendarService: CalendarService
-  ) {}
+  ) { }
   getOrderList(searchCondition: OrderModel) {
     const req = new RequestEntity();
     // req.IsShowLoading = true;
@@ -168,9 +169,7 @@ export class OrderService {
         payResult = await this.wechatPay(orderId, key);
       }
       if (payWay.value.toLowerCase().includes("quickexpress")) {
-        const req = new RequestEntity();
-        req.IsShowLoading = true;
-        this.payService.payMobile(req, "");
+        payResult = await this.quickexpressPay(orderId, key)
       }
     }
     return payResult;
@@ -217,6 +216,62 @@ export class OrderService {
     } else {
       // AppHelper.alert("微信支付失败");
       res = false;
+    }
+    return res;
+  }
+  private async quickexpressPay(
+    tradeNo: string,
+    key: string = "",
+    method: string = "TmcApiOrderUrl-Pay-Create"
+  ) {
+    let res = false;
+    try {
+      const req = new RequestEntity();
+      req.Method = method;
+      req.Version = "2.0";
+      req.Data = {
+        Channel: "App",
+        Type: "6",
+        OrderId: tradeNo,
+        IsApp: AppHelper.isApp(),
+      };
+      if (key) {
+        req.Data["Key"] = key;
+      }
+      const r = await this.apiService.getPromiseData<{ Url: string }>(req);
+      if (r && r.Url) {
+        const m = await AppHelper.modalController.create({
+          component: OpenUrlComponent,
+          componentProps: {
+            url: r.Url,
+            isOpenAsModal: true,
+          }
+        });
+        m.present();
+        res = true;
+        // const req1 = new RequestEntity();
+        // req1.Method = "TmcApiOrderUrl-Pay-Process";
+        // req1.Version = "2.0";
+        // req1.Data = {
+        //   OutTradeNo: r,
+        //   Type: "6",
+        // };
+        // const result = await this.payService.process(req1).catch((_) => {
+        //   AppHelper.alert(_);
+        // });
+        // if (result) {
+        //   // AppHelper.alert("支付完成");
+        //   res = true;
+        // } else {
+        //   // AppHelper.alert("订单处理支付失败");
+        //   res = false;
+        // }
+      } else {
+        // AppHelper.alert("微信支付失败");
+        res = false;
+      }
+    } catch (e) {
+      console.error(e);
     }
     return res;
   }
@@ -322,7 +377,7 @@ export class OrderService {
       (order.GetVariable<number>("TravelPayType") ==
         OrderTravelPayType.Credit ||
         order.GetVariable<number>("TravelPayType") ==
-          OrderTravelPayType.Person) &&
+        OrderTravelPayType.Person) &&
       order.Status != OrderStatusType.Cancel;
     if (!rev) {
       return false;

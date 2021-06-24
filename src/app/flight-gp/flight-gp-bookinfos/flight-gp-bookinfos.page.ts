@@ -500,7 +500,7 @@ export class FlightGpBookinfosPage implements OnInit {
               );
             } else {
               if (isCheckPay) {
-                this.payResult = await this.orderService.payOrder(res.TradeNo,null,false,[{label:"快钱",value:"quickexpress"}]);
+                this.payResult = await this.orderService.payOrder(res.TradeNo,null,false,[{label:"快钱快捷",value:"quickexpress"}]);
               }
             }
           } else {

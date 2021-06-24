@@ -18,4 +18,9 @@ export class WarmPromptComponent implements OnInit {
 
   ngOnInit() {}
 
+  async onGoIt(){
+    const m = await this.popoverCtrl.getTop();
+    m.dismiss();
+  }
+
 }

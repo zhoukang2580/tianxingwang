@@ -208,7 +208,7 @@ export class FlightBookPage
             }
           }
         }
-      } catch {}
+      } catch { }
       setTimeout(() => {
         if (!this.isShowInsuranceBack || this.isManagentCredentails) {
           this.refresh(false);
@@ -224,7 +224,7 @@ export class FlightBookPage
       .pipe(
         map(([tmc, isSelfType, identity]) => {
           return (
-            tmc.FlightApprovalType != 0 &&
+            tmc.FlightApprovalType &&
             tmc.FlightApprovalType != TmcApprovalType.None &&
             !isSelfType &&
             !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -747,11 +747,10 @@ export class FlightBookPage
     if (!info) {
       return "";
     }
-    return `[${
-      info.tripType == TripType.departureTrip
+    return `[${info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-    }]`;
+      }]`;
   }
   back() {
     this.natCtrl.back();
@@ -821,7 +820,7 @@ export class FlightBookPage
     let canBook = false;
     let canBook2 = false;
     const isSelf = await this.staffService.isSelfBookType();
-    this.isself=isSelf;
+    this.isself = isSelf;
     const arr = this.fillGroupConbindInfoApprovalInfo(this.vmCombindInfos);
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto, arr);
@@ -888,11 +887,11 @@ export class FlightBookPage
             }
           }
           this.goToMyOrders({
-            isHasTask: isHasTask ,
+            isHasTask: isHasTask,
             payResult,
             isCheckPay: isCheckPay ||
-            this.orderTravelPayType == OrderTravelPayType.Person ||
-            this.orderTravelPayType == OrderTravelPayType.Credit,
+              this.orderTravelPayType == OrderTravelPayType.Person ||
+              this.orderTravelPayType == OrderTravelPayType.Credit,
           });
         }
       }
@@ -1016,8 +1015,7 @@ export class FlightBookPage
         item.isShowDetail = true;
       }
       await AppHelper.alert(
-        `${item.vmCredential && item.vmCredential.Name} 【${
-          item.vmCredential && item.vmCredential.Number
+        `${item.vmCredential && item.vmCredential.Name} 【${item.vmCredential && item.vmCredential.Number
         }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
@@ -1100,11 +1098,10 @@ export class FlightBookPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
+        p.Mobile = `${p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1114,11 +1111,10 @@ export class FlightBookPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
+        p.Email = `${p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1598,28 +1594,28 @@ export class FlightBookPage
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
-            item.bookInfo.flightSegment &&
-            item.bookInfo.flightSegment.TakeoffTime
+          item.bookInfo.flightSegment &&
+          item.bookInfo.flightSegment.TakeoffTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1720,7 +1716,7 @@ export class FlightBookPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType 
     ) {
       return false;
     }
@@ -1748,8 +1744,7 @@ export class FlightBookPage
     const staff = info.credentialStaff;
     if (
       !Tmc ||
-      Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      Tmc.FlightApprovalType == TmcApprovalType.None || !Tmc.FlightApprovalType
     ) {
       return false;
     }

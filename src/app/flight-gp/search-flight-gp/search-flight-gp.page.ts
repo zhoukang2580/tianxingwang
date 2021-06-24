@@ -184,9 +184,6 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     this.isleave = true;
     this.flightGpService.removeAllBookInfos();
     // this.router.navigate([""]);
-
-
-    
   }
   private onRoundTrip(single: boolean) {
     // console.log("onRoundTrip isSingle", single);
@@ -241,6 +238,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
       .getPassengerBookInfoSource()
       .pipe(map((infos) => infos.filter((it) => !!it.bookInfo).length));
     await this.initFlightCities();
+    this.getIdentity();
     this.showReturnTrip = await this.staffService
       .isSelfBookType()
       .catch((_) => false);
