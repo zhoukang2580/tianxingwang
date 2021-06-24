@@ -535,7 +535,7 @@ export class FlightGpBookinfosPage implements OnInit {
       const ret = new GpPassengerDto();
       ret.Pid = fre.passengerEntity.Id;
       ret.Name = fre.passengerEntity.Name;
-      ret.CredentialsType = fre.passengerEntity.CredentialsType;
+      ret.Type = fre.passengerEntity.CredentialsType;
       ret.Number = fre.passengerEntity.Number;
       ret.Mobile = fre.passengerEntity.Mobile;
       ret.GPValidateStatus = fre?.passengerEntity?.Variables?.Tag;

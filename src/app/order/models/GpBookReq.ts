@@ -31,7 +31,7 @@ export class GpPassengerDto {
     /// <summary>
     /// 证件类型
     /// </summary>
-    CredentialsType: CredentialsType
+    Type: CredentialsType
     /// <summary>
     /// 证件号
     /// </summary>
