@@ -121,6 +121,7 @@ export class FlightGpUpdatePassengerPage implements OnInit {
           cardType: it.passengerEntity.CredentialsType,
           cardId: it.passengerEntity.Number,
           bankCard: it.passengerEntity.Variables.BankName,
+          Organization: it.passengerEntity.Variables.Organization,
           phone: it.passengerEntity.Mobile
         }
         let reg = /^[\u4E00-\u9FA5]{2,4}$/;
@@ -150,6 +151,11 @@ export class FlightGpUpdatePassengerPage implements OnInit {
         if (this.isStatus == "公务卡") {
           if(!obj.bankCard){
             AppHelper.alert("请选择公务卡");
+            return
+          }
+        }else{
+          if(!obj.Organization){
+            AppHelper.alert("请选择单位");
             return
           }
         }

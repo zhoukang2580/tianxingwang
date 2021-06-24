@@ -35,8 +35,8 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   private conditionModel: HotelConditionModel;
   @Output() filter: EventEmitter<any>;
-  hotelQuery: HotelQueryEntity;
   isShowFilter = false;
+  hotelQuery: HotelQueryEntity;
   items: IFilterTabItem<BrandEntity | AmenityEntity>[];
   constructor(
     private toastCtrl: ToastController,
@@ -56,6 +56,7 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
     });
     this.filter.emit();
   }
+  
   onActive(tab: IFilterTab<any>) {
     this.hotelQuery.filters = this.hotelQuery.filters.map((it) => {
       it.active = it.id == tab.id;

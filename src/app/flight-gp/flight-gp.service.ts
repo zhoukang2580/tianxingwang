@@ -415,7 +415,11 @@ export class FlightGpService {
   ) {
     console.log("addPassengerFlightSegments", arg);
     let infos = this.getfrequentBookInfo();
-    infos = [];
+    if (infos.length > 1) {
+      infos = infos.filter(it => it.passengerEntity.Id != arg.passengerEntity.Id);
+    } else {
+      infos = [];
+    }
     infos.push(arg);
     console.log("addPassengerFlightSegments added", arg);
     this.setfrequentBookInfoSource(infos);
@@ -1518,5 +1522,5 @@ export class FlightGpService {
     return this.apiService.getPromiseData<any[]>(req);
   }
 
-  
+
 }
