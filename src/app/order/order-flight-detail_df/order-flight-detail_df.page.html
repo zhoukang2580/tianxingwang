@@ -213,25 +213,26 @@
                 <div class="ion-item-divider" *ngIf="orderDetail?.Order?.OrderLinkmans">
                     联系人信息
                 </div>
-
-                <ng-container *ngIf="orderDetail?.Order?.OrderLinkmans[0] as man">
-                    <ion-row>
-                        <ion-col size="2.5">姓名</ion-col>
-                        <ion-col>{{man.Name}}</ion-col>
-                    </ion-row>
-                    <ion-row>
-                        <ion-col size="2.5">邮箱</ion-col>
-                        <ion-col>{{man.Email}}</ion-col>
-                    </ion-row>
-                    <ion-row>
-                        <ion-col size="2.5">电话</ion-col>
-                        <ion-col>{{man.Mobile}}</ion-col>
-                    </ion-row>
-                    <ion-row *ngIf="orderDetail?.Order?.OrderLinkmans[1] as type">
-                        <ion-col size="2.5">机票类型</ion-col>
-                        <ion-col>{{type.Name}}</ion-col>
-                    </ion-row>
-                </ng-container>
+                <div *ngIf="orderDetail?.Order?.OrderLinkmans">
+                    <ng-container *ngIf="orderDetail?.Order?.OrderLinkmans[0] as man">
+                        <ion-row>
+                            <ion-col size="2.5">姓名</ion-col>
+                            <ion-col>{{man.Name}}</ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="2.5">邮箱</ion-col>
+                            <ion-col>{{man.Email}}</ion-col>
+                        </ion-row>
+                        <ion-row>
+                            <ion-col size="2.5">电话</ion-col>
+                            <ion-col>{{man.Mobile}}</ion-col>
+                        </ion-row>
+                        <ion-row *ngIf="orderDetail?.Order?.OrderLinkmans[1] as type">
+                            <ion-col size="2.5">机票类型</ion-col>
+                            <ion-col>{{type.Name}}</ion-col>
+                        </ion-row>
+                    </ng-container>
+                </div>
                 <div>
                     <div class="ion-item-divider">订单信息</div>
                     <div>
