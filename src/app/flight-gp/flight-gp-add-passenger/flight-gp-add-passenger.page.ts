@@ -109,69 +109,96 @@ export class FlightGpAddPassengerPage implements OnInit {
 
   }
 
+  getCheckout(){
+    const obj = {
+      name: this.passengerInfo.Name,
+      cardType: this.passengerInfo.CredentialsType,
+      cardId: this.passengerInfo.Number,
+      bankCard: this.passengerInfo.bankCard,
+      Organization:this.Organization,
+      phone: this.passengerInfo.Mobile
+    }
+    let credential: PassengerEntity;
+    let reg = /^[\u4E00-\u9FA5]{2,4}$/;
+    var IdCardNumberReg = /(^\d{15}$)|(^\d{17}([0-9]|X)$)/;
+    var PassportNumberReg = /^1[45][0-9]{7}$|(^[P|p|S|s]\d{7}$)|(^[S|s|G|g|E|e]\d{8}$)|(^[Gg|Tt|Ss|Ll|Qq|Dd|Aa|Ff]\d{8}$)|(^[H|h|M|m]\d{8,10}$)/;
+    let reg1 = /^1[0-9]{10}$/;
+    if (!obj.name) {
+      AppHelper.alert("联系人姓名不能为空");
+      return
+    }
+    if (!(reg.test(obj.name))) {
+      AppHelper.alert("请正确填写乘客姓名");
+      return
+    }
+    if (!obj.cardId) {
+      AppHelper.alert("请填写证件号");
+      return
+    }
+    if (obj.cardType == CredentialsType.IdCard && !(IdCardNumberReg.test(obj.cardId))) {
+      AppHelper.alert("身份证格式有误");
+      return
+    }
+    if (obj.cardType == CredentialsType.Passport && !(PassportNumberReg.test(obj.cardId))) {
+      AppHelper.alert("护照格式有误")
+      return
+    }
+    if (this.isStatus == "公务卡") {
+      if(!obj.bankCard){
+        AppHelper.alert("请选择公务卡");
+        return
+      }
+    }else{
+      if(!obj.Organization){
+        AppHelper.alert("请选择单位");
+        return
+      }
+    }
+    if (!obj.phone) {
+      AppHelper.alert("请填写联系人手机号");
+      return
+    }
+    if (!(reg1.test(obj.phone))) {
+      AppHelper.alert("手机号格式不正确");
+      return
+    }
+
+    return true;
+  }
+
   async onAddPassInfo() {
     try {
-      const obj = {
-        name: this.passengerInfo.Name,
-        cardType: this.passengerInfo.CredentialsType,
-        cardId: this.passengerInfo.Number,
-        bankCard: this.passengerInfo.bankCard,
-        Organization:this.Organization,
-        phone: this.passengerInfo.Mobile
-      }
-      let credential: PassengerEntity;
-      let reg = /^[\u4E00-\u9FA5]{2,4}$/;
-      var IdCardNumberReg = /(^\d{15}$)|(^\d{17}([0-9]|X)$)/;
-      var PassportNumberReg = /^1[45][0-9]{7}$|(^[P|p|S|s]\d{7}$)|(^[S|s|G|g|E|e]\d{8}$)|(^[Gg|Tt|Ss|Ll|Qq|Dd|Aa|Ff]\d{8}$)|(^[H|h|M|m]\d{8,10}$)/;
-      let reg1 = /^1[0-9]{10}$/;
-      if (!obj.name) {
-        AppHelper.alert("联系人姓名不能为空");
-        return
-      }
-      if (!(reg.test(obj.name))) {
-        AppHelper.alert("请正确填写乘客姓名");
-        return
-      }
-      if (!obj.cardId) {
-        AppHelper.alert("请填写证件号");
-        return
-      }
-      if (obj.cardType == CredentialsType.IdCard && !(IdCardNumberReg.test(obj.cardId))) {
-        AppHelper.alert("身份证格式有误");
-        return
-      }
-      if (obj.cardType == CredentialsType.Passport && !(PassportNumberReg.test(obj.cardId))) {
-        AppHelper.alert("护照格式有误")
-        return
-      }
-      if (this.isStatus == "公务卡") {
-        if(!obj.bankCard){
-          AppHelper.alert("请选择公务卡");
-          return
+      const isVerify = this.getCheckout();
+      if (isVerify) {
+        this.passengerInfo.CredentialsTypeName = new CredentialPipe().transform(this.passengerInfo.CredentialsType)
+        const frequentBookInfo: FrequentBookInfo = {
+          passengerEntity: ({
+            Name: this.passengerInfo.Name,
+            CredentialsTypeName: this.passengerInfo.CredentialsTypeName,
+            CredentialsType: this.passengerInfo.CredentialsType,
+            Number: this.passengerInfo.Number,
+            Variables: !this.IsShareTicket ? {
+              BankBin: this.CardNumber,
+              BankName: this.CardName,
+              Tag: "1"
+            } : this.isStatus == "公务卡" ? {
+              BankBin: this.CardNumber,
+              BankName: this.CardName,
+              Tag: "1"
+            } : {
+              Organization: this.Organization,
+              Tag: "2"
+            },
+            Mobile: this.passengerInfo.Mobile
+          } as any)
         }
-      }else{
-        if(!obj.Organization){
-          AppHelper.alert("请选择单位");
-          return
-        }
-      }
-      if (!obj.phone) {
-        AppHelper.alert("请填写联系人手机号");
-        return
-      }
-      if (!(reg1.test(obj.phone))) {
-        AppHelper.alert("手机号格式不正确");
-        return
-      }
-      this.passengerInfo.CredentialsTypeName = new CredentialPipe().transform(this.passengerInfo.CredentialsType)
-      const frequentBookInfo: FrequentBookInfo = {
-        passengerEntity: ({
-          ...credential,
+  
+        const passengerDate = {
           Name: this.passengerInfo.Name,
           CredentialsTypeName: this.passengerInfo.CredentialsTypeName,
           CredentialsType: this.passengerInfo.CredentialsType,
           Number: this.passengerInfo.Number,
-          Variables: !this.IsShareTicket ? {
+          Variables: JSON.stringify(!this.IsShareTicket ? {
             BankBin: this.CardNumber,
             BankName: this.CardName,
             Tag: "1"
@@ -182,43 +209,22 @@ export class FlightGpAddPassengerPage implements OnInit {
           } : {
             Organization: this.Organization,
             Tag: "2"
-          },
+          }),
           Mobile: this.passengerInfo.Mobile
-        } as any)
-      }
-
-      const passengerDate = {
-        ...credential,
-        Name: this.passengerInfo.Name,
-        CredentialsTypeName: this.passengerInfo.CredentialsTypeName,
-        CredentialsType: this.passengerInfo.CredentialsType,
-        Number: this.passengerInfo.Number,
-        Variables: JSON.stringify(!this.IsShareTicket ? {
-          BankBin: this.CardNumber,
-          BankName: this.CardName,
-          Tag: "1"
-        } : this.isStatus == "公务卡" ? {
-          BankBin: this.CardNumber,
-          BankName: this.CardName,
-          Tag: "1"
-        } : {
-          Organization: this.Organization,
-          Tag: "2"
-        }),
-        Mobile: this.passengerInfo.Mobile
-      } as PassengerEntity
-
-      const addPassenger = await this.flightGpService.addPassengerSubmit(passengerDate);
-      if (addPassenger) {
-        const ok = await AppHelper.alert(
-          LanguageHelper.Flight.getAddMorePassengersTip(),
-          true,
-          `确定`
-        );
-
-        if (ok) {
-          await this.onAddPassengerBookInfo(frequentBookInfo);
-          this.back();
+        } as PassengerEntity
+  
+        const addPassenger = await this.flightGpService.addPassengerSubmit(passengerDate);
+        if (addPassenger) {
+          const ok = await AppHelper.alert(
+            LanguageHelper.Flight.getAddMorePassengersTip(),
+            true,
+            `确定`
+          );
+  
+          if (ok) {
+            await this.onAddPassengerBookInfo(frequentBookInfo);
+            this.back();
+          }
         }
       }
     } catch (error) {

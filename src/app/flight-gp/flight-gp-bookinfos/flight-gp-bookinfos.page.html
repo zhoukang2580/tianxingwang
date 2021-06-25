@@ -57,7 +57,7 @@
             </ion-grid>
         </ion-item>
     </ion-list>
-    <ion-list class="list next">
+    <ion-list class="list next" [attr.travesInfo]='"travesInfo"'>
         <ion-item-divider>
             <div class="travesInfoTitle">
                 <h3>旅客信息</h3>
@@ -110,7 +110,7 @@
         </div>
     </ion-list>
     <ng-container>
-        <div class="insurances" *ngIf="initialBookDtoGpModel?.InsuranceResult?.Products as insurance">
+        <div class="insurances" *ngIf="initialBookDtoGpModel?.InsuranceResult?.Products as insurance" [attr.IsCompelBuyIns]='"IsCompelBuyIns"'>
             <ion-radio-group mode="md" allow-empty-selection='true' [value]='selectedInsuranceProductId' [(ngModel)]='selectedInsuranceProductId' (ionChange)='calcTotalPrice()'>
                 <div class='ins' *ngFor='let insur of insurance'>
                     <div class="ins-item">
@@ -143,19 +143,19 @@
     </ng-container>
     <div class="contact_Info">
         <div class="divider">联系人信息</div>
-        <div class="name">
+        <div class="name" [attr.PassengerName]='"PassengerName"'>
             <div class="label">联系人姓名</div>
             <div class="ipt">
                 <ion-input clear-input='true' placeholder="请输入" [(ngModel)]="orderLinkmanDto&&orderLinkmanDto.Name"></ion-input>
             </div>
         </div>
-        <div class="phone">
+        <div class="phone" [attr.Mobile]='"Mobile"'>
             <div class="label">联系电话</div>
             <div class="ipt">
                 <ion-input clear-input='true' placeholder="请输入" [(ngModel)]="orderLinkmanDto&&orderLinkmanDto.Mobile"></ion-input>
             </div>
         </div>
-        <div class="e-mail">
+        <div class="e-mail" [attr.Email]='"Email"'>
             <div class="label">E-mail</div>
             <div class="ipt">
                 <ion-input clear-input='true' placeholder="请输入" [(ngModel)]="orderLinkmanDto&&orderLinkmanDto.Email"></ion-input>

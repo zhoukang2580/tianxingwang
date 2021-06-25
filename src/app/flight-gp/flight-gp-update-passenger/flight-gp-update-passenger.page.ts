@@ -112,61 +112,67 @@ export class FlightGpUpdatePassengerPage implements OnInit {
     }
   }
 
+  async getCheckOut(it:any){
+    const obj = {
+      name: it.passengerEntity.Name,
+      cardType: it.passengerEntity.CredentialsType,
+      cardId: it.passengerEntity.Number,
+      bankCard: it.passengerEntity.Variables.BankName,
+      Organization: it.passengerEntity.Variables.Organization,
+      phone: it.passengerEntity.Mobile
+    }
+    let reg = /^[\u4E00-\u9FA5]{2,4}$/;
+    var IdCardNumberReg = /(^\d{15}$)|(^\d{17}([0-9]|X)$)/;
+    var PassportNumberReg = /^1[45][0-9]{7}$|(^[P|p|S|s]\d{7}$)|(^[S|s|G|g|E|e]\d{8}$)|(^[Gg|Tt|Ss|Ll|Qq|Dd|Aa|Ff]\d{8}$)|(^[H|h|M|m]\d{8,10}$)/;
+    let reg1 = /^1[0-9]{10}$/;
+    if (!obj.name) {
+      AppHelper.alert("联系人姓名不能为空");
+      return
+    }
+    if (!(reg.test(obj.name))) {
+      AppHelper.alert("请正确填写乘客姓名");
+      return
+    }
+    if (!obj.cardId) {
+      AppHelper.alert("请填写证件号");
+      return
+    }
+    if (obj.cardType == CredentialsType.IdCard && !(IdCardNumberReg.test(obj.cardId))) {
+      AppHelper.alert("身份证格式有误");
+      return
+    }
+    if (obj.cardType == CredentialsType.Passport && !(PassportNumberReg.test(obj.cardId))) {
+      AppHelper.alert("护照格式有误")
+      return
+    }
+    if (this.isStatus == "公务卡") {
+      if(!obj.bankCard){
+        AppHelper.alert("请选择公务卡");
+        return
+      }
+    }else{
+      if(!obj.Organization){
+        AppHelper.alert("请选择单位");
+        return
+      }
+    }
+    if (!obj.phone) {
+      AppHelper.alert("请填写联系人手机号");
+      return
+    }
+    if (!(reg1.test(obj.phone))) {
+      AppHelper.alert("手机号格式不正确");
+      return
+    }
+
+    return true;
+  }
+
   async onUpdPassInfo() {
     try {
       for (let it of this.selectedFrequent) {
         console.log(it.passengerEntity, "select");
-        const obj = {
-          name: it.passengerEntity.Name,
-          cardType: it.passengerEntity.CredentialsType,
-          cardId: it.passengerEntity.Number,
-          bankCard: it.passengerEntity.Variables.BankName,
-          Organization: it.passengerEntity.Variables.Organization,
-          phone: it.passengerEntity.Mobile
-        }
-        let reg = /^[\u4E00-\u9FA5]{2,4}$/;
-        var IdCardNumberReg = /(^\d{15}$)|(^\d{17}([0-9]|X)$)/;
-        var PassportNumberReg = /^1[45][0-9]{7}$|(^[P|p|S|s]\d{7}$)|(^[S|s|G|g|E|e]\d{8}$)|(^[Gg|Tt|Ss|Ll|Qq|Dd|Aa|Ff]\d{8}$)|(^[H|h|M|m]\d{8,10}$)/;
-        let reg1 = /^1[0-9]{10}$/;
-        if (!obj.name) {
-          AppHelper.alert("联系人姓名不能为空");
-          return
-        }
-        if (!(reg.test(obj.name))) {
-          AppHelper.alert("请正确填写乘客姓名");
-          return
-        }
-        if (!obj.cardId) {
-          AppHelper.alert("请填写证件号");
-          return
-        }
-        if (obj.cardType == CredentialsType.IdCard && !(IdCardNumberReg.test(obj.cardId))) {
-          AppHelper.alert("身份证格式有误");
-          return
-        }
-        if (obj.cardType == CredentialsType.Passport && !(PassportNumberReg.test(obj.cardId))) {
-          AppHelper.alert("护照格式有误")
-          return
-        }
-        if (this.isStatus == "公务卡") {
-          if(!obj.bankCard){
-            AppHelper.alert("请选择公务卡");
-            return
-          }
-        }else{
-          if(!obj.Organization){
-            AppHelper.alert("请选择单位");
-            return
-          }
-        }
-        if (!obj.phone) {
-          AppHelper.alert("请填写联系人手机号");
-          return
-        }
-        if (!(reg1.test(obj.phone))) {
-          AppHelper.alert("手机号格式不正确");
-          return
-        }
+        this.getCheckOut(it);
         it.passengerEntity.CredentialsTypeName = new CredentialPipe().transform(it.passengerEntity.CredentialsType)
         // let credential: PassengerEntity;
         const frequentBookInfo: FrequentBookInfo = {
@@ -214,8 +220,9 @@ export class FlightGpUpdatePassengerPage implements OnInit {
         } as PassengerEntity
 
         await this.onAddPassengerBookInfo(frequentBookInfo);
-        const update = await this.flightGpService.updatePassengerSubmit(passengerDate);
         this.back();
+        const update = await this.flightGpService.updatePassengerSubmit(passengerDate);
+        
         if (update) {
           const ok = await AppHelper.alert(
             "已完成修改",
