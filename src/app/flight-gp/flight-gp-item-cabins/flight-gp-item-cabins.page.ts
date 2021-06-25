@@ -8,7 +8,7 @@ import { DayModel } from "../../tmc/models/DayModel";
 import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import {
   ModalController,
   NavController,
@@ -31,6 +31,7 @@ import { OrderService } from "src/app/order/order.service";
 import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 import { FlightGpService } from "../flight-gp.service";
 import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 
 @Component({
   selector: "app-flight-gp-item-cabins",
@@ -41,13 +42,16 @@ export class FlightGpItemCabinsPage implements OnInit {
   private cabins: FlightPolicy[] = [];
   private economyClassCabins: FlightPolicy[] = []; // 显示经济舱的最低价、协议价、全价
   private moreCabins: FlightPolicy[] = []; // 显示更多价格
+  private pageUrl;
   vmCabins: FlightPolicy[] = [];
   bookInfos: PassengerBookInfo<any>[];
+  @ViewChild(BackButtonComponent, { static: true }) backbtn: BackButtonComponent;
   hasMoreCabins = true;
   vmFlightSegment: FlightSegmentEntity;
   FlightFareType = FlightFareType;
   staff: StaffEntity;
   showOpenBtn$ = of(0);
+
   identity: IdentityEntity;
   filteredPolicyPassenger$: Observable<PassengerBookInfo<IFlightSegmentInfo>>;
   filterConditions: FilterConditionModel;
@@ -211,7 +215,7 @@ export class FlightGpItemCabinsPage implements OnInit {
     let top = await this.modalCtrl.getTop();
     let i = 10;
     while (top && --i > 0) {
-      await top.dismiss().catch((_) => {});
+      await top.dismiss().catch((_) => { });
       top = await this.modalCtrl.getTop();
     }
     console.timeEnd("dismissAllTopOverlays");
@@ -220,6 +224,14 @@ export class FlightGpItemCabinsPage implements OnInit {
 
   async onBookTicket(cabin: FlightPolicy) {
     try {
+      if (this.flightGpService.checkIfTimeout()) {
+        await this.flightGpService.showTimeoutPop(
+          true,
+          this.pageUrl
+        );
+        this.backbtn.popToPrePage();
+        return;
+      }
       const flightCabin = cabin.Cabin;
       // let isShowPage = false;
       let bookInfos = this.flightGpService.currentViewtFlightSegment;

@@ -70,7 +70,7 @@ export class OpenUrlComponent
     isCompleted?: boolean;
   }[] = [];
   @ViewChild(BackButtonComponent) backButton: BackButtonComponent;
-  @ViewChild(IonContent,{static:true}) cnt: IonContent;
+  @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild("iframe", { static: true }) iframe: ElementRef<HTMLIFrameElement>;
   constructor(
     activatedRoute: ActivatedRoute,
@@ -99,8 +99,11 @@ export class OpenUrlComponent
       if (p.get("horizontal")) {
         this.horizontal = p.get("horizontal");
       }
-      const url = this.getUrl(p.get("url"));
-      this.orgOpenUrl = url;
+      let url;
+      if (p.get("url")) {
+        url = this.getUrl(p.get("url"));
+        this.orgOpenUrl = url;
+      }
       this.goPath = p.get("goPath");
       this.goPathQueryParams = p.get("goPathQueryParams") || "";
       console.log("open url page ", p);
@@ -117,10 +120,14 @@ export class OpenUrlComponent
           // this.isIframeOpen = false;
           this.openInAppBrowser(url);
         } else {
-          this.openInIframe(url);
+          if (url) {
+            this.openInIframe(url);
+          }
         }
       } else {
-        this.openInIframe(url);
+        if (url) {
+          this.openInIframe(url);
+        }
       }
       if (p.get("title")) {
         this.title = p.get("title");
@@ -161,9 +168,11 @@ export class OpenUrlComponent
     this.isOpenActionSheet = !this.isOpenActionSheet;
   }
   private openInIframe(url: string) {
-    this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
-      this.getUrl(url)
-    )
+    if(url){
+      this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
+        this.getUrl(url)
+      )
+    }
   }
   onMockBack() {
     // this.backButton.back();
@@ -300,7 +309,7 @@ export class OpenUrlComponent
         filePath: "0",
         isCompleted: false,
       };
-      this.ngZone.run(()=>{
+      this.ngZone.run(() => {
         this.downloadItems.push(obj);
       });
       this.fileService
@@ -356,13 +365,13 @@ export class OpenUrlComponent
             if (m) {
               m.present();
               await m.onDidDismiss();
-              try{
-                const iframe=this.cnt['el'].querySelector("iframe");
+              try {
+                const iframe = this.cnt['el'].querySelector("iframe");
                 console.log("reloadpage window['__OpenPageUrlObj']", iframe.contentWindow);
-                  console.log("this.iframe.nativeElement.contentWindow", iframe.contentWindow);
-                  this.iframe.nativeElement=iframe;
-                  this.postMessage({ type: "doRefreshListFromApp", origin: "*" })
-              }catch(e){
+                console.log("this.iframe.nativeElement.contentWindow", iframe.contentWindow);
+                this.iframe.nativeElement = iframe;
+                this.postMessage({ type: "doRefreshListFromApp", origin: "*" })
+              } catch (e) {
                 console.error(e);
               }
               // if( window['__OpenPageUrlObj']&& window['__OpenPageUrlObj'].isDorefreshList){
@@ -474,8 +483,8 @@ export class OpenUrlComponent
     m.present();
   }
   ngOnInit() {
-    if(this.url&&!`${this.url}`.includes("safe")){
-      this.url=this.domSanitizer.bypassSecurityTrustResourceUrl(this.getUrl(this.url))
+    if (this.url && !`${this.url}`.includes("safe")) {
+      this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(this.getUrl(this.url))
     }
   }
   private postMessage(d: {

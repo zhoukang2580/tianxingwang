@@ -1,6 +1,6 @@
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
 import { flyInOut } from 'src/app/animations/flyInOut';
 import { AppHelper } from 'src/app/appHelper';
 import { RefresherComponent } from 'src/app/components/refresher/refresher.component';
@@ -19,7 +19,7 @@ import { OrderBookDto } from 'src/app/order/models/OrderBookDto';
 import { BookGpDto } from '../models/flightgp/BookGpDto';
 import { Routes } from '../models/flightgp/Routes';
 import { TicketchangingComponent } from '../components/ticketchanging/ticketchanging.component';
-import { IonCheckbox, ModalController, NavController, PopoverController } from '@ionic/angular';
+import { IonCheckbox, IonContent, ModalController, NavController, Platform, PopoverController } from '@ionic/angular';
 import { ProductItemType } from 'src/app/tmc/models/ProductItems';
 import { GpBookReq, GpPassengerDto } from 'src/app/order/models/GpBookReq';
 import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
@@ -80,7 +80,9 @@ export class FlightGpBookinfosPage implements OnInit {
   isCheckingPay: boolean;
   identitySubscription = Subscription.EMPTY;
   identity: IdentityEntity;
+  isDent = false;
 
+  @ViewChild(IonContent, { static: true }) contnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
 
@@ -88,13 +90,14 @@ export class FlightGpBookinfosPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
-    private orderService:OrderService,
+    private orderService: OrderService,
     private flightGpService: FlightGpService,
     private staffService: HrService,
     private popoverController: PopoverController,
     public modalController: ModalController,
     private navCtrl: NavController,
-    private identityService:IdentityService
+    private identityService: IdentityService,
+    private plt: Platform,
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -177,7 +180,7 @@ export class FlightGpBookinfosPage implements OnInit {
     }
     let ok = await AppHelper.alert("你要删除这段信息嘛", true, "确定", "取消");
 
-    if (ok) {   
+    if (ok) {
       this.selectedFrequent.splice(id, 1);
       await this.flightGpService.setfrequentBookInfoSource(this.selectedFrequent);
       this.calcTotalPrice();
@@ -262,12 +265,16 @@ export class FlightGpBookinfosPage implements OnInit {
     }
   }
 
-  async getIdentity(){
+  async getIdentity() {
     this.identitySubscription = this.identityService
       .getIdentitySource()
       .subscribe((r) => {
         this.identity = r;
       });
+
+    if (!this.identity.IsShareTicket) {
+      this.isDent = true;
+    }
   }
 
   private async initOrderTravelPayTypes() {
@@ -459,7 +466,7 @@ export class FlightGpBookinfosPage implements OnInit {
   }
 
 
-  async onSubmit(event: CustomEvent) {
+  async onSubmit(isSave: boolean, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
     if (this.isSubmitDisabled) {
@@ -485,32 +492,35 @@ export class FlightGpBookinfosPage implements OnInit {
           this.flightGpService.removeAllBookInfos();
           let checkPayResult = false;
           const isCheckPay = res.IsCheckPay;
-          if (isCheckPay) {
-            this.isCheckingPay = true;
-            checkPayResult = await this.checkPay(res.TradeNo);
-            this.isCheckingPay = false;
-          } else {
-            this.payResult = true;
-          }
-          if (checkPayResult) {
-            if (this.isHasTask) {
+          if (!isSave) {
+            if (isCheckPay) {
+              this.isCheckingPay = true;
+              checkPayResult = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            } else {
+              this.payResult = true;
+            }
+            if (checkPayResult) {
+              if (this.isHasTask) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  true
+                );
+              } else {
+                if (isCheckPay) {
+                  const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
+                  this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
+                }
+              }
+            } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
                 true
               );
-            } else {
-              if (isCheckPay) {
-                this.payResult = await this.orderService.payOrder(res.TradeNo,null,false,[{label:"快钱快捷",value:"quickexpress"}]);
-              }
             }
           } else {
-            await AppHelper.alert(
-              LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
-              true
-            );
+            await AppHelper.alert("下单成功");
           }
-
-          // await AppHelper.alert("下单成功");
           await this.empty();
           this.goToMyOrders();
         }
@@ -571,16 +581,60 @@ export class FlightGpBookinfosPage implements OnInit {
     return true;
   }
 
+  private getEleByAttr(attrName: string, value: string) {
+    return (
+      this.contnt["el"] &&
+      (this.contnt["el"].querySelector(
+        `[${attrName}='${value}']`
+      ) as HTMLElement)
+    );
+  }
+
+  private moveRequiredEleToViewPort(ele: any) {
+    const el: HTMLElement = (ele && ele.nativeElement) || ele;
+    if (!el) {
+      return;
+    }
+    const rect = el.getBoundingClientRect();
+    if (rect) {
+      if (this.contnt) {
+        this.contnt.scrollByPoint(0, rect.top - this.plt.height() / 2, 100);
+      }
+    }
+    this.generateAnimation(el);
+  }
+
+  private generateAnimation(el: HTMLElement) {
+    el.style.display = "block";
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        el.style.color = "var(--ion-color-danger)";
+        el.classList.add("animated");
+        el.classList.toggle("shake", true);
+      });
+    }, 200);
+    const sub = fromEvent(el, "animationend").subscribe(() => {
+      el.style.display = "";
+      el.style.color = "";
+      el.classList.toggle("shake", false);
+      sub.unsubscribe();
+    });
+  }
+
   fillBookLinkmans() {
     const isture = true;
     if (isture) {
-      if (this.selectedFrequent.length == 0) {
+      if (!this.selectedFrequent.length) {
+        const el = this.getEleByAttr("travesInfo", "travesInfo");
+        this.moveRequiredEleToViewPort(el);
         AppHelper.alert("乘客不能为空,请添加乘客");
         return
       }
 
       if (this.initialBookDtoGpModel.IsCompelBuyIns) {
         if (!this.selectedInsuranceProductId) {
+          const el = this.getEleByAttr("IsCompelBuyIns", "IsCompelBuyIns");
+          this.moveRequiredEleToViewPort(el);
           AppHelper.alert("必须选择一个保险信息");
           return;
         }
@@ -595,19 +649,29 @@ export class FlightGpBookinfosPage implements OnInit {
       let reg2 = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[com,cn,net]{1,3})+$/
       console.log(!reg2.test(orderLinkman.Email) || orderLinkman.Email == "", "sas")
       if (!orderLinkman.Name) {
+        const el = this.getEleByAttr("PassengerName", "PassengerName");
+        this.moveRequiredEleToViewPort(el);
         AppHelper.alert("请输入姓名");
         return
       } else if (!reg.test(orderLinkman.Name)) {
+        const el = this.getEleByAttr("PassengerName", "PassengerName");
+        this.moveRequiredEleToViewPort(el);
         AppHelper.alert("请正确填写乘客姓名");
         return
       } else if (!orderLinkman.Mobile) {
+        const el = this.getEleByAttr("Mobile", "Mobile");
+        this.moveRequiredEleToViewPort(el);
         AppHelper.alert("请输入手机号")
         return
       } else if (!reg1.test(orderLinkman.Mobile)) {
+        const el = this.getEleByAttr("Mobile", "Mobile");
+        this.moveRequiredEleToViewPort(el);
         AppHelper.alert("手机号输入有误")
         return
       } else if (orderLinkman.Email != "") {
         if (!reg2.test(orderLinkman.Email) || orderLinkman.Email == "") {
+          const el = this.getEleByAttr("Email", "Email");
+          this.moveRequiredEleToViewPort(el);
           AppHelper.alert("邮箱格式不正确")
           return
         }

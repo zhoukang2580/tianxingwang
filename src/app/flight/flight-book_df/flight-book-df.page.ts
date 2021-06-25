@@ -238,7 +238,6 @@ export class FlightBookDfPage
       .pipe(
         map(([tmc, isSelfType, identity]) => {
           return (
-            tmc.FlightApprovalType != 0 &&
             tmc.FlightApprovalType != TmcApprovalType.None &&
             !isSelfType &&
             !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -1793,7 +1792,7 @@ export class FlightBookDfPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType 
     ) {
       return false;
     }
@@ -1822,7 +1821,7 @@ export class FlightBookDfPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType 
     ) {
       return false;
     }

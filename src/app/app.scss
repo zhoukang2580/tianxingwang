@@ -280,6 +280,10 @@ ion-input .validerrormess {
     -webkit-box-orient: vertical;
     overflow: hidden;
     -webkit-line-clamp: 2;
+    p {
+        margin: 0;
+        padding: 0;
+    }
     &.show {
         -webkit-line-clamp: 10000;
     }

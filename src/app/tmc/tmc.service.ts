@@ -92,6 +92,9 @@ export class TmcService {
       this.memberDetail = null;
     });
   }
+  getQuickexpressPayWay() {
+    return [{ label: "快钱快捷", value: "quickexpress" }]
+  }
   async getMemberDetail() {
     if (this.memberDetail) {
       return this.memberDetail;
@@ -351,7 +354,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-TripList";
     req.Data = {};
-    
+
     return this.apiService.getPromiseData<any[]>(req);
   }
 
@@ -903,12 +906,12 @@ export class TmcService {
       }>(req)
       .catch(
         (_) =>
-          ({
-            Trafficlines: [],
-          } as {
-            HotelCities: any[];
-            Trafficlines: TrafficlineEntity[];
-          })
+        ({
+          Trafficlines: [],
+        } as {
+          HotelCities: any[];
+          Trafficlines: TrafficlineEntity[];
+        })
       );
     const local = this.localDomesticAirports;
     if (r.Trafficlines && r.Trafficlines.length) {
@@ -1699,11 +1702,11 @@ export interface PassengerBookInfo<T> {
   exchangeInfo?: ExchangeInfo;
 }
 
-export interface PassengerBookInfoGp{
+export interface PassengerBookInfoGp {
   passenger?: StaffEntity;
   credential?: CredentialsEntity;
   id?: string;
-  Seg?:number;
+  Seg?: number;
   flightSegment?: FlightSegmentEntity;
   Cabin?: FlightCabinEntity;
   exchangeInfo?: ExchangeInfo;

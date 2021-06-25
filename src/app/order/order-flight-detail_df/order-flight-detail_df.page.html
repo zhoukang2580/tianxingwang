@@ -98,8 +98,9 @@
                                 退改签政策
                             </ion-col>
                             <ion-col>
-                                <p style="margin-top: 0px" class="clip-text ion-no-margin" (click)="isShowDetail(selectedOrderFlightTicket,$event)" [class.show]='selectedOrderFlightTicket["isShowExplain"]'>
-                                    {{selectedOrderFlightTicket.Explain?.split("\\n").join("")}}
+                                <!-- <p ></p> -->
+                                <p [innerHTML]='selectedOrderFlightTicket.Explain?.split("\\n").join("")' style="margin-top: 0px" class="clip-text ion-no-margin" (click)="isShowDetail(selectedOrderFlightTicket,$event)" [class.show]='selectedOrderFlightTicket["isShowExplain"]'>
+
                                 </p>
                             </ion-col>
                         </ion-row>

@@ -57,7 +57,7 @@
             </ion-grid>
         </ion-item>
     </ion-list>
-    <ion-list class="list next">
+    <ion-list class="list next" [attr.travesInfo]='"travesInfo"'>
         <ion-item-divider>
             <div class="travesInfoTitle">
                 <h3>旅客信息</h3>
@@ -100,7 +100,7 @@
         <div class="btn_add" (click)="onAddLinkman()">
             <ion-text>添加乘机人</ion-text>
         </div>
-        <div class="hint" *ngIf="!identity?.IsShareTicket">
+        <div class="hint" *ngIf="isDent">
             <svg class="bi bi-exclamation-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"></path>
             </svg>
@@ -110,7 +110,7 @@
         </div>
     </ion-list>
     <ng-container>
-        <div class="insurances" *ngIf="initialBookDtoGpModel?.InsuranceResult?.Products as insurance">
+        <div class="insurances" *ngIf="initialBookDtoGpModel?.InsuranceResult?.Products as insurance" [attr.IsCompelBuyIns]='"IsCompelBuyIns"'>
             <ion-radio-group mode="md" allow-empty-selection='true' [value]='selectedInsuranceProductId' [(ngModel)]='selectedInsuranceProductId' (ionChange)='calcTotalPrice()'>
                 <div class='ins' *ngFor='let insur of insurance'>
                     <div class="ins-item">
@@ -143,19 +143,19 @@
     </ng-container>
     <div class="contact_Info">
         <div class="divider">联系人信息</div>
-        <div class="name">
+        <div class="name" [attr.PassengerName]='"PassengerName"'>
             <div class="label">联系人姓名</div>
             <div class="ipt">
                 <ion-input clear-input='true' placeholder="请输入" [(ngModel)]="orderLinkmanDto&&orderLinkmanDto.Name"></ion-input>
             </div>
         </div>
-        <div class="phone">
+        <div class="phone" [attr.Mobile]='"Mobile"'>
             <div class="label">联系电话</div>
             <div class="ipt">
                 <ion-input clear-input='true' placeholder="请输入" [(ngModel)]="orderLinkmanDto&&orderLinkmanDto.Mobile"></ion-input>
             </div>
         </div>
-        <div class="e-mail">
+        <div class="e-mail" [attr.Email]='"Email"'>
             <div class="label">E-mail</div>
             <div class="ipt">
                 <ion-input clear-input='true' placeholder="请输入" [(ngModel)]="orderLinkmanDto&&orderLinkmanDto.Email"></ion-input>
@@ -193,7 +193,7 @@
             <ion-icon name="chevron-up-outline" *ngIf="!isShowFee"></ion-icon>
         </div>
         <div class="submit-btn">
-            <ion-button class="btn" slot="end" size="small" fill="clear" (click)="onSubmit($event)">提交订单</ion-button>
+            <ion-button class="btn" slot="end" size="small" fill="clear" (click)="onSubmit(false,$event)">提交订单</ion-button>
         </div>
     </div>
 </ion-footer>
