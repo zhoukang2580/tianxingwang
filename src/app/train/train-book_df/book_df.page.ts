@@ -295,7 +295,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          !tmc.TrainApprovalType &&
+          tmc.TrainApprovalType &&
           tmc.TrainApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -451,7 +451,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.selectedInsuranceProduct =
           forceInsurance && forceInsurance.insuranceResult;
         if (this.viewModel.expenseTypes && this.viewModel.expenseTypes.length) {
-          combineInfo.expenseType = this.viewModel.expenseTypes[0];
+          combineInfo.expenseType = this.viewModel.expenseTypes[0].Name;
         }
         combineInfo.credential = bookInfo.credential;
         combineInfo.id = bookInfo.id;
@@ -1776,7 +1776,7 @@ export interface IBookTrainViewModel {
   orderTravelPayType: OrderTravelPayType;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[];
-  expenseTypes: string[];
+  expenseTypes: { Name: string; Tag: string }[];
   combindInfos: ITrainPassengerBookInfo[];
   isCanSkipApproval$: Observable<boolean>;
   identity: IdentityEntity;

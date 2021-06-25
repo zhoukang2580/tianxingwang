@@ -1045,6 +1045,7 @@ export class HotelService {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
+        res.ExpenseTypes=(res.ExpenseTypes||[]).filter(it=>!it.Tag||it.Tag.toLowerCase()=='hotel');
         if (bookInfos.length == 2 && isSelf) {
           const fees = {};
           Object.keys(res.ServiceFees).forEach((k) => {

@@ -1036,26 +1036,24 @@ export class TrainService {
       TrainCode: condition.TrainCode,
     };
     req.Version = "1.0";
-    return this.apiService
-      .getPromiseData<TrainEntity[]>(req)
-      .then((res) => {
-        let result = res;
-        if (res) {
-          result = res.map((it) => {
-            it.ArrivalTimeStamp = Math.floor(
-              AppHelper.getDate(it.ArrivalTime).getTime() / 1000
-            );
-            it.StartTimeStamp = Math.floor(
-              AppHelper.getDate(it.StartTime).getTime() / 1000
-            );
-            it.AddOneDayTip = this.addoneday(it);
-            it.StartShortTime = this.calendarService.getHHmm(it.StartTime);
-            it.ArrivalShortTime = this.calendarService.getHHmm(it.ArrivalTime);
-            return it;
-          });
-        }
-        return result;
-      })
+    return this.apiService.getPromiseData<TrainEntity[]>(req).then((res) => {
+      let result = res;
+      if (res) {
+        result = res.map((it) => {
+          it.ArrivalTimeStamp = Math.floor(
+            AppHelper.getDate(it.ArrivalTime).getTime() / 1000
+          );
+          it.StartTimeStamp = Math.floor(
+            AppHelper.getDate(it.StartTime).getTime() / 1000
+          );
+          it.AddOneDayTip = this.addoneday(it);
+          it.StartShortTime = this.calendarService.getHHmm(it.StartTime);
+          it.ArrivalShortTime = this.calendarService.getHHmm(it.ArrivalTime);
+          return it;
+        });
+      }
+      return result;
+    });
   }
   async dismissAllTopOverlays() {
     let i = 10;
@@ -1307,12 +1305,16 @@ export class TrainService {
       .then((res) => {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
+        res.ExpenseTypes = (res.ExpenseTypes || []).filter(
+          (it) => !it.Tag || it.Tag.toLowerCase() == "train"
+        );
         res.ServiceFees = res.ServiceFees || ({} as any);
         // 后台计算服务费根据 item.passenger.AccountId 累加,所以现在需要给每一个 item.passenger.AccountId 平均服务费
         const fees = {};
         Object.keys(res.ServiceFees).forEach((k) => {
           let count = 1;
           const one = bookInfos.find((it) => it.id == k);
+
           if (one && one.passenger) {
             count = bookInfos.filter(
               (it) =>

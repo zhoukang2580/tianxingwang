@@ -130,7 +130,7 @@ export class FlightBookDfPage
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
-  expenseTypes: string[];
+  expenseTypes: {Name:string;Tag:string;}[];
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   isCheckingPay: boolean;
@@ -1662,7 +1662,7 @@ export class FlightBookDfPage
         combineInfo.isOtherOrganization = false;
         combineInfo.notifyLanguage = "cn";
         if (this.expenseTypes && this.expenseTypes.length) {
-          combineInfo.expenseType = this.expenseTypes[0];
+          combineInfo.expenseType = this.expenseTypes[0].Name;
         }
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = insurances;

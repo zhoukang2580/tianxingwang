@@ -258,7 +258,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          tmc.TrainApprovalType != 0 &&
+          tmc.TrainApprovalType &&
           tmc.TrainApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -382,7 +382,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.selectedInsuranceProduct =
           forceInsurance && forceInsurance.insuranceResult;
         if (this.viewModel.expenseTypes && this.viewModel.expenseTypes.length) {
-          combineInfo.expenseType = this.viewModel.expenseTypes[0];
+          combineInfo.expenseType = this.viewModel.expenseTypes[0].Name;
         }
         combineInfo.credential = bookInfo.credential;
         combineInfo.id = bookInfo.id;
@@ -681,11 +681,12 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
             }
           }
           this.goToMyOrders({
-            isHasTask: isHasTask ,
+            isHasTask: isHasTask,
             payResult,
-            isCheckPay: isCheckPay ||
-            this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
-            this.viewModel.orderTravelPayType == OrderTravelPayType.Credit,
+            isCheckPay:
+              isCheckPay ||
+              this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
+              this.viewModel.orderTravelPayType == OrderTravelPayType.Credit,
           });
         }
       }
@@ -895,8 +896,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         exchangeInfo.ticket.Order.VariablesJsonObj ||
         JSON.parse(exchangeInfo.ticket.Order.Variables);
       if (exchangeInfo.ticket.Order.VariablesJsonObj["TravelPayType"]) {
-        this.viewModel.orderTravelPayType = +exchangeInfo.ticket.Order
-          .VariablesJsonObj["TravelPayType"];
+        this.viewModel.orderTravelPayType =
+          +exchangeInfo.ticket.Order.VariablesJsonObj["TravelPayType"];
         this.orderTravelPayTypes = this.orderTravelPayTypes.map((it) => {
           it.checked =
             +it.value ==
@@ -962,7 +963,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       !Tmc ||
       Tmc.TrainApprovalType == TmcApprovalType.None ||
-      Tmc.TrainApprovalType == 0
+      !Tmc.TrainApprovalType
     ) {
       return false;
     }
@@ -1643,7 +1644,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       !Tmc ||
       Tmc.TrainApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }
@@ -1667,7 +1668,7 @@ export interface IBookTrainViewModel {
   orderTravelPayType: OrderTravelPayType;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[];
-  expenseTypes: string[];
+  expenseTypes: { Name: string; Tag: string }[];
   combindInfos: ITrainPassengerBookInfo[];
   isCanSkipApproval$: Observable<boolean>;
   identity: IdentityEntity;

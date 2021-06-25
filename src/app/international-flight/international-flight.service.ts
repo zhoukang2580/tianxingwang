@@ -318,6 +318,7 @@ export class InternationalFlightService {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
+        res.ExpenseTypes=(res.ExpenseTypes||[]).filter(it=>!it.Tag||it.Tag.toLowerCase()=='internationalflight');
         console.log("平均前", { ...res.ServiceFees });
         // 后台计算服务费根据 item.passenger.AccountId 累加,所以现在需要给每一个 item.passenger.AccountId 平均服务费
         const fees = {};

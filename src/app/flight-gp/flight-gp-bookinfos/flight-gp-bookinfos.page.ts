@@ -53,7 +53,7 @@ export class FlightGpBookinfosPage implements OnInit {
     identityCard: string;
     id: string;
   }[]
-  expenseTypes: string[];
+  expenseTypes: {Name:string;Tag:string;}[];
   private subscriptions: Subscription[] = [];
   private totalPriceSource: Subject<number>;
   errors: any;
