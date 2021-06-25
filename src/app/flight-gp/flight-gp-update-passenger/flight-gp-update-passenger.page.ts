@@ -215,15 +215,16 @@ export class FlightGpUpdatePassengerPage implements OnInit {
 
         await this.onAddPassengerBookInfo(frequentBookInfo);
         const update = await this.flightGpService.updatePassengerSubmit(passengerDate);
+        this.back();
         if (update) {
           const ok = await AppHelper.alert(
             "已完成修改",
             true,
             `确定`
           );
-          if (ok) {
-            this.back();
-          }
+          // if (ok) {
+          //   this.back();
+          // }
         }
       }
     } catch (error) {
