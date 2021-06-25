@@ -510,7 +510,7 @@ export class FlightGpBookinfosPage implements OnInit {
             );
           }
 
-          await AppHelper.alert("下单成功");
+          // await AppHelper.alert("下单成功");
           await this.empty();
           this.goToMyOrders();
         }

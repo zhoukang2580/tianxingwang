@@ -116,6 +116,7 @@ export class FlightGpAddPassengerPage implements OnInit {
         cardType: this.passengerInfo.CredentialsType,
         cardId: this.passengerInfo.Number,
         bankCard: this.passengerInfo.bankCard,
+        Organization:this.Organization,
         phone: this.passengerInfo.Mobile
       }
       let credential: PassengerEntity;
@@ -142,6 +143,17 @@ export class FlightGpAddPassengerPage implements OnInit {
       if (obj.cardType == CredentialsType.Passport && !(PassportNumberReg.test(obj.cardId))) {
         AppHelper.alert("护照格式有误")
         return
+      }
+      if (this.isStatus == "公务卡") {
+        if(!obj.bankCard){
+          AppHelper.alert("请选择公务卡");
+          return
+        }
+      }else{
+        if(!obj.Organization){
+          AppHelper.alert("请选择单位");
+          return
+        }
       }
       if (!obj.phone) {
         AppHelper.alert("请填写联系人手机号");
