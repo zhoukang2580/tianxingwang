@@ -10,13 +10,15 @@ import { AppHelper } from "../appHelper";
 import { LanguageHelper } from "../languageHelper";
 import { Platform } from "@ionic/angular";
 import * as moment from "moment";
+import { IdentityService } from "../services/identity/identity.service";
 // import { CalendarService } from "../tmc/calendar.service";
 export const CHINESE_REG = /^[\u4e00-\u9fa5]+$/; // 只能输入中文
 export const ENGLISH_SURNAME_REG = /^[A-Za-z]+$/; // 英文姓的正则，匹配由26个英文字母组成的字符串
 export const ENGLISH_GIVEN_NAME_REG = /(^[A-Za-z]{1,}\s{0,}[A-Za-z]{1,}$)/; // 英文名的正则，匹配首尾空格的正则表达式
 // 英文名的正则，匹配首尾空格的正则表达式
 // tslint:disable-next-line: max-line-length
-export const IDCARDRULE_REG = /(^$)|(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$)/;
+export const IDCARDRULE_REG =
+  /(^$)|(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$)/;
 export class MemberCredential {
   isAdd?: boolean;
   isLongPeriodOfTime?: boolean;
@@ -88,15 +90,25 @@ export class MemberCredential {
   providedIn: "root",
 })
 export class MemberService {
+  private memberPromise: Promise<PageModel>;
+  member: PageModel;
   private credentialsChanges: Subject<{
     action: "remove" | "add" | "modify";
   }>;
   constructor(
     private apiService: ApiService,
     private validatorService: ValidatorService,
-    private plt: Platform
+    private plt: Platform,
+    private identityService: IdentityService
   ) {
     this.credentialsChanges = new BehaviorSubject(undefined);
+    this.identityService.getIdentitySource().subscribe((it) => {
+      this.disposal();
+    });
+  }
+  private disposal() {
+    this.memberPromise = null;
+    this.member = null;
   }
   async getCredentials(accountId: string): Promise<MemberCredential[]> {
     const req = new RequestEntity();
@@ -149,10 +161,65 @@ export class MemberService {
       return r;
     });
   }
-  getMemberDetails() {
+  async getMember(force = false) {
     const req = new RequestEntity();
-    req.Method = "ApiMemberUrl-Home-Get";
-    return this.apiService.getPromiseData<PageModel>(req);
+    req.Method = "ApiMemberUrl-Member-Get";
+    // req.IsShowLoading = true;
+    if (!force) {
+      if (this.member) {
+        return this.member;
+      }
+    }
+    if (this.memberPromise) {
+      return this.memberPromise;
+    }
+    this.memberPromise = this.apiService
+      .getPromiseData<PageModel>(req)
+      .then((m) => {
+        this.member = m;
+        return m;
+      })
+      .finally(() => {
+        this.memberPromise = null;
+      });
+    return this.memberPromise;
+  }
+  save(m: any) {
+    const req = new RequestEntity();
+    req.Method = "ApiMemberUrl-Member-Save";
+    req.Data = m;
+    // req.IsShowLoading = true;
+    return this.apiService.getPromiseData<any>(req);
+  }
+  passengerList(isshowloading = true) {
+    const req = new RequestEntity();
+    req.Method = "ApiMemberUrl-Passenger-List";
+    req.IsShowLoading = isshowloading;
+    return this.apiService.getPromiseData<any[]>(req);
+  }
+  passengerAdd(d: any) {
+    const req = new RequestEntity();
+    req.Method = "ApiMemberUrl-Passenger-Add";
+    req.Data = {
+      ...d,
+    };
+    return this.apiService.getPromiseData<any>(req);
+  }
+  passengerModify(d: any) {
+    const req = new RequestEntity();
+    req.Method = "ApiMemberUrl-Passenger-Modify";
+    req.Data = {
+      ...d,
+    };
+    return this.apiService.getPromiseData<any>(req);
+  }
+  passengerRemove(id: string) {
+    const req = new RequestEntity();
+    req.Method = "ApiMemberUrl-Passenger-Remove";
+    req.Data = {
+      Id: id,
+    };
+    return this.apiService.getPromiseData<any>(req);
   }
   initializeValidateAdd(el: HTMLElement) {
     this.validatorService.initialize(
@@ -462,8 +529,11 @@ export class MemberService {
   }
 }
 export interface PageModel {
+  Id: string;
   Name: string;
   RealName: string;
+  Nickname: string;
+  Birthday: string;
   Mobile: string;
   HeadUrl: string;
   StaffNumber: string;
