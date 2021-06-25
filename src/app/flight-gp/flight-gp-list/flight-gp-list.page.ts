@@ -44,6 +44,7 @@ import { TripType } from "src/app/tmc/models/TripType";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightCityService } from "../flight-city.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
+import { FlightService } from "src/app/flight/flight.service";
 @Component({
   selector: "app-flight-gp-list",
   templateUrl: "./flight-gp-list.page.html",
@@ -85,11 +86,13 @@ export class FlightGpListPage
   implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
+  private pageUrl;
   private lastFetchTime = 0;
   private oldSearchCities: {
     fromCityCode: string;
     toCityCode: string;
   } = {} as any;
+  private pageTimeoutSubscription = Subscription.EMPTY;
   lowestPriceSegments: FlightSegmentEntity[];
   searchFlightModel: SearchFlightModel;
   filterCondition: FilterConditionModel;
@@ -146,7 +149,7 @@ export class FlightGpListPage
     private popoverController: PopoverController,
     private storage: Storage,
     private flightCityService: FlightCityService,
-    private tmcService: TmcService
+    private tmcService: TmcService,
   ) {
     this.subscriptions.push(
       flightGpService
@@ -189,8 +192,10 @@ export class FlightGpListPage
       })
     );
     this.route.queryParamMap.subscribe(async (d) => {
+      this.pageUrl = this.router.url;
       this.isCanLeave = !this.flightGpService.getSearchFlightModel().isExchange;
       this.isSelfBookType = await this.staffService.isSelfBookType();
+      this.startCheckPageTimeout();
       this.showAddPassenger = await this.canShowAddPassenger();
       const delta = Math.floor((Date.now() - this.lastFetchTime) / 1000);
       console.log("this.route.queryParamMap deltaTime=", delta);
@@ -250,6 +255,24 @@ export class FlightGpListPage
       return "未查到符合条件的航班信息<br/>请更改查询条件重新查询";
     }
   }
+
+  private startCheckPageTimeout() {
+    this.pageTimeoutSubscription.unsubscribe();
+    this.pageTimeoutSubscription = this.flightGpService
+      .getPagePopTimeoutSource()
+      .subscribe(async (r) => {
+        if (r) {
+          const ok = await this.flightGpService.showTimeoutPop(
+            true,
+            this.pageUrl
+          );
+          if (ok) {
+            this.doRefresh(true, false);
+          }
+        }
+      });
+  }
+
   async canShowAddPassenger() {
     const identity = await this.identityService
       .getIdentityAsync()

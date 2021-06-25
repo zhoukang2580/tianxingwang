@@ -22,7 +22,7 @@ import { FlightCabinEntity } from "./models/flight/FlightCabinEntity";
 import { FilterConditionModel } from "./models/flight/advanced-search-cond/FilterConditionModel";
 import { IdentityService } from "../services/identity/identity.service";
 import { HrService, StaffEntity } from "../hr/hr.service";
-import { Injectable } from "@angular/core";
+import { EventEmitter, Injectable } from "@angular/core";
 import { Subject, BehaviorSubject, combineLatest } from "rxjs";
 
 import { ApiService } from "../services/api/api.service";
@@ -103,6 +103,11 @@ export class FlightGpService {
   currentViewtFlightSegment: FlightSegmentEntity;
   policyFlights: PassengerPolicyFlights[];
   flightResult: FlightResultEntity; // 保持和后台返回的数据一致
+  private pagePopTimeoutSource: EventEmitter<boolean>;
+  private pagePopTimeoutTime = 5 * 1000;
+  private pagePopTimeoutId;
+  private lastRefreshTime = 0;
+  private pagePopPromise: Promise<boolean>;
   get isAgent() {
     return this.tmcService.isAgent;
   }
@@ -131,6 +136,8 @@ export class FlightGpService {
     this.frequentBookInfoSource = new BehaviorSubject(this.frequentBookInfo);
 
     this.cardBinsBookInfoSource = new BehaviorSubject(this.cardBinsBookInfo);
+
+    this.pagePopTimeoutSource = new EventEmitter();
 
     this.filterConditionSources = new BehaviorSubject(
       FilterConditionModel.init()
@@ -1041,6 +1048,7 @@ export class FlightGpService {
     if (req.Language) {
       req.Data.Lang = req.Language;
     }
+    this.stopCheckPageTimout();
     return this.apiService.getPromiseData<FlightResultEntity>(req);
   }
   private replaceOldFlightSegmentInfo(
@@ -1217,8 +1225,10 @@ export class FlightGpService {
     );
   }
   private async getFlightList() {
+    this.stopCheckPageTimout();
     await this.checkOrAddSelfBookTypeBookInfo();
     await this.setDefaultFilterInfo();
+    await this.dismissAllTopOverlays();
     const req = new RequestEntity();
     req.Method = "TmcApiFlightGpUrl-Home-Index";
     const data = this.getSearchFlightModel();
@@ -1249,6 +1259,7 @@ export class FlightGpService {
             };
           });
         }
+        this.startCheckPageTimeout();
         return r;
       })
       .catch((_) => {
@@ -1304,6 +1315,67 @@ export class FlightGpService {
         }),
     };
     return this.fetchPassengerCredentials.promise;
+  }
+
+  private checkIfCurPageShouldShowTimeoutPop(curShowTipPageRouteUrl: string) {
+    if (curShowTipPageRouteUrl && curShowTipPageRouteUrl.startsWith("/")) {
+      curShowTipPageRouteUrl = AppHelper.getNormalizedPath(
+        curShowTipPageRouteUrl
+      );
+    }
+    return (
+      AppHelper.getNormalizedPath(this.router.url).toLowerCase() ==
+      (curShowTipPageRouteUrl || "").toLowerCase()
+    );
+  }
+
+  checkIfTimeout() {
+    return Date.now() - this.lastRefreshTime >= this.pagePopTimeoutTime;
+  }
+
+  async showTimeoutPop(
+    isClearSelectedBookInfos: boolean,
+    curShowTipPageRouteUrl: string
+  ) {
+    this.stopCheckPageTimout();
+    const isShow = this.checkIfCurPageShouldShowTimeoutPop(
+      curShowTipPageRouteUrl
+    );
+    if (!isShow) {
+      return false;
+    }
+    if (!this.pagePopPromise) {
+      this.pagePopPromise = this.tmcService
+        .showTimeoutPop()
+        .then((r) => {
+          r.present();
+          return r.onDidDismiss().then(() => {
+            if (isClearSelectedBookInfos) {
+              this.clearSelectedBookInfos([]);
+            }
+            return true;
+          });
+        })
+        .finally(() => {
+          this.pagePopPromise = null;
+        });
+    }
+    return this.pagePopPromise;
+  }
+  clearSelectedBookInfos(
+    selectedBookInfos: PassengerBookInfo<IFlightSegmentInfo>[]
+  ) {
+    this.passengerBookInfos = this.passengerBookInfos || [];
+    this.passengerBookInfos.forEach((it) => {
+      if (selectedBookInfos && selectedBookInfos.length) {
+        if (selectedBookInfos.find((it) => it.id == it.id)) {
+          it.bookInfo = null;
+        }
+      } else {
+        it.bookInfo = null;
+      }
+    });
+    this.setPassengerBookInfosSource(this.getPassengerBookInfos());
   }
 
   async getInitializeBookDto(
@@ -1504,6 +1576,22 @@ export class FlightGpService {
       });
     }
     return result;
+  }
+
+  getPagePopTimeoutSource() {
+    return this.pagePopTimeoutSource.asObservable();
+  }
+  private startCheckPageTimeout() {
+    this.stopCheckPageTimout();
+    this.pagePopTimeoutId = setTimeout(() => {
+      this.pagePopTimeoutSource.next(true);
+    }, this.pagePopTimeoutTime);
+  }
+  private stopCheckPageTimout() {
+    if (this.pagePopTimeoutId) {
+      clearTimeout(this.pagePopTimeoutId);
+      this.pagePopTimeoutId = null;
+    }
   }
 
   getIssuingBank() {

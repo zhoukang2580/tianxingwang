@@ -508,7 +508,8 @@ export class FlightGpBookinfosPage implements OnInit {
                 );
               } else {
                 if (isCheckPay) {
-                  this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, [{ label: "快钱快捷", value: "quickexpress" }]);
+                  const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
+                  this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
                 }
               }
             } else {
