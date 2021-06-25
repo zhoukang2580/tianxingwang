@@ -88,13 +88,13 @@ export class FlightGpBookinfosPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private tmcService: TmcService,
-    private orderService:OrderService,
+    private orderService: OrderService,
     private flightGpService: FlightGpService,
     private staffService: HrService,
     private popoverController: PopoverController,
     public modalController: ModalController,
     private navCtrl: NavController,
-    private identityService:IdentityService
+    private identityService: IdentityService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -177,7 +177,7 @@ export class FlightGpBookinfosPage implements OnInit {
     }
     let ok = await AppHelper.alert("你要删除这段信息嘛", true, "确定", "取消");
 
-    if (ok) {   
+    if (ok) {
       this.selectedFrequent.splice(id, 1);
       await this.flightGpService.setfrequentBookInfoSource(this.selectedFrequent);
       this.calcTotalPrice();
@@ -262,7 +262,7 @@ export class FlightGpBookinfosPage implements OnInit {
     }
   }
 
-  async getIdentity(){
+  async getIdentity() {
     this.identitySubscription = this.identityService
       .getIdentitySource()
       .subscribe((r) => {
@@ -459,7 +459,7 @@ export class FlightGpBookinfosPage implements OnInit {
   }
 
 
-  async onSubmit(event: CustomEvent) {
+  async onSubmit(isSave: boolean, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
     if (this.isSubmitDisabled) {
@@ -485,32 +485,34 @@ export class FlightGpBookinfosPage implements OnInit {
           this.flightGpService.removeAllBookInfos();
           let checkPayResult = false;
           const isCheckPay = res.IsCheckPay;
-          if (isCheckPay) {
-            this.isCheckingPay = true;
-            checkPayResult = await this.checkPay(res.TradeNo);
-            this.isCheckingPay = false;
-          } else {
-            this.payResult = true;
-          }
-          if (checkPayResult) {
-            if (this.isHasTask) {
+          if (!isSave) {
+            if (isCheckPay) {
+              this.isCheckingPay = true;
+              checkPayResult = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            } else {
+              this.payResult = true;
+            }
+            if (checkPayResult) {
+              if (this.isHasTask) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  true
+                );
+              } else {
+                if (isCheckPay) {
+                  this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, [{ label: "快钱快捷", value: "quickexpress" }]);
+                }
+              }
+            } else {
               await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
                 true
               );
-            } else {
-              if (isCheckPay) {
-                this.payResult = await this.orderService.payOrder(res.TradeNo,null,false,[{label:"快钱快捷",value:"quickexpress"}]);
-              }
             }
           } else {
-            await AppHelper.alert(
-              LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
-              true
-            );
+            await AppHelper.alert("下单成功");
           }
-
-          // await AppHelper.alert("下单成功");
           await this.empty();
           this.goToMyOrders();
         }
