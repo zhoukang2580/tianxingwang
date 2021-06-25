@@ -109,8 +109,7 @@
               <img src="assets/images/3.png" *ngIf='trip.Type=="Train"' alt="" />
               <div class="not-warp" (click)="goToDetailPage(trip.OrderId,trip.Type)">
                 <div class="not-name" notranslate>{{trip.PassagerName}}</div>
-                <div class="wait-trip" notranslate>您有<span>1张</span>待出行行程</div>
-                <div class="view-now" notranslate>立即查看</div>
+                <div class="wait-trip" notranslate>您有<span>1张</span>待出行行程 <div class="view-now" notranslate>立即查看</div></div>
                 <div *ngIf="trip.Type == 'Flight'">
                   <div class="wrapper">
                     <div class="trips">
