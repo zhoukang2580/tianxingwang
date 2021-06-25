@@ -128,7 +128,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   detailServiceFee: number;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
-  expenseTypes: string[];
+  expenseTypes: {Name:string;Tag:string;}[];
   travelForm: TravelFormEntity;
   isCheckingPay = false;
   isSubmitDisabled = false;
@@ -1099,7 +1099,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          !tmc.HotelApprovalType &&
+          tmc.HotelApprovalType &&
           tmc.HotelApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -1256,7 +1256,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.isOtherOrganization = false;
         combineInfo.notifyLanguage = "cn";
         if (this.expenseTypes && this.expenseTypes.length) {
-          combineInfo.expenseType = this.expenseTypes[0];
+          combineInfo.expenseType = this.expenseTypes[0].Name;
         }
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.credentialStaffMobiles =

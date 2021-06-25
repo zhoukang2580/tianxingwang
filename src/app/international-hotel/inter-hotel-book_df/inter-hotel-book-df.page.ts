@@ -121,7 +121,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
   tmc: TmcEntity;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
-  expenseTypes: string[];
+  expenseTypes: {Name:string;Tag:string;}[];
   travelForm: TravelFormEntity;
   isCheckingPay = false;
   isSubmitDisabled = false;
@@ -398,7 +398,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (
       !Tmc ||
       Tmc.InternationalHotelApprovalType == TmcApprovalType.None ||
-      Tmc.InternationalHotelApprovalType == 0
+      !Tmc.InternationalHotelApprovalType
     ) {
       return false;
     }
@@ -449,7 +449,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (
       !Tmc ||
       Tmc.InternationalHotelApprovalType == TmcApprovalType.None ||
-      Tmc.InternationalHotelApprovalType == 0
+      !Tmc.InternationalHotelApprovalType
     ) {
       return false;
     }
@@ -709,7 +709,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
           "VendorCode",
           combindInfo.creditCardInfo.creditCardType
         );
-        if( combindInfo.creditCardInfo.cardCredentialsMobile){
+        if (combindInfo.creditCardInfo.cardCredentialsMobile) {
           p.OrderCard.SetVariable(
             "CardCredentialsMobile",
             combindInfo.creditCardInfo.cardCredentialsMobile
@@ -983,7 +983,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          tmc.TrainApprovalType != 0 &&
+          tmc.TrainApprovalType &&
           tmc.TrainApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -1082,7 +1082,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
             .format("YYYY-MM-DD")}`,
         } as any;
         if (this.expenseTypes && this.expenseTypes.length) {
-          combineInfo.expenseType = this.expenseTypes[0];
+          combineInfo.expenseType = this.expenseTypes[0].Name;
         }
         combineInfo.credentialsRequested = false;
         combineInfo.creditCardPersionInfo = {} as any;

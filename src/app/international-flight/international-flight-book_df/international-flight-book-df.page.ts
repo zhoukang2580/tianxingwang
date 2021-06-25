@@ -128,7 +128,7 @@ export class InternationalFlightBookDfPage
   isDingTalk = AppHelper.isDingtalkH5();
   isRoundTrip = false;
   isself = false;
-  expenseTypes: any[];
+  expenseTypes: {Name:string;Tag:string;}[];
   OrderTravelType = OrderTravelType;
   constructor(
     private flightService: InternationalFlightService,
@@ -189,7 +189,7 @@ export class InternationalFlightBookDfPage
       .pipe(
         map(([tmc, isSelfType, identity]) => {
           return (
-            tmc.FlightApprovalType != 0 &&
+            tmc.FlightApprovalType  &&
             tmc.FlightApprovalType != TmcApprovalType.None &&
             !isSelfType &&
             !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -1608,7 +1608,7 @@ export class InternationalFlightBookDfPage
         combineInfo.isOtherOrganization = false;
         combineInfo.notifyLanguage = "cn";
         if (this.expenseTypes && this.expenseTypes.length) {
-          combineInfo.expenseType = this.expenseTypes[0];
+          combineInfo.expenseType = this.expenseTypes[0].Name;
         }
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = [];
@@ -1806,7 +1806,7 @@ export class InternationalFlightBookDfPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType 
     ) {
       return false;
     }
@@ -1836,7 +1836,7 @@ export class InternationalFlightBookDfPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }

@@ -93,7 +93,7 @@ export class TmcService {
     });
   }
   getQuickexpressPayWay() {
-    return [{ label: "快钱快捷", value: "quickexpress" }]
+    return [{ label: "快钱快捷", value: "quickexpress" }];
   }
   async getMemberDetail() {
     if (this.memberDetail) {
@@ -906,12 +906,12 @@ export class TmcService {
       }>(req)
       .catch(
         (_) =>
-        ({
-          Trafficlines: [],
-        } as {
-          HotelCities: any[];
-          Trafficlines: TrafficlineEntity[];
-        })
+          ({
+            Trafficlines: [],
+          } as {
+            HotelCities: any[];
+            Trafficlines: TrafficlineEntity[];
+          })
       );
     const local = this.localDomesticAirports;
     if (r.Trafficlines && r.Trafficlines.length) {
@@ -1720,7 +1720,7 @@ export class InitialBookDtoModel {
   PayTypes: any;
   IllegalReasons: string[];
   OutNumbers: { [key: string]: string[] };
-  ExpenseTypes: string[];
+  ExpenseTypes: { Name: string; Tag: string }[];
   RoomPlans: {
     ClientId: string;
     PassengerClientId: string;

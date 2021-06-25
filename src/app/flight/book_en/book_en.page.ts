@@ -92,7 +92,8 @@ import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
   styleUrls: ["./book_en.page.scss"],
 })
 export class BookEnPage
-  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
+  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy
+{
   langOpt = {
     meal: "Meal",
     isStop: "Stop over",
@@ -127,7 +128,7 @@ export class BookEnPage
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
-  expenseTypes: string[];
+  expenseTypes: { Name: string; Tag: string }[];
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   isCheckingPay: boolean;
@@ -219,7 +220,7 @@ export class BookEnPage
         .pipe(
           map(([tmc, isSelfType, identity]) => {
             return (
-              tmc.FlightApprovalType != 0 &&
+              tmc.FlightApprovalType  &&
               tmc.FlightApprovalType != TmcApprovalType.None &&
               !isSelfType &&
               !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -555,9 +556,10 @@ export class BookEnPage
     try {
       console.log("CombineedSelectedInfo", item);
       if (!item.modal.bookInfo.flightPolicy.Cabin.Explain) {
-        item.modal.bookInfo.flightPolicy.Cabin.Explain = await this.flightService.getTravelNDCFlightCabinRuleResult(
-          item.modal.bookInfo.flightPolicy.Cabin as any
-        );
+        item.modal.bookInfo.flightPolicy.Cabin.Explain =
+          await this.flightService.getTravelNDCFlightCabinRuleResult(
+            item.modal.bookInfo.flightPolicy.Cabin as any
+          );
       }
     } catch (e) {}
     item.openrules = !item.openrules;
@@ -749,59 +751,60 @@ export class BookEnPage
           AppHelper.alert(e);
           return null;
         });
-        if (res) {
-          if (res.TradeNo) {
-            // AppHelper.toast("下单成功!", 1400, "top");
-            // this.isPlaceOrderOk = true;
-            this.isSubmitDisabled = true;
-            let isHasTask = res.HasTasks;
-            let payResult = false;
-            this.flightService.removeAllBookInfos();
-            let checkPayResult = false;
-            const isCheckPay = res.IsCheckPay;
-            if (!isSave) {
-              if (isCheckPay) {
-                this.isCheckingPay = true;
-                checkPayResult = await this.checkPay(res.TradeNo);
-                this.isCheckingPay = false;
+      if (res) {
+        if (res.TradeNo) {
+          // AppHelper.toast("下单成功!", 1400, "top");
+          // this.isPlaceOrderOk = true;
+          this.isSubmitDisabled = true;
+          let isHasTask = res.HasTasks;
+          let payResult = false;
+          this.flightService.removeAllBookInfos();
+          let checkPayResult = false;
+          const isCheckPay = res.IsCheckPay;
+          if (!isSave) {
+            if (isCheckPay) {
+              this.isCheckingPay = true;
+              checkPayResult = await this.checkPay(res.TradeNo);
+              this.isCheckingPay = false;
+            } else {
+              payResult = true;
+            }
+            if (checkPayResult) {
+              if (this.isself && isHasTask) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  true
+                );
               } else {
-                payResult = true;
-              }
-              if (checkPayResult) {
-                if (this.isself && isHasTask) {
-                  await AppHelper.alert(
-                    LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
-                    true
-                  );
-                } else {
-                  if (isCheckPay) {
-                    payResult = await this.tmcService.payOrder(res.TradeNo);
-                  }
-                }
-              } else {
-                if (this.isself) {
-                  await AppHelper.alert(
-                    LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
-                    true
-                  );
+                if (isCheckPay) {
+                  payResult = await this.tmcService.payOrder(res.TradeNo);
                 }
               }
             } else {
-              if (isSave) {
-                await AppHelper.alert("订单已保存!");
-              } else {
-                // await AppHelper.alert("下单成功!");
+              if (this.isself) {
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                  true
+                );
               }
             }
-            this.goToMyOrders({
-              isHasTask: isHasTask ,
-              payResult,
-              isCheckPay: isCheckPay ||
+          } else {
+            if (isSave) {
+              await AppHelper.alert("订单已保存!");
+            } else {
+              // await AppHelper.alert("下单成功!");
+            }
+          }
+          this.goToMyOrders({
+            isHasTask: isHasTask,
+            payResult,
+            isCheckPay:
+              isCheckPay ||
               this.orderTravelPayType == OrderTravelPayType.Person ||
               this.orderTravelPayType == OrderTravelPayType.Credit,
-            });
-          }
+          });
         }
+      }
     }
   }
   private goToMyOrders(data: {
@@ -1496,7 +1499,7 @@ export class BookEnPage
         combineInfo.isOtherOrganization = false;
         combineInfo.notifyLanguage = "cn";
         if (this.expenseTypes && this.expenseTypes.length) {
-          combineInfo.expenseType = this.expenseTypes[0];
+          combineInfo.expenseType = this.expenseTypes[0].Name;
         }
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
@@ -1623,7 +1626,7 @@ export class BookEnPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType 
     ) {
       return false;
     }
@@ -1652,7 +1655,7 @@ export class BookEnPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }

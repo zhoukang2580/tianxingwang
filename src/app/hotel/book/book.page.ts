@@ -111,7 +111,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
   detailServiceFee: number;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
-  expenseTypes: string[];
+  expenseTypes: {Name:string;Tag:string;}[];
   travelForm: TravelFormEntity;
   isCheckingPay = false;
   isSubmitDisabled = false;
@@ -370,7 +370,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       !Tmc ||
       Tmc.HotelApprovalType == TmcApprovalType.None ||
-      Tmc.HotelApprovalType == 0
+      !Tmc.HotelApprovalType 
     ) {
       return false;
     }
@@ -391,7 +391,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       !Tmc ||
       Tmc.HotelApprovalType == TmcApprovalType.None ||
-      Tmc.HotelApprovalType == 0
+      !Tmc.HotelApprovalType
     ) {
       return false;
     }
@@ -930,7 +930,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          tmc.HotelApprovalType != 0 &&
+          tmc.HotelApprovalType  &&
           tmc.HotelApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -1046,7 +1046,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.isOtherOrganization = false;
         combineInfo.notifyLanguage = "cn";
         if (this.expenseTypes && this.expenseTypes.length) {
-          combineInfo.expenseType = this.expenseTypes[0];
+          combineInfo.expenseType = this.expenseTypes[0].Name;
         }
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.credentialStaffMobiles =

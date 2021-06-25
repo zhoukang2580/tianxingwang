@@ -189,7 +189,7 @@
           <ion-item lines="none" style="display: none">
             <ion-label> 费用类别 </ion-label>
             <ion-select #expenseTypeSelect [(ngModel)]="combindInfo.expenseType" name="Type" [compareWith]="expanseCompareFn" okText="确定" cancelText="取消">
-              <ion-select-option [value]="type" *ngFor="let type of viewModel?.expenseTypes">
+              <ion-select-option [value]="type.Name" *ngFor="let type of viewModel?.expenseTypes">
                 {{type}}
               </ion-select-option>
             </ion-select>
