@@ -80,6 +80,7 @@ export class FlightGpBookinfosPage implements OnInit {
   isCheckingPay: boolean;
   identitySubscription = Subscription.EMPTY;
   identity: IdentityEntity;
+  isDent = false;
 
   @ViewChild(IonContent, { static: true }) contnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -270,6 +271,10 @@ export class FlightGpBookinfosPage implements OnInit {
       .subscribe((r) => {
         this.identity = r;
       });
+
+    if (!this.identity.IsShareTicket) {
+      this.isDent = true;
+    }
   }
 
   private async initOrderTravelPayTypes() {
