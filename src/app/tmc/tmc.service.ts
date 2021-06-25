@@ -94,7 +94,7 @@ export class TmcService {
     if (this.memberDetail) {
       return this.memberDetail;
     }
-    return this.memberService.getMemberDetails().then((md) => {
+    return this.memberService.getMember().then((md) => {
       this.memberDetail = md;
       return md;
     });
