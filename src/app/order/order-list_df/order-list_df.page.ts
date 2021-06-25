@@ -125,13 +125,9 @@ export class OrderListDfPage
   async onPay(order: OrderEntity) {
     try {
       if (order) {
-        if (order.OrderFlightTickets.some(it => it.TicketType == OrderFlightTicketType.GP)) {
-          await this.orderService.payOrder(order.Id, null, false, [{ label: "快钱快捷", value: "quickexpress" }])
+          await this.orderService.payOrder(order.Id, null, false, this.tmcService.getQuickexpressPayWay())
           this.doRefresh()
-        } else {
-
-          await this.tmcService.payOrder(order.Id);
-        }
+          // await this.tmcService.payOrder(order.Id);
       }
     } catch (e) {
       AppHelper.alert(e);
