@@ -86,6 +86,7 @@ import { OrganizationComponent } from "src/app/tmc/components/organization/organ
 import { MockInitBookInfo, Mock_Hotel_FreeBook } from "src/app/data/mockdata";
 import { HotelBookType } from "../models/HotelBookType";
 import { SelectComponent } from "src/app/components/select/select.component";
+import { OrderService } from "src/app/order/order.service";
 @Component({
   selector: "app-book-df",
   templateUrl: "./book-df.page.html",
@@ -158,7 +159,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private payService: PayService,
     private plt: Platform,
     route: ActivatedRoute,
-    private langService: LangService
+    private langService: LangService,
+    private orderService:OrderService
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(() => {
@@ -547,7 +549,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       !Tmc ||
       Tmc.HotelApprovalType == TmcApprovalType.None ||
-      Tmc.HotelApprovalType == 0
+      !Tmc.HotelApprovalType
     ) {
       return false;
     }
@@ -568,7 +570,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       !Tmc ||
       Tmc.HotelApprovalType == TmcApprovalType.None ||
-      Tmc.HotelApprovalType == 0
+      !Tmc.HotelApprovalType
     ) {
       return false;
     }
@@ -1097,7 +1099,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          tmc.HotelApprovalType != 0 &&
+          !tmc.HotelApprovalType &&
           tmc.HotelApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -1612,7 +1614,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 );
               } else {
                 if (isCheckPay) {
-                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                  const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
+                  payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
                 }
               }
             } else {

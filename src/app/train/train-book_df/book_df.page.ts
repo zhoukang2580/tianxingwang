@@ -82,6 +82,7 @@ import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { SelectComponent } from "src/app/components/select/select.component";
+import { OrderService } from "src/app/order/order.service";
 
 @Component({
   selector: "app-train-book-df",
@@ -121,6 +122,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   totalPriceSource: Subject<number>;
   isCanSave$ = of(false);
   OrderTravelPayType = OrderTravelPayType;
+  orderTravelPayType: OrderTravelPayType;
   addContacts: AddContact[] = [];
   isCheckingPay = false;
   isShowFee = false;
@@ -135,6 +137,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     checked?: boolean;
   }[];
   CredentialsType = CredentialsType;
+  
   combindInfos: ITrainPassengerBookInfo[];
   isShowCostCenter = true;
   isShowOrganizations = true;
@@ -150,7 +153,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private calendarService: CalendarService,
     private plt: Platform,
     private langService: LangService,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private orderService:OrderService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
     // this.ionChange = new EventEmitter();
@@ -291,7 +295,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          tmc.TrainApprovalType != 0 &&
+          !tmc.TrainApprovalType &&
           tmc.TrainApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -711,8 +715,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                   true
                 );
               } else {
+                // if (isCheckPay) {
+                //   payResult = await this.tmcService.payOrder(res.TradeNo);
+                // }
                 if (isCheckPay) {
-                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                  const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
+                  payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
                 }
               }
             } else {
@@ -1025,7 +1033,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       !Tmc ||
       Tmc.TrainApprovalType == TmcApprovalType.None ||
-      Tmc.TrainApprovalType == 0
+      !Tmc.TrainApprovalType
     ) {
       return false;
     }
@@ -1744,7 +1752,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (
       !Tmc ||
       Tmc.TrainApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }

@@ -90,6 +90,7 @@ import { IFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import { LangService } from "src/app/services/lang.service";
 import { Storage } from "@ionic/storage";
 import { FlightService } from "../flight.service";
+import { OrderService } from "src/app/order/order.service";
 
 @Component({
   selector: "app-flight-book-df",
@@ -180,7 +181,8 @@ export class FlightBookDfPage
     private plt: Platform,
     private router: Router,
     private storage: Storage,
-    private langService: LangService
+    private langService: LangService,
+    private orderService:OrderService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -922,8 +924,12 @@ export class FlightBookDfPage
                   true
                 );
               } else {
+                // if (isCheckPay) {
+                //   this.payResult = await this.tmcService.payOrder(res.TradeNo);
+                // }
                 if (isCheckPay) {
-                  this.payResult = await this.tmcService.payOrder(res.TradeNo);
+                  const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
+                  this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
                 }
               }
             } else {
