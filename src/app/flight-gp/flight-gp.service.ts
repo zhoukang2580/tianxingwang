@@ -1049,7 +1049,10 @@ export class FlightGpService {
       req.Data.Lang = req.Language;
     }
     this.stopCheckPageTimout();
-    return this.apiService.getPromiseData<FlightResultEntity>(req);
+    return this.apiService.getPromiseData<FlightResultEntity>(req).then((r) => {
+      this.lastRefreshTime = Date.now();
+      return r;
+    });
   }
   private replaceOldFlightSegmentInfo(
     result: FlightResultEntity,

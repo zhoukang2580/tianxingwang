@@ -75,6 +75,7 @@ export class FlightGpItemCabinsPage implements OnInit {
     private tmcService: TmcService
   ) {
     activatedRoute.queryParamMap.subscribe(async (p) => {
+      this.pageUrl=this.router.url;
       try {
         this.vmFlightSegment = this.flightGpService.currentViewtFlightSegment;
         if (

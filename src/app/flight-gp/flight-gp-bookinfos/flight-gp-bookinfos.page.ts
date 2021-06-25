@@ -106,7 +106,6 @@ export class FlightGpBookinfosPage implements OnInit {
     this.subscriptions.push(
       this.flightGpService.getfrequentBookInfoSource().subscribe((m) => {
         this.selectedFrequent = m;
-        // this.getTotalPriceNumber();
         this.calcTotalPrice();
       })
     );
@@ -115,14 +114,14 @@ export class FlightGpBookinfosPage implements OnInit {
   private async empty() {
     this.selectedFrequent = [];
     this.flightGpService.setfrequentBookInfoSource(this.selectedFrequent);
-    // this.getTotalPriceNumber();
     this.calcTotalPrice();
   }
 
   async ngOnInit() {
-    // this.route.queryParamMap.subscribe(() => {
     this.refresh(false);
-    // })
+    this.route.queryParamMap.subscribe(() => {
+      this.calcTotalPrice();
+    })
     this.isRoundTrip = this.flightGpService.getSearchFlightModel().isRoundTrip;
     this.flightGpService.setPassengerBookInfosSource(
       this.flightGpService.getPassengerBookInfos().filter((it) => !!it.bookInfo)
@@ -133,7 +132,6 @@ export class FlightGpBookinfosPage implements OnInit {
       })
     );
     try {
-      // await this.empty();
       await this.initSearchModelParams();
       this.orderLinkmanDto = {
         Name: "",
@@ -221,7 +219,6 @@ export class FlightGpBookinfosPage implements OnInit {
         }
       }
 
-      this.getTotalPriceNumber();
       if (this.initialBookDtoGpModel) {
         this.DateTime = this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(0, 10);
         this.goOff = this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(11, 16);
@@ -245,9 +242,6 @@ export class FlightGpBookinfosPage implements OnInit {
       }
       console.log(this.initialBookDtoGpModel, 'initialBookDtoModel')
 
-      // if(this.initialBookDtoModel){
-      //   this.bookGpDto = this.initialBookDtoModel.bookGpDto;
-      // }
 
       if (!this.initialBookDtoModel) {
         this.errors = "网络错误";
@@ -255,10 +249,8 @@ export class FlightGpBookinfosPage implements OnInit {
       this.tmc = this.initialBookDtoModel.Tmc;
       this.expenseTypes = this.initialBookDtoModel.ExpenseTypes || [];
 
-      // await this.initCombindInfos();
       await this.getIdentity();
       await this.initOrderTravelPayTypes();
-      // console.log("vmCombindInfos", this.vmCombindInfos);
     } catch (err) {
       // this.errors = err || "please retry";
       console.error(err);
@@ -360,27 +352,25 @@ export class FlightGpBookinfosPage implements OnInit {
 
   calcTotalPrice() {
     console.log('order', this.orderTravelPayTypes + ":" + this.orderTravelPayType);
-
+    let totalPrice = this.getTotalPriceNumber();
     if (this.initialBookDtoGpModel) {
       if (this.initialBookDtoGpModel?.InsuranceResult?.Products) {
-        let totalPrice = this.initialBookDtoGpModel?.InsuranceResult?.Products.filter(
+        const ins = this.initialBookDtoGpModel?.InsuranceResult?.Products.find(
           (it) =>
             it &&
             it.Id == this.selectedInsuranceProductId
-        ).reduce((sum, it) => {
-          sum = AppHelper.add(+it.Price, sum);
-          return sum;
-        }, 0);
+        );
         console.log("totalPrice ", totalPrice);
-        // const fees = this.getTotalServiceFees();
-        const feestotalPrice = this.getTotalPriceNumber();
-        totalPrice = AppHelper.add(feestotalPrice, totalPrice * (this.selectedFrequent.length == 0 ? 1 : this.selectedFrequent.length));
-
-        this.totalPriceSource.next(totalPrice);
+        const insPrice=AppHelper.multiply(ins.Price,this.selectedFrequent.length)
+        totalPrice = AppHelper.add(totalPrice,insPrice);
       }
     }
+    totalPrice = AppHelper.add(totalPrice,this.getServiceFees());
+    this.totalPriceSource.next(totalPrice);
   }
-
+  private getServiceFees(){
+    return 0
+  }
   back(evt?: CustomEvent) {
     if (evt) {
       evt.preventDefault();
@@ -439,15 +429,21 @@ export class FlightGpBookinfosPage implements OnInit {
 
   private getTotalPriceNumber() {
     let feestotalPrice = 0
-    if (this.selectedFrequent) {
-      for (let price of this.selectedFrequent) {
-        console.log(this.selectedFrequent, 'price');
-        let ticketprice = this.initialBookDtoGpModel?.Routes[0]?.Fare.TicketPrice;
-        let tax = this.initialBookDtoGpModel?.Routes[0]?.Fare.Tax;
-        // feestotalPrice = (ticketprice + tax) * this.selectedFrequent.length
+    try {
+      if (this.selectedFrequent) {
+        if (this.initialBookDtoGpModel && this.initialBookDtoGpModel.Routes && this.initialBookDtoGpModel.Routes[0]) {
+          let ticketprice = this.initialBookDtoGpModel.Routes[0].Fare.TicketPrice;
+          let tax = this.initialBookDtoGpModel?.Routes[0].Fare.Tax;
+          feestotalPrice = AppHelper.multiply(AppHelper.add(ticketprice, tax), this.selectedFrequent.length);
+          return feestotalPrice;
+        }
+        const infos = this.flightGpService.getPassengerBookInfosGp();
+        let ticketprice = +infos[0].Cabin.TicketPrice;
+        let tax = +infos[0].Cabin.Tax;
         feestotalPrice = AppHelper.multiply(AppHelper.add(ticketprice, tax), this.selectedFrequent.length);
-        this.totalPrice = feestotalPrice;
       }
+    } catch (e) {
+      console.error(e);
     }
     return feestotalPrice;
   }
