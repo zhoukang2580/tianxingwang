@@ -128,7 +128,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   detailServiceFee: number;
   isCanSkipApproval$ = of(false);
   illegalReasons: any[];
-  expenseTypes: {Name:string;Tag:string;}[];
+  expenseTypes: { Name: string; Tag: string }[];
   travelForm: TravelFormEntity;
   isCheckingPay = false;
   isSubmitDisabled = false;
@@ -160,7 +160,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private plt: Platform,
     route: ActivatedRoute,
     private langService: LangService,
-    private orderService:OrderService
+    private orderService: OrderService
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(() => {
@@ -970,7 +970,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combindInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo &&
         combindInfo.bookInfo.bookInfo.roomPlan &&
-        combindInfo.bookInfo.bookInfo.roomPlan.Rules&&
+        combindInfo.bookInfo.bookInfo.roomPlan.Rules &&
         Object.keys(combindInfo.bookInfo.bookInfo.roomPlan.Rules).length > 0
       ) {
         // 只有白名单的才需要考虑差标,随心住不考虑差标
@@ -982,8 +982,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           );
           return false;
         }
-      }else{
-        p.IllegalReason ='随心住';
+      } else {
+        p.IllegalReason = "随心住";
       }
       if (!p.Mobile) {
         this.isShowOtherInfo = true;
@@ -1527,11 +1527,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     const bookDto: OrderBookDto = new OrderBookDto();
     const roomPlan =
       this.combindInfos && this.combindInfos[0].bookInfo.bookInfo.roomPlan;
-   
+
     bookDto.IsFromOffline = isSave;
     let canBook = false;
     let canBook2 = false;
-    const isSelf = await this.staffService.isSelfBookType();
     if (this.combindInfos) {
       const c = this.combindInfos.find((it) => !it.arrivalHotelTime);
       if (c) {
@@ -1586,14 +1585,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       const res = await this.hotelService.onBook(bookDto).catch((e) => {
         AppHelper.alert(e);
+        this.isSubmitDisabled = false;
         return { TradeNo: "", HasTasks: true } as IBookOrderResult;
       });
-      this.isSubmitDisabled = false;
       if (res) {
         if (res.TradeNo) {
           // AppHelper.toast("下单成功!", 1400, "top");
           this.isPlaceOrderOk = true;
-          this.isSubmitDisabled = true;
           let isHasTask = res.HasTasks;
           let payResult = false;
           let checkPayResult = false;
@@ -1606,6 +1604,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             } else {
               payResult = true;
             }
+            const isSelf = await this.staffService.isSelfBookType();
             if (checkPayResult) {
               if (isSelf && isHasTask) {
                 await AppHelper.alert(
@@ -1614,8 +1613,15 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 );
               } else {
                 if (isCheckPay) {
-                  const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
-                  payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
+                  const isp =
+                    this.orderTravelPayType == OrderTravelPayType.Person ||
+                    this.orderTravelPayType == OrderTravelPayType.Credit;
+                  payResult = await this.orderService.payOrder(
+                    res.TradeNo,
+                    null,
+                    false,
+                    isp ? this.tmcService.getQuickexpressPayWay() : []
+                  );
                 }
               }
             } else {

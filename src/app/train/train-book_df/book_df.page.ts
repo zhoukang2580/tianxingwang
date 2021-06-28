@@ -137,7 +137,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     checked?: boolean;
   }[];
   CredentialsType = CredentialsType;
-  
+
   combindInfos: ITrainPassengerBookInfo[];
   isShowCostCenter = true;
   isShowOrganizations = true;
@@ -154,7 +154,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private plt: Platform,
     private langService: LangService,
     private popoverCtrl: PopoverController,
-    private orderService:OrderService
+    private orderService: OrderService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
     // this.ionChange = new EventEmitter();
@@ -665,14 +665,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     const exchangeTip = "改签申请提交成功";
     if (canBook && canBook2) {
+      this.isSubmitDisabled = true;
       let res: IBookOrderResult;
       if (exchangeInfo && exchangeInfo.exchangeInfo) {
         res = await this.trainService.exchangeBook(bookDto).catch((e) => {
+          this.isSubmitDisabled = false;
           AppHelper.alert(e);
           return null;
         });
       } else {
         res = await this.trainService.bookTrain(bookDto).catch((e) => {
+          this.isSubmitDisabled = false;
           const msg: string = e;
           if (msg && /\d{11}-/.test(msg)) {
             const tips = msg
@@ -693,7 +696,6 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (res) {
         if (res.TradeNo) {
           this.isPlaceOrderOk = true;
-          this.isSubmitDisabled = true;
           let isHasTask = res.HasTasks;
           let payResult = false;
           this.trainService.removeAllBookInfos();
@@ -719,8 +721,15 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 //   payResult = await this.tmcService.payOrder(res.TradeNo);
                 // }
                 if (isCheckPay) {
-                  const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
-                  payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
+                  const isp =
+                    this.orderTravelPayType == OrderTravelPayType.Person ||
+                    this.orderTravelPayType == OrderTravelPayType.Credit;
+                  payResult = await this.orderService.payOrder(
+                    res.TradeNo,
+                    null,
+                    false,
+                    isp ? this.tmcService.getQuickexpressPayWay() : []
+                  );
                 }
               }
             } else {
