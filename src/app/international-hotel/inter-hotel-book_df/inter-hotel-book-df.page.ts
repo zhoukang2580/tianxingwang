@@ -88,6 +88,7 @@ import { SelectComponent } from "src/app/components/select/select.component";
 import { HotelBookType } from "src/app/hotel/models/HotelBookType";
 import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
+import { OrderService } from "src/app/order/order.service";
 
 @Component({
   selector: "app-inter-hotel-book-df",
@@ -151,7 +152,8 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     route: ActivatedRoute,
     private payService: PayService,
     private plt: Platform,
-    private langService: LangService
+    private langService: LangService,
+    private orderService: OrderService
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(() => {
@@ -1463,7 +1465,16 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
                   true
                 );
               } else {
-                await this.tmcService.payOrder(res.TradeNo);
+                // await this.tmcService.payOrder(res.TradeNo);
+                const isp =
+                this.orderTravelPayType == OrderTravelPayType.Person ||
+                this.orderTravelPayType == OrderTravelPayType.Credit;
+               await this.orderService.payOrder(
+                res.TradeNo,
+                null,
+                false,
+                isp ? this.tmcService.getQuickexpressPayWay() : []
+              );
               }
             } else {
               await AppHelper.alert(
