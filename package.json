@@ -92,7 +92,7 @@
     "codelyzer": "^5.2.2",
     "compressing": "^1.5.1",
     "cordova-ali-plugin": "file:cordova-ali-plugin",
-    "cordova-android": "^9.0.0",
+    "cordova-android": "^9.1.0",
     "cordova-hcp-plugin": "file:cordova-hcp-plugin",
     "cordova-ios": "^6.1.1",
     "cordova-plugin-camera": "^5.0.1",
@@ -150,8 +150,8 @@
       }
     },
     "platforms": [
-      "android",
-      "ios"
+      "ios",
+      "android"
     ]
   }
 }
