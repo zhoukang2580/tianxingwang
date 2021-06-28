@@ -281,6 +281,7 @@ export class TrainService {
     return true;
   }
   checkIfExchangeDiffStation(currentViewtTainItem: ICurrentViewtTainItem) {
+    return false;
     // 火车票改签逻辑（2021年6月7日15:48:08）
     // 始发站修改，改签进入查询页面，不能选择其他地方，默认由程序带出，查询后，在列表页面出现的同城（不是同一个城市）的始发站可以选择,可以认为，改签可以选择列表中出现的所有始发站
     // 目的地，48小时内不能修改目的地
