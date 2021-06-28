@@ -49,6 +49,16 @@
             <!-- <ion-text color='secondary' *ngIf='isAgreement'><span class='seperator'>|</span>协</ion-text> -->
         </div>
     </div>
+    <ion-list>
+        <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" [value]="segmenttype" color="secondary">
+          <ion-segment-button value="normal">
+            <ion-label>经济舱</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="others">
+            <ion-label>头等舱/商务舱</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-list>
     <app-or-comp *ngIf='vmCabins?.length==0'>暂无数据</app-or-comp>
     <ion-item lines='none' *ngFor='let cabin of vmCabins' class="cabin-list-item">
         <ng-container *ngIf='cabin.Cabin'>
@@ -93,12 +103,12 @@
             </div>
         </ng-container>
     </ion-item>
-    <div class='show-more'>
+    <!-- <div class='show-more'>
         <ion-chip color='secondary' (click)='onShowMoreCabins()' *ngIf='hasMoreCabins'>
             <ion-label>显示全部</ion-label>
             <ion-icon name="chevron-forward-outline" mode='ios'></ion-icon>
         </ion-chip>
-    </div>
+    </div> -->
     <ng-template #fakeList>
         <ion-list>
             <ion-item *ngFor='let cabin of [1,2,3]'>
