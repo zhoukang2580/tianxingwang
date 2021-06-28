@@ -50,7 +50,8 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 export class FlightItemCabinsPage implements OnInit {
   private cabins: FlightPolicy[] = [];
   private economyClassCabins: FlightPolicy[] = []; // 显示经济舱的最低价、协议价、全价
-  private moreCabins: FlightPolicy[] = []; // 显示更多价格
+  // private moreCabins: FlightPolicy[] = []; // 显示更多价格
+  private otherCabins: FlightPolicy[] = [];
   private pageUrl;
   @ViewChild(BackButtonComponent, { static: true })
   backbtn: BackButtonComponent;
@@ -69,6 +70,7 @@ export class FlightItemCabinsPage implements OnInit {
   isSelf = true;
   isAgreement = false;
   isExchange = false;
+  segmenttype;
   constructor(
     private flightService: FlightService,
     private route: ActivatedRoute,
@@ -83,7 +85,7 @@ export class FlightItemCabinsPage implements OnInit {
     private tmcService: TmcService
   ) {
     route.queryParamMap.subscribe(async (p) => {
-      this.pageUrl=this.router.url;
+      this.pageUrl = this.router.url;
       try {
         this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
         if (
@@ -348,10 +350,7 @@ export class FlightItemCabinsPage implements OnInit {
   async onBookTicket(cabin: FlightPolicy) {
     try {
       if (this.flightService.checkIfTimeout()) {
-        await this.flightService.showTimeoutPop(
-          true,
-          this.pageUrl
-        );
+        await this.flightService.showTimeoutPop(true, this.pageUrl);
         this.backbtn.popToPrePage();
         return;
       }
@@ -511,10 +510,11 @@ export class FlightItemCabinsPage implements OnInit {
     this.flightService.setPassengerBookInfosSource(arr);
     this.cabins = this.getPolicyCabins();
     this.initVmCabins(this.cabins);
+    // this.concatMoreCabins();
   }
-  onShowMoreCabins() {
-    this.vmCabins = this.economyClassCabins.concat(this.moreCabins);
-    this.moreCabins = [];
+  private concatMoreCabins() {
+    this.vmCabins = this.economyClassCabins.concat(this.otherCabins);
+    this.otherCabins = [];
     this.economyClassCabins = [];
     const BusinessCabins = []; //公务舱
     const DiscountCabins = []; //头等舱
@@ -531,14 +531,14 @@ export class FlightItemCabinsPage implements OnInit {
         ) {
           DiscountCabins.push(it);
         } else {
-          this.moreCabins.push(it);
+          this.otherCabins.push(it);
         }
       }
     });
     this.economyClassCabins.sort((a, b) =>
       b.Cabin && a.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
     );
-    this.moreCabins.sort((a, b) =>
+    this.otherCabins.sort((a, b) =>
       a.Cabin && b.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
     );
     BusinessCabins.sort((a, b) =>
@@ -550,14 +550,22 @@ export class FlightItemCabinsPage implements OnInit {
     this.vmCabins = this.economyClassCabins
       .concat(BusinessCabins)
       .concat(DiscountCabins)
-      .concat(this.moreCabins);
+      .concat(this.otherCabins);
     this.hasMoreCabins = false;
+  }
+  onSegmentChanged(ev: CustomEvent) {
+    this.segmenttype = ev.detail.value;
+    if (this.segmenttype == "normal") {
+      this.vmCabins = this.economyClassCabins;
+    } else {
+      this.vmCabins = this.otherCabins;
+    }
   }
   private initVmCabins(cabins: FlightPolicy[]) {
     if (!cabins || !cabins.length) {
       return;
     }
-    this.moreCabins = [];
+    this.otherCabins = [];
     this.economyClassCabins = [];
     let lowestPrice = Infinity;
     if (cabins) {
@@ -573,39 +581,44 @@ export class FlightItemCabinsPage implements OnInit {
     cabins.forEach((it) => {
       if (
         it.Cabin &&
-        it.Cabin.Type == FlightCabinType.Y &&
-        // 最低价
-        (it.Cabin.SalesPrice == `${lowestPrice}` ||
-          // 全价
-          +it.Cabin.Discount >= 1 ||
-          // 协议价
-          +it.Cabin.FareType == FlightFareType.Agreement)
+        it.Cabin.TypeName.includes("经济舱")
+        // &&
+        // // 最低价
+        // (it.Cabin.SalesPrice == `${lowestPrice}` ||
+        //   // 全价
+        //   +it.Cabin.Discount >= 1 ||
+        //   // 协议价
+        //   +it.Cabin.FareType == FlightFareType.Agreement
+        //   )
       ) {
-        if (+it.Cabin.FareType == FlightFareType.Agreement) {
-          if (it == isfirstAgreementCabin) {
-            this.economyClassCabins.push(it);
-          } else {
-            this.moreCabins.push(it);
-          }
-        } else if (+it.Cabin.FareType != FlightFareType.Agreement) {
-          this.economyClassCabins.push(it);
-        }
+        this.economyClassCabins.push(it);
+        // if (+it.Cabin.FareType == FlightFareType.Agreement) {
+        //   if (it == isfirstAgreementCabin) {
+        //     this.economyClassCabins.push(it);
+        //   } else {
+        //     this.moreCabins.push(it);
+        //   }
+        // } else if (+it.Cabin.FareType != FlightFareType.Agreement) {
+        //   this.economyClassCabins.push(it);
+        // }
       } else if (it.Cabin) {
-        this.moreCabins.push(it);
+        this.otherCabins.push(it);
       }
     });
-    this.hasMoreCabins = !!this.moreCabins.length;
+    this.hasMoreCabins = !!this.otherCabins.length;
     this.economyClassCabins.sort((a, b) =>
       b.Cabin && a.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
     );
-    this.moreCabins.sort((a, b) =>
+    this.otherCabins.sort((a, b) =>
       a.Cabin && b.Cabin ? +a.Cabin.SalesPrice - +b.Cabin.SalesPrice : 0
     );
     if (this.economyClassCabins.length) {
+      this.segmenttype = "normal";
       this.vmCabins = this.economyClassCabins;
     } else {
       this.hasMoreCabins = false;
-      this.vmCabins = this.moreCabins;
+      this.segmenttype = "others";
+      this.vmCabins = this.otherCabins;
     }
     console.log(this.vmCabins, "cabins");
   }
