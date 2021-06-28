@@ -351,22 +351,26 @@ export class FlightGpBookinfosPage implements OnInit {
 
 
   calcTotalPrice() {
-    console.log('order', this.orderTravelPayTypes + ":" + this.orderTravelPayType);
-    let totalPrice = this.getTotalPriceNumber();
-    if (this.initialBookDtoGpModel) {
-      if (this.initialBookDtoGpModel?.InsuranceResult?.Products) {
-        const ins = this.initialBookDtoGpModel?.InsuranceResult?.Products.find(
-          (it) =>
-            it &&
-            it.Id == this.selectedInsuranceProductId
-        );
-        console.log("totalPrice ", totalPrice);
-        const insPrice=AppHelper.multiply(ins.Price,this.selectedFrequent.length)
-        totalPrice = AppHelper.add(totalPrice,insPrice);
+    try {
+      console.log('order', this.orderTravelPayTypes + ":" + this.orderTravelPayType);
+      let totalPrice = this.getTotalPriceNumber();
+      if (this.initialBookDtoGpModel && this.selectedInsuranceProductId) {
+        if (this.initialBookDtoGpModel?.InsuranceResult?.Products) {
+          const ins = this.initialBookDtoGpModel.InsuranceResult.Products.find(
+            (it) =>
+              it &&
+              it.Id == this.selectedInsuranceProductId
+          );
+          console.log("totalPrice ", totalPrice);
+          const insPrice=AppHelper.multiply(ins.Price,this.selectedFrequent.length)
+          totalPrice = AppHelper.add(totalPrice,insPrice);
+        }
       }
+      totalPrice = AppHelper.add(totalPrice,this.getServiceFees());
+      this.totalPriceSource.next(totalPrice);
+    } catch (error) {
+      console.error(error);
     }
-    totalPrice = AppHelper.add(totalPrice,this.getServiceFees());
-    this.totalPriceSource.next(totalPrice);
   }
   private getServiceFees(){
     return 0
