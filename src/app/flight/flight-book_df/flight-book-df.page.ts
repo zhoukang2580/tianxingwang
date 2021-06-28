@@ -130,7 +130,7 @@ export class FlightBookDfPage
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
-  expenseTypes: {Name:string;Tag:string;}[];
+  expenseTypes: { Name: string; Tag: string }[];
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   isCheckingPay: boolean;
@@ -182,7 +182,7 @@ export class FlightBookDfPage
     private router: Router,
     private storage: Storage,
     private langService: LangService,
-    private orderService:OrderService
+    private orderService: OrderService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -876,12 +876,13 @@ export class FlightBookDfPage
     bookDto.IsForbidAutoIssue = isSave;
     let canBook = false;
     let canBook2 = false;
-    const isSelf = await this.staffService.isSelfBookType();
-    this.isself = isSelf;
     const arr = this.fillGroupConbindInfoApprovalInfo(this.vmCombindInfos);
     canBook = this.fillBookLinkmans(bookDto);
     canBook2 = this.fillBookPassengers(bookDto, arr);
     if (canBook && canBook2) {
+      this.isSubmitDisabled = true;
+      const isSelf = await this.staffService.isSelfBookType();
+      this.isself = isSelf;
       if (isSelf && this.flightService.getSearchFlightModel().isRoundTrip) {
         const p1 = bookDto.Passengers.find((it) => !!it.OutNumbers);
         const p2 = bookDto.Passengers.find((it) => !it.OutNumbers);
@@ -897,13 +898,13 @@ export class FlightBookDfPage
         .bookFlight(bookDto)
         .catch((e) => {
           AppHelper.alert(e);
+          this.isSubmitDisabled = false;
           return null;
         });
       if (res) {
         if (res.TradeNo) {
           // AppHelper.toast("下单成功!", 1400, "top");
           this.isPlaceOrderOk = true;
-          this.isSubmitDisabled = true;
           this.isHasTask = res.HasTasks;
           this.payResult = false;
           this.flightService.removeAllBookInfos();
@@ -928,8 +929,15 @@ export class FlightBookDfPage
                 //   this.payResult = await this.tmcService.payOrder(res.TradeNo);
                 // }
                 if (isCheckPay) {
-                  const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
-                  this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
+                  const isp =
+                    this.orderTravelPayType == OrderTravelPayType.Person ||
+                    this.orderTravelPayType == OrderTravelPayType.Credit;
+                  this.payResult = await this.orderService.payOrder(
+                    res.TradeNo,
+                    null,
+                    false,
+                    isp ? this.tmcService.getQuickexpressPayWay() : []
+                  );
                 }
               }
             } else {
@@ -1798,7 +1806,7 @@ export class FlightBookDfPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      !Tmc.FlightApprovalType 
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }
@@ -1827,7 +1835,7 @@ export class FlightBookDfPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      !Tmc.FlightApprovalType 
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }
