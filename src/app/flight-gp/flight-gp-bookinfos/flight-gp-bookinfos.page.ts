@@ -53,7 +53,7 @@ export class FlightGpBookinfosPage implements OnInit {
     identityCard: string;
     id: string;
   }[]
-  expenseTypes: {Name:string;Tag:string;}[];
+  expenseTypes: { Name: string; Tag: string; }[];
   private subscriptions: Subscription[] = [];
   private totalPriceSource: Subject<number>;
   errors: any;
@@ -362,17 +362,17 @@ export class FlightGpBookinfosPage implements OnInit {
               it.Id == this.selectedInsuranceProductId
           );
           console.log("totalPrice ", totalPrice);
-          const insPrice=AppHelper.multiply(ins.Price,this.selectedFrequent.length)
-          totalPrice = AppHelper.add(totalPrice,insPrice);
+          const insPrice = AppHelper.multiply(ins.Price, this.selectedFrequent.length)
+          totalPrice = AppHelper.add(totalPrice, insPrice);
         }
       }
-      totalPrice = AppHelper.add(totalPrice,this.getServiceFees());
+      totalPrice = AppHelper.add(totalPrice, this.getServiceFees());
       this.totalPriceSource.next(totalPrice);
     } catch (error) {
       console.error(error);
     }
   }
-  private getServiceFees(){
+  private getServiceFees() {
     return 0
   }
   back(evt?: CustomEvent) {
@@ -518,9 +518,8 @@ export class FlightGpBookinfosPage implements OnInit {
                 true
               );
             }
-          } else {
-            await AppHelper.alert("下单成功");
           }
+          await AppHelper.alert("下单成功");
           await this.empty();
           this.goToMyOrders();
         }
