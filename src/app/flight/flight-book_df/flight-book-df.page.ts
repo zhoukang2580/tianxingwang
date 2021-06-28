@@ -871,6 +871,7 @@ export class FlightBookDfPage
     if (this.isSubmitDisabled) {
       return;
     }
+    this.isSubmitDisabled = true;
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
     bookDto.IsForbidAutoIssue = isSave;
@@ -903,7 +904,6 @@ export class FlightBookDfPage
         if (res.TradeNo) {
           // AppHelper.toast("下单成功!", 1400, "top");
           this.isPlaceOrderOk = true;
-          this.isSubmitDisabled = true;
           this.isHasTask = res.HasTasks;
           this.payResult = false;
           this.flightService.removeAllBookInfos();
