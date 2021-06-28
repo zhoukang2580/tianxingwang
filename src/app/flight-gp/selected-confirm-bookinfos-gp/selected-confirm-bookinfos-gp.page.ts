@@ -1,5 +1,5 @@
 import { ActivatedRoute } from "@angular/router";
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 
 import { Subscription, Observable } from "rxjs";
 
@@ -37,6 +37,7 @@ import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 import { FlightGpService, SearchFlightModel } from "../flight-gp.service";
 import { SelectFlightsegmentCabinComponent } from "src/app/flight/components/select-flightsegment-cabin/select-flightsegment-cabin.component";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 
 @Component({
   selector: "app-selected-confirm-bookinfos-gp",
@@ -54,6 +55,7 @@ export class SelectedConfirmBookInfosGpPage implements OnInit, OnDestroy {
   // private passengerBookInfoGpSource: Subject<
   //   PassengerBookInfoGp[]
   // >;
+  private pageUrl;
   passengerAndBookInfos$: Observable<PassengerBookInfoGp[]>;
   searchModel: SearchFlightModel;
   identity: IdentityEntity;
@@ -61,6 +63,7 @@ export class SelectedConfirmBookInfosGpPage implements OnInit, OnDestroy {
   FlightCabinFareType = FlightCabinFareType;
   TripType = TripType;
   isSelf: boolean;
+  @ViewChild(BackButtonComponent, { static: true }) backbtn: BackButtonComponent;
   constructor(
     private modalCtrl: ModalController,
     private flightGpService: FlightGpService,
@@ -70,8 +73,13 @@ export class SelectedConfirmBookInfosGpPage implements OnInit, OnDestroy {
     private calendarService: CalendarService,
     private identityService: IdentityService,
     private navCtrl: NavController,
-    private orderService: OrderService
-  ) { }
+    private orderService: OrderService,
+    activatedRoute: ActivatedRoute,
+  ) { 
+    activatedRoute.queryParamMap.subscribe(async (p) => {
+      this.pageUrl=this.router.url;
+    })
+  }
   ngOnDestroy() {
     this.subscritions.forEach((sub) => sub.unsubscribe());
   }
@@ -199,6 +207,14 @@ export class SelectedConfirmBookInfosGpPage implements OnInit, OnDestroy {
     return result;
   }
   async nextStep() {
+    if (this.flightGpService.checkIfTimeout()) {
+      await this.flightGpService.showTimeoutPop(
+        true,
+        this.pageUrl
+      );
+      this.backbtn.popToPrePage();
+      return;
+    }
     const bookInfos = this.flightGpService
       .getPassengerBookInfosGp();
     // const isSelf = await this.staffService.isSelfBookType();
