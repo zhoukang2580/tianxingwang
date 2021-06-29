@@ -249,6 +249,7 @@ export class OrderService {
         });
         m.present();
         res = true;
+        await m.onDidDismiss();
         // const req1 = new RequestEntity();
         // req1.Method = "TmcApiOrderUrl-Pay-Process";
         // req1.Version = "2.0";
