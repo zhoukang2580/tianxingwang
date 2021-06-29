@@ -194,6 +194,9 @@ export class FlightGpListPage
     );
     this.route.queryParamMap.subscribe(async (d) => {
       this.pageUrl = this.router.url;
+      if (d.get("isClearBookInfos") == "true") {
+        this.flightGpService.clearSelectedBookInfos([]);
+      }
       this.isCanLeave = !this.flightGpService.getSearchFlightModel().isExchange;
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.startCheckPageTimeout();

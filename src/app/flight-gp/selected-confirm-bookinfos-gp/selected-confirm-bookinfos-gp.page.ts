@@ -212,7 +212,9 @@ export class SelectedConfirmBookInfosGpPage implements OnInit, OnDestroy {
         true,
         this.pageUrl
       );
-      this.backbtn.popToPrePage();
+      this.router.navigate(["flight-gp-list"], {
+        queryParams: { isClearBookInfos: true },
+      });
       return;
     }
     const bookInfos = this.flightGpService
