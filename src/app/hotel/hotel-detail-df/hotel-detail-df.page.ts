@@ -998,8 +998,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
         a.href = `tel:${phoneNumber}`;
         a.click();
       }
-    } else {
-    }
+    } 
   }
   private checkScroll() {
     this.domCtrl.write(async (_) => {

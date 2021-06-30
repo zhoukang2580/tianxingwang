@@ -9,6 +9,7 @@ import { AppHelper } from "src/app/appHelper";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { Router } from '@angular/router';
 import { InsurancOpenUrlComponent } from '../insuranc-open-url/insuranc-open-url.component';
+import { OrderService } from "src/app/order/order.service";
 
 @Component({
   selector: "app-trip-buy-insurance",
@@ -24,6 +25,7 @@ export class TripBuyInsuranceComponent implements OnInit {
     private identityService: IdentityService,
     private tmcService: TmcService,
     private router: Router,
+    private orderService:OrderService
   ) {}
   back() {
     this.modalCtrl.getTop().then(t => t.dismiss());
@@ -54,7 +56,8 @@ export class TripBuyInsuranceComponent implements OnInit {
       evt.stopPropagation();
     }
     if (key && tradeNo) {
-      await this.tmcService.payOrder(tradeNo, key);
+      // await this.tmcService.payOrder(tradeNo, key);
+      await this.orderService.payOrder(tradeNo, key, false, this.tmcService.getQuickexpressPayWay());
     }
   }
   async bookInsurance() {

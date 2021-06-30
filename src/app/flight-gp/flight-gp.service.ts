@@ -125,7 +125,6 @@ export class FlightGpService {
     this.searchFlightModel.tripType = TripType.departureTrip;
     this.searchFlightModelSource = new BehaviorSubject(this.searchFlightModel);
     this.passengerBookInfos = [];
-
     this.passengerBookInfoGp = [];
     this.frequentBookInfo = [];
     this.cardBinsBookInfo = [];

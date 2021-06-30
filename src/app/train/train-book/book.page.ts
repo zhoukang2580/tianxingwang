@@ -75,6 +75,7 @@ import { ITmcOutNumberInfo } from "src/app/tmc/components/book-tmc-outnumber/boo
 import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { OrderService } from "src/app/order/order.service";
 
 @Component({
   selector: "app-train-book",
@@ -101,6 +102,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   totalPriceSource: Subject<number>;
   isCanSave$ = of(false);
   OrderTravelPayType = OrderTravelPayType;
+  orderTravelPayType: OrderTravelPayType;
   addContacts: AddContact[] = [];
   isCheckingPay = false;
   isPlaceOrderOk = false;
@@ -123,7 +125,8 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private calendarService: CalendarService,
     private plt: Platform,
-    private langService: LangService
+    private langService: LangService,
+    private orderService: OrderService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -661,8 +664,19 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
                   true
                 );
               } else {
+                // if (isCheckPay) {
+                //   payResult = await this.tmcService.payOrder(res.TradeNo);
+                // }
                 if (isCheckPay) {
-                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                  const isp =
+                    this.orderTravelPayType == OrderTravelPayType.Person ||
+                    this.orderTravelPayType == OrderTravelPayType.Credit;
+                  payResult = await this.orderService.payOrder(
+                    res.TradeNo,
+                    null,
+                    false,
+                    isp ? this.tmcService.getQuickexpressPayWay() : []
+                  );
                 }
               }
             } else {

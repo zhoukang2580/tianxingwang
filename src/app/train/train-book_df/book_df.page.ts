@@ -122,7 +122,6 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   totalPriceSource: Subject<number>;
   isCanSave$ = of(false);
   OrderTravelPayType = OrderTravelPayType;
-  orderTravelPayType: OrderTravelPayType;
   addContacts: AddContact[] = [];
   isCheckingPay = false;
   isShowFee = false;
@@ -468,8 +467,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           bookInfo.bookInfo &&
-            bookInfo.bookInfo.trainEntity &&
-            bookInfo.bookInfo.trainEntity.StartTime
+          bookInfo.bookInfo.trainEntity &&
+          bookInfo.bookInfo.trainEntity.StartTime
         )
           ? insurances
           : [];
@@ -477,11 +476,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -497,11 +496,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         if (this.searchTrainModel && this.searchTrainModel.isExchange) {
           if (
@@ -722,8 +721,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 // }
                 if (isCheckPay) {
                   const isp =
-                    this.orderTravelPayType == OrderTravelPayType.Person ||
-                    this.orderTravelPayType == OrderTravelPayType.Credit;
+                    this.viewModel.orderTravelPayType == OrderTravelPayType.Person ||
+                    this.viewModel.orderTravelPayType == OrderTravelPayType.Credit;
                   payResult = await this.orderService.payOrder(
                     res.TradeNo,
                     null,
@@ -791,6 +790,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         if (!loading) {
           loading = true;
           const result = await this.tmcService.checkPay(tradeNo);
+
           loading = false;
           this.checkPayCount--;
           if (!result) {
@@ -1181,26 +1181,21 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       // console.log(this.viewModel.illegalReasons?.length);
       await AppHelper.alert(
         this.langService.isCn
-          ? `${
-              (item.credentialStaff && item.credentialStaff.Name) ||
-              (item.bookInfo.credential &&
-                item.bookInfo.credential.Surname +
-                  item.bookInfo.credential.Givenname)
-            } 【${
-              item.bookInfo.credential && item.bookInfo.credential.HideNumber
-            }】 ${msg} 信息不能为空`
-          : `${
-              (item.credentialStaff && item.credentialStaff.Name) ||
-              (item.bookInfo.credential &&
-                item.bookInfo.credential.Surname +
-                  item.bookInfo.credential.Givenname)
-            } 【${
-              item.bookInfo.credential && item.bookInfo.credential.HideNumber
-            }】 ${msg} ${
-              this.langService.isEn
-                ? "Information cannot be empty"
-                : "信息不能为空"
-            }`
+          ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
+          }】 ${msg} 信息不能为空`
+          : `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.HideNumber
+          }】 ${msg} ${this.langService.isEn
+            ? "Information cannot be empty"
+            : "信息不能为空"
+          }`
       );
       this.moveRequiredEleToViewPort(ele);
     };
@@ -1277,11 +1272,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
-            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-            : combindInfo.credentialStaffOtherMobile
-        }`;
+        p.Mobile = `${p.Mobile
+          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+          : combindInfo.credentialStaffOtherMobile
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1291,11 +1285,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
-            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-            : combindInfo.credentialStaffOtherEmail
-        }`;
+        p.Email = `${p.Email
+          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+          : combindInfo.credentialStaffOtherEmail
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];

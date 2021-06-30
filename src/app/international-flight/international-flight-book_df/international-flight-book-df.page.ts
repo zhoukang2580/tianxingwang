@@ -84,6 +84,7 @@ import { SearchModel } from "src/app/travel-application/travel.service";
 import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { SelectComponent } from "src/app/components/select/select.component";
+import { OrderService } from "src/app/order/order.service";
 @Component({
   selector: "app-international-flight-book-df",
   templateUrl: "./international-flight-book-df.page.html",
@@ -128,7 +129,7 @@ export class InternationalFlightBookDfPage
   isDingTalk = AppHelper.isDingtalkH5();
   isRoundTrip = false;
   isself = false;
-  expenseTypes: {Name:string;Tag:string;}[];
+  expenseTypes: { Name: string; Tag: string; }[];
   OrderTravelType = OrderTravelType;
   constructor(
     private flightService: InternationalFlightService,
@@ -141,7 +142,8 @@ export class InternationalFlightBookDfPage
     private popoverCtrl: PopoverController,
     private router: Router,
     private modalCtrl: ModalController,
-    private langService: LangService
+    private langService: LangService,
+    private orderService:OrderService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -189,7 +191,7 @@ export class InternationalFlightBookDfPage
       .pipe(
         map(([tmc, isSelfType, identity]) => {
           return (
-            tmc.FlightApprovalType  &&
+            tmc.FlightApprovalType &&
             tmc.FlightApprovalType != TmcApprovalType.None &&
             !isSelfType &&
             !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -713,8 +715,19 @@ export class InternationalFlightBookDfPage
                   true
                 );
               } else {
+                // if (isCheckPay) {
+                // payResult = await this.tmcService.payOrder(res.TradeNo);
+                // }
                 if (isCheckPay) {
-                  payResult = await this.tmcService.payOrder(res.TradeNo);
+                  const isp =
+                    this.orderTravelPayType == OrderTravelPayType.Person ||
+                    this.orderTravelPayType == OrderTravelPayType.Credit;
+                    payResult = await this.orderService.payOrder(
+                    res.TradeNo,
+                    null,
+                    false,
+                    isp ? this.tmcService.getQuickexpressPayWay() : []
+                  );
                 }
               }
             } else {
@@ -864,22 +877,18 @@ export class InternationalFlightBookDfPage
     ) => {
       await AppHelper.alert(
         !this.langService.isCn
-          ? `${
-              (item.credentialStaff && item.credentialStaff.Name) ||
-              (item.bookInfo.credential &&
-                item.bookInfo.credential.Surname +
-                  item.bookInfo.credential.Givenname)
-            } 【${
-              item.bookInfo.credential && item.bookInfo.credential.Number
-            }】 ${msg} Information cannot be empty`
-          : `${
-              (item.credentialStaff && item.credentialStaff.Name) ||
-              (item.bookInfo.credential &&
-                item.bookInfo.credential.Surname +
-                  item.bookInfo.credential.Givenname)
-            } 【${
-              item.bookInfo.credential && item.bookInfo.credential.Number
-            }】 ${msg} 信息不能为空`
+          ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
+          }】 ${msg} Information cannot be empty`
+          : `${(item.credentialStaff && item.credentialStaff.Name) ||
+          (item.bookInfo.credential &&
+            item.bookInfo.credential.Surname +
+            item.bookInfo.credential.Givenname)
+          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
+          }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
     };
@@ -1028,11 +1037,10 @@ export class InternationalFlightBookDfPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
+        p.Mobile = `${p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1042,11 +1050,10 @@ export class InternationalFlightBookDfPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
+        p.Email = `${p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1217,8 +1224,8 @@ export class InternationalFlightBookDfPage
         const hasHKMO = this.searchModel.trips.some((t) => {
           return "HK,MO".includes(
             t.bookInfo &&
-              t.bookInfo.flightRoute &&
-              t.bookInfo.flightRoute.ToCountry
+            t.bookInfo.flightRoute &&
+            t.bookInfo.flightRoute.ToCountry
           );
         });
         const hasTW = this.searchModel.trips.some((t) => {
@@ -1615,20 +1622,20 @@ export class InternationalFlightBookDfPage
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1806,7 +1813,7 @@ export class InternationalFlightBookDfPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      !Tmc.FlightApprovalType 
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }

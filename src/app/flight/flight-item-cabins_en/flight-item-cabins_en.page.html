@@ -77,7 +77,17 @@
       </ion-item>
     </ion-radio-group>
   </ng-template> -->
-  <app-or-comp *ngIf='vmCabins?.length==0'>暂无数据</app-or-comp>
+  <ion-list>
+    <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" [value]="segmenttype" color="secondary">
+      <ion-segment-button value="normal">
+        <ion-label>经济舱</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="others">
+        <ion-label>头等舱/商务舱</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <app-or-comp *ngIf='vmCabins?.length==0'>暂无数据</app-or-comp>
+  </ion-list>
   <ion-list class='ion-margin-top'>
     <ion-item *ngFor='let cabin of vmCabins'>
       <ng-container *ngIf='cabin.Cabin'>
@@ -138,12 +148,12 @@
       </ng-container>
     </ion-item>
   </ion-list>
-  <div class='show-more'>
+  <!-- <div class='show-more'>
     <ion-chip color='secondary' (click)='onShowMoreCabins()' *ngIf='hasMoreCabins'>
       <ion-label>Show all</ion-label>
       <ion-icon name="chevron-forward-outline" mode='ios'></ion-icon>
     </ion-chip>
-  </div>
+  </div> -->
   <ng-template #fakeList>
     <ion-list>
       <ion-item *ngFor='let cabin of [1,2,3]'>

@@ -114,6 +114,7 @@ export class FlightGpListPage
   isLoading = false;
   isSelfBookType = true;
   day: string;
+  phone = "400-66-88868";
   currentProcessStatus = "正在获取航班列表";
   st = 0;
   selectedPassengersNumbers: number;
@@ -193,6 +194,9 @@ export class FlightGpListPage
     );
     this.route.queryParamMap.subscribe(async (d) => {
       this.pageUrl = this.router.url;
+      if (d.get("isClearBookInfos") == "true") {
+        this.flightGpService.clearSelectedBookInfos([]);
+      }
       this.isCanLeave = !this.flightGpService.getSearchFlightModel().isExchange;
       this.isSelfBookType = await this.staffService.isSelfBookType();
       this.startCheckPageTimeout();
@@ -446,6 +450,23 @@ export class FlightGpListPage
     }, 200);
   }
 
+  async onCall() {
+    if (this.phone) {
+      const phoneNumber = this.phone;
+      const callNumber = window["call"];
+      // window.location.href=`tel:${phoneNumber}`;
+      if (callNumber) {
+        callNumber
+          .callNumber(phoneNumber, true)
+          .then((res) => console.log("Launched dialer!", res))
+          .catch((err) => console.log("Error launching dialer", err));
+      } else {
+        const a = document.createElement("a");
+        a.href = `tel:${phoneNumber}`;
+        a.click();
+      }
+    } 
+  }
   
   private async checkCabinsAndPolicy(fs: FlightSegmentEntity) {
     try {

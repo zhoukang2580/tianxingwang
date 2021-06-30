@@ -1,5 +1,5 @@
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
 import { flyInOut } from 'src/app/animations/flyInOut';
 import { AppHelper } from 'src/app/appHelper';
@@ -26,6 +26,8 @@ import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
 import { IdentityEntity } from 'src/app/services/identity/identity.entity';
 import { IdentityService } from 'src/app/services/identity/identity.service';
 import { OrderService } from 'src/app/order/order.service';
+import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
+import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
 
 @Component({
   selector: 'app-flight-gp-bookinfos',
@@ -33,7 +35,7 @@ import { OrderService } from 'src/app/order/order.service';
   styleUrls: ['./flight-gp-bookinfos.page.scss'],
   animations: [flyInOut],
 })
-export class FlightGpBookinfosPage implements OnInit {
+export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   // vmCombindInfos: ICombindInfo[] = [];
 
   orderTravelPayTypes: {
@@ -45,6 +47,9 @@ export class FlightGpBookinfosPage implements OnInit {
   showDetail = false;
   private payResult = false;
   private isHasTask = false;
+  private isPageTimeout = false;
+  private isShowInsuranceBack = false;
+  private isManagentCredentails = false;
   orderTravelPayType: OrderTravelPayType;
   OrderTravelPayType = OrderTravelPayType;
   orderTravel = OrderTravelPayType;
@@ -60,6 +65,7 @@ export class FlightGpBookinfosPage implements OnInit {
   passengerServiceFeesObj: { [clientId: string]: string };
   totalPrice = 0;
   isSubmitDisabled = false;
+  isCanSave = false;
   InsurancePrice = 0;
 
   checkPayCount = 5;
@@ -82,6 +88,8 @@ export class FlightGpBookinfosPage implements OnInit {
   identity: IdentityEntity;
   isDent = false;
 
+  private pageUrl;
+  @ViewChild(BackButtonComponent, { static: true }) backbtn: BackButtonComponent;
   @ViewChild(IonContent, { static: true }) contnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
@@ -98,6 +106,7 @@ export class FlightGpBookinfosPage implements OnInit {
     private navCtrl: NavController,
     private identityService: IdentityService,
     private plt: Platform,
+    private natCtrl: NavController,
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -119,9 +128,6 @@ export class FlightGpBookinfosPage implements OnInit {
 
   async ngOnInit() {
     this.refresh(false);
-    this.route.queryParamMap.subscribe(() => {
-      this.calcTotalPrice();
-    })
     this.isRoundTrip = this.flightGpService.getSearchFlightModel().isRoundTrip;
     this.flightGpService.setPassengerBookInfosSource(
       this.flightGpService.getPassengerBookInfos().filter((it) => !!it.bookInfo)
@@ -131,6 +137,39 @@ export class FlightGpBookinfosPage implements OnInit {
         this.totalPrice = p;
       })
     );
+    this.route.queryParamMap.subscribe(async () => {
+      this.calcTotalPrice();
+      this.pageUrl = this.router.url;
+      this.isPageTimeout = this.flightGpService.checkIfTimeout();
+      // this.isCanSave = await this.identityService
+      //   .getIdentityAsync()
+      //   .catch((_) => null as IdentityEntity)
+      //   .then((id) => {
+      //     return !!(id && id.Numbers && id.Numbers["AgentId"]);
+      //   });
+      // try {
+      //   if (this.isCanSave) {
+      //     const bookInfos = this.flightGpService.getPassengerBookInfos();
+      //     if (bookInfos && bookInfos.length) {
+      //       if (
+      //         bookInfos.some(
+      //           (it) =>
+      //             it.bookInfo.flightSegment.Carrier == "9C" ||
+      //             it.bookInfo.flightSegment.AirlineName.includes("春秋航空")
+      //         )
+      //       ) {
+      //         this.isCanSave = false;
+      //       }
+      //     }
+      //   }
+      // } catch {}
+      // setTimeout(() => {
+      //   if (!this.isShowInsuranceBack || this.isManagentCredentails) {
+      //     this.refresh(false);
+      //   }
+      //   this.isShowInsuranceBack = false;
+      // }, 200);
+    });
     try {
       await this.initSearchModelParams();
       this.orderLinkmanDto = {
@@ -142,6 +181,29 @@ export class FlightGpBookinfosPage implements OnInit {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  canDeactivate(
+    currentRoute: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState?: RouterStateSnapshot
+  ) {
+    if (this.isPageTimeout) {
+      this.isPageTimeout = false;
+      this.router.navigate(["flight-gp-list"], {
+        queryParams: { isClearBookInfos: true },
+      });
+      return false;
+    }
+    if (
+      // this.isPlaceOrderOk &&
+      nextState.url.includes("selected-confirm-bookinfos-gp")
+    ) {
+      this.natCtrl.navigateRoot("", { animated: true });
+      return false;
+    }
+    // console.log(currentRoute.url, currentState.url, nextState.url);
+    return true;
   }
 
   addPassengerGp() {
@@ -467,63 +529,73 @@ export class FlightGpBookinfosPage implements OnInit {
 
 
   async onSubmit(isSave: boolean, event: CustomEvent) {
-    this.isShowFee = false;
-    event.stopPropagation();
-    if (this.isSubmitDisabled) {
-      return;
-    }
-    const bookDto: GpBookReq = new GpBookReq();
-    const arr = this.initialBookDtoGpModel;
-    const canbook = await this.fillBookLinkmans();
-    const canbook2 = await this.fillBookPassengers(bookDto, arr);
-    // console.log(canbook);
-    if (canbook && canbook2) {
-      const res: IBookOrderResult = await this.flightGpService
-        .bookGpFlight(bookDto)
-        .catch((e) => {
-          AppHelper.alert(e);
-          return null;
-        });
-      if (res) {
-        if (res.TradeNo) {
-          this.isSubmitDisabled = true;
-          this.isHasTask = res.HasTasks;
-          this.payResult = false;
-          this.flightGpService.removeAllBookInfos();
-          let checkPayResult = false;
-          const isCheckPay = res.IsCheckPay;
-          if (!isSave) {
-            if (isCheckPay) {
-              this.isCheckingPay = true;
-              checkPayResult = await this.checkPay(res.TradeNo);
-              this.isCheckingPay = false;
-            } else {
-              this.payResult = true;
-            }
-            if (checkPayResult) {
-              if (this.isHasTask) {
+    try {
+
+      this.isPageTimeout = this.flightGpService.checkIfTimeout();
+      if (this.flightGpService.checkIfTimeout()) {
+        await this.flightGpService.showTimeoutPop(false, this.pageUrl);
+        return;
+      }
+      this.isShowFee = false;
+      event.stopPropagation();
+      if (this.isSubmitDisabled) {
+        return;
+      }
+      const bookDto: GpBookReq = new GpBookReq();
+      const arr = this.initialBookDtoGpModel;
+      const canbook = await this.fillBookLinkmans();
+      const canbook2 = await this.fillBookPassengers(bookDto, arr);
+      // console.log(canbook);
+      if (canbook && canbook2) {
+        const res: IBookOrderResult = await this.flightGpService
+          .bookGpFlight(bookDto)
+          .catch((e) => {
+            AppHelper.alert(e);
+            return null;
+          });
+        if (res) {
+          if (res.TradeNo) {
+            this.isSubmitDisabled = true;
+            this.isHasTask = res.HasTasks;
+            this.payResult = false;
+            this.flightGpService.removeAllBookInfos();
+            let checkPayResult = false;
+            const isCheckPay = res.IsCheckPay;
+            if (!isSave) {
+              if (isCheckPay) {
+                this.isCheckingPay = true;
+                checkPayResult = await this.checkPay(res.TradeNo);
+                this.isCheckingPay = false;
+              } else {
+                this.payResult = true;
+              }
+              if (checkPayResult) {
+                if (this.isHasTask) {
+                  await AppHelper.alert(
+                    LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                    true
+                  );
+                } else {
+                  if (isCheckPay) {
+                    const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
+                    this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
+                  }
+                }
+              } else {
                 await AppHelper.alert(
-                  LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
                   true
                 );
-              } else {
-                if (isCheckPay) {
-                  const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
-                  this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
-                }
               }
-            } else {
-              await AppHelper.alert(
-                LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
-                true
-              );
             }
+            await AppHelper.alert("下单成功");
+            await this.empty();
+            this.goToMyOrders();
           }
-          await AppHelper.alert("下单成功");
-          await this.empty();
-          this.goToMyOrders();
         }
       }
+    } catch (error) {
+      console.error(error);
     }
   }
 
