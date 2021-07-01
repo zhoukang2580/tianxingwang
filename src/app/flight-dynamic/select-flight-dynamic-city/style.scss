@@ -340,5 +340,8 @@
     .city-name {
       color: gray;
     }
+    &.hide-item {
+      display: none;
+    }
   }
 }
