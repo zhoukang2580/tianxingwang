@@ -721,7 +721,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       };
       let reg = /^[\u4E00-\u9FA5]{1,8}$/;
       let reg1 = /^1[0-9]{10}$/;
-      let reg2 = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[com,cn,net]{1,3})+$/
+      let reg2 = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
       console.log(!reg2.test(orderLinkman.Email) || orderLinkman.Email == "", "sas")
       if (!orderLinkman.Name) {
         const el = this.getEleByAttr("PassengerName", "PassengerName");
