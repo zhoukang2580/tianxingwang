@@ -609,12 +609,9 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     });
   }
 
-
   fillBookPassengers(bookDto: GpBookReq, combindInfos: any) {
     console.log(combindInfos, 'arr');
     bookDto.PassengerDtos = [];
-
-
     let rets: GpPassengerDto[] = [];
     for (let fre of this.selectedFrequent) {
       const ret = new GpPassengerDto();
@@ -736,18 +733,18 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       } else if (!orderLinkman.Mobile) {
         const el = this.getEleByAttr("Mobile", "Mobile");
         this.moveRequiredEleToViewPort(el);
-        AppHelper.alert("请输入手机号")
+        AppHelper.alert("请输入手机号");
         return
       } else if (!reg1.test(orderLinkman.Mobile)) {
         const el = this.getEleByAttr("Mobile", "Mobile");
         this.moveRequiredEleToViewPort(el);
-        AppHelper.alert("手机号输入有误")
+        AppHelper.alert("手机号输入有误");
         return
       } else if (orderLinkman.Email != "") {
         if (!reg2.test(orderLinkman.Email) || orderLinkman.Email == "") {
           const el = this.getEleByAttr("Email", "Email");
           this.moveRequiredEleToViewPort(el);
-          AppHelper.alert("邮箱格式不正确")
+          AppHelper.alert("邮箱格式不正确");
           return
         }
       }
