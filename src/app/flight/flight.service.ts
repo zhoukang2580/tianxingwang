@@ -36,6 +36,7 @@ import {
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { FlightFareEntity } from "./models/FlightFareEntity";
 import { FlightResultEntity } from "./models/FlightResultEntity";
+import { FlightCityService } from "./flight-city.service";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -86,6 +87,7 @@ export class FlightService {
     private modalCtrl: ModalController,
     private router: Router,
     identityService: IdentityService,
+    private flightCityService: FlightCityService,
     private tmcService: TmcService,
     private calendarService: CalendarService,
     private storage: Storage
@@ -1880,5 +1882,29 @@ export class FlightService {
       });
     }
     return result;
+  }
+  async onSelectCity(data: {
+    isShowPage: boolean;
+    isFrom: boolean;
+    isShowAirports?: boolean;
+    isDomestic?: boolean;
+    pageClassName?: string;
+    isShowSegs?: boolean;
+    isShowHotCity?: boolean;
+    isFlyDynamic?: boolean;
+    hideCityCodes?: string[];
+    extraHotAirports?: string[];
+  }) {
+    const domesticAirports = await this.getDomesticAirports();
+    const internationalAirports = await this.getInternationalAirports();
+    return this.flightCityService.onSelectCity({
+      ...data,
+      pageClassName: "flight-city-page-container",
+      domesticAirports,
+      internationalAirports,
+    });
+  }
+  get isShowingPage() {
+    return this.flightCityService.isShowingPage;
   }
 }

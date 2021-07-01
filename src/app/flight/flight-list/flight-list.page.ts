@@ -153,7 +153,6 @@ export class FlightListPage
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
     private storage: Storage,
-    private flightCityService: FlightCityService,
     private tmcService: TmcService
   ) {
     this.subscriptions.push(
@@ -679,7 +678,7 @@ export class FlightListPage
     }
     this.isCanLeave = true;
     // this.flightService.onSelectCity(isFrom);
-    const rs = await this.flightCityService.onSelectCity({isShowPage:false,isFrom:false});
+    const rs = await this.flightService.onSelectCity({isShowPage:false,isFrom:false});
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {
@@ -971,8 +970,8 @@ export class FlightListPage
     return result;
   }
   canDeactivate() {
-    if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity({isShowPage:false,isFrom:false});
+    if (this.flightService.isShowingPage) {
+      this.flightService.onSelectCity({isShowPage:false,isFrom:false});
       return false;
     }
     const s = this.flightService.getSearchFlightModel();

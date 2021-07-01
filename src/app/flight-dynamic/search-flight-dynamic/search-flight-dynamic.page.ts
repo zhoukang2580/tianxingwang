@@ -14,13 +14,14 @@ import { FlightDynamicService, SearchDynamicModule } from '../flight-dynamic.ser
 import { IdentityService } from 'src/app/services/identity/identity.service';
 import { FlightCityService } from 'src/app/flight/flight-city.service';
 import { ITripInfo } from 'src/app/international-flight/international-flight.service';
+import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
 
 @Component({
   selector: 'app-search-flight-dynamic',
   templateUrl: './search-flight-dynamic.page.html',
   styleUrls: ['./search-flight-dynamic.page.scss'],
 })
-export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit {
+export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit,CanComponentDeactivate {
   private textChange: EventEmitter<string>;
   searchConditionSubscription = Subscription.EMPTY;
   searchDynamicModel: SearchDynamicModule
@@ -48,7 +49,6 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
   showReturnTrip = true;
   constructor(
     // private flightCityService: FlightCityService,
-    // private flightService: FlightService,
     private flightDynamicService: FlightDynamicService,
     private calendarService: CalendarService,
     private identityService: IdentityService,
@@ -98,7 +98,12 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     console.log("on destroyed");
     this.searchConditionSubscription.unsubscribe();
   }
-
+  canDeactivate(){
+    if (this.flightDynamicService.isShowingPage) {
+      this.flightDynamicService.onSelectCity({ isShowPage: false, isFrom: false });
+      return false;
+    }
+  }
   ngAfterViewInit(): void {
     console.log("ngAfterViewInit");
   }

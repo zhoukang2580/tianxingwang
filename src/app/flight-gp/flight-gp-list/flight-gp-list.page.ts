@@ -1,8 +1,5 @@
 import { IFlightSegmentInfo } from "../models/PassengerFlightInfo";
-import {
-  PassengerBookInfo,
-  TmcService,
-} from "../../tmc/tmc.service";
+import { PassengerBookInfo, TmcService } from "../../tmc/tmc.service";
 import { environment } from "src/environments/environment";
 import { ApiService } from "src/app/services/api/api.service";
 import { FlyFilterComponent } from "../components/fly-filter/fly-filter.component";
@@ -83,7 +80,8 @@ import { FlightService } from "src/app/flight/flight.service";
   ],
 })
 export class FlightGpListPage
-  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
+  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate
+{
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private pageUrl;
@@ -149,8 +147,7 @@ export class FlightGpListPage
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
     private storage: Storage,
-    private flightCityService: FlightCityService,
-    private tmcService: TmcService,
+    private tmcService: TmcService
   ) {
     this.subscriptions.push(
       flightGpService
@@ -349,7 +346,7 @@ export class FlightGpListPage
     console.log("onRotateIconDone");
   }
 
-  async getIdentity(){
+  async getIdentity() {
     this.identitySubscription = this.identityService
       .getIdentitySource()
       .subscribe((r) => {
@@ -411,9 +408,10 @@ export class FlightGpListPage
         this.searchFlightModel.fromCity &&
         this.searchFlightModel.fromCity.Code;
       this.oldSearchCities.toCityCode = this.searchFlightModel.toCity.Code;
-      const flightJourneyList = await this.flightGpService.getFlightJourneyDetailListAsync(
-        loadDataFromServer
-      );
+      const flightJourneyList =
+        await this.flightGpService.getFlightJourneyDetailListAsync(
+          loadDataFromServer
+        );
       this.hasDataSource.next(false);
       let segments = this.filterFlightSegments(
         this.flightGpService.getTotalFlySegments()
@@ -436,7 +434,7 @@ export class FlightGpListPage
       this.isLoading = false;
     }
   }
-  
+
   private scrollToTop() {
     setTimeout(() => {
       if (this.cnt) {
@@ -465,9 +463,9 @@ export class FlightGpListPage
         a.href = `tel:${phoneNumber}`;
         a.click();
       }
-    } 
+    }
   }
-  
+
   private async checkCabinsAndPolicy(fs: FlightSegmentEntity) {
     try {
       if (!fs.Cabins || !fs.Cabins.length) {
@@ -505,7 +503,10 @@ export class FlightGpListPage
     }
     this.isCanLeave = true;
     // this.flightService.onSelectCity(isFrom);
-    const rs = await this.flightCityService.onSelectCity(true, isFrom);
+    const rs = await this.flightGpService.onSelectCity({
+      isShowPage: true,
+      isFrom,
+    });
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {
@@ -796,8 +797,8 @@ export class FlightGpListPage
     return result;
   }
   canDeactivate() {
-    if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity(false, false);
+    if (this.flightGpService.isShowingPage) {
+      this.flightGpService.onSelectCity({ isShowPage: false, isFrom: false });
       return false;
     }
     const s = this.flightGpService.getSearchFlightModel();

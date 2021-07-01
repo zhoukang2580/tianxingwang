@@ -68,7 +68,6 @@ export class SearchFlightPage
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
     private langService: LangService,
-    private flightCityService: FlightCityService
   ) {
     const sub = route.queryParamMap.subscribe(async (q) => {
       this.isEn = this.langService.isEn;
@@ -130,8 +129,8 @@ export class SearchFlightPage
     }
   }
   async canDeactivate() {
-    if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity({ isShowPage: false, isFrom: false });
+    if (this.flightService.isShowingPage) {
+      this.flightService.onSelectCity({ isShowPage: false, isFrom: false });
       return false;
     }
     if (this.isCanleave) {
@@ -386,7 +385,7 @@ export class SearchFlightPage
   }
   async onSelectCity(isFromCity = true) {
     this.isCanleave = true;
-    const rs = await this.flightCityService.onSelectCity({ isShowPage: true, isFrom: isFromCity });
+    const rs = await this.flightService.onSelectCity({ isShowPage: true, isFrom: isFromCity });
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {

@@ -50,7 +50,10 @@ export class FlightDynamicService {
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
     this.setSearchDynamicModelSource(new SearchDynamicModule());
   }
-  onSelectCity(data: {
+  get isShowingPage(){
+    return this.flightCityService.isShowingPage;
+  }
+  async onSelectCity(data: {
     isShowPage: boolean;
     isFrom: boolean;
     isShowAirports?: boolean;
@@ -59,10 +62,15 @@ export class FlightDynamicService {
     isShowHotCity?: boolean;
     isFlyDynamic?: boolean;
   }) {
+    const domesticAirports = await this.getDomesticAirports();
+    const internationalAirports = [];
     return this.flightCityService.onSelectCity({
       ...data,
       hideCityCodes: ["BJS", "SHA", "CAN"],
-      extraHotAirports: ["SHA", "PVG","PKX","PEK"],
+      extraHotAirports: ["SHA", "PVG", "PKX", "PEK"],
+      pageClassName: "select-flight-dynamic-city-page-container",
+      domesticAirports,
+      internationalAirports,
     });
   }
   getPassengerBookInfos() {
