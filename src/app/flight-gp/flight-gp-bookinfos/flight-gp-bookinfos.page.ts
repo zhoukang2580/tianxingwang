@@ -530,7 +530,11 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
 
   async onSubmit(isSave: boolean, event: CustomEvent) {
     try {
-
+      const isPay = this.initialBookDtoGpModel?.InsuranceResult;
+      if (!isPay) {
+        AppHelper.alert("提交失败,请联系工作人员配置支付方式");
+        return
+      }
       this.isPageTimeout = this.flightGpService.checkIfTimeout();
       if (this.flightGpService.checkIfTimeout()) {
         await this.flightGpService.showTimeoutPop(false, this.pageUrl);
