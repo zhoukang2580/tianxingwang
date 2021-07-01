@@ -90,19 +90,19 @@ export class AccountMobilePage implements OnInit, OnDestroy {
       .subscribe(
         (r) => {
           if (!r.Status) {
-            AppHelper.alert(r.Message || "绑定错误");
+            AppHelper.alert(r.Message || (r.Code||"").toLowerCase().includes("exist")?"该号码已经绑定了其他账号": "绑定错误");
             return;
           }
           if (r.Data) {
+            AppHelper.alert(r.Message||"操作成功", true);
+            AppHelper.removeQueryParamers("IsForceBindMobile");
+            this.back();
+            setTimeout(() => {
+              if (this.router.url == "/account-mobile") {
+                this.router.navigate([""]);
+              }
+            }, 300);
             if ((r.Data.Action as string).toLowerCase() == "finish") {
-              AppHelper.alert(LanguageHelper.getBindMobileSuccess(), true);
-              AppHelper.removeQueryParamers("IsForceBindMobile");
-              this.back();
-              setTimeout(() => {
-                if (this.router.url == "/account-mobile") {
-                  this.router.navigate([""]);
-                }
-              }, 300);
               return;
             }
             r.Data.Mobile = "";
@@ -122,9 +122,9 @@ export class AccountMobilePage implements OnInit, OnDestroy {
     if (r.Status && r.Data) {
       this.isActiveMobile = r.Data.IsActiveMobile;
       this.form.patchValue({ Mobile: r.Data.Mobile });
-      this.action = r.Data.Action;
-      this.isFinish = (r.Data.Action as string).toLowerCase() == "bind";
-      this.isModiy = this.isFinish || !this.isActiveMobile;
+      // this.action = r.Data.Action;
+      // this.isFinish = (r.Data.Action as string).toLowerCase() == "bind";
+      // this.isModiy = this.isFinish || !this.isActiveMobile;
       this.countDown = 0;
     }
   }
