@@ -103,6 +103,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       this.flightDynamicService.onSelectCity({ isShowPage: false, isFrom: false });
       return false;
     }
+    return true;
   }
   ngAfterViewInit(): void {
     console.log("ngAfterViewInit");

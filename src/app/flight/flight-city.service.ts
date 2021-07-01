@@ -128,6 +128,16 @@ export class FlightCityService {
     if (!isShowPage) {
       return null;
     }
+    const segments=this.cityPage.page&&this.cityPage.page.querySelector(".segments");
+    if(!isShowSegs|| !internationalAirports||!internationalAirports.length){
+      if(segments){
+        segments.classList.add('hidden');
+      }
+    }else{
+      if(segments){
+        segments.classList.remove('hidden');
+      }
+    }
     this.cityPage.onToggleSegmentsPage(isDomestic);
     return new Promise<{ isDomestic: boolean; city: TrafficlineEntity }>(
       (rsv) => {
