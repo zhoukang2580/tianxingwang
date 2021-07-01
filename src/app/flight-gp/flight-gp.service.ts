@@ -50,6 +50,7 @@ import { BookGpDto } from "./models/flightgp/BookGpDto";
 import { AccountEntity } from "./models/flightgp/AccountEntity";
 import { PassengerEntity } from "./models/flightgp/PassengerEntity";
 import { GpBookReq } from "../order/models/GpBookReq";
+import { FlightCityService } from "./flight-city.service";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -77,15 +78,9 @@ export class FlightGpService {
   private passengerBookInfoSource: Subject<
     PassengerBookInfo<IFlightSegmentInfo>[]
   >;
-  private passengerBookInfoGpSource: Subject<
-    PassengerBookInfoGp[]
-  >;
-  private frequentBookInfoSource: Subject<
-    FrequentBookInfo[]
-  >;
-  private cardBinsBookInfoSource: Subject<
-    CardBinsBookInfo[]
-  >;
+  private passengerBookInfoGpSource: Subject<PassengerBookInfoGp[]>;
+  private frequentBookInfoSource: Subject<FrequentBookInfo[]>;
+  private cardBinsBookInfoSource: Subject<CardBinsBookInfo[]>;
 
   private searchFlightModel: SearchFlightModel;
   private filterConditionSources: Subject<FilterConditionModel>;
@@ -118,6 +113,7 @@ export class FlightGpService {
     private router: Router,
     identityService: IdentityService,
     private tmcService: TmcService,
+    private flightCityService: FlightCityService,
     private calendarService: CalendarService,
     private storage: Storage
   ) {
@@ -130,7 +126,9 @@ export class FlightGpService {
     this.cardBinsBookInfo = [];
     this.passengerBookInfoSource = new BehaviorSubject(this.passengerBookInfos);
 
-    this.passengerBookInfoGpSource = new BehaviorSubject(this.passengerBookInfoGp);
+    this.passengerBookInfoGpSource = new BehaviorSubject(
+      this.passengerBookInfoGp
+    );
 
     this.frequentBookInfoSource = new BehaviorSubject(this.frequentBookInfo);
 
@@ -162,8 +160,8 @@ export class FlightGpService {
     const nextDate = this.calendarService.getMoment(1).format("YYYY-MM-DD");
     lastSelectedGoDate =
       lastSelectedGoDate &&
-        this.calendarService.generateDayModelByDate(lastSelectedGoDate)
-          .timeStamp >=
+      this.calendarService.generateDayModelByDate(lastSelectedGoDate)
+        .timeStamp >=
         this.calendarService.generateDayModelByDate(nextDate).timeStamp
         ? lastSelectedGoDate
         : nextDate;
@@ -223,20 +221,17 @@ export class FlightGpService {
     this.passengerBookInfoGpSource.next(this.passengerBookInfoGp.slice(0));
   }
 
-
   setfrequentBookInfoSource(args: FrequentBookInfo[]) {
     console.log("flight setPassengerBookInfos", args);
     this.frequentBookInfo = args;
     this.frequentBookInfoSource.next(this.frequentBookInfo.slice(0));
   }
 
-
   setCardBinsBookInfoSource(args: CardBinsBookInfo[]) {
     console.log("flight CardBinsBookInfo", args);
     this.cardBinsBookInfo = args;
     this.cardBinsBookInfoSource.next(this.cardBinsBookInfo.slice(0));
   }
-
 
   getPassengerBookInfoSource() {
     return this.passengerBookInfoSource.asObservable();
@@ -283,7 +278,8 @@ export class FlightGpService {
       } as FlightPolicy;
     });
     if (
-      false && data &&
+      false &&
+      data &&
       data.passenger &&
       data.passenger.AccountId &&
       data.isFilterPolicy
@@ -356,7 +352,6 @@ export class FlightGpService {
       }, [] as StaffEntity[]);
   }
 
-
   getPassengerBookInfos() {
     this.passengerBookInfos = this.passengerBookInfos || [];
     return this.passengerBookInfos;
@@ -376,7 +371,6 @@ export class FlightGpService {
     this.cardBinsBookInfo = this.cardBinsBookInfo || [];
     return this.cardBinsBookInfo;
   }
-
 
   async selectTripType(): Promise<TripType> {
     const ok = await AppHelper.alert(
@@ -406,9 +400,7 @@ export class FlightGpService {
     this.setPassengerBookInfosSource(infos);
   }
 
-  addFrequentBookInfo(
-    arg: FrequentBookInfo
-  ) {
+  addFrequentBookInfo(arg: FrequentBookInfo) {
     console.log("addPassengerFlightSegments", arg);
     const infos = this.getfrequentBookInfo();
     infos.push(arg);
@@ -416,13 +408,13 @@ export class FlightGpService {
     this.setfrequentBookInfoSource(infos);
   }
 
-  updataFrequentBookInfo(
-    arg: FrequentBookInfo
-  ) {
+  updataFrequentBookInfo(arg: FrequentBookInfo) {
     console.log("addPassengerFlightSegments", arg);
     let infos = this.getfrequentBookInfo();
     if (infos.length > 1) {
-      infos = infos.filter(it => it.passengerEntity.Id != arg.passengerEntity.Id);
+      infos = infos.filter(
+        (it) => it.passengerEntity.Id != arg.passengerEntity.Id
+      );
     } else {
       infos = [];
     }
@@ -430,7 +422,6 @@ export class FlightGpService {
     console.log("addPassengerFlightSegments added", arg);
     this.setfrequentBookInfoSource(infos);
   }
-
 
   openCalendar(isMulti: boolean, tripType?: TripType) {
     const goFlight = this.getPassengerBookInfos().find(
@@ -700,8 +691,6 @@ export class FlightGpService {
     return result;
   }
 
-
-
   checkIfCabinIsAllowBook(
     bookInfo: PassengerBookInfo<IFlightSegmentInfo>,
     flightCabin: FlightCabinEntity,
@@ -801,7 +790,7 @@ export class FlightGpService {
     let i = 10;
     while (top && --i > 0) {
       // console.log("onSelectReturnTrip", top);
-      await top.dismiss().catch((_) => { });
+      await top.dismiss().catch((_) => {});
       top = await this.modalCtrl.getTop();
     }
     console.timeEnd("dismissAllTopOverlays");
@@ -1380,9 +1369,7 @@ export class FlightGpService {
     this.setPassengerBookInfosSource(this.getPassengerBookInfos());
   }
 
-  async getInitializeBookDto(
-    bookDto: BookGpDto
-  ): Promise<InitialBookDtoModel> {
+  async getInitializeBookDto(bookDto: BookGpDto): Promise<InitialBookDtoModel> {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-FlightGp-Init";
 
@@ -1421,7 +1408,6 @@ export class FlightGpService {
     return this.apiService.getPromiseData<any>(req);
   }
 
-
   updatePassengerSubmit(d: PassengerEntity) {
     const req = new RequestEntity();
     req.IsShowLoading = true;
@@ -1437,7 +1423,7 @@ export class FlightGpService {
     req.IsShowLoading = true;
     req.Method = `TmcApiBookUrl-FlightGp-DeletePassenger`;
     req.Data = {
-      Id: id
+      Id: id,
     };
     return this.apiService.getPromiseData<any>(req);
   }
@@ -1568,7 +1554,7 @@ export class FlightGpService {
         // console.log(moment(s.TakeoffTime).hour());
         return (
           this.filterCondition.takeOffTimeSpan.lower <=
-          this.calendarService.getMoment(0, s.TakeoffTime).hour() &&
+            this.calendarService.getMoment(0, s.TakeoffTime).hour() &&
           (this.calendarService.getMoment(0, s.TakeoffTime).hour() <
             this.filterCondition.takeOffTimeSpan.upper ||
             (this.calendarService.getMoment(0, s.TakeoffTime).hour() ==
@@ -1611,6 +1597,27 @@ export class FlightGpService {
     req.Data = [];
     return this.apiService.getPromiseData<any[]>(req);
   }
-
-
+  async onSelectCity(data: {
+    isShowPage: boolean;
+    isFrom: boolean;
+    isShowAirports?: boolean;
+    isDomestic?: boolean;
+    pageClassName?: string;
+    isShowSegs?: boolean;
+    isShowHotCity?: boolean;
+    isFlyDynamic?: boolean;
+    hideCityCodes?: string[];
+    extraHotAirports?: string[];
+  }) {
+    const domesticAirports = await this.getDomesticAirports();
+    return this.flightCityService.onSelectCity({
+      ...data,
+      pageClassName: "flight-gp-city-page-container",
+      domesticAirports,
+      internationalAirports: [],
+    });
+  }
+  get isShowingPage() {
+    return this.flightCityService.isShowingPage;
+  }
 }

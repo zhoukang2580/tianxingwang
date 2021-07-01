@@ -63,7 +63,6 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     private identityService: IdentityService,
     private calendarService: CalendarService,
     private navCtrl: NavController,
-    private flightCityService: FlightCityService,
     private flightGpService: FlightGpService,
     private storage: Storage,
     private staffService: HrService,
@@ -151,8 +150,8 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     }
   }
   async canDeactivate() {
-    if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity({ isShowPage: false, isFrom: false });
+    if (this.flightGpService.isShowingPage) {
+      this.flightGpService.onSelectCity({ isShowPage: false, isFrom: false });
       return false;
     }
     if (this.isCanleave) {
@@ -413,7 +412,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   }
   async onSelectCity(isFromCity = true) {
     this.isCanleave = true;
-    const rs = await this.flightCityService.onSelectCity(
+    const rs = await this.flightGpService.onSelectCity(
       {
         isDomestic: true,
         isFrom: isFromCity,

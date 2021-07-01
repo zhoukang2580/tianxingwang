@@ -164,7 +164,6 @@ export class FlightListEnPage
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
     private storage: Storage,
-    private flightCityService: FlightCityService,
     private tmcService: TmcService,
     private langService: LangService,
     private cabintypePipe: CabintypePipe
@@ -698,7 +697,7 @@ export class FlightListEnPage
       return;
     }
     this.isCanLeave = true;
-    const rs = await this.flightCityService.onSelectCity({isShowPage:false,isFrom:false});
+    const rs = await this.flightService.onSelectCity({isShowPage:false,isFrom:false});
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {
@@ -1007,8 +1006,8 @@ export class FlightListEnPage
     return result;
   }
   canDeactivate() {
-    if (this.flightCityService.isShowingPage) {
-      this.flightCityService.onSelectCity({isShowPage:false,isFrom:false});
+    if (this.flightService.isShowingPage) {
+      this.flightService.onSelectCity({isShowPage:false,isFrom:false});
       return false;
     }
     const s = this.flightService.getSearchFlightModel();

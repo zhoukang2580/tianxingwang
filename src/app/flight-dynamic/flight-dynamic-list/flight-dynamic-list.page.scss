@@ -6,6 +6,9 @@
 
 .navigation {
     background: #eee;
+    position: sticky;
+    top: 0;
+    z-index: 1;
     ul {
         padding: 8px;
         margin: 0;

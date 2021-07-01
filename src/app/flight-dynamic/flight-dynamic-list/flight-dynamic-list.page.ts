@@ -22,7 +22,7 @@ export class FlightDynamicListPage implements OnInit, OnDestroy {
   currentProcessStatus = "正在获取航班列表";
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   @ViewChild("cnt", { static: true }) public cnt: IonContent;
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(IonRefresher,{static:true}) refresher: IonRefresher;
   isLoading = false;
   isNoData = false;
   airportTime: string;
@@ -85,10 +85,6 @@ export class FlightDynamicListPage implements OnInit, OnDestroy {
         this.scrollToTop();
       }
       this.flightDynamicListModel = [];
-      if (this.isLoading) {
-        return;
-      }
-      this.isLoading = true;
       if (this.refresher) {
         this.refresher.complete();
         this.refresher.disabled = true;
@@ -96,6 +92,10 @@ export class FlightDynamicListPage implements OnInit, OnDestroy {
           this.refresher.disabled = false;
         }, 100);
       }
+      if (this.isLoading) {
+        return;
+      }
+      this.isLoading = true;
       // this.currentProcessStatus = "正在获取航班列表";
       // this.apiService.showLoadingView({ msg: this.currentProcessStatus });
       this.isNoData = false;
