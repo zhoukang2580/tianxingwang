@@ -150,6 +150,11 @@ export class FlightGpListPage
     private tmcService: TmcService
   ) {
     this.subscriptions.push(
+      this.identityService.getIdentitySource().subscribe((id) => {
+        this.identity = id;
+      })
+    );
+    this.subscriptions.push(
       flightGpService
         .getPassengerBookInfoSource()
         .pipe(map((item) => item.length))
@@ -234,6 +239,12 @@ export class FlightGpListPage
     return false;
   }
 
+  private getCachcityKey() {
+    if (this.identity) {
+      return `last_selected_flight_gp_goDate_${this.identity.Id}`;
+    }
+    return "";
+  }
   getNoMoreDataDesc() {
     const bookInfos = this.flightGpService.getPassengerBookInfos();
     const go = bookInfos.find(
@@ -307,19 +318,13 @@ export class FlightGpListPage
     const s = this.flightGpService.getSearchFlightModel();
     if (s.isRoundTrip) {
       if (s.tripType == TripType.departureTrip) {
-        if (identity) {
-          await this.storage.set(
-            `last_selected_flight_goDate_${identity.Id}`,
-            day.date
-          );
+        if (identity && this.getCachcityKey()) {
+          await this.storage.set(this.getCachcityKey(), day.date);
         }
       }
     } else {
-      if (identity) {
-        await this.storage.set(
-          `last_selected_flight_goDate_${identity.Id}`,
-          day.date
-        );
+      if (identity && this.getCachcityKey()) {
+        await this.storage.set(this.getCachcityKey(), day.date);
       }
     }
     if (this.filterCondition) {

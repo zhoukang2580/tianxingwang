@@ -416,7 +416,6 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
       {
         isDomestic: true,
         isFrom: isFromCity,
-        isShowAirports: false,
         isShowPage: true,
         isShowSegs: true
       }

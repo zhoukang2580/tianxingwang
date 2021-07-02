@@ -1600,7 +1600,6 @@ export class FlightGpService {
   async onSelectCity(data: {
     isShowPage: boolean;
     isFrom: boolean;
-    isShowAirports?: boolean;
     isDomestic?: boolean;
     pageClassName?: string;
     isShowSegs?: boolean;
@@ -1612,6 +1611,7 @@ export class FlightGpService {
     const domesticAirports = await this.getDomesticAirports();
     return this.flightCityService.onSelectCity({
       ...data,
+      isShowAirports: false,
       pageClassName: "flight-gp-city-page-container",
       domesticAirports,
       internationalAirports: [],
