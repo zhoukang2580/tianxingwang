@@ -264,7 +264,7 @@
               </ion-select-option>
             </ion-select>
             <ion-select #expirationMonthEle [(ngModel)]="combindInfo.creditCardInfo.expirationMonth" [selectedText]='combindInfo.creditCardInfo.expirationMonth+"月"' [okText]='"确定"' [cancelText]='"取消"'>
-              <ion-select-option value="{{m}}" *ngFor="let m of months(combindInfo.creditCardInfo.years)">{{m}}月
+              <ion-select-option value="{{m}}" *ngFor="let m of months(combindInfo.creditCardInfo.expirationYear)">{{m}}月
               </ion-select-option>
             </ion-select>
           </ion-item>
@@ -302,9 +302,9 @@
               </div>
               <div class="flex padding-v row" [attr.creditCardInfoexpirationYear]="combindInfo.id">
                 <span class="label">有效期</span>
-                <span>{{combindInfo.creditCardInfo.expirationYear}}</span>
+                <span (click)="onOpenSelect(expirationYearEle)">{{combindInfo.creditCardInfo.expirationYear}}</span>
                 <ion-icon name="caret-down-outline" class="down" (click)="onOpenSelect(expirationYearEle)"></ion-icon>
-                <span>{{combindInfo.creditCardInfo.expirationMonth+"月"}}</span>
+                <span (click)="onOpenSelect(expirationMonthEle)">{{combindInfo.creditCardInfo.expirationMonth+"月"}}</span>
                 <ion-icon name="caret-down-outline" class="down" (click)="onOpenSelect(expirationMonthEle)"></ion-icon>
               </div>
               <div class="flex padding-v row" [attr.creditCardPersionInfocredentialType]="combindInfo.id" (click)="onOpenSelect(cctypeEle)">
