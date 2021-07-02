@@ -661,7 +661,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.generateAnimation(el);
   }
   private generateAnimation(el: HTMLElement) {
-    el.style.display = "block";
+    // el.style.display = "block";
     setTimeout(() => {
       requestAnimationFrame(() => {
         el.style.color = "var(--ion-color-danger)";
@@ -697,11 +697,33 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       );
       return false;
     }
+    if (
+      item.bookInfo.bookInfo.roomPlan.BookType == HotelBookType.Elong &&
+      !item.creditCardInfo.cardCredentialsMobile
+    ) {
+      this.showErrorMsg(
+        "请输入信用卡预留手机号",
+        item,
+        this.getEleByAttr("creditCardInfocreditCardMobile", item.id)
+      );
+      return false;
+    }
     if (!item.creditCardInfo.creditCardCvv) {
       this.showErrorMsg(
         "信用卡CVV必填",
         item,
         this.getEleByAttr("creditCardInfocreditCardCvv", item.id)
+      );
+      return false;
+    }
+    if (
+      !item.creditCardInfo.expirationYear ||
+      !item.creditCardInfo.expirationMonth
+    ) {
+      this.showErrorMsg(
+        "有效期必填",
+        item,
+        this.getEleByAttr("creditCardInfoexpirationYear", item.id)
       );
       return false;
     }
@@ -729,10 +751,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       );
       return false;
     }
-    // if (!item.creditCardPersionInfo.name) {
-    //   showErrorMsg("持卡人名必填");
-    //   return false;
-    // }
+    
     return true;
   }
   private fillBookLinkmans(bookDto: OrderBookDto) {

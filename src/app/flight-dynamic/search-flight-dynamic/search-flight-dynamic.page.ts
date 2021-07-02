@@ -48,7 +48,6 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
   flightno: "flightno" | "strip" = "flightno";
   showReturnTrip = true;
   constructor(
-    // private flightCityService: FlightCityService,
     private flightDynamicService: FlightDynamicService,
     private calendarService: CalendarService,
     private identityService: IdentityService,

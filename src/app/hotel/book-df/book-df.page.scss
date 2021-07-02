@@ -153,11 +153,8 @@ ion-list .info {
   @extend .font;
 }
 .credit-card-info {
-  .card-credentials-mobile {
-    font-size: 12px;
-    ion-input {
-      align-self: flex-start;
-    }
+  .flex .label{
+    width: 130px;
   }
 }
 .section {

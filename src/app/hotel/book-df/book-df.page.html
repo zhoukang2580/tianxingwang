@@ -259,11 +259,11 @@
           </ion-item>
           <ion-item style="display: none">
             <ion-label>有效期</ion-label>
-            <ion-select [(ngModel)]="combindInfo.creditCardInfo.expirationYear" #expirationYearEle>
+            <ion-select [(ngModel)]="combindInfo.creditCardInfo.expirationYear" #expirationYearEle [okText]='"确定"' [cancelText]='"取消"'>
               <ion-select-option value="{{y}}" *ngFor="let y of combindInfo.creditCardInfo.years">{{y}}
               </ion-select-option>
             </ion-select>
-            <ion-select #expirationMonthEle [(ngModel)]="combindInfo.creditCardInfo.expirationMonth" [selectedText]='combindInfo.creditCardInfo.expirationMonth+"月"'>
+            <ion-select #expirationMonthEle [(ngModel)]="combindInfo.creditCardInfo.expirationMonth" [selectedText]='combindInfo.creditCardInfo.expirationMonth+"月"' [okText]='"确定"' [cancelText]='"取消"'>
               <ion-select-option value="{{m}}" *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]">{{m}}月
               </ion-select-option>
             </ion-select>
@@ -292,7 +292,7 @@
                 <span class="label">信用卡号</span>
                 <ion-input [(ngModel)]="combindInfo.creditCardInfo.creditCardNumber" placeholder="信用卡卡号"></ion-input>
               </div>
-              <div class="flex padding-v row card-credentials-mobile" [attr.creditCardInfocreditCardNumber]="combindInfo.id">
+              <div class="flex padding-v row card-credentials-mobile" [attr.creditCardInfocreditCardMobile]="combindInfo.id">
                 <span class="label">信用卡预留手机号</span>
                 <ion-input [(ngModel)]="combindInfo.creditCardInfo.cardCredentialsMobile" placeholder="信用卡预留手机号"></ion-input>
               </div>
