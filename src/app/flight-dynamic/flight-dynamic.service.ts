@@ -186,7 +186,7 @@ export class FlightDynamicService {
       ToAirport: d.ToAirport,
       FlightNumber: d.FlightNumber,
     };
-
+    req.IsShowLoading=true;
     return this.apiService.getPromiseData<any[]>(req);
   }
   getFlightDynamicDetails(Date: string, FlightNumber: string) {
