@@ -61,23 +61,33 @@ export class ApiService {
   ) {
     this.loadingSubject = new BehaviorSubject({ isLoading: false, msg: "" });
     if (this.plt.is("android")) {
-      this.plt.backButton.subscribe((r) => {
-        const arr =
-          this.reqLoadingStatus &&
-          this.reqLoadingStatus
-            .slice(0)
-            .filter((it) => it.isShow)
-            .sort((a, b) => b.reqDateTime - a.reqDateTime);
-        if (arr.length) {
-          arr[0].isShow = false;
-          this.setLoading({
-            isShowLoading: false,
-            reqMethod: arr[0].reqMethod,
-            msg: "",
-          });
-        }
-      });
+      document.addEventListener(
+        "backbutton",
+        () => {
+          this.backButtonAction();
+        },
+        false
+      );
+      
     }
+  }
+  private backButtonAction(){
+    this.plt.backButton.subscribe((r) => {
+      const arr =
+        this.reqLoadingStatus &&
+        this.reqLoadingStatus
+          .slice(0)
+          .filter((it) => it.isShow)
+          .sort((a, b) => b.reqDateTime - a.reqDateTime);
+      if (arr.length) {
+        arr[0].isShow = false;
+        this.setLoading({
+          isShowLoading: false,
+          reqMethod: arr[0].reqMethod,
+          msg: "",
+        });
+      }
+    });
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
