@@ -112,7 +112,8 @@ export class FlightGpUpdatePassengerPage implements OnInit {
     }
   }
 
-  async getCheckOut(it:any){
+  getCheckOut(it: any) {
+
     const obj = {
       name: it.passengerEntity.Name,
       cardType: it.passengerEntity.CredentialsType,
@@ -146,12 +147,13 @@ export class FlightGpUpdatePassengerPage implements OnInit {
       return
     }
     if (this.isStatus == "公务卡") {
-      if(!obj.bankCard){
+      if (!obj.bankCard) {
         AppHelper.alert("请选择公务卡");
         return
       }
-    }else{
-      if(!obj.Organization){
+    } 
+    if(this.isStatus == "单位"){
+      if (!obj.Organization) {
         AppHelper.alert("请选择单位");
         return
       }
@@ -172,17 +174,40 @@ export class FlightGpUpdatePassengerPage implements OnInit {
     try {
       for (let it of this.selectedFrequent) {
         console.log(it.passengerEntity, "select");
-        this.getCheckOut(it);
-        it.passengerEntity.CredentialsTypeName = new CredentialPipe().transform(it.passengerEntity.CredentialsType)
-        // let credential: PassengerEntity;
-        const frequentBookInfo: FrequentBookInfo = {
-          passengerEntity: ({
-            Id:it.passengerEntity.Id,
+        const isVerify = this.getCheckOut(it);
+        if (isVerify) {
+          it.passengerEntity.CredentialsTypeName = new CredentialPipe().transform(it.passengerEntity.CredentialsType)
+          // let credential: PassengerEntity;
+          const frequentBookInfo: FrequentBookInfo = {
+            passengerEntity: ({
+              Id: it.passengerEntity.Id,
+              Name: it.passengerEntity.Name,
+              CredentialsTypeName: it.passengerEntity.CredentialsTypeName,
+              CredentialsType: it.passengerEntity.CredentialsType,
+              Number: it.passengerEntity.Number,
+              Variables: !this.IsShareTicket ? {
+                BankBin: it.passengerEntity.Variables.BankBin,
+                BankName: it.passengerEntity.Variables.BankName,
+                Tag: "1"
+              } : this.isStatus == "公务卡" ? {
+                BankBin: it.passengerEntity.Variables.BankBin,
+                BankName: it.passengerEntity.Variables.BankName,
+                Tag: "1"
+              } : {
+                Organization: it.passengerEntity.Variables.Organization,
+                Tag: "2"
+              },
+              Mobile: it.passengerEntity.Mobile
+            } as any)
+          }
+  
+          const passengerDate = {
             Name: it.passengerEntity.Name,
             CredentialsTypeName: it.passengerEntity.CredentialsTypeName,
             CredentialsType: it.passengerEntity.CredentialsType,
             Number: it.passengerEntity.Number,
-            Variables: !this.IsShareTicket ? {
+            Id: it.passengerEntity.Id,
+            Variables: JSON.stringify(!this.IsShareTicket ? {
               BankBin: it.passengerEntity.Variables.BankBin,
               BankName: it.passengerEntity.Variables.BankName,
               Tag: "1"
@@ -193,45 +218,21 @@ export class FlightGpUpdatePassengerPage implements OnInit {
             } : {
               Organization: it.passengerEntity.Variables.Organization,
               Tag: "2"
-            },
+            }),
             Mobile: it.passengerEntity.Mobile
-          } as any)
-        }
-
-        const passengerDate = {
-          Name: it.passengerEntity.Name,
-          CredentialsTypeName: it.passengerEntity.CredentialsTypeName,
-          CredentialsType: it.passengerEntity.CredentialsType,
-          Number: it.passengerEntity.Number,
-          Id: it.passengerEntity.Id,
-          Variables: JSON.stringify(!this.IsShareTicket ? {
-            BankBin: it.passengerEntity.Variables.BankBin,
-            BankName: it.passengerEntity.Variables.BankName,
-            Tag: "1"
-          } : this.isStatus == "公务卡" ? {
-            BankBin: it.passengerEntity.Variables.BankBin,
-            BankName: it.passengerEntity.Variables.BankName,
-            Tag: "1"
-          } : {
-            Organization: it.passengerEntity.Variables.Organization,
-            Tag: "2"
-          }),
-          Mobile: it.passengerEntity.Mobile
-        } as PassengerEntity
-
-        await this.onAddPassengerBookInfo(frequentBookInfo);
-        this.back();
-        const update = await this.flightGpService.updatePassengerSubmit(passengerDate);
-        
-        if (update) {
-          const ok = await AppHelper.alert(
-            "已完成修改",
-            true,
-            `确定`
-          );
-          // if (ok) {
-          //   this.back();
-          // }
+          } as PassengerEntity
+  
+          await this.onAddPassengerBookInfo(frequentBookInfo);
+          this.back();
+          const update = await this.flightGpService.updatePassengerSubmit(passengerDate);
+  
+          if (update) {
+            const ok = await AppHelper.alert(
+              "已完成修改",
+              true,
+              `确定`
+            );
+          }
         }
       }
     } catch (error) {
