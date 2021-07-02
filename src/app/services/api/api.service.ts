@@ -31,6 +31,7 @@ import { environment } from "src/environments/environment";
 import { Storage } from "@ionic/storage";
 import { LogService } from "../log/log.service";
 import { CONFIG } from "src/app/config";
+import { Platform } from "@ionic/angular";
 interface ApiConfig {
   Urls: { [key: string]: string };
   Token: string;
@@ -43,6 +44,7 @@ export class ApiService {
     reqMethod: string;
     isShow: boolean;
     msg: string;
+    reqDateTime: number;
   }[] = [];
   private loadingSubject: Subject<{ isLoading: boolean; msg: string }>;
   public apiConfig: ApiConfig;
@@ -54,21 +56,28 @@ export class ApiService {
     private identityService: IdentityService,
     private storage: Storage,
     private route: ActivatedRoute,
-    private logService: LogService
+    private logService: LogService,
+    private plt: Platform
   ) {
     this.loadingSubject = new BehaviorSubject({ isLoading: false, msg: "" });
-    // this.storage
-    //   .get(`KEY_API_CONFIG`)
-    //   .then((config) => {
-    //     if (config) {
-    //       this.apiConfig = config;
-    //     }
-    //   })
-    //   .finally(() => {
-    //     this.loadApiConfig(true)
-    //       .then((_) => { })
-    //       .catch(() => { });
-    //   });
+    if (this.plt.is("android")) {
+      this.plt.backButton.subscribe((r) => {
+        const arr =
+          this.reqLoadingStatus &&
+          this.reqLoadingStatus
+            .slice(0)
+            .filter((it) => it.isShow)
+            .sort((a, b) => b.reqDateTime - a.reqDateTime);
+        if (arr.length) {
+          arr[0].isShow = false;
+          this.setLoading({
+            isShowLoading: false,
+            reqMethod: arr[0].reqMethod,
+            msg: "",
+          });
+        }
+      });
+    }
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -86,6 +95,7 @@ export class ApiService {
         isShow: data.isShowLoading,
         reqMethod: data.reqMethod,
         msg: data.msg,
+        reqDateTime: Date.now(),
       });
     } else {
       one.isShow = data.isShowLoading;
@@ -539,7 +549,8 @@ export class ApiService {
                 this.apiConfig = local;
               }
               // this.storage.set(`KEY_API_CONFIG`, this.apiConfig);
-              const identityEntity = await this.identityService.getIdentityAsync();
+              const identityEntity =
+                await this.identityService.getIdentityAsync();
               if (identityEntity) {
                 this.identityService.setIdentity(identityEntity);
               }
