@@ -1232,13 +1232,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
         combineInfo.creditCardInfo = {
           years,
-          expirationYear: `${new Date().getFullYear()}`,
-          expirationMonth: `1`,
+          expirationYear: ``,
+          expirationMonth: ``,
           creditCardExpirationDate: `${this.calendarService
             .getMoment(0)
             .startOf("year")
             .format("YYYY-MM-DD")}`,
-          creditCardType: "VI",
+          creditCardType: "",
         };
         combineInfo.isShowTravelDetail = true;
         combineInfo.creditCardPersionInfo = {} as any;
