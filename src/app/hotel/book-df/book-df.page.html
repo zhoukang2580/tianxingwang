@@ -259,7 +259,7 @@
           </ion-item>
           <ion-item style="display: none">
             <ion-label>有效期</ion-label>
-            <ion-select [(ngModel)]="combindInfo.creditCardInfo.expirationYear" #expirationYearEle [okText]='"确定"' [cancelText]='"取消"'>
+            <ion-select (ionChange)='combindInfo.creditCardInfo.expirationMonth=""' [(ngModel)]="combindInfo.creditCardInfo.expirationYear" #expirationYearEle [okText]='"确定"' [cancelText]='"取消"'>
               <ion-select-option value="{{y}}" *ngFor="let y of combindInfo.creditCardInfo.years">{{y}}
               </ion-select-option>
             </ion-select>
