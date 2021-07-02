@@ -171,7 +171,7 @@ export class HotelService {
     if (!roomPlan || !roomPlan.RoomPlanRules) {
       return "";
     }
-    return roomPlan.RoomPlanRules.map((it) => it.Description).join(",");
+    return roomPlan.RoomPlanRules.filter(it=>!!it.Description).map((it) => it.Description).join(",");
   }
   getAvgPrice(plan: RoomPlanEntity) {
     let price = 0;

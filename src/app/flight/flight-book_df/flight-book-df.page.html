@@ -54,11 +54,11 @@
                                     <div class="ins-item">
                                         <ion-item>
                                             <ion-radio mode="md" [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
-                                            <ion-label class="name">
+                                            <ion-label class="name" >
                                                 {{insurance.insuranceResult?.Name}} <span class="price"><small>￥</small> {{insurance.insuranceResult?.Price}}/人</span>
                                             </ion-label>
                                         </ion-item>
-                                        <ion-label color='secondary' (click)='onShowInsuranceDetail(insurance,$event)'>
+                                        <ion-label color='secondary' class='ion-text-nowrap' (click)='onShowInsuranceDetail(insurance,$event)'>
                                             详情
                                             <ion-icon name="caret-up-outline" *ngIf='insurance.showDetail'>
                                             </ion-icon>
