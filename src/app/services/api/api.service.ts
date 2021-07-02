@@ -64,6 +64,7 @@ export class ApiService {
       document.addEventListener(
         "backbutton",
         () => {
+          console.log('api service backbutton')
           this.backButtonAction();
         },
         false
@@ -72,8 +73,7 @@ export class ApiService {
     }
   }
   private backButtonAction(){
-    this.plt.backButton.subscribe((r) => {
-      const arr =
+    const arr =
         this.reqLoadingStatus &&
         this.reqLoadingStatus
           .slice(0)
@@ -87,7 +87,6 @@ export class ApiService {
           msg: "",
         });
       }
-    });
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
