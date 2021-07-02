@@ -102,14 +102,14 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   }
   private checkBackDateIsAfterflyDate() {
     if (this.goDate && this.backDate) {
-      console.log(this.router.url.includes("search-flight"));
+      console.log(this.router.url.includes("search-flight-gp"));
       if (
         this.searchFlightModel &&
         this.searchFlightModel.isRoundTrip &&
         !this.isleave &&
         this.goDate.timeStamp > this.backDate.timeStamp
       ) {
-        if (this.router.url.includes("search-flight")) {
+        if (this.router.url.includes("search-flight-gp")) {
           AppHelper.alert(
             "您选择的去程日期在返程日期之后，返程日期自动更新为去程日期后一天"
           );
@@ -299,7 +299,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     } as TrafficlineEntity;
     const lastFromCity =
       (await this.storage
-        .get("fromCity")
+        .get("fromCity_gp")
         .then((c: TrafficlineEntity) => {
           if (!c.Code) {
             return null;
@@ -309,7 +309,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
         .catch((_) => null)) || vmFromCity;
     const lastToCity =
       (await this.storage
-        .get("toCity")
+        .get("toCity_gp")
         .then((c: TrafficlineEntity) => {
           if (!c.Code) {
             return null;
@@ -333,8 +333,8 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     this.isCanleave = true;
     this.isleave = true;
     console.log(`启程日期${this.goDate.date},返程日期：${this.backDate.date}`);
-    this.storage.set("fromCity", this.searchFlightModel.fromCity);
-    this.storage.set("toCity", this.searchFlightModel.toCity);
+    this.storage.set("fromCity_gp", this.searchFlightModel.fromCity);
+    this.storage.set("toCity_gp", this.searchFlightModel.toCity);
 
     const s: SearchFlightModel =
       this.searchFlightModel || new SearchFlightModel();
@@ -392,7 +392,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
       await this.storage.set(
-        `last_selected_flight_goDate_${identity.Id}`,
+        `last_selected_flight_gp_goDate_${identity.Id}`,
         date
       );
     }

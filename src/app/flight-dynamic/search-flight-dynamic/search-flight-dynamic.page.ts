@@ -153,7 +153,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     const identity = await this.identityService.getIdentityAsync();
     if (identity) {
       await this.storage.set(
-        `last_selected_flight_goDate_${identity.Id}`,
+        `last_selected_flight_dynamic_goDate_${identity.Id}`,
         date
       );
     }
@@ -270,7 +270,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     } as TrafficlineEntity;
     const lastFromCity =
       (await this.storage
-        .get("fromCity")
+        .get("fromCity_flight_dynamic")
         .then((c: TrafficlineEntity) => {
           if (!c.Code) {
             return null;
@@ -280,7 +280,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
         .catch((_) => null)) || vmFromCity;
     const lastToCity =
       (await this.storage
-        .get("toCity")
+        .get("toCity_flight_dynamic")
         .then((c: TrafficlineEntity) => {
           if (!c.Code) {
             return null;

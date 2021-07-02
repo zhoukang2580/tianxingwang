@@ -145,6 +145,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   arrivalDateTimes: string[];
   @HostBinding("class.show-price-detail") isShowPriceDetail = false;
   dates: { date: string; price: string | number }[] = [];
+
   constructor(
     private navCtrl: NavController,
     private identityService: IdentityService,
@@ -172,6 +173,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       })
     );
+  }
+  months(year) {
+    const m = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    if (year == new Date().getFullYear()) {
+      return m.filter((it) => it >= new Date().getMonth() + 1);
+    }
+    return m;
   }
   calcNights(item: IPassengerHotelBookInfo) {
     const info = item;
@@ -751,7 +759,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       );
       return false;
     }
-    
+
     return true;
   }
   private fillBookLinkmans(bookDto: OrderBookDto) {
