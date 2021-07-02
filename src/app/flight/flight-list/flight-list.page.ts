@@ -502,7 +502,6 @@ export class FlightListPage
       this.st = Date.now();
       this.renderFlightList(segments);
       this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
-      this.apiService.hideLoadingView();
       this.isLoading = false;
       if (this.activeTab != "none" && this.activeTab != "filter") {
         this.sortFlights(this.activeTab);
@@ -516,6 +515,7 @@ export class FlightListPage
       }
       this.isLoading = false;
     }
+    this.apiService.hideLoadingView();
   }
   private filterSegmentsByGoArrivalTime(segments: FlightSegmentEntity[]) {
     let result = segments;
