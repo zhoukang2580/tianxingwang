@@ -15,6 +15,7 @@ import { AppHelper } from "src/app/appHelper";
 import { OrderStatusType } from "src/app/order/models/OrderEntity";
 import { TaskModel } from "src/app/order/models/TaskModel";
 import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
+import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
 
 @Component({
   selector: "app-approval-tack",
@@ -27,7 +28,6 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
   private loadDataSub = Subscription.EMPTY;
   private queryparamSub = Subscription.EMPTY;
   private pageSize = 20;
-  private isOpenUrl = false;
   curTaskPageIndex = 0;
   TaskStatusType = TaskStatusType;
   tasks: TaskEntity[];
@@ -63,12 +63,13 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
           this.onTaskReviewed();
         }
       }
-      if(this.isOpenUrl){
-        this.doRefresh()
-      }
-      this.isOpenUrl=false;
     });
     this.doRefresh();
+    AppHelper.getWindowMsgSource().subscribe((r) => {
+      if (r && r.data && r.data.type == "back") {
+        this.doRefresh();
+      }
+    });
   }
   ngOnDestroy() {
     this.loadDataSub.unsubscribe();
@@ -172,8 +173,20 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
       //   .then((_) => {
       //     this.isOpenUrl = true;
       //   });
-      AppHelper.jump(this.router, url, {});
-      this.isOpenUrl = true;
+      // AppHelper.jump(this.router, url, {});
+      const m = await AppHelper.modalController.create({
+        component: OpenUrlComponent,
+        componentProps: {
+          url,
+          isOpenAsModal: true,
+          isIframeOpen: true,
+          isHideTitle: false,
+          title: task && task.Title,
+        },
+      });
+      m.present();
+      await m.onDidDismiss();
+      // this.doRefresh()
     }
   }
 

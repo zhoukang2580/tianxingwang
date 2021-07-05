@@ -35,6 +35,7 @@ import { ProductItem } from "src/app/tmc/models/ProductItems";
 import { MapService } from "src/app/services/map/map.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { AgentEntity } from "src/app/tmc/models/AgentEntity";
+import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home-df.page.html",
@@ -425,19 +426,31 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         console.error(e);
       });
     if (url) {
-      this.router
-        .navigate(["open-url"], {
-          queryParams: {
-            url,
-            title: task && task.Title,
-            // tabId: this.activeTab?.value,
-            isOpenInAppBrowser: false,
-            isIframeOpen: true,
-            isHideTitle: false,
-            goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
-          },
-        })
-        .then((_) => { });
+      // this.router
+      //   .navigate(["open-url"], {
+      //     queryParams: {
+      //       url,
+      //       title: task && task.Title,
+      //       // tabId: this.activeTab?.value,
+      //       isOpenInAppBrowser: false,
+      //       isIframeOpen: true,
+      //       isHideTitle: false,
+      //       goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
+      //     },
+      //   })
+      //   .then((_) => { });
+      AppHelper.modalController.create({
+        component:OpenUrlComponent,
+        componentProps:{
+          url,
+          isOpenAsModal:true,
+          isIframeOpen: true,
+          isHideTitle: false,
+          title: task && task.Title
+        }
+      }).then(m=>{
+        m.present();
+      })
     }
   }
 
