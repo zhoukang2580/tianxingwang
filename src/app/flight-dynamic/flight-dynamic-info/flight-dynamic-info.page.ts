@@ -183,7 +183,6 @@ export class FlightDynamicInfoPage implements OnInit {
             it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
             it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
 
-
             this.hour = it.Minute;
             this.type = it.StatusName;
             this.FlightName = it.AirlineName;
