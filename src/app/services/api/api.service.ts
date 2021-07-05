@@ -41,7 +41,7 @@ interface ApiConfig {
 })
 export class ApiService {
   private reqLoadingStatus: {
-    reqMethod: string;
+    reqId: string;
     isShow: boolean;
     msg: string;
     reqDateTime: number;
@@ -64,51 +64,47 @@ export class ApiService {
       document.addEventListener(
         "backbutton",
         () => {
-          console.log('api service backbutton')
+          console.log("api service backbutton");
           this.backButtonAction();
         },
         false
       );
-      
     }
   }
-  private backButtonAction(){
+  private backButtonAction() {
     const arr =
-        this.reqLoadingStatus &&
-        this.reqLoadingStatus
-          .slice(0)
-          .filter((it) => it.isShow)
-          .sort((a, b) => b.reqDateTime - a.reqDateTime);
-      if (arr.length) {
-        arr[0].isShow = false;
-        this.setLoading({
-          isShowLoading: false,
-          reqMethod: arr[0].reqMethod,
-          msg: "",
-        });
-      }
+      this.reqLoadingStatus &&
+      this.reqLoadingStatus
+        .slice(0)
+        .filter((it) => it.isShow)
+        .sort((a, b) => b.reqDateTime - a.reqDateTime);
+    if (arr.length) {
+      arr[0].isShow = false;
+      this.setLoading({
+        isShowLoading: false,
+        reqId: arr[0].reqId,
+        msg: "",
+      });
+    }
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
   }
   private setLoading(data: {
     msg: string;
-    reqMethod: string;
+    reqId: string;
     isShowLoading?: boolean;
   }) {
-    const one = this.reqLoadingStatus.find(
-      (it) => it.reqMethod == data.reqMethod
-    );
-    if (!one) {
+    const one = this.reqLoadingStatus.find((it) => it.reqId == data.reqId);
+    if (one) {
+      one.isShow = data.isShowLoading;
+    } else {
       this.reqLoadingStatus.push({
         isShow: data.isShowLoading,
-        reqMethod: data.reqMethod,
+        reqId: data.reqId,
         msg: data.msg,
         reqDateTime: Date.now(),
       });
-    } else {
-      one.isShow = data.isShowLoading;
-      one.msg = data.msg;
     }
     const show = this.reqLoadingStatus.find((it) => it.isShow);
     if (show) {
@@ -116,18 +112,22 @@ export class ApiService {
     } else {
       this.loadingSubject.next({ msg: "", isLoading: false });
     }
+    if (data.reqId == "clearall") {
+      this.loadingSubject.next({ msg: "", isLoading: false });
+    }
+    this.reqLoadingStatus = this.reqLoadingStatus.filter((it) => it.isShow);
   }
   showLoadingView(d: { msg: string }) {
     this.setLoading({
       msg: d.msg,
-      reqMethod: "showLoadingView",
+      reqId: "showLoadingView",
       isShowLoading: true,
     });
   }
   hideLoadingView() {
     this.setLoading({
       msg: "",
-      reqMethod: "showLoadingView",
+      reqId: "showLoadingView",
       isShowLoading: false,
     });
   }
@@ -316,6 +316,12 @@ export class ApiService {
     logtimeex.Method = req.Method;
     const t = new Date().toLocaleDateString();
     const connection = this.getNetWorkConnection();
+    const reqId = AppHelper.uuid();
+    this.setLoading({
+      msg: req.LoadingMsg,
+      isShowLoading: req.IsShowLoading,
+      reqId,
+    });
     return this.http
       .post(
         url,
@@ -345,7 +351,7 @@ export class ApiService {
           console.log("reqMethod =" + req.Method, this.reqLoadingStatus);
           this.setLoading({
             isShowLoading: false,
-            reqMethod: req.Method,
+            reqId,
             msg: "",
           });
         })
@@ -415,7 +421,7 @@ export class ApiService {
       catchError((error: Error | any) => {
         this.setLoading({
           isShowLoading: false,
-          reqMethod: req.Method,
+          reqId: "clearall",
           msg: "",
         });
         const entity = new ExceptionEntity();
@@ -442,11 +448,6 @@ export class ApiService {
     if (req.Data && typeof req.Data != "string") {
       req.Data = JSON.stringify(req.Data);
     }
-    this.setLoading({
-      msg: req.LoadingMsg,
-      isShowLoading: req.IsShowLoading,
-      reqMethod: req.Method,
-    });
     if (this.apiConfig && this.apiConfig.Urls) {
       return from(this.getUrl(req)).pipe(
         switchMap((url) => this.post(url, req)),
@@ -471,17 +472,33 @@ export class ApiService {
     filename: string
   ) {
     req.Token = this.apiConfig.Token;
-    return this.http.post(`${url}`, req.Data, {
-      params: {
-        Data: JSON.stringify({ FileName: filename }).trim(),
-        Sign: this.getSign(req),
-        Ticket: req.Ticket,
-      },
-      headers: {
-        "Content-Type": contentType || "image/jpeg",
-      },
-      observe: "body",
+    const reqId = AppHelper.uuid();
+    this.setLoading({
+      msg: req.LoadingMsg,
+      isShowLoading: req.IsShowLoading,
+      reqId,
     });
+    return this.http
+      .post(`${url}`, req.Data, {
+        params: {
+          Data: JSON.stringify({ FileName: filename }).trim(),
+          Sign: this.getSign(req),
+          Ticket: req.Ticket,
+        },
+        headers: {
+          "Content-Type": contentType || "image/jpeg",
+        },
+        observe: "body",
+      })
+      .pipe(
+        finalize(() => {
+          this.setLoading({
+            msg: req.LoadingMsg,
+            isShowLoading: false,
+            reqId,
+          });
+        })
+      );
   }
   sendBodyData(
     request: RequestEntity,
@@ -490,11 +507,6 @@ export class ApiService {
     fileName: string
   ): Observable<IResponse<any>> {
     const req = { ...request };
-    this.setLoading({
-      msg: req.LoadingMsg,
-      isShowLoading: req.IsShowLoading,
-      reqMethod: req.Method,
-    });
     if (this.apiConfig && this.apiConfig.Urls) {
       return from(this.getUrl(req)).pipe(
         switchMap((url) => this.postBodyData(url, req, contentType, fileName)),
