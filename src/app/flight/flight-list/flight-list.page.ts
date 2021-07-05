@@ -678,7 +678,7 @@ export class FlightListPage
     }
     this.isCanLeave = true;
     // this.flightService.onSelectCity(isFrom);
-    const rs = await this.flightService.onSelectCity({isShowPage:false,isFrom:false});
+    const rs = await this.flightService.onSelectCity({isShowPage:true,isFrom:false});
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {
