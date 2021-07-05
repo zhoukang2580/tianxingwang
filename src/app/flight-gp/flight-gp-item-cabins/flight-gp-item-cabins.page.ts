@@ -171,6 +171,16 @@ export class FlightGpItemCabinsPage implements OnInit {
     );
   }
 
+  onSearchDynamic(vmFlightSegment: any) {
+    this.router.navigate([AppHelper.getRoutePath("flight-dynamic-info")], {
+      queryParams: {
+        Date: vmFlightSegment.TakeoffTime.substring(0, 10),
+        FlightNumber: vmFlightSegment.Number,
+        distinguish: vmFlightSegment.FromCityName + ',' + vmFlightSegment.ToCityName,
+      }
+    })
+  }
+
   private setDefaultFilteredInfo() {
     let bookInfos = this.flightGpService.getPassengerBookInfos();
     bookInfos = this.flightGpService.getPassengerBookInfos().map((it) => {

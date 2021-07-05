@@ -41,6 +41,7 @@ import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 import { SelectFlightsegmentCabinComponent } from "../components/select-flightsegment-cabin/select-flightsegment-cabin.component";
 import { SelectFlightPassengerComponent } from "../components/select-flight-passenger/select-flight-passenger.component";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { FlightDynamicService } from "src/app/flight-dynamic/flight-dynamic.service";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -73,6 +74,7 @@ export class FlightItemCabinsPage implements OnInit {
   segmenttype;
   constructor(
     private flightService: FlightService,
+    private flightDynamicService: FlightDynamicService,
     private route: ActivatedRoute,
     private modalCtrl: ModalController,
     private flydayService: CalendarService,
@@ -178,6 +180,17 @@ export class FlightItemCabinsPage implements OnInit {
       info.passenger.Policy.FlightLegalTip
     );
   }
+
+  onSearchDynamic(vmFlightSegment: any) {
+    this.router.navigate([AppHelper.getRoutePath("flight-dynamic-info")], {
+      queryParams: {
+        Date: vmFlightSegment.TakeoffTime.substring(0, 10),
+        FlightNumber: vmFlightSegment.Number,
+        distinguish: vmFlightSegment.FromCityName + ',' + vmFlightSegment.ToCityName,
+      }
+    })
+  }
+
   private setDefaultFilteredInfo() {
     let bookInfos = this.flightService.getPassengerBookInfos();
     bookInfos = this.flightService.getPassengerBookInfos().map((it) => {
@@ -409,11 +422,10 @@ export class FlightItemCabinsPage implements OnInit {
                 );
                 if (cabin.LowerSegment) {
                   if (cabin.LowerSegment.LowerSegmentRangTime) {
-                    msg = `您指定的航班在差标指定范围${
-                      cabin.LowerSegment.LowerSegmentRangTime
-                    }内有更低价航班:${cabin.LowerSegment.Number} ${(
-                      cabin.LowerSegment.TakeoffTime || ""
-                    ).substr(11, 5)},是否预订更低价航班？`;
+                    msg = `您指定的航班在差标指定范围${cabin.LowerSegment.LowerSegmentRangTime
+                      }内有更低价航班:${cabin.LowerSegment.Number} ${(
+                        cabin.LowerSegment.TakeoffTime || ""
+                      ).substr(11, 5)},是否预订更低价航班？`;
                   } else {
                     msg = `是否预订更低价航班？${cabin.LowerSegment.Number} ${(
                       cabin.LowerSegment.TakeoffTime || ""

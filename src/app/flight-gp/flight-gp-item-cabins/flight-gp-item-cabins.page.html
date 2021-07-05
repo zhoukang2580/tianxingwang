@@ -37,28 +37,31 @@
                 </div>
             </div>
         </div>
-        <div class="aircompany">
-            <img [src]="vmFlightSegment?.AirlineSrc" alt="">
-            <ion-text class='ion-text-nowrap' color='medium'>{{vmFlightSegment?.AirlineName}} {{vmFlightSegment?.Number}}</ion-text>
-            <ion-text color='secondary' *ngIf='vmFlightSegment?.CodeShareNumber'><span class='seperator'>|</span>共享{{vmFlightSegment?.CodeShareNumber}}</ion-text>
-            <ion-text color='medium'> <span class='seperator'>|</span>机型{{vmFlightSegment?.PlaneType}}</ion-text>
-            <ion-text color='medium'> <span class='seperator'>|</span>{{vmFlightSegment?.FlyTimeName}}
-            </ion-text>
-            <ion-text color='secondary'><span class='seperator'>|</span>{{vmFlightSegment?.Meal?"有":"无"}}餐食
-            </ion-text>
+        <div class="aircompany" (click)="onSearchDynamic(vmFlightSegment)">
+            <div>
+                <img [src]="vmFlightSegment?.AirlineSrc" alt="">
+                <ion-text class='ion-text-nowrap' color='medium'>{{vmFlightSegment?.AirlineName}} {{vmFlightSegment?.Number}}</ion-text>
+                <ion-text color='secondary' *ngIf='vmFlightSegment?.CodeShareNumber'><span class='seperator'>|</span>共享{{vmFlightSegment?.CodeShareNumber}}</ion-text>
+                <ion-text color='medium'> <span class='seperator'>|</span>机型{{vmFlightSegment?.PlaneType}}</ion-text>
+                <ion-text color='medium'> <span class='seperator'>|</span>{{vmFlightSegment?.FlyTimeName}}
+                </ion-text>
+                <ion-text color='secondary'><span class='seperator'>|</span>{{vmFlightSegment?.Meal?"有":"无"}}餐食
+                </ion-text>
+            </div>
             <!-- <ion-text color='secondary' *ngIf='isAgreement'><span class='seperator'>|</span>协</ion-text> -->
+            <ion-icon class="icon" name="chevron-forward-outline"></ion-icon>
         </div>
     </div>
     <ion-list>
         <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" [value]="segmenttype" color="secondary">
-          <ion-segment-button value="normal">
-            <ion-label>经济舱</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="others">
-            <ion-label>头等舱/商务舱</ion-label>
-          </ion-segment-button>
+            <ion-segment-button value="normal">
+                <ion-label>经济舱</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="others">
+                <ion-label>头等舱/商务舱</ion-label>
+            </ion-segment-button>
         </ion-segment>
-      </ion-list>
+    </ion-list>
     <app-or-comp *ngIf='vmCabins?.length==0'>暂无数据</app-or-comp>
     <ion-item lines='none' *ngFor='let cabin of vmCabins' class="cabin-list-item">
         <ng-container *ngIf='cabin.Cabin'>

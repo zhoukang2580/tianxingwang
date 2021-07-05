@@ -19,7 +19,8 @@ export class FlightDynamicInfoPage implements OnInit {
   flightDynamicPro: any;
   flightNo: string;
   flightNum: string;
-  flightNoN:string;
+  flightNoN: string;
+  flyNum: string;
   FlightName: string
   dateTime: string;
   PlanArrivalTime: string;
@@ -41,7 +42,9 @@ export class FlightDynamicInfoPage implements OnInit {
     startDate: string,
     enDate: string,
   }
-  
+
+
+
   hour: string;
   type: string;
   isShow = false;
@@ -62,26 +65,40 @@ export class FlightDynamicInfoPage implements OnInit {
         this.flightNoN = q.get("flightNoN");
         let start = q.get("startTime");
         let end = q.get("endTime");
-        this.initSearchModelParams();
-        this.dateTime = this.searchDynamicModel.Date;
-        this.detailList = {
-          Date: this.dateTime,
-          FlightNumber: this.flightNo,
-          distinguish: this.searchDynamicModel.fromCity.CityName + ',' + this.searchDynamicModel.toCity.CityName,
+        let flyDate = q.get("Date");
+        this.flyNum = q.get("FlightNumber");
+        let disting = q.get("distinguish");
+        if (flyDate && this.flyNum && disting) {
+          this.detailList = {
+            Date: flyDate,
+            FlightNumber: this.flyNum,
+            distinguish: disting,
+          }
+        } else {
+          this.initSearchModelParams();
+          this.dateTime = this.searchDynamicModel.Date;
+
+          this.detailList = {
+            Date: this.dateTime,
+            FlightNumber: this.flightNo,
+            distinguish: this.searchDynamicModel.fromCity.CityName + ',' + this.searchDynamicModel.toCity.CityName,
+          }
+          this.detailsList = {
+            Date: this.dateTime,
+            FlightNumber: this.flightNum,
+            startDate: start,
+            enDate: end,
+          }
+          this.detailsLists = {
+            Date: this.dateTime,
+            FlightNumber: this.flightNoN,
+            startDate: start,
+            enDate: end,
+          }
         }
-        
-        this.detailsList = {
-          Date: this.dateTime,
-          FlightNumber: this.flightNum,
-          startDate: start,
-          enDate: end,
-        }
-        this.detailsLists = {
-          Date: this.dateTime,
-          FlightNumber: this.flightNoN,
-          startDate: start,
-          enDate: end,
-        }
+
+        console.log(this.detailList, "detailList")
+
         this.loadDetails();
       })
     } catch (error) {
@@ -95,7 +112,7 @@ export class FlightDynamicInfoPage implements OnInit {
 
   private async loadDetails() {
     try {
-      if (this.flightNo) {
+      if (this.detailList) {
         this.flightDynamicService.getFlightDynamicDetail(this.detailList).then(d => {
           d.forEach(it => {
             this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
@@ -104,7 +121,7 @@ export class FlightDynamicInfoPage implements OnInit {
             it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
             it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
             it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
-    
+
             const fliNo = it.PreviousFlightNumber;
             this.hour = it.Minute;
             this.type = it.StatusName;
@@ -127,7 +144,7 @@ export class FlightDynamicInfoPage implements OnInit {
           console.log(this.flightDynamicPro, "flight");
         })
       }
-      if(this.flightNum){
+      if (this.flightNum) {
         this.flightDynamicService.getFlightDynamicDetailes(this.detailsList).then(d => {
           d.filter(it => {
             this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
@@ -136,8 +153,8 @@ export class FlightDynamicInfoPage implements OnInit {
             it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
             it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
             it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
-  
-            
+
+
             this.hour = it.Minute;
             this.type = it.StatusName;
             const fliNo = it.PreviousFlightNumber;
@@ -149,14 +166,14 @@ export class FlightDynamicInfoPage implements OnInit {
             }
           });
           this.flightDynamicDetailsModel = d;
-          
+
           this.flightDynamicPro = this.flightDynamicDetailsModel;
           this.flightDynamicPro = { ...this.flightDynamicPro }[0];
-         
+
           console.log(this.flightDynamicPro, "flight");
         })
       }
-      if(this.flightNoN){
+      if (this.flightNoN) {
         this.flightDynamicService.getFlightDynamicDetailes(this.detailsLists).then(d => {
           d.filter(it => {
             this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
@@ -165,8 +182,8 @@ export class FlightDynamicInfoPage implements OnInit {
             it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
             it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
             it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
-  
-            
+
+
             this.hour = it.Minute;
             this.type = it.StatusName;
             this.FlightName = it.AirlineName;
@@ -178,17 +195,17 @@ export class FlightDynamicInfoPage implements OnInit {
             }
           });
           this.flightDynamicDetailsModel = d;
-          
+
           this.flightDynamicPro = this.flightDynamicDetailsModel;
           this.flightDynamicPro = { ...this.flightDynamicPro }[0];
-         
+
           console.log(this.flightDynamicPro, "flight");
         })
       }
     } catch (error) {
       AppHelper.alert(error)
     }
-    
+
 
   }
 
@@ -205,7 +222,7 @@ export class FlightDynamicInfoPage implements OnInit {
       queryParams: {
         PreviousFlightDate: previous.PreviousFlightDate.substring(0, 10),
         PreviousFlightNumber: previous.PreviousFlightNumber,
-        FlightDateTime: this.searchDynamicModel.Date,
+        FlightDateTime:  previous.Date.substring(0, 10),
         FlightNumber: previous.FlightNumber,
         preDepCity: previous.PreviousFromAirport,
         preArrCity: previous.PreviousToAirport

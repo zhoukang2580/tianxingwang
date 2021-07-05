@@ -72,11 +72,17 @@ ion-content.padding-half-c {
         color: #343434;
     }
     .aircompany {
-        padding: 0 1em 1.5em 2.2em;
+        padding: 1em 1em 1.5em 2.2em;
         font-size: 0.6rem;
         display: flex;
         align-items: center;
+        justify-content: space-between;
+        background: #eee;
         flex-wrap: wrap;
+        .icon {
+            font-size: 18px;
+            color: #666;
+        }
     }
     .aircompany img {
         width: 1rem;
