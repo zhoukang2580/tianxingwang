@@ -43,8 +43,6 @@ export class FlightDynamicInfoPage implements OnInit {
     enDate: string,
   }
 
-
-
   hour: string;
   type: string;
   isShow = false;
