@@ -112,32 +112,34 @@ export class FlightDynamicInfoPage implements OnInit {
     try {
       if (this.detailList) {
         this.flightDynamicService.getFlightDynamicDetail(this.detailList).then(d => {
-          d.forEach(it => {
-            this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
-            this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
-            it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
-            it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
-            it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
-            it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
-
-            const fliNo = it.PreviousFlightNumber;
-            this.hour = it.Minute;
-            this.type = it.StatusName;
-            this.FlightName = it.AirlineName;
-            this.isShow = false;
-            if (fliNo && fliNo.length) {
-              this.isShow = true;
+          if (d && d.length) {
+            d.forEach(it => {
+              this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
+              this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
+              it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
+              it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
+              it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
+              it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
+  
+              const fliNo = it.PreviousFlightNumber;
+              this.hour = it.Minute;
+              this.type = it.StatusName;
+              this.FlightName = it.AirlineName;
+              this.isShow = false;
+              if (fliNo && fliNo.length) {
+                this.isShow = true;
+              }
+            });
+            this.flightDynamicDetailsModel = d;
+            const len = this.flightDynamicDetailsModel.length;
+            var pro;
+            if (len > 1) {
+              pro = this.flightDynamicDetailsModel.pop();
+              this.flightDynamicPro = pro;
+            } else {
+              this.flightDynamicPro = d;
+              this.flightDynamicPro = { ...this.flightDynamicPro }[0];
             }
-          });
-          this.flightDynamicDetailsModel = d;
-          const len = this.flightDynamicDetailsModel.length;
-          var pro;
-          if (len > 1) {
-            pro = this.flightDynamicDetailsModel.pop();
-            this.flightDynamicPro = pro;
-          } else {
-            this.flightDynamicPro = d;
-            this.flightDynamicPro = { ...this.flightDynamicPro }[0];
           }
           console.log(this.flightDynamicPro, "flight");
         })
