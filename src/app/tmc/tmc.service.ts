@@ -76,6 +76,10 @@ export class TmcService {
   private mobileTemplateSelectItemList: SelectItem[] = [];
   private emailTemplateSelectItemList: SelectItem[] = [];
   public allLocalAirports: TrafficlineEntity[];
+  private isReloadDomesticAirports = false;
+  private isReloadInterAirports = false;
+  private loadDomesticAirportsPromise: Promise<TrafficlineEntity[]>;
+  private loadInterAirportsPromise: Promise<TrafficlineEntity[]>;
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -880,104 +884,129 @@ export class TmcService {
   async getDomesticAirports(forceFetch: boolean = false) {
     const req = new RequestEntity();
     req.Method = `ApiHomeUrl-Resource-Airport`;
-    if (!this.localDomesticAirports) {
-      this.localDomesticAirports =
-        (await this.storage.get(KEY_HOME_AIRPORTS)) ||
-        ({
-          LastUpdateTime: 0,
-          Trafficlines: [],
-        } as LocalStorageAirport);
+    // 每次进来都重新调用一次接口
+    forceFetch = forceFetch || !this.isReloadDomesticAirports;
+    if (this.loadDomesticAirportsPromise) {
+      return this.loadDomesticAirportsPromise;
     }
-    if (
-      !forceFetch &&
-      this.localDomesticAirports &&
-      this.localDomesticAirports.Trafficlines &&
-      this.localDomesticAirports.Trafficlines.length
-    ) {
-      return Promise.resolve(this.localDomesticAirports.Trafficlines);
-    }
-    req.Data = {
-      LastUpdateTime: this.localDomesticAirports.LastUpdateTime,
-    };
-    const r = await this.apiService
-      .getPromiseData<{
-        HotelCities: any[];
-        Trafficlines: TrafficlineEntity[];
-      }>(req)
-      .catch(
-        (_) =>
+    this.loadDomesticAirportsPromise = new Promise(async (rsv) => {
+      if (!this.localDomesticAirports) {
+        this.localDomesticAirports =
+          (await this.storage.get(KEY_HOME_AIRPORTS)) ||
           ({
+            LastUpdateTime: 0,
             Trafficlines: [],
-          } as {
-            HotelCities: any[];
-            Trafficlines: TrafficlineEntity[];
-          })
-      );
-    const local = this.localDomesticAirports;
-    if (r.Trafficlines && r.Trafficlines.length) {
-      const airports = [
-        ...this.localDomesticAirports.Trafficlines.filter(
-          (item) => !r.Trafficlines.some((i) => i.Id == item.Id)
-        ),
-        ...r.Trafficlines,
-      ];
-      this.localDomesticAirports.LastUpdateTime = Math.floor(Date.now() / 1000);
-      local.Trafficlines = this.localDomesticAirports.Trafficlines = airports;
-      await this.storage.set(KEY_HOME_AIRPORTS, this.localDomesticAirports);
-    }
-    return local.Trafficlines;
+          } as LocalStorageAirport);
+      }
+      if (
+        !forceFetch &&
+        this.localDomesticAirports &&
+        this.localDomesticAirports.Trafficlines &&
+        this.localDomesticAirports.Trafficlines.length
+      ) {
+        rsv(this.localDomesticAirports.Trafficlines);
+        return this.localDomesticAirports.Trafficlines;
+      }
+      req.Data = {
+        LastUpdateTime: this.localDomesticAirports.LastUpdateTime,
+      };
+      this.isReloadDomesticAirports = true;
+      const r = await this.apiService
+        .getPromiseData<{
+          HotelCities: any[];
+          Trafficlines: TrafficlineEntity[];
+        }>(req)
+        .catch(
+          () =>
+            ({
+              Trafficlines: [],
+            } as {
+              HotelCities: any[];
+              Trafficlines: TrafficlineEntity[];
+            })
+        );
+      const local = this.localDomesticAirports;
+      if (r.Trafficlines && r.Trafficlines.length) {
+        const airports = [
+          ...this.localDomesticAirports.Trafficlines.filter(
+            (item) => !r.Trafficlines.some((i) => i.Id == item.Id)
+          ),
+          ...r.Trafficlines,
+        ];
+        this.localDomesticAirports.LastUpdateTime = Math.floor(
+          Date.now() / 1000
+        );
+        local.Trafficlines = this.localDomesticAirports.Trafficlines = airports;
+        await this.storage.set(KEY_HOME_AIRPORTS, this.localDomesticAirports);
+      }
+      rsv(local.Trafficlines);
+    });
+    this.loadDomesticAirportsPromise.finally(() => {
+      this.loadDomesticAirportsPromise = null;
+    });
+    return this.loadDomesticAirportsPromise;
   }
   async getInternationalAirports(forceFetch: boolean = false) {
     const req = new RequestEntity();
     req.Method = `ApiHomeUrl-Resource-InternationalAirport`;
-    // req.IsForward = true;
-    if (!this.localInternationAirports) {
-      this.localInternationAirports =
-        (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
-        ({
-          LastUpdateTime: 0,
-          Trafficlines: [],
-        } as LocalStorageAirport);
+    forceFetch = forceFetch || !this.isReloadInterAirports;
+    if (this.loadInterAirportsPromise) {
+      return this.loadInterAirportsPromise;
     }
-    if (!forceFetch && this.localInternationAirports.Trafficlines.length) {
-      return Promise.resolve(this.localInternationAirports.Trafficlines);
-    }
-    req.Data = {
-      LastUpdateTime: this.localInternationAirports.LastUpdateTime,
-    };
-    req.IsShowLoading = true;
-    let st = window.performance.now();
-    req.IsShowLoading = true;
-    req.LoadingMsg = "正在获取机场数据";
-    const r = await this.apiService
-      .getPromiseData<{
-        HotelCities: any[];
-        Trafficlines: TrafficlineEntity[];
-      }>(req)
-      .catch((_) => ({ Trafficlines: [] as TrafficlineEntity[] }));
-    const local = this.localInternationAirports;
-    if (r.Trafficlines && r.Trafficlines.length) {
-      const airports = [
-        ...this.localInternationAirports.Trafficlines.filter(
-          (item) => !r.Trafficlines.some((i) => i.Id == item.Id)
-        ),
-        ...r.Trafficlines,
-      ];
-      local.Trafficlines = airports;
-      this.localInternationAirports.LastUpdateTime = Math.floor(
-        Date.now() / 1000
-      );
-      this.localInternationAirports.Trafficlines = local.Trafficlines;
-      st = window.performance.now();
-      this.storage
-        .set(KEY_INTERNATIONAL_AIRPORTS, this.localInternationAirports)
-        .then((_) => {
-          console.log(
-            `本地化国际机场耗时：${window.performance.now() - st} ms`
-          );
-        });
-    }
-    return local.Trafficlines;
+    this.loadInterAirportsPromise = new Promise(async (rsv) => {
+      if (!this.localInternationAirports) {
+        this.localInternationAirports =
+          (await this.storage.get(KEY_INTERNATIONAL_AIRPORTS)) ||
+          ({
+            LastUpdateTime: 0,
+            Trafficlines: [],
+          } as LocalStorageAirport);
+      }
+      if (!forceFetch && this.localInternationAirports.Trafficlines.length) {
+        rsv(this.localInternationAirports.Trafficlines)
+        return this.localInternationAirports.Trafficlines;
+      }
+      req.Data = {
+        LastUpdateTime: this.localInternationAirports.LastUpdateTime,
+      };
+      let st = window.performance.now();
+      req.IsShowLoading = true;
+      req.LoadingMsg = "正在获取机场数据";
+      this.isReloadInterAirports = true;
+      const r = await this.apiService
+        .getPromiseData<{
+          HotelCities: any[];
+          Trafficlines: TrafficlineEntity[];
+        }>(req)
+        .catch((_) => ({ Trafficlines: [] as TrafficlineEntity[] }));
+      const local = this.localInternationAirports;
+      if (r.Trafficlines && r.Trafficlines.length) {
+        const airports = [
+          ...this.localInternationAirports.Trafficlines.filter(
+            (item) => !r.Trafficlines.some((i) => i.Id == item.Id)
+          ),
+          ...r.Trafficlines,
+        ];
+        local.Trafficlines = airports;
+        this.localInternationAirports.LastUpdateTime = Math.floor(
+          Date.now() / 1000
+        );
+        this.localInternationAirports.Trafficlines = local.Trafficlines;
+        st = window.performance.now();
+        this.storage
+          .set(KEY_INTERNATIONAL_AIRPORTS, this.localInternationAirports)
+          .then((_) => {
+            console.log(
+              `本地化国际机场耗时：${window.performance.now() - st} ms`
+            );
+          });
+      }
+      rsv(local.Trafficlines);
+    });
+    this.loadInterAirportsPromise.finally(() => {
+      this.loadInterAirportsPromise = null;
+    });
+    return this.loadInterAirportsPromise;
   }
   async checkPay(orderId: string, isshowLoading = true): Promise<boolean> {
     const req = new RequestEntity();
