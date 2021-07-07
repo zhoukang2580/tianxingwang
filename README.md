@@ -144,3 +144,66 @@ cordova 官网 `https://cordova.apache.org/`
 
 ## 解决ios粘贴复制显示为英文的问题
 info-plist 添加 Localizations，参考config.xml 下面的 Localizations节点
+
+
+## ios 发布生产过程
+1. 先切换到要发布版本的分支，一般是master分支，然后获取最新代码
+2. 到config.xml里面修改报名为 com.eskytrip.zhaozuomingios
+3. 确认版本号
+4. 修改config.ts里面的配置选项，将mockProBuild设置为false，将isShowVConsole设置为false，根据项目APP的名称，确定是否修改 appTitle字段，确认AppleStoreAppId的值是否需要修改
+5. 执行 ionic cordova build ios --prod --release 执行生产编译
+6. 编译完成后，请撤销对config.xml包名的修改
+7. 编译完成后，用xcode打开platform/ios的项目
+8. 打开项目后，检查info选项卡下面的URL Types 里面的item，是否有遗漏微信的跳转配置，如果没有weixin或者wechat配置项，需要添加一个，identifier为wechat或者weixin值是config.ts里面的wechat对象里面的appId的值，如果没有配置这一项，跳转微信后，将不能跳转回来
+9. 用xcode编译一下项目，看看是否有问题，最好先连接自己的平果手机，选择自己的手机然后安装到手机调试看看有无问题。
+10. 切换到Signing&Capabilities选项卡，将Automatically manage signing的对勾去掉，然后在provisioning profile选择最新的发布provisioning描述文件，再编译一次
+11. 在菜单栏找到Product菜单，在列表中选择Archive,等待归档完成
+12. 在弹出的窗口，右边有个Distribute App 和Validate APP，先执行一下Validate APP
+13. 在弹出的窗口中，选择next ,当 出现需要选择 证书 certificate and ios apple store profile的窗口时，选择对应的生产证书然后next,等待校验完成
+14. 校验没有问题后，重新选择 Distribute App
+15. 选择Apple store Connect,选择upload 
+16. 证书选择和前面相同
+17. 上传完毕后，浏览器打开 https://appstoreconnect.apple.com/,登陆后，点击对应的APP，当前是天行商旅，在新的界面，有个加号，点击加号（如果有新的协议更新，需要先完成新协议同意的操作），添加一个版本号，填写更新说明，然后再在对应的地方填写相关信息，
+18. 在 “构建版本” 中选择刚刚上传的版本（可能需要等十多分钟才看见，或者等几个小时），然后就可以提交审核了。
+### 如果是发布ios热更版本
+删除项目目录下面所有的 包名.哈希值.zip或者 包名.ios.zip
+步骤同 1，2，3，4，5
+编译完后，如果项目目录下面没有出现一个文件：
+com.eskytrip.zhaozuomingios.哈希值.ios.zip
+的文件，则需要手动生成:
+1. cd scripts 进入到scripts目录
+2. node hashfile.js 
+执行完后，可以看到一个包名.哈希值.ios.zip文件
+3. 将上面的那个zip文件拷贝到生产服务器service.version站点下面的wwwroot目录里面的download文件夹下面，然后将文件的哈希值剪切出来，将服务器该目录下面的包名.ios.zip文件删除，然后把刚刚复制的文件重命名为包名.ios.zip。在同站点下面有个Applications文件夹，进入到文件夹，可以看到包名.ios.json文件进入到该文件，将刚刚剪切出来的哈希值，替换掉Md5字段的值，然后将
+Version版本号的最后一位数字修改为当前数值加1，保存文件即可。
+如果有多台服务器，只需要重复步骤3的操作即可。
+
+
+## Android 发布生产过程
+1. 先切换到要发布版本的分支，一般是master分支，然后获取最新代码
+2. 到config.xml里面修改报名为 com.skytrip.dmonlie ,一般情况下，默认的就可以，因为发布ios后，请撤销对包名的修改
+3. 确认版本号
+4. 修改config.ts里面的配置选项，将mockProBuild设置为false，将isShowVConsole设置为false，根据项目APP的名称，确定是否修改 appTitle字段，确认AppleStoreAppId的值是否需要修改
+5. 执行 ionic cordova build android --prod --release 执行生产编译
+6. 直接将新生成的包名.哈希值.apk复制到服务器service.version站点下面的wwwroot目录里面的download里面,将原来的dmonline.apk重命名或者删除，然后将新复制过来的apk重命名为dmonline.apk，最好在重命名的时候，把哈希值剪切出来
+7. 返回上两级目录，也就是Applications目录，里面有个包名.android.json文件，进入后，将刚刚剪切的apk哈希值替换ApkMd5字段，Version的值要和此次编译的config.xml里面的版本号保持一致
+### 如果是发布Android热更版本
+删除项目目录下面所有的 包名.哈希值.zip或者 包名.android.zip
+步骤同 1，2，3，4，5
+编译完后，项目目录下面出现一个文件：包名.哈希值.ios.zip
+ 将上面的那个zip文件拷贝到生产服务器service.version站点下面的wwwroot目录里面的download文件夹下面，然后将文件的哈希值剪切出来，将服务器该目录下面的包名.android.zip文件删除，然后把刚刚复制的文件重命名为包名.android.zip。在同站点下面有个Applications文件夹，进入到文件夹，可以看到包名.android.json文件进入到该文件，将刚刚剪切出来的哈希值，替换掉Md5字段的值，然后将
+Version版本号的最后一位数字修改为当前数值加1，保存文件即可。
+如果有多台服务器，只需要重复步骤3的操作即可。
+
+##热更新服务器json文件说明
+{
+  “DownloadUrl”:"",//热更新zip文件在服务器的位置
+  "Md5":"",//热更新zip包的md5的值
+  "ApkDownloadUrl":"",// apk在服务器的位置
+  "Version":"",//当前的人更新的版本号，最后一位是热更新版本，其他两位是更新APP，如果是Android就是相当于重新安装apk，ios则需要跳转到applestore更新
+  "Ignore":false/true,//是否强制更新，如果是false，则提示用户，否则不提示，直接下载更新，用户需要等待更新完成后才能操作
+  "EnabledHcpUpdate":true/false,// 是否允许热更新，false不允许，即不检查更新
+  "EnabledHAppUpdate":true/false,// 是否允许更新App，false不允许，即不检查更新
+}
+## 关于热更的注意事项
+一般情况下，Android直接修版本号的第二位数值，然后编译，发布一个APP升级包即可，热更不太稳定，特别是ios的热更，可能有的机型打开的不是最新的版本，所以ios的热更是出现紧急问题修复才发布，发布后，当天就提交一个ios更新到Applestore审核，审核通过后，将服务器版本号修改为和审核版本的版本号一致，让用户到apple store手动更新APP。
