@@ -34,13 +34,13 @@
                         <app-train-list-item-df [seat]='bookInfo.bookInfo?.selectedSeat' [isShowSelectSeatLocation]="false" [selectSeatLocation]='bookInfo?.bookInfo?.trainEntity?.BookSeatLocation' (seatPicker)='onSeatPicked($event,bookInfo)' [bookInfo]='bookInfo?.bookInfo' [train]='bookInfo?.bookInfo?.trainEntity'>
                         </app-train-list-item-df>
                     </ion-label>
+                    <ion-label class='rules ion-text-wrap' color='danger'>
+                        {{bookInfo?.bookInfo?.trainPolicy?.Rules?.join("; ")}}
+                    </ion-label>
                     <div class="warm_prompt" (click)="onOpenrules()">
                         <img src="assets/images/hint.png" alt="">
                         <ion-text>火车票购票温馨提示</ion-text>
                     </div>
-                    <ion-label class='rules ion-text-wrap' color='danger'>
-                        {{bookInfo?.bookInfo?.trainPolicy?.Rules?.join("; ")}}
-                    </ion-label>
                 </div>
             </ion-item>
             <!-- <ion-item lines='none' *ngIf='(showSelectReturnTrip$|async)&&bookInfo?.bookInfo?.tripType!=TripType.returnTrip'>
