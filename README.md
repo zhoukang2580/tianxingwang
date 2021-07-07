@@ -141,3 +141,6 @@ cordova 官网 `https://cordova.apache.org/`
 ## 打包编译报内存不足
 1. `npm install -g increase-memory-limit`
 2. `increase-memory-limit`
+
+## 解决ios粘贴复制显示为英文的问题
+info-plist 添加 Localizations，参考config.xml 下面的 Localizations节点

@@ -79,6 +79,12 @@
                 <string>weixinULAPI</string>
             </array>
         </edit-config>
+        <edit-config file="*-Info.plist" mode="merge" target="Localizations">
+            <array>
+                <string>Chinese (simplified)</string>
+                <string>English</string>
+            </array>
+        </edit-config>
         <preference name="errorUrl" value="ionic://app/cordovaError.html" />
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
