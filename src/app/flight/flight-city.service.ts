@@ -406,7 +406,7 @@ function CityPage(domesticCities, interCities, pageClassName, lang = "cn") {
     }</label>`;
     const label2 = document.createElement("label");
     label2.innerHTML = `<label class='display-air-name'>${
-      c.Name || ""
+      c.Nickname || ""
     }</label>`;
     item.append(label);
     item.append(label2);
