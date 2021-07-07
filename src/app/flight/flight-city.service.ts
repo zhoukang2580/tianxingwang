@@ -446,7 +446,7 @@ function CityPage(domesticCities, interCities, pageClassName, lang = "cn") {
       h.classList.add("header");
       h.classList.add("hot-cities-wrapper1");
       const lb = document.createElement("label");
-      lb.textContent = that.isShowAirports ? "热门机场" : "热门城市";
+      lb.textContent = that.isShowAirports ? "热门选择" : "热门城市";
       h.append(lb);
       wrapper.append(h);
       const list = document.createElement("div");
@@ -945,8 +945,8 @@ function CityPage(domesticCities, interCities, pageClassName, lang = "cn") {
     label.classList.add("display-city-name");
     label2.classList.add("display-air-name");
     label2.innerHTML = `
-      <span class='name notranslate'>${c.Name}</span>
-      <span class='city-name notranslate'>(${c.CityName})</span> 
+      <span class='name notranslate'>${c.Nickname}</span>
+      <span class='city-name notranslate'>(${c.Code})</span> 
     `;
     label.classList.add("notranslate");
     if (c.CityName) {
