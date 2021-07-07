@@ -207,3 +207,11 @@ Version版本号的最后一位数字修改为当前数值加1，保存文件即
 }
 ## 关于热更的注意事项
 一般情况下，Android直接修版本号的第二位数值，然后编译，发布一个APP升级包即可，热更不太稳定，特别是ios的热更，可能有的机型打开的不是最新的版本，所以ios的热更是出现紧急问题修复才发布，发布后，当天就提交一个ios更新到Applestore审核，审核通过后，将服务器版本号修改为和审核版本的版本号一致，让用户到apple store手动更新APP。
+
+## 发布h5
+1. 先切换到要发布版本的分支，一般是master分支，然后获取最新代码
+2. 到config.xml里面修改报名为 com.skytrip.dmonlie ,一般情况下，默认的就可以，因为发布ios后，请撤销对包名的修改
+3. 确认版本号
+4. 修改config.ts里面的配置选项，将mockProBuild设置为false，将isShowVConsole设置为false，根据项目APP的名称，确定是否修改 appTitle字段，确认AppleStoreAppId的值是否需要修改
+5. 执行 ng build --prod --base-href /www/ 执行生产编译
+6. 将www目录拷贝到服务器client.app站点下面的wwwroot，首先将原来的www重命名，然后将新的www复制过去即可。
