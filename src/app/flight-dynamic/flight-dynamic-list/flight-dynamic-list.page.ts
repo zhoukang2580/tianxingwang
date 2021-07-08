@@ -123,7 +123,8 @@ export class FlightDynamicListPage implements OnInit, OnDestroy {
       this.apiService.hideLoadingView();
       this.isLoading = false;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
+      AppHelper.alert(error);
       this.isNoData = true;
       this.apiService.hideLoadingView();
       this.isLoading = false;
