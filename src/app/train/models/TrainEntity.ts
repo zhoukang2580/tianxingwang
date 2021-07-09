@@ -98,6 +98,7 @@ export class TrainEntity {
   /// 坐席信息
   /// </summary>
   Seats: TrainSeatEntity[];
+  isHasSeats?:boolean;
   /// <summary>
   /// 时刻表
   /// </summary>

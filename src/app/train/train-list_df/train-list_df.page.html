@@ -53,7 +53,7 @@
   </app-or-comp>
   <ion-list>
     <ul class='train'>
-      <li *ngFor='let item of vmTrains;trackBy:trackBy;let idx=index;' #li>
+      <li *ngFor='let item of vmTrains;trackBy:trackBy;let idx=index;' #li [class.no-seats]='!item.isHasSeats'>
         <!-- <ion-text color='danger'>{{idx}}</ion-text> -->
         <app-train-list-item-df [train]='item' (bookTicket)='onBookTicket(item,$event)' (scheduleEmit)='schedules(item)'>
         </app-train-list-item-df>

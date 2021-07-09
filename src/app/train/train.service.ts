@@ -1050,6 +1050,7 @@ export class TrainService {
           it.AddOneDayTip = this.addoneday(it);
           it.StartShortTime = this.calendarService.getHHmm(it.StartTime);
           it.ArrivalShortTime = this.calendarService.getHHmm(it.ArrivalTime);
+          it.isHasSeats = it.Seats && it.Seats.some((s) => s.Count > 0);
           return it;
         });
       }

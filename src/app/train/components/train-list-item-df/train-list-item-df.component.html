@@ -25,7 +25,7 @@
     <div class="right">
       <div class="price">
         ￥{{ getLowestSeatPrice() }}
-        <ng-container *ngIf="showOpenCloseIcon()">
+        <ng-container *ngIf="train?.isHasSeats">
           <ion-icon name="caret-down-outline" color="secondary" *ngIf="train['isShowSeats']"></ion-icon>
           <ion-icon name="caret-up-outline" color="secondary" *ngIf="!train['isShowSeats']"></ion-icon>
         </ng-container>
@@ -42,7 +42,7 @@
           <span class="seat-count" *ngIf="seat.SeatType == TrainSeatType.NoSeat">{{ seat.Count ?(+seat.Count < 20?seat.Count+"张":"有") : "无" }}票</span>
     </ion-col>
   </ion-row>
-  <ion-grid class="seats" *ngIf="train.isShowSeats" >
+  <ion-grid class="seats" *ngIf="train.isShowSeats">
     <ng-container *ngFor="let seat of getSeats()">
       <ion-row [attr.color]="seat.color" *ngIf="seat.Count > 0">
         <ion-col>{{ seat.SeatTypeName }}</ion-col>
@@ -93,7 +93,9 @@
           <span class="seat-count" *ngIf="seat.SeatType == TrainSeatType.NoSeat">{{ seat.Count ? "" : "no" }}{{ langOpt.Left }}</span>
           <div class="price" style="margin-left: auto">￥{{ seat.SalesPrice }}<span *ngIf='seat.SeatType==TrainSeatType.HardBerth'>起</span></div>
     </div>
-    <div *ngIf='seat.SeatTypeName?.includes("硬卧")'><ion-text color='danger'>卧铺席位，以实际出票为准</ion-text></div>
+    <div *ngIf='seat.SeatTypeName?.includes("硬卧")'>
+      <ion-text color='danger'>卧铺席位，以实际出票为准</ion-text>
+    </div>
   </div>
   <div *ngIf="!bookInfo?.isExchange && isShowSelectSeatLocation">
     <app-seat-picker-df [selectdSeat]="seat" [selectSeatLocation]="selectSeatLocation" (seatPicker)="onSeatPicker($event)">
