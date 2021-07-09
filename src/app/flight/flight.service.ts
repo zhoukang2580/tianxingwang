@@ -1202,8 +1202,9 @@ export class FlightService {
     if (req.Language) {
       req.Data.Lang = req.Language;
     }
-    this.stopCheckPageTimout();
+    // this.stopCheckPageTimout();
     return this.apiService.getPromiseData<FlightResultEntity>(req).then((r) => {
+      // this.startCheckPageTimeout();
       this.lastRefreshTime = Date.now();
       return r;
     });
