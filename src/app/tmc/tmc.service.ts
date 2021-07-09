@@ -238,6 +238,11 @@ export class TmcService {
     req.Data = { ...task };
     return this.apiService.getPromiseData<any>(req);
   }
+  async getAccountWaitingTasks() {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHomeUrl-Home-GetAccountWaitingTasks";
+    return this.apiService.getPromiseData<{DataCount:number}>(req);
+  }
   private async checkHasAuth(isDomestic = true) {
     try {
       // const msg = "您没有预定权限";

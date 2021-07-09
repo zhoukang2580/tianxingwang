@@ -48,9 +48,10 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private curCity: TrafficlineEntity;
   private isLoadingHotHotels = false;
   private isLoadingReviewedTask = false;
-  @ViewChild("bannersEl", { static: true })  bannersEl: ElementRef<HTMLElement>;
+  @ViewChild("bannersEl", { static: true }) bannersEl: ElementRef<HTMLElement>;
   @ViewChild("hothotel", { static: true }) hothotelEl: ElementRef<HTMLElement>;
-  @ViewChild("announcementEl", { static: true })  announcementEl: ElementRef<HTMLElement>;
+  @ViewChild("announcementEl", { static: true })
+  announcementEl: ElementRef<HTMLElement>;
   @ViewChild("taskEle", { static: true }) taskEl: ElementRef<HTMLElement>;
   @ViewChild("tripEle", { static: true }) tripEl: ElementRef<HTMLElement>;
   private bannersSwiper: any;
@@ -78,6 +79,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   recommendHotelDefaultImg: string;
+  accountWaitingTasksNumber = 0;
   // options = {};
   swiperOption: {
     loop: true;
@@ -143,15 +145,15 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     FromCityName: String;
   }[];
 
-  tasklist: {
-    Title: String;
-    Detail: String;
-    Url: String;
-    Tag: String;
-    Id: String;
-    ExpiredTime: String;
-    IsRead: boolean;
-  }[];
+  // tasklist: {
+  //   Title: String;
+  //   Detail: String;
+  //   Url: String;
+  //   Tag: String;
+  //   Id: String;
+  //   ExpiredTime: String;
+  //   IsRead: boolean;
+  // }[];
   config: ConfigEntity;
   activeTab: ProductItem;
   curIndex = 0;
@@ -192,7 +194,16 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.langService.translate();
       this.loadTripList();
       this.loadReviewedTask();
+      this.getAccountWaitingTasksCount();
     });
+  }
+  private async getAccountWaitingTasksCount() {
+    this.tmcService
+      .getAccountWaitingTasks()
+      .then((r) => {
+        this.accountWaitingTasksNumber = r && r.DataCount;
+      })
+      .catch();
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -200,6 +211,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   goBusiness() {
     this.router.navigate([AppHelper.getRoutePath("business-list")]);
+  }
+  onWaitingtask() {
+    this.router.navigate([AppHelper.getRoutePath("approval-task")]);
   }
   private async getAgentData() {
     if (this.agent) {
@@ -309,8 +323,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       const h = Math.floor((seconds - 24 * 3600 * d) / 3600);
       const mm = Math.floor((seconds - 24 * 3600 * d - h * 3600) / 60);
       const ss = seconds - d * 24 * 3600 - h * 3600 - mm * 60;
-      return `${d > 0 ? d + "天" : ""}${d > 0 ? h + "小时" : h > 0 ? h + "小时" : ""
-        }${mm > 0 ? mm + "分钟" : ""}${this.getHHMM(ss)}秒`;
+      return `${d > 0 ? d + "天" : ""}${
+        d > 0 ? h + "小时" : h > 0 ? h + "小时" : ""
+      }${mm > 0 ? mm + "分钟" : ""}${this.getHHMM(ss)}秒`;
     }
     return "";
   }
@@ -408,51 +423,38 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  async onTaskDetail(task) {
-    const url = await this.getTaskHandleUrl(task);
-    this.tmcService
-      .SetAccountMessage(task)
-      .then(() => {
-        this.tasklist = this.tasklist.filter((it) => it.Id != task.Id);
-        setTimeout(() => {
-          if(!this.taskEleSwiper){
-            this.initTaskSpwiper()
-          }else{
-            this.taskEleSwiper.update();
-          }
-        }, 200);
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-    if (url) {
-      // this.router
-      //   .navigate(["open-url"], {
-      //     queryParams: {
-      //       url,
-      //       title: task && task.Title,
-      //       // tabId: this.activeTab?.value,
-      //       isOpenInAppBrowser: false,
-      //       isIframeOpen: true,
-      //       isHideTitle: false,
-      //       goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
-      //     },
-      //   })
-      //   .then((_) => { });
-      AppHelper.modalController.create({
-        component:OpenUrlComponent,
-        componentProps:{
-          url,
-          isOpenAsModal:true,
-          isIframeOpen: true,
-          isHideTitle: false,
-          title: task && task.Title
-        }
-      }).then(m=>{
-        m.present();
-      })
-    }
-  }
+  // async onTaskDetail(task) {
+  //   const url = await this.getTaskHandleUrl(task);
+  //   this.tmcService
+  //     .SetAccountMessage(task)
+  //     .then(() => {
+  //       this.tasklist = this.tasklist.filter((it) => it.Id != task.Id);
+  //       setTimeout(() => {
+  //         if(!this.taskEleSwiper){
+  //           this.initTaskSpwiper()
+  //         }else{
+  //           this.taskEleSwiper.update();
+  //         }
+  //       }, 200);
+  //     })
+  //     .catch((e) => {
+  //       console.error(e);
+  //     });
+  //   if (url) {
+  //     AppHelper.modalController.create({
+  //       component:OpenUrlComponent,
+  //       componentProps:{
+  //         url,
+  //         isOpenAsModal:true,
+  //         isIframeOpen: true,
+  //         isHideTitle: false,
+  //         title: task && task.Title
+  //       }
+  //     }).then(m=>{
+  //       m.present();
+  //     })
+  //   }
+  // }
 
   goToDetail(id) {
     this.hotelService.RoomDefaultImg = this.recommendHotelDefaultImg;
@@ -469,13 +471,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     let url = this.getTaskUrl(task);
     if (url) {
       if (url.includes("?")) {
-        url = `${url}&isApp=true&lang=${
-          AppHelper.getLanguage() || ""
-        }`;
+        url = `${url}&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
       } else {
-        url = `${url}?isApp=true&lang=${
-          AppHelper.getLanguage() || ""
-        }`;
+        url = `${url}?isApp=true&lang=${AppHelper.getLanguage() || ""}`;
       }
       if (isAppendTicket && ticket) {
         url = `${url}&ticket=${ticket}`;
@@ -488,7 +486,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     return task && (task.HandleUrl || task.Url);
   }
 
-  ngAfterViewInit() { }
+  ngAfterViewInit() {}
   private destroySwiper() {
     if (this.bannersSwiper) {
       this.bannersSwiper.destroy();
@@ -515,7 +513,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       //   await this.flightService.initSelfBookTypeBookInfos(false);
       //   await this.trainServive.initSelfBookTypeBookInfos(false);
       // }
-    } catch (e) { }
+    } catch (e) {}
   }
 
   private initSwiperhotels() {
@@ -560,7 +558,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       // speed: 1000,
       // direction: "vertical",
     };
-    console.log("taskel",this.taskEl)
+    console.log("taskel", this.taskEl);
     if (this.taskEl && this.taskEl.nativeElement) {
       this.taskEleSwiper = new Swiper(this.taskEl.nativeElement, opts);
     }
@@ -612,7 +610,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.agent = null;
           this.banners = [];
           this.tripList = [];
-          this.tasklist = [];
           this.staffCredentials = null;
           if (!(await this.hasTicket())) {
             return;
@@ -679,7 +676,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  async isShowGp(){
+  async isShowGp() {
     this.isShowFlightGp = await this.tmcService.hasBookRight("flightGp");
   }
 
@@ -744,65 +741,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       }
     }
   }
-  // async goToPage(name: string, params?: any) {
-  //   const tmc = await this.tmcService.getTmc();
-  //   const msg = "您没有预订权限";
-  //   if (!tmc || !tmc.RegionTypeValue) {
-  //     AppHelper.alert(msg);
-  //     return;
-  //   }
-  //   let route = "";
 
-  //   const tmcRegionTypeValue = tmc.RegionTypeValue.toLowerCase();
-  //   if (name == "international-flight") {
-  //     route = "search-international-flight";
-  //     if (tmcRegionTypeValue.search("internationalflight") < 0) {
-  //       AppHelper.alert(msg);
-  //       return;
-  //     }
-  //   }
-  //   if (name == "international-hotel") {
-  //     route = "search-international-hotel";
-  //     if (tmcRegionTypeValue.search("internationalhot") < 0) {
-  //       AppHelper.alert(msg);
-  //       return;
-  //     }
-  //   }
-  //   if (name == "hotel") {
-  //     route = "search-hotel";
-  //     if (tmcRegionTypeValue.search("hotel") < 0) {
-  //       AppHelper.alert(msg);
-  //       return;
-  //     }
-  //   }
-  //   if (name == "train") {
-  //     route = "search-train";
-  //     if (tmcRegionTypeValue.search("train") < 0) {
-  //       AppHelper.alert(msg);
-  //       return;
-  //     }
-  //   }
-  //   if (name == "flight") {
-  //     route = "search-flight";
-  //     if (tmcRegionTypeValue.search("flight") < 0) {
-  //       AppHelper.alert(msg);
-  //       return;
-  //     }
-  //   }
-  //   if (name == "rentalCar") {
-  //     route = "rental-car";
-  //     if (tmcRegionTypeValue.search("car") < 0) {
-  //       AppHelper.alert(msg);
-  //       return;
-  //     }
-  //   }
-  //   if (name == "bulletin") {
-  //     route = "bulletin-list";
-  //   }
-  //   this.router.navigate([AppHelper.getRoutePath(route)], {
-  //     queryParams: { bulletinType: params },
-  //   });
-  // }
   private async clearBookInfos() {
     this.tmcService.clearTravelFormNumber();
     if (await this.hasTicket()) {
@@ -831,20 +770,11 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
     this.isLoadingReviewedTask = true;
     if (!(await this.hasTicket())) {
-      this.isLoadingReviewedTask = false;  
+      this.isLoadingReviewedTask = false;
       return;
     }
     try {
       this.isLoadingReviewedTask = true;
-      this.tasklist = await this.tmcService.getTaskReviewed();
-      this.tasklist.forEach((t) => {
-        if (t.ExpiredTime) {
-          t.ExpiredTime = t.ExpiredTime.substr(
-            0,
-            "yyyy-mm-ddTHH:mm:ss".length
-          ).replace("T", " ");
-        }
-      });
     } catch (error) {
       console.log(error);
     }

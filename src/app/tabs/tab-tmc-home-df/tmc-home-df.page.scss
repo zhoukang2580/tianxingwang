@@ -201,7 +201,7 @@ ion-header ion-title {
   display: flex;
   align-items: center;
   overflow: auto;
-  margin-top: 25px;
+  // margin-top: 25px;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -214,14 +214,40 @@ ion-header ion-title {
     justify-content: center;
     align-items: center;
     flex-flow: column nowrap;
-    padding: 0 1em;
-    .imgs {
-      width: 19px;
+    padding: 1.5625em 1em;
+    position: relative;
+    // .imgs {
+    //   width: 19px;
+    //   height: 20px;
+    // }
+    // .dy-imgs {
+    //   width: 26px;
+    //   height: 20px;
+    // }
+    // .wt-imgs{
+    //   width: 17px;
+    // }
+    img {
+      width: 24px;
       height: 20px;
+      object-fit: contain;
     }
-    .dy-imgs {
-      width: 26px;
-      height: 20px;
+    .badge {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      $r: 1.5em;
+      font-size: 12px;
+      position: absolute;
+      top: 1em;
+      right: 0.3em;
+      height: $r;
+      width: $r;
+      min-height: $r;
+      min-width: $r;
+      background-color: var(--ion-color-danger);
+      color: white;
+      border-radius: 50%;
     }
   }
   .txt {
