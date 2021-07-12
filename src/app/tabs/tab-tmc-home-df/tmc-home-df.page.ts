@@ -63,10 +63,12 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private isLoadingTripList = false;
   private isLoadingAgent = false;
   private intervalId: any;
-  agent: AgentEntity;
+  // agent: AgentEntity;
   identity: IdentityEntity;
   isLoadingNotice = false;
   isAgent = false;
+  hasShop = false;
+  hasFlightDynamic = false;
   isCanDailySigned = true;
   isRegister = true;
   aliPayResult$: Observable<any>;
@@ -216,16 +218,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate([AppHelper.getRoutePath("approval-task")]);
   }
   private async getAgentData() {
-    if (this.agent) {
-      return this.agent;
-    }
-    if (this.isLoadingAgent) {
-      return;
-    }
-    this.isLoadingAgent = true;
-    this.agent = await this.tmcService.getAgent().catch(() => null);
-    this.isLoadingAgent = false;
-    return this.agent;
+    return this.tmcService.getAgent();
   }
   onDemand() {
     this.router.navigate([AppHelper.getRoutePath("demand-list")]);
@@ -335,13 +328,25 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
     return d;
   }
-  private async hasShop() {
-    const d = await this.getAgentData();
-    return d && d.HasShop;
+  private async checkHasShop() {
+    try {
+      const d = await this.getAgentData();
+      this.hasShop = d && d.HasShop;
+      return this.hasShop;
+    } catch (e) {}
+    return false;
+  }
+  private async checkHasFlightDynamic() {
+    try {
+      const d = await this.getAgentData();
+      this.hasFlightDynamic = d && d.HasFlightDynamic;
+      return this.hasFlightDynamic;
+    } catch (e) {}
+    return false;
   }
   private async integral() {
     try {
-      const d = await this.hasShop();
+      const d = await this.checkHasShop();
       if (!d) {
         return;
       }
@@ -362,7 +367,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async onSignIn() {
-    const d = await this.hasShop();
+    const d = await this.checkHasShop();
     if (!d) {
       return;
     }
@@ -607,7 +612,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           this.configService.getConfigAsync().then((c) => {
             this.config = c;
           });
-          this.agent = null;
           this.banners = [];
           this.tripList = [];
           this.staffCredentials = null;
@@ -616,6 +620,8 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
           }
 
           this.isShowGp();
+          this.checkHasShop();
+          this.checkHasFlightDynamic();
           this.checkIfCanDailySigned();
           this.loadBanners();
           this.loadHotHotels();
@@ -643,7 +649,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private async checkIfCanDailySigned() {
-    const d = await this.hasShop();
+    const d = await this.checkHasShop();
     if (!d) {
       return;
     }
@@ -908,6 +914,9 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       // this.updateTripSwiper();
       // this.loadBanners();
       // this.loadHotHotels();
+      this.checkHasShop().then((r) => {
+        this.hasShop = r;
+      });
       this.staff = await this.staffService.getStaff();
       console.log("home check", this.staffCredentials);
       if (this.staff && this.staff.AccountId) {

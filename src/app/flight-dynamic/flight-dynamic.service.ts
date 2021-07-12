@@ -71,6 +71,7 @@ export class FlightDynamicService {
       pageClassName: "select-flight-dynamic-city-page-container",
       domesticAirports,
       internationalAirports,
+      isShow3Code:true
     });
   }
   getPassengerBookInfos() {
@@ -200,7 +201,7 @@ export class FlightDynamicService {
       flightNumber: FlightNumber,
     };
 
-    return this.apiService.getPromiseData<any>(req);
+    return this.apiService.getPromiseData<any[]>(req);
   }
 
   getFlightDynamicDetail(d: {

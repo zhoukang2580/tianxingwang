@@ -73,6 +73,7 @@ export class TmcService {
   // private fetchingCredentialReq: { [md5: string]: { isFectching: boolean; promise: Promise<any>; } } = {} as any;
   private identity: IdentityEntity;
   private agent: AgentEntity;
+  private loadAgentDataPromise: Promise<AgentEntity>;
   private mobileTemplateSelectItemList: SelectItem[] = [];
   private emailTemplateSelectItemList: SelectItem[] = [];
   public allLocalAirports: TrafficlineEntity[];
@@ -241,7 +242,11 @@ export class TmcService {
   async getAccountWaitingTasks() {
     const req = new RequestEntity();
     req.Method = "TmcApiHomeUrl-Home-GetAccountWaitingTasks";
-    return this.apiService.getPromiseData<{DataCount:number}>(req);
+    return this.apiService.getPromiseData<{ DataCount: number }>(req);
+  }
+  private async checkHasFlightDynamic() {
+    const Agent = await this.getAgent();
+    return Agent && Agent.HasFlightDynamic;
   }
   private async checkHasAuth(isDomestic = true) {
     try {
@@ -968,7 +973,7 @@ export class TmcService {
           } as LocalStorageAirport);
       }
       if (!forceFetch && this.localInternationAirports.Trafficlines.length) {
-        rsv(this.localInternationAirports.Trafficlines)
+        rsv(this.localInternationAirports.Trafficlines);
         return this.localInternationAirports.Trafficlines;
       }
       req.Data = {
@@ -1046,23 +1051,29 @@ export class TmcService {
     if (this.agent && !forceFetch) {
       return Promise.resolve(this.agent);
     }
+    if (this.loadAgentDataPromise) {
+      return this.loadAgentDataPromise;
+    }
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Agent-Agent";
-    this.agent = await this.apiService
+    this.loadAgentDataPromise = this.apiService
       .getPromiseData<{ Agent: AgentEntity }>(req)
       .then((r) => {
         if (r && r.Agent) {
-          return {
+          this.agent = {
             ...r.Agent,
             LogoFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`,
             LogoFullFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`,
           };
+          return this.agent;
         }
-        return r;
+        return r.Agent;
       })
-      .catch((_) => null);
-    return this.agent;
+      .finally(() => {
+        this.loadAgentDataPromise = null;
+      });
+    return this.loadAgentDataPromise;
   }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
     if (this.tmc && !forceFetch) {

@@ -45,6 +45,7 @@ export class AgentEntity {
     /// </summary>
     IsUsed: boolean;// 
     HasShop: boolean;// 
+    HasFlightDynamic: boolean;// 
     /// <summary>
     /// 是否启用
     /// </summary>
