@@ -63,8 +63,10 @@ export class FlightCityService {
   }
   private onHideCityName(isCityName = true) {}
   async onSelectCity({
-    isShowSegs,
     isDomestic,
+    isShow3Code,
+    isShowCityName,
+    isShowSegs,
     isShowPage,
     isShowAirports,
     isFrom,
@@ -77,6 +79,8 @@ export class FlightCityService {
     internationalAirports,
   }: {
     isShowPage: boolean;
+    isShow3Code?: boolean;
+    isShowCityName?: boolean;
     isFrom: boolean;
     isShowAirports?: boolean;
     isDomestic?: boolean;
@@ -104,6 +108,9 @@ export class FlightCityService {
     if (isDomestic == undefined) {
       isDomestic = true;
     }
+    if (isShowCityName == undefined) {
+      isShowCityName = true;
+    }
     if (isShowSegs == undefined) {
       isShowSegs = true;
     }
@@ -121,6 +128,7 @@ export class FlightCityService {
     this.cityPage.isShowAirports = isShowAirports;
     this.cityPage.isShowHotCity = isShowHotCity;
     this.cityPage.isShowSegs = isShowSegs;
+    this.cityPage.isShow3Code = isShow3Code;
     this.onSearbarClick(isFrom);
     this.cityPage.openPage(isShowPage);
     // this.onHideSegments(!isShowSegs, !isShowHotCity);
@@ -128,14 +136,19 @@ export class FlightCityService {
     if (!isShowPage) {
       return null;
     }
-    const segments=this.cityPage.page&&this.cityPage.page.querySelector(".segments");
-    if(!isShowSegs|| !internationalAirports||!internationalAirports.length){
-      if(segments){
-        segments.classList.add('hidden');
+    const segments =
+      this.cityPage.page && this.cityPage.page.querySelector(".segments");
+    if (
+      !isShowSegs ||
+      !internationalAirports ||
+      !internationalAirports.length
+    ) {
+      if (segments) {
+        segments.classList.add("hidden");
       }
-    }else{
-      if(segments){
-        segments.classList.remove('hidden');
+    } else {
+      if (segments) {
+        segments.classList.remove("hidden");
       }
     }
     this.cityPage.onToggleSegmentsPage(isDomestic);
@@ -832,8 +845,8 @@ function CityPage(domesticCities, interCities, pageClassName, lang = "cn") {
   function getContainerEle() {
     return getPageEle().querySelector(".container");
   }
-  function getCachedHistoriesKey(){
-    return that.pageClassName+"_cached_histories_cities_key";
+  function getCachedHistoriesKey() {
+    return that.pageClassName + "_cached_histories_cities_key";
   }
   function cacheSelectedCities(histories) {
     window.localStorage.setItem(
@@ -843,9 +856,7 @@ function CityPage(domesticCities, interCities, pageClassName, lang = "cn") {
   }
   function getCachedSelectedCities() {
     try {
-      const l = window.localStorage.getItem(
-        getCachedHistoriesKey()
-      );
+      const l = window.localStorage.getItem(getCachedHistoriesKey());
       if (l) {
         return JSON.parse(l);
       }
@@ -946,12 +957,15 @@ function CityPage(domesticCities, interCities, pageClassName, lang = "cn") {
     label2.classList.add("display-air-name");
     label2.innerHTML = `
       <span class='name notranslate'>${c.Nickname}</span>
-      <span class='city-name notranslate'>(${c.Code})</span> 
+      <span class='city-name notranslate'>(${(that.isShow3Code?c.Code:"")})</span> 
     `;
     label.classList.add("notranslate");
-    if (c.CityName) {
+    if (c.CityName||c.Code) {
       const sp = document.createElement("span");
-      sp.textContent = `(${c.CityName})`;
+      sp.textContent =that.isShowCityName? `(${c.CityName})`:"";
+      if(that.isShow3Code){
+        sp.textContent=`${sp.textContent}(${c.Code})`;
+      }
       sp.classList.add("city-name");
       sp.classList.add("notranslate");
       label.append(sp);
