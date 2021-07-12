@@ -103,10 +103,12 @@
                             <img src="assets/images/1.png" *ngIf='trip.Type=="Flight"' alt="" />
                             <img src="assets/images/2.png" *ngIf='trip.Type=="Hotel"' alt="" />
                             <img src="assets/images/3.png" *ngIf='trip.Type=="Train"' alt="" />
-                            <div class="not-warp" (click)="goToDetailPage(trip.OrderId,trip.Type)">
-                                <div class="not-name" notranslate>{{trip.PassagerName}}</div>
-                                <div class="wait-trip" notranslate>您有<span>1张</span>待出行行程</div>
-                                <div class="view-now" notranslate>立即查看</div>
+                            <div class="wp" (click)="goToDetailPage(trip.OrderId,trip.Type)">
+                                <div class="not-wrap">
+                                    <div class="not-name" notranslate>{{trip.PassagerName}}</div>
+                                    <div class="wait-trip" notranslate>您有<span>1张</span>待出行行程</div>
+                                    <div class="view-now" notranslate>立即查看</div>
+                                </div>
                                 <div *ngIf="trip.Type == 'Flight'">
                                     <div class="wrapper">
                                         <div class="trips">
@@ -116,7 +118,7 @@
                                         </div>
                                     </div>
                                     <div class="fly-time" notranslate>
-                                        <span notranslate class="hourname">{{trip.Name}}</span><span *ngIf='trip.displayTimeName'>将于{{trip.displayTimeName}}后起飞</span>
+                                        <span notranslate >{{trip.Name}}</span><span *ngIf='trip.displayTimeName'>将于{{trip.displayTimeName}}后起飞</span>
                                     </div>
                                 </div>
                                 <div *ngIf="trip.Type == 'Train'">
@@ -127,10 +129,10 @@
                                             <div class="arriving-city"><span notranslate>{{trip?.ToName}}</span></div>
                                         </div>
                                     </div>
-                                    <div class="fly-time" notranslate><span notranslate class="hourname">{{trip.Name}}</span><span *ngIf='trip.displayTimeName'>将于{{trip.displayTimeName}}后出发</span>
+                                    <div class="fly-time" notranslate><span notranslate >{{trip.Name}}</span><span *ngIf='trip.displayTimeName'>将于{{trip.displayTimeName}}后出发</span>
                                     </div>
                                 </div>
-                                <div *ngIf="trip.Type == 'Hotel'">
+                                <div *ngIf="trip.Type == 'Hotel'" class="hotel">
                                     <div class="wrapper">
                                         <div class="trips">
                                             <div class="starting-city" notranslate>{{trip?.Name}}</div>

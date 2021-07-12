@@ -14,10 +14,6 @@ ion-header ion-title {
   width: 100vw;
 }
 
-.hourname {
-  margin: 0 2px;
-}
-
 .hot-hotel {
   --background: white;
   --border-width: 0;
@@ -304,10 +300,15 @@ ion-header ion-title {
       }
     }
   }
-  .not-warp {
+  .wp {
+    margin-left: 1em;
+    .hotel {
+      line-height: 1.6;
+    }
+  }
+  .not-wrap {
     display: flex;
     flex-wrap: wrap;
-    margin: 0.5em 1em;
     line-height: 1.7;
     .not-name,
     .wait-trip,
