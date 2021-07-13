@@ -529,7 +529,8 @@ export class SearchFlightDfPage
     console.log("search-flight", s);
     // this.calendarService.setSelectedDaysSource([this.calendarService.generateDayModelByDate(s.Date)]);
     this.flightService.setSearchFlightModelSource(s);
-    this.router.navigate([AppHelper.getRoutePath("flight-list")]);
+    // this.router.navigate([AppHelper.getRoutePath(`flight-list${(this.searchFlightModel.isRoundTrip)?"-roundtrip":""}`)]);
+    this.router.navigate([`flight-list`]);
     this.cachLastSelectedFlightGoDate(s.Date);
   }
   private async cachLastSelectedFlightGoDate(date: string) {
@@ -561,7 +562,8 @@ export class SearchFlightDfPage
       isFrom: isFromCity,
       isShowAirports: false,
       isShowPage: true,
-      isShowSegs: true
+      isShow3Code: true,
+      isShowCityName: false
     });
     if (rs) {
       const s = this.searchFlightModel;

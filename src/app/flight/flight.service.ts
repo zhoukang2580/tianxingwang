@@ -72,7 +72,8 @@ export class FlightService {
   private filterCondition: FilterConditionModel;
   currentViewtFlightSegment: FlightSegmentEntity;
   policyFlights: PassengerPolicyFlights[];
-  flightResult: FlightResultEntity; // 保持和后台返回的数据一致
+  flightGoTripResult: FlightResultEntity; // 保持和后台返回的数据一致
+  flightBackTripResult: FlightResultEntity; // 保持和后台返回的数据一致
   private pagePopTimeoutSource: EventEmitter<boolean>;
   private pagePopTimeoutTime = 10 * 60 * 1000;
   private pagePopTimeoutId;
@@ -137,7 +138,7 @@ export class FlightService {
   }
   async initSelfBookTypeBookInfos(isShowLoading = true) {
     await this.checkOrAddSelfBookTypeBookInfo(isShowLoading);
-    await this.loadPolicyedFlightsAsync(this.flightResult);
+    await this.loadPolicyedFlightsAsync(this.flightGoTripResult);
   }
   private disposal() {
     this.setSearchFlightModelSource(new SearchFlightModel());
@@ -264,22 +265,6 @@ export class FlightService {
     return policyCabins;
   }
 
-  private getUnSelectFlightSegmentPassengers() {
-    return this.getPassengerBookInfos()
-      .filter(
-        (item) =>
-          !item.bookInfo ||
-          !item.bookInfo.flightSegment ||
-          !item.bookInfo.flightPolicy
-      )
-      .map((item) => item.passenger)
-      .reduce((arr, item) => {
-        if (!arr.find((i) => i.AccountId == item.AccountId)) {
-          arr.push(item);
-        }
-        return arr;
-      }, [] as StaffEntity[]);
-  }
   async loadPolicyedFlightsAsync(flightResult: FlightResultEntity) {
     this.policyFlights = [];
     if (
@@ -578,7 +563,7 @@ export class FlightService {
     let bookInfos = this.getPassengerBookInfos();
     if (!bookInfos.length) {
       await this.addOneBookInfoToSelfBookType();
-      await this.loadPolicyedFlightsAsync(this.flightResult);
+      await this.loadPolicyedFlightsAsync(this.flightGoTripResult);
     }
     bookInfos = this.getPassengerBookInfos();
     if (!bookInfos.length) {
@@ -826,7 +811,7 @@ export class FlightService {
       processResult.isRePlace = true;
       const cannotArr: string[] = [];
       this.policyFlights = await this.loadPolicyedFlightsAsync(
-        this.flightResult
+        this.flightGoTripResult
       );
       for (let i = 0; i < data.length; i++) {
         const item = data[i];
@@ -1168,7 +1153,7 @@ export class FlightService {
     return false;
   }
   async initFlightSegmentCabinsPolicy() {
-    await this.loadPolicyedFlightsAsync(this.flightResult);
+    await this.loadPolicyedFlightsAsync(this.flightGoTripResult);
     return this.policyFlights;
   }
   private async getFlightSegmentDetail(s: FlightSegmentEntity) {
@@ -1218,13 +1203,13 @@ export class FlightService {
     if (result && result.FlightSegments) {
     }
     if (
-      this.flightResult &&
-      this.flightResult.FlightSegments &&
+      this.flightGoTripResult &&
+      this.flightGoTripResult.FlightSegments &&
       result &&
       result.FlightFares &&
       result.FlightSegments
     ) {
-      const one = this.flightResult.FlightSegments.find(
+      const one = this.flightGoTripResult.FlightSegments.find(
         (it) => it.Number == oldSeg.Number
       );
       // 替换最低价
@@ -1354,7 +1339,7 @@ export class FlightService {
     return addDay >= 1 ? `+${addDay}${LanguageHelper.getDayTip()}` : "";
   }
   getTotalFlySegments() {
-    return this.getFlightSegments(this.flightResult);
+    return this.getFlightSegments(this.flightGoTripResult);
   }
   private getFlightSegments(r: FlightResultEntity) {
     console.log("getTotalFlySegments flyJourneys", r);
@@ -1470,18 +1455,18 @@ export class FlightService {
     // }
     if (!loadDataFromServer) {
       if (
-        this.flightResult &&
-        this.flightResult.FlightSegments &&
-        this.flightResult.FlightSegments.length
+        this.flightGoTripResult &&
+        this.flightGoTripResult.FlightSegments &&
+        this.flightGoTripResult.FlightSegments.length
       ) {
-        return Promise.resolve(this.flightResult);
+        return Promise.resolve(this.flightGoTripResult);
       }
     }
-    this.flightResult = await this.getFlightList();
+    this.flightGoTripResult = await this.getFlightList();
     // if (!environment.production) {
     //   await this.storage.set("test_flightjourney", this.flightJourneyList);
     // }
-    return this.flightResult;
+    return this.flightGoTripResult;
   }
   private async setDefaultFilterInfo() {
     const self = await this.staffService.isSelfBookType();
@@ -1889,6 +1874,8 @@ export class FlightService {
     isFrom: boolean;
     isShowAirports?: boolean;
     isDomestic?: boolean;
+    isShowCityName?: boolean;
+    isShow3Code?: boolean;
     pageClassName?: string;
     isShowSegs?: boolean;
     isShowHotCity?: boolean;

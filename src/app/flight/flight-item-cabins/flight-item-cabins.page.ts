@@ -71,6 +71,7 @@ export class FlightItemCabinsPage implements OnInit {
   isSelf = true;
   isAgreement = false;
   isExchange = false;
+  hasFlightDynamic = false;
   segmenttype;
   constructor(
     private flightService: FlightService,
@@ -90,6 +91,12 @@ export class FlightItemCabinsPage implements OnInit {
       this.pageUrl = this.router.url;
       try {
         this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
+        this.tmcService
+          .getAgent()
+          .then((a) => {
+            this.hasFlightDynamic = a&&a.HasFlightDynamic;
+          })
+          .catch();
         if (
           this.vmFlightSegment &&
           this.vmFlightSegment.Cabins &&
@@ -186,9 +193,10 @@ export class FlightItemCabinsPage implements OnInit {
       queryParams: {
         Date: vmFlightSegment.TakeoffTime.substring(0, 10),
         FlightNumber: vmFlightSegment.Number,
-        distinguish: vmFlightSegment.FromCityName + ',' + vmFlightSegment.ToCityName,
-      }
-    })
+        distinguish:
+          vmFlightSegment.FromCityName + "," + vmFlightSegment.ToCityName,
+      },
+    });
   }
 
   private setDefaultFilteredInfo() {
@@ -239,13 +247,13 @@ export class FlightItemCabinsPage implements OnInit {
     if (!cabin || !cabin.LowerSegment) {
       return false;
     }
-    let fs = this.flightService.flightResult.FlightSegments.find(
+    let fs = this.flightService.flightGoTripResult.FlightSegments.find(
       (it) =>
         it.Number == cabin.LowerSegment.Number &&
         it.TakeoffTime == cabin.LowerSegment.TakeoffTime
     );
     if (!fs) {
-      fs = this.flightService.flightResult.FlightSegments.find(
+      fs = this.flightService.flightGoTripResult.FlightSegments.find(
         (it) => it.Number == cabin.LowerSegment.Number
       );
     }
@@ -386,7 +394,7 @@ export class FlightItemCabinsPage implements OnInit {
             !this.flightService.policyFlights.length
           ) {
             await this.flightService.loadPolicyedFlightsAsync(
-              this.flightService.flightResult
+              this.flightService.flightGoTripResult
             );
           }
           if (
@@ -422,10 +430,11 @@ export class FlightItemCabinsPage implements OnInit {
                 );
                 if (cabin.LowerSegment) {
                   if (cabin.LowerSegment.LowerSegmentRangTime) {
-                    msg = `您指定的航班在差标指定范围${cabin.LowerSegment.LowerSegmentRangTime
-                      }内有更低价航班:${cabin.LowerSegment.Number} ${(
-                        cabin.LowerSegment.TakeoffTime || ""
-                      ).substr(11, 5)},是否预订更低价航班？`;
+                    msg = `您指定的航班在差标指定范围${
+                      cabin.LowerSegment.LowerSegmentRangTime
+                    }内有更低价航班:${cabin.LowerSegment.Number} ${(
+                      cabin.LowerSegment.TakeoffTime || ""
+                    ).substr(11, 5)},是否预订更低价航班？`;
                   } else {
                     msg = `是否预订更低价航班？${cabin.LowerSegment.Number} ${(
                       cabin.LowerSegment.TakeoffTime || ""
