@@ -93,7 +93,7 @@ export class FlightGpItemCabinsPage implements OnInit {
         this.tmcService
           .getAgent()
           .then((a) => {
-            this.hasFlightDynamic =a&&a.HasFlightDynamic;
+            this.hasFlightDynamic = a && a.HasFlightDynamic;
           })
           .catch();
         this.isSelf = await this.staffService.isSelfBookType();
@@ -373,7 +373,7 @@ export class FlightGpItemCabinsPage implements OnInit {
     cabins.forEach((it) => {
       if (
         it.Cabin &&
-        it.Cabin.TypeName.includes("经济舱")
+        it.Cabin.Type == FlightCabinType.Y
         // it.Cabin.Type == FlightCabinType.Y &&
         // // 最低价
         // (it.Cabin.SalesPrice == `${lowestPrice}` ||
