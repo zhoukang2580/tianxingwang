@@ -602,7 +602,7 @@ export class FlightItemCabinsPage implements OnInit {
     cabins.forEach((it) => {
       if (
         it.Cabin &&
-        it.Cabin.TypeName.includes("经济舱")
+        it.Cabin.Type==FlightCabinType.Y
         // &&
         // // 最低价
         // (it.Cabin.SalesPrice == `${lowestPrice}` ||
