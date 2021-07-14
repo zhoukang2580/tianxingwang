@@ -45,9 +45,7 @@ export class TrainListItemDfComponent implements OnInit {
       evt.preventDefault();
       evt.stopPropagation();
     }
-    AppHelper.alert(
-      LanguageHelper.Train.getCanSwipeIdCardTip()
-    );
+    AppHelper.alert(LanguageHelper.Train.getCanSwipeIdCardTip());
   }
   getLowestSeatPrice() {
     if (!this.train || !this.train.Seats || !this.train.Seats.length) {
@@ -69,7 +67,33 @@ export class TrainListItemDfComponent implements OnInit {
     }
     train.isShowSeats = !train.isShowSeats;
   }
-  onBookTicket(seat: TrainSeatEntity,evt:CustomEvent) {
+  showSeatTip(seat: TrainSeatEntity) {
+    const arr = [
+      TrainSeatType.HardBerthUp,
+      TrainSeatType.HardBerth,
+      TrainSeatType.HardBerthDown,
+
+      TrainSeatType.SoftBerthUp,
+      TrainSeatType.SoftBerth,
+      TrainSeatType.HighGradeSoftBerth,
+
+      TrainSeatType.BusinessBerthUp,
+      TrainSeatType.BusinessBerthDown,
+
+      TrainSeatType.FirstClassBerth,
+      TrainSeatType.FirstClassBerthDown,
+
+      TrainSeatType.SecondClassBerth,
+      TrainSeatType.SecondClassBerthMiddle,
+      TrainSeatType.SecondClassBerthDown,
+    ];
+    return (
+      seat &&
+      ((seat.SeatTypeName && seat.SeatTypeName.includes("卧")) ||
+        arr.some((it) => it == seat.SeatType))
+    );
+  }
+  onBookTicket(seat: TrainSeatEntity, evt: CustomEvent) {
     evt.preventDefault();
     evt.stopPropagation();
     if (seat && +seat.Count <= 0) {
@@ -97,7 +121,7 @@ export class TrainListItemDfComponent implements OnInit {
     if (this.train) {
       this.train.BookSeatType = seat.SeatType;
     }
-    
+
     this.bookTicket.emit(seat);
   }
   onSeatPicker(seat: string) {
@@ -110,8 +134,7 @@ export class TrainListItemDfComponent implements OnInit {
 
     return this.train.Seats;
   }
-  ngOnInit() {
-  }
+  ngOnInit() {}
   onScheduls(evt: CustomEvent) {
     if (evt) {
       evt.stopPropagation();
