@@ -12,7 +12,6 @@
                     <ion-icon name='caret-down-outline' *ngIf='!searchFlightModel?.isLocked'></ion-icon>
                 </ion-text>
                 <div (@rotateIcon.done)='onRotateIconDone()' [@rotateIcon]='isRotateIcon' class='rotate-icon' [class.small-margin]='showAddPassenger'>
-                    <!-- <i class='icon icon-flight-plane' (click)='onSwapCity()'></i> -->
                     <img class="img-r" src="assets/images/1.png" (click)='onSwapCity()' alt="">
                 </div>
                 <ion-text (click)='onSelectCity(false)' class='to-city'>
