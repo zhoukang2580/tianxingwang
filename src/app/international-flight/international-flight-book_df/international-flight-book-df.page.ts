@@ -460,6 +460,9 @@ export class InternationalFlightBookDfPage
       this.vmCombindInfos.forEach((item) => {
         if (item.tmcOutNumberInfos) {
           item.tmcOutNumberInfos.forEach((info) => {
+            if (info.label.toLowerCase() == "staffnumber") {
+              info.value = info.staffNumber;
+            }
             if (info.label.toLowerCase() == "travelnumber") {
               info.loadTravelUrlErrorMsg =
                 result[info.staffNumber] && result[info.staffNumber].Message;

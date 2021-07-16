@@ -1647,6 +1647,9 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     if (result) {
       this.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {
+          if (info.label.toLowerCase() == "staffnumber") {
+            info.value = info.staffNumber;
+          }
           if (info.label.toLowerCase() == "travelnumber") {
             info.loadTravelUrlErrorMsg =
               result[info.staffNumber] && result[info.staffNumber].Message;

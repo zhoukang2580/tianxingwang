@@ -1582,6 +1582,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (result) {
       this.viewModel.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {
+          if (info.label.toLowerCase() == "staffnumber") {
+            info.value = info.staffNumber;
+          }
           if (info.label.toLowerCase() == "travelnumber") {
             info.loadTravelUrlErrorMsg =
               result[info.staffNumber] && result[info.staffNumber].Message;

@@ -1825,6 +1825,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.combindInfos.forEach((combindInfo) => {
         if (combindInfo.tmcOutNumberInfos) {
           combindInfo.tmcOutNumberInfos.forEach((info) => {
+            if (info.label.toLowerCase() == "staffnumber") {
+              info.value = info.staffNumber;
+            }
             if (info.label.toLowerCase() == "travelnumber") {
               info.travelUrlInfos =
                 result[info.staffNumber] && result[info.staffNumber].Data;
