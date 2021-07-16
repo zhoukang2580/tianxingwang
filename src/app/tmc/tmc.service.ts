@@ -1075,8 +1075,19 @@ export class TmcService {
       });
     return this.loadAgentDataPromise;
   }
+  checkShouldAndHasSelectTmc() {
+    if (this.identity && this.identity.Numbers && this.identity.Numbers.AgentId)
+      return (
+        this.identity &&
+        this.identity.Numbers &&
+        this.identity.Numbers.AgentId &&
+        this.identity.Numbers.TmcId &&
+        this.identity.Numbers.TmcId != "0"
+      );
+    return true;
+  }
   async getTmc(forceFetch = false): Promise<TmcEntity> {
-    if (this.tmc && !forceFetch) {
+    if ((this.tmc && !forceFetch) || !this.checkShouldAndHasSelectTmc()) {
       return Promise.resolve(this.tmc);
     }
     if (this.fetchingTmcPromise) {

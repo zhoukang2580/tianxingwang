@@ -231,16 +231,20 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       AppHelper.jump(this.router, b.Url, null);
     }
   }
+  private checkShouldAndHasSelectTmc() {
+    return this.tmcService.checkShouldAndHasSelectTmc()
+  }
   private async loadBanners() {
     if (!this.banners || !this.banners.length) {
       if (this.isLoadingBanners) {
         return;
       }
       this.isLoadingBanners = true;
-      if (!(await this.hasTicket())) {
+      if (!(await this.hasTicket()) || !this.checkShouldAndHasSelectTmc()) {
         this.isLoadingBanners = false;
         return;
       }
+
       this.tmcService
         .getBanners()
         .catch(() => [])
@@ -347,7 +351,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private async integral() {
     try {
       const d = await this.checkHasShop();
-      if (!d) {
+      if (!d || !this.checkShouldAndHasSelectTmc()) {
         return;
       }
       this.integralRegion = {
@@ -650,7 +654,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private async checkIfCanDailySigned() {
     const d = await this.checkHasShop();
-    if (!d) {
+    if (!d || !this.checkShouldAndHasSelectTmc()) {
       return;
     }
     this.tmcService
@@ -796,7 +800,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     this.isLoadingTripList = true;
-    if (!(await this.hasTicket())) {
+    if (!(await this.hasTicket()) || !this.checkShouldAndHasSelectTmc()) {
       this.isLoadingTripList = false;
       return;
     }
@@ -888,7 +892,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
         return;
       }
       this.isLoadingNotice = true;
-      if (!(await this.hasTicket())) {
+      if (!(await this.hasTicket()) || !this.checkShouldAndHasSelectTmc()) {
         this.isLoadingNotice = false;
         return;
       }
