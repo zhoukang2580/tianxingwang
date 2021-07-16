@@ -125,7 +125,7 @@ ion-header ion-title {
 }
 
 .info {
-  padding-top: var(--ion-safe-area-top);
+  top: var(--ion-safe-area-top);
   display: flex;
   align-items: center;
   position: absolute;
@@ -133,7 +133,7 @@ ion-header ion-title {
   justify-content: center;
   left: 0;
   right: 0;
-  top: 1.2em;
+  // top: 1.2em;
   color: white;
   .caret-down {
     font-size: 0.9rem;
@@ -152,6 +152,12 @@ ion-header ion-title {
     display: flex;
     align-items: center;
     justify-content: center;
+    .txt{
+      margin-right: 1em;
+    }
+    padding: 0.5em 1.7em;
+    color: white;
+    background-color: rgba(0125,125,125,0.3);
   }
 }
 

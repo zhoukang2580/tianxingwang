@@ -47,6 +47,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: "flight-list-roundtrip",
+    loadChildren: () =>
+      import("./flight-list-roundtrip/flight-list-roundtrip.module").then(
+        (m) => m.FlightListRoundTripPageModule
+      ),
+  },
+  {
     path: "flight-list_en",
     loadChildren: () =>
       import("./flight-list_en/flight-list_en.module").then(

@@ -43,12 +43,13 @@ export class FlightGpItemCabinsPage implements OnInit {
   private economyClassCabins: FlightPolicy[] = []; // 显示经济舱的最低价、协议价、全价
   private otherCabins: FlightPolicy[] = []; // 显示更多价格
   private pageUrl;
-  segmenttype
+  segmenttype;
   vmCabins: FlightPolicy[] = [];
   bookInfos: PassengerBookInfo<any>[];
   @ViewChild(BackButtonComponent, { static: true })
   backbtn: BackButtonComponent;
   hasMoreCabins = true;
+  hasFlightDynamic = false;
   vmFlightSegment: FlightSegmentEntity;
   FlightFareType = FlightFareType;
   staff: StaffEntity;
@@ -89,6 +90,12 @@ export class FlightGpItemCabinsPage implements OnInit {
         ) {
           this.isAgreement = true;
         }
+        this.tmcService
+          .getAgent()
+          .then((a) => {
+            this.hasFlightDynamic = a && a.HasFlightDynamic;
+          })
+          .catch();
         this.isSelf = await this.staffService.isSelfBookType();
         this.cabinTypes = this.getCabinTypes();
         const identity = await this.identityService
@@ -176,9 +183,10 @@ export class FlightGpItemCabinsPage implements OnInit {
       queryParams: {
         Date: vmFlightSegment.TakeoffTime.substring(0, 10),
         FlightNumber: vmFlightSegment.Number,
-        distinguish: vmFlightSegment.FromCityName + ',' + vmFlightSegment.ToCityName,
-      }
-    })
+        distinguish:
+          vmFlightSegment.FromCityName + "," + vmFlightSegment.ToCityName,
+      },
+    });
   }
 
   private setDefaultFilteredInfo() {
@@ -365,7 +373,7 @@ export class FlightGpItemCabinsPage implements OnInit {
     cabins.forEach((it) => {
       if (
         it.Cabin &&
-        it.Cabin.TypeName.includes("经济舱")
+        it.Cabin.Type == FlightCabinType.Y
         // it.Cabin.Type == FlightCabinType.Y &&
         // // 最低价
         // (it.Cabin.SalesPrice == `${lowestPrice}` ||
@@ -397,9 +405,9 @@ export class FlightGpItemCabinsPage implements OnInit {
     );
     if (this.economyClassCabins.length) {
       this.vmCabins = this.economyClassCabins;
-      this.segmenttype='normal'
+      this.segmenttype = "normal";
     } else {
-      this.segmenttype='others'
+      this.segmenttype = "others";
       this.hasMoreCabins = false;
       this.vmCabins = this.otherCabins;
     }

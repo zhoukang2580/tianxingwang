@@ -122,7 +122,7 @@ export class FlightListEnPage
   vmFlights: FlightSegmentEntity[]; // 用于视图展示
   vmFlightJourneyList: FlightJourneyEntity[];
   get flightResult() {
-    return this.flightService.flightResult;
+    return this.flightService.flightGoTripResult;
   }
   totalFilteredSegments: FlightSegmentEntity[];
   priceOrderL2H: boolean; // 价格从低到高

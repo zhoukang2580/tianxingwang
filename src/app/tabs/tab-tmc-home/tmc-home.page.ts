@@ -55,12 +55,10 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   private staffCredentials: MemberCredential[];
   private subscription = Subscription.EMPTY;
   @ViewChild(IonSlides) slidesEle: IonSlides;
-  @ViewChild("container", { static: true }) containerEl: ElementRef<
-    HTMLElement
-  >;
-  @ViewChild("announcementEl", { static: true }) announcementEl: ElementRef<
-    HTMLElement
-  >;
+  @ViewChild("container", { static: true })
+  containerEl: ElementRef<HTMLElement>;
+  @ViewChild("announcementEl", { static: true })
+  announcementEl: ElementRef<HTMLElement>;
   private exitAppSub: Subject<number> = new BehaviorSubject(null);
   private swiper: any;
   private announcementElSwiper: any;
@@ -135,9 +133,12 @@ export class TmcHomePage implements OnInit, OnDestroy, AfterViewInit {
   goBusiness() {
     this.router.navigate([AppHelper.getRoutePath("business-list")]);
   }
+  private checkShouldAndHasSelectTmc() {
+    return this.tmcService.checkShouldAndHasSelectTmc();
+  }
   private async loadBanners() {
     if (!this.banners || !this.banners.length) {
-      if (!(await this.hasTicket())) {
+      if (!(await this.hasTicket()) || !this.checkShouldAndHasSelectTmc()) {
         return;
       }
       if (this.isLoadingBanners) {

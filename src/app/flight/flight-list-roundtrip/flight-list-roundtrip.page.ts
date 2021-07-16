@@ -1,14 +1,14 @@
-import { SelectFlightPassengerComponent } from "./../components/select-flight-passenger/select-flight-passenger.component";
-import { IFlightSegmentInfo } from "./../models/PassengerFlightInfo";
+import { SelectFlightPassengerComponent } from "../components/select-flight-passenger/select-flight-passenger.component";
+import { IFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import {
   PassengerBookInfo,
   FlightHotelTrainType,
   TmcService,
-} from "./../../tmc/tmc.service";
+} from "../../tmc/tmc.service";
 import { environment } from "src/environments/environment";
 import { ApiService } from "src/app/services/api/api.service";
-import { FlyFilterComponent } from "./../components/fly-filter/fly-filter.component";
-import { SearchFlightModel } from "./../flight.service";
+import { FlyFilterComponent } from "../components/fly-filter/fly-filter.component";
+import { SearchFlightModel } from "../flight.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { HrService } from "../../hr/hr.service";
 import { AppHelper } from "src/app/appHelper";
@@ -20,7 +20,13 @@ import {
   ModalController,
   PopoverController,
 } from "@ionic/angular";
-import { Observable, Subscription, Subject, BehaviorSubject } from "rxjs";
+import {
+  Observable,
+  Subscription,
+  Subject,
+  BehaviorSubject,
+  fromEvent,
+} from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   Component,
@@ -51,9 +57,9 @@ import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightCityService } from "../flight-city.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 @Component({
-  selector: "app-flight-list",
-  templateUrl: "./flight-list.page.html",
-  styleUrls: ["./flight-list.page.scss"],
+  selector: "app-flight-list-roundtrip",
+  templateUrl: "./flight-list-roundtrip.page.html",
+  styleUrls: ["./flight-list-roundtrip.page.scss"],
   animations: [
     trigger("showFooterAnimate", [
       state("true", style({ height: "*" })),
@@ -87,7 +93,7 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
     ]),
   ],
 })
-export class FlightListPage
+export class FlightListRoundTripPage
   implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate
 {
   private subscriptions: Subscription[] = [];
@@ -106,17 +112,21 @@ export class FlightListPage
   showAddPassenger = false;
   isRotateIcon = false;
   isOpenFilter = false;
-  @ViewChild("cnt", { static: true }) public cnt: IonContent;
+  @ViewChild("cntGo", { static: true }) public cntGo: IonContent;
+  @ViewChild("cntBack", { static: true }) public cntBack: IonContent;
+  @ViewChild("container", { static: true })
+  public containerEle: ElementRef<HTMLElement>;
   @ViewChildren("fli") public liEles: QueryList<ElementRef<HTMLElement>>;
-  vmFlights: FlightSegmentEntity[]; // 用于视图展示
-  vmFlightJourneyList: FlightJourneyEntity[];
+  vmGoTripFlights: FlightSegmentEntity[]; // 用于视图展示
+  vmBackTripFlights: FlightSegmentEntity[]; // 用于视图展示
   get flightResult() {
     return this.flightService.flightGoTripResult;
   }
   totalFilteredSegments: FlightSegmentEntity[];
   priceOrderL2H: boolean; // 价格从低到高
   timeOrdM2N: boolean; // 时间从早到晚
-  isLoading = false;
+  isLoadingGoTrips = false;
+  isLoadingBackTrips = false;
   isSelfBookType = true;
   day: string;
   currentProcessStatus = "正在获取航班列表";
@@ -126,6 +136,7 @@ export class FlightListPage
     goArrivalDateTime: string;
     backTakeOffDateTime: string;
   };
+  isOpenGoTrip = true;
   @ViewChild(IonRefresher) refresher: IonRefresher;
   activeTab: "filter" | "time" | "price" | "none"; // 当前激活的tab
   hasDataSource: Subject<boolean>;
@@ -164,7 +175,7 @@ export class FlightListPage
         })
     );
     this.hasDataSource = new BehaviorSubject(false);
-    this.vmFlights = [];
+    this.vmGoTripFlights = [];
     this.searchFlightModel = new SearchFlightModel();
     this.subscriptions.push(
       flightService.getPassengerBookInfoSource().subscribe((infos) => {
@@ -214,8 +225,8 @@ export class FlightListPage
         this.checkIfSelectedPassengerChanged();
       if (
         (d && d.get("doRefresh") == "true") ||
-        !this.vmFlights ||
-        !this.vmFlights.length ||
+        !this.vmGoTripFlights ||
+        !this.vmGoTripFlights.length ||
         isFetch
       ) {
         this.lastFetchTime = Date.now();
@@ -346,7 +357,7 @@ export class FlightListPage
       (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
     );
     if (go) {
-      if (!this.vmFlights || !this.vmFlights.length) {
+      if (!this.vmGoTripFlights || !this.vmGoTripFlights.length) {
         let arrival = go.bookInfo.flightSegment.ArrivalTime || "";
         arrival = moment(arrival).add(1, "hours").format("YYYY-MM-DD HH:mm");
         if (
@@ -384,7 +395,7 @@ export class FlightListPage
     }
     if (
       byUser &&
-      (!day || this.searchFlightModel.Date == day.date || this.isLoading)
+      (!day || this.searchFlightModel.Date == day.date || this.isLoadingGoTrips)
     ) {
       return;
     }
@@ -435,10 +446,11 @@ export class FlightListPage
       `doRefresh:loadDataFromServer=${loadDataFromServer},keepSearchCondition=${keepSearchCondition}`
     );
     try {
+      this.doRefreshBackTrips(true, false);
       this.lowestPriceSegments = [];
       if (loadDataFromServer) {
         this.lastFetchTime = Date.now();
-        this.scrollToTop();
+        this.scrollToTop(true);
         setTimeout(() => {
           this.flyDayService.setSelectedDaysSource([
             this.flyDayService.generateDayModelByDate(
@@ -447,10 +459,10 @@ export class FlightListPage
           ]);
         }, 200);
       }
-      if (this.isLoading) {
+      if (this.isLoadingGoTrips) {
         return;
       }
-      this.isLoading = true;
+      this.isLoadingGoTrips = true;
       this.flyDayService.setSelectedDaysSource([
         this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date),
       ]);
@@ -470,15 +482,16 @@ export class FlightListPage
           this.activeTab = "none";
         }, 0);
       }
-      this.vmFlights = [];
-      this.isLoading = true;
+      this.vmGoTripFlights = [];
+      this.isLoadingGoTrips = true;
       this.currentProcessStatus = "正在获取航班列表";
       this.apiService.showLoadingView({ msg: this.currentProcessStatus });
       this.oldSearchCities.fromCityCode =
         this.searchFlightModel &&
         this.searchFlightModel.fromCity &&
         this.searchFlightModel.fromCity.Code;
-      this.oldSearchCities.toCityCode = this.searchFlightModel.toCity.Code;
+      this.oldSearchCities.toCityCode =
+        this.searchFlightModel.toCity && this.searchFlightModel.toCity.Code;
       const flightJourneyList =
         await this.flightService.getFlightJourneyDetailListAsync(
           loadDataFromServer
@@ -501,8 +514,9 @@ export class FlightListPage
       }
       this.st = Date.now();
       this.renderFlightList(segments);
-      this.hasDataSource.next(!!this.vmFlights.length && !this.isLoading);
-      this.isLoading = false;
+      this.hasDataSource.next(
+        !!this.vmGoTripFlights.length && !this.isLoadingGoTrips
+      );
       if (this.activeTab != "none" && this.activeTab != "filter") {
         this.sortFlights(this.activeTab);
       }
@@ -513,8 +527,98 @@ export class FlightListPage
       if (!environment.production) {
         console.error(e);
       }
-      this.isLoading = false;
     }
+    this.isLoadingGoTrips = false;
+    this.apiService.hideLoadingView();
+  }
+  async doRefreshBackTrips(
+    loadDataFromServer: boolean,
+    keepSearchCondition: boolean
+  ) {
+    console.log(
+      `doRefresh:loadDataFromServer=${loadDataFromServer},keepSearchCondition=${keepSearchCondition}`
+    );
+    try {
+      this.lowestPriceSegments = [];
+      if (loadDataFromServer) {
+        this.lastFetchTime = Date.now();
+        this.scrollToTop(false);
+        setTimeout(() => {
+          this.flyDayService.setSelectedDaysSource([
+            this.flyDayService.generateDayModelByDate(
+              this.searchFlightModel.Date
+            ),
+          ]);
+        }, 200);
+      }
+      if (this.isLoadingBackTrips) {
+        return;
+      }
+      this.isLoadingBackTrips = true;
+      this.flyDayService.setSelectedDaysSource([
+        this.flyDayService.generateDayModelByDate(this.searchFlightModel.Date),
+      ]);
+      const isSelf = await this.staffService.isSelfBookType();
+      // this.moveDayToSearchDate();
+      if (this.refresher) {
+        this.refresher.complete();
+        this.refresher.disabled = true;
+        setTimeout(() => {
+          this.refresher.disabled = false;
+        }, 100);
+      }
+      if (!keepSearchCondition) {
+        this.filterCondition = FilterConditionModel.init();
+        this.flightService.setFilterConditionSource(this.filterCondition);
+        setTimeout(() => {
+          this.activeTab = "none";
+        }, 0);
+      }
+      this.vmBackTripFlights = [];
+      this.isLoadingGoTrips = true;
+      this.currentProcessStatus = "正在获取航班列表";
+      this.apiService.showLoadingView({ msg: this.currentProcessStatus });
+      this.oldSearchCities.toCityCode =
+        this.searchFlightModel &&
+        this.searchFlightModel.toCity &&
+        this.searchFlightModel.toCity.Code;
+      this.oldSearchCities.toCityCode = this.searchFlightModel.toCity.Code;
+      const flightJourneyList =
+        await this.flightService.getFlightJourneyDetailListAsync(
+          loadDataFromServer
+        );
+      // if (loadDataFromServer) {
+      //   let segments = this.flightService.getTotalFlySegments();
+      //   if (isSelf) {
+      //     segments = this.filterSegmentsByGoArrivalTime(segments);
+      //   }
+      //   this.vmFlights = segments;
+      //   this.currentProcessStatus = "正在计算差标";
+      //   await this.flightService.loadPolicyedFlightsAsync(flightJourneyList);
+      // }
+      this.hasDataSource.next(false);
+      let segments = this.filterFlightSegments(
+        this.flightService.getTotalFlySegments()
+      );
+      segments = this.filterSegmentsByGoArrivalTime(segments);
+      this.st = Date.now();
+      this.renderBackTripFlightList(segments);
+      this.hasDataSource.next(
+        !!this.vmBackTripFlights.length && !this.isLoadingGoTrips
+      );
+      this.isLoadingGoTrips = false;
+      if (this.activeTab != "none" && this.activeTab != "filter") {
+        this.sortFlights(this.activeTab);
+      }
+      if (loadDataFromServer || !keepSearchCondition) {
+        this.initFilterConditionInfo();
+      }
+    } catch (e) {
+      if (!environment.production) {
+        console.error(e);
+      }
+    }
+    this.isLoadingBackTrips = false;
     this.apiService.hideLoadingView();
   }
   private filterSegmentsByGoArrivalTime(segments: FlightSegmentEntity[]) {
@@ -534,14 +638,16 @@ export class FlightListPage
     return result;
   }
 
-  private scrollToTop() {
+  private scrollToTop(isGo: boolean) {
+    if (!this.isStillOnCurrentPage()) {
+      return;
+    }
     setTimeout(() => {
-      if (this.cnt) {
-        if (!this.isStillOnCurrentPage()) {
-          return;
-        }
-        if (this.cnt && typeof this.cnt.scrollToTop == "function") {
-          this.cnt.scrollToTop(100);
+      if (isGo) {
+        this.cntGo.scrollToTop(100);
+      } else {
+        if (this.cntBack) {
+          this.cntBack.scrollToTop(100);
         }
       }
     }, 200);
@@ -678,7 +784,10 @@ export class FlightListPage
     }
     this.isCanLeave = true;
     // this.flightService.onSelectCity(isFrom);
-    const rs = await this.flightService.onSelectCity({isShowPage:true,isFrom:false});
+    const rs = await this.flightService.onSelectCity({
+      isShowPage: true,
+      isFrom: false,
+    });
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {
@@ -707,7 +816,96 @@ export class FlightListPage
       })
     );
   }
+  private initContainerActions() {
+    const leftel:HTMLElement=this.containerEle.nativeElement.querySelector(".left");
+    const rightel:HTMLElement=this.containerEle.nativeElement.querySelector(".right");
+    function getArcTanDeg(tanVal) {
+      return Math.atan(tanVal) / (Math.PI / 180);
+    }
+    let x = 0;
+    let y = 0;
+    this.subscriptions.push(
+      fromEvent(this.containerEle.nativeElement, "touchstart").subscribe(
+        (evt: TouchEvent) => {
+          if (evt.touches && evt.touches.length) {
+            x = evt.touches[0].pageX;
+            y = evt.touches[0].pageY;
+          }
+        }
+      )
+    );
+    this.subscriptions.push(
+      fromEvent(this.containerEle.nativeElement, "touchmove").subscribe(
+        (evt: TouchEvent) => {
+          if (evt.touches && evt.touches.length) {
+            const x1 = evt.touches[0].pageX;
+            const y1 = evt.touches[0].pageY;
+            const dY = Math.abs(y1 - y);
+            const dX = Math.abs(x1 - x);
+            const deg = getArcTanDeg(dY / dX);
+            const isHorizontal = deg <= 0.02;
+            const sign = x1 - x < 0 ? -1 : 1;
+            let p = dX / AppHelper.platform.width();
+            if (dX == 0) {
+              return;
+            }
+            if (!isHorizontal) {
+              if (dX > 5) {
+                p = 0.25;
+              }
+            }
+            console.log(`touchmove dx=${dX},p=${p}`);
+            if (p >= 0.65) {
+              p = 0.25;
+              this.containerEle.nativeElement.style.transform = `translate3d(${
+                sign * p * 100
+              }%,0,0)`;
+              return;
+            }
+            if(sign<0){
+              leftel.style.flexBasis=`${p}`;
+              rightel.style.flex=`1`;
+            }else{
+              rightel.style.flexBasis=`${p}`;
+              leftel.style.flex=`1`;
+            }
+            this.containerEle.nativeElement.style.transform = `translate3d(${
+              sign * p * 100
+            }%,0,0)`;
+          }
+        }
+      )
+    );
+    this.subscriptions.push(
+      fromEvent(this.containerEle.nativeElement, "touchend").subscribe(
+        (evt: TouchEvent) => {
+          if (evt.touches && evt.touches.length) {
+            const x1 = evt.touches[0].pageX;
+            const y1 = evt.touches[0].pageY;
+            const dY = Math.abs(y1 - y);
+            const dX = Math.abs(x1 - x);
+            const sign = x1 - x < 0 ? -1 : 1;
+            // console.log(`dX=${dX},dY=${dY},dY/dX=${dY / dX}`);
+            const deg = getArcTanDeg(dY / dX);
+            const isHorizontal = deg <= 0.02;
+            if (dX == 0 || !isHorizontal) {
+              return;
+            }
+            if (sign > 0) {
+              this.isOpenGoTrip = false;
+            }
+            if (this.isOpenGoTrip) {
+              this.containerEle.nativeElement.style.transform = `translate3d(${-0.75}%,0,0)`;
+            } else {
+              this.containerEle.nativeElement.style.transform = `translate3d(${-0.25}%,0,0)`;
+            }
+          }
+        }
+      )
+    );
+  }
   async ngOnInit() {
+    this.initContainerActions();
     this.subscriptions.push(this.pageTimeoutSubscription);
     this.subscriptions.push(
       this.flightService
@@ -730,11 +928,13 @@ export class FlightListPage
     this.subscriptions.push(filterConditionSubscription);
   }
   private isStillOnCurrentPage() {
-    return this.router.routerState.snapshot.url.includes("flight-list");
+    return this.router.routerState.snapshot.url.includes(
+      "flight-list-roundtrip"
+    );
   }
   ngOnDestroy() {
     console.log("ngOnDestroy");
-    this.vmFlights = [];
+    this.vmGoTripFlights = [];
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
@@ -860,20 +1060,20 @@ export class FlightListPage
   }
   async onTimeOrder() {
     // console.time("time");
-    this.isLoading = true;
+    this.isLoadingGoTrips = true;
     this.activeTab = "time";
     this.timeOrdM2N = !this.timeOrdM2N;
     this.sortFlights("time");
-    this.isLoading = false;
+    this.isLoadingGoTrips = false;
     // console.timeEnd("time");
   }
   async onPriceOrder() {
     // console.time("price");
-    this.isLoading = true;
+    this.isLoadingGoTrips = true;
     this.activeTab = "price";
     this.priceOrderL2H = !this.priceOrderL2H;
     this.sortFlights("price");
-    this.isLoading = false;
+    this.isLoadingGoTrips = false;
     // console.timeEnd("price");
   }
   private sortFlights(key: "price" | "time") {
@@ -887,7 +1087,7 @@ export class FlightListPage
         : "height2Low";
       this.filterCondition.timeFromM2N = "initial";
       const segments = this.flightService.sortByPrice(
-        this.vmFlights,
+        this.vmGoTripFlights,
         this.priceOrderL2H
       );
       this.renderFlightList(segments);
@@ -896,12 +1096,12 @@ export class FlightListPage
       this.filterCondition.timeFromM2N = this.timeOrdM2N ? "am2pm" : "pm2am";
       this.filterCondition.priceFromL2H = "initial";
       const segments = this.flightService.sortByTime(
-        this.vmFlights,
+        this.vmGoTripFlights,
         this.timeOrdM2N
       );
       this.renderFlightList(segments);
     }
-    this.scrollToTop();
+    this.scrollToTop(this.isOpenGoTrip);
   }
   private calcLowestPrice(fs: FlightSegmentEntity[]) {
     const data = fs;
@@ -935,7 +1135,11 @@ export class FlightListPage
     return this.lowestPriceSegments;
   }
   private renderFlightList(fs: FlightSegmentEntity[] = []) {
-    this.vmFlights = this.calcLowestPrice(fs);
+    this.vmGoTripFlights = this.calcLowestPrice(fs);
+    return;
+  }
+  private renderBackTripFlightList(fs: FlightSegmentEntity[] = []) {
+    this.vmBackTripFlights = this.calcLowestPrice(fs);
     return;
   }
   private filterFlightSegments(segs: FlightSegmentEntity[]) {
@@ -971,7 +1175,7 @@ export class FlightListPage
   }
   canDeactivate() {
     if (this.flightService.isShowingPage) {
-      this.flightService.onSelectCity({isShowPage:false,isFrom:false});
+      this.flightService.onSelectCity({ isShowPage: false, isFrom: false });
       return false;
     }
     const s = this.flightService.getSearchFlightModel();

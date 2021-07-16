@@ -76,38 +76,6 @@ img.access-by-IdCard {
 .seat-outline {
   font-size: 0.7rem;
 }
-// .seats {
-//   font-size: 0.9rem;
-//   ion-row :nth-last-child(1){
-//     border-bottom: 0;
-//   }
-
-//   ion-row {
-//     // border: 2px solid var(--ion-color-medium);
-//     border-bottom: 0.1px solid #c3c3c3;
-//     // border-radius: 4px;
-//     border-color: transparent;
-//     margin: 0.5em 0;
-//     &[color="primary"] {
-//       border-color: transparent;
-//     }
-//     &[color="danger"] {
-//       border-color: rgba(var(--ion-color-danger-rgb), 0.6);
-//       ion-button[color="danger"] {
-//         opacity: 0.6;
-//       }
-//     }
-//     &[color="secondary"] {
-//       border-color: var(--ion-color-secondary);
-//     }
-//     &[color="success"] {
-//       border-bottom: 0.1px solid #c3c3c3;
-//     }
-//     &[color="warning"] {
-//       border-color: var(--ion-color-warning);
-//     }
-//   }
-// }
 
 .seats {
   font-size: 0.9rem;
@@ -134,6 +102,10 @@ img.access-by-IdCard {
       border-color: var(--ion-color-warning);
     }
   }
+}
+.no-seat{
+  opacity: 0.5;
+  // background: #fefefe;
 }
 
 .stop-line-stop {
