@@ -1643,7 +1643,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
         }
       });
     });
-    const result = await this.tmcService.getTravelUrls(args);
+    const result = await this.tmcService.getTravelUrls(args,'Hotel');
     if (result) {
       this.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {

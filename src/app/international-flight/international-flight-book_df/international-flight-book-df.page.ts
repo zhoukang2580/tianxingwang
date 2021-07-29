@@ -455,7 +455,7 @@ export class InternationalFlightBookDfPage
         });
       }
     });
-    const result = await this.tmcService.getTravelUrls(args);
+    const result = await this.tmcService.getTravelUrls(args,'Flight');
     if (result) {
       this.vmCombindInfos.forEach((item) => {
         if (item.tmcOutNumberInfos) {

@@ -1548,7 +1548,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     });
-    const result = await this.tmcService.getTravelUrls(args);
+    const result = await this.tmcService.getTravelUrls(args,'Hotel');
     if (result) {
       this.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {

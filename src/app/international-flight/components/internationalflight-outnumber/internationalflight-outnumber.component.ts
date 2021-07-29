@@ -16,7 +16,7 @@ import {
 } from "@ionic/angular";
 import { Component, OnInit, Input, Output } from "@angular/core";
 import { Subscription, fromEvent } from "rxjs";
-import { TmcService, TravelUrlInfo } from "src/app/tmc/tmc.service";
+import { IGetTravelUrlTravelType, TmcService, TravelUrlInfo } from "src/app/tmc/tmc.service";
 import { SelectTravelNumberComponent } from "src/app/tmc/components/select-travel-number-popover/select-travel-number-popover.component";
 @Component({
   selector: "app-internationalflight-outnumber",
@@ -36,6 +36,7 @@ export class InternationalFlightOutNumberComponent
     travelUrlInfo: TravelUrlInfo;
   }>;
   @Input() isShowGroupedInfo: boolean;
+  @Input() travelType: IGetTravelUrlTravelType;
   @Input() isExchange: boolean;
   @Input() tmcOutNumberInfos: ITmcOutNumberInfo[];
   vmTmcOutNumberInfos: ITmcOutNumberInfo[];
@@ -139,6 +140,7 @@ export class InternationalFlightOutNumberComponent
             name: arg.label,
           },
         ],
+        this.travelType,
         false
       );
       if (result) {

@@ -580,7 +580,7 @@ export class FlightBookDfPage
         });
       }
     });
-    const result = await this.tmcService.getTravelUrls(args);
+    const result = await this.tmcService.getTravelUrls(args,'Flight');
     const travelnumber = this.tmcService.getTravelFormNumber();
     if (result) {
       this.vmCombindInfos.forEach((combindInfo) => {
