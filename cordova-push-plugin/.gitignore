@@ -1,0 +1,6 @@
+*.iml
+.idea
+.DS_Store
+npm-debug.log
+.tern-project
+node_modules/
