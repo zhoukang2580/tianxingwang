@@ -34,6 +34,7 @@
     <hook src="scripts/zipfile_before_build.js" type="before_build" />
     <hook src="scripts/after_build.js" type="after_build" />
     <platform name="android">
+        <resource-file src="google-services.json" target="/app/google-services.json" />
         <preference name="errorUrl" value="file:///android_asset/www/cordovaError.html" />
         <hook src="scripts/wechat-plugin-hook.js" type="before_build" />
         <allow-intent href="market:*" />

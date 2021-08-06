@@ -148,11 +148,13 @@
       "cordova-ali-plugin": {},
       "cordova-plugin-camera": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      }
+      },
+      "cordova-push-plugin": {}
     },
     "platforms": [
       "ios",
       "android"
-    ]
+    ],
+    "locator":"phonegap-push-plugin"
   }
 }

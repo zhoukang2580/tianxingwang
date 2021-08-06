@@ -1,4 +1,4 @@
-package com.adobe.phonegap.push;
+package com.beeant.push;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

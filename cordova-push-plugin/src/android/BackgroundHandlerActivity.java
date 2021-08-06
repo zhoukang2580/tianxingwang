@@ -1,4 +1,4 @@
-package com.adobe.phonegap.push;
+package com.beeant.push;
 
 import android.app.Activity;
 import android.app.NotificationManager;
