@@ -101,7 +101,6 @@
     "cordova-plugin-ionic-webview": "^5.0.0",
     "cordova-plugin-safariviewcontroller": "^1.6.0",
     "cordova-plugin-splashscreen": "^6.0.0",
-    "cordova-push-plugin": "file:cordova-push-plugin",
     "cordova-qrscanner-plugin": "file:cordova-qrscanner-plugin",
     "cordova-wechat-plugin": "file:cordova-wechat-plugin",
     "fs-readdir-recursive": "^1.1.0",
@@ -148,13 +147,12 @@
       "cordova-ali-plugin": {},
       "cordova-plugin-camera": {
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
-      },
-      "cordova-push-plugin": {}
+      }
     },
     "platforms": [
       "ios",
       "android"
     ],
-    "locator":"phonegap-push-plugin"
+    "locator": "phonegap-push-plugin"
   }
 }
