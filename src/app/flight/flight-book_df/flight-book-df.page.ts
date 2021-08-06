@@ -91,6 +91,7 @@ import { LangService } from "src/app/services/lang.service";
 import { Storage } from "@ionic/storage";
 import { FlightService } from "../flight.service";
 import { OrderService } from "src/app/order/order.service";
+import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
 
 @Component({
   selector: "app-flight-book-df",
@@ -580,7 +581,7 @@ export class FlightBookDfPage
         });
       }
     });
-    const result = await this.tmcService.getTravelUrls(args,'Flight');
+    const result = await this.tmcService.getTravelUrls(args, "Flight");
     const travelnumber = this.tmcService.getTravelFormNumber();
     if (result) {
       this.vmCombindInfos.forEach((combindInfo) => {
@@ -1553,9 +1554,16 @@ export class FlightBookDfPage
       return;
     }
     this.isShowInsuranceBack = true;
-    this.router.navigate([AppHelper.getRoutePath("open-url")], {
-      queryParams: { url: insurance.DetailUrl, title: insurance.Name },
-    });
+    AppHelper.modalController
+      .create({
+        component: OpenUrlComponent,
+        componentProps: {
+          isOpenAsModal: true,
+          url: insurance.DetailUrl,
+          title: insurance.Name,
+        },
+      })
+      .then((m) => m.present());
   }
   private getPassengerServiceFee(id: string) {
     const totalFees = this.getTotalServiceFees();

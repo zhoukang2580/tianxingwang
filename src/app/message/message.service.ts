@@ -32,6 +32,7 @@ export class MessageService {
   private messageSource: Subject<MessageModel>;
   private started = false;
   private intervalId: any;
+  curViewMsgItem:MessageModel
   constructor(
     private apiService: ApiService,
     identityService: IdentityService
