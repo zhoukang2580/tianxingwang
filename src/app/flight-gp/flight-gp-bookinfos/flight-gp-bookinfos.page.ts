@@ -326,7 +326,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         this.identity = r;
       });
 
-    if (!this.identity.IsShareTicket) {
+    if (!this.tmcService.isAgent) {
       this.isDent = true;
     }
   }
