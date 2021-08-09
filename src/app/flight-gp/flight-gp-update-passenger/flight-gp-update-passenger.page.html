@@ -35,11 +35,11 @@
                     <ion-col size='4'>证件号码</ion-col>
                     <ion-input [(ngModel)]="select.passengerEntity&&select.passengerEntity.Number" clear-input='true'></ion-input>
                 </ion-row>
-                <ion-row *ngIf="!IsShareTicket">
+                <ion-row *ngIf="!isAgent">
                     <ion-col size='4'>公务卡发卡行</ion-col>
                     <ion-text (click)="onSelectBank()">{{select.passengerEntity&&select.passengerEntity.Variables.BankName}}</ion-text>
                 </ion-row>
-                <ion-row *ngIf="IsShareTicket">
+                <ion-row *ngIf="isAgent">
                     <ion-col size='4'>
                         <div (click)="shareTicket.open()">
                             <span>{{isStatus}}</span>
