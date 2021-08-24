@@ -16,13 +16,12 @@
     <h6 class='ion-padding-start'>{{message?.InsertTime}}</h6>
     <div class='detail' #msgdetail [attr.msgdetail]='message?.Detail' [attr.msgid]='message?.Id'>
     </div>
-    <ion-button class='ion-margin-top' color='secondary' *ngIf='message?.Url' expand='block' (click)="onShowDetail(message?.Url)">显示详情
+    <ion-button class='ion-margin-top' color='secondary' *ngIf='isShowUrlBtn' expand='block' (click)="onShowDetail(message?.Url)">显示详情
     </ion-button>
   </ng-container>
   <ng-template #detailTempl>
     <div class='wrapper' *ngIf='(url$|async) as url'>
       <iframe [src]="url" #iframe></iframe>
-      <!-- <a [href]='url'></a> -->
     </div>
   </ng-template>
 </ion-content>

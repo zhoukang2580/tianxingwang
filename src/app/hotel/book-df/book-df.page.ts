@@ -1819,12 +1819,15 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     });
-    const result = await this.tmcService.getTravelUrls(args);
+    const result = await this.tmcService.getTravelUrls(args,'Hotel');
     const travelnumber = this.tmcService.getTravelFormNumber();
     if (result) {
       this.combindInfos.forEach((combindInfo) => {
         if (combindInfo.tmcOutNumberInfos) {
           combindInfo.tmcOutNumberInfos.forEach((info) => {
+            if (info.label.toLowerCase() == "staffnumber") {
+              info.value = info.staffNumber;
+            }
             if (info.label.toLowerCase() == "travelnumber") {
               info.travelUrlInfos =
                 result[info.staffNumber] && result[info.staffNumber].Data;

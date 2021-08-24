@@ -8,21 +8,22 @@ import {
   ViewChildren,
   QueryList,
   ElementRef,
-  AfterViewInit
+  AfterViewInit,
 } from "@angular/core";
 import {
   IonRefresher,
   IonInfiniteScroll,
   IonList,
-  NavController
+  NavController,
 } from "@ionic/angular";
 import {
   trigger,
   state,
   style,
   transition,
-  animate
+  animate,
 } from "@angular/animations";
+import { RefresherComponent } from "src/app/components/refresher";
 
 @Component({
   selector: "app-message-list",
@@ -32,9 +33,9 @@ import {
     trigger("openclose", [
       state("true", style({ height: "*" })),
       state("false", style({ height: "0" })),
-      transition("true<=>false", animate("300ms"))
-    ])
-  ]
+      transition("true<=>false", animate("300ms")),
+    ]),
+  ],
 })
 export class MessageListPage implements OnInit, AfterViewInit {
   messages: MessageModel[];
@@ -44,7 +45,7 @@ export class MessageListPage implements OnInit, AfterViewInit {
   open = false;
   isSelectAll = false;
   @ViewChild(IonList) ionList: IonList;
-  @ViewChild(IonRefresher) refresher: IonRefresher;
+  @ViewChild(RefresherComponent) refresher: RefresherComponent;
   @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
   @ViewChildren("msgDetial") msgDetialEles: QueryList<ElementRef<HTMLElement>>;
   constructor(
@@ -88,13 +89,13 @@ export class MessageListPage implements OnInit, AfterViewInit {
   }
   onSelectAll() {
     console.log("onSelectAll");
-    this.messages.forEach(item => {
+    this.messages.forEach((item) => {
       item.IsSelected = true;
     });
     this.isSelectAll = true;
   }
   onUnSelectAll() {
-    this.messages.forEach(item => {
+    this.messages.forEach((item) => {
       item.IsSelected = false;
     });
     this.isSelectAll = false;
@@ -120,15 +121,14 @@ export class MessageListPage implements OnInit, AfterViewInit {
       item.IsSelected = !item.IsSelected;
       return;
     }
-    let isUrl=item.Url;
-   const path= AppHelper.getValueFromQueryString("app_path",isUrl)
-   if(isUrl&&isUrl.toLocaleLowerCase().includes("app_path")){
-     this.router.navigate([path]);
-   }else{
-    this.router.navigate([AppHelper.getRoutePath("message-detail")], {
-      queryParams: { message: JSON.stringify(item) }
-    });
-   }
+    this.messageService.curViewMsgItem = item;
+    let isUrl = item.Url;
+    const path = AppHelper.getValueFromQueryString("app_path", isUrl);
+    if (isUrl && isUrl.toLocaleLowerCase().includes("app_path")) {
+      this.router.navigate([path]);
+    } else {
+      this.router.navigate([AppHelper.getRoutePath("message-detail")]);
+    }
   }
   async doRefresh() {
     if (this.scroller) {
@@ -147,13 +147,13 @@ export class MessageListPage implements OnInit, AfterViewInit {
     console.log("onRemove");
     const result = await this.messageService.Remove([item.Id]);
     if (result) {
-      this.messages = this.messages.filter(it => it.Id !== item.Id);
+      this.messages = this.messages.filter((it) => it.Id !== item.Id);
     }
     this.ionList.closeSlidingItems();
   }
   async onRemoveAll() {
     const result = await this.messageService.Remove(
-      this.messages.map(it => it.Id)
+      this.messages.map((it) => it.Id)
     );
     if (result) {
       this.ionList.closeSlidingItems();
@@ -169,11 +169,11 @@ export class MessageListPage implements OnInit, AfterViewInit {
     msg.IsSelected = false;
   }
   async onReadAll() {
-    const items = this.messages.filter(it => it.IsSelected && !it.IsRead);
+    const items = this.messages.filter((it) => it.IsSelected && !it.IsRead);
     if (items.length === 0) {
       return;
     }
-    const result = await this.messageService.Read(items.map(it => it.Id));
+    const result = await this.messageService.Read(items.map((it) => it.Id));
     if (result) {
       this.doRefresh();
       this.ionList.closeSlidingItems();
@@ -195,16 +195,15 @@ export class MessageListPage implements OnInit, AfterViewInit {
   }
   private renderDetail() {
     if (this.msgDetialEles) {
-      this.msgDetialEles.changes.subscribe(_ => {
-        this.msgDetialEles.forEach(e => {
+      this.msgDetialEles.changes.subscribe((_) => {
+        this.msgDetialEles.forEach((e) => {
           if (e.nativeElement) {
-            e.nativeElement.innerHTML = e.nativeElement.getAttribute(
-              "msgdetail"
-            );
+            e.nativeElement.innerHTML =
+              e.nativeElement.getAttribute("msgdetail");
             const anchors = e.nativeElement.querySelectorAll("a");
             if (anchors) {
               if (anchors.length) {
-                anchors.forEach(a => {
+                anchors.forEach((a) => {
                   if (a.href) {
                     a.style.textDecoration = "none";
                     a.style.color = "var(--ion-color-dark)";

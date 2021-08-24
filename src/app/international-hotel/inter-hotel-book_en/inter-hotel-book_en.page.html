@@ -227,7 +227,7 @@
                     </ion-item>
                 </ion-list>
                 <ion-list [attr.outnumberid]='combindInfo.id'>
-                    <app-book-tmc-outnumber [attr.tmcOutNumber]='combindInfo.id' [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
+                    <app-book-tmc-outnumber [travelType]="'Hotel'" [attr.tmcOutNumber]='combindInfo.id' [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'></app-book-tmc-outnumber>
                 </ion-list>
                 <ion-list>
                     <ion-list-header>

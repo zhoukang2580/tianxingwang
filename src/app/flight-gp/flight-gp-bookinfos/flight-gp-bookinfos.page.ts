@@ -211,9 +211,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   }
 
   onAddLinkman() {
-    this.router.navigate([AppHelper.getRoutePath("flight-gp-add-passenger")], {
-      queryParams: { isShareType: this.initialBookDtoGpModel.Identity.IsShareTicket }
-    });
+    this.router.navigate([AppHelper.getRoutePath("flight-gp-add-passenger")]);
   }
 
   onUpdate(evt: CustomEvent, item) {
@@ -225,7 +223,6 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     this.router.navigate([AppHelper.getRoutePath("flight-gp-update-passenger")], {
       queryParams: {
         id: Id,
-        isShareType: this.initialBookDtoGpModel.Identity.IsShareTicket
       }
     });
   }
@@ -326,7 +323,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         this.identity = r;
       });
 
-    if (!this.identity.IsShareTicket) {
+    if (!this.tmcService.isAgent) {
       this.isDent = true;
     }
   }

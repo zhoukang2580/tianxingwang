@@ -86,7 +86,8 @@ import { SearchModel } from "src/app/travel-application/travel.service";
   styleUrls: ["./flight-ticket-reserve.page.scss"],
 })
 export class FlightTicketReservePage
-  implements OnInit, OnDestroy, AfterViewInit {
+  implements OnInit, OnDestroy, AfterViewInit
+{
   private subscriptions: Subscription[] = [];
   private subscription = Subscription.EMPTY;
   private checkPayCount = 5;
@@ -181,7 +182,7 @@ export class FlightTicketReservePage
     ]).pipe(
       map(([tmc, isSelfType, identity]) => {
         return (
-          tmc.FlightApprovalType != 0 &&
+          tmc.FlightApprovalType &&
           tmc.FlightApprovalType != TmcApprovalType.None &&
           !isSelfType &&
           !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -253,14 +254,14 @@ export class FlightTicketReservePage
               };
               return r;
             });
-          const segs = this.flightService.flightListResult.FlightSegments.filter(
-            (s) =>
+          const segs =
+            this.flightService.flightListResult.FlightSegments.filter((s) =>
               p.FlightRoutes.some(
                 (r) =>
                   r.FlightSegmentIds &&
                   r.FlightSegmentIds.some((rsegid) => rsegid == s.Id)
               )
-          );
+            );
           p.FlightSegments = segs;
         }
         const account = new AccountEntity();
@@ -325,11 +326,10 @@ export class FlightTicketReservePage
               it.bookInfo.flightRoute &&
               it.bookInfo.flightRoute.FlightSegments
             ) {
-              it.bookInfo.flightRoute.FlightSegments = it.bookInfo.flightRoute.FlightSegments.map(
-                (seg) => {
+              it.bookInfo.flightRoute.FlightSegments =
+                it.bookInfo.flightRoute.FlightSegments.map((seg) => {
                   return seg;
-                }
-              );
+                });
             }
             it.bookInfo = {
               ...it.bookInfo,
@@ -441,7 +441,7 @@ export class FlightTicketReservePage
         });
       }
     });
-    const result = await this.tmcService.getTravelUrls(args);
+    const result = await this.tmcService.getTravelUrls(args, "Flight");
     if (result) {
       this.vmCombindInfos.forEach((item) => {
         if (item.tmcOutNumberInfos) {
@@ -1724,7 +1724,7 @@ export class FlightTicketReservePage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }
@@ -1754,7 +1754,7 @@ export class FlightTicketReservePage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      Tmc.FlightApprovalType == 0
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }

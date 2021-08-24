@@ -21,8 +21,8 @@
                     <!-- <ion-input [(ngModel)]="passengerInfo.cardType"></ion-input> -->
                     <ion-col class="value" (click)="statusSelect.open()">{{(pass?.CredentialsType|credential)||"请选泽"}}</ion-col>
                     <ion-item style="display: none">
-                        <ion-select cancelText="取消" okText="确定" backdrop-dismiss="true" #statusSelect translucent="true" [interfaceOptions]="customPopoverOptions" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="pass.CredentialsType" name="status"
-                            (ionChange)="onSearch($event)">
+                        <ion-select cancelText="取消" okText="确定" backdrop-dismiss="true" #statusSelect translucent="true" [interfaceOptions]="customPopoverOptions" interface="popover"
+                            [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="pass.CredentialsType" name="status" (ionChange)="onSearch($event)">
                             <ion-select-option value="{{credentialsType.IdCard}}">身份证</ion-select-option>
                             <ion-select-option value="{{credentialsType.Passport}}">护照</ion-select-option>
                         </ion-select>
@@ -35,7 +35,7 @@
                     <ion-col size='4.3'>证件号码</ion-col>
                     <ion-input [(ngModel)]="pass.Number" clear-input='true'></ion-input>
                 </ion-row>
-                <ion-row *ngIf="!IsShareTicket">
+                <ion-row *ngIf="!isAgent">
                     <ion-col size='4.3'>
                         <span>公务卡发卡行</span>
                     </ion-col>
@@ -43,14 +43,15 @@
                     <ion-text (click)="onSelectBank()">{{CardName}}</ion-text>
                     <!-- <ion-text (click)="onSelectBank()">{{pass?.bankCard?.BankName}}</ion-text> -->
                 </ion-row>
-                <ion-row *ngIf="IsShareTicket">
+                <ion-row *ngIf="isAgent">
                     <ion-col size='4.3'>
                         <div (click)="shareTicket.open()">
                             <span>{{isStatus}}</span>
                             <ion-icon name="caret-down-outline"></ion-icon>
                         </div>
                         <ion-item style="display: none">
-                            <ion-select cancelText="取消" okText="确定" backdrop-dismiss="true" #shareTicket translucent="true" [interfaceOptions]="customPopovertype" interface="popover" [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="isStatus" name="status" (ionChange)="onSearch($event)">
+                            <ion-select cancelText="取消" okText="确定" backdrop-dismiss="true" #shareTicket translucent="true" [interfaceOptions]="customPopovertype" interface="popover"
+                                [compareWith]="compareWithFn" placeholder="请选择" [(ngModel)]="isStatus" name="status" (ionChange)="onSearch($event)">
                                 <ion-select-option value="{{bankType.official}}">公务卡</ion-select-option>
                                 <ion-select-option value="{{bankType.unit}}">单位</ion-select-option>
                             </ion-select>

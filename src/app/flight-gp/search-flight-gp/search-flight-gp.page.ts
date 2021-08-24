@@ -30,7 +30,9 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
   templateUrl: "./search-flight-gp.page.html",
   styleUrls: ["./search-flight-gp.page.scss"],
 })
-export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
+export class SearchFlightGpPage
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate
+{
   isSelf = false;
   isSingle = true;
   goDate: DayModel;
@@ -47,6 +49,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   isShowBookInfos$ = of(0);
   isCanleave = true;
   isleave = true;
+  isAgent = false;
   seg = "single";
   domestic = "domestic";
   selectedInterPassengers: any[];
@@ -75,6 +78,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   ) {
     this.isIos = plt.is("ios");
     const sub = route.queryParamMap.subscribe(async (q) => {
+      this.isAgent = this.tmcService.isAgent;
       this.isEn = this.langService.isEn;
       this.isSelf = await this.staffService.isSelfBookType();
       this.isleave = false;
@@ -90,7 +94,6 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   onCabinChange() {
     // this.loadLoadingLevelPolicies();
   }
-
 
   async onToggleDomestic(segv: "domestic") {
     const ok = await this.tmcService.hasBookRight("flight");
@@ -118,8 +121,8 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
       this.backDate =
         this.goDate.timeStamp > this.backDate.timeStamp
           ? this.calendarService.generateDayModel(
-            this.calendarService.getMoment(1, this.goDate.date)
-          )
+              this.calendarService.getMoment(1, this.goDate.date)
+            )
           : this.backDate;
     }
   }
@@ -171,7 +174,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     return true;
   }
 
-  async getIdentity(){
+  async getIdentity() {
     this.identitySubscription = this.identityService
       .getIdentitySource()
       .subscribe((r) => {
@@ -213,7 +216,6 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     return this.staffService.isSelfBookType();
   }
   async ngOnInit() {
-
     this.searchConditionSubscription = this.flightGpService
       .getSearchFlightModelSource()
       .subscribe(async (s) => {
@@ -342,7 +344,7 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
     const staff = await this.staffService.getStaff().catch((_) => null);
     if (staff && staff.BookType == StaffBookType.Self) {
       const exists = this.flightGpService.getPassengerBookInfos();
-      console.log(exists, "exists==============")
+      console.log(exists, "exists==============");
       const go = exists.find(
         (it) => it.bookInfo && it.bookInfo.tripType == TripType.departureTrip
       );
@@ -356,8 +358,8 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
         const arrivalDate = this.calendarService.getMoment(
           0,
           go.bookInfo &&
-          go.bookInfo.flightSegment &&
-          go.bookInfo.flightSegment.ArrivalTime
+            go.bookInfo.flightSegment &&
+            go.bookInfo.flightSegment.ArrivalTime
         );
         if (
           +this.calendarService.getMoment(0, this.backDate.date) <
@@ -412,14 +414,12 @@ export class SearchFlightGpPage implements OnInit, OnDestroy, AfterViewInit, Can
   }
   async onSelectCity(isFromCity = true) {
     this.isCanleave = true;
-    const rs = await this.flightGpService.onSelectCity(
-      {
-        isDomestic: true,
-        isFrom: isFromCity,
-        isShowPage: true,
-        isShowSegs: true
-      }
-    );
+    const rs = await this.flightGpService.onSelectCity({
+      isDomestic: true,
+      isFrom: isFromCity,
+      isShowPage: true,
+      isShowSegs: true,
+    });
     if (rs) {
       const s = this.searchFlightModel;
       if (rs.isDomestic) {

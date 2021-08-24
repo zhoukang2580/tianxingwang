@@ -179,6 +179,7 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
         componentProps: {
           url,
           isOpenAsModal: true,
+          isAppendTicket: true,
           isIframeOpen: true,
           isHideTitle: false,
           title: task && task.Title,

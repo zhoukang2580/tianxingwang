@@ -136,6 +136,7 @@ export class InterHotelOutNumberComponent
             name: arg.label,
           },
         ],
+        'Hotel',
         false
       );
       if (result) {

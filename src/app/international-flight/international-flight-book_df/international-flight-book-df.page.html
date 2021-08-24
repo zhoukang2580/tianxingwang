@@ -422,7 +422,7 @@
               </div>
             </ng-container>
             <div class="outnumbers" [attr.outnumberid]='combindInfo.id' *ngIf='combindInfo.isShowGroupedInfo'>
-              <app-internationalflight-outnumber [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+              <app-internationalflight-outnumber [travelType]='"Flight"' [isShowGroupedInfo]="true" [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos' (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
               </app-internationalflight-outnumber>
             </div>
             <ion-item lines='none' style='display: none;'>

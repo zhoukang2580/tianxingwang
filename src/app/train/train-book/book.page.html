@@ -231,7 +231,7 @@
           <ion-item-group>
             <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
               [isExchange]='searchTrainModel?.isExchange' [isShowGroupedInfo]='true'
-              (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+              (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)' [travelType]='"Train"'>
             </app-book-tmc-outnumber>
           </ion-item-group>
         </ng-container>

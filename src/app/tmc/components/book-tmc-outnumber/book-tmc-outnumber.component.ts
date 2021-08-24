@@ -8,7 +8,7 @@ import {
   AfterViewInit,
   ViewChild,
 } from "@angular/core";
-import { TmcService } from "./../../tmc.service";
+import { IGetTravelUrlTravelType, TmcService } from "./../../tmc.service";
 import {
   PopoverController,
   IonInput,
@@ -26,7 +26,8 @@ import { Subscription, fromEvent } from "rxjs";
   animations: [flyInOut],
 })
 export class BookTmcOutnumberComponent
-  implements OnInit, OnDestroy, AfterViewInit {
+  implements OnInit, OnDestroy, AfterViewInit
+{
   private timer: any;
   private subscriptions: Subscription[] = [];
 
@@ -37,6 +38,7 @@ export class BookTmcOutnumberComponent
     travelUrlInfo: TravelUrlInfo;
   }>;
   @Input() isShowGroupedInfo: boolean;
+  @Input() travelType:IGetTravelUrlTravelType;
   @Input() isExchange: boolean;
   @Input() tmcOutNumberInfos: ITmcOutNumberInfo[];
   vmTmcOutNumberInfos: ITmcOutNumberInfo[];
@@ -112,11 +114,9 @@ export class BookTmcOutnumberComponent
   }
   onSelectChange(evt: CustomEvent, ele: IonSelect) {
     if (evt && evt.detail && !evt.detail.value && ele) {
-      try{
-        ele["el"].shadowRoot.querySelector (".select-text").textContent = "";
-      }catch(e){
-
-      }
+      try {
+        ele["el"].shadowRoot.querySelector(".select-text").textContent = "";
+      } catch (e) {}
     }
   }
   async onSelectTravelNumber(arg: ITmcOutNumberInfo) {
@@ -136,6 +136,7 @@ export class BookTmcOutnumberComponent
             name: arg.label,
           },
         ],
+        this.travelType,
         false
       );
       if (result) {

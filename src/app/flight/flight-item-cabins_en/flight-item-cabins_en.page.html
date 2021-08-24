@@ -80,10 +80,10 @@
   <ion-list>
     <ion-segment mode='ios' (ionChange)="onSegmentChanged($event)" [value]="segmenttype" color="secondary">
       <ion-segment-button value="normal">
-        <ion-label>经济舱</ion-label>
+        <ion-label>经济/超经</ion-label>
       </ion-segment-button>
       <ion-segment-button value="others">
-        <ion-label>头等舱/商务舱</ion-label>
+        <ion-label>商务/头等</ion-label>
       </ion-segment-button>
     </ion-segment>
     <app-or-comp *ngIf='vmCabins?.length==0'>暂无数据</app-or-comp>

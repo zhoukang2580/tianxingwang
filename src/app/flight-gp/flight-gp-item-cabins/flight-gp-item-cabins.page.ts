@@ -373,7 +373,7 @@ export class FlightGpItemCabinsPage implements OnInit {
     cabins.forEach((it) => {
       if (
         it.Cabin &&
-        it.Cabin.Type == FlightCabinType.Y
+        it.Cabin.TypeName.includes("经济")
         // it.Cabin.Type == FlightCabinType.Y &&
         // // 最低价
         // (it.Cabin.SalesPrice == `${lowestPrice}` ||

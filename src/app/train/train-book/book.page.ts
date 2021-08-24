@@ -1487,7 +1487,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         info.isLoadingNumber = true;
       });
     });
-    const result = await this.tmcService.getTravelUrls(args);
+    const result = await this.tmcService.getTravelUrls(args,'Train');
     if (result) {
       this.viewModel.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {

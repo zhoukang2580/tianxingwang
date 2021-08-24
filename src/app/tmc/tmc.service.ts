@@ -778,6 +778,7 @@ export class TmcService {
       staffOutNumber: string;
       name: string;
     }[],
+    travelType: IGetTravelUrlTravelType,
     isShowLoading: boolean = false
   ): Promise<{
     [staffNumber: string]: ITravelUrlResult;
@@ -788,15 +789,17 @@ export class TmcService {
     const all: Promise<{ key: string; value: ITravelUrlResult }>[] = [];
     if (data && data.length) {
       for (const arg of data) {
-        const res = this.getTravelUrl(arg, isShowLoading).catch((_) => {
-          return {
-            key: arg.staffNumber,
-            value: {
-              Data: null,
-              Message: _.Message || _.message || _,
-            } as ITravelUrlResult,
-          };
-        });
+        const res = this.getTravelUrl(arg, travelType, isShowLoading).catch(
+          (_) => {
+            return {
+              key: arg.staffNumber,
+              value: {
+                Data: null,
+                Message: _.Message || _.message || _,
+              } as ITravelUrlResult,
+            };
+          }
+        );
         all.push(res);
       }
     }
@@ -814,6 +817,7 @@ export class TmcService {
       staffOutNumber: string;
       name: string;
     },
+    travelType: string,
     isShowLoading = false
   ): Promise<{
     key: string;
@@ -822,7 +826,7 @@ export class TmcService {
     const req = new RequestEntity();
     req.IsShowLoading = isShowLoading;
     req.Method = "TmcApiBookUrl-Home-GetTravelUrl";
-    req.Data = data;
+    req.Data = { ...data, travelType };
     return this.apiService.getPromiseData<{
       key: string;
       value: ITravelUrlResult;
@@ -1802,3 +1806,4 @@ export class InitialBookDtoModel {
     Approvers: StaffApprover[];
   }[];
 }
+export type IGetTravelUrlTravelType = "Flight" | "Hotel" | "Train";

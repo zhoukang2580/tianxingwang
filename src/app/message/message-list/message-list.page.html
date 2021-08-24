@@ -13,10 +13,10 @@
 
 
 <ion-content>
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh()">
+  <app-refresher slot="fixed" (ionRefresh)="doRefresh()">
     <ion-refresher-content refreshingText="正在加载...">
     </ion-refresher-content>
-  </ion-refresher>
+  </app-refresher>
   <ion-list *ngIf='!loading else loadingTemp'>
     <ng-container *ngIf='messages.length else nodata'>
       <ion-item-sliding *ngFor='let item of messages'>

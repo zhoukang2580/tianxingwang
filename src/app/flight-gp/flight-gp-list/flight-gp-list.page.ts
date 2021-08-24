@@ -97,6 +97,7 @@ export class FlightGpListPage
   showAddPassenger = false;
   isRotateIcon = false;
   isOpenFilter = false;
+  isAgent = false;
   identity: IdentityEntity;
   @ViewChild("cnt", { static: true }) public cnt: IonContent;
   @ViewChildren("fli") public liEles: QueryList<ElementRef<HTMLElement>>;
@@ -195,6 +196,7 @@ export class FlightGpListPage
       })
     );
     this.route.queryParamMap.subscribe(async (d) => {
+      this.isAgent=this.tmcService.isAgent;
       this.pageUrl = this.router.url;
       if (d.get("isClearBookInfos") == "true") {
         this.flightGpService.clearSelectedBookInfos([]);

@@ -1,4 +1,9 @@
-import { LoadingController, NavController, Platform, IonContent } from "@ionic/angular";
+import {
+  LoadingController,
+  NavController,
+  Platform,
+  IonContent,
+} from "@ionic/angular";
 import { Subject, BehaviorSubject, Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
@@ -30,8 +35,8 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
 import { ImgControlComponent } from "src/app/components/img-control/img-control.component";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
-import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
-import { DownloadFileComponent } from '../download-file/download-file.component';
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { DownloadFileComponent } from "../download-file/download-file.component";
 
 @Component({
   selector: "app-open-url",
@@ -40,7 +45,8 @@ import { DownloadFileComponent } from '../download-file/download-file.component'
   providers: [InAppBrowser],
 })
 export class OpenUrlComponent
-  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
+  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate
+{
   title: string;
   // url$: Subject<any>;
   url: any;
@@ -52,6 +58,7 @@ export class OpenUrlComponent
   isOpenAsModal = false;
   isIos = false;
   private isOpenInAppBrowser = false;
+  private isAppendTicket = false;
   private isback = false;
   private goPath = "";
   private goPathQueryParams: any;
@@ -90,7 +97,6 @@ export class OpenUrlComponent
     this.backSource = new BehaviorSubject(false);
     this.isIos = this.plt.is("ios");
     this.subscription = activatedRoute.queryParamMap.subscribe((p) => {
-
       this.keyboard.hideFormAccessoryBar(false);
       OpenUrlComponent.isDestroyed = false;
       if (p.get("vertical")) {
@@ -161,6 +167,9 @@ export class OpenUrlComponent
           url += `?lang=${AppHelper.getLanguage()}`;
         }
       }
+      if (this.isAppendTicket) {
+        url=this.appenTicket(url)
+      }
     }
     return url;
   }
@@ -168,10 +177,10 @@ export class OpenUrlComponent
     this.isOpenActionSheet = !this.isOpenActionSheet;
   }
   private openInIframe(url: string) {
-    if(url){
+    if (url) {
       this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
         this.getUrl(url)
-      )
+      );
     }
   }
   onMockBack() {
@@ -233,7 +242,7 @@ export class OpenUrlComponent
   private reloadPage() {
     console.log("reloadpage", this.appenVersion(this.orgOpenUrl));
     setTimeout(() => {
-      window['__OpenPageUrlObj'].isDorefreshList = false;
+      window["__OpenPageUrlObj"].isDorefreshList = false;
       this.openInIframe(this.appenVersion(this.orgOpenUrl));
     }, 200);
   }
@@ -244,6 +253,20 @@ export class OpenUrlComponent
           url = `${url}&v_v=${Date.now()}`;
         } else {
           url = `${url}?v_v=${Date.now()}`;
+        }
+      }
+    }
+    return url;
+  }
+  private appenTicket(url: string) {
+    if (url) {
+      const tn: string = (AppHelper.getTicketName() || "").toLowerCase();
+      const tk = AppHelper.getTicket();
+      if (!url.includes(tn)) {
+        if (url.includes("?")) {
+          url = `${url}&${tn}=${tk}`;
+        } else {
+          url = `${url}?${tn}=${tk}`;
         }
       }
     }
@@ -366,11 +389,17 @@ export class OpenUrlComponent
               m.present();
               await m.onDidDismiss();
               try {
-                const iframe = this.cnt['el'].querySelector("iframe");
-                console.log("reloadpage window['__OpenPageUrlObj']", iframe.contentWindow);
-                console.log("this.iframe.nativeElement.contentWindow", iframe.contentWindow);
+                const iframe = this.cnt["el"].querySelector("iframe");
+                console.log(
+                  "reloadpage window['__OpenPageUrlObj']",
+                  iframe.contentWindow
+                );
+                console.log(
+                  "this.iframe.nativeElement.contentWindow",
+                  iframe.contentWindow
+                );
                 this.iframe.nativeElement = iframe;
-                this.postMessage({ type: "doRefreshListFromApp", origin: "*" })
+                this.postMessage({ type: "doRefreshListFromApp", origin: "*" });
               } catch (e) {
                 console.error(e);
               }
@@ -387,7 +416,7 @@ export class OpenUrlComponent
         // }
         this.downloadFile(evt.data.url, evt.data.name || evt.data.fileName);
       } else if ((evt.data.type || "").toLowerCase() == "dorefreshlist") {
-        window['__OpenPageUrlObj'] = { isDorefreshList: true };
+        window["__OpenPageUrlObj"] = { isDorefreshList: true };
       }
     }
   }
@@ -425,9 +454,7 @@ export class OpenUrlComponent
       },
     });
   }
-  ngAfterViewInit() {
-
-  }
+  ngAfterViewInit() {}
   private showLoading() {
     setTimeout(async () => {
       if (this.iframe) {
@@ -484,21 +511,21 @@ export class OpenUrlComponent
   }
   ngOnInit() {
     if (this.url && !`${this.url}`.includes("safe")) {
-      this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(this.getUrl(this.url))
+      this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
+        this.getUrl(this.url)
+      );
     }
   }
-  private postMessage(d: {
-    type: string;
-    data?: any;
-    origin?: any
-  }) {
+  private postMessage(d: { type: string; data?: any; origin?: any }) {
     // console.log("window['openurliframe'].contentWindow",window['openurliframe'])
     if (this.iframe.nativeElement && this.iframe.nativeElement.contentWindow) {
-      this.iframe.nativeElement.contentWindow.
-        postMessage({
+      this.iframe.nativeElement.contentWindow.postMessage(
+        {
           type: d.type,
-          data: d.data
-        }, d.origin)
+          data: d.data,
+        },
+        d.origin
+      );
     }
   }
   ngOnDestroy() {

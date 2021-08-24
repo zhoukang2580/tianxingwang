@@ -139,6 +139,7 @@ export class FlightOutNumberComponent
             name: arg.label,
           },
         ],
+        'Flight',
         false
       );
       if (result) {

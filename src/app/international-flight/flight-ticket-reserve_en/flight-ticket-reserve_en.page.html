@@ -173,7 +173,7 @@
           </ion-item-group>
           <ion-item-group>
             <app-book-tmc-outnumber outnumber='outnumber' [tmcOutNumberInfos]='combindInfo?.tmcOutNumberInfos'
-              [isShowGroupedInfo]="true" (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)'>
+              [isShowGroupedInfo]="true" (tmcOutNumber)='onSelectTravelNumber($event,combindInfo)' [travelType]="'Flight'">
             </app-book-tmc-outnumber>
           </ion-item-group>
         </ng-container>

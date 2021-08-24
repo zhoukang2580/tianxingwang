@@ -139,6 +139,7 @@ export class HotelOutNumberComponent
             name: arg.label,
           },
         ],
+        'Hotel',
         false
       );
       if (result) {

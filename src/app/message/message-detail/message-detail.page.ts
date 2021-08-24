@@ -11,7 +11,7 @@ import {
   ElementRef,
   AfterViewInit,
   ViewChildren,
-  QueryList
+  QueryList,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { MessageModel } from "src/app/message/message.service";
@@ -19,12 +19,13 @@ import * as moment from "moment";
 @Component({
   selector: "app-message-detail",
   templateUrl: "./message-detail.page.html",
-  styleUrls: ["./message-detail.page.scss"]
+  styleUrls: ["./message-detail.page.scss"],
 })
 export class MessageDetailPage implements OnInit, AfterViewInit {
   message: MessageModel;
   isShowLink: boolean;
   url$: Subject<any>;
+  isShowUrlBtn = false;
   @ViewChildren("iframe") iframEles: QueryList<ElementRef<HTMLIFrameElement>>;
   @ViewChildren("msgdetail") msgdetailEles: QueryList<ElementRef<HTMLElement>>;
   constructor(
@@ -35,43 +36,61 @@ export class MessageDetailPage implements OnInit, AfterViewInit {
     private loadingController: LoadingController
   ) {
     this.url$ = new BehaviorSubject(null);
-    route.queryParamMap.subscribe(p => {
-      const m = p.get("message");
-      if (m) {
-        this.message = JSON.parse(m);
-        if (this.message) {
-          if (!this.message.IsRead) {
-            this.messageService.Read([this.message.Id]);
+    route.queryParamMap.subscribe((p) => {
+      this.isShowUrlBtn = false;
+      try {
+        const m = this.messageService.curViewMsgItem;
+        if (m) {
+          this.message = m;
+          if (this.message) {
+            if (!this.message.IsRead) {
+              this.messageService.Read([this.message.Id]);
+            }
+            this.message.InsertTime = moment(this.message.InsertTime).format(
+              "YYYY-MM-DD HH:mm"
+            );
           }
-          this.message.InsertTime = moment(this.message.InsertTime).format(
-            "YYYY-MM-DD HH:mm"
-          );
+          if (this.message && this.message.Url) {
+            this.isShowLink = false;
+            this.message.Url = this.appenTicket(this.message.Url);
+            this.isShowUrlBtn = !!this.message.Url;
+          }
         }
-        if (this.message && this.message.Url) {
-          this.isShowLink = false;
-          this.message.Url = this.message.Url.includes("?")
-            ? `${this.message.Url}&${AppHelper.getTicketName()}=${AppHelper.getTicket()}`
-            : `${this.message.Url}?&${AppHelper.getTicketName()}=${AppHelper.getTicket()}`;
+        console.log(this.message);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  }
+  private appenTicket(url: string) {
+    if (url) {
+      const tn: string = (AppHelper.getTicketName() || "").toLowerCase();
+      const tk = AppHelper.getTicket();
+      if (!url.includes(tn)) {
+        if (url.includes("?")) {
+          url = `${url}&${tn}=${tk}`;
+        } else {
+          url = `${url}?${tn}=${tk}`;
         }
       }
-      console.log(this.message);
-    });
+    }
+    return url;
   }
   ngAfterViewInit() {
     if (this.iframEles) {
-      this.iframEles.changes.subscribe(async _ => {
+      this.iframEles.changes.subscribe(async (_) => {
         // console.log(this.iframEles.first);
         const l = await this.loadingController.create({
-          message: "请稍候"
+          message: "请稍候",
         });
         l.backdropDismiss = true;
         if (this.iframEles.first && this.iframEles.first.nativeElement) {
           l.present();
           this.iframEles.first.nativeElement.onload = () => {
-            l.dismiss().catch(_ => 0);
+            l.dismiss().catch((_) => 0);
           };
         } else {
-          l.dismiss().catch(_ => 0);
+          l.dismiss().catch((_) => 0);
         }
       });
     }
@@ -83,7 +102,7 @@ export class MessageDetailPage implements OnInit, AfterViewInit {
       ) {
         this.renderHtml();
       }
-      this.msgdetailEles.changes.subscribe(_ => {
+      this.msgdetailEles.changes.subscribe((_) => {
         // console.log(_);
         this.renderHtml();
       });
@@ -93,11 +112,10 @@ export class MessageDetailPage implements OnInit, AfterViewInit {
     if (this.msgdetailEles.first && this.msgdetailEles.first.nativeElement) {
       this.msgdetailEles.first.nativeElement.innerHTML =
         this.message && this.message.Detail;
-      const anchors = this.msgdetailEles.first.nativeElement.querySelectorAll(
-        "a"
-      );
+      const anchors =
+        this.msgdetailEles.first.nativeElement.querySelectorAll("a");
       if (anchors && anchors.length) {
-        anchors.forEach(a => {
+        anchors.forEach((a) => {
           if (a.href) {
             a.style.color = "var(--ion-color-secondary)";
             a.style.textDecoration = "none";
@@ -123,5 +141,5 @@ export class MessageDetailPage implements OnInit, AfterViewInit {
     this.isShowLink = true;
     this.url$.next(this.sanitizer.bypassSecurityTrustResourceUrl(url));
   }
-  ngOnInit() { }
+  ngOnInit() {}
 }
