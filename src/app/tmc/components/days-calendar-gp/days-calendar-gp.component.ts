@@ -12,19 +12,23 @@ import {
   EventEmitter,
   QueryList,
   ViewChildren,
-  OnDestroy
+  OnDestroy,
+  Input,
 } from "@angular/core";
 import * as moment from "moment";
 import { CalendarService } from "src/app/tmc/calendar.service";
 @Component({
   selector: "app-days-calendar-gp",
   templateUrl: "./days-calendar-gp.component.html",
-  styleUrls: ["./days-calendar-gp.component.scss"]
+  styleUrls: ["./days-calendar-gp.component.scss"],
 })
 export class DaysCalendarGpComponent implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   @Output() itemSelected: EventEmitter<DayModel>;
   @Output() calenderClick: EventEmitter<any>;
+  @Input() langOpt = {
+    calendar: "日历",
+  };
   @ViewChild("daysContainer") daysEle: ElementRef<HTMLElement>;
   @ViewChildren("dayItem") dayItems: QueryList<ElementRef<HTMLElement>>;
   days: DayModel[];
@@ -45,10 +49,10 @@ export class DaysCalendarGpComponent implements OnInit, AfterViewInit, OnDestroy
     this.initDays(moment().format("YYYY-MM-DD"));
     this.subscription = this.calendarService
       .getSelectedDaysSource()
-      .subscribe(days => {
+      .subscribe((days) => {
         setTimeout(() => {
           if (days && days.length) {
-            const selectedDate = days.find(it => it.selected);
+            const selectedDate = days.find((it) => it.selected);
             this.initDays(days[0].date, selectedDate);
             this.moveDateToView();
           } else {
@@ -60,27 +64,39 @@ export class DaysCalendarGpComponent implements OnInit, AfterViewInit, OnDestroy
   }
   private initDays(date: string, selectedDate: DayModel = null) {
     this.days = [];
-    for (let i = 0; i < 7; i++) {
+    let idx = moment(date).diff(moment().format("YYYY-MM-DD"), "days");
+    if (idx > 7) {
+      idx = 7;
+    }
+    for (let i = -idx; i < 7 + idx; i++) {
       const nextDay = moment(date).add(i, "days");
       const day = this.calendarService.generateDayModel(nextDay);
       day.dayOfWeekName = this.calendarService.getWeekName(day);
       day.topDesc = this.calendarService.getDescOfDay(day);
+      if (day.topDesc) {
+        if (
+          day.topDesc.toLowerCase() != "today" &&
+          day.topDesc.toLowerCase().includes("day")
+        ) {
+          day.topDesc = day.topDesc.substr(0, 3) + ".";
+        }
+      }
       day.selected = (selectedDate && selectedDate.date == day.date) || i == 0;
       this.days.push(day);
     }
-    let n = Math.abs(moment().diff(moment(date), "days"));
-    n = n > 10 ? 7 : n;
-    for (let i = -1; i >= -n; i--) {
-      const nextDay = moment(date).add(i, "days");
-      const day = this.calendarService.generateDayModel(nextDay);
-      if (day.timeStamp < Math.floor(new Date().getTime() / 1000)) {
-        break;
-      }
-      day.dayOfWeekName = this.calendarService.getWeekName(day);
-      day.topDesc = this.calendarService.getDescOfDay(day);
-      this.days.unshift(day);
-    }
-    console.log("days calendar", `n=${n}`, this.days);
+    // let n = Math.abs(moment(date).diff(moment().format("YYYY-MM-DD"), "days"));
+    // n = n > 10 ? 7 : n;
+    // for (let i = -1; i >= -n; i--) {
+    //   const nextDay = moment(date).add(i, "days");
+    //   const day = this.calendarService.generateDayModel(nextDay);
+    //   if (day.timeStamp < Math.floor(new Date().getTime() / 1000)) {
+    //     break;
+    //   }
+    //   day.dayOfWeekName = this.calendarService.getWeekName(day);
+    //   day.topDesc = this.calendarService.getDescOfDay(day);
+    //   this.days.unshift(day);
+    // }
+    // console.log("days calendar", `n=${n}`, this.days);
   }
   onCalendar() {
     this.calenderClick.emit();
@@ -90,7 +106,7 @@ export class DaysCalendarGpComponent implements OnInit, AfterViewInit, OnDestroy
   }
   private moveDateToView() {
     setTimeout(() => {
-      const d = this.days.find(it => it.selected);
+      const d = this.days.find((it) => it.selected);
       if (d) {
         this.onDaySelected(d, false);
       }
@@ -111,7 +127,7 @@ export class DaysCalendarGpComponent implements OnInit, AfterViewInit, OnDestroy
     }
     if (!this.daysEle || !this.daysEle.nativeElement) {
       // 如果这里的日历找不到对应的日期，结束
-      if (!this.days.find(item => item.date == day.date)) {
+      if (!this.days.find((item) => item.date == day.date)) {
         const ele = this.daysEle.nativeElement.querySelector(".active");
         // console.log("日期变更停止",ele);
         if (ele) {
@@ -124,7 +140,7 @@ export class DaysCalendarGpComponent implements OnInit, AfterViewInit, OnDestroy
     let selectedEle;
     // console.dir(this.dayItems);
     if (this.dayItems && this.dayItems.length) {
-      this.dayItems.forEach(item => {
+      this.dayItems.forEach((item) => {
         // console.log(item.nativeElement.getAttribute("date"));
         if (item.nativeElement.getAttribute("date") == day.date) {
           selectedEle = item.nativeElement;
@@ -135,17 +151,17 @@ export class DaysCalendarGpComponent implements OnInit, AfterViewInit, OnDestroy
       });
     }
     if (daysEle && selectedEle) {
-      this.domCtrl.read(_ => {
+      this.domCtrl.read((_) => {
         const clientRect = selectedEle.getBoundingClientRect();
         // console.dir(daysEle);
         const dist =
           clientRect.width / 2 + clientRect.left - this.plt.width() / 2;
         // console.dir(dist);
-        this.domCtrl.write(_ => {
+        this.domCtrl.write((_) => {
           daysEle.scrollBy({
             left: dist,
             top: 0,
-            behavior: "smooth"
+            behavior: "smooth",
           });
         });
       });

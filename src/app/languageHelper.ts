@@ -371,6 +371,14 @@ export class LanguageHelper {
   static getTaiwanEpTip(): string {
     return "入台证";
   }
+  
+  static getResidencePermit(): string {
+    return "港澳台居民身份证";
+  }
+  
+  static getAlienPermanentResidenceIdCard(): string {
+    return "外国人永久居留身份证";
+  }
   static getCloseTip(): string {
     return "X";
   }

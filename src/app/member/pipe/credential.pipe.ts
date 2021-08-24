@@ -32,7 +32,15 @@ export enum CredentialsType {
   /// <summary>
   /// 其他证件
   /// </summary>
-  Other = 8
+  Other = 8,
+  /// <summary>
+  /// 港澳台居民身份证
+  /// </summary>
+  ResidencePermit = 9,
+  /// <summary>
+  /// 外国人永久居留身份证
+  /// </summary>
+  AlienPermanentResidenceIdCard = 10
 }
 @Pipe({
   name: "credential"
@@ -58,6 +66,10 @@ export class CredentialPipe implements PipeTransform {
         return LanguageHelper.getOtherTip();
       case CredentialsType.TaiwanEp:
         return LanguageHelper.getTaiwanEpTip();
+      case CredentialsType.ResidencePermit:
+        return LanguageHelper.getResidencePermit();
+      case CredentialsType.AlienPermanentResidenceIdCard:
+        return LanguageHelper.getAlienPermanentResidenceIdCard();
     }
   }
 }
