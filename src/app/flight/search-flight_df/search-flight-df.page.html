@@ -121,8 +121,8 @@
                         {{flightCabin.label}}</ion-select-option>
                 </ion-select>
             </ul>
-            <div class="btn-search" (click)="searchFlight(false)">查询航班</div>
-            <!-- <div class="btn-search" (click)="onSelectPassenger(false)" *ngIf='(!isSelf && selectedInterPassengers?.length==0)'>请添加乘客</div> -->
+            <div class="btn-search" (click)="searchFlight(false)" *ngIf='isSelf||(!isSelf&&selectedPassengers>0)'>查询航班</div>
+            <div class="btn-search" (click)="onSelectPassenger(false)" *ngIf='(!isSelf && selectedInterPassengers?.length==0)'>请添加乘客</div>
         </ion-card-content>
     </ion-card>
 </ion-content>
