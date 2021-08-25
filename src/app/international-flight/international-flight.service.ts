@@ -438,6 +438,8 @@ export class InternationalFlightService {
     };
     return this.fetchPassengerCredentials.promise;
   }
+
+
   private initFilterCondition() {
     this.filterCondition = {
       price: "none",

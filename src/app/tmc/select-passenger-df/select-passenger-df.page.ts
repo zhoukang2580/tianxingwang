@@ -166,6 +166,8 @@ export class SelectPassengerDfPage
       })
     );
     this.doRefresh(null);
+
+    console.log(this.forType, '=====');
   }
   private initFilteredCredentialsTypes() {
     this.filteredCredentialsTypes = [];
@@ -175,6 +177,30 @@ export class SelectPassengerDfPage
     ) {
       this.filteredCredentialsTypes = [CredentialsType.IdCard];
     }
+
+    if (this.forType == FlightHotelTrainType.Flight) {
+      this.filteredCredentialsTypes = [[CredentialsType.HmPass],
+      [CredentialsType.TwPass],
+      [CredentialsType.TaiwanEp],
+      [CredentialsType.ResidencePermit]] as any
+      console.log(this.filteredCredentialsTypes, 'type');
+    }
+
+    if (this.forType == FlightHotelTrainType.InternationalFlight) {
+      this.filteredCredentialsTypes = [[CredentialsType.IdCard],
+      [CredentialsType.AlienPermanentResidenceIdCard],
+      [CredentialsType.Other],
+      [CredentialsType.ResidencePermit]] as any
+      console.log(this.filteredCredentialsTypes, 'type');
+    }
+    
+    if (this.forType == FlightHotelTrainType.Train) {
+      this.filteredCredentialsTypes = [[CredentialsType.HmPass],
+      [CredentialsType.TwPass],
+      [CredentialsType.TaiwanEp]] as any
+      console.log(this.filteredCredentialsTypes, 'type');
+    }
+
   }
   private initRemoveitem() {
     this.removeitemSubscription = this.removeitem.subscribe(async (info) => {
@@ -397,7 +423,7 @@ export class SelectPassengerDfPage
             this.vmStaffs = this.vmStaffs.concat(staffs);
           }
         },
-        () => {}
+        () => { }
       );
   }
   private checkSamePolicy(s: StaffEntity) {
@@ -468,9 +494,37 @@ export class SelectPassengerDfPage
       } else {
         this.staffCredentails = staffCredentails;
       }
+
+      if (
+        this.forType == FlightHotelTrainType.Flight
+      ) {
+        const temp = staffCredentails.filter((it) => it.Type != CredentialsType.HmPass &&
+          it.Type != CredentialsType.TwPass &&
+          it.Type != CredentialsType.TaiwanEp &&
+          it.Type != CredentialsType.ResidencePermit)
+        this.staffCredentails = temp;
+      }
+      if (
+        this.forType == FlightHotelTrainType.InternationalFlight
+      ) {
+        const temp = staffCredentails.filter((it) => it.Type != CredentialsType.IdCard &&
+          it.Type != CredentialsType.AlienPermanentResidenceIdCard &&
+          it.Type != CredentialsType.Other &&
+          it.Type != CredentialsType.ResidencePermit)
+        this.staffCredentails = temp;
+      }
+      if (
+        this.forType == FlightHotelTrainType.Train
+      ) {
+        const temp = staffCredentails.filter((it) => it.Type != CredentialsType.HmPass &&
+          it.Type != CredentialsType.TwPass &&
+          it.Type != CredentialsType.TaiwanEp)
+        this.staffCredentails = temp;
+      }
+
       let first =
         this.staffCredentails.find((it) => it.Type == CredentialsType.IdCard) ||
-        this.staffCredentails.length
+          this.staffCredentails.length
           ? this.staffCredentails[0]
           : null;
       if (
@@ -518,7 +572,7 @@ export class SelectPassengerDfPage
     this.vmNewCredential.CredentialsRemark = "客户";
     this.vmNewCredential.Type =
       this.forType == FlightHotelTrainType.HotelInternational ||
-      this.forType == FlightHotelTrainType.InternationalFlight
+        this.forType == FlightHotelTrainType.InternationalFlight
         ? CredentialsType.Passport
         : CredentialsType.IdCard;
     this.vmNewCredential.Gender = "M";

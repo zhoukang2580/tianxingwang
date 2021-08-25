@@ -8,6 +8,8 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
+  OnChanges,
+  SimpleChanges,
 } from "@angular/core";
 import {
   MemberCredential,
@@ -47,7 +49,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() credential: MemberCredential; // 新增的证件
   @Output() credentialChange: EventEmitter<MemberCredential>;
   @Input() filteredCredentialsTypes: CredentialsType[];
-  @Input() forType: number;
+  @Input() forType: FlightHotelTrainType;
   @Input() langOpt = {
     docType: "证件类型",
     idsurname: "证件姓",
@@ -125,57 +127,11 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log(this.identityTypes);
   }
 
-  private getFlight() {
-    this.identityTypes = this.identityTypes.filter((e) => parseInt(e.key) != this.CredentialsType.HmPass &&
-      parseInt(e.key) != this.CredentialsType.TwPass &&
-      parseInt(e.key) != this.CredentialsType.TaiwanEp &&
-      parseInt(e.key) != this.CredentialsType.ResidencePermit);
-    console.log(this.identityTypes, 'identityTypes')
-
-  }
-
-  private getInternationalFlight() {
-    this.identityTypes = this.identityTypes.filter((e) => parseInt(e.key) != this.CredentialsType.IdCard &&
-    parseInt(e.key) != this.CredentialsType.AlienPermanentResidenceIdCard &&
-    parseInt(e.key) != this.CredentialsType.Other &&
-    parseInt(e.key) != this.CredentialsType.ResidencePermit);
-  console.log(this.identityTypes, 'identityTypes')
-  }
-
-  private getTrain() {
-    this.identityTypes = this.identityTypes.filter((e) => parseInt(e.key) != this.CredentialsType.HmPass &&
-    parseInt(e.key) != this.CredentialsType.TwPass &&
-    parseInt(e.key) != this.CredentialsType.TaiwanEp);
-  console.log(this.identityTypes, 'identityTypes')
-  }
-
-  private getForType() {
-    if (this.forType == FlightHotelTrainType.Flight) {
-      return this.getFlight();
-    }
-    if (this.forType == FlightHotelTrainType.InternationalFlight) {
-      return this.getInternationalFlight();
-    }
-    if (this.forType == FlightHotelTrainType.Train) {
-      return this.getTrain();
-    }
-
-
-    // switch (this.forType) {
-    //   case this.forType = FlightHotelTrainType.Flight:
-    //     return this.getFlight();
-    //   case this.forType = FlightHotelTrainType.InternationalFlight:
-    //     return this.getInternationalFlight();
-    //   case this.forType = FlightHotelTrainType.Train:
-    //     return this.getTrain();
-    //   case this.forType = FlightHotelTrainType.Hotel:
-    //     return this.getIdentityTypes();
-    // }
-  }
+  
 
   ngOnInit() {
     this.getIdentityTypes();
-    this.getForType();
+
   }
 
   private async confirmTipMessage(c: MemberCredential) {

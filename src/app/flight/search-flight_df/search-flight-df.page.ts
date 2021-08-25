@@ -66,8 +66,9 @@ export class SearchFlightDfPage
   FlightVoyageType = FlightVoyageType;
   private subscriptions: Subscription[] = [];
   get selectedPassengers() {
-    return this.flightService.getPassengerBookInfos().length;
+    return this.flightService.getPassengerBookInfos().length || this.internationalFlightService.getBookInfos().length;
   }
+  
   isEn = false;
   isIos = false;
   isSwapingCity = false;
@@ -346,9 +347,12 @@ export class SearchFlightDfPage
         this.showReturnTrip = await this.staffService.isSelfBookType();
       });
     this.subscriptions.push(this.searchConditionSubscription);
-    this.isShowBookInfos$ = this.flightService
-      .getPassengerBookInfoSource()
-      .pipe(map((infos) => infos.filter((it) => !!it.bookInfo).length));
+    // this.isShowBookInfos$ = this.flightService
+    //   .getPassengerBookInfoSource()
+    //   .pipe(map((infos) => infos.filter((it) => !!it.bookInfo).length));
+    // this.isShowBookInfos$ = this.internationalFlightService
+    //   .getBookInfoSource()
+    //   .pipe(map((infos) => infos.filter((it) => !!it.bookInfo).length));
     await this.initFlightCities();
     this.showReturnTrip = await this.staffService
       .isSelfBookType()
