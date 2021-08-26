@@ -1228,11 +1228,11 @@ export class InternationalFlightBookDfPage
           credentials = credentials.filter((t) => t);
         }
 
-        if (!hasTW) {
-          credentials = credentials.filter(
-            (t) => t.Type != CredentialsType.TwPass
-          );
-        }
+        // if (!hasTW) {
+        //   credentials = credentials.filter(
+        //     (t) => t.Type != CredentialsType.TwPass
+        //   );
+        // }
       }
     }
     return credentials;

@@ -760,7 +760,16 @@ export class SelectPassengerDfPage
         AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
         return false;
       }
-      this.flightService.addPassengerBookInfo(passengerBookInfo);
+      console.log(passengerBookInfo,"passengerBookInfo");
+      const BookInfo = this.flightService.getPassengerBookInfos();
+      if (BookInfo) {
+        if (!BookInfo.find(it => it.credential.Id == passengerBookInfo.credential.Id)) {
+          this.flightService.addPassengerBookInfo(passengerBookInfo);
+        }else{
+          AppHelper.toast("已添加该旅客",2000,"middle");
+          return false;
+        }
+      }
     }
     if (this.forType == FlightHotelTrainType.InternationalFlight) {
       const can = this.interFlightService.getBookInfos().length < 9;
@@ -769,15 +778,33 @@ export class SelectPassengerDfPage
         return false;
       }
       const bookInfos = this.interFlightService.getBookInfos();
-      this.interFlightService.addPassengerBookInfo(passengerBookInfo);
+      if (bookInfos) {
+        if (!bookInfos.find(it => it.credential.Id == passengerBookInfo.credential.Id)) {
+          this.interFlightService.addPassengerBookInfo(passengerBookInfo);
+        } else {
+          AppHelper.toast("已添加该旅客",2000,"middle");
+          return false;
+        }
+      }
     }
     if (this.forType == FlightHotelTrainType.Train) {
       if (this.trainService.getBookInfos().length > 4) {
         AppHelper.alert(LanguageHelper.Train.getCannotBookMorePassengerTip());
         return false;
       }
-      this.trainService.addBookInfo(passengerBookInfo);
+
+      const trainBookInfos = this.trainService.getBookInfos();
+      if (trainBookInfos) {
+        if (!trainBookInfos.find(it => it.credential.Id == passengerBookInfo.credential.Id)) {
+          this.trainService.addBookInfo(passengerBookInfo);
+        } else {
+          AppHelper.toast("已添加该旅客",2000,"middle");
+          return false;
+        }
+      }
     }
+
+
     return true;
   }
   back(evt?: CustomEvent) {
