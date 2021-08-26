@@ -1190,28 +1190,6 @@ export class InternationalFlightBookDfPage
       ]);
       const credentials = res && res[item.bookInfo.passenger.AccountId];
       item.credentials = credentials;
-      // if (credentials.length) {
-      //   const exist = item.credentials[0];
-      //   item.credentialsRequested = credentials && credentials.length > 0;
-      //   if (credentials) {
-      //     if (credentials.length) {
-      //       const one = credentials.find(
-      //         (it) => it.Number == exist.Number && exist.Type == it.Type
-      //       );
-      //       if (one) {
-      //         item.credentials = [
-      //           one,
-      //           ...credentials.filter((it) => it != one),
-      //         ];
-      //       } else {
-      //         if (item.credentialsRequested) {
-      //           item.credentials = credentials;
-      //         }
-      //       }
-      //     } else {
-      //     }
-      //   }
-      // }
     }
     item.credentials = this.filterCredentials(item.credentials);
     item.vmCredential = item.credentials[0];
@@ -1222,7 +1200,10 @@ export class InternationalFlightBookDfPage
     let tmp = credentials;
     tmp = [];
     if (credentials) {
-      credentials = credentials.filter((t) => t.Type != CredentialsType.IdCard);
+      credentials = credentials.filter((t) => t.Type != CredentialsType.IdCard 
+      &&t.Type !=CredentialsType.AlienPermanentResidenceIdCard
+      &&t.Type !=CredentialsType.Other
+      &&t.Type !=CredentialsType.ResidencePermit);
       if (this.searchModel && this.searchModel.trips) {
         const hasHKMO = this.searchModel.trips.some((t) => {
           return "HK,MO".includes(

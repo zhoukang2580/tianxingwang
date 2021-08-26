@@ -92,6 +92,7 @@ import { Storage } from "@ionic/storage";
 import { FlightService } from "../flight.service";
 import { OrderService } from "src/app/order/order.service";
 import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
+import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 
 @Component({
   selector: "app-flight-book-df",
@@ -149,6 +150,7 @@ export class FlightBookDfPage
   isDingTalk = AppHelper.isDingtalkH5();
   addContacts: AddContact[] = [];
   isself: boolean;
+  CredentialsType = CredentialsType;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent, { static: true }) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -1373,6 +1375,11 @@ export class FlightBookDfPage
     }
     if (item.credentials) {
       item.credentials = item.credentials.filter((it) => !!it.Number);
+      item.credentials = item.credentials.filter((it)=> 
+      it.Type != CredentialsType.HmPass &&
+      it.Type != CredentialsType.TwPass && 
+      it.Type != CredentialsType.TaiwanEp &&  
+      it.Type !=CredentialsType.ResidencePermit)
     }
     console.log("onModify", item.credentials);
   }

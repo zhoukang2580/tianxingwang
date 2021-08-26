@@ -66,7 +66,11 @@ export class SearchFlightDfPage
   FlightVoyageType = FlightVoyageType;
   private subscriptions: Subscription[] = [];
   get selectedPassengers() {
-    return this.flightService.getPassengerBookInfos().length || this.internationalFlightService.getBookInfos().length;
+    return this.flightService.getPassengerBookInfos().length;
+  }
+
+  get selectedPassengersIn(){
+    return this.internationalFlightService.getBookInfos().length;
   }
   
   isEn = false;

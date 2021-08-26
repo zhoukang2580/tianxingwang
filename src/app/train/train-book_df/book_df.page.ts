@@ -1663,6 +1663,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     if (item.credentials) {
       item.credentials = item.credentials.filter((it) => !!it.Number);
+      item.credentials = item.credentials.filter((it)=> 
+      it.Type != CredentialsType.HmPass &&
+      it.Type != CredentialsType.TwPass && 
+      it.Type != CredentialsType.TaiwanEp)
     }
     console.log("onModify", item.credentials);
   }
