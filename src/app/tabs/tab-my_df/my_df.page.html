@@ -60,7 +60,7 @@
             </ion-label>
         </ion-item>
     </ion-list>
-    <ion-list *ngIf='!isAgent&&staff?.StaffNumber'>
+    <ion-list *ngIf='!isAgent&&staff?.StaffNumber&&false'>
         <ion-item (click)="goBusiness()" detail>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon" notranslate>
