@@ -20,6 +20,7 @@ import { SelectedTrainSegmentInfoDfComponent } from './selected-train-segment-in
 import { TrainListItemDfComponent } from './train-list-item-df/train-list-item-df.component';
 import { SeatPickerDfComponent } from './seat-picker-df/seat-picker-df.component';
 import { WarmPromptComponent } from './warm-prompt/warm-prompt.component';
+import { Bind12306Component } from './bind12306/bind12306.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { WarmPromptComponent } from './warm-prompt/warm-prompt.component';
     TrainFilterComponent,
     SeatPickerComponent,
     SeatPickerDfComponent,
+    Bind12306Component,
     TrainRefundComponent,
     TrainTicketComponent,
     SelectAndReplaceTrainInfoComponent,

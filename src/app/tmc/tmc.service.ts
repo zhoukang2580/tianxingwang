@@ -1627,6 +1627,7 @@ export class TmcEntity extends BaseEntity {
   TrainIsAllowRefund: boolean;
   TrainIsAllowExchange: boolean;
   TrainHasInsurance: boolean;
+  TrainIsBindNumber: boolean;
   // ==== 火车票配置 end =======
   // ============= 酒店配置 start ========
   HotelHoldMinute: string;
@@ -1776,6 +1777,15 @@ export class InitialBookDtoModel {
   ServiceFees: { [clientId: string]: string };
   Insurances: { [clientId: string]: InsuranceProductEntity[] };
   TravelFrom: TravelFormEntity;
+  AccountNumber12306: {
+    IsIdentity: boolean;
+    Tag: string;
+    Account: AccountEntity;
+    NumberEntity: any;
+    Variables: any;
+    Number: string;
+    Name: string;
+  };
   Tmc: TmcEntity;
   PayTypes: any;
   IllegalReasons: string[];

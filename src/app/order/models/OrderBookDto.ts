@@ -47,6 +47,11 @@ export class OrderBookDto {
   /// 线下
   /// </summary>
   IsFromOffline: boolean;
+  IsOfficialBooked: boolean;
+  AccountNumber:{
+    Name:string;
+    Number:string;
+  }
   /// <summary>
   /// 通知
   /// </summary>

@@ -93,6 +93,48 @@ export class TrainService {
       }
     });
   }
+  async Unbind12306() {
+    const req = new RequestEntity();
+    req.Data = {};
+    req.Method = "TmcApiBookUrl-Train-Unbind";
+    req.IsShowLoading = true;
+    return this.apiService.getPromiseData<any>(req);
+  }
+  async bind12306(d: { name: string; password: string }) {
+    const req = new RequestEntity();
+    req.Data = d;
+    req.Method = "TmcApiBookUrl-Train-Bind";
+    req.IsShowLoading = true;
+    return this.apiService.getPromise<any>(req);
+  }
+  async accountValidate(d: { name: string; password: string;Unbind?:""|"Unbind";code?:string; }) {
+    const req = new RequestEntity();
+    req.Data = d;
+    req.Method = "TmcApiBookUrl-Train-AccountValidate";
+    req.IsShowLoading = true;
+    return this.apiService.getPromise<any>(req);
+  }
+  async getContacts() {
+    const req = new RequestEntity();
+    req.Data ={}
+    req.Method = "TmcApiBookUrl-Train-GetContacts";
+    req.IsShowLoading = true;
+    return this.apiService.getPromiseData<any>(req);
+  }
+  async codeValidateAndBind12306(d: { name: string; password: string; code: string }) {
+    const req = new RequestEntity();
+    req.Data = d;
+    req.Method = "TmcApiBookUrl-Train-CodeValidate";
+    req.IsShowLoading = true;
+    return this.apiService.getPromise<any>(req);
+  }
+  async getBindAccountNumber() {
+    const req = new RequestEntity();
+    req.Data ={}
+    req.Method = "TmcApiBookUrl-Train-GetBindAccountNumber";
+    req.IsShowLoading = true;
+    return this.apiService.getPromiseData<any>(req);
+  }
   private clearSelectedBookInfos() {
     this.bookInfos = this.bookInfos || [];
     this.bookInfos.forEach((it) => {

@@ -47,6 +47,7 @@ import { ImageRecoverService } from "./services/imageRecover/imageRecover.servic
 import { ThemeService } from "./services/theme/theme.service";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
 import { combineAll, filter, map, mergeMap } from "rxjs/operators";
+import { Bind12306Component } from "./train/components/bind12306/bind12306.component";
 export interface App {
   loadUrl: (
     url: string,
@@ -80,7 +81,8 @@ export interface App {
   ],
 })
 export class AppComponent
-  implements AfterViewInit, AfterContentInit, OnChanges, OnInit {
+  implements AfterViewInit, AfterContentInit, OnChanges, OnInit
+{
   app: App = window.navigator["app"];
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
@@ -140,7 +142,7 @@ export class AppComponent
     if (this.platform.is("android")) {
       AppHelper.setDeviceName("android");
     }
-    
+
     this.initializeApp();
     this.platform.ready().then(() => {
       if (this.platform.is("ios") && AppHelper.isApp()) {
@@ -222,6 +224,11 @@ export class AppComponent
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {
       if (!environment.production) {
+        // AppHelper.modalController
+        //   .create({ component: Bind12306Component })
+        //   .then((m) => {
+        //     m.present();
+        //   });
         // AppHelper.getQueryParamers()['mmsid'] = 2;
         // this.router.navigate(['mms-order-lottery'], { queryParams: { mmsid: 2 } });
         // this.router.navigate(['mms-admin-home'], { queryParams: { mmsid: 2 } });
