@@ -131,6 +131,7 @@ export class InternationalFlightBookDfPage
   isself = false;
   expenseTypes: { Name: string; Tag: string; }[];
   OrderTravelType = OrderTravelType;
+  PromptInformation = '';
   constructor(
     private flightService: InternationalFlightService,
     private route: ActivatedRoute,
@@ -143,7 +144,7 @@ export class InternationalFlightBookDfPage
     private router: Router,
     private modalCtrl: ModalController,
     private langService: LangService,
-    private orderService:OrderService
+    private orderService: OrderService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -455,7 +456,7 @@ export class InternationalFlightBookDfPage
         });
       }
     });
-    const result = await this.tmcService.getTravelUrls(args,'Flight');
+    const result = await this.tmcService.getTravelUrls(args, 'Flight');
     if (result) {
       this.vmCombindInfos.forEach((item) => {
         if (item.tmcOutNumberInfos) {
@@ -725,7 +726,7 @@ export class InternationalFlightBookDfPage
                   const isp =
                     this.orderTravelPayType == OrderTravelPayType.Person ||
                     this.orderTravelPayType == OrderTravelPayType.Credit;
-                    payResult = await this.orderService.payOrder(
+                  payResult = await this.orderService.payOrder(
                     res.TradeNo,
                     null,
                     false,
@@ -1041,8 +1042,8 @@ export class InternationalFlightBookDfPage
         "";
       if (combindInfo.credentialStaffOtherMobile) {
         p.Mobile = `${p.Mobile
-            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-            : combindInfo.credentialStaffOtherMobile
+          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+          : combindInfo.credentialStaffOtherMobile
           }`;
       }
       p.Email =
@@ -1054,8 +1055,8 @@ export class InternationalFlightBookDfPage
         "";
       if (combindInfo.credentialStaffOtherEmail) {
         p.Email = `${p.Email
-            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-            : combindInfo.credentialStaffOtherEmail
+          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+          : combindInfo.credentialStaffOtherEmail
           }`;
       }
       if (combindInfo.insuranceProducts) {
@@ -1200,10 +1201,10 @@ export class InternationalFlightBookDfPage
     let tmp = credentials;
     tmp = [];
     if (credentials) {
-      credentials = credentials.filter((t) => t.Type != CredentialsType.IdCard 
-      &&t.Type !=CredentialsType.AlienPermanentResidenceIdCard
-      &&t.Type !=CredentialsType.Other
-      &&t.Type !=CredentialsType.ResidencePermit);
+      // credentials = credentials.filter((t) => t.Type != CredentialsType.IdCard 
+      // &&t.Type !=CredentialsType.AlienPermanentResidenceIdCard
+      // &&t.Type !=CredentialsType.Other
+      // &&t.Type !=CredentialsType.ResidencePermit);
       if (this.searchModel && this.searchModel.trips) {
         const hasHKMO = this.searchModel.trips.some((t) => {
           return "HK,MO".includes(
@@ -1224,15 +1225,21 @@ export class InternationalFlightBookDfPage
             tmp.push(c);
           }
         }
-        if (!hasHKMO) {
-          credentials = credentials.filter((t) => t);
+        if (hasHKMO) {
+          credentials = credentials.filter(
+            (t) => t.Type == CredentialsType.Passport
+              || t.Type == CredentialsType.HmPass);
+          this.PromptInformation = "大陆乘客往来香港或澳门,请使用港澳通行证使用护照出行的乘客,须同时持有7天内前往第三国或地区的机票";
+        } else if (hasTW) {
+          credentials = credentials.filter(
+            (t) => t.Type == CredentialsType.Passport
+              || t.Type == CredentialsType.TwPass);
+          this.PromptInformation = "大陆乘客往来台湾，请使用台湾通行证;如在台湾中转/经停，请选择护照并携带后续航班行程单";
+        } else {
+          credentials = credentials.filter(
+            (t) => t.Type == CredentialsType.Passport);
+          this.PromptInformation = "非港澳台地区出行,请选择护照,证件信息请重新填写!";
         }
-
-        // if (!hasTW) {
-        //   credentials = credentials.filter(
-        //     (t) => t.Type != CredentialsType.TwPass
-        //   );
-        // }
       }
     }
     return credentials;
