@@ -75,7 +75,7 @@ var PushNotification = /*#__PURE__*/function () {
     value: function unregister(successCallback) {
       var _this2 = this;
 
-      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () { };
       var options = arguments.length > 2 ? arguments[2] : undefined;
 
       if (typeof errorCallback !== 'function') {
@@ -113,7 +113,7 @@ var PushNotification = /*#__PURE__*/function () {
   }, {
     key: "subscribe",
     value: function subscribe(topic, successCallback) {
-      var errorCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
+      var errorCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () { };
 
       if (typeof errorCallback !== 'function') {
         console.log('PushNotification.subscribe failure: failure parameter not a function');
@@ -138,7 +138,7 @@ var PushNotification = /*#__PURE__*/function () {
   }, {
     key: "unsubscribe",
     value: function unsubscribe(topic, successCallback) {
-      var errorCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
+      var errorCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () { };
 
       if (typeof errorCallback !== 'function') {
         console.log('PushNotification.unsubscribe failure: failure parameter not a function');
@@ -159,7 +159,7 @@ var PushNotification = /*#__PURE__*/function () {
   }, {
     key: "setApplicationIconBadgeNumber",
     value: function setApplicationIconBadgeNumber(successCallback) {
-      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () { };
       var badge = arguments.length > 2 ? arguments[2] : undefined;
 
       if (typeof errorCallback !== 'function') {
@@ -183,7 +183,7 @@ var PushNotification = /*#__PURE__*/function () {
   }, {
     key: "getApplicationIconBadgeNumber",
     value: function getApplicationIconBadgeNumber(successCallback) {
-      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () { };
 
       if (typeof errorCallback !== 'function') {
         console.log('PushNotification.getApplicationIconBadgeNumber failure: failure ' + 'parameter not a function');
@@ -204,8 +204,8 @@ var PushNotification = /*#__PURE__*/function () {
   }, {
     key: "clearAllNotifications",
     value: function clearAllNotifications() {
-      var successCallback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
-      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+      var successCallback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () { };
+      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () { };
 
       if (typeof errorCallback !== 'function') {
         console.log('PushNotification.clearAllNotifications failure: failure parameter not a function');
@@ -229,8 +229,8 @@ var PushNotification = /*#__PURE__*/function () {
   }, {
     key: "clearNotification",
     value: function clearNotification() {
-      var successCallback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
-      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+      var successCallback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () { };
+      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () { };
       var id = arguments.length > 2 ? arguments[2] : undefined;
       var idNumber = parseInt(id, 10);
 
@@ -320,8 +320,8 @@ var PushNotification = /*#__PURE__*/function () {
   }, {
     key: "finish",
     value: function finish() {
-      var successCallback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
-      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+      var successCallback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () { };
+      var errorCallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () { };
       var id = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'handler';
 
       if (typeof successCallback !== 'function') {
@@ -344,6 +344,88 @@ var PushNotification = /*#__PURE__*/function () {
  * Push Notification Plugin.
  */
 
+function AndroidPushNotification() { }
+cordova.addWindowEventHandler('receiveandroidpushmessage')
+console.log("AndroidPushNotification")
+const AndroidPush = new AndroidPushNotification()
+AndroidPush.getAndroidToken = function getAndroidToken(appId) {
+  // console.log('getAndroidToken appId', appId)
+
+  return new Promise(function (rsv, rej) {
+    exec(function (r) {
+      rsv(r)
+    }, function (e) {
+      rej(e)
+    }, 'PushNotification', 'getToken', [appId]);
+  })
+}
+AndroidPush.deleteToken = function deleteToken(appId) {
+  return new Promise(function (rsv, rej) {
+    exec(function (r) {
+      rsv(r)
+    }, function (e) {
+      rej(e)
+    }, 'PushNotification', 'deleteToken', [appId]);
+  })
+}
+AndroidPush.registerMiPush = function registerMiPush(appId, appKey) {
+  return new Promise(function (rsv, rej) {
+    exec(function (r) {
+      rsv(r)
+    }, function (e) {
+      rej(e)
+    }, 'PushNotification', 'registerMiPush', [appId, appKey]);
+  })
+}
+AndroidPush.registerViVoToken = function (appId, appKey, appSecret) {
+  return new Promise(function (rsv, rej) {
+    exec(function (r) {
+      rsv(r)
+    }, function (e) {
+      rej(e)
+    }, 'PushNotification', 'registerViVoToken', [appId, appKey, appSecret]);
+  })
+}
+AndroidPush.initViVoPush = function () {
+  return new Promise(function (rsv, rej) {
+    exec(function (r) {
+      rsv(r)
+    }, function (e) {
+      rej(e)
+    }, 'PushNotification', 'initViVoPush', []);
+  })
+}
+AndroidPush.getOppoRegisterId = function (appKey,appSecret) {
+  return new Promise(function (rsv, rej) {
+    exec(function (r) {
+      rsv(r)
+    }, function (e) {
+      rej(e)
+    }, 'PushNotification', 'getOppoRegisterId', [appKey,appSecret]);
+  })
+}
+AndroidPush.getManufacturer = function getManufacturer() {
+  return new Promise(function (rsv, rej) {
+    exec(function (r) {
+      rsv(r)
+    }, function (e) {
+      rej(e)
+    }, 'PushNotification', 'getManufacturer', []);
+  })
+}
+AndroidPush.subscribeAndroidMessage = function subscribeAndroidMessage(appId) {
+  return new Promise(function (rsv, rej) {
+    exec(function (msg) {
+      // console.log("receiveandroidpushmessage",msg)
+      if (msg) {
+        cordova.fireWindowEvent('receiveandroidpushmessage', msg);
+      }
+      rsv(msg)
+    }, function (e) {
+      rej(e)
+    }, 'PushNotification', 'subscribeMessage', [appId]);
+  })
+}
 
 module.exports = {
   /**
@@ -378,5 +460,6 @@ module.exports = {
    * and testing. Typically, you should use the
    * .init helper method.
    */
-  PushNotification: PushNotification
+  PushNotification: PushNotification,
+  AndroidPushNotification: AndroidPush
 };

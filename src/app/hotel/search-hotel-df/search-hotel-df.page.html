@@ -87,20 +87,20 @@
             <span>{{changeDateTipMsg}}</span>
           </div>
         </ng-container>
-        <div class='destination' lines='none' detail (click)='onSearchCity()'>
+        <div class='destination' lines='none' detail >
           <ion-item lines='none' class="destination">
-            <ion-label style="max-width: 60px;">目的地</ion-label>
-            <ion-label>
+            <ion-label style="max-width: 60px;" (click)='onSearchCity()'>目的地</ion-label>
+            <ion-label (click)='onSearchCity()'>
               <ng-container *ngIf='isPositioning else no'>
-                请选择目的地
+                正在定位...
               </ng-container>
               <ng-template #no>
                 <ion-label class="ion-text-wrap">
-                  <h2>{{searchHotelModel?.destinationCity?.Name}}</h2>
+                  <h2>{{(searchHotelModel?.searchText.Text?searchHotelModel?.searchText.Text+"("+(searchHotelModel?.destinationCity?.Name||"")+")":"")|| searchHotelModel?.destinationCity?.Name||'请选择目的地'}}</h2>
                 </ion-label>
               </ng-template>
             </ion-label>
-            <ion-button fill='clear' *ngIf='' color='secondary' size='small' (click)='onPosition()'>
+            <ion-button fill='clear' color='secondary' size='small' (click)='onPosition()'>
               <div class='pos' slot='end'>
                 <ion-icon name="locate" mode='md' size='small' color='secondary'></ion-icon>
                 我的位置

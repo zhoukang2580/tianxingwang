@@ -171,7 +171,9 @@ export class HotelService {
     if (!roomPlan || !roomPlan.RoomPlanRules) {
       return "";
     }
-    return roomPlan.RoomPlanRules.filter(it=>!!it.Description).map((it) => it.Description).join(",");
+    return roomPlan.RoomPlanRules.filter((it) => !!it.Description)
+      .map((it) => it.Description)
+      .join(",");
   }
   getAvgPrice(plan: RoomPlanEntity) {
     let price = 0;
@@ -359,17 +361,22 @@ export class HotelService {
     this.setSearchHotelModel(m);
   }
   async getCurPosition() {
-    const res = await this.mapService.getLatLng().catch((_) => null);
-    if (res && res.position) {
-      const cities = await this.getHotelCityAsync();
-      res.city = cities.find(
-        (c) =>
-          c.Name &&
-          (c.Name.includes(res.position.cityName) ||
-            res.position.cityName.includes(c.Name))
-      );
-    }
-    return res.city ? res : await this.mapService.getCurrentCityPosition();
+    const res = await this.mapService.getMyPositionInfo();
+    console.log("hotel getCurPosition ",res);
+    // if (res && res.position) {
+    //   const cities = await this.getHotelCityAsync();
+    //   res.city = cities.find(
+    //     (c) =>
+    //       c.Name &&
+    //       (c.Name.includes(res.position.cityName) ||
+    //         res.position.cityName.includes(c.Name))
+    //   );
+    // }
+    // return {
+    //   position: res || (await this.mapService.getCurrentCityPosition()),
+    //   city: res.city,
+    // };
+    return res;
   }
   getSearchHotelModelSource() {
     return this.searchHotelModelSource.asObservable();
@@ -1045,7 +1052,9 @@ export class HotelService {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
-        res.ExpenseTypes=(res.ExpenseTypes||[]).filter(it=>!it.Tag||it.Tag.toLowerCase()=='hotel');
+        res.ExpenseTypes = (res.ExpenseTypes || []).filter(
+          (it) => !it.Tag || it.Tag.toLowerCase() == "hotel"
+        );
         if (bookInfos.length == 2 && isSelf) {
           const fees = {};
           Object.keys(res.ServiceFees).forEach((k) => {

@@ -65,7 +65,7 @@ export class MapService {
       };
       setTimeout(() => {
         try {
-          this.isInitBMap = !!document.querySelector("#bmapscript");
+          this.isInitBMap = !!document.body.querySelector("#bmapscript");
           if (this.isInitBMap) {
             rsv(true);
             return;
@@ -77,7 +77,7 @@ export class MapService {
           script.src = `https://api.map.baidu.com/api?v=3.0&ak=${baiduMapAk}&callback=init`;
           window["BMAP_PROTOCOL"] = "https";
           window["BMap_loadScriptTime"] = new Date().getTime();
-          document.head.appendChild(script);
+          document.body.appendChild(script);
         } catch (e) {
           console.error(e);
           rsv(false);
@@ -216,8 +216,7 @@ export class MapService {
       const position = new AMap.LngLat(latlng.lng, latlng.lat); // 标准写法
       marker = new AMap.Marker({
         animation: "AMAP_ANIMATION_BOUNCE",
-        icon:
-          "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
+        icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
         // offset: new AMap.Pixel(-13, -30),
         position, // 位置
       });
@@ -229,8 +228,7 @@ export class MapService {
     if (marker && window["AMap"] && window["AMap"].LngLat) {
       this.removeMarkerFromAmap(marker);
       marker = new window["AMap"].Marker({
-        icon:
-          "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png", // 自定义点标记
+        icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png", // 自定义点标记
         position: [latLng.lng, latLng.lat], // 基点位置
         offset: new window["AMap"].Pixel(0, 0), // 设置点标记偏移量
         anchor: "bottom-left", // 设置锚点方位
@@ -296,9 +294,9 @@ export class MapService {
     };
     if (!window["BMap"]) {
       await this.initBMap();
-      if (!window["BMap"]) {
-        return Promise.reject("地图加载失败");
-      }
+    }
+    if (!window["BMap"]) {
+      return Promise.reject("地图加载失败");
     }
     return new Promise<MapPoint>((s, reject) => {
       let point: MapPoint;
@@ -530,11 +528,17 @@ export class MapService {
       latitude: lats,
     };
   }
-  async getLatLng() {
+  async getMyPositionInfo() {
     const st = Date.now();
     let result: {
       city: TrafficlineEntity;
-      position: { lat: string; lng: string; cityName: string };
+      position: {
+        lat: string;
+        lng: string;
+        cityName: string;
+        province: any;
+        address: any;
+      };
     } = {} as any;
     const isMini =
       (await AppHelper.isWechatMiniAsync()) || AppHelper.isWechatMini();
@@ -554,6 +558,8 @@ export class MapService {
         lat: latLng.lat,
         lng: latLng.lng,
         cityName: latLng.cityName,
+        address: latLng.address,
+        province: latLng.province,
       };
     }
     return result.position && result.position.lat && result.position.lng
@@ -591,7 +597,7 @@ export class MapService {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
-    let latLng: MapPoint = await this.getLatLng().catch((_) => {
+    let latLng: MapPoint = await this.getMyPositionInfo().catch((_) => {
       console.error("getCurrentPosition error", _);
       return void 0;
     });
@@ -669,17 +675,18 @@ export class MapService {
     return new Promise<MapPoint>(async (s) => {
       if (!window["BMap"]) {
         await this.initBMap();
-        if(!window["BMap"]){
-          console.error("getCityNameByIp,BMap 地图尚未加载。。。");
-          s(null);
-        }
+      }
+      if (!window["BMap"]) {
+        console.error("getCityNameByIp,BMap 地图尚未加载。。。");
+        s(null);
+        return;
       }
       const myCity = new window["BMap"].LocalCity();
       let timeout = false;
       setTimeout(() => {
         timeout = true;
         s(null);
-      }, 5 * 1000);
+      }, 50 * 1000);
       myCity.get(
         (rs: {
           center: {

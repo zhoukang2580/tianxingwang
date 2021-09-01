@@ -36,6 +36,8 @@ import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
 import { combineLatest, Observable } from "rxjs";
 import { ApiService } from "./services/api/api.service";
+import { AppVersion } from "@ionic-native/app-version/ngx";
+
 import {
   trigger,
   style,
@@ -46,8 +48,10 @@ import {
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
 import { ThemeService } from "./services/theme/theme.service";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
-import { combineAll, filter, map, mergeMap } from "rxjs/operators";
+import { combineAll, filter, map, mergeMap, switchMap } from "rxjs/operators";
 import { Bind12306Component } from "./train/components/bind12306/bind12306.component";
+import { IdentityService } from "./services/identity/identity.service";
+import { CordovaPushPluginHelper } from "./cordovaPushPluginHelper";
 export interface App {
   loadUrl: (
     url: string,
@@ -103,6 +107,8 @@ export class AppComponent
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private http: HttpClient,
+    private identityService:IdentityService,
+    private appversion: AppVersion,
     private imageRecoverService: ImageRecoverService,
     messageService: MessageService,
     fileService: FileHelperService,
@@ -181,7 +187,21 @@ export class AppComponent
     }
     return path;
   }
+   private async initPush() {
+    await this.platform.ready();
+    this.identityService
+      .getIdentitySource()
+      .pipe(switchMap(() => this.identityService.getStatus()))
+      .subscribe((ok) => {
+        if (ok) {
+          CordovaPushPluginHelper.initPush(this.appversion, this.apiService);
+        }
+      });
+  }
   initializeApp() {
+    if (AppHelper.isApp()) {
+      this.initPush();
+    }
     // this.backButtonAction();
     // if (!AppHelper.isApp()) {
     //   const back = window.history.back;
