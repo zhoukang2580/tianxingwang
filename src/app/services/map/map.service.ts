@@ -7,7 +7,6 @@ import { BehaviorSubject, Subject } from "rxjs";
 import { Storage } from "@ionic/storage";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
 export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
-export const GaodeMapKey = `42acb0dcc0c0541c738f8842ffb360ce`;
 const _KEY_GET_LATEST_LOCATE_POS = `_key_get_latest_locate_pos`;
 export interface MapPoint {
   lng: string;
@@ -31,13 +30,9 @@ export class MapService {
   private static TAG = "map 定位";
   private st = Date.now();
   private querys: any;
-  private amap: any;
-  private isInitBMap = false;
+  private initBMapPromise: Promise<boolean>;
   private bMapLocalSearchObj;
   private bMapLocalSearchSources: Subject<any[]>;
-  private latestLocatePos: {
-    [time: number]: { point: MapPoint; city: TrafficlineEntity; position: any };
-  };
   constructor(
     private apiService: ApiService,
     private storage: Storage,
@@ -54,89 +49,40 @@ export class MapService {
       }
     });
     if (!AppHelper.isWechatMini()) {
-      this.initGaoDeMap();
+      this.initBMap();
     }
   }
   private async initBMap() {
-    return new Promise<boolean>((rsv) => {
+    if (this.initBMapPromise) {
+      return this.initBMapPromise;
+    }
+    this.initBMapPromise = new Promise<boolean>((rsv) => {
       window["init"] = function init() {
         console.log("callback call");
         rsv(true);
       };
-      setTimeout(() => {
-        try {
-          this.isInitBMap = !!document.body.querySelector("#bmapscript");
-          if (this.isInitBMap) {
-            rsv(true);
-            return;
-          }
-          const script = document.createElement("script");
-          script.id = "bmapscript";
-          script.setAttribute("bmapscript", "bmapscript");
-          script.type = "text/javascript";
-          script.src = `https://api.map.baidu.com/api?v=3.0&ak=${baiduMapAk}&callback=init`;
-          window["BMAP_PROTOCOL"] = "https";
-          window["BMap_loadScriptTime"] = new Date().getTime();
-          document.body.appendChild(script);
-        } catch (e) {
-          console.error(e);
-          rsv(false);
-        }
-      }, 0);
-    });
-  }
-  convertToAmap(p: { lat: string; lng: string }) {
-    console.log("原始坐标", p);
-    return new Promise<{ lat: string; lng: string }>((resolve, reject) => {
-      const gps = [p.lng, p.lat];
-      if (window["AMap"]) {
-        window["AMap"].convertFrom(gps, "gps", (status, result) => {
-          console.log("convertToAmap ", status, result);
-          if (result.info === "ok") {
-            const lnglats: {
-              Q: string; // 28.372125;
-              R: string; // -81.502408;
-              lat: string; // 28.372125;
-              lng: string; // -81.502408;
-            }[] = result.locations; // Array.<LngLat>
-            console.log(
-              `convertToAmap olat=${p.lat},olng=${p.lng}`,
-              lnglats[0]
-            );
-            resolve({ lat: lnglats[0].lat, lng: lnglats[0].lng });
-          } else {
-            reject(result);
-          }
-        });
-      } else {
-        reject("");
-      }
-    });
-  }
-  private initGaoDeMap() {
-    window["onAmapLoad"] = () => {
-      // alert("高德地图初始化完成")
-      // this.amap = new window["AMap"].Map("container", {
-      //   center: [116.397428, 39.90923],
-      //   zoom: 13,
-      // });
-    };
-    setTimeout(() => {
       try {
-        if (document.querySelector("#amapscript")) {
+        const isInitBMap = !!document.body.querySelector("#bmapscript");
+        if (isInitBMap) {
+          rsv(this.checkIfWindowHasBMapObj());
           return;
         }
-        const url = `https://webapi.amap.com/maps?v=1.4.15&key=${GaodeMapKey}&callback=onAmapLoad`;
-        const jsapi = document.createElement("script");
-        jsapi.charset = "utf-8";
-        jsapi.src = url;
-        jsapi.id = "amapscript";
-        document.head.appendChild(jsapi);
+        const script = document.createElement("script");
+        script.id = "bmapscript";
+        script.setAttribute("bmapscript", "bmapscript");
+        script.type = "text/javascript";
+        script.src = `https://api.map.baidu.com/api?v=3.0&ak=${baiduMapAk}&callback=init`;
+        window["BMAP_PROTOCOL"] = "https";
+        window["BMap_loadScriptTime"] = new Date().getTime();
+        document.body.appendChild(script);
       } catch (e) {
         console.error(e);
+        rsv(false);
       }
-    }, 3000);
+    });
+    return this.initBMapPromise;
   }
+
   getBMap(container: HTMLElement) {
     let bmap;
     if (window["BMap"] && window["BMap"].Map) {
@@ -144,103 +90,10 @@ export class MapService {
     }
     return bmap;
   }
+  private checkIfWindowHasBMapObj() {
+    return window["BMap"] && window["BMap"].Map;
+  }
 
-  // getAMap(lnglat: { lng: string; lat: string }) {
-  //   if (this.amap) {
-  //     if (lnglat) {
-  //       if (window["AMap"] && window["AMap"].LngLat) {
-  //         const AMap = window["AMap"];
-  //         // 传入经纬度，设置地图中心点
-  //         const position = new AMap.LngLat(lnglat.lng, lnglat.lat); // 标准写法
-  //         // 简写 var position = [116, 39];
-  //         this.amap.setCenter(position);
-  //         // 获取地图中心点
-  //         // const currentCenter = this.amap.getCenter();
-  //       }
-  //     }
-  //     return { map: this.amap, amapContainer: this.amapContainer };
-  //   }
-  //   this.amapContainer = document.getElementById("amap");
-  //   if (!this.amapContainer) {
-  //     this.amapContainer = document.createElement("div");
-  //     this.amapContainer.id = "amap";
-  //     this.amapContainer.classList.add("hidden");
-  //     this.amapContainer.style.width = "100%";
-  //     this.amapContainer.style.height = "100%";
-  //     document.body.append(this.amapContainer);
-  //   }
-  //   if (window["AMap"] && window["AMap"].Map) {
-  //     this.amap = new window["AMap"].Map(this.amapContainer, {
-  //       zoom: 13, // 级别
-  //       resizeEnable: true,
-  //       vectorMapForeign: "English",
-  //       center: [lnglat.lng, lnglat.lat] // 中心点坐标
-  //       // viewMode: "3D" // 使用3D视图
-  //     });
-  //   }
-  //   return { map: this.amap, amapContainer: this.amapContainer };
-  // }
-  initAMap(lnglat: { lng: string; lat: string }, el: HTMLElement, zoom = 13) {
-    let map;
-    if (this.amap) {
-      if (typeof this.amap.destroy == "function") {
-        this.amap.destroy();
-      }
-    }
-    if (window["AMap"] && window["AMap"].Map) {
-      const AMap = window["AMap"];
-
-      map = new window["AMap"].Map(el, {
-        zoom, // 级别
-        resizeEnable: true,
-        lang: "en",
-        center: new AMap.LngLat(lnglat.lng, lnglat.lat), // 中心点坐标
-        // viewMode: "3D" // 使用3D视图
-      });
-      // AMap.plugin(["AMap.ToolBar"], () => {
-      //   const toolbar = new AMap.ToolBar();
-      //   map.addControl(toolbar);
-      // });
-    }
-    this.amap = map;
-    return map;
-  }
-  addMarkerToAMap(latlng: { lat: string; lng: string }, amap: any) {
-    let marker;
-    amap = amap || this.amap;
-    const AMap = window["AMap"];
-    if (AMap && AMap.Marker && amap) {
-      if (typeof amap.clearMap == "function") {
-        amap.clearMap();
-      }
-      const position = new AMap.LngLat(latlng.lng, latlng.lat); // 标准写法
-      marker = new AMap.Marker({
-        animation: "AMAP_ANIMATION_BOUNCE",
-        icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png",
-        // offset: new AMap.Pixel(-13, -30),
-        position, // 位置
-      });
-      amap.add(marker); // 添加到地图
-    }
-    return marker;
-  }
-  moveAMapMarker(latLng: { lat: string; lng: string }, marker: any) {
-    if (marker && window["AMap"] && window["AMap"].LngLat) {
-      this.removeMarkerFromAmap(marker);
-      marker = new window["AMap"].Marker({
-        icon: "https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png", // 自定义点标记
-        position: [latLng.lng, latLng.lat], // 基点位置
-        offset: new window["AMap"].Pixel(0, 0), // 设置点标记偏移量
-        anchor: "bottom-left", // 设置锚点方位
-      });
-      this.amap.add(marker);
-    }
-  }
-  removeMarkerFromAmap(marker) {
-    if (this.amap) {
-      this.amap.remove(marker);
-    }
-  }
   convertPoint(curPoint: MapPoint): Promise<MapPoint> {
     return new Promise((s, reject) => {
       if (!curPoint) {
@@ -261,6 +114,7 @@ export class MapService {
   private async getCurrentPosition(): Promise<MapPoint> {
     if (AppHelper.isApp()) {
       const r = await this.geolocation.getCurrentPosition().catch(() => null);
+      console.log("app geolocation定位结果",r);
       const p: MapPoint = {
         lat: `${r && r.coords.latitude}`,
         lng: `${r && r.coords.longitude}`,
@@ -292,10 +146,10 @@ export class MapService {
       7: `服务不可用`,
       8: `超时`,
     };
-    if (!window["BMap"]) {
+    if (!this.checkIfWindowHasBMapObj()) {
       await this.initBMap();
     }
-    if (!window["BMap"]) {
+    if (!this.checkIfWindowHasBMapObj()) {
       return Promise.reject("地图加载失败");
     }
     return new Promise<MapPoint>((s, reject) => {
@@ -304,6 +158,8 @@ export class MapService {
       setTimeout(() => {
         reject("定位超时");
       }, 5 * 1000);
+      // 开启SDK辅助定位
+      // geolocation.enableSDKLocation();
       geolocation.getCurrentPosition(
         (r: {
           address: {
@@ -346,7 +202,13 @@ export class MapService {
             reject(status[geolocation.getStatus()] || geolocation.getStatus());
           }
         },
-        { enableHighAccuracy: false }
+        {
+          // 是否要求浏览器获取最佳效果，同浏览器定位接口参数。默认为false
+          enableHighAccuracy: true,
+          // timeout 超时事件，单位为毫秒。默认为10秒
+          // maximumAge 允许返回指定事件内的缓存结果，单位为毫秒。如果为0，则每次请求都获取最新的定位结果。默认为10分钟
+          SDKLocation: true,
+        }
       );
     });
   }
@@ -375,8 +237,11 @@ export class MapService {
     }
     return this.bMapLocalSearchSources.asObservable();
   }
-  private getCityFromMap(p: MapPoint): Promise<AddressComponents> {
-    if (!window["BMap"]) {
+  private async getCityFromMap(p: MapPoint): Promise<AddressComponents> {
+    if (!this.checkIfWindowHasBMapObj()) {
+      await this.initBMap();
+    }
+    if (!this.checkIfWindowHasBMapObj()) {
       return Promise.reject("地图加载失败");
     }
     const geoc = new window["BMap"].Geocoder();
@@ -430,11 +295,9 @@ export class MapService {
     return this.getCurrentPosition();
   }
   private async getCurrentCityPositionInWechatMini(): Promise<{
-    city: TrafficlineEntity;
     position: any;
   }> {
     let result: {
-      city: TrafficlineEntity;
       position: any;
     };
     console.log(
@@ -454,19 +317,6 @@ export class MapService {
         lng: latLng.longitude,
         lat: latLng.latitude,
       };
-      const city = await this.getCityByMap(p).catch((_) => {
-        console.error("getCityByMap", _);
-        return null;
-      });
-      if (city) {
-        result = {
-          city: {
-            CityName: city.CityName,
-            CityCode: city.CityCode,
-          } as any,
-          position: latLng,
-        };
-      }
     } else {
       return null;
     }
@@ -531,13 +381,19 @@ export class MapService {
   async getMyPositionInfo() {
     const st = Date.now();
     let result: {
-      city: TrafficlineEntity;
       position: {
         lat: string;
         lng: string;
         cityName: string;
         province: any;
-        address: any;
+        address?: {
+          city: string; // "上海市";
+          city_code: string; // 0;
+          district: string; // "";
+          province: string; // "上海市";
+          street: string; // "";
+          street_number: string; // "";
+        };
       };
     } = {} as any;
     const isMini =
@@ -566,29 +422,10 @@ export class MapService {
       ? result
       : null;
   }
-  private async getLatestLocatePos() {
-    if (!this.latestLocatePos) {
-      const local = await this.storage.get(_KEY_GET_LATEST_LOCATE_POS);
-      if (local) {
-        this.latestLocatePos = local;
-      }
-    }
-    if (this.latestLocatePos && Object.keys(this.latestLocatePos).length) {
-      const t = Object.keys(this.latestLocatePos)
-        .map((k) => +k)
-        .sort((t1, t2) => t2 - t1)[0];
-      if (Date.now() - t < 3600 * 1000) {
-        return this.latestLocatePos[t];
-      }
-    }
-    return null;
-  }
   private async getPosResult(): Promise<{
-    city: TrafficlineEntity;
     position: any;
   }> {
     let result: {
-      city: TrafficlineEntity;
       position: any;
     };
     const isMini =
@@ -604,79 +441,37 @@ export class MapService {
     console.log("getCurrentPosition", latLng);
     if (latLng) {
       result = {
-        city: {
-          CityName: latLng.cityName,
-          CityCode: "",
-        } as any,
         position: latLng,
       };
     }
     if (latLng) {
-      const city = await this.getCityByMap(latLng).catch((_) => {
-        console.error("getCityByMap", _);
+      const cityFromMap = await this.getCityFromMap(latLng).catch((_) => {
+        console.error("getCityFromMap", _);
         return null;
       });
-      if (city) {
+      if (cityFromMap) {
         result = {
-          city: {
-            CityName: city.CityName,
-            CityCode: city.CityCode,
-          } as any,
-          position: latLng,
+          position: cityFromMap,
         };
-      } else {
-        const cityFromMap = await this.getCityFromMap(latLng).catch((_) => {
-          console.error("getCityFromMap", _);
-          return null;
-        });
-        if (cityFromMap) {
-          result = {
-            city: {
-              CityCode: "",
-              CityName: cityFromMap.city,
-            } as any,
-            position: cityFromMap,
-          };
-        }
       }
-    }
-    if (result && result.city && result.city.CityCode) {
-      this.latestLocatePos = {
-        [Date.now()]: {
-          city: result.city,
-          position: result.position,
-          point: latLng,
-        },
-      };
-      this.storage.set(_KEY_GET_LATEST_LOCATE_POS, this.latestLocatePos);
     }
     return result;
   }
   async getCurrentCityPosition(): Promise<{
-    city: TrafficlineEntity;
     position: any;
   }> {
     let result: {
-      city: TrafficlineEntity;
       position: any;
     };
-    const latestLocatePos = await this.getLatestLocatePos();
-    if (latestLocatePos && latestLocatePos.city) {
-      result = {} as any;
-      result.city = latestLocatePos.city;
-      result.position = latestLocatePos.position;
-      this.getPosResult();
-      return result;
-    }
     result = await this.getPosResult();
     return result;
   }
   private getPosByIp(): Promise<MapPoint> {
     return new Promise<MapPoint>(async (s) => {
-      if (!window["BMap"]) {
+      if (!this.checkIfWindowHasBMapObj()) {
         await this.initBMap();
       }
-      if (!window["BMap"]) {
+      if (!this.checkIfWindowHasBMapObj()) {
         console.error("getCityNameByIp,BMap 地图尚未加载。。。");
         s(null);
         return;
@@ -709,15 +504,7 @@ export class MapService {
       );
     });
   }
-  private async getCityByMap(p: MapPoint) {
-    const req = new RequestEntity();
-    req.Method = "TmcApiHotelUrl-City-GetCityByMap";
-    req.Data = p;
-    return await this.apiService.getPromiseData<{
-      CityName: string;
-      CityCode: string;
-    }>(req);
-  }
+
   private getCurrentPostionByNavigator(): Promise<MapPoint> {
     if (
       navigator &&
@@ -767,8 +554,4 @@ export interface AddressComponents {
   district: string;
   street: string;
   streetNumber: string;
-}
-interface TrafficlineEntity {
-  CityCode: string;
-  CityName: string;
 }

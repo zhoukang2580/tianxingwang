@@ -13,7 +13,6 @@ import { ChangeInterRoomPlanDateComponent } from "./change-inter-roomplan-date/c
 import { InterHotelStarPriceComponent } from "./inter-hotel-starprice/inter-hotel-starprice.component";
 import { InterRecommendRankComponent } from "./inter-recommend-rank/inter-recommend-rank.component";
 import { InterHotelWarrantyComponent } from "./inter-hotel-warranty/inter-hotel-warranty.component";
-import { AmapComponent } from "./amap/amap.component";
 import { OverHotelComponent } from './over-hotel/over-hotel.component';
 import { InterHotelQueryEnComponent } from './inter-hotel-query_en/inter-hotel-query_en.component';
 import { InterRoomShowItemEnComponent } from './inter-room-show-item_en/inter-room-show-item_en.component';
@@ -39,7 +38,6 @@ import { InterHotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hot
     InterHotelStarPriceEnComponent,
     InterRecommendRankComponent,
     InterHotelOutNumberComponent,
-    AmapComponent,
     OverHotelComponent
   ],
   imports: [
@@ -50,7 +48,6 @@ import { InterHotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hot
     AppDirectivesModule
   ],
   exports: [
-    AmapComponent,
     InterHotelWarrantyComponent,
     InterHotelAddcontactsCompComponent,
     InterHotelQueryComponent,

@@ -220,6 +220,10 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
     this.hotelQueryModel.PageIndex = 0;
     this.hotelQueryModel.PageSize = 20;
+    if(this.searchHotelModel&&this.searchHotelModel.myPosition){
+      this.hotelQueryModel.Lat=this.searchHotelModel.myPosition.Lat;
+      this.hotelQueryModel.Lng=this.searchHotelModel.myPosition.Lng;
+    }
     this.hotelDayPrices = [];
     this.totalHotels = 0;
     this.scrollToTop();

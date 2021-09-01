@@ -96,7 +96,7 @@
               </ng-container>
               <ng-template #no>
                 <ion-label class="ion-text-wrap">
-                  <h2>{{(searchHotelModel?.searchText.Text?searchHotelModel?.searchText.Text+"("+(searchHotelModel?.destinationCity?.Name||"")+")":"")|| searchHotelModel?.destinationCity?.Name||'请选择目的地'}}</h2>
+                  <h2>{{searchHotelModel?.myPosition?.Text||searchHotelModel?.destinationCity?.Name||"请选择目的地"}}</h2>
                 </ion-label>
               </ng-template>
             </ion-label>

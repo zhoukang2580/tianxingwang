@@ -26,7 +26,7 @@ import { Subject, combineLatest } from "rxjs";
 import { HrService } from "../hr/hr.service";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { ModalController } from "@ionic/angular";
-import { MapService } from "../services/map/map.service";
+import { MapPoint, MapService } from "../services/map/map.service";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { HotelPaymentType } from "./models/HotelPaymentType";
@@ -59,6 +59,7 @@ export class SearchHotelModel {
   tag: "Agreement" | "" | "SpecialPrice";
   hotelType: "agreement" | "normal" | "specialprice";
   searchText: { Value?: string; Text: string; Lat?: string; Lng?: string };
+  myPosition?: { Text: string; Lat?: string; Lng?: string };
 }
 export interface LocalHotelCityCache {
   LastUpdateTime: number;
@@ -602,6 +603,17 @@ export class HotelService {
     }
     return this.localHotelCities;
   }
+  async getCityByMap(p: MapPoint) {
+    const req = new RequestEntity();
+    req.Method = "TmcApiHotelUrl-City-GetCityByMap";
+    req.Data = {
+      position:{
+        lat:p.lat,
+        lng:p.lng
+      }
+    };
+    return this.apiService.getPromiseData<TrafficlineEntity>(req);
+  }
   private async getHotelConditionsAsync(cityCode: string) {
     if (this.isLoadingCondition) {
       return;
@@ -731,6 +743,10 @@ export class HotelService {
         req.Data["SearchKey"] = cond.searchText.Text;
         delete req.Data["HotelId"];
       }
+    }
+    if(this.searchHotelModel.myPosition){
+      req.Data["Lat"] = this.searchHotelModel.myPosition.Lat;
+      req.Data["Lng"] = this.searchHotelModel.myPosition.Lng;
     }
     // req.IsShowLoading = true;
     return this.apiService.getResponse<HotelResultEntity>(req).pipe(

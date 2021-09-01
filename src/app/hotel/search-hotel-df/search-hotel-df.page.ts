@@ -279,6 +279,7 @@ export class SearchHotelDfPage
         this.hotelService.setSearchHotelModel({
           ...this.searchHotelModel,
           destinationCity: rs.city,
+          myPosition:null
         });
         this.hotelCityService.onSelectCity(false);
       }
@@ -288,27 +289,42 @@ export class SearchHotelDfPage
   }
 
   async onPosition() {
-    try{
-      this.isPositioning = true;
+    try {
       if (this.isLeavePage) {
         return;
       }
+      this.isPositioning = true;
       if (this.searchHotelModel) {
         const curPos = await this.hotelService.getCurPosition();
+        console.log("onPosition curPos ", curPos);
         const cities = await this.hotelService.getHotelCityAsync();
         if (cities) {
-          const c = curPos && curPos.city;
+          let c: TrafficlineEntity;
+          if (curPos && curPos.position) {
+            c = await this.hotelService
+              .getCityByMap({
+                lat: curPos.position.lat,
+                lng: curPos.position.lng,
+              })
+              .catch(() => null);
+          }
+          const cName = curPos && curPos.position && curPos.position.cityName;
+          c = cities.find(
+            (it) => it.CityCode == c.CityCode || it.Name == cName
+          );
           if (c) {
-            const city = cities.find((it) => it.Code == c.CityCode);
+            const city = c;
             this.hotelService.setSearchHotelModel({
               ...this.hotelService.getSearchHotelModel(),
               destinationCity: city,
-              searchText:
+              myPosition:
                 curPos && curPos.position
                   ? {
                       Lat: curPos.position.lat,
                       Lng: curPos.position.lng,
-                      Text: curPos.position.address,
+                      Text: curPos.position.address
+                        ? `${curPos.position.address.city}${curPos.position.address.street}${curPos.position.address.street_number}`
+                        : "",
                     }
                   : null,
             });
@@ -316,9 +332,8 @@ export class SearchHotelDfPage
           }
         }
       }
-    }catch(e){
+    } catch (e) {
       console.error(e);
-      
     }
     this.isPositioning = false;
   }
