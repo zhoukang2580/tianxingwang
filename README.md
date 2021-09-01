@@ -10,7 +10,12 @@
 ## 通用api调用
 ## 公共组件模块
 ## 插件模块
-
+## 安装依赖
+`npm i `,如果国内运行慢，可以尝试使用淘宝镜像 ，
+npm config set registry https://registry.npm.taobao.org
+`npm install -g cnpm --registry=https://registry.npm.taobao.org`
+然后后续的安装模块命令和 npm 一样，仅需要将 npm 改成 cnpm 
+参考网址:`https://npm.taobao.org/`
 登录：
   1.用户名、密码，如果输错2次，请求验证码(调用api)，不区分大小写
   2.手机验证码登录,倒计时,如果输错2次，请求验证码
@@ -24,9 +29,11 @@
   `ng serve --host 域名 --port 端口号 --open` 其中的默认端口号是4200
   例如：
   `ng serve --host dev.app.beeant.com --port 4500 --open`
-  `ng serve --vendorChunk=true --sourceMap=false --optimization=false --hmr=true --commonChunk=true --disableHostCheck`
-## 开发阶段使用热加载模块，提高编译速度
-  `ng serve --hmr`
+  `ng serve --disableHostCheck=true --hmr=true --optimization=false --sourceMap=false --vendorChunk=true`
+ngnix 启动 ：ng serve --disableHostCheck
+## 运行项目
+`ng serve `,如果要指定端口运行，`ng serve --port 端口号`
+如果不需要自动刷新 `ng serve --liveReload=false`
 ## 关于路由的简单逻辑
 1. 路由跳转，如果有定义这个路由，说明页面存在，或者，如果新增某个风格的页面，路由也是存在的，所以，一旦路由不存在，则跳转到默认路由
 2. 路由的路径统一跳转，需要注意格式，每个路由定义的规则是，标准路由名称_style_language，即，标准路由名称定义第一个，后面是不同风格和语言的路由定义
@@ -54,22 +61,42 @@ service 以.service 结尾，文件名以 - 切分 比如 mms-shopcart.service
 1. 主版本和次版本不变，就不用更新app
 2. (1)的情况下，查看人更新的版本号，检查本地目录是否已经存在，不存在该热更新版本，则下载更新，新增一个目录名称，存放新文件，下次启动后加载新目录的文件
 
-## 更新app过程
+# 发布注意
+ 0. 包名到config.xml里面的id="xxx"那个值，拷贝即可，或者查看项目目录下面的.zip文件的名字
+ 1. ng build --prod  --base-href /www/  
+ 2. 如果是打包apk，首先需要将angular.json目录下面的output path恢复到默认值，www，然后执行 cordova打包命令，打包完成后，项目目录下面会生成一个 `包名.json`文件，这个文件放置到服务器版本检查的目录即可，如果文件已经存在服务器版本检查的目录中，只需要修改服务器目录下面的 `包名.json`文件内的版本号即可。
+## 发布apk：
+0. 修改config.xml里面的包名，修改主版本号或者次版本号（增加）
+1. 打包完成后，会在命令行中输入出apk的相关信息，名字较长，包含md5的apk就是要放到服务器下载目录（wwwroot）目录下面，然后将名字中的md5值剪切，再到`包名.json`所在的文件中，将apkmd5的值替换成刚刚剪切的值，然后修改版本号为此次发布apk的版本号即可。
+2. ios更新的APP的id是1513565385
+## 发布热更文件：
+1. 可选修改config.xml文件里面的包名，增加热更版本号，然后执行cordova 打包命令，
+2. 打包完成后，可以再项目目录下找到一个`包名.平台.md5.zip`的文件，其中的md5就是此次打包的zip文件的md5，将这个zip文件拷贝到服务器热更文件存储目录下(wwwroot)，然后将名字中的md5剪切，注意，留下的文件名应该是`包名.平台.zip`，然后将md5替换版本配置文件当中的md5的值，同时，修改版本号问当前热更版本号即可。
+# 测试账号
+  1. 测试地址用test001 123456
+  2. 生产的话用test 112233
+# 测试环境APK打包
+  1. 将environment.prod.ts里面的mockProdBuild设置为true，然后执行命令，`ionic cordova build android --prod` 注意，不要添加 --release 选项。 
+  2. 打包完成后，生成的apk访问的就是测试服务器的地址
+  注意事项：测试环境的apk无法调试微信相关的功能
+
+  ## 更新app过程
 1. 到config.xml修改版本号，修改主、次版本号需要重新发布到appstore或者安卓市场，如果修改的是热更版本号，也就是最后一位，则不需要重新发布应用
 2. 执行生产环境打包，生产android的apk，用mac打包，生成iphone的app，分别发布到市场
 3. 如果不需要发布应用，仅发布热更，先用生成apk的命令正常打包，然后在项目目录下找到xxx.xxx.android.hash.zip的文件，ios则是 包名.ios.hash.zip，将文件复制到service.version站点的download目录下面（删除就的zip文件，或者重命名），并且将文件名的hash剪切，将这个hash复制到Applications下面对应的 xxx.android.json或者xxx.ios.json文件的MD5对应的地方，注意，不是apkmd5,apkmd5是更新apk时候，用于校验apk的hash值用的。最后将版本号修改即可。注意看config.xml里面的版本号前两位，需要保持一致，最后一位是热更新用的，增加最后一位即可。
 4. 最后修改updateList.xml修改对应的配置项。其中的Value=config.xml的版本号，其中的version节点对应Android的apk更新，其内部的hotfix对应热更的www目录。md5的值在编译生成的output目录的xxx.apk路径中很长的一段字符串就是对应的md5
 5. 非常重要的注意点，如果是ios热更，一定要用mac进行build ios 生成的 xxx.ios.zip文件，否则更新失败！！！
 6. 由于历史原因，生产的iOS热更新文件的json名字是 `com.eskytrip.zhaozuomingios.ios.json`,下载的文件名字根据json文件内部指定名字即可。
-7. mac上打包时候，到target里面的info找到plist文件，添加微信的白名单 weixinULAPI
+7. mac上打包时候，到target里面的info找到plist文件，添加微信的白名单 `weixinULAPI`
 8. 在平果开发者中心，找到Identifiers，应用管理中，勾上Associated Domains
+9. 在info 下面url types出添加一个identityfier wechat 或者 weixin ，url schema 的值为对应的appid(查看config.ts)
 ## 发布
 `ng build --prod --base-href /www/`
 ng serve --disableHostCheck
 如果出现内存溢出，则需要修改
 `npm run build-prod`
 ## 修改wechat app id 
-1. 到项目目录下面找到config.xml，找到里面的 `<preference name="WECHATAPPID" value="wx58e8910e60cd69ac" />`
+1. 到项目目录下面找到config.ts，修改里面的wechatappid
 2. 将其值修改对应的appid即可
 3. ios微信配置，请参考官网：`https://developers.weixin.qq.com/doc/oplatform/Mobile_App/Access_Guide/iOS.html`
 ## ios 发布app说明
@@ -215,3 +242,25 @@ Version版本号的最后一位数字修改为当前数值加1，保存文件即
 4. 修改config.ts里面的配置选项，将mockProBuild设置为false，将isShowVConsole设置为false，根据项目APP的名称，确定是否修改 appTitle字段，确认AppleStoreAppId的值是否需要修改
 5. 执行 ng build --prod --base-href /www/ 执行生产编译
 6. 将www目录拷贝到服务器client.app站点下面的wwwroot，首先将原来的www重命名，然后将新的www复制过去即可。
+#ios 上长按弹出选择变成了英文的解决办法
+在 p-infolist新增一个 Localizations，添加两个语言选项，一个是English，一个是Chinese（simplified)
+
+## 安装cordova-push-plugin 注意事项
+如果提示pod相关错误，需要切换到platform/ios所在的目录，执行以下命令
+先更新repo 
+pod repo list 查看一下repo列表
+删除警告提示的分支，可能是master，保留另一个 trunk
+sudo gem install cocoapods --pre 更新pod
+pod repo update 更新pod本地仓库
+最后执行
+pod install 
+如果提示网络连接的错误，请多重复几次，如果还不行，用手机开流量热点，执行，确保安装完成。
+如果以上还不能正常安装，则先删除platform ios，重新添加，重新添加插件
+重复执行以上步骤
+安装完后，非常重要的一点就是检查一下 项目目录下面的pods-debug.xcconfig和pods-release.xcconfig里面的内容是否和
+pods/target support files/pods-项目名称.debug.xcconfig,pods-项目名称.release.xcconig里面的内容一致，如果不一致，从pods/target support files/里面的两个文件的内容拷贝到对于的文件中
+如果编译遇到 framework not found Pods_XXX___ 
+解决方法：
+1.项目蓝色图标－>Targets->General->Linked Frameworks and Libraries
+2.删除 Pods_XXX___.frameworks
+可以成功编译
