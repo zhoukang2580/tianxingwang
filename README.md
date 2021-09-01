@@ -215,3 +215,8 @@ Version版本号的最后一位数字修改为当前数值加1，保存文件即
 4. 修改config.ts里面的配置选项，将mockProBuild设置为false，将isShowVConsole设置为false，根据项目APP的名称，确定是否修改 appTitle字段，确认AppleStoreAppId的值是否需要修改
 5. 执行 ng build --prod --base-href /www/ 执行生产编译
 6. 将www目录拷贝到服务器client.app站点下面的wwwroot，首先将原来的www重命名，然后将新的www复制过去即可。
+
+# mac node 引发编译的问题
+ionic cordova build ios 报异常
+The "mode" argument must be integer. Received an instance of Object
+判断应该是node版本引发，使用vnm管理node版本，并且切换到低一点的版本
