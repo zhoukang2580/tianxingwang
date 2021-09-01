@@ -1,0 +1,8 @@
+dependencies {
+   api(name:"vivo_pushSDK_v3.0.0.3_483",ext:"aar")
+}
+repositories {
+  flatDir {
+    dirs 'libs'
+  }
+}

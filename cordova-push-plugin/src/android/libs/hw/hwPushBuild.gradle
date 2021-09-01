@@ -1,0 +1,25 @@
+
+buildscript {
+    dependencies {
+        classpath 'com.huawei.agconnect:agcp:1.5.2.300'
+    }
+    repositories {
+        google()
+        jcenter()
+        // 配置HMS Core SDK的Maven仓地址。
+        maven {url 'https://developer.huawei.com/repo/'}
+    }
+}
+
+allprojects {
+    repositories {
+          google()
+          jcenter()
+          // 配置HMS Core SDK的Maven仓地址。
+          maven {url 'https://developer.huawei.com/repo/'}
+    }
+    
+}
+
+apply plugin: 'com.huawei.agconnect'
+

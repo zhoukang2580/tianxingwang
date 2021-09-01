@@ -1,0 +1,114 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot='start'>
+      <app-back-button [backFn]='back.bind(this)'>
+      </app-back-button>
+    </ion-buttons>
+    <ion-title>{{isNamePasswordValidateFail?"信息核验":"登录12306账号"}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form action="javascript:void(0)">
+    <ion-list>
+      <ion-item>
+        <ion-label></ion-label>
+        <ion-input name='name' [(ngModel)]='name' placeholder='请输入12306账号'></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label></ion-label>
+        <ion-input name='password' [(ngModel)]='password' [clearInput]='true' placeholder='请输入12306账号的密码' type='password'></ion-input>
+      </ion-item>
+    </ion-list>
+  </form>
+  <ion-list>
+    <div class="w">
+      <div class="agreement">
+        <ion-checkbox [checked]='isAgreement' [(ngModel)]='isAgreement'></ion-checkbox>
+        <span (click)='onToggleIsRead()' class="ag">
+          同意
+        </span>
+        <span class="privacy" (click)="openAgreementPage($event)">
+          <ion-text color='secondary'>《账户授权协议》</ion-text>
+        </span>
+      </div>
+      <ion-button color='secondary' (click)='onBind()' [disabled]='!isAgreement||!name||!password' *ngIf='!isNamePasswordValidateFail'>
+        登录12306
+      </ion-button>
+      <div *ngIf='isNamePasswordValidateFail' class="sms-wp">
+        <ion-row>
+          <ion-col size='2'>
+            <div class="num i active" >1</div>
+          </ion-col>
+          <ion-col>
+            <h4>发送<ion-text color='secondary'>{{accountNumber?.SendSmsBody}}</ion-text>至12306</h4>
+            <h5>{{accountNumber?.SmsTip}}</h5>
+          </ion-col>
+        </ion-row>
+        <ion-row class="mg">
+          <ion-col size='2'></ion-col>
+          <ion-col>
+            <ion-button color='secondary' (click)='onSendSms()'>发送短信</ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size='2'>
+            <div class="num i" [class.active]='isSendSms'>2</div>
+          </ion-col>
+          <ion-col>
+            <h4>输入短信验证码，完成核验</h4>
+            <h5>发送短信后，将收到12306发给您的六位数字验证码，请输入该验证码</h5>
+            <div class="flx">
+              <span>验证码</span>
+              <ion-input type='tel' [(ngModel)]='code' placeholder='请输入手机短信验证码'></ion-input>
+            </div>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col size='2'></ion-col>
+          <ion-col>
+            <ion-button color='secondary' (click)='codeValidateAndBind12306()' [disabled]='!name||!password||!code'>
+              完成核验
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </div>
+
+    </div>
+  </ion-list>
+  <ion-list class="item-account">
+    <ion-item *ngIf='bindAccountNumber'>
+      <ion-label>
+        <p class="ah">已有12306账号</p>
+        <h2>
+          <ion-row>
+            <ion-col>
+              {{bindAccountNumber.Name}}
+            </ion-col>
+            <ion-col (click)='onUnbind()' class="ion-text-end">
+              退出
+            </ion-col>
+          </ion-row>
+        </h2>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+<div class="zz" *ngIf="isShowAgreement" (click)="isShowAgreement=false"></div>
+<div class="transfrom" [class.show]='isShowAgreement'>
+  <ion-icon name='close-circle' mode='ios' class="close" color='medium' (click)='isShowAgreement=false'></ion-icon>
+  <h5><strong>火车票12306购票服务协议：</strong></h5>
+  <p>
+    在使用火车票代订服务之前，请您（即用户）仔细阅读下述协议条款。一旦您点击确认本协议，即表示您已接受了以下所述的条款和条件，同意受本协议约束。如果您不同意接受全部的条款和条件，那么您将无法使用本协议约定的技术服务。<br>
+    第一条服务说明<br>
+    1.1 通过天行商旅预订火车票时，可自由选择自行通过您自有的12306账户和密码登陆12306进行预订，也可选择将您的12306账户和密码授权给天行商旅进行代订。<br>
+    1.2 为了更好地给您提供火车票代订服务，一旦您选择12306购票服务 ，您同意将您的12306账户和密码授权给天行商旅，允许天行商旅使用您的12306账户和密码登陆，并完成火车票预订及其相关退改签等操作。<br>
+    1.3 接受此协议，代表自愿委托使用我的12306乘客进行购票。<br>
+    第二条各方权利和义务：<br>
+    1.1 天行商旅提供的是火车票代订服务，您接受本协议，意味着您同意我们使用您填写的乘客信息进行代订，同时您必须遵守12306的购票规定的<ion-text color='secondary' (click)='onOpen12306Items("https://kyfw.12306.cn/otn/regist/rule")'>
+      服务条款。
+    </ion-text>
+    <br>
+    1.2 用户了解并同意，天行商旅会根据您的授权使用您的12306账户及密码操作代订事宜，为了后续进一步向您提供服务，也会在系统中记录您的前述相关信息。但是对于您的隐私信息及相关交易信息，天行商旅会严格保护。<br>
+    1.3 天行商旅可根据国家法律法规变化及维护交易秩序、保护消费者权益需要，不时修改本协议。<br>
+  </p>
+</div>

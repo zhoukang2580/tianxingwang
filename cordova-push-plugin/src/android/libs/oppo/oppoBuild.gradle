@@ -1,0 +1,8 @@
+dependencies {
+   api(name:"com.heytap.msp",ext:"aar")
+}
+repositories {
+  flatDir {
+    dirs 'libs'
+  }
+}

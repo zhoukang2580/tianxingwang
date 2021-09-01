@@ -1,0 +1,129 @@
+.transfrom {
+  font-size: 14px;
+  transform: translate(0, 100%);
+  position: fixed;
+  transition: all ease-in-out 200ms;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  opacity: 0;
+  max-width: 100%;
+  width: 100%;
+  max-height: 65vh;
+  overflow-y: auto;
+  background-color: white;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 0.3em 1em;
+  &.show {
+    z-index: 20;
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  .wrapper {
+    width: 100%;
+    overflow: scroll;
+    line-height: 2;
+  }
+}
+.zz {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 19;
+  opacity: 0.5;
+  background-color: var(--ion-color-dark);
+}
+.agreement {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  .ag {
+    font-size: 14px;
+    margin-left: 0.2em;
+  }
+  ion-checkbox {
+    margin-left: 0.2em;
+  }
+}
+.w {
+  width: 100%;
+  padding: 0 1.4em;
+  ion-button {
+    height: 2.8em;
+    margin-top: 1.8em;
+    width: 100%;
+  }
+}
+ion-col {
+  padding: 0;
+}
+.item-account {
+  ion-item ion-label {
+    border: 1px solid #f2f2f2;
+    padding: 0.6em 0.9em;
+    border-radius: 5px;
+  }
+  .ah {
+    font-size: 12px;
+    margin-bottom: 0.6em;
+  }
+  h2 {
+    font-size: 14px;
+  }
+}
+.close {
+  position: absolute;
+  font-size: 1.9em;
+  top: 0.2em;
+  right: 0.4em;
+}
+.flx {
+  display: flex;
+  align-items: center;
+}
+.sms-wp {
+  h3,
+  h4,
+  h5 {
+    margin: 0;
+    line-height: 1.6;
+  }
+  h4 {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  h5 {
+    font-size: 16px;
+  }
+  .num.i {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    $r: 1.3em;
+    width: $r;
+    height: $r;
+    min-width: $r;
+    min-height: $r;
+    color: white;
+    opacity: 0.8;
+    border-radius: 50%;
+    background-color: var(--ion-color-medium);
+    &.active {
+      opacity: 1;
+      background-color: var(--ion-color-secondary);
+    }
+  }
+  ion-row ion-col:first-child {
+    align-self: flex-start;
+    margin-top: 0.3em;
+  }
+  margin-top: 1em;
+  .mg {
+    margin: 0 0 1em;
+  }
+}

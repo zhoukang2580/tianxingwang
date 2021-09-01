@@ -83,6 +83,7 @@ import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcen
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { SelectComponent } from "src/app/components/select/select.component";
 import { OrderService } from "src/app/order/order.service";
+import { Bind12306Component } from "../components/bind12306/bind12306.component";
 
 @Component({
   selector: "app-train-book-df",
@@ -208,6 +209,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.error = e;
     }
   }
+
   private async getInitializeBookDto() {
     const bookDto = new OrderBookDto();
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
@@ -636,18 +638,95 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       combindInfo.organization.Name = res.Name;
     }
   }
-
-  async bookTrain(isSave: boolean = false, event: CustomEvent) {
+  async bookTrainBy12306(event: CustomEvent) {
+    this.bookTrain(false, event, true);
+  }
+  private async checkAndBind12306() {
+    if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
+      if (this.initialBookDto.AccountNumber12306.IsIdentity) {
+        return true;
+      }
+    }
+    return this.bind12306();
+  }
+  private async bind12306() {
+    try {
+      if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
+        this.initialBookDto.AccountNumber12306= await this.trainService.getBindAccountNumber();
+      }
+      const an=this.initialBookDto.AccountNumber12306;
+      const m = await AppHelper.modalController.create({
+        component: Bind12306Component,
+        componentProps: {
+          name: an && an.Name,
+          password: an && an.Number,
+        },
+      });
+      m.present();
+      const res = await m.onDidDismiss();
+      if (res && res.data) {
+        return true;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  }
+  async bookTrain(
+    isSave: boolean = false,
+    event: CustomEvent,
+    is12306Book: boolean = false
+  ) {
     this.isShowFee = false;
     event.stopPropagation();
     if (this.isSubmitDisabled) {
       return;
+    }
+    let isOfficialBooked = false;
+    if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
+      this.initialBookDto.AccountNumber12306 =
+        await this.trainService.getBindAccountNumber();
+    }
+    if (
+      !is12306Book &&
+      this.initialBookDto &&
+      (!this.initialBookDto.AccountNumber12306 ||
+        !this.initialBookDto.AccountNumber12306.IsIdentity)
+    ) {
+      const ok = await AppHelper.alert(
+        "您尚未绑定12306账户,可能导致线上无法退改签,则需登陆乘车人12306账户或至火车站退改签",
+        true,
+        "直接预订",
+        "绑定12306"
+      );
+      isOfficialBooked = !ok;
+      if (isOfficialBooked) {
+        this.bookTrainBy12306(event);
+        return;
+      }
+    }
+    if (is12306Book) {
+      isOfficialBooked = await this.checkAndBind12306();
+      if (!isOfficialBooked) {
+        const direct = await AppHelper.alert(
+          "您尚未绑定12306账户,可能导致线上无法退改签,则需登陆乘车人12306账户或至火车站退改签",
+          true,
+          "直接预订",
+          "重新绑定12306"
+        );
+        isOfficialBooked = !direct;
+        if (isOfficialBooked) {
+          this.bookTrainBy12306(event);
+          return;
+        }
+      }
     }
     const exchangeInfo = this.trainService
       .getBookInfos()
       .find((it) => !!it.exchangeInfo);
     const bookDto: OrderBookDto = new OrderBookDto();
     bookDto.IsFromOffline = isSave;
+    bookDto.IsOfficialBooked = isOfficialBooked;
     let canBook = false;
     let canBook2 = false;
     this.viewModel.combindInfos = this.fillGroupConbindInfoApprovalInfo(
@@ -1663,10 +1742,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     }
     if (item.credentials) {
       item.credentials = item.credentials.filter((it) => !!it.Number);
-      item.credentials = item.credentials.filter((it)=> 
-      it.Type != CredentialsType.HmPass &&
-      it.Type != CredentialsType.TwPass && 
-      it.Type != CredentialsType.TaiwanEp)
+      item.credentials = item.credentials.filter(
+        (it) =>
+          it.Type != CredentialsType.HmPass &&
+          it.Type != CredentialsType.TwPass &&
+          it.Type != CredentialsType.TaiwanEp
+      );
     }
     console.log("onModify", item.credentials);
   }

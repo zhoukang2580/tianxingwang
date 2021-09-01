@@ -46,7 +46,8 @@ import { HotelCityService } from "../hotel-city.service";
   styleUrls: ["./search-hotel-df.page.scss"],
 })
 export class SearchHotelDfPage
-  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
+  implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate
+{
   @ViewChild(BackButtonComponent) backbtn: BackButtonComponent;
   @ViewChild("imgEles", { static: true }) imgEles: ElementRef<HTMLElement>;
   @ViewChild("ionCardEle", { static: true }) ionCard: IonCard;
@@ -287,27 +288,37 @@ export class SearchHotelDfPage
   }
 
   async onPosition() {
-    this.isPositioning = true;
-    if (this.isLeavePage) {
-      return;
-    }
-    if (this.searchHotelModel) {
-      const cities = await this.hotelService.getHotelCityAsync();
-      if (cities) {
-        const c = cities.find(
-          (it) =>
-            it.Code ==
-            (this.searchHotelModel.destinationCity &&
-              this.searchHotelModel.destinationCity.Code)
-        );
-        if (c) {
-          this.hotelService.setSearchHotelModel({
-            ...this.hotelService.getSearchHotelModel(),
-            destinationCity: c,
-          });
-          await this.hotelService.getConditions(true);
+    try{
+      this.isPositioning = true;
+      if (this.isLeavePage) {
+        return;
+      }
+      if (this.searchHotelModel) {
+        const curPos = await this.hotelService.getCurPosition();
+        const cities = await this.hotelService.getHotelCityAsync();
+        if (cities) {
+          const c = curPos && curPos.city;
+          if (c) {
+            const city = cities.find((it) => it.Code == c.CityCode);
+            this.hotelService.setSearchHotelModel({
+              ...this.hotelService.getSearchHotelModel(),
+              destinationCity: city,
+              searchText:
+                curPos && curPos.position
+                  ? {
+                      Lat: curPos.position.lat,
+                      Lng: curPos.position.lng,
+                      Text: curPos.position.address,
+                    }
+                  : null,
+            });
+            await this.hotelService.getConditions(true);
+          }
         }
       }
+    }catch(e){
+      console.error(e);
+      
     }
     this.isPositioning = false;
   }

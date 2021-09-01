@@ -36,6 +36,8 @@ import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
 import { combineLatest, Observable } from "rxjs";
 import { ApiService } from "./services/api/api.service";
+import { AppVersion } from "@ionic-native/app-version/ngx";
+
 import {
   trigger,
   style,
@@ -46,7 +48,10 @@ import {
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
 import { ThemeService } from "./services/theme/theme.service";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
-import { combineAll, filter, map, mergeMap } from "rxjs/operators";
+import { combineAll, filter, map, mergeMap, switchMap } from "rxjs/operators";
+import { Bind12306Component } from "./train/components/bind12306/bind12306.component";
+import { IdentityService } from "./services/identity/identity.service";
+import { CordovaPushPluginHelper } from "./cordovaPushPluginHelper";
 export interface App {
   loadUrl: (
     url: string,
@@ -80,7 +85,8 @@ export interface App {
   ],
 })
 export class AppComponent
-  implements AfterViewInit, AfterContentInit, OnChanges, OnInit {
+  implements AfterViewInit, AfterContentInit, OnChanges, OnInit
+{
   app: App = window.navigator["app"];
   message$: Observable<MessageModel>;
   openSelectCity$: Observable<boolean>;
@@ -101,6 +107,8 @@ export class AppComponent
     private actionSheetCtrl: ActionSheetController,
     private loadingCtrl: LoadingController,
     private http: HttpClient,
+    private identityService:IdentityService,
+    private appversion: AppVersion,
     private imageRecoverService: ImageRecoverService,
     messageService: MessageService,
     fileService: FileHelperService,
@@ -140,7 +148,7 @@ export class AppComponent
     if (this.platform.is("android")) {
       AppHelper.setDeviceName("android");
     }
-    
+
     this.initializeApp();
     this.platform.ready().then(() => {
       if (this.platform.is("ios") && AppHelper.isApp()) {
@@ -179,7 +187,21 @@ export class AppComponent
     }
     return path;
   }
+   private async initPush() {
+    await this.platform.ready();
+    this.identityService
+      .getIdentitySource()
+      .pipe(switchMap(() => this.identityService.getStatus()))
+      .subscribe((ok) => {
+        if (ok) {
+          CordovaPushPluginHelper.initPush(this.appversion, this.apiService);
+        }
+      });
+  }
   initializeApp() {
+    if (AppHelper.isApp()) {
+      this.initPush();
+    }
     // this.backButtonAction();
     // if (!AppHelper.isApp()) {
     //   const back = window.history.back;
@@ -222,6 +244,11 @@ export class AppComponent
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {
       if (!environment.production) {
+        // AppHelper.modalController
+        //   .create({ component: Bind12306Component })
+        //   .then((m) => {
+        //     m.present();
+        //   });
         // AppHelper.getQueryParamers()['mmsid'] = 2;
         // this.router.navigate(['mms-order-lottery'], { queryParams: { mmsid: 2 } });
         // this.router.navigate(['mms-admin-home'], { queryParams: { mmsid: 2 } });

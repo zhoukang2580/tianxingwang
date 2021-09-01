@@ -947,18 +947,18 @@ function CityPage(domesticCities, interCities, lang = "cn") {
     let arr = that.isDomestic ? that.cities : that.internationalCities;
     let temp = [];
     if (kw) {
-      let tmpArr;
-      if (kw.length == 3) {
-        tmpArr = arr.filter(
-          (it) => (it.Code || "").toLowerCase() == kw.toLowerCase()
-        );
-      }
+      // let tmpArr=[];
+      // if (kw.length == 3) {
+      //   tmpArr = arr.filter(
+      //     (it) => (it.Code || "").toLowerCase() == kw.toLowerCase()
+      //   );
+      // }
       arr = arr.filter((it) => {
-        if (tmpArr) {
-          return tmpArr.some((one) =>
-            it.matchStr.toLowerCase().includes(one.CityName.toLowerCase())
-          );
-        }
+        // if (tmpArr&&tmpArr.length) {
+        //   return tmpArr.some((one) =>
+        //     it.matchStr.toLowerCase().includes(one.CityName.toLowerCase())
+        //   );
+        // }
         return it.matchStr.toLowerCase().includes(kw.toLowerCase());
       });
       temp = arr.slice(
@@ -981,6 +981,11 @@ function CityPage(domesticCities, interCities, lang = "cn") {
       infinite.disabled = temp.length < that.pageSize;
     }
     if (temp && temp.length) {
+      const l = that.searchListPage.querySelector(".search-list-page__list");
+      const ln=l.querySelector(".no-more-data");
+      if(ln){
+        l.removeChild(ln)
+      }
       appMoreItems(temp);
     } else {
       const l = that.searchListPage.querySelector(".search-list-page__list");
