@@ -149,6 +149,7 @@ export class MapService {
       }, 30 * 1000);
       // 开启SDK辅助定位
       // geolocation.enableSDKLocation();
+      console.time("百度地图定位到的当前位置geo");
       geolocation.getCurrentPosition(
         async (r: {
           address: {
@@ -162,10 +163,11 @@ export class MapService {
           };
           point: MapPoint;
         }) => {
+          console.timeEnd("百度地图定位到的当前位置geo");
           if (geolocation.getStatus() == window["BMAP_STATUS_SUCCESS"]) {
             point = r.point;
             if (r && r.point) {
-              console.log("百度地图定位到的当前位置 ", r);
+              console.log(`百度地图定位到的当前位置`, r);
               const addresscomp = await this.getAddressComponents({
                 lat: r.point.lat,
                 lng: r.point.lng,
@@ -233,7 +235,7 @@ export class MapService {
       this.bMapLocalSearchObj = new window["BMap"].LocalSearch(pt, {
         pageCapacity: 20,
         onSearchComplete: (r) => {
-          console.log(r);
+          // console.log(r);
           this.bMapLocalSearchSources.next((r && r.Ar) || []);
         },
       });
@@ -264,9 +266,11 @@ export class MapService {
         street: string;
         streetNumber: string;
       }>((rsv) => {
+        let st = Date.now();
         const geoc = new window["BMap"].Geocoder({ extensions_town: true });
         let isResolve = false;
         geoc.getLocation(pt, function (rs) {
+          console.log(`Geocoder 解析地址耗时 ${Date.now() - st}`);
           const addComp = rs.addressComponents;
           if (isResolve) {
             return;
@@ -404,9 +408,11 @@ export class MapService {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
     }
+    console.time("getCurrentPositionByBMap");
     let latLng: MapPoint = await this.getCurrentPositionByBMap().catch(
       () => null
     );
+    console.timeEnd("getCurrentPositionByBMap");
     if (!latLng) {
       latLng = await this.getPosByBMapIp();
       console.log("通过idp定位", latLng);
@@ -418,7 +424,7 @@ export class MapService {
           lat: latLng.lat,
           lng: latLng.lng,
         });
-        console.log("getMyPositionInfo addressComp ",addressComp)
+        console.log("getMyPositionInfo addressComp ", addressComp);
         if (addressComp) {
           latLng.address = {
             city: addressComp.city,
@@ -499,6 +505,7 @@ export class MapService {
         s(null);
         return;
       }
+      let st = Date.now();
       const myCity = new window["BMap"].LocalCity();
       let isResolve = false;
       setTimeout(() => {
@@ -518,6 +525,7 @@ export class MapService {
           level: number;
           name: string;
         }) => {
+          console.log(`localcity 耗时：${Date.now() - st}`);
           if (isResolve) {
             return;
           }

@@ -299,8 +299,15 @@ export class SearchHotelDfPage
         console.log("onPosition curPos ", curPos);
         const cities = await this.hotelService.getHotelCityAsync();
         if (cities) {
+          const cName = curPos && curPos.position && curPos.position.cityName;
           let c: TrafficlineEntity;
-          if (curPos && curPos.position) {
+          c = cities.find(
+            (it) =>
+              it.Name == cName ||
+              cName.includes(it.Name) ||
+              it.Name.includes(cName)
+          );
+          if (!c) {
             c = await this.hotelService
               .getCityByMap({
                 lat: curPos.position.lat,
@@ -308,10 +315,6 @@ export class SearchHotelDfPage
               })
               .catch(() => null);
           }
-          const cName = curPos && curPos.position && curPos.position.cityName;
-          c = cities.find(
-            (it) => it.CityCode == c.CityCode || it.Name == cName
-          );
           if (c) {
             const city = c;
             this.hotelService.setSearchHotelModel({
