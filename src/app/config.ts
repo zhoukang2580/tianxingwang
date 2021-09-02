@@ -9,7 +9,7 @@ export const CONFIG = {
   defaultStyle: "df",
   progressbarColor: "#08c261", // webview加载第三方应用进度条的颜色
   showNotUseWechatAccountTipTimeout: 5000,
-  apiExcceedlogtime: 6 * 1000,// api请求超过某个时间，就发送一个日志到后台
+  apiExcceedlogtime: 20 * 1000,// api请求超过某个时间，就发送一个日志到后台
   apiTimemoutTime:30*1000,
   appDomain: {
     production: "sky-trip.com",
