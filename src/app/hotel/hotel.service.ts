@@ -379,6 +379,53 @@ export class HotelService {
     // };
     return res;
   }
+  async getMyPosition(isByUser = false) {
+    try {
+      if (this.searchHotelModel) {
+        const curPos = await this.getCurPosition();
+        console.log("onPosition curPos ", curPos);
+        const cities = await this.getHotelCityAsync();
+        if (cities) {
+          const cName = curPos && curPos.position && curPos.position.cityName;
+          let c: TrafficlineEntity;
+          c = cities.find(
+            (it) =>
+              it.Name == cName ||
+              cName.includes(it.Name) ||
+              it.Name.includes(cName)
+          );
+          if (!c) {
+            c = await this
+              .getCityByMap({
+                lat: curPos.position.lat,
+                lng: curPos.position.lng,
+              })
+              .catch(() => null);
+          }
+          if (c) {
+            const city = c;
+            this.setSearchHotelModel({
+              ...this.getSearchHotelModel(),
+              destinationCity: city,
+              myPosition:
+                isByUser && curPos && curPos.position
+                  ? {
+                      Lat: curPos.position.lat,
+                      Lng: curPos.position.lng,
+                      Text: curPos.position.address
+                        ? `${curPos.position.address.city}${curPos.position.address.district}${curPos.position.address.street}`
+                        : "",
+                    }
+                  : null,
+            });
+            await this.getConditions(true);
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
   getSearchHotelModelSource() {
     return this.searchHotelModelSource.asObservable();
   }

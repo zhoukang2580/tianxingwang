@@ -287,59 +287,10 @@ export class SearchHotelDfPage
       this.router.navigate([AppHelper.getRoutePath("select-inter-city")]);
     }
   }
-
-  async onPosition(isByUser = false) {
-    try {
-      if (this.isLeavePage) {
-        return;
-      }
-      this.isPositioning = true;
-      if (this.searchHotelModel) {
-        const curPos = await this.hotelService.getCurPosition();
-        console.log("onPosition curPos ", curPos);
-        const cities = await this.hotelService.getHotelCityAsync();
-        if (cities) {
-          const cName = curPos && curPos.position && curPos.position.cityName;
-          let c: TrafficlineEntity;
-          c = cities.find(
-            (it) =>
-              it.Name == cName ||
-              cName.includes(it.Name) ||
-              it.Name.includes(cName)
-          );
-          if (!c) {
-            c = await this.hotelService
-              .getCityByMap({
-                lat: curPos.position.lat,
-                lng: curPos.position.lng,
-              })
-              .catch(() => null);
-          }
-          if (c) {
-            const city = c;
-            this.hotelService.setSearchHotelModel({
-              ...this.hotelService.getSearchHotelModel(),
-              destinationCity: city,
-              myPosition:
-                isByUser && curPos && curPos.position
-                  ? {
-                      Lat: curPos.position.lat,
-                      Lng: curPos.position.lng,
-                      Text: curPos.position.address
-                        ? `${curPos.position.address.city}${curPos.position.address.district}${curPos.position.address.street}`
-                        : "",
-                    }
-                  : null,
-            });
-            await this.hotelService.getConditions(true);
-          }
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    this.isPositioning = false;
+  onPosition(isByUser=false){
+    this.hotelService.getMyPosition(isByUser)
   }
+ 
   onShowSelectedBookInfos() {
     this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
   }

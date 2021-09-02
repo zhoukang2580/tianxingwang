@@ -184,6 +184,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     route.queryParamMap.subscribe(async (p) => {
       this.clearBookInfos();
       this.check();
+      this.hotelService.getMyPosition().catch();
       this.isAgent = this.tmcService.isAgent;
       if (p.get("selectedCompany")) {
         this.tmcService.setSelectedCompanySource(p.get("selectedCompany"));
@@ -432,38 +433,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  // async onTaskDetail(task) {
-  //   const url = await this.getTaskHandleUrl(task);
-  //   this.tmcService
-  //     .SetAccountMessage(task)
-  //     .then(() => {
-  //       this.tasklist = this.tasklist.filter((it) => it.Id != task.Id);
-  //       setTimeout(() => {
-  //         if(!this.taskEleSwiper){
-  //           this.initTaskSpwiper()
-  //         }else{
-  //           this.taskEleSwiper.update();
-  //         }
-  //       }, 200);
-  //     })
-  //     .catch((e) => {
-  //       console.error(e);
-  //     });
-  //   if (url) {
-  //     AppHelper.modalController.create({
-  //       component:OpenUrlComponent,
-  //       componentProps:{
-  //         url,
-  //         isOpenAsModal:true,
-  //         isIframeOpen: true,
-  //         isHideTitle: false,
-  //         title: task && task.Title
-  //       }
-  //     }).then(m=>{
-  //       m.present();
-  //     })
-  //   }
-  // }
 
   goToDetail(id) {
     this.hotelService.RoomDefaultImg = this.recommendHotelDefaultImg;
@@ -472,24 +441,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private async getTaskHandleUrl(task, isAppendTicket = true) {
-    const identity: IdentityEntity = await this.identityService
-      .getIdentityAsync()
-      .catch((_) => null);
-    const ticket = identity && identity.Ticket;
-    let url = this.getTaskUrl(task);
-    if (url) {
-      if (url.includes("?")) {
-        url = `${url}&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
-      } else {
-        url = `${url}?isApp=true&lang=${AppHelper.getLanguage() || ""}`;
-      }
-      if (isAppendTicket && ticket) {
-        url = `${url}&ticket=${ticket}`;
-      }
-    }
-    return url;
-  }
 
   getTaskUrl(task) {
     return task && (task.HandleUrl || task.Url);
@@ -517,11 +468,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   }
   private async initializeSelfBookInfos() {
     try {
-      // if (staff) {
-      //   await this.hotelService.initSelfBookTypeBookInfos(false);
-      //   await this.flightService.initSelfBookTypeBookInfos(false);
-      //   await this.trainServive.initSelfBookTypeBookInfos(false);
-      // }
     } catch (e) {}
   }
 
@@ -556,20 +502,6 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.bannersSwiper.on("transitionEnd", function () {
         that.curIndex = this.activeIndex;
       });
-    }
-  }
-  private initTaskSpwiper() {
-    const opts: any = {
-      // circular: true,
-      autoplay: {
-        disableOnInteraction: false,
-      },
-      // speed: 1000,
-      // direction: "vertical",
-    };
-    console.log("taskel", this.taskEl);
-    if (this.taskEl && this.taskEl.nativeElement) {
-      this.taskEleSwiper = new Swiper(this.taskEl.nativeElement, opts);
     }
   }
   private initTripSpwiper() {
