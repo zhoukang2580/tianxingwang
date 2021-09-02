@@ -254,7 +254,9 @@ export class SearchHotelDfPage
   }
   ngOnInit() {
     this.observeSearchCondition();
-    this.onPosition();
+    if (!this.searchHotelModel && this.searchHotelModel.myPosition) {
+      this.onPosition();
+    }
     this.initSegment();
   }
   private async checkHasAuth(isDomestic = true) {

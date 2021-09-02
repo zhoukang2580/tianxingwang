@@ -361,22 +361,8 @@ export class HotelService {
     m.hotelType = "normal";
     this.setSearchHotelModel(m);
   }
-  async getCurPosition() {
+  private async getCurPosition() {
     const res = await this.mapService.getMyPositionInfo();
-    console.log("hotel getCurPosition ",res);
-    // if (res && res.position) {
-    //   const cities = await this.getHotelCityAsync();
-    //   res.city = cities.find(
-    //     (c) =>
-    //       c.Name &&
-    //       (c.Name.includes(res.position.cityName) ||
-    //         res.position.cityName.includes(c.Name))
-    //   );
-    // }
-    // return {
-    //   position: res || (await this.mapService.getCurrentCityPosition()),
-    //   city: res.city,
-    // };
     return res;
   }
   async getMyPosition(isByUser = false) {
@@ -395,12 +381,10 @@ export class HotelService {
               it.Name.includes(cName)
           );
           if (!c) {
-            c = await this
-              .getCityByMap({
-                lat: curPos.position.lat,
-                lng: curPos.position.lng,
-              })
-              .catch(() => null);
+            c = await this.getCityByMap({
+              lat: curPos.position.lat,
+              lng: curPos.position.lng,
+            }).catch(() => null);
           }
           if (c) {
             const city = c;
@@ -408,13 +392,14 @@ export class HotelService {
               ...this.getSearchHotelModel(),
               destinationCity: city,
               myPosition:
-                isByUser && curPos && curPos.position
+                curPos && curPos.position
                   ? {
                       Lat: curPos.position.lat,
                       Lng: curPos.position.lng,
-                      Text: curPos.position.address
-                        ? `${curPos.position.address.city}${curPos.position.address.district}${curPos.position.address.street}`
-                        : "",
+                      Text:
+                        isByUser && curPos.position.address
+                          ? `${curPos.position.address.city}${curPos.position.address.district}${curPos.position.address.street}`
+                          : "",
                     }
                   : null,
             });
@@ -654,10 +639,10 @@ export class HotelService {
     const req = new RequestEntity();
     req.Method = "TmcApiHotelUrl-City-GetCityByMap";
     req.Data = {
-      position:{
-        lat:p.lat,
-        lng:p.lng
-      }
+      position: {
+        lat: p.lat,
+        lng: p.lng,
+      },
     };
     return this.apiService.getPromiseData<TrafficlineEntity>(req);
   }
@@ -791,7 +776,11 @@ export class HotelService {
         delete req.Data["HotelId"];
       }
     }
-    if(this.searchHotelModel.myPosition){
+    if (
+      this.searchHotelModel.myPosition &&
+      this.searchHotelModel.myPosition.Lat &&
+      this.searchHotelModel.myPosition.Lng
+    ) {
       req.Data["Lat"] = this.searchHotelModel.myPosition.Lat;
       req.Data["Lng"] = this.searchHotelModel.myPosition.Lng;
     }
