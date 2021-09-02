@@ -721,7 +721,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           return;
         }
       }
-      this.initialBookDto.AccountNumber12306.IsIdentity=isOfficialBooked;
+      if(this.initialBookDto&&this.initialBookDto.AccountNumber12306){
+        this.initialBookDto.AccountNumber12306.IsIdentity=isOfficialBooked;
+      }
     }
     const exchangeInfo = this.trainService
       .getBookInfos()
@@ -763,7 +765,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
               this.isSubmitDisabled=false;
               if (r.Code == "MessageCodeValidate") {
                 AppHelper.alert(r.Message).then((ok) => {
-                  this.initialBookDto.AccountNumber12306.IsIdentity=false;
+                  if(this.initialBookDto&&this.initialBookDto.AccountNumber12306){
+                    this.initialBookDto.AccountNumber12306.IsIdentity=false;
+                  }
                   this.bookTrainBy12306(event);
                 });
                 return;
