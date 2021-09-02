@@ -403,7 +403,7 @@ export class HotelService {
                     }
                   : null,
             });
-            await this.getConditions(true);
+            await this.getConditions(isByUser);
           }
         }
       }
