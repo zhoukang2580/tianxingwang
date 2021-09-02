@@ -402,8 +402,7 @@ export class MapService {
         };
       };
     } = {} as any;
-    const isMini =
-      (await AppHelper.isWechatMiniAsync()) || AppHelper.isWechatMini();
+    const isMini = AppHelper.isWechatMini();
     if (isMini) {
       result = await this.getCurrentCityPositionInWechatMini();
       return result;
