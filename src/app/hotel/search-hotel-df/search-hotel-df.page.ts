@@ -287,10 +287,15 @@ export class SearchHotelDfPage
       this.router.navigate([AppHelper.getRoutePath("select-inter-city")]);
     }
   }
-  onPosition(isByUser=false){
-    this.hotelService.getMyPosition(isByUser)
+  async onPosition(isByUser = false) {
+    if (this.isPositioning) {
+      return;
+    }
+    this.isPositioning = true;
+    await this.hotelService.getMyPosition(isByUser);
+    this.isPositioning = false;
   }
- 
+
   onShowSelectedBookInfos() {
     this.router.navigate([AppHelper.getRoutePath("hotel-book")]);
   }
