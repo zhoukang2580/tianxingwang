@@ -261,7 +261,7 @@ export class SearchHotelDfPage
   }
   private async checkHasAuth(isDomestic = true) {
     return this.tmcService.hasBookRight(
-      isDomestic ? "hotel" : "international-hotel"
+      isDomestic ? "hotel" : "international-hotel" 
     );
   }
   private async initSegment() {
