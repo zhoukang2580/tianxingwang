@@ -1421,14 +1421,14 @@ export class TrainService {
     req.Timeout = 60;
     return this.apiService.getPromiseData<IBookOrderResult>(req);
   }
-  async bookTrain(bookDto: OrderBookDto): Promise<IBookOrderResult> {
+  async bookTrain(bookDto: OrderBookDto) {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Train-Book";
     bookDto.Channel = await this.tmcService.getChannel();
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService.getPromiseData<IBookOrderResult>(req);
+    return this.apiService.getPromise<IBookOrderResult>(req);
   }
   removeAllBookInfos() {
     this.bookInfos = [];

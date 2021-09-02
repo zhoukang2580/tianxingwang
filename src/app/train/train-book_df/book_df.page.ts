@@ -652,9 +652,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private async bind12306() {
     try {
       if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
-        this.initialBookDto.AccountNumber12306= await this.trainService.getBindAccountNumber();
+        this.initialBookDto.AccountNumber12306 =
+          await this.trainService.getBindAccountNumber();
       }
-      const an=this.initialBookDto.AccountNumber12306;
+      const an = this.initialBookDto.AccountNumber12306;
       const m = await AppHelper.modalController.create({
         component: Bind12306Component,
         componentProps: {
@@ -720,6 +721,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           return;
         }
       }
+      this.initialBookDto.AccountNumber12306.IsIdentity=isOfficialBooked;
     }
     const exchangeInfo = this.trainService
       .getBookInfos()
@@ -752,24 +754,45 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           return null;
         });
       } else {
-        res = await this.trainService.bookTrain(bookDto).catch((e) => {
-          this.isSubmitDisabled = false;
-          const msg: string = e;
-          if (msg && /\d{11}-/.test(msg)) {
-            const tips = msg
-              .split("/")
-              .filter((it) => !!it)
-              .map((it) => {
-                const [phone, code] = it.split("-");
-                return `使用手机号${phone},发送验证码${code}到12306进行手机身份验证(验证码30分钟内有效)`;
-              })
-              .join("\r\n");
-            AppHelper.alert(tips);
-            return;
-          }
-          AppHelper.alert(e);
-          return null;
-        });
+        await this.trainService
+          .bookTrain(bookDto)
+          .then((r) => {
+            if (r.Status) {
+              res = r.Data;
+            } else {
+              this.isSubmitDisabled=false;
+              if (r.Code == "MessageCodeValidate") {
+                AppHelper.alert(r.Message).then((ok) => {
+                  this.initialBookDto.AccountNumber12306.IsIdentity=false;
+                  this.bookTrainBy12306(event);
+                });
+                return;
+              }
+              AppHelper.alert(r.Message);
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+            this.isSubmitDisabled = false;
+            const msg: string = e;
+            if (msg && /\d{11}-/.test(msg)) {
+              const tips = msg
+                .split("/")
+                .filter((it) => !!it)
+                .map((it) => {
+                  const [phone, code] = it.split("-");
+                  return `使用手机号${phone},发送验证码${code}到12306进行手机身份验证(验证码30分钟内有效)`;
+                })
+                .join("\r\n");
+              AppHelper.alert(tips);
+              return;
+            }
+            AppHelper.alert(e).then((ok) => {
+              this.bookTrainBy12306(event);
+            });
+            res = null;
+            return null;
+          });
       }
       if (res) {
         if (res.TradeNo) {
