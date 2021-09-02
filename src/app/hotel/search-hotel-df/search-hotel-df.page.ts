@@ -279,7 +279,7 @@ export class SearchHotelDfPage
         this.hotelService.setSearchHotelModel({
           ...this.searchHotelModel,
           destinationCity: rs.city,
-          myPosition:null
+          myPosition: null,
         });
         this.hotelCityService.onSelectCity(false);
       }
@@ -288,7 +288,7 @@ export class SearchHotelDfPage
     }
   }
 
-  async onPosition() {
+  async onPosition(isByUser = false) {
     try {
       if (this.isLeavePage) {
         return;
@@ -318,12 +318,12 @@ export class SearchHotelDfPage
               ...this.hotelService.getSearchHotelModel(),
               destinationCity: city,
               myPosition:
-                curPos && curPos.position
+                isByUser && curPos && curPos.position
                   ? {
                       Lat: curPos.position.lat,
                       Lng: curPos.position.lng,
                       Text: curPos.position.address
-                        ? `${curPos.position.address.city}${curPos.position.address.street}${curPos.position.address.street_number}`
+                        ? `${curPos.position.address.city}${curPos.position.address.district}${curPos.position.address.street}`
                         : "",
                     }
                   : null,

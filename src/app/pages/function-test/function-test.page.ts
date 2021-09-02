@@ -74,7 +74,7 @@ export class FunctionTestPage implements OnInit {
   }
   onGetInfoByLatlng() {
     this.mapService
-      .getaddressComponents({ ...this.posInfo })
+      .getAddressComponents({ ...this.posInfo })
       .then((r) => {
         this.addressComponents = r;
       })
