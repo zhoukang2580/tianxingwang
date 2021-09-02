@@ -688,6 +688,8 @@ export interface IHrInvitation {
   name: string;
   roleIds: string;
   roleNames: string;
+  positionNames: string;
+  positionIds: string;
   number: string;
   gender: string;
   birthday: string;

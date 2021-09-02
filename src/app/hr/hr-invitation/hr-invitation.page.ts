@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
 import { Subscription } from "rxjs";
-import { HrService } from "../hr.service";
+import { HrService, IHrInvitation } from "../hr.service";
 import { CostcenterComponent } from "../components/costcenter/search-costcenter.component";
 import { OrganizationComponent } from "../components/organization/organization.component";
 @Component({
@@ -117,7 +117,7 @@ export class HrInvitationPage implements OnInit, OnDestroy {
         } as any;
       }
 
-      const hrInvitationItem: any = {
+      const hrInvitationItem: IHrInvitation = {
         hrId: this.route.snapshot.queryParams.hrid,
         name: this.route.snapshot.queryParams.name,
         positionNames: this.route.snapshot.queryParams.positionNames || "",
@@ -137,6 +137,8 @@ export class HrInvitationPage implements OnInit, OnDestroy {
         birthday: "",
       };
       this.hrInvitationItem = hrInvitationItem;
+      console.log(" hrInvitationItem ",this.hrInvitationItem)
+      this.hrService.setHrInvitationSource(this.hrInvitationItem);
     } catch (e) {
       AppHelper.alert(e);
     }
