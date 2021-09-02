@@ -244,6 +244,20 @@ export class AppComponent
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {
       if (!environment.production) {
+        this.router.navigate(["hr-invitation"], {
+          queryParams: {
+            hrid: "1",
+            hrName: "东美在线",
+            costCenterId: "100000018",
+            costCenterName: "第二成本中心",
+            organizationId: "100000013",
+            organizationName: "(A008)产品技术部",
+            policyId: "100000005",
+            policyName: "总监差旅标准",
+            roleIds: "2",
+            roleNames: "行政人事",
+          },
+        });
         // AppHelper.modalController
         //   .create({ component: Bind12306Component })
         //   .then((m) => {

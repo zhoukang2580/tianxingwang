@@ -399,8 +399,8 @@ export class HrService {
       PolicyName: data.policy.Name,
       OrganizationId: data.organization.Id,
       OrganizationName: data.organization.Name,
-      CostCenterName: data.constCenter.Name,
-      CostCenterId: data.constCenter.Id,
+      CostCenterName: data.costCenter.Name,
+      CostCenterId: data.costCenter.Id,
       Country: data.country.Code,
       CountryId: data.country.Id,
       CountryCode: data.country.Code,
@@ -680,7 +680,7 @@ export interface IOrganization {
 }
 export interface IHrInvitation {
   hrId?: string;
-  constCenter: ICostCenter;
+  costCenter: ICostCenter;
   policy: IPolicy;
   organization: IOrganization;
   country: CountryEntity;

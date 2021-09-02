@@ -28,18 +28,7 @@ export class HrInvitationPage implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   ngOnInit() {
-    // this.router.navigate(["hr-invitation"], {
-    //   queryParams: {
-    //     hrid: "163",
-    //     hrName: "上海东美在线旅行社有限公司",
-    //     costCenterId: "6300000001",
-    //     costCenterName: "一般政策",
-    //     organizationId: "6300000005",
-    //     policyId: "6300000001",
-    //     roleIds: "24,25",
-    //     roleNames: "超级秘书,新秘书",
-    //   },
-    // });
+    // http://test.app.testskytrip.com/Home/www/index.html?hrid=1&hrName=东美在线&App_Path=hr-invitation&costCenterId=100000018&costCenterName=第二成本中心&organizationId=100000013&organizationName=(A008)产品技术部&policyId=100000005&policyName=总监差旅标准&roleIds=2&roleNames=行政人事
   }
   private async showReLoginTip() {
     return AppHelper.alert("如后台已通过申请，请重新登录");
@@ -103,19 +92,38 @@ export class HrInvitationPage implements OnInit, OnDestroy {
   }
   init() {
     try {
+      let costCenter =
+        this.hrService.hrInvitation && this.hrService.hrInvitation.costCenter;
+      let country =
+        this.hrService.hrInvitation && this.hrService.hrInvitation.country;
+      let organization =
+        this.hrService.hrInvitation && this.hrService.hrInvitation.organization;
+      if (!costCenter || !costCenter.Id) {
+        costCenter = {
+          Id: this.route.snapshot.queryParams.costCenterId || "",
+          Name: this.route.snapshot.queryParams.costCenterName,
+        } as any;
+      }
+      if (!country || !country.Id) {
+        country = {
+          Id: this.route.snapshot.queryParams.countriesId || "",
+          Name: this.route.snapshot.queryParams.countriesName,
+        } as any;
+      }
+      if (!organization || !organization.Id) {
+        organization = {
+          Id: this.route.snapshot.queryParams.organizationId || "",
+          Name: this.route.snapshot.queryParams.organizationName || "",
+        } as any;
+      }
+
       const hrInvitationItem: any = {
         hrId: this.route.snapshot.queryParams.hrid,
         name: this.route.snapshot.queryParams.name,
         positionNames: this.route.snapshot.queryParams.positionNames || "",
         positionIds: this.route.snapshot.queryParams.positionIds || "",
-        costCenter: {
-          Id: this.route.snapshot.queryParams.costCenterId || "",
-          Name: this.route.snapshot.queryParams.costCenterName,
-        },
-        country: {
-          Id: this.route.snapshot.queryParams.countriesId || "",
-          Name: this.route.snapshot.queryParams.countriesName,
-        },
+        costCenter: costCenter,
+        country: country,
         policy: {
           Id: this.route.snapshot.queryParams.policyId || "",
           Name: this.route.snapshot.queryParams.policyName || "",
@@ -123,10 +131,7 @@ export class HrInvitationPage implements OnInit, OnDestroy {
         roleIds: this.route.snapshot.queryParams.roleIds || "",
         roleNames: this.route.snapshot.queryParams.roleNames || "",
         hrName: this.route.snapshot.queryParams.hrName || "",
-        organization: {
-          Id: this.route.snapshot.queryParams.organizationId || "",
-          Name: this.route.snapshot.queryParams.organizationName || "",
-        },
+        organization: organization,
         gender: this.route.snapshot.queryParams.gender,
         number: this.route.snapshot.queryParams.number,
         birthday: "",

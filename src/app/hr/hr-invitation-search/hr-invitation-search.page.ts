@@ -81,7 +81,7 @@ export class HrInvitationSearchPage implements OnInit {
     } else if (this.type == "costcenter") {
       this.hrService.hrInvitation = {
         ...this.hrService.hrInvitation,
-        constCenter: item,
+        costCenter: item,
       };
     } else if (this.type == "organization") {
       this.hrService.hrInvitation = {
