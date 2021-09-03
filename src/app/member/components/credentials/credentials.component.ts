@@ -69,12 +69,12 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     setlongterm: "设置为长期有效",
     longterm: "长期有效",
     nationality: "国籍",
-    lssuingcou: "发证国"
+    lssuingcou: "发证国",
   };
   CredentialsType = CredentialsType;
   FlightHotelTrainType = FlightHotelTrainType;
   identityTypes: { key: string; value: string }[];
-  notcredentials : { key: string; value: string }[];
+  notcredentials: { key: string; value: string }[];
   @ViewChild(IonDatetime) datetimeComp: IonDatetime;
   maxYear = new Date().getFullYear() + 80;
   minYear = 1901;
@@ -127,11 +127,8 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     console.log(this.identityTypes);
   }
 
-  
-
   ngOnInit() {
     this.getIdentityTypes();
-
   }
 
   private async confirmTipMessage(c: MemberCredential) {
@@ -173,10 +170,26 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.credentialChange.emit(c);
     return true;
   }
+  private getBirthYears(min: number, max: number) {
+    min = Math.min(min, max);
+    max = Math.max(min, max);
+    const ys = [];
+    for (let y = max; y > min; y--) {
+      ys.push(y);
+    }
+    return ys;
+  }
   async onSelectBirthDate() {
     if (this.datetimeComp) {
       this.datetimeComp.value = "";
       this.maxYear = new Date().getFullYear();
+      if (this.credential.Birthday) {
+        this.datetimeComp.yearValues = this.getBirthYears(
+          new Date().getFullYear() - 150,
+          new Date().getFullYear()
+        );
+        this.datetimeComp.value = this.credential.Birthday;
+      }
       this.datetimeComp.open();
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value = d.detail.value;
@@ -241,8 +254,12 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.datetimeComp) {
       this.datetimeComp.value = "";
       this.datetimeComp.open();
-      this.maxYear = new Date().getFullYear() + 100;
+      this.maxYear = new Date().getFullYear() + 150;
       this.minYear = new Date().getFullYear();
+      this.datetimeComp.yearValues = this.getBirthYears(
+        this.minYear,
+        this.maxYear
+      );
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value: string = d.detail.value;
         if (value && this.credential) {
