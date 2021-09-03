@@ -695,61 +695,24 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     is12306Book: boolean = false,
     isNamePasswordValidateFail = false
   ) {
+    const exchangeInfo = this.trainService
+      .getBookInfos()
+      .find((it) => !!it.exchangeInfo);
+    const isExchangeBook =
+      exchangeInfo &&
+      exchangeInfo.exchangeInfo &&
+      !!exchangeInfo.exchangeInfo.ticket;
+    const tip1 = `12306官方规定已通过核验的常用乘客在添加后30天内不可删除；每个账号最多添加15个(含本人)常用乘客！`;
+    const tip2 = `您尚未绑定12306账户,可能导致无法线上退改签,则需登陆乘车人12306账户或至火车站退改签`;
+    const tip3 = `您当前不是12306官方预订,可能导致无法线上退改签,则需登陆乘车人12306账户或至火车站退改签`;
     this.isShowFee = false;
+    const bookDto: OrderBookDto = new OrderBookDto();
+    bookDto.IsFromOffline = isSave;
     event.stopPropagation();
     if (this.isSubmitDisabled) {
       return;
     }
-    let isOfficialBooked = false;
-    if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
-      this.initialBookDto.AccountNumber12306 =
-        await this.trainService.getBindAccountNumber();
-    }
-    if (
-      !is12306Book &&
-      this.initialBookDto &&
-      (!this.initialBookDto.AccountNumber12306 ||
-        !this.initialBookDto.AccountNumber12306.IsIdentity)
-    ) {
-      const ok = await AppHelper.alert(
-        "您尚未绑定12306账户,可能导致线上无法退改签,则需登陆乘车人12306账户或至火车站退改签",
-        true,
-        "直接预订",
-        "绑定12306"
-      );
-      isOfficialBooked = !ok;
-      if (isOfficialBooked) {
-        this.bookTrainBy12306(event);
-        return;
-      }
-    }
-    if (is12306Book) {
-      isOfficialBooked = await this.checkAndBind12306(
-        isNamePasswordValidateFail
-      );
-      if (!isOfficialBooked) {
-        const direct = await AppHelper.alert(
-          "您尚未绑定12306账户,可能导致线上无法退改签,则需登陆乘车人12306账户或至火车站退改签",
-          true,
-          "直接预订",
-          "重新绑定12306"
-        );
-        isOfficialBooked = !direct;
-        if (isOfficialBooked) {
-          this.bookTrainBy12306(event);
-          return;
-        }
-      }
-      if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
-        this.initialBookDto.AccountNumber12306.IsIdentity = isOfficialBooked;
-      }
-    }
-    const exchangeInfo = this.trainService
-      .getBookInfos()
-      .find((it) => !!it.exchangeInfo);
-    const bookDto: OrderBookDto = new OrderBookDto();
-    bookDto.IsFromOffline = isSave;
-    bookDto.IsOfficialBooked = isOfficialBooked;
+
     let canBook = false;
     let canBook2 = false;
     this.viewModel.combindInfos = this.fillGroupConbindInfoApprovalInfo(
@@ -764,8 +727,73 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       bookDto.TicketId = exchangeInfo.exchangeInfo.ticket.Id;
     }
-    const exchangeTip = "改签申请提交成功";
     if (canBook && canBook2) {
+      let isOfficialBooked = false;
+      if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
+        this.initialBookDto.AccountNumber12306 =
+          await this.trainService.getBindAccountNumber();
+      }
+      if (
+        !is12306Book &&
+        this.initialBookDto &&
+        (!this.initialBookDto.AccountNumber12306 ||
+          !this.initialBookDto.AccountNumber12306.IsIdentity)
+      ) {
+        if (!isExchangeBook) {
+          const ok = await AppHelper.alert(tip2, true, "直接预订", "绑定12306");
+          isOfficialBooked = !ok;
+          if (isOfficialBooked) {
+            this.bookTrainBy12306(event);
+            return;
+          }
+        }
+      }
+      if (is12306Book) {
+        isOfficialBooked = await this.checkAndBind12306(
+          isNamePasswordValidateFail
+        );
+        if (!isOfficialBooked) {
+          if (!isExchangeBook) {
+            const direct = await AppHelper.alert(
+              tip2,
+              true,
+              "直接预订",
+              "重新绑定12306"
+            );
+            isOfficialBooked = !direct;
+            if (isOfficialBooked) {
+              this.bookTrainBy12306(event);
+              return;
+            }
+          }
+        }
+        if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
+          this.initialBookDto.AccountNumber12306.IsIdentity = isOfficialBooked;
+        }
+      }
+      bookDto.IsOfficialBooked = isOfficialBooked;
+      if (!bookDto.IsOfficialBooked) {
+        if (!is12306Book) {
+          if (!isExchangeBook) {
+            const direct = await AppHelper.alert(
+              tip3,
+              true,
+              "直接预订",
+              "12306预订"
+            );
+            if (!direct) {
+              this.bookTrainBy12306(event);
+              return;
+            }
+          }
+        }
+      } else {
+        if (!this.isSelfBookType) {
+          if (!isExchangeBook) {
+            await AppHelper.alert(tip1, true);
+          }
+        }
+      }
       this.isSubmitDisabled = true;
       let res: IBookOrderResult;
       if (exchangeInfo && exchangeInfo.exchangeInfo) {
@@ -859,7 +887,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                 }
               }
             } else {
-              if (isSelf) {
+              if (isSelf && isCheckPay) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
                   true
