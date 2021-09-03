@@ -240,7 +240,12 @@ ion-footer .toolbar {
   display: flex;
   align-items: center;
 }
-
+.account12306 {
+  img {
+    width: 2em;
+    margin: 0 0.5em 0 0.2em;
+  }
+}
 .center {
   display: flex;
   justify-content: center;

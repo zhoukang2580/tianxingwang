@@ -638,18 +638,33 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       combindInfo.organization.Name = res.Name;
     }
   }
-  async bookTrainBy12306(event: CustomEvent) {
-    this.bookTrain(false, event, true);
+  async bookTrainBy12306(
+    event: CustomEvent,
+    isNamePasswordValidateFail = false
+  ) {
+    this.bookTrain(false, event, true, isNamePasswordValidateFail);
   }
-  private async checkAndBind12306() {
+  private async checkAndBind12306(isNamePasswordValidateFail: boolean) {
     if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
       if (this.initialBookDto.AccountNumber12306.IsIdentity) {
         return true;
       }
     }
-    return this.bind12306();
+    return this.bind12306(isNamePasswordValidateFail);
   }
-  private async bind12306() {
+  async onRebind12306() {
+    try {
+      const ok = await this.bind12306(false);
+      if (ok) {
+        this.initialBookDto.AccountNumber12306 =
+          await this.trainService.getBindAccountNumber();
+      }
+    } catch (e) {
+      console.error(e);
+      AppHelper.alert(e);
+    }
+  }
+  private async bind12306(isNamePasswordValidateFail: boolean) {
     try {
       if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
         this.initialBookDto.AccountNumber12306 =
@@ -661,6 +676,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         componentProps: {
           name: an && an.Name,
           password: an && an.Number,
+          isNamePasswordValidateFail,
         },
       });
       m.present();
@@ -676,7 +692,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   async bookTrain(
     isSave: boolean = false,
     event: CustomEvent,
-    is12306Book: boolean = false
+    is12306Book: boolean = false,
+    isNamePasswordValidateFail = false
   ) {
     this.isShowFee = false;
     event.stopPropagation();
@@ -707,7 +724,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     if (is12306Book) {
-      isOfficialBooked = await this.checkAndBind12306();
+      isOfficialBooked = await this.checkAndBind12306(
+        isNamePasswordValidateFail
+      );
       if (!isOfficialBooked) {
         const direct = await AppHelper.alert(
           "您尚未绑定12306账户,可能导致线上无法退改签,则需登陆乘车人12306账户或至火车站退改签",
@@ -721,8 +740,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           return;
         }
       }
-      if(this.initialBookDto&&this.initialBookDto.AccountNumber12306){
-        this.initialBookDto.AccountNumber12306.IsIdentity=isOfficialBooked;
+      if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
+        this.initialBookDto.AccountNumber12306.IsIdentity = isOfficialBooked;
       }
     }
     const exchangeInfo = this.trainService
@@ -762,13 +781,16 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             if (r.Status) {
               res = r.Data;
             } else {
-              this.isSubmitDisabled=false;
+              this.isSubmitDisabled = false;
               if (r.Code == "MessageCodeValidate") {
                 AppHelper.alert(r.Message).then((ok) => {
-                  if(this.initialBookDto&&this.initialBookDto.AccountNumber12306){
-                    this.initialBookDto.AccountNumber12306.IsIdentity=false;
+                  if (
+                    this.initialBookDto &&
+                    this.initialBookDto.AccountNumber12306
+                  ) {
+                    this.initialBookDto.AccountNumber12306.IsIdentity = false;
                   }
-                  this.bookTrainBy12306(event);
+                  this.bookTrainBy12306(event, true);
                 });
                 return;
               }
@@ -791,9 +813,6 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
               AppHelper.alert(tips);
               return;
             }
-            AppHelper.alert(e).then((ok) => {
-              this.bookTrainBy12306(event);
-            });
             res = null;
             return null;
           });

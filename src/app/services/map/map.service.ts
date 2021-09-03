@@ -413,10 +413,10 @@ export class MapService {
     );
     console.timeEnd("getCurrentPositionByBMap");
     if (!latLng) {
-      console.time("通过idp定位");
+      console.time("通过ip定位");
       latLng = await this.getPosByBMapIp();
-      console.log("通过idp定位", latLng);
-      console.timeEnd("通过idp定位");
+      console.log("通过ip定位", latLng);
+      console.timeEnd("通过ip定位");
     }
     console.log(`getLatLng 结束：耗时 ${Date.now() - st} latLng`, latLng);
     if (latLng) {

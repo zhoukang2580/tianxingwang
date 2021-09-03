@@ -91,6 +91,17 @@
             </ion-item-group>
           </ng-container>
         </ion-list>
+        <ion-list class="account12306" *ngIf='initialBookDto?.AccountNumber12306?.Name' (click)='onRebind12306()'>
+          <ion-item detail>
+            <img src="assets/images/12306.png">
+            <ion-label>
+              {{initialBookDto.AccountNumber12306.Number.substr(0,3)+"****"+initialBookDto.AccountNumber12306.Number.substr(7,4)}}
+            </ion-label>
+            <ion-label slot='end' class="ion-text-end">
+              <p>切换12306账号</p>
+            </ion-label>
+          </ion-item>
+        </ion-list>
         <ion-list>
           <ion-item-group>
             <ion-item class="pass-information">
