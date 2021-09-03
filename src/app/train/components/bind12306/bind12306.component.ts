@@ -72,6 +72,8 @@ export class Bind12306Component implements OnInit {
     try {
       await this.trainService.Unbind12306();
       this.bindAccountNumber = null;
+      this.name = "";
+      this.password = "";
       // const r = await this.validateAccount();
       // if (r) {
       //   await this.trainService.Unbind12306();

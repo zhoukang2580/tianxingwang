@@ -743,7 +743,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.isSubmitDisabled) {
       return;
     }
-
+    let isDirectBook = false;
     let canBook = false;
     let canBook2 = false;
     this.viewModel.combindInfos = this.fillGroupConbindInfoApprovalInfo(
@@ -771,8 +771,13 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           !this.initialBookDto.AccountNumber12306.IsIdentity)
       ) {
         if (!isExchangeBook) {
-          const ok = await AppHelper.alert(tip2, true, "直接预订", "绑定12306");
-          isOfficialBooked = !ok;
+          isDirectBook = await AppHelper.alert(
+            tip2,
+            true,
+            "直接预订",
+            "绑定12306"
+          );
+          isOfficialBooked = !isDirectBook;
           if (isOfficialBooked) {
             this.bookTrainBy12306(event);
             return;
@@ -785,13 +790,13 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         );
         if (!isOfficialBooked) {
           if (!isExchangeBook) {
-            const direct = await AppHelper.alert(
+            isDirectBook = await AppHelper.alert(
               tip2,
               true,
               "直接预订",
               "重新绑定12306"
             );
-            isOfficialBooked = !direct;
+            isOfficialBooked = !isDirectBook;
             if (isOfficialBooked) {
               this.bookTrainBy12306(event);
               return;
@@ -806,15 +811,17 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (!bookDto.IsOfficialBooked) {
         if (!is12306Book) {
           if (!isExchangeBook) {
-            const direct = await AppHelper.alert(
-              tip3,
-              true,
-              "直接预订",
-              "12306预订"
-            );
-            if (!direct) {
-              this.bookTrainBy12306(event);
-              return;
+            if (!isDirectBook) {
+              const direct = await AppHelper.alert(
+                tip3,
+                true,
+                "直接预订",
+                "12306预订"
+              );
+              if (!direct) {
+                this.bookTrainBy12306(event);
+                return;
+              }
             }
           }
         }
