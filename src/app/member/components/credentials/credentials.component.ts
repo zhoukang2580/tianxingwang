@@ -174,7 +174,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
     min = Math.min(min, max);
     max = Math.max(min, max);
     const ys = [];
-    for (let y = max; y > min; y--) {
+    for (let y = max; y >= min; y--) {
       ys.push(y);
     }
     return ys;
@@ -252,7 +252,6 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
   async onSelectExpireDate() {
     if (this.datetimeComp) {
-      this.datetimeComp.value = "";
       this.datetimeComp.open();
       this.maxYear = new Date().getFullYear() + 150;
       this.minYear = new Date().getFullYear();
@@ -260,6 +259,7 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
         this.minYear,
         this.maxYear
       );
+      this.datetimeComp.value = "";
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value: string = d.detail.value;
         if (value && this.credential) {
