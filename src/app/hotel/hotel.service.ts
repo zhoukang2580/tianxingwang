@@ -779,7 +779,8 @@ export class HotelService {
     if (
       this.searchHotelModel.myPosition &&
       this.searchHotelModel.myPosition.Lat &&
-      this.searchHotelModel.myPosition.Lng
+      this.searchHotelModel.myPosition.Lng &&
+      this.searchHotelModel.myPosition.Text
     ) {
       req.Data["Lat"] = this.searchHotelModel.myPosition.Lat;
       req.Data["Lng"] = this.searchHotelModel.myPosition.Lng;
