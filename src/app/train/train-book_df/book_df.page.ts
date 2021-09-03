@@ -664,6 +664,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       AppHelper.alert(e);
     }
   }
+  private async reloadAccount12306Number() {
+    if (this.initialBookDto) {
+      this.initialBookDto.AccountNumber12306 =
+        await this.trainService.getBindAccountNumber();
+    }
+  }
   private async bind12306(isNamePasswordValidateFail: boolean) {
     try {
       if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
@@ -681,6 +687,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       });
       m.present();
       const res = await m.onDidDismiss();
+      this.reloadAccount12306Number();
       if (res && res.data) {
         return true;
       }
