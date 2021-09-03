@@ -1,8 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot='start'>
-      <!-- <app-back-button defaultHref="" [class.hidden]='!identity?.Numbers?.AgentId' [backFn]='back.bind(this)'>
-      </app-back-button> -->
+      <ion-button (click)='onLogin()' color='secondary' *ngIf='identity?.Ticket'>切换账号</ion-button>
     </ion-buttons>
     <ion-title>信息确认</ion-title>
     <ion-buttons slot='end'>

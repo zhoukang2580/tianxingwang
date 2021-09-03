@@ -66,6 +66,9 @@ export class ConfirmInformationPage implements OnInit, OnDestroy {
       }
     });
   }
+  onLogin() {
+    this.router.navigate(["login"]);
+  }
   async getCredentials(accountId: string): Promise<MemberCredential[]> {
     const req = new RequestEntity();
     req.IsShowLoading = true;
