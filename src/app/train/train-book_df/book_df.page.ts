@@ -660,6 +660,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.bookTrain(false, event, true, isNamePasswordValidateFail);
   }
   private async checkAndBind12306(isNamePasswordValidateFail: boolean) {
+    await this.showBindTip();
     if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
       if (this.initialBookDto.AccountNumber12306.IsIdentity) {
         return true;
