@@ -14,7 +14,7 @@ export class Bind12306Component implements OnInit {
   code: string;
   isAgreement = true;
   isShowAgreement = false;
-  bindAccountNumber: any;
+  bindAccountNumber: { Name: string; Number: string };
   countDown = 0;
   isNamePasswordValidateFail = false;
   passengersList: any;
@@ -30,7 +30,13 @@ export class Bind12306Component implements OnInit {
   back() {
     AppHelper.modalController.getTop().then((t) => {
       if (t) {
-        t.dismiss(this.validateResult);
+        const res = this.validateResult
+          ? {
+              Name: this.name,
+              Number: this.password,
+            }
+          : false;
+        t.dismiss(res);
       }
     });
   }

@@ -107,7 +107,12 @@ export class TrainService {
     req.IsShowLoading = true;
     return this.apiService.getPromise<any>(req);
   }
-  async accountValidate(d: { name: string; password: string;Unbind?:""|"Unbind";code?:string; }) {
+  async accountValidate(d: {
+    name: string;
+    password: string;
+    Unbind?: "" | "Unbind";
+    code?: string;
+  }) {
     const req = new RequestEntity();
     req.Data = d;
     req.Method = "TmcApiBookUrl-Train-AccountValidate";
@@ -116,12 +121,16 @@ export class TrainService {
   }
   async getContacts() {
     const req = new RequestEntity();
-    req.Data ={}
+    req.Data = {};
     req.Method = "TmcApiBookUrl-Train-GetContacts";
     req.IsShowLoading = true;
     return this.apiService.getPromiseData<any>(req);
   }
-  async codeValidateAndBind12306(d: { name: string; password: string; code: string }) {
+  async codeValidateAndBind12306(d: {
+    name: string;
+    password: string;
+    code: string;
+  }) {
     const req = new RequestEntity();
     req.Data = d;
     req.Method = "TmcApiBookUrl-Train-CodeValidate";
@@ -130,10 +139,12 @@ export class TrainService {
   }
   async getBindAccountNumber() {
     const req = new RequestEntity();
-    req.Data ={}
+    req.Data = {};
     req.Method = "TmcApiBookUrl-Train-GetBindAccountNumber";
     req.IsShowLoading = true;
-    return this.apiService.getPromiseData<any>(req);
+    return this.apiService.getPromiseData<{ Name: string; Number: string;IsIdentity:boolean;Tag:string; }>(
+      req
+    );
   }
   private clearSelectedBookInfos() {
     this.bookInfos = this.bookInfos || [];
@@ -1421,10 +1432,10 @@ export class TrainService {
     req.Timeout = 60;
     return this.apiService.getPromiseData<IBookOrderResult>(req);
   }
-  async trainIsBindNumber(){
-    return this.tmcService.getTmc().then(tmc=>{
+  async trainIsBindNumber() {
+    return this.tmcService.getTmc().then((tmc) => {
       return tmc.TrainIsBindNumber;
-    })
+    });
   }
   async bookTrain(bookDto: OrderBookDto) {
     const req = new RequestEntity();
