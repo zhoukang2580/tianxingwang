@@ -1421,6 +1421,11 @@ export class TrainService {
     req.Timeout = 60;
     return this.apiService.getPromiseData<IBookOrderResult>(req);
   }
+  async trainIsBindNumber(){
+    return this.tmcService.getTmc().then(tmc=>{
+      return tmc.TrainIsBindNumber;
+    })
+  }
   async bookTrain(bookDto: OrderBookDto) {
     const req = new RequestEntity();
     req.Method = "TmcApiBookUrl-Train-Book";
