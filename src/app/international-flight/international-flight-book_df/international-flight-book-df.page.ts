@@ -1229,16 +1229,13 @@ export class InternationalFlightBookDfPage
           credentials = credentials.filter(
             (t) => t.Type == CredentialsType.Passport
               || t.Type == CredentialsType.HmPass);
-          this.PromptInformation = "大陆乘客往来香港或澳门,请使用港澳通行证使用护照出行的乘客,须同时持有7天内前往第三国或地区的机票";
         } else if (hasTW) {
           credentials = credentials.filter(
             (t) => t.Type == CredentialsType.Passport
               || t.Type == CredentialsType.TwPass);
-          this.PromptInformation = "大陆乘客往来台湾，请使用台湾通行证;如在台湾中转/经停，请选择护照并携带后续航班行程单";
         } else {
           credentials = credentials.filter(
             (t) => t.Type == CredentialsType.Passport);
-          this.PromptInformation = "非港澳台地区出行,请选择护照,证件信息请重新填写!";
         }
       }
     }
