@@ -84,6 +84,9 @@ ion-col {
 .flx {
   display: flex;
   align-items: center;
+  &.code {
+    margin: 0.7em 0 0;
+  }
 }
 .sms-wp {
   h3,

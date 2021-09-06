@@ -6,9 +6,12 @@
             <ion-text class="btn" color='secondary' *ngIf="canSelectCompany">切换客户</ion-text>
         </div>
         <div class="scan-pic" *ngIf="canShow">
-            <app-scan-comp>
+            <app-scan-comp >
                 <img src="assets/images/home-scan.png" alt="" />
             </app-scan-comp>
+            <!-- <app-scan-comp (scanResult)='onScanResult($event)' [isAutoCloseScanPage]='true'>
+                <img src="assets/images/home-scan.png" alt="" />
+            </app-scan-comp> -->
         </div>
     </div>
     <div class="banners">

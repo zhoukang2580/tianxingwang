@@ -10,23 +10,23 @@
 <ion-content>
   <ion-item detail (click)='onSelectPolicy()'>
     <ion-label>政策:</ion-label>
-    <ion-label class="ion-text-end">{{hrInvitationItem?.policy?.Name}}</ion-label>
+    <ion-label class="ion-text-end notranslate">{{hrInvitationItem?.policy?.Name}}</ion-label>
   </ion-item>
   <ion-item detail (click)="onSelectCostCenter()">
     <ion-label>成本中心:</ion-label>
-    <ion-label class="ion-text-end">{{hrInvitationItem?.costCenter?.Name}}</ion-label>
+    <ion-label class="ion-text-end notranslate">{{hrInvitationItem?.costCenter?.Name}}</ion-label>
   </ion-item>
   <ion-item detail (click)="onSelectOrganization()">
     <ion-label>组织架构:</ion-label>
-    <ion-label class="ion-text-end">{{hrInvitationItem?.organization?.Name}}</ion-label>
+    <ion-label class="ion-text-end notranslate">{{hrInvitationItem?.organization?.Name}}</ion-label>
   </ion-item>
   <ion-item detail (click)="onSelectCountry()">
     <ion-label>国家:</ion-label>
-    <ion-label class="ion-text-end">{{hrInvitationItem?.country.Name}}</ion-label>
+    <ion-label class="ion-text-end notranslate">{{hrInvitationItem?.country.Name}}</ion-label>
   </ion-item>
   <ion-item *ngIf='hrInvitationItem'>
     <ion-label>姓名:</ion-label>
-    <ion-input class="ion-text-end" [(ngModel)]="hrInvitationItem.name"></ion-input>
+    <ion-input class="ion-text-end notranslate" [(ngModel)]="hrInvitationItem.name"></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>性别:</ion-label>
@@ -52,7 +52,7 @@
   </ion-item>
   <ion-item lines="none">
     <ion-label>角色:</ion-label>
-    <ion-label class="ion-text-end">{{hrInvitationItem?.roleNames}}</ion-label>
+    <ion-label class="ion-text-end ion-text-wrap notranslate">{{hrInvitationItem?.roleNames}}</ion-label>
   </ion-item>
   <div class="flex_btn">
     <ion-button color="secondary" slot="end" (click)="onAddInvitation()" class="btn_height">立即申请</ion-button>

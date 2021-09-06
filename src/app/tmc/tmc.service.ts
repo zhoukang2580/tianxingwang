@@ -1778,11 +1778,11 @@ export class InitialBookDtoModel {
   Insurances: { [clientId: string]: InsuranceProductEntity[] };
   TravelFrom: TravelFormEntity;
   AccountNumber12306: {
-    IsIdentity: boolean;
-    Tag: string;
-    Account: AccountEntity;
-    NumberEntity: any;
-    Variables: any;
+    IsIdentity?: boolean;
+    Tag?: string;
+    Account?: AccountEntity;
+    NumberEntity?: any;
+    Variables?: any;
     Number: string;
     Name: string;
   };

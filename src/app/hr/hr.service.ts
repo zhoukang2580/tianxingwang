@@ -410,7 +410,7 @@ export class HrService {
       Birthday: data.birthday && data.birthday.substr(0, 10),
       HrId: this.getHrInvitation().hrId,
     };
-    return this.apiService.getPromiseData<any>(req);
+    return this.apiService.getPromise<any>(req);
   }
   async getStaffCredentials(
     AccountId: string,

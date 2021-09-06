@@ -638,6 +638,21 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       combindInfo.organization.Name = res.Name;
     }
   }
+  private async showBindTip() {
+    const tip1 = `12306官方规定已通过核验的常用乘客在添加后30天内不可删除；每个账号最多添加15个(含本人)常用乘客！`;
+    const exchangeInfo = this.trainService
+      .getBookInfos()
+      .find((it) => !!it.exchangeInfo);
+    const isExchangeBook =
+      exchangeInfo &&
+      exchangeInfo.exchangeInfo &&
+      !!exchangeInfo.exchangeInfo.ticket;
+    if (!this.isSelfBookType) {
+      if (!isExchangeBook) {
+        await AppHelper.alert(tip1, true);
+      }
+    }
+  }
   async bookTrainBy12306(
     event: CustomEvent,
     isNamePasswordValidateFail = false
@@ -645,6 +660,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.bookTrain(false, event, true, isNamePasswordValidateFail);
   }
   private async checkAndBind12306(isNamePasswordValidateFail: boolean) {
+    await this.showBindTip();
     if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
       if (this.initialBookDto.AccountNumber12306.IsIdentity) {
         return true;
@@ -654,6 +670,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async onRebind12306() {
     try {
+      await this.showBindTip();
       const ok = await this.bind12306(false);
       if (ok) {
         this.initialBookDto.AccountNumber12306 =
@@ -666,8 +683,10 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   private async reloadAccount12306Number() {
     if (this.initialBookDto) {
-      this.initialBookDto.AccountNumber12306 =
-        await this.trainService.getBindAccountNumber();
+      const accountNumber12306 = await this.trainService.getBindAccountNumber();
+      if (accountNumber12306 && accountNumber12306.Name) {
+        this.initialBookDto.AccountNumber12306 = accountNumber12306;
+      }
     }
   }
   private async bind12306(isNamePasswordValidateFail: boolean) {
@@ -689,6 +708,13 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       const res = await m.onDidDismiss();
       this.reloadAccount12306Number();
       if (res && res.data) {
+        if (this.initialBookDto) {
+          // 以传入的为准
+          this.initialBookDto.AccountNumber12306 = {
+            Name: res.data.Name,
+            Number: res.data.Number,
+          };
+        }
         return true;
       }
     } catch (e) {
@@ -709,7 +735,6 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       exchangeInfo &&
       exchangeInfo.exchangeInfo &&
       !!exchangeInfo.exchangeInfo.ticket;
-    const tip1 = `12306官方规定已通过核验的常用乘客在添加后30天内不可删除；每个账号最多添加15个(含本人)常用乘客！`;
     const tip2 = `您尚未绑定12306账户,可能导致无法线上退改签,则需登陆乘车人12306账户或至火车站退改签`;
     const tip3 = `您当前不是12306官方预订,可能导致无法线上退改签,则需登陆乘车人12306账户或至火车站退改签`;
     this.isShowFee = false;
@@ -719,7 +744,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.isSubmitDisabled) {
       return;
     }
-
+    let isDirectBook = false;
     let canBook = false;
     let canBook2 = false;
     this.viewModel.combindInfos = this.fillGroupConbindInfoApprovalInfo(
@@ -747,8 +772,13 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           !this.initialBookDto.AccountNumber12306.IsIdentity)
       ) {
         if (!isExchangeBook) {
-          const ok = await AppHelper.alert(tip2, true, "直接预订", "绑定12306");
-          isOfficialBooked = !ok;
+          isDirectBook = await AppHelper.alert(
+            tip2,
+            true,
+            "直接预订",
+            "绑定12306"
+          );
+          isOfficialBooked = !isDirectBook;
           if (isOfficialBooked) {
             this.bookTrainBy12306(event);
             return;
@@ -761,13 +791,13 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         );
         if (!isOfficialBooked) {
           if (!isExchangeBook) {
-            const direct = await AppHelper.alert(
+            isDirectBook = await AppHelper.alert(
               tip2,
               true,
               "直接预订",
               "重新绑定12306"
             );
-            isOfficialBooked = !direct;
+            isOfficialBooked = !isDirectBook;
             if (isOfficialBooked) {
               this.bookTrainBy12306(event);
               return;
@@ -782,23 +812,24 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (!bookDto.IsOfficialBooked) {
         if (!is12306Book) {
           if (!isExchangeBook) {
-            const direct = await AppHelper.alert(
-              tip3,
-              true,
-              "直接预订",
-              "12306预订"
-            );
-            if (!direct) {
-              this.bookTrainBy12306(event);
-              return;
+            if (!isDirectBook) {
+              const direct = await AppHelper.alert(
+                tip3,
+                true,
+                "直接预订",
+                "12306预订"
+              );
+              if (!direct) {
+                this.bookTrainBy12306(event);
+                return;
+              }
             }
           }
         }
-      } else {
-        if (!this.isSelfBookType) {
-          if (!isExchangeBook) {
-            await AppHelper.alert(tip1, true);
-          }
+      }
+      if (bookDto.IsOfficialBooked) {
+        if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
+          bookDto.AccountNumber = this.initialBookDto.AccountNumber12306;
         }
       }
       this.isSubmitDisabled = true;

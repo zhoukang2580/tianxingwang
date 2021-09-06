@@ -129,7 +129,9 @@ export class MemberService {
     const req = new RequestEntity();
     req.IsShowLoading = true;
     req.Method = "TmcApiHomeUrl-Credentials-Add";
-    req.Data = c;
+    const tmp = { ...c };
+    delete tmp.Id;
+    req.Data = tmp;
     return this.apiService.getPromiseData<string>(req).then((r) => {
       this.credentialsChanges.next({
         action: "add",
@@ -493,13 +495,17 @@ export class MemberService {
     if (!c.Birthday) {
       return this.checkProperty(c, "Birthday", rules, container);
     }
-    c.Birthday = moment(c.Birthday).format("YYYY-MM-DD");
+    let fm = "YYYY-MM-DD";
+    if (c.Birthday && c.Birthday.includes("/")) {
+      fm = "YYYY/MM/DD";
+    }
+    c.Birthday = moment(c.Birthday, fm).format("YYYY-MM-DD");
     c.Birthday = this.getFormatedDate(c.Birthday);
     console.log(c.Birthday);
     if (!c.ExpirationDate) {
       return this.checkProperty(c, "ExpirationDate", rules, container);
     }
-    c.ExpirationDate = moment(c.ExpirationDate).format("YYYY-MM-DD");
+    c.ExpirationDate = moment(c.ExpirationDate,fm).format("YYYY-MM-DD");
     c.ExpirationDate = this.getFormatedDate(c.ExpirationDate);
     if (!c.Country) {
       return this.checkProperty(c, "Country", rules, container);
