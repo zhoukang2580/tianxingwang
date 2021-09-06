@@ -37,11 +37,20 @@ export class LangService {
     });
   }
   get isEn() {
-    return AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() == "en";
+    const lang = AppHelper.getLanguage();
+    return (
+      (AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() == "en") ||
+      lang == "en"
+    );
   }
   get isCn() {
-    const lang=AppHelper.getLanguage();
-    return !AppHelper.getStyle() || AppHelper.getStyle().toLowerCase() == "cn"||!lang||lang=='cn';
+    const lang = AppHelper.getLanguage();
+    return (
+      !AppHelper.getStyle() ||
+      AppHelper.getStyle().toLowerCase() == "cn" ||
+      !lang ||
+      lang == "cn"
+    );
   }
   translate() {
     try {
@@ -67,6 +76,10 @@ export class LangService {
   setLang(lang = "cn") {
     AppHelper.setStyle(lang);
     AppHelper.setStorage("language", lang);
+    const obj=AppHelper.getQueryParamers();
+    if(obj&&obj.language){
+      obj.language=''
+    }
     this.langSource.next(lang);
   }
   getLang() {

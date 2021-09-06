@@ -1,12 +1,12 @@
 <ion-radio-group class='credentials-remark ion-no-margin ion-no-padding' mode='md' (ionChange)='onSelectItem($event)'
   name='CredentialsRemark'>
   <ion-item *ngFor='let info of bookInfos'>
-    <ion-label class='sm-font-size' *ngIf='info?.credential?.Name'>
+    <ion-label class='sm-font-size notranslate ion-text-wrap' *ngIf='info?.credential?.Name'>
       {{info.credential.Name}} {{info?.credential?.HideNumber}}</ion-label>
     <ion-radio [value]="info"></ion-radio>
   </ion-item>
   <ion-item (click)='onUnFilterPolicy()'>
-    <ion-label  class='sm-font-size'  color='secondary'>不过滤差标</ion-label>
+    <ion-label  class='sm-font-size ion-text-wrap'  color='secondary'>不过滤差标</ion-label>
     <ion-radio  ></ion-radio>
   </ion-item>
 </ion-radio-group>

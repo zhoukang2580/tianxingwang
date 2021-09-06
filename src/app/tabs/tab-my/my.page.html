@@ -1,14 +1,8 @@
-<!-- <ion-header>
-    <ion-toolbar color="primary">
-        <ion-title class="ion-text-capitalize">我的</ion-title>
-    </ion-toolbar>
-</ion-header> -->
 <ion-content>
     <ion-list lines='none' class='top-panal'>
         <ion-item detail (click)='goToMyDetail()' class="head_detail">
             <ion-thumbnail slot='start' class="top-center">
                 <img class="img" alt="头像" [lazyLoad]="Model?.HeadUrl" [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'>
-                <!-- <ion-img [src]='Model?.HeadUrl'></ion-img> -->
             </ion-thumbnail>
             <ion-label class='ion-padding-start'>
                 <h3 style="color: #e8e1e1;font-size: 1.1rem;" notranslate>{{Model?.RealName}}
@@ -21,9 +15,6 @@
         </ion-item>
     </ion-list>
     <ion-card mode='ios' color='primary' *ngIf='isShowMyOrderTabs'>
-        <!-- <ion-card-header>
-            <strong>我的订单</strong>
-        </ion-card-header> -->
         <ion-card-content>
             <ion-row>
                 <ion-col *ngFor='let item of items;let last = last;'>
@@ -69,7 +60,7 @@
             </ion-label>
         </ion-item>
     </ion-list>
-    <ion-list *ngIf='!isAgent&&staff?.StaffNumber'>
+    <ion-list *ngIf='!isAgent&&staff?.StaffNumber&&false'>
         <ion-item (click)="goBusiness()" detail>
             <!-- <ion-icon name="cog" color="dark"></ion-icon> -->
             <ion-label class="has-left-icon" notranslate>

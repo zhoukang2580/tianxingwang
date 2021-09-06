@@ -48,10 +48,10 @@ try {
 } catch (e) {
   console.error(e);
 }
-if (CONFIG.mockProBuild) {
-  const obj = AppHelper.getQueryParamers();
-  obj.style = "df";
-}
+// if (CONFIG.mockProBuild) {
+//   const obj = AppHelper.getQueryParamers();
+//   obj.style = "df";
+// }
 AppHelper.checkNetworkStatus();
 
 function changeAppTitle() {
