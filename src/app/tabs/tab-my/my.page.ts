@@ -1,6 +1,6 @@
 import { environment } from "src/environments/environment";
-import { ConfigEntity } from "./../../services/config/config.entity";
-import { MessageService } from "./../../message/message.service";
+import { ConfigEntity } from "../../services/config/config.entity";
+import { MessageService } from "../../message/message.service";
 import { AppHelper } from "src/app/appHelper";
 import { Component, OnInit } from "@angular/core";
 
@@ -171,7 +171,7 @@ export class MyPage implements OnDestroy, OnInit {
     }
   }
   private goToProductTabsPage(tab: ProductItem) {
-    this.router.navigate([AppHelper.getRoutePath(`order-list`)], {
+    this.router.navigate([AppHelper.getRoutePath(`order-list_df`)], {
       queryParams: { tabId: tab.value },
     });
   }
@@ -186,6 +186,22 @@ export class MyPage implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
+    this.router.events
+      .pipe(
+        filter(
+          (evt) =>
+            evt instanceof NavigationEnd && this.router.url.includes("tabs/my")
+        )
+      )
+      .subscribe(() => {
+        if (this.langService.isCn) {
+          if (this.router.url.endsWith("en")) {
+            this.router.navigate([
+              this.router.url.substr(1, this.router.url.lastIndexOf("_")),
+            ]);
+          }
+        }
+      });
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (_) => {
         this.items = ORDER_TABS.filter((it) => it.isDisplay);

@@ -26,7 +26,7 @@ export class StylePageGuard implements CanActivate {
     | boolean
     | UrlTree {
     try {
-      const style: string = AppHelper.getStyle() || CONFIG.defaultStyle;
+      const style: string = AppHelper.getStyle();
       let styleRoute = `${this.getRoute(state.url)}_${style}`;
       // if (
       //   !style ||
