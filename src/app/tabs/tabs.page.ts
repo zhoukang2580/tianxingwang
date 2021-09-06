@@ -71,8 +71,14 @@ export class TabsPage implements OnInit {
         )
       )
       .subscribe((evt) => {
-        console.log("evt", evt);
+        console.log(
+          "isLangChanged " +
+            this.isLangChanged +
+            " this.router.url " +
+            this.router.url
+        );
         if (this.isLangChanged) {
+          this.isLangChanged=false;
           this.router.navigate([
             this.router.url.substr(1, this.router.url.lastIndexOf("_")),
           ]);

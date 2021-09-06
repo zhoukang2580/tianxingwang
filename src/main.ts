@@ -70,6 +70,7 @@ function initStyle() {
     AppHelper.getStyle() ||
     AppHelper.getLanguage() ||
     CONFIG.defaultStyle;
+  AppHelper.setStyle(obj.style);
   obj.language = obj.language || (obj.style == "en" ? "en" : "cn");
 }
 function processPath() {

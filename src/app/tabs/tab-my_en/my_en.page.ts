@@ -18,7 +18,7 @@ import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { environment } from "src/environments/environment";
 
-import { MyPage } from "../tab-my/my.page";
+import { MyDfPage } from "../tab-my_df/my_df.page";
 @Component({
   selector: "app-my_en",
   templateUrl: "my_en.page.html",

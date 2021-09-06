@@ -28,10 +28,10 @@ interface PageModel {
 }
 @Component({
   selector: "app-my",
-  templateUrl: "my.page.html",
-  styleUrls: ["my.page.scss"],
+  templateUrl: "my_df.page.html",
+  styleUrls: ["my_df.page.scss"],
 })
-export class MyPage implements OnDestroy, OnInit {
+export class MyDfPage implements OnDestroy, OnInit {
   private identity: IdentityEntity;
   Model: PageModel;
   isIos = false;

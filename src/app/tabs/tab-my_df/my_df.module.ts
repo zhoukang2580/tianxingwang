@@ -3,13 +3,13 @@ import { RouterModule, Route } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { MyPage } from "./my.page";
+import { MyDfPage } from "./my_df.page";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
 import { StylePageGuard } from "src/app/guards/style-page.guard";
 let routes: Route[] = [
   {
     path: "",
-    component: MyPage,
+    component: MyDfPage,
     canActivate: [StylePageGuard],
   },
 ];
@@ -23,6 +23,6 @@ let routes: Route[] = [
     RouterModule.forChild(routes),
     AppComponentsModule,
   ],
-  declarations: [MyPage],
+  declarations: [MyDfPage],
 })
-export class MyPageModule {}
+export class MyPageDfModule {}

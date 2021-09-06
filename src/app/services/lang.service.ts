@@ -73,12 +73,12 @@ export class LangService {
       console.error(e);
     }
   }
-  setLang(lang = "cn") {
+  setLang(lang = CONFIG.defaultStyle) {
     AppHelper.setStyle(lang);
     AppHelper.setStorage("language", lang);
     const obj=AppHelper.getQueryParamers();
     if(obj&&obj.language){
-      obj.language=''
+      obj.language=lang
     }
     this.langSource.next(lang);
   }

@@ -17,7 +17,7 @@ const routes: Routes = [
     children: [
       {
         path: "",
-        redirectTo:  "/tabs/tmc-home",
+        redirectTo: "/tabs/tmc-home",
         pathMatch: "full",
       },
       {
@@ -51,7 +51,7 @@ const routes: Routes = [
       {
         path: "my",
         loadChildren: () =>
-          import("./tab-my/my.module").then((m) => m.MyPageModule),
+          import("./tab-my_df/my_df.module").then((m) => m.MyPageDfModule),
       },
       {
         path: "my_en",
@@ -71,7 +71,6 @@ const routes: Routes = [
     redirectTo: "/tabs/tmc-home",
     pathMatch: "full",
   },
-
 ];
 
 @NgModule({
