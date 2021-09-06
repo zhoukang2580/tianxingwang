@@ -27,7 +27,10 @@ export class StylePageGuard implements CanActivate {
     | UrlTree {
     try {
       const style: string = AppHelper.getStyle();
-      let styleRoute = `${this.getRoute(state.url)}_${style}`;
+      let styleRoute = `${this.getRoute(state.url)}`;
+      if (style) {
+        styleRoute = `${this.getRoute(state.url)}_${style}`;
+      }
       // if (
       //   !style ||
       //   style.toLowerCase() == "cn" ||
