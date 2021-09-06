@@ -36,6 +36,7 @@ import { MapService } from "src/app/services/map/map.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { AgentEntity } from "src/app/tmc/models/AgentEntity";
 import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
+import { QrScanService } from "src/app/services/qrScan/qrscan.service";
 @Component({
   selector: "app-tmc-home",
   templateUrl: "tmc-home-df.page.html",
@@ -63,6 +64,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   private isLoadingTripList = false;
   private isLoadingAgent = false;
   private intervalId: any;
+  private scanresult: any;
   // agent: AgentEntity;
   identity: IdentityEntity;
   isLoadingNotice = false;
@@ -78,6 +80,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   agentNotices: { text: string; active?: boolean; id: number }[];
   canSelectCompany = false;
   isShowFlightGp = false;
+  isScanning = false;
   staff: StaffEntity;
   canShow = AppHelper.isApp() || AppHelper.isWechatH5();
   recommendHotelDefaultImg: string;
@@ -177,6 +180,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     private flightService: FlightService,
     route: ActivatedRoute,
     private configService: ConfigService,
+    private scanService:QrScanService,
     private loginService: LoginService,
     private langService: LangService // private appHelper:AppHelper
   ) {
@@ -199,6 +203,45 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
       this.loadReviewedTask();
       this.getAccountWaitingTasksCount();
     });
+  }
+  async onScanResult(txt: string) {
+    try {
+      this.isScanning = true;
+      // await this.scanService.scan();
+      console.log("onScanResult", txt);
+      this.scanresult = txt;
+      if (txt && txt.toLowerCase().includes("app_path")) {
+        this.scanService.setScanResultSource("");
+        const path = AppHelper.getValueFromQueryString("app_path", txt);
+        console.log("txt " + txt);
+        // tslint:disable-next-line: max-line-length
+        // http://test.app.beeant.com/Home/www/index.html?hrid=4&hrName=张德&App_Path=hr-invitation&costCenterId=7&costCenterName=日常报销预算&organizationId=93&organizationName=(A001)小张&policyId=undefined&policyName=undefined&roleIds=14&
+        // http://test.app.testskytrip.com/Home/www/index.html?hrid=163&hrName=上海东美在线旅行社有限公司&App_Path=hr-invitation&costCenterId=6300000001&costCenterName=财务部&organizationId=6300000007&organizationName=(A007)综合业务部&policyId=6300000001&policyName=一般政策&roleIds=25&roleNames=新秘书
+        const query = { autoClose: true };
+        txt
+          .substr(txt.indexOf("?") + 1)
+          .split("&")
+          .forEach((kv) => {
+            const k = kv.split("=");
+            const v = AppHelper.getValueFromQueryString(k[0], txt) || "";
+            query[k[0]] = v == "undefined" || v == "null" ? "" : v;
+          });
+        setTimeout(() => {
+          this.router.navigate([AppHelper.getRoutePath(path)], {
+            queryParams: query,
+          });
+        }, 100);
+      } else {
+        if (txt && txt.length) {
+          this.router.navigate([
+            AppHelper.getRoutePath("scan-result"),
+            { scanResult: txt },
+          ]);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
   private async getAccountWaitingTasksCount() {
     this.tmcService
