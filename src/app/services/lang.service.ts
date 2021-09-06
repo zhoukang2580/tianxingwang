@@ -37,11 +37,20 @@ export class LangService {
     });
   }
   get isEn() {
-    return AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() == "en";
+    const lang = AppHelper.getLanguage();
+    return (
+      (AppHelper.getStyle() && AppHelper.getStyle().toLowerCase() == "en") ||
+      lang == "en"
+    );
   }
   get isCn() {
-    const lang=AppHelper.getLanguage();
-    return !AppHelper.getStyle() || AppHelper.getStyle().toLowerCase() == "cn"||!lang||lang=='cn';
+    const lang = AppHelper.getLanguage();
+    return (
+      !AppHelper.getStyle() ||
+      AppHelper.getStyle().toLowerCase() == "cn" ||
+      !lang ||
+      lang == "cn"
+    );
   }
   translate() {
     try {
