@@ -687,8 +687,15 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private async reloadAccount12306Number() {
     if (this.initialBookDto) {
       const accountNumber12306 = await this.trainService.getBindAccountNumber();
+      // 除了普通角色，其他角色后台可能不进行绑定，所以，后台加载不到这个绑定的账号信息
       if (accountNumber12306 && accountNumber12306.Name) {
         this.initialBookDto.AccountNumber12306 = accountNumber12306;
+      }
+      if (this.isSelfBookType) {
+        // 如果在绑定界面退出了绑定状态
+        if (!accountNumber12306 || !accountNumber12306.Name) {
+          this.initialBookDto.AccountNumber12306 = accountNumber12306;
+        }
       }
     }
   }
@@ -1503,7 +1510,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       }
-     
+
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
         combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
@@ -1636,8 +1643,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
       }
       if (p.InsuranceProducts.length) {
-        if(!p.Train){
-          p.Train={} as any;
+        if (!p.Train) {
+          p.Train = {} as any;
         }
         p.Train.InsuranceProducts = p.InsuranceProducts;
       }
