@@ -29,7 +29,7 @@ import { environment } from "src/environments/environment";
 import { TravelModel } from "src/app/order/models/TravelModel";
 import { RefresherComponent } from "src/app/components/refresher";
 import { OrderFlightTicketStatusType } from "src/app/order/models/OrderFlightTicketStatusType";
-import { OrderFlightTicketType } from 'src/app/order/models/OrderFlightTicketType';
+import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 import { OrderService } from "src/app/order/order.service";
 @Component({
   selector: "app-trip",
@@ -53,13 +53,14 @@ export class TripPage implements OnInit, OnDestroy {
   trips: OrderTripModel[];
   isLoading = false;
   isShowInsurance = true || environment.mockProBuild;
+  title = "待出行";
   constructor(
     private tmcService: TmcService,
     private apiservice: ApiService,
     private route: ActivatedRoute,
     private modalCtrl: ModalController,
     private router: Router,
-    private orderService:OrderService,
+    private orderService: OrderService,
     @Optional() private tabs: TabsPage
   ) {
     console.log(tabs);
@@ -120,6 +121,7 @@ export class TripPage implements OnInit, OnDestroy {
       });
     const sub = this.route.queryParamMap.subscribe((_) => {
       setTimeout(() => {
+        this.title = "待出行";
         if (!this.trips || !this.trips.length) {
           this.doRefresh();
         }
@@ -200,7 +202,12 @@ export class TripPage implements OnInit, OnDestroy {
   async payInsurance(d: { key: string; tradeNo: string }) {
     if (d && d.key && d.tradeNo) {
       // await this.tmcService.payOrder(d.tradeNo, d.key);
-      await this.orderService.payOrder(d.tradeNo, d.key, false, this.tmcService.getQuickexpressPayWay());
+      await this.orderService.payOrder(
+        d.tradeNo,
+        d.key,
+        false,
+        this.tmcService.getQuickexpressPayWay()
+      );
     }
   }
   goToDetailPage(trip: OrderTripModel) {
@@ -211,12 +218,12 @@ export class TripPage implements OnInit, OnDestroy {
       trip.Type == "Flight"
         ? "flight"
         : trip.Type == "Train"
-          ? "train"
-          : trip.Type == "Hotel"
-            ? "hotel"
-            : trip.Type == "Car"
-              ? "car"
-              : "";
+        ? "train"
+        : trip.Type == "Hotel"
+        ? "hotel"
+        : trip.Type == "Car"
+        ? "car"
+        : "";
     if (tag) {
       this.router.navigate([AppHelper.getRoutePath(`order-${tag}-detail`)], {
         queryParams: { orderId: trip.OrderId },

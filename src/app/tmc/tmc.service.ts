@@ -1584,6 +1584,7 @@ export class TmcEntity extends BaseEntity {
   Account: AccountEntity;
   IsUsed: boolean;
   MandatoryBuyInsurance: boolean;
+  TrainMandatoryBuyInsurance: boolean;
   IsUsedName: string;
   Code: string;
   FlightApprovalType: TmcApprovalType;

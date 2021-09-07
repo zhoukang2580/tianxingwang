@@ -84,11 +84,13 @@ import { OrganizationComponent } from "src/app/tmc/components/organization/organ
 import { SelectComponent } from "src/app/components/select/select.component";
 import { OrderService } from "src/app/order/order.service";
 import { Bind12306Component } from "../components/bind12306/bind12306.component";
+import { flyInOut } from "../../animations/flyInOut";
 
 @Component({
   selector: "app-train-book-df",
   templateUrl: "./book_df.page.html",
   styleUrls: ["./book_df.page.scss"],
+  animations:[flyInOut]
 })
 export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private checkPayCountIntervalId: any;
@@ -442,7 +444,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
               bookInfo &&
               bookInfo.passenger &&
               bookInfo.passenger.Policy &&
-              !!bookInfo.passenger.Policy.TrainForceInsuranceId,
+              !!bookInfo.passenger.Policy.TrainForceInsuranceId&&this.tmc.TrainMandatoryBuyInsurance,
             showDetail: false,
           };
         });

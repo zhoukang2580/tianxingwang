@@ -246,6 +246,66 @@ ion-footer .toolbar {
     margin: 0 0.5em 0 0.2em;
   }
 }
+.insurances {
+  ion-radio-group {
+    font-size: 14px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+    display: flex;
+    flex-flow: row wrap;
+  }
+  .ins {
+    width: 100%;
+    background: transparent;
+    border-bottom: 1px solid #eeeeee;
+  }
+  .ins-item {
+    padding: 0 0.6em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 1em;
+    ion-item {
+      width: 100%;
+      font-size: 14px;
+      padding: 0;
+      margin: 0;
+    }
+    small {
+      font-size: 10px;
+      margin-left: 1em;
+      margin-right: -0.5em;
+    }
+    .ins-name {
+      display: flex;
+      align-items: center;
+      padding-left: 0.5em;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: #333333;
+    }
+    .ins-price {
+      font-family: PingFang SC;
+      font-weight: bold;
+      color: #333333;
+    }
+  }
+  .show-more {
+    display: flex;
+    justify-content: space-between;
+    ion-icon {
+      opacity: 0.6;
+      font-size: 16px;
+    }
+    padding: 0.5em;
+  }
+  .ins-detail {
+    padding: 0 1em;
+    font-size: 14px;
+    margin-top: -0.5em;
+  }
+}
 .center {
   display: flex;
   justify-content: center;
