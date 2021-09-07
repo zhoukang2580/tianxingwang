@@ -1502,6 +1502,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             p.InsuranceProducts.push(it.insuranceResult);
           }
         }
+        if (p.InsuranceProducts.length) {
+          p.Train.InsuranceProducts = p.InsuranceProducts;
+        }
       }
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
