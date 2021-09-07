@@ -452,8 +452,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         const combineInfo: ITrainPassengerBookInfo = {} as any;
         combineInfo.isShowTravelInfo = true;
         const forceInsurance = insurances.find((it) => it.disabled);
-        combineInfo.selectedInsuranceProduct =
-          forceInsurance && forceInsurance.insuranceResult;
+        combineInfo.selectedInsuranceProductId =
+          forceInsurance && forceInsurance.insuranceResult.Id;
         if (this.viewModel.expenseTypes && this.viewModel.expenseTypes.length) {
           combineInfo.expenseType = this.viewModel.expenseTypes[0].Name;
         }
@@ -1498,7 +1498,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
         for (const it of combindInfo.insuranceProducts) {
-          if (it.insuranceResult == combindInfo.selectedInsuranceProduct) {
+          if (it.insuranceResult.Id == combindInfo.selectedInsuranceProductId) {
             p.InsuranceProducts.push(it.insuranceResult);
           }
         }
@@ -2031,7 +2031,7 @@ interface ITrainPassengerBookInfo {
     email: string;
   }[];
   credentialStaffOtherEmail: string;
-  selectedInsuranceProduct: InsuranceProductEntity;
+  // selectedInsuranceProduct: InsuranceProductEntity;
   selectedInsuranceProductId: string;
   insuranceProducts: {
     insuranceResult: InsuranceProductEntity;
