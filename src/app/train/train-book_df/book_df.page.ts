@@ -90,7 +90,7 @@ import { flyInOut } from "../../animations/flyInOut";
   selector: "app-train-book-df",
   templateUrl: "./book_df.page.html",
   styleUrls: ["./book_df.page.scss"],
-  animations:[flyInOut]
+  animations: [flyInOut],
 })
 export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private checkPayCountIntervalId: any;
@@ -444,7 +444,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
               bookInfo &&
               bookInfo.passenger &&
               bookInfo.passenger.Policy &&
-              !!bookInfo.passenger.Policy.TrainForceInsuranceId&&this.tmc.TrainMandatoryBuyInsurance,
+              !!bookInfo.passenger.Policy.TrainForceInsuranceId &&
+              this.tmc.TrainMandatoryBuyInsurance,
             showDetail: false,
           };
         });
@@ -1011,7 +1012,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.viewModel.orderTravelPayType
     );
     if (this.viewModel && this.viewModel.combindInfos) {
-      let totalPrice = this.viewModel.combindInfos.reduce((arr, item) => {
+      let totalPrice = 0;
+      for (const item of this.viewModel.combindInfos) {
         if (
           item.bookInfo &&
           item.bookInfo.bookInfo &&
@@ -1023,24 +1025,25 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
               it.SeatType == info.trainPolicy.SeatType &&
               info.trainEntity.TrainNo == info.trainPolicy.TrainNo
           );
-
-          arr = +AppHelper.add(arr, +((seat && seat.SalesPrice) || 0));
+          totalPrice = AppHelper.add(
+            totalPrice,
+            +((seat && seat.SalesPrice) || 0)
+          );
         }
         if (!exchange) {
           if (item.insuranceProducts) {
-            const psum = item.insuranceProducts
-              .filter(
-                (it) => it.insuranceResult == item.selectedInsuranceProduct
-              )
-              .reduce((sum, it) => {
-                sum = AppHelper.add(+it.insuranceResult.Price, sum);
-                return +sum;
-              }, 0);
-            arr = +AppHelper.add(+arr, psum);
+            const psum = item.insuranceProducts.find(
+              (it) => it.insuranceResult.Id == item.selectedInsuranceProductId
+            );
+            if (psum) {
+              totalPrice = +AppHelper.add(
+                +totalPrice,
+                +psum.insuranceResult.Price
+              );
+            }
           }
         }
-        return +arr;
-      }, 0);
+      }
       // console.log("totalPrice ", totalPrice);
       let fees = this.getTotalServiceFees();
       if (fees && exchange) {
@@ -2029,6 +2032,7 @@ interface ITrainPassengerBookInfo {
   }[];
   credentialStaffOtherEmail: string;
   selectedInsuranceProduct: InsuranceProductEntity;
+  selectedInsuranceProductId: string;
   insuranceProducts: {
     insuranceResult: InsuranceProductEntity;
     disabled: boolean;

@@ -96,10 +96,10 @@
                 <div class="ins-item">
                   <ion-item>
                     <ion-radio mode="md" [value]="insurance.insuranceResult.Id" [disabled]='insurance.disabled'></ion-radio>
-                    <ion-label >
-                     <div class="ins-name">
-                      {{insurance.insuranceResult?.Name}} <span class="ins-price"><small>￥</small> {{insurance.insuranceResult?.Price}}/人</span>
-                     </div>
+                    <ion-label>
+                      <div class="ins-name">
+                        {{insurance.insuranceResult?.Name}} <span class="ins-price"><small>￥</small> {{insurance.insuranceResult?.Price}}/人</span>
+                      </div>
                     </ion-label>
                   </ion-item>
                   <ion-label color='secondary' class='ion-text-nowrap' (click)='onShowInsuranceDetail(insurance,$event)'>
@@ -374,6 +374,12 @@
       <div class="spacebetween" style="margin-top: 2px">
         <ion-text>票价</ion-text>
         <ion-text>{{infos.bookInfo.bookInfo.selectedSeat.Price}}元</ion-text>
+      </div>
+      <div *ngFor='let insurance of infos?.insuranceProducts'>
+        <div class="spacebetween" *ngIf="insurance.insuranceResult?.Id==infos.selectedInsuranceProductId">
+          <ion-text>{{insurance.insuranceResult?.Name}}</ion-text>
+          <ion-text>{{insurance?.insuranceResult?.Price}}元</ion-text>
+        </div>
       </div>
       <div class="spacebetween" style="margin-top: 2px"
         *ngIf="tmc?.IsShowServiceFee||(viewModel.orderTravelPayType == OrderTravelPayType.Person||viewModel.orderTravelPayType==OrderTravelPayType.Credit)">
