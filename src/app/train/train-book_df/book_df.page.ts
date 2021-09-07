@@ -1502,10 +1502,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             p.InsuranceProducts.push(it.insuranceResult);
           }
         }
-        if (p.InsuranceProducts.length) {
-          p.Train.InsuranceProducts = p.InsuranceProducts;
-        }
       }
+     
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
         combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
@@ -1636,6 +1634,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
+      }
+      if (p.InsuranceProducts.length) {
+        if(!p.Train){
+          p.Train={} as any;
+        }
+        p.Train.InsuranceProducts = p.InsuranceProducts;
       }
       bookDto.Passengers.push(p);
     }
