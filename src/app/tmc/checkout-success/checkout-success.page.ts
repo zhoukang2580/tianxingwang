@@ -96,7 +96,8 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
         .getMoment(1, this.date)
         .format("YYYY-MM-DD"),
     });
-    this.router.navigate([AppHelper.getRoutePath("hotel-list")]);
+    this.isCanBack=true;
+    this.router.navigate(["hotel-list"]);
   }
   private async getRecommendHotel() {
     this.tmcService

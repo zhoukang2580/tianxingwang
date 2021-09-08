@@ -452,8 +452,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         const combineInfo: ITrainPassengerBookInfo = {} as any;
         combineInfo.isShowTravelInfo = true;
         const forceInsurance = insurances.find((it) => it.disabled);
-        combineInfo.selectedInsuranceProduct =
-          forceInsurance && forceInsurance.insuranceResult;
+        combineInfo.selectedInsuranceProductId =
+          forceInsurance && forceInsurance.insuranceResult.Id;
         if (this.viewModel.expenseTypes && this.viewModel.expenseTypes.length) {
           combineInfo.expenseType = this.viewModel.expenseTypes[0].Name;
         }
@@ -687,8 +687,15 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private async reloadAccount12306Number() {
     if (this.initialBookDto) {
       const accountNumber12306 = await this.trainService.getBindAccountNumber();
+      // 除了普通角色，其他角色后台可能不进行绑定，所以，后台加载不到这个绑定的账号信息
       if (accountNumber12306 && accountNumber12306.Name) {
         this.initialBookDto.AccountNumber12306 = accountNumber12306;
+      }
+      if (this.isSelfBookType) {
+        // 如果在绑定界面退出了绑定状态
+        if (!accountNumber12306 || !accountNumber12306.Name) {
+          this.initialBookDto.AccountNumber12306 = accountNumber12306;
+        }
       }
     }
   }
@@ -1498,11 +1505,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
         for (const it of combindInfo.insuranceProducts) {
-          if (it.insuranceResult == combindInfo.selectedInsuranceProduct) {
+          if (it.insuranceResult.Id == combindInfo.selectedInsuranceProductId) {
             p.InsuranceProducts.push(it.insuranceResult);
           }
         }
       }
+
       p.ExpenseType = combindInfo.expenseType;
       p.IllegalReason =
         combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
@@ -1633,6 +1641,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
+      }
+      if (p.InsuranceProducts.length) {
+        if (!p.Train) {
+          p.Train = {} as any;
+        }
+        p.Train.InsuranceProducts = p.InsuranceProducts;
       }
       bookDto.Passengers.push(p);
     }
@@ -2031,7 +2045,7 @@ interface ITrainPassengerBookInfo {
     email: string;
   }[];
   credentialStaffOtherEmail: string;
-  selectedInsuranceProduct: InsuranceProductEntity;
+  // selectedInsuranceProduct: InsuranceProductEntity;
   selectedInsuranceProductId: string;
   insuranceProducts: {
     insuranceResult: InsuranceProductEntity;
