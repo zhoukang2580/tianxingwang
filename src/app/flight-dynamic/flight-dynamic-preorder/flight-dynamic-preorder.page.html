@@ -39,7 +39,7 @@
         <ion-item-group>
             <div *ngIf="thisFlightDynamicDetails as item">
                 <ion-item-divider class="divider" lines='none'>{{item.FromAirportName}}|本次航班</ion-item-divider>
-                <ion-item lines="none" (click)="onSelectFlight(item.FlightNumber)">
+                <ion-item lines="none" (click)="onSelectPresent(item.FlightNumber)">
                     <ion-grid>
                         <ion-row>
                             <ion-col class="label">{{item.FlightNumber}}</ion-col>

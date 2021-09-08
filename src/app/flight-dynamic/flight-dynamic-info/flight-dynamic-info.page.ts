@@ -61,10 +61,10 @@ export class FlightDynamicInfoPage implements OnInit {
         this.flightNo = q.get("flightNo")
         this.flightNum = q.get("flightNum");
         this.flightNoN = q.get("flightNoN");
+        this.flyNum = q.get("FlightNumber");
         let start = q.get("startTime");
         let end = q.get("endTime");
         let flyDate = q.get("Date");
-        this.flyNum = q.get("FlightNumber");
         let disting = q.get("distinguish");
         if (flyDate && this.flyNum && disting) {
           this.detailList = {
@@ -97,11 +97,28 @@ export class FlightDynamicInfoPage implements OnInit {
 
         console.log(this.detailList, "detailList")
 
+        
         this.loadDetails();
       })
     } catch (error) {
       console.error(error)
     }
+  }
+
+ planeNo() {
+    if (this.flightNo) {
+      return this.flightNo
+    }
+    if (this.flightNum) {
+      return this.flightNum
+    }
+    if (this.flightNoN) {
+      return this.flightNoN
+    }
+    if (this.flyNum) {
+      return this.flyNum
+    }
+      // return this.flightNo || this.flightNum || this.flightNoN || this.flyNum
   }
 
   async customPopoverOptions() {
@@ -120,7 +137,7 @@ export class FlightDynamicInfoPage implements OnInit {
               it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
               it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
               it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
-  
+
               const fliNo = it.PreviousFlightNumber;
               this.hour = it.Minute;
               this.type = it.StatusName;
@@ -221,7 +238,7 @@ export class FlightDynamicInfoPage implements OnInit {
       queryParams: {
         PreviousFlightDate: previous.PreviousFlightDate.substring(0, 10),
         PreviousFlightNumber: previous.PreviousFlightNumber,
-        FlightDateTime:  previous.Date.substring(0, 10),
+        FlightDateTime: previous.Date.substring(0, 10),
         FlightNumber: previous.FlightNumber,
         preDepCity: previous.PreviousFromAirport,
         preArrCity: previous.PreviousToAirport

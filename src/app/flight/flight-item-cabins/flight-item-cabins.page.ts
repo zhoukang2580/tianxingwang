@@ -91,6 +91,10 @@ export class FlightItemCabinsPage implements OnInit {
       this.pageUrl = this.router.url;
       try {
         this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
+        //  this.flightService.getFlightSegmentDetail(this.vmFlightSegment).then(it=>{
+        this.initFlightSegments(this.vmFlightSegment);
+        //  })
+
         this.tmcService
           .getAgent()
           .then((a) => {
@@ -106,6 +110,8 @@ export class FlightItemCabinsPage implements OnInit {
         ) {
           this.isAgreement = true;
         }
+
+        console.log(this.vmFlightSegment,"vmFlightSegment")
         this.isSelf = await this.staffService.isSelfBookType();
         this.cabinTypes = this.getCabinTypes();
         const identity = await this.identityService
@@ -207,6 +213,16 @@ export class FlightItemCabinsPage implements OnInit {
     });
     this.flightService.setPassengerBookInfosSource(bookInfos);
   }
+
+  async initFlightSegments(s: FlightSegmentEntity) {
+    try {
+      const result = await this.flightService.getFlightSegmentDetail(s);
+      this.vmFlightSegment = result.FlightSegments[0];
+      console.log(this.vmFlightSegment,"vmFlightSegment")
+    } catch (e) {
+      console.error(e);
+    }
+  }
   private async getLowestFlightPolicyCabin(
     lowestFlightSegment: FlightSegmentEntity
   ) {
@@ -260,6 +276,9 @@ export class FlightItemCabinsPage implements OnInit {
     if (!cabin.LowerSegment.Cabins || !cabin.LowerSegment.Cabins.length) {
       await this.flightService.initFlightSegmentCabins(fs);
       cabin.LowerSegment.Cabins = fs.Cabins.map((it) => ({ ...it }));
+
+      console.log(cabin.LowerSegment.Cabins,"=======")
+
     }
     if (!cabin.LowerSegment.Cabins || !cabin.LowerSegment.Cabins.length) {
       return false;

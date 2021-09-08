@@ -4,8 +4,8 @@
             <app-back-button defaultHref=""></app-back-button>
         </ion-buttons>
         <ion-title>
-            <div class="tit">
-                <div>{{flightNo}}{{flightNum}}{{flightNoN}}{{flyNum}}</div>
+            <div class="tit" *ngIf="planeNo() as p">
+                <div>{{p}}</div>
                 <span>{{FlightName}}</span>
             </div>
         </ion-title>
@@ -66,7 +66,7 @@
                         </ion-row>
                     </ion-grid>
                 </ion-item>
-                <ion-item>
+                <ion-item lines="none">
                     <ion-grid>
                         <ion-row>
                             <ion-col class="terminal">{{item.ToAirportName}}{{item.ToTerminal}}</ion-col>
@@ -93,6 +93,16 @@
                         </ion-row>
                     </ion-grid>
                 </ion-item>
+                <div class="down_nac">
+                    <div class="up">
+                        <p>机龄:{{item.PlaneAge}}年</p>
+                        <p>机型:{{item.PlaneType}}</p>
+                    </div>
+                    <div class="down">
+                        <p>平均延误{{item.AverageDelay}}分钟</p>
+                        <p>航班准点率：{{item.TakeoffOntimeRate}}</p>
+                    </div>
+                </div>
             </div>
         </ion-item-group>
     </ion-list>

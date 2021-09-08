@@ -111,4 +111,11 @@ export class FlightDynamicDetailPage {
     FlightDynamicStatusType: string
     StatusName: string
     AddDay: string
+
+    PlaneAge: string;
+
+    PlaneType: string;
+
+    AverageDelay:string;
+
 }

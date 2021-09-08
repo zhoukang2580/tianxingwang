@@ -1156,7 +1156,8 @@ export class FlightService {
     await this.loadPolicyedFlightsAsync(this.flightGoTripResult);
     return this.policyFlights;
   }
-  private async getFlightSegmentDetail(s: FlightSegmentEntity) {
+   
+  async getFlightSegmentDetail(s: FlightSegmentEntity) {
     let ADTPtcs = this.getPassengerBookInfos().length || 1;
     const isSelf = await this.staffService.isSelfBookType();
     if (isSelf) {

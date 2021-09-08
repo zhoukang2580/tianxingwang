@@ -57,12 +57,12 @@
                 </div>
             </div>
         </div>
-        <div class="aircompany hasflydynamic"  (click)="onSearchDynamic(vmFlightSegment)" *ngIf='hasFlightDynamic'>
+        <div class="aircompany hasflydynamic" (click)="onSearchDynamic(vmFlightSegment)" *ngIf='hasFlightDynamic'>
             <ng-container [ngTemplateOutlet]='sss'></ng-container>
             <ion-icon class="icon" name="chevron-forward-outline"></ion-icon>
         </div>
         <ng-container *ngIf='!hasFlightDynamic'>
-            <div class="aircompany" >
+            <div class="aircompany">
                 <ng-container [ngTemplateOutlet]='sss'></ng-container>
             </div>
         </ng-container>
@@ -75,6 +75,13 @@
             </ion-text>
             <ion-text color='secondary'><span class='seperator'>|</span>{{vmFlightSegment?.Meal?"有":"无"}}餐食
             </ion-text>
+            <ion-text color='medium'> <span class='seperator'>|</span>机龄{{vmFlightSegment?.PlaneAge}}年
+            </ion-text>
+            <ion-text color='medium'> <span class='seperator'>|</span>平均延误{{vmFlightSegment?.AverageDelay}}分钟
+            </ion-text>
+            <ion-text color='medium'> <span class='seperator'>|</span>准点率:{{vmFlightSegment?.TakeoffOntimeRate}}
+            </ion-text>
+
             <!-- <ion-text color='secondary' *ngIf='isAgreement'><span class='seperator'>|</span>协</ion-text> -->
         </ng-template>
     </div>
@@ -130,8 +137,7 @@
                         <ion-label (click)='openrules(cabin)'>
                             <h3 class='discount'>
                                 <ion-text color='dark' *ngIf='identity?.Numbers&&identity.Numbers["AgentId"] else aatemp'>
-                                    <span *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName'></span> {{cabin.Cabin?.TypeName
-                                    }}({{cabin.Cabin?.Code }})
+                                    <span *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName'></span> {{cabin.Cabin?.TypeName }}({{cabin.Cabin?.Code }})
                                 </ion-text>
                                 <ng-template #aatemp>
                                     <ion-text color='dark'>{{cabin.Cabin?.TypeName}}</ion-text>
