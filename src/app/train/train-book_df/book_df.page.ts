@@ -872,16 +872,8 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
               }
               if (r.Code == "TrainCheckPassenger") {
                 const msg: string = r.Message;
-                if (msg && /\d{11}-/.test(msg)) {
-                  const tips = msg
-                    .split("/")
-                    .filter((it) => !!it)
-                    .map((it) => {
-                      const [phone, code] = it.split("-");
-                      return `使用手机号${phone},发送验证码${code}到12306进行手机身份验证(验证码30分钟内有效)`;
-                    })
-                    .join("\r\n");
-                  AppHelper.alert(tips);
+                const ok = this.checkTrainCheckPassenger(msg);
+                if (ok) {
                   return;
                 }
               }
@@ -892,19 +884,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             console.error(e);
             this.isSubmitDisabled = false;
             const msg: string = e;
-            if (msg && /\d{11}-/.test(msg)) {
-              const tips = msg
-                .split("/")
-                .filter((it) => !!it)
-                .map((it) => {
-                  const [phone, code] = it.split("-");
-                  return `使用手机号${phone},发送验证码${code}到12306进行手机身份验证(验证码30分钟内有效)`;
-                })
-                .join("\r\n");
-              AppHelper.alert(tips);
+            const ok = this.checkTrainCheckPassenger(msg);
+            res = null;
+            if (ok) {
               return;
             }
-            res = null;
             return null;
           });
       }
@@ -975,6 +959,38 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       }
     }
+  }
+  private checkTrainCheckPassenger(msg: string) {
+    if (msg && /\d{11}-/.test(msg)) {
+      let vcode = "";
+      const tips = msg
+        .split("/")
+        .filter((it) => !!it)
+        .map((it) => {
+          const [phone, code] = it.split("-");
+          vcode = code;
+          return `使用手机号${phone},发送验证码${code}到12306进行手机身份验证(验证码30分钟内有效)`;
+        })
+        .join("\r\n");
+      if (AppHelper.isApp()) {
+        AppHelper.alert(tips, true, "用本机号码发送", "取消").then((ok) => {
+          if (ok) {
+            this.onSendSms(vcode);
+          }
+        });
+      } else {
+        AppHelper.alert(tips);
+      }
+      return true;
+    }
+    return false;
+  }
+  private onSendSms(vcode: string) {
+    const a = document.createElement("a");
+    a.href = `sms:12306${
+      AppHelper.platform.is("ios") ? "&" : "?"
+    }body=${vcode}`;
+    a.click();
   }
   private getTotalServiceFees() {
     let fees = 0;
