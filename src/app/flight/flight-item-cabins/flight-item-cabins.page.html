@@ -75,11 +75,11 @@
             </ion-text>
             <ion-text color='secondary'><span class='seperator'>|</span>{{vmFlightSegment?.Meal?"有":"无"}}餐食
             </ion-text>
-            <ion-text color='medium'> <span class='seperator'>|</span>机龄{{vmFlightSegment?.PlaneAge}}年
+            <ion-text color='medium' *ngIf='vmFlightSegment?.PlaneAge'> <span class='seperator'>|</span>机龄{{vmFlightSegment?.PlaneAge}}年
             </ion-text>
-            <ion-text color='medium'> <span class='seperator'>|</span>平均延误{{vmFlightSegment?.AverageDelay}}分钟
+            <ion-text color='medium' *ngIf='vmFlightSegment?.AverageDelay'> <span class='seperator'>|</span>平均延误{{vmFlightSegment?.AverageDelay}}分钟
             </ion-text>
-            <ion-text color='medium'> <span class='seperator'>|</span>准点率:{{vmFlightSegment?.TakeoffOntimeRate}}
+            <ion-text color='medium' *ngIf='vmFlightSegment?.TakeoffOntimeRate'> <span class='seperator'>|</span>准点率:{{vmFlightSegment?.TakeoffOntimeRate}}
             </ion-text>
 
             <!-- <ion-text color='secondary' *ngIf='isAgreement'><span class='seperator'>|</span>协</ion-text> -->

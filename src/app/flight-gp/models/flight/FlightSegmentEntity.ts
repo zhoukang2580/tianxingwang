@@ -221,4 +221,8 @@ export class FlightSegmentEntity {
   TrackById: number;
   Duration: number;
   flightRouteIds: string[];
+
+  AverageDelay:string;
+  PlaneAge: string;
+  TakeoffOntimeRate: string;
 }

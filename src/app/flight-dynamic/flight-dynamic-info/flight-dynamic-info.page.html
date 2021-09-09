@@ -93,14 +93,14 @@
                         </ion-row>
                     </ion-grid>
                 </ion-item>
-                <div class="down_nac">
+                <div class="down_nac" *ngIf="item.PlaneAge||item.PlaneType||item.AverageDelay||item.TakeoffOntimeRate">
                     <div class="up">
-                        <p>机龄:{{item.PlaneAge}}年</p>
-                        <p>机型:{{item.PlaneType}}</p>
-                    </div>
-                    <div class="down">
-                        <p>平均延误{{item.AverageDelay}}分钟</p>
-                        <p>航班准点率：{{item.TakeoffOntimeRate}}</p>
+                        <p *ngIf='item.PlaneAge'>机龄:{{item.PlaneAge}}年</p>
+                        <p *ngIf='item.PlaneType'>机型:{{item.PlaneType}}</p>
+                        <!-- </div>
+                    <div class="down"> -->
+                        <p *ngIf='item.AverageDelay'>平均延误{{item.AverageDelay}}分钟</p>
+                        <p *ngIf='item.TakeoffOntimeRate'>航班准点率：{{item.TakeoffOntimeRate}}</p>
                     </div>
                 </div>
             </div>

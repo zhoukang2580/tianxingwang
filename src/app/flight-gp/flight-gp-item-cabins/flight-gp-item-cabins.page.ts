@@ -81,6 +81,7 @@ export class FlightGpItemCabinsPage implements OnInit {
       this.pageUrl = this.router.url;
       try {
         this.vmFlightSegment = this.flightGpService.currentViewtFlightSegment;
+        this.initFlightSegments(this.vmFlightSegment)
         if (
           this.vmFlightSegment &&
           this.vmFlightSegment.Cabins &&
@@ -187,6 +188,16 @@ export class FlightGpItemCabinsPage implements OnInit {
           vmFlightSegment.FromCityName + "," + vmFlightSegment.ToCityName,
       },
     });
+  }
+
+  async initFlightSegments(s: FlightSegmentEntity) {
+    try {
+      const result = await this.flightGpService.getFlightSegmentDetail(s);
+      this.vmFlightSegment = result.FlightSegments[0];
+      console.log(this.vmFlightSegment,"vmFlightSegment")
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   private setDefaultFilteredInfo() {
