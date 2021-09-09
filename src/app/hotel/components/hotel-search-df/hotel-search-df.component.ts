@@ -18,7 +18,6 @@ import {
   IonHeader,
   IonContent,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
@@ -28,6 +27,7 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 import { RefresherComponent } from "src/app/components/refresher";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { HotelService } from "../../hotel.service";
+import { StorageService } from "src/app/services/storage-service.service";
 const HISTORY_HOTEL_CITIES = "history_hotel_cities";
 @Component({
   selector: "app-search-city-df",
@@ -75,7 +75,7 @@ export class HotelSearchDfComponent
   constructor(
     public router: Router,
     private hotelService: HotelService,
-    private storage: Storage,
+    private storage: StorageService,
     route: ActivatedRoute,
     langService: LangService
   ) {

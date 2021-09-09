@@ -23,11 +23,11 @@ import {
   ModalController,
   PopoverController,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
 import { FlightCityService } from "../flight-city.service";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-search-flight",
   templateUrl: "./search-flight.page.html",
@@ -61,7 +61,7 @@ export class SearchFlightPage
     private calendarService: CalendarService,
     private navCtrl: NavController,
     private flightService: FlightService,
-    private storage: Storage,
+    private storage: StorageService,
     private staffService: HrService,
     private apiService: ApiService,
     private tmcService: TmcService,

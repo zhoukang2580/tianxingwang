@@ -49,7 +49,6 @@ import {
   Component,
   OnDestroy,
 } from "@angular/core";
-import { Storage } from "@ionic/storage";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import * as moment from "moment";
 import { DayModel } from "../../tmc/models/DayModel";
@@ -85,6 +84,7 @@ import { RefresherComponent } from "src/app/components/refresher";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { SearchApprovalEnComponent } from "src/app/tmc/components/search-approval_en/search-approval_en.component";
 import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
+import { StorageService } from "src/app/services/storage-service.service";
 
 @Component({
   selector: "app-book-en",
@@ -162,7 +162,7 @@ export class BookEnPage
     private popoverCtrl: PopoverController,
     private plt: Platform,
     private router: Router,
-    private storage: Storage,
+    private storage: StorageService,
     private LangService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);

@@ -14,9 +14,9 @@ import {
   Renderer2
 } from "@angular/core";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { Storage } from "@ionic/storage";
 import { TmcService } from "../../../tmc/tmc.service";
 import { trigger, state, transition } from "@angular/animations";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-select-airports",
   templateUrl: "./select-airports.component.html",
@@ -48,7 +48,7 @@ export class SelectAirportsModalComponent implements OnInit, AfterViewInit {
   constructor(
     private tmcService: TmcService,
     private modalCtrl: ModalController,
-    private storage: Storage,
+    private storage: StorageService,
     private domCtrl: DomController
   ) {}
   async ngOnInit() {

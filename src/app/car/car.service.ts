@@ -1,12 +1,12 @@
 import { BehaviorSubject } from "rxjs";
 import { Subject } from "rxjs";
 import { IdentityService } from "./../services/identity/identity.service";
-import { Storage } from "@ionic/storage";
 import { AppHelper } from "./../appHelper";
 import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { RequestEntity } from "../services/api/Request.entity";
 import { tap } from "rxjs/operators";
+import { StorageService } from "../services/storage-service.service";
 export const KEY_RENTAL_CAR_VERIFY_MOBILE = "_key_rental_car_verify_mobile";
 interface ILocalMobile {
   [mobile: number]: number;
@@ -30,7 +30,7 @@ export class CarService {
   private openUrlSource: Subject<string>;
   constructor(
     private apiService: ApiService,
-    private storage: Storage,
+    private storage: StorageService,
     private identityService: IdentityService
   ) {
     this.identityService.getIdentitySource().subscribe(_ => {

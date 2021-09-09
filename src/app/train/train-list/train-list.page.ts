@@ -44,9 +44,9 @@ import { TripType } from "src/app/tmc/models/TripType";
 import * as moment from "moment";
 import { LanguageHelper } from "src/app/languageHelper";
 import { map, tap, switchMap } from "rxjs/operators";
-import { Storage } from "@ionic/storage";
 import { trigger, transition, style, animate } from "@angular/animations";
 import { SelectedTrainSegmentInfoEnComponent } from "../components/selected-train-segment-info_en/selected-train-segment-info_en.component";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-train-list",
   templateUrl: "./train-list.page.html",
@@ -118,7 +118,7 @@ export class TrainListPage implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private trainService: TrainService,
     private router: Router,
-    private storage: Storage,
+    private storage: StorageService,
     private calendarService: CalendarService,
     private route: ActivatedRoute,
     private apiService: ApiService,

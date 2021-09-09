@@ -5,9 +5,9 @@ import { RequestEntity } from "../../../services/api/Request.entity";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { IonInfiniteScroll, ModalController } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { CountryEntity } from "../../models/CountryEntity";
 import { TmcService } from "../../tmc.service";
+import { StorageService } from "src/app/services/storage-service.service";
 
 @Component({
   selector: "app-select-country",
@@ -31,7 +31,7 @@ export class SelectCountryModalComponent implements OnInit {
   constructor(
     route: ActivatedRoute,
     private tmcService: TmcService,
-    private storage: Storage,
+    private storage: StorageService,
     private modalCtrl: ModalController
   ) {
     route.queryParamMap.subscribe(p => {

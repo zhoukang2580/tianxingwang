@@ -55,7 +55,6 @@ import {
   ViewChild,
   OnDestroy,
 } from "@angular/core";
-import { Storage } from "@ionic/storage";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import * as moment from "moment";
 import { DayModel } from "../../tmc/models/DayModel";
@@ -102,6 +101,7 @@ import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcen
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { SelectComponent } from "src/app/components/select/select.component";
 import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
+import { StorageService } from "src/app/services/storage-service.service";
 
 @Component({
   selector: "app-flight-book",
@@ -169,7 +169,7 @@ export class FlightBookPage
     private popoverCtrl: PopoverController,
     private plt: Platform,
     private router: Router,
-    private storage: Storage,
+    private storage: StorageService,
     private LangService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);

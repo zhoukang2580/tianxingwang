@@ -1,4 +1,3 @@
-import { Storage } from "@ionic/storage";
 import { SelectAndReplacebookinfoComponent } from "./components/select-and-replacebookinfo/select-and-replacebookinfo.component";
 import { CalendarService } from "./../tmc/calendar.service";
 import { CredentialsType } from "./../member/pipe/credential.pipe";
@@ -37,6 +36,7 @@ import { OrderBookDto } from "../order/models/OrderBookDto";
 import { FlightFareEntity } from "./models/FlightFareEntity";
 import { FlightResultEntity } from "./models/FlightResultEntity";
 import { FlightCityService } from "./flight-city.service";
+import { StorageService } from "../services/storage-service.service";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -91,7 +91,7 @@ export class FlightService {
     private flightCityService: FlightCityService,
     private tmcService: TmcService,
     private calendarService: CalendarService,
-    private storage: Storage
+    private storage: StorageService
   ) {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;

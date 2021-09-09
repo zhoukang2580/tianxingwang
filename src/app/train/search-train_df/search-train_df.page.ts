@@ -15,13 +15,13 @@ import * as moment from "moment";
 import { Subscription, of } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
 import { ModalController, PopoverController } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { map } from "rxjs/operators";
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
 import { LangService } from "src/app/services/lang.service";
 import { SelectedTrainSegmentInfoDfComponent } from "../components/selected-train-segment-info-df/selected-train-segment-info-df.component";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-search-train-df",
   templateUrl: "./search-train_df.page.html",
@@ -47,7 +47,7 @@ export class SearchTrainDfPage
   constructor(
     public router: Router,
     private route: ActivatedRoute,
-    private storage: Storage,
+    private storage: StorageService,
     private staffService: HrService,
     private identityService: IdentityService,
     private trainService: TrainService,

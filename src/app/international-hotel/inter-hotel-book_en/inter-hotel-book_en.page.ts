@@ -37,7 +37,6 @@ import {
   IonContent,
   Platform,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import {
   HrService,
   StaffApprover,

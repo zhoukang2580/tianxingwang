@@ -16,7 +16,6 @@ import { BehaviorSubject, of } from "rxjs";
 import { Subject } from "rxjs";
 import { ApiService } from "../services/api/api.service";
 import { Injectable, EventEmitter } from "@angular/core";
-import { Storage } from "@ionic/storage";
 import { map } from "rxjs/operators";
 import { RoomEntity } from "../hotel/models/RoomEntity";
 import { ConfigEntity } from "../services/config/config.entity";
@@ -36,6 +35,7 @@ import { CountryEntity } from "../tmc/models/CountryEntity";
 import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DestinationAreaType } from "../tmc/models/DestinationAreaType";
 import { MemberService } from "../member/member.service";
+import { StorageService } from "../services/storage-service.service";
 export const KEY_INTERNATIONAL_HOTEL_COUNTRIES =
   "key_international_hotel_countries";
 interface ILocalCache<T> {
@@ -82,7 +82,7 @@ export class InternationalHotelService {
   HotelDefaultImg: string;
   constructor(
     private apiService: ApiService,
-    private storage: Storage,
+    private storage: StorageService,
     private calendarService: CalendarService,
     private modalCtrl: ModalController,
     private staffService: HrService,

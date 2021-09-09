@@ -19,7 +19,6 @@ import {
   NavController,
   PopoverController,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import { TripType } from "src/app/tmc/models/TripType";
 import { TrainEntity } from "../models/TrainEntity";
@@ -30,6 +29,7 @@ import { SelectedTrainSegmentInfoComponent } from "../components/selected-train-
 import { ShowStandardDetailsComponent } from "src/app/tmc/components/show-standard-details/show-standard-details.component";
 import { LangService } from 'src/app/services/lang.service';
 import { SelectedTrainSegmentInfoEnComponent } from '../components/selected-train-segment-info_en/selected-train-segment-info_en.component';
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-search-train",
   templateUrl: "./search-train.page.html",
@@ -53,7 +53,7 @@ export class SearchTrainPage
   constructor(
     public router: Router,
     private route: ActivatedRoute,
-    private storage: Storage,
+    private storage: StorageService,
     private staffService: HrService,
     private identityService: IdentityService,
     private apiService: ApiService,

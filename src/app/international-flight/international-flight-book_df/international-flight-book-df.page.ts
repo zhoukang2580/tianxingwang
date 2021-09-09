@@ -75,7 +75,6 @@ import { PriceDetailComponent } from "src/app/flight/components/price-detail/pri
 import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
-import { Storage } from "@ionic/storage";
 import { TMC_FLIGHT_OUT_NUMBER } from "../mock-data";
 import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
@@ -85,6 +84,7 @@ import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcen
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { SelectComponent } from "src/app/components/select/select.component";
 import { OrderService } from "src/app/order/order.service";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-international-flight-book-df",
   templateUrl: "./international-flight-book-df.page.html",
@@ -138,7 +138,7 @@ export class InternationalFlightBookDfPage
     private identityService: IdentityService,
     private staffService: HrService,
     private tmcService: TmcService,
-    private storage: Storage,
+    private storage: StorageService,
     private plt: Platform,
     private popoverCtrl: PopoverController,
     private router: Router,

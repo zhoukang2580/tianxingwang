@@ -28,10 +28,10 @@ import { Router, ActivatedRoute } from "@angular/router";
 import { IdentityService } from "../identity/identity.service";
 import { LanguageHelper } from "src/app/languageHelper";
 import { environment } from "src/environments/environment";
-import { Storage } from "@ionic/storage";
 import { LogService } from "../log/log.service";
 import { CONFIG } from "src/app/config";
 import { Platform } from "@ionic/angular";
+import { StorageService } from "../storage-service.service";
 interface ApiConfig {
   Urls: { [key: string]: string };
   Token: string;
@@ -54,7 +54,7 @@ export class ApiService {
     private http: HttpClient,
     private router: Router,
     private identityService: IdentityService,
-    private storage: Storage,
+    private storage: StorageService,
     private route: ActivatedRoute,
     private logService: LogService,
     private plt: Platform

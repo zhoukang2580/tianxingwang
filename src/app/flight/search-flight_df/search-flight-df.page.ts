@@ -24,7 +24,6 @@ import {
   PopoverController,
   Platform,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
@@ -37,6 +36,7 @@ import {
 import { FlightCityService } from "../flight-city.service";
 import { CONFIG } from "src/app/config";
 import { flatten } from "@angular/compiler";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-search-flight-df",
   templateUrl: "./search-flight-df.page.html",
@@ -84,7 +84,7 @@ export class SearchFlightDfPage
     private navCtrl: NavController,
     private flightService: FlightService,
     private internationalFlightService: InternationalFlightService,
-    private storage: Storage,
+    private storage: StorageService,
     private staffService: HrService,
     private apiService: ApiService,
     private tmcService: TmcService,
@@ -571,7 +571,8 @@ export class SearchFlightDfPage
       isShowAirports: false,
       isShowPage: true,
       isShow3Code: true,
-      isShowCityName: false
+      isShowCityName: false,
+      isShowSegs:false
     });
     if (rs) {
       const s = this.searchFlightModel;

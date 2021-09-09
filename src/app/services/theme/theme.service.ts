@@ -1,11 +1,11 @@
 import { Platform } from "@ionic/angular";
 import { AppHelper } from "./../../appHelper";
 import { IdentityService } from "./../identity/identity.service";
-import { Storage } from "@ionic/storage";
 import { BehaviorSubject, Subject } from "rxjs";
 import { Injectable } from "@angular/core";
 import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { filter } from "rxjs/operators";
+import { StorageService } from "../storage-service.service";
 type Mode = "dark" | "light";
 @Injectable({
   providedIn: "root",
@@ -14,7 +14,7 @@ export class ThemeService {
   private mode: Mode;
   private modeSource: Subject<Mode>;
   constructor(
-    private storage: Storage,
+    private storage: StorageService,
     private statusBar: StatusBar,
     private plt: Platform
   ) {

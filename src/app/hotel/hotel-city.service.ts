@@ -1,6 +1,5 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { Platform } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { BehaviorSubject } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";

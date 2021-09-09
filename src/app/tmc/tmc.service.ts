@@ -13,8 +13,7 @@ import { OrderTravelPayType } from "../order/models/OrderTravelEntity";
 import { StaffEntity } from "../hr/hr.service";
 import { CredentialsEntity } from "./models/CredentialsEntity";
 import { TrafficlineEntity } from "./models/TrafficlineEntity";
-import { Storage } from "@ionic/storage";
-import * as jsPy from "js-pinyin";
+import {getFullChars} from "js-pinyin";
 import * as moment from "moment";
 import { InsuranceProductEntity } from "../insurance/models/InsuranceProductEntity";
 import { PayService } from "../services/pay/pay.service";
@@ -40,6 +39,7 @@ import { AgentRegionType } from "./models/AgentRegionType";
 import { TimeoutTipComponent } from "./components/timeout-tip/timeout-tip.component";
 import { FlightSegmentEntity } from "../flight-gp/models/flight/FlightSegmentEntity";
 import { FlightCabinEntity } from "../flight-gp/models/flight/FlightCabinEntity";
+import { StorageService } from "../services/storage-service.service";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -83,7 +83,7 @@ export class TmcService {
   private loadInterAirportsPromise: Promise<TrafficlineEntity[]>;
   constructor(
     private apiService: ApiService,
-    private storage: Storage,
+    private storage: StorageService,
     private identityService: IdentityService,
     private payService: PayService,
     private platform: Platform,
@@ -892,7 +892,7 @@ export class TmcService {
     return this.allLocalAirports;
   }
   private getFirstLetter(name: string) {
-    const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);
+    const pyFl = `${getFullChars(name)}`.charAt(0);
     return pyFl && pyFl.toUpperCase();
   }
   async getDomesticAirports(forceFetch: boolean = false) {

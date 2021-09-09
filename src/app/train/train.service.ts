@@ -14,8 +14,7 @@ import { TripType } from "../tmc/models/TripType";
 import { TrainEntity, TrainSeatType } from "./models/TrainEntity";
 import { TrafficlineEntity } from "../tmc/models/TrafficlineEntity";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
-import { Storage } from "@ionic/storage";
-import * as jsPy from "js-pinyin";
+import { getFullChars } from "js-pinyin";
 import {
   PassengerBookInfo,
   TmcService,
@@ -35,6 +34,7 @@ import { OrderBookDto } from "../order/models/OrderBookDto";
 import { DayModel } from "../tmc/models/DayModel";
 import { SelectAndReplaceTrainInfoComponent } from "./components/select-and-replaceinfo/select-and-replaceinfo.component";
 import { AccountEntity } from "../account/models/AccountEntity";
+import { StorageService } from "../services/storage-service.service";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -75,7 +75,7 @@ export class TrainService {
   }
   constructor(
     private apiService: ApiService,
-    private storage: Storage,
+    private storage: StorageService,
     private staffService: HrService,
     private tmcService: TmcService,
     private identityService: IdentityService,
@@ -142,9 +142,12 @@ export class TrainService {
     req.Data = {};
     req.Method = "TmcApiBookUrl-Train-GetBindAccountNumber";
     req.IsShowLoading = true;
-    return this.apiService.getPromiseData<{ Name: string; Number: string;IsIdentity:boolean;Tag:string; }>(
-      req
-    );
+    return this.apiService.getPromiseData<{
+      Name: string;
+      Number: string;
+      IsIdentity: boolean;
+      Tag: string;
+    }>(req);
   }
   private clearSelectedBookInfos() {
     this.bookInfos = this.bookInfos || [];
@@ -1073,7 +1076,7 @@ export class TrainService {
     );
   }
   private getFirstLetter(name: string) {
-    const pyFl = `${jsPy.getFullChars(name)}`.charAt(0);
+    const pyFl = `${getFullChars(name)}`.charAt(0);
     return pyFl && pyFl.toUpperCase();
   }
   async searchAsync(condition: SearchTrainModel) {

@@ -44,12 +44,12 @@ import { FlightCabinType } from "../models/flight/FlightCabinType";
 import { LanguageHelper } from "src/app/languageHelper";
 import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
 
-import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { FilterPassengersPolicyComponent } from "../../tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightCityService } from "../flight-city.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-flight-list",
   templateUrl: "./flight-list.page.html",
@@ -152,7 +152,7 @@ export class FlightListPage
     private identityService: IdentityService,
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
-    private storage: Storage,
+    private storage: StorageService,
     private tmcService: TmcService
   ) {
     this.subscriptions.push(

@@ -26,7 +26,7 @@ import { Zip } from "@ionic-native/zip/ngx";
 import { File } from "@ionic-native/file/ngx";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
-import { IonicStorageModule } from "@ionic/storage";
+import { IonicStorageModule } from '@ionic/storage-angular';
 import { Animation } from "./animations/animation-interface";
 import { FileHelperService } from './services/file-helper.service';
 import { AppHelper } from './appHelper';

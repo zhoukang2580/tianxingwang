@@ -39,7 +39,6 @@ import {
   IonContent,
   Platform,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import {
   HrService,
   StaffApprover,
@@ -83,6 +82,7 @@ import { RefresherComponent } from "src/app/components/refresher";
 import { WarrantyComponent } from "src/app/hotel/components/warranty/warranty.component";
 import { InterHotelWarrantyComponent } from "../components/inter-hotel-warranty/inter-hotel-warranty.component";
 import { CHINESE_REG } from "src/app/member/member.service";
+import { StorageService } from "src/app/services/storage-service.service";
 
 @Component({
   selector: "app-inter-hotel-book",
@@ -134,7 +134,7 @@ export class InterHotelBookPage implements OnInit, OnDestroy, AfterViewInit {
     private navCtrl: NavController,
     private identityService: IdentityService,
     private hotelService: InternationalHotelService,
-    private storage: Storage,
+    private storage: StorageService,
     private tmcService: TmcService,
     private popoverCtrl: PopoverController,
     private modalCtrl: ModalController,

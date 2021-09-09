@@ -49,7 +49,6 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
-import { Storage } from "@ionic/storage";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import * as moment from "moment";
 import {
@@ -87,6 +86,7 @@ import { MockInitBookInfo, Mock_Hotel_FreeBook } from "src/app/data/mockdata";
 import { HotelBookType } from "../models/HotelBookType";
 import { SelectComponent } from "src/app/components/select/select.component";
 import { OrderService } from "src/app/order/order.service";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-book-df",
   templateUrl: "./book-df.page.html",
@@ -150,7 +150,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private navCtrl: NavController,
     private identityService: IdentityService,
     private hotelService: HotelService,
-    private storage: Storage,
+    private storage: StorageService,
     private tmcService: TmcService,
     private popoverCtrl: PopoverController,
     private modalCtrl: ModalController,

@@ -1,6 +1,5 @@
 import { Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Storage } from "@ionic/storage";
 import {
   IonContent,
   Platform,

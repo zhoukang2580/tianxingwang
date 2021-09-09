@@ -6,7 +6,6 @@ import * as moment from "moment";
 import { AvailableDate } from "./models/AvailableDate";
 import { LanguageHelper } from "../languageHelper";
 import { DayModel, ILunarInfo } from "./models/DayModel";
-import { Storage } from "@ionic/storage";
 import { Platform } from "@ionic/angular";
 import { Router } from "@angular/router";
 import { FlightHotelTrainType } from "./tmc.service";
@@ -16,6 +15,7 @@ import { connect } from "http2";
 import { AppHelper } from "../appHelper";
 import { TmcCalendarComponent } from "./components/tmc-calendar/tmc-calendar.page";
 import { LangService } from "../services/lang.service";
+import { StorageService } from "../services/storage-service.service";
 const lunarCalendar = window["LunarCalendar"];
 const _KEY_HOLIDAYS = "_key_holidays";
 @Injectable({
@@ -37,7 +37,7 @@ export class CalendarService {
 
   constructor(
     private apiService: ApiService,
-    private storage: Storage,
+    private storage: StorageService,
     private plt: Platform,
     private router: Router,
     private langService: LangService

@@ -44,7 +44,6 @@ import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { OrderBookDto } from "src/app/order/models/OrderBookDto";
 import { AppHelper } from "src/app/appHelper";
 import { PassengerDto } from "src/app/tmc/models/PassengerDto";
-import { Storage } from "@ionic/storage";
 import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
 import {
   StaffEntity,
@@ -75,6 +74,7 @@ import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { flyInOut } from "src/app/animations/flyInOut";
 import { OrderHotelType } from "src/app/order/models/OrderHotelEntity";
 import { WarrantyComponent } from "../components/warranty/warranty.component";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-book",
   templateUrl: "./book.page.html",
@@ -129,7 +129,7 @@ export class BookPage implements OnInit, AfterViewInit, OnDestroy {
     private navCtrl: NavController,
     private identityService: IdentityService,
     private hotelService: HotelService,
-    private storage: Storage,
+    private storage: StorageService,
     private tmcService: TmcService,
     private popoverCtrl: PopoverController,
     private modalCtrl: ModalController,

@@ -10,10 +10,10 @@ import { of, throwError } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { IResponse } from "../api/IResponse";
 import { LanguageHelper } from "src/app/languageHelper";
-import { Storage } from "@ionic/storage";
 import { environment } from "src/environments/environment";
 import { AccountMobilePage } from "src/app/account/account-mobile/account-mobile.page";
 import { AccountPasswordPage } from "src/app/account/account-password/account-password.page";
+import { StorageService } from "../storage-service.service";
 @Injectable({
   providedIn: "root",
 })
@@ -35,7 +35,7 @@ export class LoginService {
     private router: Router,
     private apiService: ApiService,
     private http: HttpClient,
-    private storage: Storage,
+    private storage: StorageService,
     private ngZone: NgZone
   ) {
     this.identityService.getIdentitySource().subscribe((id) => {

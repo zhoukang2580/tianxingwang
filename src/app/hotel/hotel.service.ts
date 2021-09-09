@@ -31,7 +31,6 @@ import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { HotelPaymentType } from "./models/HotelPaymentType";
 import { RequestEntity } from "../services/api/Request.entity";
-import { Storage } from "@ionic/storage";
 import * as jsPy from "js-pinyin";
 import * as moment from "moment";
 import { filter, map, switchMap, delay, finalize } from "rxjs/operators";
@@ -51,6 +50,7 @@ import { ConfigEntity } from "../services/config/config.entity";
 import { AgentEntity } from "../tmc/models/AgentEntity";
 import { CityEntity } from "../tmc/models/CityEntity";
 import { AgentRegionType } from "../tmc/models/AgentRegionType";
+import { StorageService } from "../services/storage-service.service";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -111,7 +111,7 @@ export class HotelService {
     private modalCtrl: ModalController,
     private mapService: MapService,
     private tmcService: TmcService,
-    private storage: Storage,
+    private storage: StorageService,
     private calendarService: CalendarService
   ) {
     this.bookInfoSource = new BehaviorSubject([]);

@@ -1,5 +1,4 @@
 import { environment } from "src/environments/environment";
-import { Storage } from "@ionic/storage";
 import { CalendarService } from "../tmc/calendar.service";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { IdentityEntity } from "../services/identity/identity.entity";
@@ -51,6 +50,7 @@ import { AccountEntity } from "./models/flightgp/AccountEntity";
 import { PassengerEntity } from "./models/flightgp/PassengerEntity";
 import { GpBookReq } from "../order/models/GpBookReq";
 import { FlightCityService } from "./flight-city.service";
+import { StorageService } from "../services/storage-service.service";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -115,7 +115,7 @@ export class FlightGpService {
     private tmcService: TmcService,
     private flightCityService: FlightCityService,
     private calendarService: CalendarService,
-    private storage: Storage
+    private storage: StorageService
   ) {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;

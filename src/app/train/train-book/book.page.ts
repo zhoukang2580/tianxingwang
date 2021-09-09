@@ -25,7 +25,6 @@ import {
   TravelUrlInfo,
   TmcService,
 } from "src/app/tmc/tmc.service";
-import { Storage } from "@ionic/storage";
 import { OrderBookDto } from "../../order/models/OrderBookDto";
 import { InitialBookDtoModel, PassengerBookInfo } from "../../tmc/tmc.service";
 import { TrainService } from "../train.service";
@@ -76,6 +75,7 @@ import { AccountEntity } from "src/app/account/models/AccountEntity";
 import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEntity";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { OrderService } from "src/app/order/order.service";
+import { StorageService } from "src/app/services/storage-service.service";
 
 @Component({
   selector: "app-train-book",
@@ -116,7 +116,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   CredentialsType = CredentialsType;
   constructor(
     private trainService: TrainService,
-    private storage: Storage,
+    private storage: StorageService,
     private navCtrl: NavController,
     private identityService: IdentityService,
     private staffService: HrService,

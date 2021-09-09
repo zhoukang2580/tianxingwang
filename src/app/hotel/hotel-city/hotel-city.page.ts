@@ -12,10 +12,10 @@ import {
   NgZone,
 } from "@angular/core";
 import { NavController, IonInfiniteScroll, IonSearchbar } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
+import { StorageService } from "src/app/services/storage-service.service";
 const HISTORY_HOTEL_CITIES = "history_hotel_cities";
 @Component({
   selector: "app-hotel-city",
@@ -51,7 +51,7 @@ export class HotelCityPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(IonInfiniteScroll, { static: true }) scroller: IonInfiniteScroll;
   constructor(
     private hotelService: HotelService,
-    private storage: Storage,
+    private storage: StorageService,
     route: ActivatedRoute,
     private ngZone: NgZone,
     private navCtrl: NavController,

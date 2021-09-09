@@ -2,12 +2,12 @@ import { TmcService } from "src/app/tmc/tmc.service";
 import { OrganizationEntity } from "../../../hr/hr.service";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ModalController, IonRefresher } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import {
   NodeItem,
   TreeOptions,
   TreeCallbacks
 } from "src/app/components/tree-ngx";
+import { StorageService } from "src/app/services/storage-service.service";
 const ORGANIZATION_PREFERANCE_KEY = "organization_preferance_key";
 const ORGANIZATION_PREFERANCE_KEY_MODE = "organization_preferance_key_mode";
 interface LocalOrganizationEntity {
@@ -37,7 +37,7 @@ export class OrganizationComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private tmcService: TmcService,
-    private storage: Storage
+    private storage: StorageService
   ) {}
   async back() {
     const t = await this.modalCtrl.getTop();

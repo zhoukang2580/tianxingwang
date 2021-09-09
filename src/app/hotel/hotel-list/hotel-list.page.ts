@@ -7,7 +7,6 @@ import { ScrollerComponent } from "./../../components/scroller/scroller.componen
 import { RefresherComponent } from "./../../components/refresher/refresher.component";
 import { fadeInOut } from "./../../animations/fadeInOut";
 import { flyInOut } from "./../../animations/flyInOut";
-import { Storage } from "@ionic/storage";
 import { AgentEntity } from "./../../tmc/models/AgentEntity";
 import { ConfigEntity } from "./../../services/config/config.entity";
 import { ConfigService } from "./../../services/config/config.service";

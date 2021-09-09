@@ -25,7 +25,6 @@ import {
   TravelUrlInfo,
   TmcService,
 } from "src/app/tmc/tmc.service";
-import { Storage } from "@ionic/storage";
 import { OrderBookDto } from "../../order/models/OrderBookDto";
 import { InitialBookDtoModel, PassengerBookInfo } from "../../tmc/tmc.service";
 import { TrainService } from "../train.service";
@@ -85,6 +84,7 @@ import { SelectComponent } from "src/app/components/select/select.component";
 import { OrderService } from "src/app/order/order.service";
 import { Bind12306Component } from "../components/bind12306/bind12306.component";
 import { flyInOut } from "../../animations/flyInOut";
+import { StorageService } from "src/app/services/storage-service.service";
 
 @Component({
   selector: "app-train-book-df",
@@ -145,7 +145,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isShowOrganizations = true;
   constructor(
     private trainService: TrainService,
-    private storage: Storage,
+    private storage: StorageService,
     private navCtrl: NavController,
     private identityService: IdentityService,
     private staffService: HrService,
@@ -869,6 +869,21 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
                   this.bookTrainBy12306(event, true);
                 });
                 return;
+              }
+              if (r.Code == "TrainCheckPassenger") {
+                const msg: string = r.Message;
+                if (msg && /\d{11}-/.test(msg)) {
+                  const tips = msg
+                    .split("/")
+                    .filter((it) => !!it)
+                    .map((it) => {
+                      const [phone, code] = it.split("-");
+                      return `使用手机号${phone},发送验证码${code}到12306进行手机身份验证(验证码30分钟内有效)`;
+                    })
+                    .join("\r\n");
+                  AppHelper.alert(tips);
+                  return;
+                }
               }
               AppHelper.alert(r.Message);
             }

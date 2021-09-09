@@ -7,13 +7,13 @@ import {
   IonRefresher,
   IonInfiniteScroll,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import {
   NodeItem,
   TreeOptions,
   TreeCallbacks,
 } from "src/app/components/tree-ngx";
 import { tap, finalize } from "rxjs/operators";
+import { StorageService } from "src/app/services/storage-service.service";
 const ORGANIZATION_PREFERANCE_KEY = "organization_preferance_key";
 const ORGANIZATION_PREFERANCE_KEY_MODE = "organization_preferance_key_mode";
 interface TreeData {
@@ -48,7 +48,7 @@ export class TreeDataComponent implements OnInit, OnDestroy {
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   constructor(
     private modalCtrl: ModalController,
-    private storage: Storage,
+    private storage: StorageService,
     private apiService: ApiService
   ) {}
   async back() {

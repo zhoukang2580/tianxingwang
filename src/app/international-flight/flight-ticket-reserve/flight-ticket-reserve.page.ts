@@ -74,12 +74,12 @@ import { PriceDetailComponent } from "src/app/flight/components/price-detail/pri
 import { OrderLinkmanDto } from "src/app/order/models/OrderLinkmanDto";
 import { SearchApprovalComponent } from "src/app/tmc/components/search-approval/search-approval.component";
 import { ProductItemType } from "src/app/tmc/models/ProductItems";
-import { Storage } from "@ionic/storage";
 import { TMC_FLIGHT_OUT_NUMBER } from "../mock-data";
 import { OrderFlightTicketType } from "src/app/order/models/OrderFlightTicketType";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { OrderInsuranceEntity } from "src/app/order/models/OrderInsuranceEntity";
 import { SearchModel } from "src/app/travel-application/travel.service";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-flight-ticket-reserve",
   templateUrl: "./flight-ticket-reserve.page.html",
@@ -133,7 +133,7 @@ export class FlightTicketReservePage
     private identityService: IdentityService,
     private staffService: HrService,
     private tmcService: TmcService,
-    private storage: Storage,
+    private storage: StorageService,
     private plt: Platform,
     private popoverCtrl: PopoverController,
     private router: Router,

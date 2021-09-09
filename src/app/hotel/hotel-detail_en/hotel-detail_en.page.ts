@@ -42,7 +42,6 @@ import {
   IonHeader,
 } from "@ionic/angular";
 import { CalendarService } from "src/app/tmc/calendar.service";
-import { Storage } from "@ionic/storage";
 import { ConfigService } from "src/app/services/config/config.service";
 import { RoomEntity } from "../models/RoomEntity";
 import { RoomPlanEntity } from "../models/RoomPlanEntity";
@@ -55,6 +54,7 @@ import {
 import { TripType } from "src/app/tmc/models/TripType";
 // tslint:disable-next-line: max-line-length
 import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-passengers-popover/filter-passengers-policy-popover.component";
+import { StorageService } from "src/app/services/storage-service.service";
 type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 
 @Component({
@@ -113,7 +113,7 @@ export class HotelDetailEnPage implements OnInit, AfterViewInit, OnDestroy {
     private domCtrl: DomController,
     private render: Renderer2,
     private calendarService: CalendarService,
-    private storage: Storage,
+    private storage: StorageService,
     private configService: ConfigService,
     private tmcService: TmcService,
     private staffService: HrService,

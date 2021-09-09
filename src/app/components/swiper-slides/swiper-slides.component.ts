@@ -66,7 +66,7 @@ export class SwiperSlidesComponent
     }
     // console.log(TAG + " this.initialPos ", this.initialPos);
     if (this.containerEl && this.containerEl.nativeElement) {
-      let options = {
+      let options:any = {
         direction: "horizontal", // 垂直切换选项
         // loop: true, // 循环模式选项
         ...this.getDefaultOptions(),

@@ -20,7 +20,6 @@ import {
   OnDestroy
 } from "@angular/core";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { Storage } from "@ionic/storage";
 import { TrainService } from "src/app/train/train.service";
 import {
   trigger,
@@ -29,6 +28,7 @@ import {
   animate,
   style
 } from "@angular/animations";
+import { StorageService } from "src/app/services/storage-service.service";
 export const CACHE_KEY_STATIONS = "cache_key_stations";
 @Component({
   selector: "app-select-station-df",
@@ -60,7 +60,7 @@ export class SelectTrainStationDfPage
   constructor(
     private trainService: TrainService,
     private route: ActivatedRoute,
-    private storage: Storage
+    private storage: StorageService
   ) {}
   async ngOnInit() {
     this.loadHistories();

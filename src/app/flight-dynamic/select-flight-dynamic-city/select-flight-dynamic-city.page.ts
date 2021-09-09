@@ -2,7 +2,6 @@ import { RefresherComponent } from "../../components/refresher/refresher.compone
 import { Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { BackButtonComponent } from "../../components/back-button/back-button.component";
-import { Storage } from "@ionic/storage";
 import {
   IonContent,
   Platform,
@@ -29,6 +28,7 @@ import {
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { LangService } from "src/app/services/lang.service";
 import { FlightService } from "src/app/flight/flight.service";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-select-flight-dynamic-city",
   templateUrl: "./select-flight-dynamic-city.page.html",
@@ -62,7 +62,7 @@ export class SelectFlightDynamicCityPage implements OnInit, OnDestroy, AfterView
     plt: Platform,
     route: ActivatedRoute,
     private flightService: FlightService,
-    private storage: Storage,
+    private storage: StorageService,
     private langService: LangService
   ) {
     this.isIos = plt.is("ios");

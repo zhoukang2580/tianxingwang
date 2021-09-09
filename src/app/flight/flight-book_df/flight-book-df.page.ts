@@ -88,11 +88,11 @@ import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { IFlightSegmentInfo } from "../models/PassengerFlightInfo";
 import { LangService } from "src/app/services/lang.service";
-import { Storage } from "@ionic/storage";
 import { FlightService } from "../flight.service";
 import { OrderService } from "src/app/order/order.service";
 import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
+import { StorageService } from "src/app/services/storage-service.service";
 
 @Component({
   selector: "app-flight-book-df",
@@ -183,7 +183,7 @@ export class FlightBookDfPage
     private popoverCtrl: PopoverController,
     private plt: Platform,
     private router: Router,
-    private storage: Storage,
+    private storage: StorageService,
     private langService: LangService,
     private orderService: OrderService
   ) {

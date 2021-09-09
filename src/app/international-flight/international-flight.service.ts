@@ -36,9 +36,9 @@ import { MemberService } from "../member/member.service";
 import { CredentialsEntity } from "../tmc/models/CredentialsEntity";
 import { CredentialsType } from "../member/pipe/credential.pipe";
 import { OrderBookDto } from "../order/models/OrderBookDto";
-import { Storage } from "@ionic/storage";
 import { FlightCabinType } from "../flight/models/flight/FlightCabinType";
 import { FlightFareRuleEntity } from "../flight/models/FlightFareRuleEntity";
+import { StorageService } from "../services/storage-service.service";
 const LAST_INTERNATIONAL_FLIGHT_SEARCH_CONDITION_KEY =
   "last_international_flight_search_condition_key";
 export interface IFlightCabinType {
@@ -208,7 +208,7 @@ export class InternationalFlightService {
     private modalCtrl: ModalController,
     private staffService: HrService,
     private memerService: MemberService,
-    private storage: Storage,
+    private storage: StorageService,
     private LangService: LangService
   ) {
     this.searchModelSource = new BehaviorSubject({} as any);

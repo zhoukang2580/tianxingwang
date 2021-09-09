@@ -12,7 +12,7 @@ import { AppHelper } from "../appHelper";
 import { CountryEntity } from "../tmc/models/CountryEntity";
 import { BaseEntity } from "../models/BaseEntity";
 import { IdentityEntity } from "../services/identity/identity.entity";
-import { Storage } from "@ionic/storage";
+import { StorageService } from "../services/storage-service.service";
 const KEY_WORKBENCHES = "workbenches_cache_key";
 export enum StaffBookType {
   /// <summary>
@@ -56,7 +56,7 @@ export class HrService {
   staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
-    private storage: Storage,
+    private storage: StorageService,
     private identityService: IdentityService
   ) {
     this.hrInvitationSource = new BehaviorSubject(null);

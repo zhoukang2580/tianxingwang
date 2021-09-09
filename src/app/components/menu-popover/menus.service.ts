@@ -1,12 +1,12 @@
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { Injectable } from "@angular/core";
 const KEY_SYSTEMS_MENUS = "key_systems_menus_";
-import { Storage } from "@ionic/storage";
 import { Subject, BehaviorSubject } from "rxjs";
 import { filter } from "rxjs/operators";
 import { ApiService } from "src/app/services/api/api.service";
 import { RequestEntity } from "src/app/services/api/Request.entity";
 import { AuthorizeService } from "src/app/services/authorize/authorize.service";
+import { StorageService } from "src/app/services/storage-service.service";
 export const WMS_REPORTS_SYSTEM_MENUS: SystemsMenus[] = [
   {
     feature: "wms",
@@ -448,7 +448,7 @@ export class MenusService {
   private menusSource: Subject<SystemsMenus[]>;
   private menus: SystemsMenus[];
   constructor(
-    private storage: Storage,
+    private storage: StorageService,
     private identityService: IdentityService,
     private authService: AuthorizeService
   ) {

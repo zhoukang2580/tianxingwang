@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { ModalController, IonRefresher } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import {
   NodeItem,
   TreeOptions,

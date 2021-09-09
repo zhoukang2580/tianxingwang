@@ -2,7 +2,6 @@ import { RefresherComponent } from "../../components/refresher/refresher.compone
 import { Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { BackButtonComponent } from "../../components/back-button/back-button.component";
-import { Storage } from "@ionic/storage";
 import {
   IonContent,
   Platform,
@@ -29,6 +28,7 @@ import {
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { LangService } from "src/app/services/lang.service";
 import { FlightGpService } from "../flight-gp.service";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-select-flight-city",
   templateUrl: "./select-flight-city.page.html",
@@ -62,7 +62,7 @@ export class SelectFlightCityPage implements OnInit, OnDestroy, AfterViewInit {
     plt: Platform,
     route: ActivatedRoute,
     private flightGpService: FlightGpService,
-    private storage: Storage,
+    private storage: StorageService,
     private langService: LangService
   ) {
     this.isIos = plt.is("ios");

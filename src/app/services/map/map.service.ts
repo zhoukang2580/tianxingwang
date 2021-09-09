@@ -4,8 +4,8 @@ import { ApiService } from "src/app/services/api/api.service";
 import { Injectable } from "@angular/core";
 import { WechatHelper } from "src/app/wechatHelper";
 import { BehaviorSubject, Subject } from "rxjs";
-import { Storage } from "@ionic/storage";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
+import { StorageService } from "../storage-service.service";
 export const baiduMapAk = `BFddaa13ba2d76f4806d1abb98ef907c`;
 const _KEY_GET_LATEST_LOCATE_POS = `_key_get_latest_locate_pos`;
 export interface MapPoint {
@@ -35,7 +35,7 @@ export class MapService {
   private bMapLocalSearchSources: Subject<any[]>;
   constructor(
     private apiService: ApiService,
-    private storage: Storage,
+    private storage: StorageService,
     private geolocation: Geolocation
   ) {
     this.querys = AppHelper.getQueryParamers();

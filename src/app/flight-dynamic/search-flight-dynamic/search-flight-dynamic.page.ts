@@ -5,7 +5,6 @@ import { of, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AppHelper } from 'src/app/appHelper';
 import { HrService } from 'src/app/hr/hr.service';
-import { Storage } from "@ionic/storage";
 import { CalendarService } from 'src/app/tmc/calendar.service';
 import { DayModel } from 'src/app/tmc/models/DayModel';
 import { TrafficlineEntity } from 'src/app/tmc/models/TrafficlineEntity';
@@ -15,6 +14,7 @@ import { IdentityService } from 'src/app/services/identity/identity.service';
 import { FlightCityService } from 'src/app/flight/flight-city.service';
 import { ITripInfo } from 'src/app/international-flight/international-flight.service';
 import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
+import { StorageService } from 'src/app/services/storage-service.service';
 
 @Component({
   selector: 'app-search-flight-dynamic',
@@ -52,7 +52,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     private calendarService: CalendarService,
     private identityService: IdentityService,
     private staffService: HrService,
-    private storage: Storage,
+    private storage: StorageService,
     private router: Router,
     private plt: Platform
   ) {

@@ -23,12 +23,12 @@ import {
   IonHeader,
   IonContent,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { Subscription } from "rxjs";
 import { finalize } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
 import { AppHelper } from "src/app/appHelper";
 import { HotelSearchDfComponent } from "../components/hotel-search-df/hotel-search-df.component";
+import { StorageService } from "src/app/services/storage-service.service";
 const HISTORY_HOTEL_CITIES = "history_hotel_cities";
 @Component({
   selector: "app-hotel-city-df",
@@ -77,7 +77,7 @@ export class HotelCityDfPage implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     public router: Router,
     private hotelService: HotelService,
-    private storage: Storage,
+    private storage: StorageService,
     route: ActivatedRoute,
     private ngZone: NgZone,
     private navCtrl: NavController,

@@ -40,7 +40,6 @@ import {
   Platform,
   IonSelect,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import {
   HrService,
   StaffApprover,
@@ -89,6 +88,7 @@ import { HotelBookType } from "src/app/hotel/models/HotelBookType";
 import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcenter/search-costcenter.component";
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { OrderService } from "src/app/order/order.service";
+import { StorageService } from "src/app/services/storage-service.service";
 
 @Component({
   selector: "app-inter-hotel-book-df",
@@ -142,7 +142,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
     private navCtrl: NavController,
     private identityService: IdentityService,
     private hotelService: InternationalHotelService,
-    private storage: Storage,
+    private storage: StorageService,
     private tmcService: TmcService,
     private popoverCtrl: PopoverController,
     private modalCtrl: ModalController,

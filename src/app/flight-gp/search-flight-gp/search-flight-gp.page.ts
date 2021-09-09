@@ -18,13 +18,13 @@ import {
   PopoverController,
   Platform,
 } from "@ionic/angular";
-import { Storage } from "@ionic/storage";
 import { TripType } from "src/app/tmc/models/TripType";
 import { map } from "rxjs/operators";
 import { LangService } from "src/app/services/lang.service";
 import { FlightGpService, SearchFlightModel } from "../flight-gp.service";
 import { FlightCityService } from "src/app/flight/flight-city.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-search-flight-gp",
   templateUrl: "./search-flight-gp.page.html",
@@ -67,7 +67,7 @@ export class SearchFlightGpPage
     private calendarService: CalendarService,
     private navCtrl: NavController,
     private flightGpService: FlightGpService,
-    private storage: Storage,
+    private storage: StorageService,
     private staffService: HrService,
     private apiService: ApiService,
     private tmcService: TmcService,

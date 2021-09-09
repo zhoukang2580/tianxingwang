@@ -2,7 +2,6 @@ import { RefresherComponent } from "../../components/refresher/refresher.compone
 import { Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { BackButtonComponent } from "../../components/back-button/back-button.component";
-import { Storage } from "@ionic/storage";
 import {
   IonContent,
   Platform,
@@ -30,6 +29,7 @@ import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { InternationalFlightService } from "../international-flight.service";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { LangService } from "src/app/services/lang.service";
+import { StorageService } from "src/app/services/storage-service.service";
 @Component({
   selector: "app-select-international-flight-city",
   templateUrl: "./select-city.page.html",
@@ -67,7 +67,7 @@ export class SelectCityPage implements OnInit, OnDestroy, AfterViewInit {
     plt: Platform,
     route: ActivatedRoute,
     private flightService: InternationalFlightService,
-    private storage: Storage,
+    private storage: StorageService,
     private tmcService: TmcService,
     private langService: LangService
   ) {
