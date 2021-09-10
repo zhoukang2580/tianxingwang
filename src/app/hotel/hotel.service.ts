@@ -70,6 +70,9 @@ export interface LocalHotelCityCache {
 })
 export class HotelService {
   private fetchPassengerCredentials: { promise: Promise<any> };
+  private loadHotelCitiesFromServerPs: {
+    [lastUpdatetime: number]: Promise<{ Trafficlines: TrafficlineEntity[] }>;
+  } = {};
   private hotelConditionSubscription = Subscription.EMPTY;
   private bookInfos: PassengerBookInfo<IHotelInfo>[];
   private bookInfoSource: Subject<PassengerBookInfo<IHotelInfo>[]>;
@@ -367,6 +370,7 @@ export class HotelService {
   }
   async getMyPosition(isByUser = false) {
     try {
+      console.log("getMyPosition this.searchHotelModel", this.searchHotelModel);
       if (this.searchHotelModel) {
         const curPos = await this.getCurPosition();
         console.log("onPosition curPos ", curPos);
@@ -562,14 +566,6 @@ export class HotelService {
     }
     return res;
   }
-  // searchHotelCity(data: { Name: string; PageIndex: number; IsHot: boolean }) {
-  //   const req = new RequestEntity();
-  //   req.Method = "ApiHomeUrl-Resource-DomesticHotelCity";
-  //   req.Data = {
-  //     ...data,
-  //   };
-  //   return this.apiService.getResponse<TrafficlineEntity[]>(req);
-  // }
 
   async getHotelCityAsync(forceRefresh = false) {
     try {
@@ -589,29 +585,13 @@ export class HotelService {
         this.localHotelCities &&
         this.localHotelCities.length
       ) {
-        // console.log(
-        //   "locals 广元",
-        //   this.localHotelCities.find((it) => it.Name == "广元")
-        // );
         return this.localHotelCities;
       }
       this.localHotelCities = this.localHotelCities || [];
       const cs = await this.loadHotelCitiesFromServer(this.lastUpdateTime);
-      // .catch((_) => ({ HotelCities: [] as TrafficlineEntity[] }));
       if (cs && cs.Trafficlines && cs.Trafficlines.length) {
-        // console.log("cs.Trafficlines", cs.Trafficlines);
-        // console.log("cs.Trafficlines 广元", cs.Trafficlines.find(it=>it.Name=='广元'));
-        // let tmpArr = [];
         const arr = cs.Trafficlines.map((item) => {
           const fl = this.getFirstLetter(item.Name);
-          // if (
-          //   !item ||
-          //   !item.Pinyin ||
-          //   !fl ||
-          //   fl.toLowerCase() != item.Pinyin.substr(0, 1).toLowerCase()
-          // ) {
-          //   tmpArr.push(item);
-          // }
           if (!item.FirstLetter) {
             if (!item.Pinyin) {
               item.FirstLetter = this.getFirstLetter(item.Name);
@@ -621,7 +601,6 @@ export class HotelService {
           }
           return item;
         });
-        // console.log("tmpArr",tmpArr);
         this.localHotelCities = [
           ...this.localHotelCities.filter(
             (it) => !arr.some((c) => c.Code == it.Code)
@@ -1035,10 +1014,18 @@ export class HotelService {
       LastUpdateTime: lastUpdateTime,
     };
     req.IsShowLoading = true;
-    return this.apiService.getPromiseData<{
-      Trafficlines: TrafficlineEntity[];
-      // HotelCities: TrafficlineEntity[];
-    }>(req);
+    if (this.loadHotelCitiesFromServerPs[lastUpdateTime]) {
+      return this.loadHotelCitiesFromServerPs[lastUpdateTime];
+    }
+    this.loadHotelCitiesFromServerPs[lastUpdateTime] = this.apiService
+      .getPromiseData<{
+        Trafficlines: TrafficlineEntity[];
+        // HotelCities: TrafficlineEntity[];
+      }>(req)
+      .finally(() => {
+        return (this.loadHotelCitiesFromServerPs[lastUpdateTime] = null);
+      });
+    return this.loadHotelCitiesFromServerPs[lastUpdateTime];
   }
   searchHotelByText(keyword: string, pageIndex: number) {
     const req = new RequestEntity();

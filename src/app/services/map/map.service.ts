@@ -33,6 +33,7 @@ export class MapService {
   private initBMapPromise: Promise<boolean>;
   private bMapLocalSearchObj;
   private bMapLocalSearchSources: Subject<any[]>;
+  private getMyPositionInfoPromise: Promise<any>;
   constructor(
     private apiService: ApiService,
     private storage: StorageService,
@@ -326,6 +327,7 @@ export class MapService {
     } else {
       return null;
     }
+    console.log("getCurrentCityPositionInWechatMini result", result);
     return result;
   }
   private async wxGetLocation(): Promise<{
@@ -386,69 +388,66 @@ export class MapService {
   }
   async getMyPositionInfo() {
     const st = Date.now();
-    let result: {
-      position: {
-        lat: string;
-        lng: string;
-        cityName: string;
-        province: any;
-        address?: {
-          city?: string; // "上海市";
-          city_code?: string; // 0;
-          district?: string; // "";
-          province?: string; // "上海市";
-          street?: string; // "";
-          street_number?: string; // "";
-        };
-      };
-    } = {} as any;
-    const isMini = AppHelper.isWechatMini();
-    if (isMini) {
-      result = await this.getCurrentCityPositionInWechatMini();
-      return result;
+    let result: IMyPositionInfo = {} as IMyPositionInfo;
+    if (this.getMyPositionInfoPromise) {
+      return this.getMyPositionInfoPromise;
     }
-    console.time("getCurrentPositionByBMap");
-    let latLng: MapPoint = await this.getCurrentPositionByBMap().catch(
-      () => null
-    );
-    console.timeEnd("getCurrentPositionByBMap");
-    if (!latLng) {
-      console.time("通过ip定位");
-      latLng = await this.getPosByBMapIp();
-      console.log("通过ip定位", latLng);
-      console.timeEnd("通过ip定位");
-    }
-    console.log(`getLatLng 结束：耗时 ${Date.now() - st} latLng`, latLng);
-    if (latLng) {
-      if (!latLng.address || !latLng.address.city) {
-        const addressComp = await this.getCityAddressComponentsFromMap({
-          lat: latLng.lat,
-          lng: latLng.lng,
-        });
-        console.log("getMyPositionInfo addressComp ", addressComp);
-        if (addressComp) {
-          latLng.address = {
-            city: addressComp.city,
-            district: addressComp.district,
-            province: addressComp.province,
-            street: addressComp.street,
-            street_number: addressComp.streetNumber,
-          };
-          latLng.province = addressComp.province;
-          latLng.cityName = latLng.cityName || addressComp.city;
+    this.getMyPositionInfoPromise = new Promise<IMyPositionInfo>(
+      async (rsv) => {
+        const isMini = AppHelper.isWechatMini();
+        if (isMini) {
+          result = await this.getCurrentCityPositionInWechatMini();
+          return rsv(result);
         }
+        console.time("getCurrentPositionByBMap");
+        let latLng: MapPoint = await this.getCurrentPositionByBMap().catch(
+          () => null
+        );
+        console.timeEnd("getCurrentPositionByBMap");
+        if (!latLng) {
+          console.time("通过ip定位");
+          latLng = await this.getPosByBMapIp();
+          console.log("通过ip定位", latLng);
+          console.timeEnd("通过ip定位");
+        }
+        console.log(`getLatLng 结束：耗时 ${Date.now() - st} latLng`, latLng);
+        if (latLng) {
+          if (!latLng.address || !latLng.address.city) {
+            const addressComp = await this.getCityAddressComponentsFromMap({
+              lat: latLng.lat,
+              lng: latLng.lng,
+            });
+            console.log("getMyPositionInfo addressComp ", addressComp);
+            if (addressComp) {
+              latLng.address = {
+                city: addressComp.city,
+                district: addressComp.district,
+                province: addressComp.province,
+                street: addressComp.street,
+                street_number: addressComp.streetNumber,
+              };
+              latLng.province = addressComp.province;
+              latLng.cityName = latLng.cityName || addressComp.city;
+            }
+          }
+          result.position = {
+            lat: latLng.lat,
+            lng: latLng.lng,
+            cityName: latLng.cityName,
+            address: latLng.address,
+            province: latLng.province,
+          };
+        }
+        rsv(
+          result.position && result.position.lat && result.position.lng
+            ? result
+            : null
+        );
       }
-      result.position = {
-        lat: latLng.lat,
-        lng: latLng.lng,
-        cityName: latLng.cityName,
-        address: latLng.address,
-        province: latLng.province,
-      };
-    }
-    return result.position && result.position.lat && result.position.lng
-      ? result
-      : null;
+    ).finally(() => {
+      this.getMyPositionInfoPromise = null;
+    });
+    return this.getMyPositionInfoPromise;
   }
   private async getPosResult(): Promise<{
     position: any;
@@ -548,4 +547,20 @@ export interface AddressComponents {
   street: string; // 肇嘉浜路
   streetNumber: string; // 366号11c
   town?: string; // 天平路街道
+}
+interface IMyPositionInfo {
+  position: {
+    lat: string;
+    lng: string;
+    cityName: string;
+    province: any;
+    address?: {
+      city?: string; // "上海市";
+      city_code?: string; // 0;
+      district?: string; // "";
+      province?: string; // "上海市";
+      street?: string; // "";
+      street_number?: string; // "";
+    };
+  };
 }
