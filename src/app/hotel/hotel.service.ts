@@ -378,12 +378,14 @@ export class HotelService {
         if (cities) {
           const cName = curPos && curPos.position && curPos.position.cityName;
           let c: TrafficlineEntity;
-          c = cities.find(
-            (it) =>
-              it.Name == cName ||
-              cName.includes(it.Name) ||
-              it.Name.includes(cName)
-          );
+          if (cName) {
+            c = cities.find(
+              (it) =>
+                it.Name == cName ||
+                cName.includes(it.Name) ||
+                it.Name.includes(cName)
+            );
+          }
           if (!c) {
             c = await this.getCityByMap({
               lat: curPos.position.lat,

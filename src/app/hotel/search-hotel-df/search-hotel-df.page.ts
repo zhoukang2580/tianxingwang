@@ -74,6 +74,7 @@ export class SearchHotelDfPage
   disabled: boolean;
   isPositioning = false;
   isLeavePage = false;
+  isShowPositionbtn = !AppHelper.isWechatMini();
   private getHoursCondition() {
     return this.hotelService.hotelIsCanSelectYesterday();
   }
@@ -261,7 +262,7 @@ export class SearchHotelDfPage
   }
   private async checkHasAuth(isDomestic = true) {
     return this.tmcService.hasBookRight(
-      isDomestic ? "hotel" : "international-hotel" 
+      isDomestic ? "hotel" : "international-hotel"
     );
   }
   private async initSegment() {
