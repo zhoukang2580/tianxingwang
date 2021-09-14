@@ -28,6 +28,7 @@ import { IdentityService } from 'src/app/services/identity/identity.service';
 import { OrderService } from 'src/app/order/order.service';
 import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
 import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
+import { FlightSegmentEntity } from 'src/app/flight/models/flight/FlightSegmentEntity';
 
 @Component({
   selector: 'app-flight-gp-bookinfos',
@@ -87,7 +88,6 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   identitySubscription = Subscription.EMPTY;
   identity: IdentityEntity;
   isDent = false;
-
   private pageUrl;
   @ViewChild(BackButtonComponent, { static: true }) backbtn: BackButtonComponent;
   @ViewChild(IonContent, { static: true }) contnt: IonContent;
@@ -141,34 +141,6 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       this.calcTotalPrice();
       this.pageUrl = this.router.url;
       this.isPageTimeout = this.flightGpService.checkIfTimeout();
-      // this.isCanSave = await this.identityService
-      //   .getIdentityAsync()
-      //   .catch((_) => null as IdentityEntity)
-      //   .then((id) => {
-      //     return !!(id && id.Numbers && id.Numbers["AgentId"]);
-      //   });
-      // try {
-      //   if (this.isCanSave) {
-      //     const bookInfos = this.flightGpService.getPassengerBookInfos();
-      //     if (bookInfos && bookInfos.length) {
-      //       if (
-      //         bookInfos.some(
-      //           (it) =>
-      //             it.bookInfo.flightSegment.Carrier == "9C" ||
-      //             it.bookInfo.flightSegment.AirlineName.includes("春秋航空")
-      //         )
-      //       ) {
-      //         this.isCanSave = false;
-      //       }
-      //     }
-      //   }
-      // } catch {}
-      // setTimeout(() => {
-      //   if (!this.isShowInsuranceBack || this.isManagentCredentails) {
-      //     this.refresh(false);
-      //   }
-      //   this.isShowInsuranceBack = false;
-      // }, 200);
     });
     try {
       await this.initSearchModelParams();
@@ -355,6 +327,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     bookGpDto.Routes = [];
     infos.forEach((item) => {
       if (item) {
+        item.flightSegment = this.flightGpService.currentViewtFlightSegment;
         const p = new Routes();
         p.Seg = item.Seg;
         p.Segment = item.flightSegment;

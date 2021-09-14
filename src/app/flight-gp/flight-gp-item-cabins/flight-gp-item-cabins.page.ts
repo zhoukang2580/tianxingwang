@@ -193,7 +193,14 @@ export class FlightGpItemCabinsPage implements OnInit {
   async initFlightSegments(s: FlightSegmentEntity) {
     try {
       const result = await this.flightGpService.getFlightSegmentDetail(s);
-      this.vmFlightSegment = result.FlightSegments[0];
+      // this.vmFlightSegment = result.FlightSegments[0];
+      this.vmFlightSegment = {
+        ...this.vmFlightSegment,
+        PlaneAge:result.FlightSegments[0].PlaneAge,
+        PlaneType:result.FlightSegments[0].PlaneType,
+        TakeoffOntimeRate:result.FlightSegments[0].TakeoffOntimeRate,
+        AverageDelay:result.FlightSegments[0].AverageDelay
+      }
       console.log(this.vmFlightSegment,"vmFlightSegment")
     } catch (e) {
       console.error(e);

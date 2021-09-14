@@ -87,6 +87,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
       .pipe(
         tap(async (infos) => {
           this.bookInfos = infos.filter((it) => !!it.bookInfo);
+          
           this.isSelf = await this.staffService.isSelfBookType();
           if (this.isSelf) {
             const goinfo = infos.find(
@@ -107,6 +108,7 @@ export class SelectedFlightBookInfosPage implements OnInit, OnDestroy {
           // console.log("showSelectReturnTripButton",this.showSelectReturnTripButton);
         })
       );
+    
     this.subscritions.push(
       this.identityService.getIdentitySource().subscribe((identity) => {
         this.identity = identity;

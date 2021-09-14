@@ -84,6 +84,7 @@ export class FlyListItemComponent implements OnInit, AfterViewInit, OnChanges {
     //     this.isAgreement = true;
     //   }
     // }
+    console.log(this.flightSegment,"flightSegment")
   }
   onShowAgreement(evt: CustomEvent) {
     evt.stopPropagation();

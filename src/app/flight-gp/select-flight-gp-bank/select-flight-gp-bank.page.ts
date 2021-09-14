@@ -118,7 +118,7 @@ export class SelectFlightGpBankPage implements OnInit {
     console.log(letter);
   }
 
-  onSelect(s){
+    onSelect(s){
     console.log("所选的发卡行:"+s.Name);
     
   }
