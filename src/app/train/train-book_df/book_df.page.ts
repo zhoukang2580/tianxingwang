@@ -1671,6 +1671,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           p.Train = {} as any;
         }
         p.Train.InsuranceProducts = p.InsuranceProducts;
+        p.InsuranceProducts=[];
       }
       bookDto.Passengers.push(p);
     }
