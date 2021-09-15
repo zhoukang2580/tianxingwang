@@ -1358,6 +1358,13 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       if (combindInfo.bookInfo) {
         p.Policy = combindInfo.bookInfo.passenger.Policy;
       }
+      if (p.InsuranceProducts.length) {
+        if (!p.Train) {
+          p.Train = {} as any;
+        }
+        p.Train.InsuranceProducts = p.InsuranceProducts;
+        p.InsuranceProducts=[];
+      }
       bookDto.Passengers.push(p);
     }
     return true;

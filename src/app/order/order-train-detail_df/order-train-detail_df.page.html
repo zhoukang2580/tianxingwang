@@ -51,7 +51,7 @@
                     <ion-row *ngIf="ticket.Detail">
                       <ion-col size="3"> 座位信息 </ion-col>
                       <ion-col style="display: flex; align-items: center">
-                        {{ticket.Detail}}
+                        {{ticket.Detail}}<span style="margin-left: 0.2em;">{{ticket?.SeatTypeName}}</span>
                         <img src="assets/images/idcard.png" class="access-by-IdCard" *ngIf="ticket?.VariablesJsonObj.IsAccessByIdCard" alt="" style="width: 1.5em; margin-left: 0.5em" />
                       </ion-col>
                     </ion-row>
