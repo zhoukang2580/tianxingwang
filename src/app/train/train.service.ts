@@ -1456,6 +1456,7 @@ export class TrainService {
       ...this.getSearchTrainModel(),
       isLocked: false,
       isExchange: false,
+      IsRangeExchange: false,
     });
   }
 }

@@ -3,11 +3,11 @@ import { AppHelper } from "src/app/appHelper";
 import { TrainService } from "../../train.service";
 
 @Component({
-  selector: "app-bind12306",
-  templateUrl: "./bind12306.component.html",
-  styleUrls: ["./bind12306.component.scss"],
+  selector: "app-validate12306",
+  templateUrl: "./validate12306.component.html",
+  styleUrls: ["./validate12306.component.scss"],
 })
-export class Bind12306Component implements OnInit {
+export class Validate12306Component implements OnInit {
   constructor(private trainService: TrainService) {}
   name: string;
   password: string;

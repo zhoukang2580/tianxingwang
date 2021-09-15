@@ -82,7 +82,7 @@ import { SearchCostcenterComponent } from "src/app/tmc/components/search-costcen
 import { OrganizationComponent } from "src/app/tmc/components/organization/organization.component";
 import { SelectComponent } from "src/app/components/select/select.component";
 import { OrderService } from "src/app/order/order.service";
-import { Bind12306Component } from "../components/bind12306/bind12306.component";
+import { Validate12306Component } from "../components/validate12306/validate12306.component";
 import { flyInOut } from "../../animations/flyInOut";
 import { StorageService } from "src/app/services/storage-service.service";
 
@@ -102,6 +102,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
   isShowOtherInfo = false;
+  isShowBind12306btn = true;
   // @Input() isOtherCostCenter: boolean;
   // @Input() otherCostCenterCode: string;
   // @Input() otherCostCenterName: string;
@@ -169,6 +170,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.isSelfBookType = is;
     });
     try {
+      this.isShowBind12306btn = !this.isExchangeBook();
       if (this.ionRefresher) {
         this.ionRefresher.complete();
         this.ionRefresher.disabled = true;
@@ -211,7 +213,15 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.error = e;
     }
   }
-
+  private isExchangeBook() {
+    const bookInfos = this.trainService
+      .getBookInfos()
+      .filter((it) => !!it.bookInfo);
+    const exchangeInfo = bookInfos.find((it) => !!it.exchangeInfo);
+    const exchange = exchangeInfo && exchangeInfo.exchangeInfo;
+    const ticket = exchange && exchange.ticket;
+    return !!ticket;
+  }
   private async getInitializeBookDto() {
     const bookDto = new OrderBookDto();
     bookDto.TravelFormId = AppHelper.getQueryParamers()["travelFormId"] || "";
@@ -653,6 +663,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     event: CustomEvent,
     isNamePasswordValidateFail = false
   ) {
+    this.isShowBind12306btn = true;
     this.bookTrain(false, event, true, isNamePasswordValidateFail);
   }
   private async checkAndBind12306(isNamePasswordValidateFail: boolean) {
@@ -662,12 +673,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         return true;
       }
     }
-    return this.bind12306(isNamePasswordValidateFail);
+    return this.validate12306(isNamePasswordValidateFail);
   }
-  async onRebind12306() {
+  async onValidate12306() {
     try {
       await this.showBindTip();
-      const ok = await this.bind12306(false);
+      const ok = await this.validate12306(false);
       if (ok) {
         this.initialBookDto.AccountNumber12306 =
           await this.trainService.getBindAccountNumber();
@@ -680,19 +691,19 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private async reloadAccount12306Number() {
     if (this.initialBookDto) {
       const accountNumber12306 = await this.trainService.getBindAccountNumber();
-      // 除了普通角色，其他角色后台可能不进行绑定，所以，后台加载不到这个绑定的账号信息
+      // 除了普通角色，其他角色后台可能不进行验证，所以，后台加载不到这个验证的账号信息
       if (accountNumber12306 && accountNumber12306.Name) {
         this.initialBookDto.AccountNumber12306 = accountNumber12306;
       }
       if (this.isSelfBookType) {
-        // 如果在绑定界面退出了绑定状态
+        // 如果在验证界面退出了验证状态
         if (!accountNumber12306 || !accountNumber12306.Name) {
           this.initialBookDto.AccountNumber12306 = accountNumber12306;
         }
       }
     }
   }
-  private async bind12306(isNamePasswordValidateFail: boolean) {
+  private async validate12306(isNamePasswordValidateFail: boolean) {
     try {
       if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
         this.initialBookDto.AccountNumber12306 =
@@ -700,7 +711,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       const an = this.initialBookDto.AccountNumber12306;
       const m = await AppHelper.modalController.create({
-        component: Bind12306Component,
+        component: Validate12306Component,
         componentProps: {
           name: an && an.Name,
           password: an && an.Number,
@@ -738,7 +749,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       exchangeInfo &&
       exchangeInfo.exchangeInfo &&
       !!exchangeInfo.exchangeInfo.ticket;
-    const tip2 = `您尚未绑定12306账户,可能导致无法线上退改签,则需登陆乘车人12306账户或至火车站退改签`;
+    const tip2 = `您尚未验证12306账户,可能导致无法线上退改签,则需登陆乘车人12306账户或至火车站退改签`;
     const tip3 = `您当前不是12306官方预订,可能导致无法线上退改签,则需登陆乘车人12306账户或至火车站退改签`;
     this.isShowFee = false;
     const bookDto: OrderBookDto = new OrderBookDto();
@@ -779,7 +790,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
             tip2,
             true,
             "直接预订",
-            "绑定12306"
+            "验证12306"
           );
           isOfficialBooked = !isDirectBook;
           if (isOfficialBooked) {
@@ -798,7 +809,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
               tip2,
               true,
               "直接预订",
-              "重新绑定12306"
+              "重新验证12306"
             );
             isOfficialBooked = !isDirectBook;
             if (isOfficialBooked) {
@@ -1671,7 +1682,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           p.Train = {} as any;
         }
         p.Train.InsuranceProducts = p.InsuranceProducts;
-        p.InsuranceProducts=[];
+        p.InsuranceProducts = [];
       }
       bookDto.Passengers.push(p);
     }

@@ -17,7 +17,7 @@
     <ng-container *ngIf='trips?.length else nomoredata'>
       <div *ngFor='let trip of trips' (click)='goToDetailPage(trip)'>
         <ng-container *ngIf='trip.Type=="Train"'>
-          <app-train-trip [trip]="trip"></app-train-trip>
+          <app-train-trip [trip]="trip" [isShowInsurance]='true'  (showInsuranceEvt)='onShowSelectedInsurance($event)' (payInsuranceEvt)="payInsurance($event)"></app-train-trip>
         </ng-container>
         <ng-container *ngIf='trip.Type=="Hotel"'>
           <app-hotel-trip [trip]="trip"></app-hotel-trip>
