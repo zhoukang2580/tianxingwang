@@ -470,14 +470,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.isOtherOrganization = false;
         combineInfo.notifyLanguage = notityLang;
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
-        combineInfo.insuranceProducts = this.isShowInsurances(
-          bookInfo.bookInfo &&
-            bookInfo.bookInfo.trainEntity &&
-            bookInfo.bookInfo.trainEntity.StartTime
-        )
-          ? insurances
-          : [];
-
+        combineInfo.insuranceProducts = insurances;
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
@@ -1141,12 +1134,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       console.error(e);
     }
   }
-  private isShowInsurances(takeoffTime: string) {
-    if (takeoffTime) {
-      return +moment(takeoffTime) > +moment(moment().add(2, "hours"));
-    }
-    return true;
-  }
+  // private isShowInsurances(takeoffTime: string) {
+  //   if (takeoffTime) {
+  //     return +moment(takeoffTime) > +moment(moment().add(2, "hours"));
+  //   }
+  //   return true;
+  // }
   private getTravelFormNumber(name: string) {
     if (!this.viewModel || !this.viewModel.travelForm) {
       return "";
