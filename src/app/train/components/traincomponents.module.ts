@@ -1,4 +1,4 @@
-import { SelectAndReplaceTrainInfoComponent } from './select-and-replaceinfo/select-and-replaceinfo.component';
+import { SelectAndReplaceTrainInfoComponent } from "./select-and-replaceinfo/select-and-replaceinfo.component";
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { AppComponentsModule } from "src/app/components/appcomponents.module";
@@ -11,16 +11,16 @@ import { TrainListItemComponent } from "./train-list-item/train-list-item.compon
 import { TrainscheduleComponent } from "./trainschedule/trainschedule.component";
 import { TimeSpanComponent } from "./train-filter/time-span/time-span.component";
 import { TrainFilterComponent } from "./train-filter/train-filter.component";
-import { SeatPickerComponent } from './seat-picker/seat-picker.component';
-import { TrainRefundComponent } from './train-refund/train-refund.component';
-import { TrainTicketComponent } from './train-ticket/train-ticket.component';
-import { TrainListItemEnComponent } from './train-list-item_en/train-list-item_en.component';
-import { SelectedTrainSegmentInfoEnComponent } from './selected-train-segment-info_en/selected-train-segment-info_en.component';
-import { SelectedTrainSegmentInfoDfComponent } from './selected-train-segment-info-df/selected-train-segment-info-df.component';
-import { TrainListItemDfComponent } from './train-list-item-df/train-list-item-df.component';
-import { SeatPickerDfComponent } from './seat-picker-df/seat-picker-df.component';
-import { WarmPromptComponent } from './warm-prompt/warm-prompt.component';
-import { Bind12306Component } from './bind12306/bind12306.component';
+import { SeatPickerComponent } from "./seat-picker/seat-picker.component";
+import { TrainRefundComponent } from "./train-refund/train-refund.component";
+import { TrainTicketComponent } from "./train-ticket/train-ticket.component";
+import { TrainListItemEnComponent } from "./train-list-item_en/train-list-item_en.component";
+import { SelectedTrainSegmentInfoEnComponent } from "./selected-train-segment-info_en/selected-train-segment-info_en.component";
+import { SelectedTrainSegmentInfoDfComponent } from "./selected-train-segment-info-df/selected-train-segment-info-df.component";
+import { TrainListItemDfComponent } from "./train-list-item-df/train-list-item-df.component";
+import { SeatPickerDfComponent } from "./seat-picker-df/seat-picker-df.component";
+import { WarmPromptComponent } from "./warm-prompt/warm-prompt.component";
+import { Validate12306Component } from "./validate12306/validate12306.component";
 
 @NgModule({
   declarations: [
@@ -35,11 +35,11 @@ import { Bind12306Component } from './bind12306/bind12306.component';
     TrainFilterComponent,
     SeatPickerComponent,
     SeatPickerDfComponent,
-    Bind12306Component,
+    Validate12306Component,
     TrainRefundComponent,
     TrainTicketComponent,
     SelectAndReplaceTrainInfoComponent,
-    WarmPromptComponent
+    WarmPromptComponent,
   ],
   imports: [
     CommonModule,
@@ -48,7 +48,7 @@ import { Bind12306Component } from './bind12306/bind12306.component';
     ReactiveFormsModule,
     AppDirectivesModule,
     AppComponentsModule,
-    TmcComponentsModule
+    TmcComponentsModule,
   ],
   exports: [
     TrainListItemComponent,
@@ -63,7 +63,7 @@ import { Bind12306Component } from './bind12306/bind12306.component';
     SeatPickerComponent,
     SeatPickerDfComponent,
     TrainTicketComponent,
-    WarmPromptComponent
+    WarmPromptComponent,
   ],
   entryComponents: [
     SeatPickerDfComponent,
@@ -72,7 +72,7 @@ import { Bind12306Component } from './bind12306/bind12306.component';
     TrainscheduleComponent,
     TrainFilterComponent,
     TrainRefundComponent,
-    SelectAndReplaceTrainInfoComponent
-  ]
+    SelectAndReplaceTrainInfoComponent,
+  ],
 })
 export class TrainComponentsModule {}

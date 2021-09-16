@@ -1,4 +1,3 @@
-import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { FileHelperService } from "src/app/services/file-helper.service";
 import { environment } from "src/environments/environment";
 import { MessageModel, MessageService } from "./message/message.service";
@@ -6,12 +5,8 @@ import { MessageModel, MessageService } from "./message/message.service";
 import {
   Component,
   AfterViewInit,
-  ContentChildren,
-  QueryList,
   AfterContentInit,
   OnChanges,
-  ContentChild,
-  ViewChild,
   OnInit,
 } from "@angular/core";
 
@@ -23,7 +18,6 @@ import {
   LoadingController,
   NavController,
   ModalController,
-  IonImg,
   PopoverController,
 } from "@ionic/angular";
 import { SplashScreen } from "@ionic-native/splash-screen/ngx";
@@ -34,7 +28,7 @@ import { ConfigService } from "./services/config/config.service";
 import { HttpClient } from "@angular/common/http";
 import { LanguageHelper } from "./languageHelper";
 import { WechatHelper } from "./wechatHelper";
-import { combineLatest, Observable } from "rxjs";
+import { Observable } from "rxjs";
 import { ApiService } from "./services/api/api.service";
 import { AppVersion } from "@ionic-native/app-version/ngx";
 
@@ -46,10 +40,8 @@ import {
   animate,
 } from "@angular/animations";
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
-import { ThemeService } from "./services/theme/theme.service";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
-import { combineAll, filter, map, mergeMap, switchMap } from "rxjs/operators";
-import { Bind12306Component } from "./train/components/bind12306/bind12306.component";
+import { filter, map, mergeMap, switchMap } from "rxjs/operators";
 import { IdentityService } from "./services/identity/identity.service";
 import { CordovaPushPluginHelper } from "./cordovaPushPluginHelper";
 export interface App {
