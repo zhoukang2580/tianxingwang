@@ -164,34 +164,6 @@ export class FlightDynamicInfoPage implements OnInit {
         })
       }
 
-      // if (this.flightNoN) {
-      //   this.flightDynamicService.getFlightDynamicDetailes(this.detailsLists).then(d => {
-      //     d.filter(it => {
-      //       this.PlanArrivalTime = it.PlanArrivalTime.substring(0, 10);
-      //       this.PlanTakeoffTime = it.PlanTakeoffTime.substring(0, 10);
-      //       it.PlanArrivalTime = it.PlanArrivalTime.substring(11, 16).replace("00:00", "");
-      //       it.PlanTakeoffTime = it.PlanTakeoffTime.substring(11, 16).replace("00:00", "");
-      //       it.EstimateTakeoffTime = it.EstimateTakeoffTime.substring(11, 16).replace("00:00", "");
-      //       it.EstimateArrivalTime = it.EstimateArrivalTime.substring(11, 16).replace("00:00", "");
-
-      //       this.hour = it.Minute;
-      //       this.type = it.StatusName;
-      //       this.FlightName = it.AirlineName;
-      //       const fliNo = it.PreviousFlightNumber;
-      //       this.hour = it.Minute;
-      //       this.isShow = false;
-      //       if (fliNo && fliNo.length) {
-      //         this.isShow = true;
-      //       }
-      //     });
-      //     this.flightDynamicDetailsModel = d;
-
-      //     this.flightDynamicPro = this.flightDynamicDetailsModel;
-      //     this.flightDynamicPro = { ...this.flightDynamicPro }[0];
-
-      //     console.log(this.flightDynamicPro, "flight");
-      //   })
-      // }
     } catch (error) {
       AppHelper.alert(error)
     }
