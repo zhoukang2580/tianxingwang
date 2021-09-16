@@ -87,12 +87,6 @@ export class FlightDynamicInfoPage implements OnInit {
             startDate: start,
             enDate: end,
           }
-          // this.detailsLists = {
-          //   Date: this.dateTime,
-          //   FlightNumber: this.flightNoN,
-          //   startDate: start,
-          //   enDate: end,
-          // }
         }
 
         console.log(this.detailList, "detailList")
@@ -133,7 +127,7 @@ export class FlightDynamicInfoPage implements OnInit {
 
   private async loadDetails() {
     try {
-      if (this.flightNo) {
+      if (this.flightNo || this.detailList) {
         this.flightDynamicService.getFlightDynamicDetail(this.detailList).then(d => {
           if (d && d.length) {
             d.forEach(it => {
@@ -146,8 +140,7 @@ export class FlightDynamicInfoPage implements OnInit {
               pro = this.flightDynamicDetailsModel.pop();
               this.flightDynamicPro = pro;
             } else {
-              this.flightDynamicPro = d;
-              this.flightDynamicPro = { ...this.flightDynamicPro }[0];
+              this.flightDynamicPro = {...d}[0];
             }
           }
           console.log(this.flightDynamicPro, "flight");
