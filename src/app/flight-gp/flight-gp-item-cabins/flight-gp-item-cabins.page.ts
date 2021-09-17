@@ -81,7 +81,7 @@ export class FlightGpItemCabinsPage implements OnInit {
       this.pageUrl = this.router.url;
       try {
         this.vmFlightSegment = this.flightGpService.currentViewtFlightSegment;
-        this.initFlightSegments(this.vmFlightSegment)
+        // this.initFlightSegments(this.vmFlightSegment)
         if (
           this.vmFlightSegment &&
           this.vmFlightSegment.Cabins &&
@@ -190,22 +190,22 @@ export class FlightGpItemCabinsPage implements OnInit {
     });
   }
 
-  async initFlightSegments(s: FlightSegmentEntity) {
-    try {
-      const result = await this.flightGpService.getFlightSegmentDetail(s);
-      // this.vmFlightSegment = result.FlightSegments[0];
-      this.vmFlightSegment = {
-        ...this.vmFlightSegment,
-        PlaneAge:result.FlightSegments[0].PlaneAge,
-        PlaneType:result.FlightSegments[0].PlaneType,
-        TakeoffOntimeRate:result.FlightSegments[0].TakeoffOntimeRate,
-        AverageDelay:result.FlightSegments[0].AverageDelay
-      }
-      console.log(this.vmFlightSegment,"vmFlightSegment")
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  // async initFlightSegments(s: FlightSegmentEntity) {
+  //   try {
+  //     const result = await this.flightGpService.getFlightSegmentDetail(s);
+  //     // this.vmFlightSegment = result.FlightSegments[0];
+  //     this.vmFlightSegment = {
+  //       ...this.vmFlightSegment,
+  //       PlaneAge:result.FlightSegments[0].PlaneAge,
+  //       PlaneType:result.FlightSegments[0].PlaneType,
+  //       TakeoffOntimeRate:result.FlightSegments[0].TakeoffOntimeRate,
+  //       AverageDelay:result.FlightSegments[0].AverageDelay
+  //     }
+  //     console.log(this.vmFlightSegment,"vmFlightSegment")
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
 
   private setDefaultFilteredInfo() {
     let bookInfos = this.flightGpService.getPassengerBookInfos();

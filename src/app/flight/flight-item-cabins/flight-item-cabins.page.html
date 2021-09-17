@@ -143,6 +143,9 @@
                                     <ion-text color='dark'>{{cabin.Cabin?.TypeName}}</ion-text>
                                 </ng-template>
                                 <ion-text color='dark'>{{cabin.Cabin?.Discount|discount}}</ion-text>
+                                <ng-container *ngIf='cabin.Cabin?.Variables?.Baggage'>
+                                    <span class='seperator'>|</span>{{cabin.Cabin.Variables.Baggage}}
+                                </ng-container>
                             </h3>
                             <h3 class="remain">
                                 <ng-container *ngIf='cabin.Cabin?.Count<"10"'><span class="ion-margin-end">余票{{cabin.Cabin?.Count}}张</span></ng-container>

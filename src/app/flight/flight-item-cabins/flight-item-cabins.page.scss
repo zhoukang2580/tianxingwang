@@ -37,7 +37,10 @@ ion-content.padding-half-c {
   font-size: 0.7rem;
   padding: 1em 0;
 }
-
+.seperator {
+  margin: 0 0.2em;
+  opacity: 0.8;
+}
 .b {
   background: #ffffff;
   border-radius: 0.5em;
@@ -74,9 +77,7 @@ ion-content.padding-half-c {
     font-size: 0.6rem;
     display: flex;
     align-items: center;
-    .seperator {
-      margin: 0 0.2em;
-    }
+
     background: #eee;
     flex-wrap: wrap;
     .icon {
@@ -88,6 +89,7 @@ ion-content.padding-half-c {
       transform: translate(0, -50%);
     }
   }
+
   .aircompany img {
     width: 1rem;
     height: 1rem;

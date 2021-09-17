@@ -91,7 +91,7 @@ export class FlightItemCabinsPage implements OnInit {
       this.pageUrl = this.router.url;
       try {
         this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
-        this.initFlightSegments(this.vmFlightSegment);
+        // this.initFlightSegments(this.vmFlightSegment);
 
         this.tmcService
           .getAgent()
@@ -212,28 +212,28 @@ export class FlightItemCabinsPage implements OnInit {
     this.flightService.setPassengerBookInfosSource(bookInfos);
   }
 
-  async initFlightSegments(s: FlightSegmentEntity) {
-    try {
-      const result = await this.flightService.getFlightSegmentDetail(s);
-      console.log(this.vmFlightSegment,"vmFlightSegment1")
-      // this.vmFlightSegment = result.FlightSegments[0];
-      this.vmFlightSegment = {
-        ...this.vmFlightSegment,
-        PlaneAge:result.FlightSegments[0].PlaneAge,
-        PlaneType:result.FlightSegments[0].PlaneType,
-        TakeoffOntimeRate:result.FlightSegments[0].TakeoffOntimeRate,
-        AverageDelay:result.FlightSegments[0].AverageDelay
-      }
+  // async initFlightSegments(s: FlightSegmentEntity) {
+  //   try {
+  //     const result = await this.flightService.getFlightSegmentDetail(s);
+  //     console.log(this.vmFlightSegment,"vmFlightSegment1")
+  //     // this.vmFlightSegment = result.FlightSegments[0];
+  //     this.vmFlightSegment = {
+  //       ...this.vmFlightSegment,
+  //       PlaneAge:result.FlightSegments[0].PlaneAge,
+  //       PlaneType:result.FlightSegments[0].PlaneType,
+  //       TakeoffOntimeRate:result.FlightSegments[0].TakeoffOntimeRate,
+  //       AverageDelay:result.FlightSegments[0].AverageDelay
+  //     }
       
-      // this.vmFlightSegment.PlaneAge = result.FlightSegments[0].PlaneAge;
-      // this.vmFlightSegment.PlaneType = result.FlightSegments[0].PlaneType;
-      // this.vmFlightSegment.TakeoffOntimeRate = result.FlightSegments[0].TakeoffOntimeRate;
-      // this.vmFlightSegment.AverageDelay = result.FlightSegments[0].AverageDelay;
-      console.log(this.vmFlightSegment,"vmFlightSegment2")
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  //     // this.vmFlightSegment.PlaneAge = result.FlightSegments[0].PlaneAge;
+  //     // this.vmFlightSegment.PlaneType = result.FlightSegments[0].PlaneType;
+  //     // this.vmFlightSegment.TakeoffOntimeRate = result.FlightSegments[0].TakeoffOntimeRate;
+  //     // this.vmFlightSegment.AverageDelay = result.FlightSegments[0].AverageDelay;
+  //     console.log(this.vmFlightSegment,"vmFlightSegment2")
+  //   } catch (e) {
+  //     console.error(e);
+  //   }
+  // }
   private async getLowestFlightPolicyCabin(
     lowestFlightSegment: FlightSegmentEntity
   ) {

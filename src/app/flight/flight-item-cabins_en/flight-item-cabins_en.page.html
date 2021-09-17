@@ -97,20 +97,18 @@
               <ion-label (click)='openrules(cabin)'>
                 <h3 class='discount'>
                   <ion-text color='dark' *ngIf='identity?.Numbers&&identity.Numbers["AgentId"] else aatemp'>
-                    <span class="capital"
-                      *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName'></span>
+                    <span class="capital" *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName'></span>
                     {{cabin.Cabin?.TypeName |cabintype }}({{cabin.Cabin?.Code }})
                   </ion-text>
                   <ng-template #aatemp>
                     <ion-text color='dark'>
-                      <span class="capital"
-                      *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName'></span>
-                    {{cabin.Cabin?.TypeName |cabintype }}
+                      <span class="capital" *ngIf=' cabin.Cabin?.TypeName?.length > 4 ? cabin.Cabin?.TypeName?.replace("舱", "") : cabin.Cabin?.TypeName'></span>
+                      {{cabin.Cabin?.TypeName |cabintype }}
                     </ion-text>
                   </ng-template>
                   <!-- <ion-text color='dark'>{{cabin.Cabin?.Discount|discount}}</ion-text> -->
                   <ion-text color='secondary' *ngIf='cabin.Cabin?.FareType==FlightFareType.Agreement'>
-                    <strong >
+                    <strong>
                       <span class="agreement" style="color: red;">
                         'A'
                       </span>
@@ -123,13 +121,15 @@
                 <h3>
                   <ion-text color='secondary'>Policies&nbsp;> </ion-text>
                 </h3>
-                <h3 *ngIf="cabin.Cabin?.Count<10" >{{cabin.Cabin?.Count}} Left</h3>
+                <h3 *ngIf="cabin.Cabin?.Count<10">{{cabin.Cabin?.Count}} Left</h3>
+                <ng-container *ngIf='cabin.Cabin?.Variables?.Baggage'>
+                  <span class='seperator'>|</span>{{cabin.Cabin.Variables.Baggage}}
+                </ng-container>
               </ion-label>
             </ion-col>
             <ion-col size='4'>
               <ion-text color='danger'>￥{{cabin.Cabin?.SalesPrice}}</ion-text>
-              <ion-button [color]='cabin.color' class='ion-margin-top' expand='block' [class.disabled]='!cabin?.IsAllowBook'
-                (click)='onBookTicket(cabin)'>
+              <ion-button [color]='cabin.color' class='ion-margin-top' expand='block' [class.disabled]='!cabin?.IsAllowBook' (click)='onBookTicket(cabin)'>
                 <ion-text color='light'>Book</ion-text>
               </ion-button>
             </ion-col>
@@ -137,10 +137,10 @@
 
           <ion-row *ngIf='cabin?.Rules'>
             <ion-col>
-              <ion-label *ngFor='let r of cabin.Rules' color='danger'  class='rule ion-text-wrap'>{{r}}</ion-label>
-              <ion-label *ngIf='cabin.Rules?.length&&getFlightIllegalTip()' color='danger'  class='rule ion-text-wrap'>提示：({{getFlightIllegalTip()}})
+              <ion-label *ngFor='let r of cabin.Rules' color='danger' class='rule ion-text-wrap'>{{r}}</ion-label>
+              <ion-label *ngIf='cabin.Rules?.length&&getFlightIllegalTip()' color='danger' class='rule ion-text-wrap'>提示：({{getFlightIllegalTip()}})
               </ion-label>
-              <ion-label *ngIf='!cabin.Rules?.length&&getFlightlegalTip()' color='danger'  class='rule ion-text-wrap'>提示：({{getFlightlegalTip()}})
+              <ion-label *ngIf='!cabin.Rules?.length&&getFlightlegalTip()' color='danger' class='rule ion-text-wrap'>提示：({{getFlightlegalTip()}})
               </ion-label>
             </ion-col>
           </ion-row>

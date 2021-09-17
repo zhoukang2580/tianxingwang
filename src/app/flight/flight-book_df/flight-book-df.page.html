@@ -406,6 +406,9 @@
                     </ng-container>
                     <span class="line">|</span>
                     <span>{{segment.Meal?langOpt.has:langOpt.no}}{{langOpt.meal}}</span>
+                    <ng-container *ngIf='obj.combindInfo?.modal?.bookInfo.flightPolicy?.Cabin?.Variables?.Baggage'>
+                        <span class='line'>|</span>{{obj.combindInfo?.modal?.bookInfo.flightPolicy?.Cabin?.Variables.Baggage}}
+                    </ng-container>
                 </div>
                 <div class="ticket-info">
                     <span class="s-price">票价{{obj.combindInfo?.modal?.bookInfo.flightPolicy?.Cabin?.SalesPrice}}</span>

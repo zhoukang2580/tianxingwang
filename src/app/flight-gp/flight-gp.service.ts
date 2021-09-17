@@ -1067,6 +1067,10 @@ export class FlightGpService {
         oldSeg.LowestFare = newSeg.LowestFare;
         oldSeg.Cabins = result.FlightFares as any;
         oldSeg.Tax = newSeg.Tax;
+        oldSeg.PlaneAge = newSeg.PlaneAge;
+        oldSeg.PlaneType = newSeg.PlaneType;
+        oldSeg.TakeoffOntimeRate = newSeg.TakeoffOntimeRate;
+        oldSeg.AverageDelay = newSeg.AverageDelay;
       }
       if (one) {
         console.log("替换信息");

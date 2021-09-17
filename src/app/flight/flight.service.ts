@@ -1156,7 +1156,7 @@ export class FlightService {
     await this.loadPolicyedFlightsAsync(this.flightGoTripResult);
     return this.policyFlights;
   }
-   
+
   async getFlightSegmentDetail(s: FlightSegmentEntity) {
     let ADTPtcs = this.getPassengerBookInfos().length || 1;
     const isSelf = await this.staffService.isSelfBookType();
@@ -1223,6 +1223,10 @@ export class FlightService {
           (it) => it.FlightNumber == oldSeg.Number
         ) as any;
         oldSeg.Tax = newSeg.Tax;
+        oldSeg.PlaneAge = newSeg.PlaneAge;
+        oldSeg.PlaneType = newSeg.PlaneType;
+        oldSeg.TakeoffOntimeRate = newSeg.TakeoffOntimeRate;
+        oldSeg.AverageDelay = newSeg.AverageDelay;
       }
       if (one) {
         console.log("替换信息");
