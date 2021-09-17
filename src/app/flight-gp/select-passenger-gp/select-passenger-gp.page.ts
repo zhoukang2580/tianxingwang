@@ -24,6 +24,7 @@ export class SelectPassengerGpPage implements OnInit {
   bookInfos$: Observable<PassengerBookInfo<any>[]>;
   vmStaffs: StaffEntity[];
   vmPassenger: PassengerEntity[];
+  oldPassenger: PassengerEntity[];
   selectedCredentialId: string;
   private subscriptions: Subscription[] = [];
   loading = false;
@@ -79,6 +80,7 @@ export class SelectPassengerGpPage implements OnInit {
             it.Variables = JSON.parse(it.Variables);
           })
           this.vmPassenger = r;
+          this.oldPassenger = r;
         }
       })
 
@@ -102,7 +104,25 @@ export class SelectPassengerGpPage implements OnInit {
   }
 
   onSearch(event: any) {
+    this.loadMore((this.vmKeyword || "").trim());
+  }
 
+  loadMore(vmKeyword) {
+    if (vmKeyword) {
+      let PassengerList = [];
+      this.oldPassenger.forEach(e => {
+        const sumValue = e.Name.search(vmKeyword) != -1 || 
+          e.CredentialsTypeName.search(vmKeyword) != -1 ||
+          e.Mobile.search(vmKeyword) != -1 ||
+          e.Number.search(vmKeyword) != -1
+        if (sumValue) {
+          PassengerList.push(e);
+        }
+      });
+      this.vmPassenger = PassengerList;
+    }else{
+      this.doRefresh();
+    }
   }
 
   async onDelete(Id, idx, evt: CustomEvent) {

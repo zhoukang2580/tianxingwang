@@ -105,8 +105,10 @@
                                     <ion-text color='dark'>{{cabin.Cabin?.TypeName}}</ion-text>
                                 </ng-template>
                                 <ion-text color='dark'>{{cabin.Cabin?.Discount|discount}}</ion-text>
+                            </h3>
+                            <h3 class='discount'>
                                 <ng-container *ngIf='cabin.Cabin?.Variables?.Baggage'>
-                                    <span class='seperator'>|</span>{{cabin.Cabin.Variables.Baggage}}
+                                    <span>{{cabin.Cabin.Variables.Baggage}}</span>
                                 </ng-container>
                             </h3>
                             <h3 class="remain">

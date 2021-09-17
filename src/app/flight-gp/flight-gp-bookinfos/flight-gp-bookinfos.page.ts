@@ -88,6 +88,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   identitySubscription = Subscription.EMPTY;
   identity: IdentityEntity;
   isDent = false;
+  isAgent = false;
   private pageUrl;
   @ViewChild(BackButtonComponent, { static: true }) backbtn: BackButtonComponent;
   @ViewChild(IonContent, { static: true }) contnt: IonContent;
@@ -144,6 +145,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     });
     try {
       await this.initSearchModelParams();
+      this.isCanSave = this.tmcService.isAgent;
       this.orderLinkmanDto = {
         Name: "",
         Mobile: "",
@@ -497,7 +499,6 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     await m.present();
   }
 
-
   async onSubmit(isSave: boolean, event: CustomEvent) {
     try {
       const isPay = this.initialBookDtoGpModel?.InsuranceResult;
@@ -518,7 +519,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       const bookDto: GpBookReq = new GpBookReq();
       const arr = this.initialBookDtoGpModel;
       const canbook = await this.fillBookLinkmans();
-      const canbook2 = await this.fillBookPassengers(bookDto, arr);
+      const canbook2 = await this.fillBookPassengers(bookDto, arr,isSave);
       // console.log(canbook);
       if (canbook && canbook2) {
         const res: IBookOrderResult = await this.flightGpService
@@ -561,8 +562,13 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
                   true
                 );
               }
+              await AppHelper.alert("下单成功");
+            } else {
+              if (isSave) {
+                // bookDto.IsAllowIssueTicket = false;
+                await AppHelper.alert("订单已保存!");
+              }
             }
-            await AppHelper.alert("下单成功");
             await this.empty();
             this.goToMyOrders();
           }
@@ -579,7 +585,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     });
   }
 
-  fillBookPassengers(bookDto: GpBookReq, combindInfos: any) {
+  fillBookPassengers(bookDto: GpBookReq, combindInfos: any,isSave:boolean) {
     console.log(combindInfos, 'arr');
     bookDto.PassengerDtos = [];
     let rets: GpPassengerDto[] = [];
@@ -618,6 +624,8 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       }
     }
     bookDto.PayType = this.orderTravelPayType;
+
+    bookDto.IsAllowIssueTicket = !isSave;
     console.log(bookDto, "arr1");
 
     return true;

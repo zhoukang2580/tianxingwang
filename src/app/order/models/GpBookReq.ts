@@ -17,6 +17,8 @@ export class GpBookReq {
     Insurance: InsuranceProductEntity;
 
     PayType: OrderTravelPayType;
+
+    IsAllowIssueTicket: boolean;
 }
 
 export class GpPassengerDto {
