@@ -63,7 +63,7 @@
             <img [src]="vmFlightSegment?.AirlineSrc" alt="">
             <ion-text class='ion-text-nowrap' color='medium'>{{vmFlightSegment?.AirlineName}} {{vmFlightSegment?.Number}}</ion-text>
             <ion-text color='secondary' *ngIf='vmFlightSegment?.CodeShareNumber'><span class='seperator'>|</span>共享{{vmFlightSegment?.CodeShareNumber}}</ion-text>
-            <ion-text color='medium'> <span class='seperator'>|</span>机型{{vmFlightSegment?.PlaneType}}</ion-text>
+            <ion-text color='medium'> <span class='seperator'>|</span>机型{{vmFlightSegment?.FlightDynamicPlaneType}}</ion-text>
             <ion-text color='medium'> <span class='seperator'>|</span>{{vmFlightSegment?.FlyTimeName}}
             </ion-text>
             <ion-text color='secondary'><span class='seperator'>|</span>{{vmFlightSegment?.Meal?"有":"无"}}餐食

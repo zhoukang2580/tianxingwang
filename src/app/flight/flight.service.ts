@@ -1224,7 +1224,7 @@ export class FlightService {
         ) as any;
         oldSeg.Tax = newSeg.Tax;
         oldSeg.PlaneAge = newSeg.PlaneAge;
-        oldSeg.PlaneType = newSeg.PlaneType;
+        oldSeg.FlightDynamicPlaneType = newSeg.PlaneType;
         oldSeg.TakeoffOntimeRate = newSeg.TakeoffOntimeRate;
         oldSeg.AverageDelay = newSeg.AverageDelay;
       }

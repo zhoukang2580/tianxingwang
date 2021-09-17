@@ -77,6 +77,10 @@ export class FlightSegmentEntity {
   /// </summary>
   PlaneType: string;
   /// <summary>
+  /// 机型
+  /// </summary>
+  FlightDynamicPlaneType: string;
+  /// <summary>
   /// 餐食
   /// M   Meal        不特定餐食
   /// B   Breakfast   早餐
