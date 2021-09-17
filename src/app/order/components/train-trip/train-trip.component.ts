@@ -32,8 +32,8 @@ export class TrainTripComponent implements OnInit {
     }
     return this.trip.OrderInsurances.find(
       (it) =>
-        it.Status == OrderInsuranceStatusType.Booking 
-        // &&        it.TravelPayType == OrderTravelPayType.Person
+        it.Status == OrderInsuranceStatusType.Booking &&
+        it.TravelPayType == OrderTravelPayType.Person
     );
   }
   async onShowSelectedInsurance(

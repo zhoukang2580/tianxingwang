@@ -177,15 +177,15 @@
                   <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
                 </div>
               </ion-item>
-              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id">
-                <div class="otherinfo">
+              <ion-item class="other_equipment" >
+                <div class="otherinfo" [attr.mobileid]="combindInfo.id">
                   <div class="other">
                     <span class="label">其他电话：</span>
                     <ion-input [(ngModel)]="combindInfo.credentialStaffOtherMobile" placeholder="电话"></ion-input>
                   </div>
                 </div>
               </ion-item>
-              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id">
+              <ion-item class="other_equipment" >
                 <div class="otherinfo">
                   <div class="other">
                     <span class="label">其他邮箱：</span>
@@ -193,7 +193,7 @@
                   </div>
                 </div>
               </ion-item>
-              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id" *ngIf='isShowCostCenter'>
+              <ion-item class="other_equipment"  *ngIf='isShowCostCenter'>
                 <div class="otherinfo">
                   <div class="other">
                     <span class="label">其他成本中心：</span>
@@ -202,7 +202,7 @@
                   </div>
                 </div>
               </ion-item>
-              <ion-item class="other_equipment" [attr.mobileid]="combindInfo.id" *ngIf='isShowOrganizations'>
+              <ion-item class="other_equipment"  *ngIf='isShowOrganizations'>
                 <div class="otherinfo">
                   <div class="other">
                     <span class="label">其他部门：</span>
