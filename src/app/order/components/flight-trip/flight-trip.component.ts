@@ -71,8 +71,8 @@ export class FlightTripComponent implements OnInit, OnChanges {
     }
     return this.trip.OrderInsurances.find(
       (it) =>
-        it.Status == OrderInsuranceStatusType.Booking &&
-        it.TravelPayType == OrderTravelPayType.Person
+        it.Status == OrderInsuranceStatusType.Booking 
+        // &&        it.TravelPayType == OrderTravelPayType.Person
     );
   }
   private diffHours(t1: string, t2: string) {

@@ -81,8 +81,8 @@ export class TripBuyInsuranceComponent implements OnInit {
     const order: {
       TradeNo: string;
       Key: string;
-    } = await this.apiservice.getPromiseData<any>(req).catch(_ => {
-      AppHelper.alert(_.Message || _);
+    } = await this.apiservice.getPromiseData<any>(req).catch(r => {
+      AppHelper.alert(r&&r.Message || r||"接口异常");
       return null;
     });
     if (order) {
