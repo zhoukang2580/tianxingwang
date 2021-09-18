@@ -121,7 +121,7 @@ export class SelectPassengerGpPage implements OnInit {
       });
       this.vmPassenger = PassengerList;
     }else{
-      this.doRefresh();
+      this.vmPassenger = this.oldPassenger;
     }
   }
 
