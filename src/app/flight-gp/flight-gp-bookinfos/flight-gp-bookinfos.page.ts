@@ -296,6 +296,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       .subscribe((r) => {
         this.identity = r;
       });
+    this.isAgent = this.tmcService.isAgent;
 
     if (!this.tmcService.isAgent) {
       this.isDent = true;
