@@ -7,11 +7,11 @@
             <ion-searchbar debounce="300" class="ion-no-margin ion-no-padding smfont" mode='ios' placeholder="请输入员工号、姓名、手机号" (ionChange)='onSearch($event)' [(ngModel)]='vmKeyword'>
             </ion-searchbar>
         </ion-toolbar>
-        <ion-buttons slot='end' *ngIf='bookInfos$'>
+        <ion-buttons slot='end' *ngIf='selectedPassengerNumber'>
             <ion-button fill='clear' color='secondary' size='small' (click)='onShow()'>
                 已选
                 <ion-badge color='danger'>
-                    <ion-text color='light'>{{(bookInfos$|async).length}}</ion-text>
+                    <ion-text color='light'>{{selectedPassengerNumber}}</ion-text>
                 </ion-badge>
             </ion-button>
         </ion-buttons>

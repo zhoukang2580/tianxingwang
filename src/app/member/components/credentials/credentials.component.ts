@@ -194,9 +194,11 @@ export class CredentialsComponent implements OnInit, OnDestroy, AfterViewInit {
       const sub = this.datetimeComp.ionChange.subscribe((d: CustomEvent) => {
         const value = d.detail.value;
         if (value) {
-          this.credential.Birthday = this.calendarService.getFormatedDate(
-            value.substr(0, 10)
-          );
+          setTimeout(() => {
+            this.credential.Birthday = this.calendarService.getFormatedDate(
+              value.substr(0, 10)
+            );
+          }, 0);
           console.log(" Birthday ", this.credential.Birthday);
         }
         setTimeout(() => {

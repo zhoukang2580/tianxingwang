@@ -8,11 +8,7 @@ import { CredentialsEntity } from "../models/CredentialsEntity";
 import { TmcService } from "../tmc.service";
 import { MemberService, MemberCredential } from "../../member/member.service";
 import { CanComponentDeactivate } from "../../guards/candeactivate.guard";
-import {
-  HrService,
-  StaffBookType,
-  PolicyEntity,
-} from "../../hr/hr.service";
+import { HrService, StaffBookType, PolicyEntity } from "../../hr/hr.service";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { ApiService } from "../../services/api/api.service";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -62,13 +58,15 @@ export const NOT_WHITE_LIST = "notwhitelist";
   animations: [flyInOut],
 })
 export class SelectPassengerDfPage
-  implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy {
+  implements OnInit, CanComponentDeactivate, AfterViewInit, OnDestroy
+{
   private keyword: string;
   private isOpenPageAsModal = false; // 设置是否通过modalcontroller打开
   private bookInfos: PassengerBookInfo<any>[];
   private removeitemSubscription = Subscription.EMPTY;
   private idInputEleSubscription = Subscription.EMPTY;
   private subscription = Subscription.EMPTY;
+  selectedPassengerNumber = 0;
   @ViewChild(CredentialsComponent) credentialsComp: CredentialsComponent;
   @ViewChild(IonContent, { static: true }) content: IonContent;
   @ViewChild(RefresherComponent, { static: true })
@@ -154,7 +152,7 @@ export class SelectPassengerDfPage
     this.subscriptions.push(
       this.route.queryParamMap.subscribe((q) => {
         if (q.get("forType")) {
-          this.forType = (q.get("forType") as any) as FlightHotelTrainType;
+          this.forType = q.get("forType") as any as FlightHotelTrainType;
         }
         this.getIdentityTypes();
         this.initPassengerTypes();
@@ -167,7 +165,7 @@ export class SelectPassengerDfPage
     );
     this.doRefresh(null);
 
-    console.log(this.forType, '=====');
+    console.log(this.forType, "=====");
   }
   private initFilteredCredentialsTypes() {
     this.filteredCredentialsTypes = [];
@@ -179,28 +177,33 @@ export class SelectPassengerDfPage
     }
 
     if (this.forType == FlightHotelTrainType.Flight) {
-      this.filteredCredentialsTypes = [[CredentialsType.HmPass],
-      [CredentialsType.TwPass],
-      [CredentialsType.TaiwanEp],
-      [CredentialsType.ResidencePermit]] as any
-      console.log(this.filteredCredentialsTypes, 'type');
+      this.filteredCredentialsTypes = [
+        [CredentialsType.HmPass],
+        [CredentialsType.TwPass],
+        [CredentialsType.TaiwanEp],
+        [CredentialsType.ResidencePermit],
+      ] as any;
+      console.log(this.filteredCredentialsTypes, "type");
     }
 
     if (this.forType == FlightHotelTrainType.InternationalFlight) {
-      this.filteredCredentialsTypes = [[CredentialsType.IdCard],
-      [CredentialsType.AlienPermanentResidenceIdCard],
-      [CredentialsType.Other],
-      [CredentialsType.ResidencePermit]] as any
-      console.log(this.filteredCredentialsTypes, 'type');
-    }
-    
-    if (this.forType == FlightHotelTrainType.Train) {
-      this.filteredCredentialsTypes = [[CredentialsType.HmPass],
-      [CredentialsType.TwPass],
-      [CredentialsType.TaiwanEp]] as any
-      console.log(this.filteredCredentialsTypes, 'type');
+      this.filteredCredentialsTypes = [
+        [CredentialsType.IdCard],
+        [CredentialsType.AlienPermanentResidenceIdCard],
+        [CredentialsType.Other],
+        [CredentialsType.ResidencePermit],
+      ] as any;
+      console.log(this.filteredCredentialsTypes, "type");
     }
 
+    if (this.forType == FlightHotelTrainType.Train) {
+      this.filteredCredentialsTypes = [
+        [CredentialsType.HmPass],
+        [CredentialsType.TwPass],
+        [CredentialsType.TaiwanEp],
+      ] as any;
+      console.log(this.filteredCredentialsTypes, "type");
+    }
   }
   private initRemoveitem() {
     this.removeitemSubscription = this.removeitem.subscribe(async (info) => {
@@ -277,9 +280,10 @@ export class SelectPassengerDfPage
       );
     }
     if (this.bookInfos$) {
-      this.bookInfos$ = this.bookInfos$.pipe(
-        tap((infos) => {
+      this.subscriptions.push(
+        this.bookInfos$.subscribe((infos) => {
           this.bookInfos = infos;
+          this.selectedPassengerNumber = infos.length;
         })
       );
     }
@@ -414,7 +418,8 @@ export class SelectPassengerDfPage
               passenger.Account = new AccountEntity();
               passenger.Account.Id = tmc && tmc.Account.Id; // 所选的tmcId
               passenger.AccountId = passenger.Account.Id;
-              passenger.CredentialsInfo = LanguageHelper.Flight.getNotWhitelistingTip(); // 非白名单
+              passenger.CredentialsInfo =
+                LanguageHelper.Flight.getNotWhitelistingTip(); // 非白名单
               staffs.unshift(passenger);
             }
           }
@@ -423,7 +428,7 @@ export class SelectPassengerDfPage
             this.vmStaffs = this.vmStaffs.concat(staffs);
           }
         },
-        () => { }
+        () => {}
       );
   }
   private checkSamePolicy(s: StaffEntity) {
@@ -495,36 +500,39 @@ export class SelectPassengerDfPage
         this.staffCredentails = staffCredentails;
       }
 
-      if (
-        this.forType == FlightHotelTrainType.Flight
-      ) {
-        const temp = staffCredentails.filter((it) => it.Type != CredentialsType.HmPass &&
-          it.Type != CredentialsType.TwPass &&
-          it.Type != CredentialsType.TaiwanEp &&
-          it.Type != CredentialsType.ResidencePermit)
+      if (this.forType == FlightHotelTrainType.Flight) {
+        const temp = staffCredentails.filter(
+          (it) =>
+            it.Type != CredentialsType.HmPass &&
+            it.Type != CredentialsType.TwPass &&
+            it.Type != CredentialsType.TaiwanEp &&
+            it.Type != CredentialsType.ResidencePermit
+        );
         this.staffCredentails = temp;
       }
-      if (
-        this.forType == FlightHotelTrainType.InternationalFlight
-      ) {
-        const temp = staffCredentails.filter((it) => it.Type != CredentialsType.IdCard &&
-          it.Type != CredentialsType.AlienPermanentResidenceIdCard &&
-          it.Type != CredentialsType.Other &&
-          it.Type != CredentialsType.ResidencePermit)
+      if (this.forType == FlightHotelTrainType.InternationalFlight) {
+        const temp = staffCredentails.filter(
+          (it) =>
+            it.Type != CredentialsType.IdCard &&
+            it.Type != CredentialsType.AlienPermanentResidenceIdCard &&
+            it.Type != CredentialsType.Other &&
+            it.Type != CredentialsType.ResidencePermit
+        );
         this.staffCredentails = temp;
       }
-      if (
-        this.forType == FlightHotelTrainType.Train
-      ) {
-        const temp = staffCredentails.filter((it) => it.Type != CredentialsType.HmPass &&
-          it.Type != CredentialsType.TwPass &&
-          it.Type != CredentialsType.TaiwanEp)
+      if (this.forType == FlightHotelTrainType.Train) {
+        const temp = staffCredentails.filter(
+          (it) =>
+            it.Type != CredentialsType.HmPass &&
+            it.Type != CredentialsType.TwPass &&
+            it.Type != CredentialsType.TaiwanEp
+        );
         this.staffCredentails = temp;
       }
 
       let first =
         this.staffCredentails.find((it) => it.Type == CredentialsType.IdCard) ||
-          this.staffCredentails.length
+        this.staffCredentails.length
           ? this.staffCredentails[0]
           : null;
       if (
@@ -572,7 +580,7 @@ export class SelectPassengerDfPage
     this.vmNewCredential.CredentialsRemark = "客户";
     this.vmNewCredential.Type =
       this.forType == FlightHotelTrainType.HotelInternational ||
-        this.forType == FlightHotelTrainType.InternationalFlight
+      this.forType == FlightHotelTrainType.InternationalFlight
         ? CredentialsType.Passport
         : CredentialsType.IdCard;
     this.vmNewCredential.Gender = "M";
@@ -703,9 +711,9 @@ export class SelectPassengerDfPage
       selectedCredential.HideNumber = selectedCredential.Number;
     }
     const passengerBookInfo: PassengerBookInfo<any> = {
-      credential: ({
+      credential: {
         ...selectedCredential,
-      } as any) as CredentialsEntity,
+      } as any as CredentialsEntity,
       isNotWhitelist,
       passenger: {
         ...this.selectedPassenger,
@@ -760,13 +768,20 @@ export class SelectPassengerDfPage
         AppHelper.alert(LanguageHelper.Flight.getCannotBookMorePassengerTip());
         return false;
       }
-      console.log(passengerBookInfo,"passengerBookInfo");
-      const BookInfo = this.flightService.getPassengerBookInfos();
-      if (BookInfo) {
-        if (!BookInfo.find(it => it.credential.Id == passengerBookInfo.credential.Id)) {
+      console.log(passengerBookInfo, "passengerBookInfo");
+      const bookInfos = this.flightService.getPassengerBookInfos();
+      if (bookInfos) {
+        if (
+          !bookInfos.find((it) =>
+            this.checkIfPassengerCredentialAdded(
+              it.credential,
+              passengerBookInfo.credential
+            )
+          )
+        ) {
           this.flightService.addPassengerBookInfo(passengerBookInfo);
-        }else{
-          AppHelper.toast("已添加该旅客",2000,"middle");
+        } else {
+          AppHelper.toast("已添加该旅客", 2000, "middle");
           return false;
         }
       }
@@ -779,10 +794,17 @@ export class SelectPassengerDfPage
       }
       const bookInfos = this.interFlightService.getBookInfos();
       if (bookInfos) {
-        if (!bookInfos.find(it => it.credential.Id == passengerBookInfo.credential.Id)) {
+        if (
+          !bookInfos.find((it) =>
+            this.checkIfPassengerCredentialAdded(
+              it.credential,
+              passengerBookInfo.credential
+            )
+          )
+        ) {
           this.interFlightService.addPassengerBookInfo(passengerBookInfo);
         } else {
-          AppHelper.toast("已添加该旅客",2000,"middle");
+          AppHelper.toast("已添加该旅客", 2000, "middle");
           return false;
         }
       }
@@ -795,17 +817,35 @@ export class SelectPassengerDfPage
 
       const trainBookInfos = this.trainService.getBookInfos();
       if (trainBookInfos) {
-        if (!trainBookInfos.find(it => it.credential.Id == passengerBookInfo.credential.Id)) {
+        if (
+          !trainBookInfos.find((it) =>
+            this.checkIfPassengerCredentialAdded(
+              it.credential,
+              passengerBookInfo.credential
+            )
+          )
+        ) {
           this.trainService.addBookInfo(passengerBookInfo);
         } else {
-          AppHelper.toast("已添加该旅客",2000,"middle");
+          AppHelper.toast("已添加该旅客", 2000, "middle");
           return false;
         }
       }
     }
 
-
     return true;
+  }
+  private checkIfPassengerCredentialAdded(
+    credential: CredentialsEntity,
+    newCredential: CredentialsEntity
+  ) {
+    return (
+      credential &&
+      newCredential &&
+      ((credential.Number == newCredential.Number &&
+        credential.Type == newCredential.Type) ||
+        credential == newCredential)
+    );
   }
   back(evt?: CustomEvent) {
     if (evt) {
