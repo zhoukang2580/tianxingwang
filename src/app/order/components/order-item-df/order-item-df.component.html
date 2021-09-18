@@ -19,11 +19,11 @@
                         <div class="item">
                             <div class="item-con">
                                 <span>
-                    <img src="assets/images/aircraft.png" alt="" />
-                  </span>
+                                    <img src="assets/images/aircraft.png" alt="" />
+                                </span>
                                 <span>
-                    {{ trip.FlightNumber }}
-                  </span>
+                                    {{ trip.FlightNumber }}
+                                </span>
                                 <div>{{ trip.FromCityName }}—{{ trip.ToCityName }}</div>
                                 <div *ngIf="ticket.TicketType == OrderFlightTicketType.GP" class="ticketgp">GP</div>
                             </div>
@@ -32,8 +32,8 @@
                             <div>起飞时间</div>
                             <div>
                                 <span *ngIf="trip.TakeoffTime">{{
-                    trip.TakeoffTime.replace("T", " ")
-                    }}</span>
+                                    trip.TakeoffTime.replace("T", " ")
+                                    }}</span>
                             </div>
                         </div>
                         <div class="item" style="align-items: center" *ngIf="
@@ -52,7 +52,14 @@
                             </div>
                             <div class="item-tail">
                                 <ion-text color="danger" class="ion-text-nowrap">
-                                    <ion-text>￥{{ ticket.VariablesJsonObj?.ticketAmount }}</ion-text>
+                                    <ion-text>
+                                        <span>
+                                            ￥{{ ticket.VariablesJsonObj?.ticketAmount }}
+                                        </span>
+                                        <ng-container *ngIf='ticket.VariablesJsonObj?.insuranceAmount>0'>
+                                            (含保险{{ticket.VariablesJsonObj?.insuranceAmount}})
+                                        </ng-container>
+                                    </ion-text>
                                 </ion-text>
                                 <div>
                                     <ng-container *ngIf="order.VariablesJsonObj.isPay ">
@@ -69,10 +76,12 @@
                                             </ion-text>
                                             <ion-icon name="help-circle-outline" color="secondary" (click)="onHelp($event)"></ion-icon>
                                         </ng-container>
-                                        <ion-button *ngIf="ticket.VariablesJsonObj.isShowExchangeButton && ticket.TicketType != OrderFlightTicketType.GP " size="small" (click)="onExchangeFlightTicket($event, ticket, trip)" color="secondary">
+                                        <ion-button *ngIf="ticket.VariablesJsonObj.isShowExchangeButton && ticket.TicketType != OrderFlightTicketType.GP " size="small"
+                                            (click)="onExchangeFlightTicket($event, ticket, trip)" color="secondary">
                                             <ion-text color="light">改签</ion-text>
                                         </ion-button>
-                                        <ion-button *ngIf="ticket.VariablesJsonObj.isShowExchangeButton && ticket.TicketType == OrderFlightTicketType.GP" size="small" (click)="onExchangeFlightGpTicket($event, ticket, trip)" color="secondary">
+                                        <ion-button *ngIf="ticket.VariablesJsonObj.isShowExchangeButton && ticket.TicketType == OrderFlightTicketType.GP" size="small"
+                                            (click)="onExchangeFlightGpTicket($event, ticket, trip)" color="secondary">
                                             <ion-text color="light">改签</ion-text>
                                         </ion-button>
                                         <ng-container *ngIf="ticket.VariablesJsonObj.isCustomApplyExchanging">
@@ -112,15 +121,15 @@
                         </ion-col>
                         <ion-col class="select-text" class="dark">
                             <strong>
-                  <ion-text>{{ orderTrainTrip.TrainCode }}</ion-text>&nbsp;&nbsp;
-                  <ion-text>
-                    <ion-text class="from-station-name">{{ orderTrainTrip?.FromStationName }}
-                    </ion-text>
-                    —
-                    <ion-text class="to-station-name">
-                      {{ orderTrainTrip?.ToStationName }}</ion-text>
-                  </ion-text>
-                </strong>
+                                <ion-text>{{ orderTrainTrip.TrainCode }}</ion-text>&nbsp;&nbsp;
+                                <ion-text>
+                                    <ion-text class="from-station-name">{{ orderTrainTrip?.FromStationName }}
+                                    </ion-text>
+                                    —
+                                    <ion-text class="to-station-name">
+                                        {{ orderTrainTrip?.ToStationName }}</ion-text>
+                                </ion-text>
+                            </strong>
                         </ion-col>
                     </ion-row>
                     <ion-row class="train_ion">
@@ -130,8 +139,8 @@
                         <ion-col>
                             <ion-text color="medium">
                                 <span *ngIf="orderTrainTrip?.StartTime">{{
-                    orderTrainTrip.StartTime.replace("T", " ")
-                    }}</span>
+                                    orderTrainTrip.StartTime.replace("T", " ")
+                                    }}</span>
                             </ion-text>
                         </ion-col>
                     </ion-row>
@@ -152,7 +161,9 @@
                             <ion-text color="medium">应付金额</ion-text>
                             <ion-text color="danger" style="margin: 0 1.1em">
                                 <ion-text>￥{{ order.TotalAmount }}</ion-text>
-                                <span *ngIf="order.OrderInsurances?.length"> (含保险) </span>
+                                <ng-container *ngIf='orderTrainTicket.VariablesJsonObj?.insuranceAmount>0'>
+                                    (含保险{{orderTrainTicket.VariablesJsonObj?.insuranceAmount}})
+                                </ng-container>
                             </ion-text>
                             <ng-container class="ion-text-end" *ngIf="order.VariablesJsonObj?.isPay" size="3">
                                 <ion-button (click)="onPay($event)" size="small" color="secondary">去支付
@@ -187,9 +198,9 @@
                             <span *ngIf="order.VariablesJsonObj?.SelfPayAmount > 0" class="free-book-tag">随心住</span>
                             <ion-text color="medium">订单编号</ion-text>
                             <span class="select-text orderid dark">
-                  <strong class="strong">{{ order.Id }}</strong>
-                  <!-- <strong class="strong">{{ orderHotel.Id }}</strong> -->
-                </span>
+                                <strong class="strong">{{ order.Id }}</strong>
+                                <!-- <strong class="strong">{{ orderHotel.Id }}</strong> -->
+                            </span>
                             <div class="status-name">
                                 <strong class="strong">{{ order.StatusName }}</strong>
                             </div>
@@ -202,8 +213,8 @@
                     </ion-col>
                     <ion-col class="select-text" class="dark">
                         <strong>
-                {{ orderHotel.HotelName }}
-              </strong>
+                            {{ orderHotel.HotelName }}
+                        </strong>
                     </ion-col>
                 </ion-row>
                 <ion-row>
@@ -227,8 +238,8 @@
                         <ng-container *ngIf="orderHotel.Passenger as p">
                             <div>
                                 <span>
-                    {{ p.Name }}
-                  </span>
+                                    {{ p.Name }}
+                                </span>
                             </div>
                         </ng-container>
                     </ion-col>
