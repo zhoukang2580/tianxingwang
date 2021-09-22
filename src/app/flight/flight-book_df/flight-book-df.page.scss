@@ -326,7 +326,7 @@
 }
 
 ion-footer {
-    height: 49px;
+    // height: 49px;
     &.freebook {
         height: 70px;
     }
@@ -380,6 +380,124 @@ ion-footer {
     }
 }
 
+.ticketKnow {
+    display: flex;
+    width: 100%;
+    height: 40px;
+    align-items: center;
+    background: #eee;
+    ion-item {
+        width: 100%;
+    }
+    ion-checkbox {
+        width: 0.85rem;
+        height: 0.85rem;
+    }
+    ion-label {
+        font-size: 14px;
+    }
+}
+
+.translate {
+    border-radius: 5px 5px 0px 0px;
+    padding: 0 0.3em;
+    font-size: 14px;
+    background-color: white;
+    transform: translate(0, 100%);
+    position: fixed;
+    transition: all ease-in-out 200ms;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    opacity: 0;
+    max-width: 100%;
+    width: 100%;
+    &.show {
+        z-index: 1002;
+        opacity: 1;
+        transform: translate(0, 0);
+    }
+    .needKnow {
+        width: 100%;
+        max-height: 150vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        -webkit-overflow-scrolling: touch;
+        .titels {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            .del {
+                font-size: 26px;
+                color: #666;
+            }
+            .centent {
+                font-size: 18px;
+                font-weight: bold;
+            }
+        }
+    }
+    ion-item {
+        font-size: 14px;
+        border-bottom: 1px solid #eee;
+        line-height: 3;
+        ion-icon {
+            font-size: 20px;
+        }
+    }
+}
+
+.agreement-alert {
+    position: fixed;
+    top: 51%;
+    left: 10%;
+    right: 10%;
+    transform: translate3d(0, 1000%, 0);
+    transform: translate3d(0, -50%, 0);
+    z-index: 1000;
+    background: var(--ion-color-light);
+    transition: all .2s ease-in-out;
+    border-radius: 5px;
+    padding: 1em 2em .5em;
+    header {
+        padding: 10px;
+        text-align: center;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+    }
+    .agreement-c {
+        padding: 10px 0;
+        font-size: 14px;
+    }
+    .buttons {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        .button {
+            width: 90px;
+            height: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #eee;
+            background: #5099fe;
+        }
+         :first-child {
+            background: #fff;
+            border: 1px solid #237fff8a;
+            color: #5099fe;
+        }
+    }
+}
+
 .transfrom {
     border-radius: 10px 10px 0px 0px;
     padding: 0 1em;
@@ -396,7 +514,7 @@ ion-footer {
     max-width: 100%;
     width: 100%;
     &.show {
-        z-index: 1;
+        z-index: 11;
         opacity: 1;
         transform: translate(0, -44px);
     }

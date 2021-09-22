@@ -189,6 +189,12 @@
 </ion-content>
 <app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍候...</app-waiting-check-pay>
 <ion-footer>
+    <div class="ticketKnow" *ngIf="rules && rules.length">
+        <ion-item lines='none'>
+            <ion-checkbox mode='ios' color="secondary" checked='false' #checkboxs></ion-checkbox>
+            <ion-label>我已阅读并同意<a (click)="onTicketStatus()">购票需知</a></ion-label>
+        </ion-item>
+    </div>
     <div class="price-detail">
         <div class="left" (click)="onToggleIsShowFee()">
             <div class="total "><span class="">总计：</span><span class="price ">￥{{totalPrice}}</span></div><span class="detail ">明细</span>
@@ -206,6 +212,36 @@
     </div>
 </ion-footer>
 <div class="zz" *ngIf="isShowFee" (click)="onToggleIsShowFee()"></div>
+<div class="zz" style="z-index: 1001;" *ngIf="isTicketShow" (click)="onTicketStatus()"></div>
+<div class="zz" style="z-index: 10;" *ngIf="isShowAgreementAlert"></div>
+
+<div class="agreement-alert" [class.show]='isShowAgreementAlert' *ngIf="isShowAgreementAlert">
+    <header>订票服务协议</header>
+    <div class="agreement-c">
+        我已阅读并同意<a (click)="onTicketStatus()">购票须知</a>
+    </div>
+    <div class="buttons">
+        <div class="button" (click)='onReadAgreement(false)'>不同意</div>
+        <div class="h-line"></div>
+        <div class="button" (click)='onReadAgreement(true)'>同意</div>
+    </div>
+</div>
+
+<div [class.show]="isTicketShow" class="translate">
+    <div class="needKnow">
+        <ion-list>
+            <div class="titels">
+                <div class="del" (click)="onTicketStatus()">×</div>
+                <div class="centent">{{Title}}</div>
+                <div></div>
+            </div>
+            <ion-item lines='none' *ngFor="let item of rules" (click)="onJumpPage(item.src)">
+                <ion-label>{{item.key}}</ion-label>
+                <ion-icon name="chevron-forward-outline" color='medium'></ion-icon>
+            </ion-item>
+        </ion-list>
+    </div>
+</div>
 <div [class.show]="isShowFee" *ngIf="selectedFrequent && selectedFrequent.length" class="transfrom" #transfromEle>
     <div class="wrapper" *ngFor="let infos of selectedFrequent">
         <div class="fee itm" *ngIf="initialBookDtoGpModel?.Routes[0]?.Fare as fare">

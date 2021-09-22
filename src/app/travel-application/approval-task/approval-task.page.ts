@@ -154,26 +154,6 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
   async onTaskDetail(task: TaskEntity) {
     const url = await this.getTaskHandleUrl(task);
     if (url) {
-      // this.router
-      //   .navigate(["open-url"], {
-      //     queryParams: {
-      //       url,
-      //       title: task && task.Name,
-      //       tabId: this.activeTab?.value,
-      //       // isOpenInAppBrowser: AppHelper.isApp(),
-      //       isOpenInAppBrowser: false,
-      //       isIframeOpen: true,
-      //       isHideTitle: false,
-      //       goPath: AppHelper.getNormalizedPath(this.router.url.substr(1)), // /approval-task
-      //       goPathQueryParams: JSON.stringify({
-      //         tab: "已审任务"
-      //       })
-      //     },
-      //   })
-      //   .then((_) => {
-      //     this.isOpenUrl = true;
-      //   });
-      // AppHelper.jump(this.router, url, {});
       const m = await AppHelper.modalController.create({
         component: OpenUrlComponent,
         componentProps: {

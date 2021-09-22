@@ -29,6 +29,7 @@ import { OrderService } from 'src/app/order/order.service';
 import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
 import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
 import { FlightSegmentEntity } from 'src/app/flight/models/flight/FlightSegmentEntity';
+import { OpenUrlComponent } from 'src/app/pages/components/open-url-comp/open-url.component';
 
 @Component({
   selector: 'app-flight-gp-bookinfos',
@@ -67,6 +68,13 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   totalPrice = 0;
   isSubmitDisabled = false;
   isCanSave = false;
+  isTicketShow = false;
+  Title = "购票须知";
+  isShowAgreementAlert = false;
+  rules: {
+    key: string;
+    src: string;
+  }[] = [];
   InsurancePrice = 0;
 
   checkPayCount = 5;
@@ -94,6 +102,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   @ViewChild(IonContent, { static: true }) contnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
+  @ViewChildren("checkboxs") checkboxs: QueryList<IonCheckbox>;
 
   constructor(
     private router: Router,
@@ -201,6 +210,38 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     });
   }
 
+  onTicketStatus() {
+    this.isTicketShow = !this.isTicketShow;
+  }
+
+  onReadAgreement(isConsent = false) {
+    if (isConsent) {
+      const isCheckbox = this.checkboxs.toArray();
+      isCheckbox[0].checked = true;
+      this.isShowAgreementAlert = !this.isShowAgreementAlert;
+    } else {
+      this.isShowAgreementAlert = !this.isShowAgreementAlert;
+    }
+  }
+
+  async onJumpPage(url: string) {
+    if (url) {
+      const m = await AppHelper.modalController.create({
+        component: OpenUrlComponent,
+        componentProps: {
+          url,
+          isOpenAsModal: true,
+          isAppendTicket: true,
+          isIframeOpen: true,
+          isHideTitle: false,
+          title: this.Title,
+        },
+      });
+      m.present();
+      await m.onDidDismiss();
+    }
+  }
+
   onToggleIsShowFee() {
     this.isShowFee = !this.isShowFee;
   }
@@ -275,6 +316,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       }
       console.log(this.initialBookDtoGpModel, 'initialBookDtoModel')
 
+      await this.onTicketNeedKnow();
 
       if (!this.initialBookDtoModel) {
         this.errors = "网络错误";
@@ -288,6 +330,22 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       // this.errors = err || "please retry";
       console.error(err);
     }
+  }
+
+  private async onTicketNeedKnow() {
+    this.initialBookDtoGpModel.forEach(it => {
+      const flightRule = it.Routes[0].Segment.FlightRule.AirlineRules.HO || it.Routes[0].Segment.FlightRule.AirlineRules.HO;
+      flightRule.forEach(it => {
+        const valueOf = { key: (Object.keys(it)).toString(), src: (Object.values(it)).toString() }
+        this.rules.push(valueOf);
+      });
+      it.Routes[0].Segment.FlightRule.CommonRules.forEach((e) => {
+        const valueOf = { key: (Object.keys(e)).toString(), src: (Object.values(e)).toString() }
+        this.rules.push(valueOf);
+      });
+    })
+
+    console.log(this.rules, "===");
   }
 
   async getIdentity() {
@@ -499,9 +557,29 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     m.backdropDismiss = true;
     await m.present();
   }
+  async onBookServeAgreement() {
+    try {
+      const isCheckbox = this.checkboxs.toArray();
+      const isTicketstatus = isCheckbox[0].checked;
+      if (isTicketstatus == false) {
+        console.log("请勾选购票协议");
+        this.isShowAgreementAlert = !this.isShowAgreementAlert;
+        return false
+      } else {
+        console.log("已勾选购票协议")
+        return true
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   async onSubmit(isSave: boolean, event: CustomEvent) {
     try {
+      let ticketAgreement = true;
+      if (this.rules && this.rules.length) {
+        ticketAgreement = await this.onBookServeAgreement();
+      }
       const isPay = this.initialBookDtoGpModel?.InsuranceResult;
       if (!isPay) {
         AppHelper.alert("提交失败,请联系工作人员配置支付方式");
@@ -517,10 +595,11 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       if (this.isSubmitDisabled) {
         return;
       }
-      const bookDto: GpBookReq = new GpBookReq();
+      if (ticketAgreement) {
+        const bookDto: GpBookReq = new GpBookReq();
       const arr = this.initialBookDtoGpModel;
       const canbook = await this.fillBookLinkmans();
-      const canbook2 = await this.fillBookPassengers(bookDto, arr,isSave);
+      const canbook2 = await this.fillBookPassengers(bookDto, arr, isSave);
       // console.log(canbook);
       if (canbook && canbook2) {
         const res: IBookOrderResult = await this.flightGpService
@@ -575,6 +654,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
           }
         }
       }
+      }
     } catch (error) {
       console.error(error);
     }
@@ -586,7 +666,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     });
   }
 
-  fillBookPassengers(bookDto: GpBookReq, combindInfos: any,isSave:boolean) {
+  fillBookPassengers(bookDto: GpBookReq, combindInfos: any, isSave: boolean) {
     console.log(combindInfos, 'arr');
     bookDto.PassengerDtos = [];
     let rets: GpPassengerDto[] = [];
