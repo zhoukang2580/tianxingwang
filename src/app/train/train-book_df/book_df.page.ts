@@ -101,6 +101,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
+  isShowSubmitBtn = false;
   isShowOtherInfo = false;
   isShowBind12306btn = true;
   // @Input() isOtherCostCenter: boolean;
@@ -171,6 +172,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     });
     try {
       this.isShowBind12306btn = !this.isExchangeBook();
+      this.isShowSubmitBtn = this.isExchangeBook();
       if (this.ionRefresher) {
         this.ionRefresher.complete();
         this.ionRefresher.disabled = true;
