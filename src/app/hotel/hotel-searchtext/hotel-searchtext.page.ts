@@ -142,6 +142,7 @@ export class HotelSearchTextPage implements OnInit, OnDestroy, AfterViewInit {
     this.hotelService.setSearchHotelModel({
       ...this.hotelService.getSearchHotelModel(),
       searchText: it || { Text: this.searchText },
+      myPosition:null
     });
     setTimeout(() => {
       this.navCtrl.back();
