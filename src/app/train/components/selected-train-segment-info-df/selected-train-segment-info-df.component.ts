@@ -3,8 +3,8 @@ import { TrainSeatEntity } from "../../models/TrainSeatEntity";
 import { TrainService, TrainPolicyModel } from "../../train.service";
 import { CalendarService } from "../../../tmc/calendar.service";
 import { ModalController, PopoverController } from "@ionic/angular";
-import { Observable, of, combineLatest, from } from "rxjs";
-import { EventEmitter } from "@angular/core";
+import { Observable, of, combineLatest, from, Subscription } from "rxjs";
+import { EventEmitter, OnDestroy } from "@angular/core";
 import { Component, OnInit } from "@angular/core";
 import { PassengerBookInfo } from "src/app/tmc/tmc.service";
 import * as moment from "moment";
@@ -19,14 +19,15 @@ import { WarmPromptComponent } from "../warm-prompt/warm-prompt.component";
 @Component({
   selector: "app-selected-train-segment-info-df",
   templateUrl: "./selected-train-segment-info-df.component.html",
-  styleUrls: ["./selected-train-segment-info-df.component.scss"]
+  styleUrls: ["./selected-train-segment-info-df.component.scss"],
 })
-export class SelectedTrainSegmentInfoDfComponent implements OnInit {
-  bookInfos$: Observable<PassengerBookInfo<ITrainInfo>[]>;
-  showSelectReturnTrip$ = of(false);
+export class SelectedTrainSegmentInfoDfComponent implements OnInit, OnDestroy {
+  bookInfos: PassengerBookInfo<ITrainInfo>[];
+  showSelectReturnTrip = false;
   TripType = TripType;
   isExchange = false;
   isSelf = false;
+  subscriptions: Subscription[] = [];
   constructor(
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
@@ -34,43 +35,57 @@ export class SelectedTrainSegmentInfoDfComponent implements OnInit {
     private trainService: TrainService,
     private staffService: HrService,
     private router: Router
-  ) { }
+  ) {}
   async back() {
     const t = await this.modalCtrl.getTop();
     if (t) {
-      t.dismiss().catch(_ => 0);
+      t.dismiss().catch((_) => 0);
     }
   }
+  ngOnDestroy() {
+    this.subscriptions.forEach((sub) => {
+      sub.unsubscribe();
+    });
+  }
   ngOnInit() {
-    this.staffService.isSelfBookType().then(is => {
+    this.staffService.isSelfBookType().then((is) => {
       this.isSelf = is;
     });
-    this.bookInfos$ = this.trainService.getBookInfoSource().pipe(
-      tap(infos => {
+    const sub1 = this.trainService
+      .getBookInfoSource()
+      .subscribe((infos) => {
         console.log("bookinfos", infos);
         setTimeout(() => {
-          this.isExchange = !!infos.find(it => it.bookInfo && it.bookInfo.isExchange);
+          this.isExchange = !!infos.find(
+            (it) => it.bookInfo && it.bookInfo.isExchange
+          );
         }, 0);
-      })
-    );
-    this.showSelectReturnTrip$ = combineLatest([
+        this.bookInfos = infos;
+      });
+    const sub2 = combineLatest([
       from(this.staffService.isSelfBookType()),
       this.trainService.getSearchTrainModelSource(),
-      this.trainService.getBookInfoSource()
-    ]).pipe(
-      map(([isSelf, s, bookInfos]) => {
-        return (
-          isSelf &&
-          s &&
-          s.isRoundTrip &&
-          bookInfos &&
-          (bookInfos.length &&
+      this.trainService.getBookInfoSource(),
+    ])
+      .pipe(
+        map(([isSelf, s, bookInfos]) => {
+          return (
+            isSelf &&
+            s &&
+            s.isRoundTrip &&
+            bookInfos &&
+            bookInfos.length &&
             !bookInfos.find(
-              it => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
-            ))
-        );
-      })
-    );
+              (it) => it.bookInfo && it.bookInfo.tripType == TripType.returnTrip
+            )
+          );
+        })
+      )
+      .subscribe((r) => {
+        this.showSelectReturnTrip = r;
+      });
+    this.subscriptions.push(sub1);
+    this.subscriptions.push(sub2);
   }
   onSeatPicked(location: string, bookInfo: PassengerBookInfo<ITrainInfo>) {
     if (bookInfo && bookInfo.bookInfo && bookInfo.bookInfo.trainEntity) {
@@ -94,7 +109,7 @@ export class SelectedTrainSegmentInfoDfComponent implements OnInit {
   getSeatPrice(info: ITrainInfo) {
     if (info && info.trainEntity && info.trainEntity.Seats) {
       const s = info.trainEntity.Seats.find(
-        s => s.SeatType == info.trainPolicy.SeatType
+        (s) => s.SeatType == info.trainPolicy.SeatType
       );
       return s && s.SalesPrice;
     }
@@ -108,11 +123,11 @@ export class SelectedTrainSegmentInfoDfComponent implements OnInit {
       info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-      }]`;
+    }]`;
   }
   canGoToNext() {
     return (
-      this.trainService.getBookInfos().filter(it => !!it.bookInfo).length > 0
+      this.trainService.getBookInfos().filter((it) => !!it.bookInfo).length > 0
     );
   }
   remove(bookInfo: PassengerBookInfo<ITrainInfo>) {
@@ -124,7 +139,7 @@ export class SelectedTrainSegmentInfoDfComponent implements OnInit {
   }
 
   // onOpenrules(){
-    
+
   // }
 
   async onOpenrules() {
@@ -137,5 +152,4 @@ export class SelectedTrainSegmentInfoDfComponent implements OnInit {
     m.backdropDismiss = true;
     await m.present();
   }
-
 }

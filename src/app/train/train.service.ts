@@ -961,7 +961,7 @@ export class TrainService {
     //     : (obj[next?.credential?.Id] = true && item.push(next));
     //   return item;
     // }, []);
-    // this.bookInfos = infos || [];
+    this.bookInfos = infos || [];
     this.bookInfoSource.next(this.bookInfos);
   }
   getBookInfos() {
