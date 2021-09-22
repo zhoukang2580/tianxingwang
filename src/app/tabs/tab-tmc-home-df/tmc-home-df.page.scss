@@ -285,6 +285,7 @@ ion-header ion-title {
     margin: 0.5em 1em;
     border-radius: 6px;
     box-shadow: 4px 1px 7px 6px #f5f5f5;
+    font-size: 14px;
     .swiper-wrapper {
       height: 90px;
     }
@@ -338,6 +339,7 @@ ion-header ion-title {
     }
   }
   .fly-time {
+    text-align: start;
     span {
       color: #ff6600;
     }

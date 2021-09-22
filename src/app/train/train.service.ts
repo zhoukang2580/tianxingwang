@@ -953,14 +953,14 @@ export class TrainService {
     return this.localTrafficLine.TrafficLines;
   }
   setBookInfoSource(infos: PassengerBookInfo<ITrainInfo>[]) {
-    console.log("setBookInfoSource", infos);
-    var obj = {};
-    infos = infos.reduce(function (item, next) {
-      obj[next?.credential?.Id]
-        ? ""
-        : (obj[next?.credential?.Id] = true && item.push(next));
-      return item;
-    }, []);
+    // console.log("setBookInfoSource", infos);
+    // var obj = {};
+    // infos = infos.reduce(function (item, next) {
+    //   obj[next?.credential?.Id]
+    //     ? ""
+    //     : (obj[next?.credential?.Id] = true && item.push(next));
+    //   return item;
+    // }, []);
     this.bookInfos = infos || [];
     this.bookInfoSource.next(this.bookInfos);
   }

@@ -47,7 +47,8 @@ import { TrainOrderPricePopoverComponent } from "../components/train-order-price
   animations: [flyInOut],
 })
 export class OrderTrainDetailDfPage
-  implements OnInit, AfterViewInit, OnDestroy {
+  implements OnInit, AfterViewInit, OnDestroy
+{
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
@@ -468,9 +469,10 @@ export class OrderTrainDetailDfPage
     ) {
       return;
     }
-    this.orderDetail.Order.OrderTrainTickets = this.orderService.checkIfOrderTrainTicketShow(
-      this.orderDetail.Order.OrderTrainTickets
-    );
+    this.orderDetail.Order.OrderTrainTickets =
+      this.orderService.checkIfOrderTrainTicketShow(
+        this.orderDetail.Order.OrderTrainTickets
+      );
     this.orderDetail.Order.OrderTrainTickets.forEach((t) => {
       if (!this.tikectId2OriginalTickets[t.Id]) {
         const res: OrderTrainTicketEntity[] = [];
@@ -497,9 +499,7 @@ export class OrderTrainDetailDfPage
       );
       ticketInsurances.map((insurance) => {
         const oneTrip = ticket.OrderTrainTrips.find(
-          (trip) =>
-            // console.log("wwww");
-            insurance.AdditionKey == trip.Key
+          (trip) => insurance.AdditionKey == trip.Key
         );
         console.log("onetrip", oneTrip);
         if (oneTrip) {
@@ -511,7 +511,7 @@ export class OrderTrainDetailDfPage
       });
     });
   }
-  private initTikectsInsurances() {
+  private initTicketsInsurances() {
     this.tikect2Insurance = {};
     if (
       !this.orderDetail ||
@@ -522,9 +522,12 @@ export class OrderTrainDetailDfPage
       return;
     }
     this.orderDetail.Order.OrderTrainTickets.forEach((t) => {
-      if (!this.tikect2Insurance[t.Key]) {
-        this.tikect2Insurance[t.Key] = this.getTicketOrderInsurances(t);
-        console.log(this.tikect2Insurance[t.Key], "sss");
+      if (t.VariablesJsonObj && t.VariablesJsonObj.insuranceKeys) {
+        const keys: string[] = t.VariablesJsonObj.insuranceKeys.split(",");
+        this.tikect2Insurance[t.Id] =
+          this.orderDetail.Order.OrderInsurances.filter((it) =>
+            keys.some((k) => k == it.Key)
+          );
       }
     });
   }
@@ -541,7 +544,7 @@ export class OrderTrainDetailDfPage
     this.initOriginalTickets();
     // console.log(this.orderDetail.Order.OrderTrainTickets, "44444");
     this.initTicketsTripsInsurance();
-    this.initTikectsInsurances();
+    this.initTicketsInsurances();
     this.isLoading = false;
     this.initTabs();
     // this.sortTabs();
@@ -635,34 +638,34 @@ export class OrderTrainDetailDfPage
       );
     }
   }
-  getInsuranceAmount() {
-    if (
-      !this.orderDetail ||
-      !this.orderDetail.Order ||
-      !this.orderDetail.Order.OrderInsurances ||
-      !this.orderDetail.Order.OrderItems ||
-      !this.orderDetail.Order.OrderTrainTickets
-    ) {
-      return 0;
-    }
-    const flightTripkeys: string[] = [];
-    this.orderDetail.Order.OrderTrainTickets.forEach((t) => {
-      if (t.OrderTrainTrips) {
-        t.OrderTrainTrips.forEach((trip) => {
-          if (!flightTripkeys.find((k) => k == trip.Key)) {
-            flightTripkeys.push(trip.Key);
-          }
-        });
-      }
-    });
-    const keys = this.orderDetail.Order.OrderInsurances.filter(
-      (it) => !!flightTripkeys.find((k) => k == it.AdditionKey)
-    ).map((it) => it.Key);
-    const insuranceAmount = this.orderDetail.Order.OrderItems.filter((it) =>
-      keys.find((k) => k == it.Key)
-    ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
-    return insuranceAmount;
-  }
+  // getInsuranceAmount() {
+  //   if (
+  //     !this.orderDetail ||
+  //     !this.orderDetail.Order ||
+  //     !this.orderDetail.Order.OrderInsurances ||
+  //     !this.orderDetail.Order.OrderItems ||
+  //     !this.orderDetail.Order.OrderTrainTickets
+  //   ) {
+  //     return 0;
+  //   }
+  //   const flightTripkeys: string[] = [];
+  //   this.orderDetail.Order.OrderTrainTickets.forEach((t) => {
+  //     if (t.OrderTrainTrips) {
+  //       t.OrderTrainTrips.forEach((trip) => {
+  //         if (!flightTripkeys.find((k) => k == trip.Key)) {
+  //           flightTripkeys.push(trip.Key);
+  //         }
+  //       });
+  //     }
+  //   });
+  //   const keys = this.orderDetail.Order.OrderInsurances.filter(
+  //     (it) => !!flightTripkeys.find((k) => k == it.AdditionKey)
+  //   ).map((it) => it.Key);
+  //   const insuranceAmount = this.orderDetail.Order.OrderItems.filter((it) =>
+  //     keys.find((k) => k == it.Key)
+  //   ).reduce((acc, it) => (acc = AppHelper.add(acc, +it.Amount)), 0);
+  //   return insuranceAmount;
+  // }
   getInsuranceName() {
     if (
       !this.orderDetail ||
@@ -716,7 +719,8 @@ export class OrderTrainDetailDfPage
       this.tikectId2OriginalTickets[t.Id].find((f) => f.Id == originalid);
     t.VariablesJsonObj.isToggleIcon = !t.VariablesJsonObj.isToggleIcon;
     if (originalTicket) {
-      originalTicket.isShowOriginalTicket = !originalTicket.isShowOriginalTicket;
+      originalTicket.isShowOriginalTicket =
+        !originalTicket.isShowOriginalTicket;
       const height = this.plt.height();
       setTimeout(() => {
         const rect = (event.target as HTMLElement).getBoundingClientRect();
@@ -813,7 +817,10 @@ export class OrderTrainDetailDfPage
         cssClass: "ticket-changing",
         componentProps: {
           order: this.orderDetail && this.orderDetail.Order,
-          insurance: this.getInsuranceAmount(),
+          insurance:
+            this.selectedTicket &&
+            this.selectedTicket.VariablesJsonObj &&
+            this.selectedTicket.VariablesJsonObj.insuranceAmount,
           IsShowServiceFee: Tmc.IsShowServiceFee,
           orderItems,
           amount: orderItems.reduce(

@@ -11,16 +11,16 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <ion-item-group *ngFor='let bookInfo of bookInfos$|async'>
+    <ion-item-group *ngFor='let bookInfo of bookInfos'>
         <ng-container *ngIf='bookInfo?.bookInfo'>
             <ion-item lines='none' style="--background:#fff">
                 <div class='detail'>
                     <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;{{bookInfo?.credential?.HideNumber}}</ion-label>
                     <div class='date'>
                         <strong>{{getDate(bookInfo?.bookInfo?.trainEntity)}}
-              <!-- <ion-text color='secondary' *ngIf='!bookInfo.bookInfo?.isExchange'>
+                            <!-- <ion-text color='secondary' *ngIf='!bookInfo.bookInfo?.isExchange'>
                 {{getTripTypeTip(bookInfo?.bookInfo)}}</ion-text> -->
-              </strong>
+                        </strong>
                         <ion-button fill='clear' size='small' (click)='remove(bookInfo)'>
                             <ion-icon name="trash" color='medium' mode='ios'>
                             </ion-icon>
@@ -31,7 +31,8 @@
                         </ion-button>
                     </div>
                     <ion-label class='train-item'>
-                        <app-train-list-item-df [seat]='bookInfo.bookInfo?.selectedSeat' [isShowSelectSeatLocation]="false" [selectSeatLocation]='bookInfo?.bookInfo?.trainEntity?.BookSeatLocation' (seatPicker)='onSeatPicked($event,bookInfo)' [bookInfo]='bookInfo?.bookInfo' [train]='bookInfo?.bookInfo?.trainEntity'>
+                        <app-train-list-item-df [seat]='bookInfo.bookInfo?.selectedSeat' [isShowSelectSeatLocation]="false" [selectSeatLocation]='bookInfo?.bookInfo?.trainEntity?.BookSeatLocation'
+                            (seatPicker)='onSeatPicked($event,bookInfo)' [bookInfo]='bookInfo?.bookInfo' [train]='bookInfo?.bookInfo?.trainEntity'>
                         </app-train-list-item-df>
                     </ion-label>
                     <ion-label class='rules ion-text-wrap' color='danger'>
