@@ -52,10 +52,10 @@
                     <span>{{segments?.CarrierName}}{{segments?.Number}}</span>
                     <span>机型{{segments?.PlaneType}}</span>
                     <span>{{segStatus?.TypeName}}</span>
-                    <span color='secondary' (click)="onOpenrules(initialBookDtoGpModel?.Routes[0])">退改签政策</span>
                     <span *ngIf='segStatus.Variables?.Baggage'>
-                        {{segStatus.Variables.Baggage}}
+                        托运行李：{{segStatus.Variables.Baggage}}
                     </span>
+                    <span color='secondary' (click)="onOpenrules(initialBookDtoGpModel?.Routes[0])">退改签政策</span>
                 </ion-row>
             </ion-grid>
         </ion-item>
