@@ -333,19 +333,25 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   }
 
   private async onTicketNeedKnow() {
-    this.initialBookDtoGpModel.forEach(it => {
-      const flightRule = it.Routes[0].Segment.FlightRule.AirlineRules.HO || it.Routes[0].Segment.FlightRule.AirlineRules.HO;
-      flightRule.forEach(it => {
-        const valueOf = { key: (Object.keys(it)).toString(), src: (Object.values(it)).toString() }
-        this.rules.push(valueOf);
-      });
-      it.Routes[0].Segment.FlightRule.CommonRules.forEach((e) => {
-        const valueOf = { key: (Object.keys(e)).toString(), src: (Object.values(e)).toString() }
-        this.rules.push(valueOf);
-      });
-    })
+    try {
+      this.initialBookDtoGpModel.forEach(it => {
+        const flightRule = it.Routes[0].Segment.FlightRule.AirlineRules.MF || it.Routes[0].Segment.FlightRule.AirlineRules.HO;
+        if (flightRule) {
+          flightRule.forEach(it => {
+            const valueOf = { key: (Object.keys(it)).toString(), src: (Object.values(it)).toString() }
+            this.rules.push(valueOf);
+          });
+          it.Routes[0].Segment.FlightRule.CommonRules.forEach((e) => {
+            const valueOf = { key: (Object.keys(e)).toString(), src: (Object.values(e)).toString() }
+            this.rules.push(valueOf);
+          });
+        }
+      })
 
-    console.log(this.rules, "===");
+      console.log(this.rules, "===");
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async getIdentity() {
@@ -597,63 +603,63 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       }
       if (ticketAgreement) {
         const bookDto: GpBookReq = new GpBookReq();
-      const arr = this.initialBookDtoGpModel;
-      const canbook = await this.fillBookLinkmans();
-      const canbook2 = await this.fillBookPassengers(bookDto, arr, isSave);
-      // console.log(canbook);
-      if (canbook && canbook2) {
-        const res: IBookOrderResult = await this.flightGpService
-          .bookGpFlight(bookDto)
-          .catch((e) => {
-            AppHelper.alert(e);
-            return null;
-          });
-        if (res) {
-          if (res.TradeNo) {
-            this.isSubmitDisabled = true;
-            this.isHasTask = res.HasTasks;
-            this.payResult = false;
-            this.flightGpService.removeAllBookInfos();
-            let checkPayResult = false;
-            const isCheckPay = res.IsCheckPay;
-            if (!isSave) {
-              if (isCheckPay) {
-                this.isCheckingPay = true;
-                checkPayResult = await this.checkPay(res.TradeNo);
-                this.isCheckingPay = false;
-              } else {
-                this.payResult = true;
-              }
-              if (checkPayResult) {
-                if (this.isHasTask) {
+        const arr = this.initialBookDtoGpModel;
+        const canbook = await this.fillBookLinkmans();
+        const canbook2 = await this.fillBookPassengers(bookDto, arr, isSave);
+        // console.log(canbook);
+        if (canbook && canbook2) {
+          const res: IBookOrderResult = await this.flightGpService
+            .bookGpFlight(bookDto)
+            .catch((e) => {
+              AppHelper.alert(e);
+              return null;
+            });
+          if (res) {
+            if (res.TradeNo) {
+              this.isSubmitDisabled = true;
+              this.isHasTask = res.HasTasks;
+              this.payResult = false;
+              this.flightGpService.removeAllBookInfos();
+              let checkPayResult = false;
+              const isCheckPay = res.IsCheckPay;
+              if (!isSave) {
+                if (isCheckPay) {
+                  this.isCheckingPay = true;
+                  checkPayResult = await this.checkPay(res.TradeNo);
+                  this.isCheckingPay = false;
+                } else {
+                  this.payResult = true;
+                }
+                if (checkPayResult) {
+                  if (this.isHasTask) {
+                    await AppHelper.alert(
+                      LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                      true
+                    );
+                  } else {
+                    if (isCheckPay) {
+                      const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
+                      this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
+                    }
+                  }
+                } else {
                   await AppHelper.alert(
-                    LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
+                    LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
                     true
                   );
-                } else {
-                  if (isCheckPay) {
-                    const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
-                    this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
-                  }
                 }
+                await AppHelper.alert("下单成功");
               } else {
-                await AppHelper.alert(
-                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
-                  true
-                );
+                if (isSave) {
+                  // bookDto.IsAllowIssueTicket = false;
+                  await AppHelper.alert("订单已保存!");
+                }
               }
-              await AppHelper.alert("下单成功");
-            } else {
-              if (isSave) {
-                // bookDto.IsAllowIssueTicket = false;
-                await AppHelper.alert("订单已保存!");
-              }
+              await this.empty();
+              this.goToMyOrders();
             }
-            await this.empty();
-            this.goToMyOrders();
           }
         }
-      }
       }
     } catch (error) {
       console.error(error);

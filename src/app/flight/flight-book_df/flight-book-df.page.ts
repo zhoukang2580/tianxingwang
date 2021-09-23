@@ -588,17 +588,23 @@ export class FlightBookDfPage
   }
 
   private async onTicketNeedKnow(cluase: ICombindInfo[]) {
-    this.vmCombindInfos.forEach(it => {
-      const flightRule = it.vmModal.bookInfo.flightSegment.FlightRule.AirlineRules.HO || it.vmModal.bookInfo.flightSegment.FlightRule.AirlineRules.HO;
-      flightRule.forEach(it => {
-        const valueOf = { key: (Object.keys(it)).toString(), src: (Object.values(it)).toString() }
-        this.rules.push(valueOf);
-      });
-      it.vmModal.bookInfo.flightSegment.FlightRule.CommonRules.forEach((e) => {
-        const valueOf = { key: (Object.keys(e)).toString(), src: (Object.values(e)).toString() }
-        this.rules.push(valueOf);
-      });
-    })
+    try {
+      this.vmCombindInfos.forEach(it => {
+        const flightRule = it.vmModal.bookInfo.flightSegment.FlightRule.AirlineRules.MF || it.vmModal.bookInfo.flightSegment.FlightRule.AirlineRules.HO;
+        if (flightRule) {
+          flightRule.forEach(it => {
+            const valueOf = { key: (Object.keys(it)).toString(), src: (Object.values(it)).toString() }
+            this.rules.push(valueOf);
+          });
+          it.vmModal.bookInfo.flightSegment.FlightRule.CommonRules.forEach((e) => {
+            const valueOf = { key: (Object.keys(e)).toString(), src: (Object.values(e)).toString() }
+            this.rules.push(valueOf);
+          });
+        }
+      })
+    } catch (error) {
+      console.error(error)
+    }
 
     console.log(this.rules, "===");
   }
