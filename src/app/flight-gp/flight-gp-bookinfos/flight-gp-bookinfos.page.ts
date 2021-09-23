@@ -334,21 +334,33 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
 
   private async onTicketNeedKnow() {
     try {
-      this.initialBookDtoGpModel.forEach(it => {
-        const flightRule = it.Routes[0].Segment.FlightRule.AirlineRules.MF || it.Routes[0].Segment.FlightRule.AirlineRules.HO;
-        if (flightRule) {
-          flightRule.forEach(it => {
-            const valueOf = { key: (Object.keys(it)).toString(), src: (Object.values(it)).toString() }
-            this.rules.push(valueOf);
-          });
-          it.Routes[0].Segment.FlightRule.CommonRules.forEach((e) => {
-            const valueOf = { key: (Object.keys(e)).toString(), src: (Object.values(e)).toString() }
-            this.rules.push(valueOf);
-          });
+      this.rules = []
+      for (const it of this.initialBookDtoGpModel) {
+        const ruleKey = it.Routes[0].Segment.FlightRule.AirlineRules;
+        for (const k of Object.keys(ruleKey)) {
+          const arr = ruleKey[k];
+          for (const item of arr) {
+            for (const itemK of Object.keys(item)) {
+              this.rules.push({
+                key: itemK,
+                src: item[itemK]
+              })
+            }
+          }
         }
-      })
-
-      console.log(this.rules, "===");
+      }
+      const it = this.initialBookDtoGpModel[0]
+      if (it.Routes[0].Segment.FlightRule.CommonRules) {
+        it.Routes[0].Segment.FlightRule.CommonRules.forEach((e) => {
+          for (const itemK of Object.keys(e)) {
+            this.rules.push({
+              key: itemK,
+              src: e[itemK]
+            })
+          }
+        });
+      }
+      console.log(this.rules, "rules")
     } catch (error) {
       console.error(error);
     }

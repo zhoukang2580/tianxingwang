@@ -589,24 +589,37 @@ export class FlightBookDfPage
 
   private async onTicketNeedKnow(cluase: ICombindInfo[]) {
     try {
-      this.vmCombindInfos.forEach(it => {
-        const flightRule = it.vmModal.bookInfo.flightSegment.FlightRule.AirlineRules.MF || it.vmModal.bookInfo.flightSegment.FlightRule.AirlineRules.HO;
-        if (flightRule) {
-          flightRule.forEach(it => {
-            const valueOf = { key: (Object.keys(it)).toString(), src: (Object.values(it)).toString() }
-            this.rules.push(valueOf);
-          });
-          it.vmModal.bookInfo.flightSegment.FlightRule.CommonRules.forEach((e) => {
-            const valueOf = { key: (Object.keys(e)).toString(), src: (Object.values(e)).toString() }
-            this.rules.push(valueOf);
-          });
+      this.rules = []
+      for (const it of this.vmCombindInfos) {
+        const ruleKey = it.vmModal.bookInfo.flightSegment.FlightRule.AirlineRules;
+        for (const k of Object.keys(ruleKey)) {
+          const arr = ruleKey[k];
+          for (const item of arr) {
+            for (const itemK of Object.keys(item)) {
+              this.rules.push({
+                key: itemK,
+                src: item[itemK]
+              })
+            }
+          }
         }
-      })
+      }
+      const it = this.vmCombindInfos[0]
+      if (it.vmModal.bookInfo.flightSegment.FlightRule.CommonRules) {
+        it.vmModal.bookInfo.flightSegment.FlightRule.CommonRules.forEach((e) => {
+          const keys = Object.keys(e)
+          for (const itemK of keys) {
+            this.rules.push({
+              key: itemK,
+              src: e[itemK]
+            })
+          }
+        });
+      }
+      console.log(this.rules, "rules")
     } catch (error) {
       console.error(error)
     }
-
-    console.log(this.rules, "===");
   }
 
   checkOrderTravelType(type: OrderTravelType) {
