@@ -594,6 +594,12 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
 
   async onSubmit(isSave: boolean, event: CustomEvent) {
     try {
+      
+      this.isPageTimeout = this.flightGpService.checkIfTimeout();
+      if (this.flightGpService.checkIfTimeout()) {
+        await this.flightGpService.showTimeoutPop(false, this.pageUrl);
+        return;
+      }
       let ticketAgreement = true;
       if (this.rules && this.rules.length) {
         ticketAgreement = await this.onBookServeAgreement();
@@ -602,11 +608,6 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       if (!isPay) {
         AppHelper.alert("提交失败,请联系工作人员配置支付方式");
         return
-      }
-      this.isPageTimeout = this.flightGpService.checkIfTimeout();
-      if (this.flightGpService.checkIfTimeout()) {
-        await this.flightGpService.showTimeoutPop(false, this.pageUrl);
-        return;
       }
       this.isShowFee = false;
       event.stopPropagation();

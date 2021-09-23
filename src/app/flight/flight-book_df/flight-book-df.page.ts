@@ -965,15 +965,15 @@ export class FlightBookDfPage
     }
   }
   async bookFlight(isSave: boolean = false, event: CustomEvent) {
-    let ticketAgreement = true;
-    if (this.rules && this.rules.length) {
-      ticketAgreement = await this.onBookServeAgreement();
-    }
     this.isPageTimeout = this.flightService.checkIfTimeout();
     if (this.flightService.checkIfTimeout()) {
       await this.flightService.showTimeoutPop(false, this.pageUrl);
       // this.router.navigate(["flight-list"]);
       return;
+    }
+    let ticketAgreement = true;
+    if (this.rules && this.rules.length) {
+      ticketAgreement = await this.onBookServeAgreement();
     }
     this.isShowFee = false;
     event.stopPropagation();
