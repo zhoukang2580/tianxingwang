@@ -17,7 +17,7 @@ import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { MemberCredential, MemberService } from "../member.service";
 import { CredentialsComponent } from "../components/credentials/credentials.component";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
-import { IonCheckbox } from "_@ionic_angular@5.7.0@@ionic/angular";
+import { IonCheckbox } from "@ionic/angular";
 import { HrService } from "src/app/hr/hr.service";
 @Component({
   selector: "app-member-credential-management",
