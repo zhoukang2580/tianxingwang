@@ -7,6 +7,8 @@ import {
   ViewChild,
   AfterViewInit,
   OnDestroy,
+  ViewChildren,
+  QueryList,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { AppHelper } from "src/app/appHelper";
@@ -15,6 +17,8 @@ import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { MemberCredential, MemberService } from "../member.service";
 import { CredentialsComponent } from "../components/credentials/credentials.component";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
+import { IonCheckbox } from "_@ionic_angular@5.7.0@@ionic/angular";
+import { HrService } from "src/app/hr/hr.service";
 @Component({
   selector: "app-member-credential-management",
   templateUrl: "./member-credential-management.page.html",
@@ -26,19 +30,23 @@ export class MemberCredentialManagementPage
   private subscriptions: Subscription[] = [];
   CredentialsType = CredentialsType;
   @ViewChild(BackButtonComponent) backBtn: BackButtonComponent;
+  @ViewChild("checkboxs") checkboxs: IonCheckbox;
+  // @ViewChild("checkboxs") checkboxs
   credentials: MemberCredential[];
   modifyCredential: MemberCredential; // 新增的证件
   loading = false;
   isCanDeactive = false;
   isModify = false;
   isKeyBoardShow = false;
+  isShowAgreement = false;
   isFromConformCredentials = false;
   eyeOn = true;
   constructor(
     private memberService: MemberService,
     route: ActivatedRoute,
     private keyboard: Keyboard,
-    private router: Router
+    private router: Router,
+    private staffService: HrService
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe((p) => {
@@ -63,12 +71,28 @@ export class MemberCredentialManagementPage
   private back() {
     this.backBtn.popToPrePage();
   }
+
+  private isAgreement() {
+    if (!this.isShowAgreement) {
+      return true;
+    }
+    const isTrue = this.checkboxs.checked
+    if (!isTrue) {
+      AppHelper.alert("请阅读并同意以下内容");
+      return false;
+    } else {
+      return true;
+    }
+  }
   async onSaveCredential() {
-    if (this.modifyCredential) {
-      if (this.modifyCredential.isAdd) {
-        await this.saveAdd(this.modifyCredential);
-      } else {
-        await this.saveModify(this.modifyCredential);
+    const isStatus = this.isAgreement();
+    if (isStatus) {
+      if (this.modifyCredential) {
+        if (this.modifyCredential.isAdd) {
+          await this.saveAdd(this.modifyCredential);
+        } else {
+          await this.saveModify(this.modifyCredential);
+        }
       }
     }
   }
@@ -125,6 +149,9 @@ export class MemberCredentialManagementPage
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   ngOnInit() {
+    this.staffService.isSelfBookType().then(iss => {
+      this.isShowAgreement = iss;
+    })
     this.keyboard.onKeyboardWillShow().subscribe(() => {
       this.isKeyBoardShow = true;
     });
@@ -141,7 +168,7 @@ export class MemberCredentialManagementPage
     }
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   async onRemoveExistCredential(c: MemberCredential) {
     const comfirmDel = await AppHelper.alert(
       LanguageHelper.getConfirmDeleteTip(),
