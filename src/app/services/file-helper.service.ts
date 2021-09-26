@@ -87,7 +87,6 @@ export class FileHelperService {
     private zip: Zip
   ) {
     AppHelper.setHttpClient(httpClient);
-    AppHelper.setFileService(this);
     this.plt.ready().then(async () => {
       this.hcpPlugin = window["hcp"];
       if (this.hcpPlugin) {
@@ -129,8 +128,10 @@ export class FileHelperService {
       this.fileInfo.documentsDirectory = this.file.documentsDirectory;
       this.fileInfo.syncedDataDirectory = this.file.syncedDataDirectory;
       this.fileInfo.applicationDirectory = this.file.applicationDirectory;
-      this.fileInfo.applicationStorageDirectory = this.file.applicationStorageDirectory;
-      this.fileInfo.externalApplicationStorageDirectory = this.file.externalApplicationStorageDirectory;
+      this.fileInfo.applicationStorageDirectory =
+        this.file.applicationStorageDirectory;
+      this.fileInfo.externalApplicationStorageDirectory =
+        this.file.externalApplicationStorageDirectory;
       this.fileInfo.externalRootDirectory = this.file.externalRootDirectory;
       // this.logMessage(JSON.stringify(this.fileInfo, null, 2));
       this.createUpdateWwwDirectory();
@@ -500,10 +501,8 @@ export class FileHelperService {
           return false;
         }
         const path = `${this.dataDirectory}${this.updateDirectoryName}`;
-        const serverVersionDirectory = `${this.www}_${this.serverVersion}`.replace(
-          /\./g,
-          "_"
-        );
+        const serverVersionDirectory =
+          `${this.www}_${this.serverVersion}`.replace(/\./g, "_");
         await this.removeRecursively(path, serverVersionDirectory);
         const direntry = await this.createDir(path, serverVersionDirectory);
         if (!direntry) {
@@ -617,13 +616,7 @@ export class FileHelperService {
     this.logMessage(`index.html 文件写入完成，内容`, indexHtml);
   }
   private async getMockPkgNameAndVersion() {
-    const xml = await AppHelper.getConfigXmlStr();
-    const arr = xml.match(/id="(.+?)"/i);
-    const versions = xml.match(/version="(.+?)"/i);
-    return {
-      pkgName: arr && arr[1],
-      version: versions && versions[1],
-    };
+    return AppHelper.getAppVersionAndPkgNameFromConfigXml();
   }
   private async getInstallAppVersionNumber() {
     await this.plt.ready();
@@ -666,9 +659,7 @@ export class FileHelperService {
     }
   }
   getLocalHcpVersion() {
-    const hcpVersion = (
-      AppHelper.getStorage<string>("apphcpversion") || ""
-    ).trim();
+    const hcpVersion = AppHelper.getHcpVersion();
     if (AppHelper.isApp()) {
       this.logMessage(`getStorage 热更后存储在本地的版本=${hcpVersion}`);
     }
@@ -1024,9 +1015,7 @@ export class FileHelperService {
    * 检查是否有新apk要更新
    * @param onprogress
    */
-  async checkAppUpdate(
-    onprogress: (hcp: IHcpUpdateModel) => void
-  ): Promise<{
+  async checkAppUpdate(onprogress: (hcp: IHcpUpdateModel) => void): Promise<{
     isCanUpdate: boolean;
     ignore: boolean;
     updateDescriptions?: string[];

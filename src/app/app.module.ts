@@ -84,8 +84,7 @@ export function navAnimations(baseEl, opts) {
   bootstrap: [AppComponent]
 })
 export class AppModule {
-  constructor(router: Router, plt: Platform,fileService:FileHelperService) {
-    AppHelper.setFileService(fileService);
+  constructor(router: Router, plt: Platform) {
     curPlt = plt.is("ios") ? "ios" : "md";
     console.log("AppModule", router.config);
   }

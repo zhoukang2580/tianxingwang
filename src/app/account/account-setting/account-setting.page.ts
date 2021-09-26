@@ -20,6 +20,8 @@ export class AccountSettingPage implements OnInit, OnDestroy {
   isDarkMode: boolean;
   ttsEnabled = false;
   isShowTTsOption = true;
+  isShowLanguage = true;
+  isShowMode = true;
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -30,8 +32,10 @@ export class AccountSettingPage implements OnInit, OnDestroy {
     private langService: LangService
   ) {
     this.ttsEnabled = ttsService.getEnabled();
-    if (CONFIG["accountSetting"]) {
-      this.isShowTTsOption = CONFIG["accountSetting"].isShowTTS;
+    if (CONFIG.accountSetting) {
+      this.isShowLanguage = CONFIG.accountSetting.isShowLanguage;
+      this.isShowTTsOption = CONFIG.accountSetting.isShowTTS;
+      this.isShowMode = CONFIG.accountSetting.isShowMode;
     }
   }
   back() {

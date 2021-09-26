@@ -40,23 +40,31 @@ export class QrScanService implements IQRScanner {
       this.qrScanner.prepare(resolve, reject);
     });
   }
-  cancelScan() {
+  async cancelScan() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<void>((resolve, reject) => {
       this.qrScanner.cancelScan(resolve, reject);
     });
   }
 
-  destroy() {
+  async destroy() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<void>((resolve, reject) => {
       this.qrScanner.destroy(resolve, reject);
     });
   }
-  enableLight() {
+  async enableLight() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<void>((resolve, reject) => {
       this.qrScanner.enableLight(resolve, reject);
     });
   }
-  disableLight() {
+  async disableLight() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<void>((resolve, reject) => {
       this.qrScanner.disableLight(resolve, reject);
     });
@@ -82,22 +90,30 @@ export class QrScanService implements IQRScanner {
       this.qrScanner.pausePreview(resolve, reject);
     });
   }
-  getStatus() {
+  async getStatus() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<IQrScannerStatus>((resolve, reject) => {
       this.qrScanner.getStatus(resolve, reject);
     });
   }
-  hide() {
+  async hide() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<IQrScannerStatus>((resolve, reject) => {
       this.qrScanner.hide(resolve, reject);
     });
   }
-  show() {
+  async show() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<IQrScannerStatus>((resolve, reject) => {
       this.qrScanner.show(resolve, reject);
     });
   }
-  openSettings() {
+  async openSettings() {
+    await this.plt.ready();
+    this.qrScanner = window["qrScanner"];
     return new Promise<IQrScannerStatus>((resolve, reject) => {
       this.qrScanner.openSettings(resolve, reject);
     });

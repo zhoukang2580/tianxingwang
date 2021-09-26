@@ -24,7 +24,8 @@ import * as uuidJs from "uuid-js";
 import { FileHelperService } from "./services/file-helper.service";
 import { CONFIG } from "src/app/config";
 import { filter, finalize } from "rxjs/operators";
-import { EventEmitter } from '@angular/core';
+import { EventEmitter } from "@angular/core";
+import { AppVersion } from "@ionic-native/app-version/ngx";
 export class AppHelper {
   static httpClient: HttpClient;
   private static _deviceName: "ios" | "android";
@@ -36,7 +37,7 @@ export class AppHelper {
   static alertController: AlertController;
   static modalController: ModalController;
   static popoverController: PopoverController;
-  static fileService: FileHelperService;
+  private static cordovaGetAppVersion: AppVersion;
   static loadingSubject = new BehaviorSubject({
     isLoading: false,
     msg: "",
@@ -64,7 +65,7 @@ export class AppHelper {
     this.popoverController = popoverController;
   }
   static getWindowMsgSource() {
-    // 此方法在main.ts里面监听了message消息  
+    // 此方法在main.ts里面监听了message消息
     return AppHelper.windowMsgSource.pipe(filter((it) => !!it));
   }
   static checkNetworkStatus() {
@@ -95,13 +96,30 @@ export class AppHelper {
       });
   }
   static getHcpVersion() {
-    return this.fileService && this.fileService.getLocalHcpVersion();
+    const hcpVersion = (
+      AppHelper.getStorage<string>("apphcpversion") || ""
+    ).trim();
+    return hcpVersion;
   }
-  static setFileService(fileService: FileHelperService) {
-    AppHelper.fileService = fileService;
+  static async getAppVersion() {
+    await AppHelper.platform.ready();
+    if (!this.cordovaGetAppVersion) {
+      this.cordovaGetAppVersion = window["cordova.getAppVersion"];
+    }
+    if (!this.cordovaGetAppVersion) {
+      const info = await this.getAppVersionAndPkgNameFromConfigXml();
+      return info.version;
+    }
+    return this.cordovaGetAppVersion.getVersionNumber();
   }
-  static getAppVersion() {
-    return this.fileService && this.fileService.getRunningVersion();
+  static async getAppVersionAndPkgNameFromConfigXml() {
+    const xml = await AppHelper.getConfigXmlStr();
+    const arr = xml.match(/id="(.+?)"/i);
+    const versions = xml.match(/version="(.+?)"/i);
+    return {
+      pkgName: arr && arr[1],
+      version: versions && versions[1],
+    };
   }
   static setToastController(toastController: ToastController) {
     this.toastController = toastController;
@@ -520,6 +538,27 @@ export class AppHelper {
     } else {
       return false;
     }
+  }
+  static getCurrentPlatform() {
+    if (AppHelper.isPDA()) {
+      return "PDA";
+    }
+    if (AppHelper.isApp()) {
+      return "App";
+    }
+    if (AppHelper.isDingtalkH5()) {
+      return "DingtalkH5";
+    }
+    if (AppHelper.isWechatH5()) {
+      return "WechatH5";
+    }
+    if (AppHelper.isWechatMini()) {
+      return "WechatMini";
+    }
+    if (AppHelper.isH5()) {
+      return "H5";
+    }
+    return "";
   }
   static isWechatMiniAsync() {
     return new Promise<boolean>((resolve) => {
@@ -1003,7 +1042,7 @@ export class AppHelper {
       AppHelper.getTicketName(),
     ];
     for (const p in paramters) {
-      if (tags.includes(p.toLowerCase())) {
+      if (tags.find((it) => it == p.toLowerCase())) {
         continue;
       }
       req[p] = paramters[p];

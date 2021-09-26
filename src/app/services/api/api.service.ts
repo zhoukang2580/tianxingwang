@@ -1,6 +1,6 @@
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, NgZone } from "@angular/core";
 import * as md5 from "md5";
 import { RequestEntity } from "./Request.entity";
 import { AppHelper } from "../../appHelper";
@@ -32,9 +32,23 @@ import { LogService } from "../log/log.service";
 import { CONFIG } from "src/app/config";
 import { Platform } from "@ionic/angular";
 import { StorageService } from "../storage-service.service";
+const KEY_API_CONFIG = "KEY_API_CONFIG_CACHE_KEY";
 interface ApiConfig {
   Urls: { [key: string]: string };
   Token: string;
+}
+interface IPopMessage {
+  results?: any[];
+  messageCount?: number;
+  msg?: {
+    Id: string;
+    Title: string; // "测试标题:" + i,
+    Detail: string; // "消息消息消息消息消息消息",
+    IsRead: boolean;
+    IsSelected?: boolean;
+    Url: string; //
+    InsertTime: string;
+  };
 }
 @Injectable({
   providedIn: "root",
@@ -47,19 +61,38 @@ export class ApiService {
     reqDateTime: number;
   }[] = [];
   private loadingSubject: Subject<{ isLoading: boolean; msg: string }>;
+  private notifyMessageSource: Subject<IPopMessage>;
+  private webSocketIsOkSource: Subject<boolean>;
   public apiConfig: ApiConfig;
   private fetchApiConfigPromise: Promise<any>;
   private tryAutoLoginPromise: Promise<IResponse<any>>;
+  private popMessage: IPopMessage = {};
+  private websocketInterval: any;
+  private identity: IdentityEntity;
+  private isGetingMessageCount = false;
   constructor(
     private http: HttpClient,
     private router: Router,
     private identityService: IdentityService,
-    private storage: StorageService,
+    private storageService: StorageService,
     private route: ActivatedRoute,
     private logService: LogService,
-    private plt: Platform
+    private plt: Platform,
+    private ngZone: NgZone
   ) {
     this.loadingSubject = new BehaviorSubject({ isLoading: false, msg: "" });
+    this.webSocketIsOkSource = new BehaviorSubject(true);
+    this.notifyMessageSource = new BehaviorSubject({});
+    this.loadApiConfig(true).catch();
+    identityService.getIdentitySource().subscribe((it) => {
+      this.identity = it;
+      if (!this.identity || !this.identity.Ticket) {
+        if (this.websocketInterval) {
+          clearInterval(this.websocketInterval);
+        }
+      }
+    });
+
     if (this.plt.is("android")) {
       document.addEventListener(
         "backbutton",
@@ -86,6 +119,12 @@ export class ApiService {
         msg: "",
       });
     }
+  }
+  getNotifyMessageSource() {
+    return this.notifyMessageSource.asObservable();
+  }
+  getWebSocketIsOkSource() {
+    return this.webSocketIsOkSource.asObservable();
   }
   getLoading() {
     return this.loadingSubject.asObservable().pipe(delay(0));
@@ -130,6 +169,14 @@ export class ApiService {
       reqId: "showLoadingView",
       isShowLoading: false,
     });
+  }
+  private dismissLoadingView() {
+    if (this.reqLoadingStatus) {
+      this.reqLoadingStatus.forEach((l) => {
+        l.isShow = false;
+      });
+      this.loadingSubject.next({ msg: "", isLoading: false });
+    }
   }
   send<T>(
     method: string,
@@ -238,12 +285,15 @@ export class ApiService {
       .filter((it) => it != "Url" && it != "IsShowLoading")
       .map((k) => `${k}=${req[k]}`)
       .join("&");
-    const url = await this.getUrl(req);
     if (this.tryAutoLoginPromise) {
       return this.tryAutoLoginPromise;
     }
+    let due = req.Timeout || CONFIG.apiTimemoutTime * 1000;
+    due = due < 1000 ? due * 1000 : due;
+    console.log("apiservice tryAutoLogin");
     this.tryAutoLoginPromise = new Promise<IResponse<any>>(
-      (resolve, reject) => {
+      async (resolve, reject) => {
+        const url = await this.getUrl(req);
         const subscribtion = this.http
           .post(
             url,
@@ -255,6 +305,7 @@ export class ApiService {
               observe: "body",
             }
           )
+          .pipe(timeout(due))
           .subscribe(
             (r: IResponse<any>) => {
               resolve(r);
@@ -362,7 +413,7 @@ export class ApiService {
     isCheckLogin: boolean,
     req: RequestEntity
   ) {
-    let due = req.Timeout || 30 * 1000;
+    let due = req.Timeout || CONFIG.apiTimemoutTime * 1000;
     due = due < 1000 ? due * 1000 : due;
     return of(response).pipe(
       timeout(due),
@@ -569,12 +620,7 @@ export class ApiService {
               } else {
                 this.apiConfig = local;
               }
-              // this.storage.set(`KEY_API_CONFIG`, this.apiConfig);
-              const identityEntity =
-                await this.identityService.getIdentityAsync();
-              if (identityEntity) {
-                this.identityService.setIdentity(identityEntity);
-              }
+              this.storageService.set(KEY_API_CONFIG, this.apiConfig);
               s(this.apiConfig);
             } else {
               s(null);
@@ -593,5 +639,135 @@ export class ApiService {
         req.Timestamp
       }${req.Token}`
     ) as string;
+  }
+  setWebSocket(websocketUrl: string) {
+    try {
+      if (this.websocketInterval) {
+        clearInterval(this.websocketInterval);
+      }
+      if (!websocketUrl || !WebSocket) {
+        return false;
+      }
+      const self = this;
+      function closeWebSocket(url) {
+        url = url.replace("/ws", "/").replace("/wss", "/");
+        url += (url.indexOf("?") ? "&" : "?") + "IsCloseWebSocket=true";
+        self.http.get(url).subscribe();
+      }
+      this.popMessage.results = [];
+      // 创建一个webSocket对象
+      var lastAccessTime = new Date();
+      var ws = websocketUrl.replace("https", "wss");
+      ws = ws.replace("http", "ws");
+      const createWebSocket = () => {
+        var socket = new WebSocket(ws);
+        socket.onopen = (e) => {
+          if (socket.readyState == WebSocket.OPEN) {
+            this.popMessage.results = [];
+            this.webSocketIsOkSource.next(true);
+          }
+        };
+        socket.onmessage = (data) => {
+          console.log("socket onmessage", data);
+          if (data.data == "") {
+            lastAccessTime = new Date();
+            return;
+          }
+          var info = JSON.parse(data.data);
+          if (info) {
+            if (!self.popMessage.results) {
+              self.popMessage.results = [];
+            }
+            switch (info.Type) {
+              case "AccountMessage":
+                self.popMessage.results.push(info);
+                // self.getMessageCount();
+                this.popMessage.msg = info;
+                this.notifyMessageSource.next(this.popMessage);
+                break;
+              case "CheckForceLogout":
+                self.checkForceLogout(true);
+                break;
+              case "MessageCount":
+                if (info.Count != null) {
+                  // $("*[message=count]").html(info.Count);
+                  self.popMessage.messageCount = info.Count;
+                  self.notifyMessageSource.next(this.popMessage);
+                }
+                break;
+            }
+          }
+        };
+        socket.onclose = () => {
+          this.notifyMessageSource.next(this.popMessage);
+        };
+        return socket;
+      };
+      var socket = createWebSocket();
+      window.onbeforeunload = function () {
+        closeWebSocket(websocketUrl);
+        if (socket.readyState == WebSocket.OPEN) {
+          socket.close();
+        }
+      };
+      this.websocketInterval = setInterval(() => {
+        try {
+          var date = new Date();
+          if (
+            socket != null &&
+            socket.readyState == WebSocket.OPEN &&
+            date.getTime() - lastAccessTime.getTime() < 60 * 1000
+          ) {
+            socket.send("");
+          } else {
+            if (date.getTime() - lastAccessTime.getTime() >= 60 * 1000) {
+              self.executePullMessageHandle();
+            }
+            if (socket.readyState != WebSocket.CLOSED) {
+              this.webSocketIsOkSource.next(false);
+              socket.close();
+            }
+            socket = createWebSocket();
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }, 1000 * 30);
+      return true;
+    } catch (ex) {
+      console.error(ex);
+    }
+    return false;
+  }
+  private executePullMessageHandle() {
+    this.popMessage.results = undefined;
+    if (!this.identity || !this.identity.Ticket) {
+      return;
+    }
+    this.checkForceLogout();
+    this.getMessageCount();
+  }
+  private checkForceLogout(force?: boolean) {
+    this.identityService.identityCheck(false);
+  }
+  private getMessageCount() {
+    if (this.isGetingMessageCount || !this.identity || !this.identity.Ticket) {
+      return;
+    }
+    this.isGetingMessageCount = true;
+    const req = new RequestEntity();
+    req.Method = "ApiAccountUrl-Message-GetCount";
+    return this.getResponse<{ Count: number }>(req)
+      .pipe(
+        map((r) => r.Data && r.Data.Count),
+        catchError((_) => of(0)),
+        finalize(() => {
+          this.isGetingMessageCount = false;
+        })
+      )
+      .subscribe((c) => {
+        this.popMessage.messageCount = c;
+        this.notifyMessageSource.next(this.popMessage);
+      });
   }
 }
