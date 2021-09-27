@@ -258,6 +258,7 @@ pod install
 重复执行以上步骤
 安装完后，非常重要的一点就是检查一下 项目目录下面的pods-debug.xcconfig和pods-release.xcconfig里面的内容是否和
 pods/target support files/pods-项目名称.debug.xcconfig,pods-项目名称.release.xcconig里面的内容一致，如果不一致，从pods/target support files/里面的两个文件的内容拷贝到对于的文件中
+注意，打开xcode项目的时候，要选 项目名称.xcworkspace打开，而不是以往的 xxx.xcodeproj，否则编译不通过
 如果编译遇到 framework not found Pods_XXX___ 
 解决方法：
 1.项目蓝色图标－>Targets->General->Linked Frameworks and Libraries
