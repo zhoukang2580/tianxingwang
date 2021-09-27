@@ -13,6 +13,7 @@ import { IdentityService } from "../services/identity/identity.service";
 import { AppHelper } from "../appHelper";
 import { LoginService } from "../services/login/login.service";
 import { IdentityEntity } from "../services/identity/identity.entity";
+import { TmcService } from "../tmc/tmc.service";
 
 @Injectable({
   providedIn: "root",
@@ -21,7 +22,8 @@ export class TmcGuard implements CanActivate, CanActivateChild {
   constructor(
     private identityService: IdentityService,
     private loginService: LoginService,
-    private router: Router
+    private router: Router,
+    private tmcService: TmcService
   ) {}
   canActivateChild(
     childRoute: ActivatedRouteSnapshot,
@@ -44,6 +46,14 @@ export class TmcGuard implements CanActivate, CanActivateChild {
       .getIdentityAsync()
       .then((identity) => {
         console.log("tmc guard identity ", identity);
+        if(this.tmcService.isAgent){
+          this.router
+          .navigate([AppHelper.getRoutePath("login")])
+          .then(() => {
+            AppHelper.alert("仅允许钉钉绑定的客户员工登录");
+          });
+          return false;
+        }
         if (identity && identity.Id && identity.Ticket && identity.Numbers) {
           if (identity.Numbers.TmcId) {
             const query = AppHelper.getQueryParamers();
