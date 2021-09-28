@@ -51,6 +51,7 @@ import { AgentEntity } from "../tmc/models/AgentEntity";
 import { CityEntity } from "../tmc/models/CityEntity";
 import { AgentRegionType } from "../tmc/models/AgentRegionType";
 import { StorageService } from "../services/storage-service.service";
+import { LogService } from "../services/log/log.service";
 export class SearchHotelModel {
   checkInDate: string;
   checkOutDate: string;
@@ -115,7 +116,8 @@ export class HotelService {
     private mapService: MapService,
     private tmcService: TmcService,
     private storage: StorageService,
-    private calendarService: CalendarService
+    private calendarService: CalendarService,
+    private logService: LogService
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchHotelModelSource = new BehaviorSubject(null);
@@ -1131,9 +1133,22 @@ export class HotelService {
     req.IsShowLoading = true;
     req.Timeout = 60;
     this.apiService.showLoadingView({ msg: "正在预订，请稍候" });
-    return this.apiService.getPromiseData<IBookOrderResult>(req).finally(() => {
-      this.apiService.hideLoadingView();
-    });
+    return this.apiService
+      .getPromiseData<IBookOrderResult>(req)
+      .then((r) => {
+        if (r && r.TradeNo && r.TradeNo == "0") {
+          this.logService.addException({
+            Tag: `酒店订单下单异常 返回的订单号${r.TradeNo}`,
+            Error: r,
+            Method: req.Method,
+            Message: r.Message,
+          });
+        }
+        return r;
+      })
+      .finally(() => {
+        this.apiService.hideLoadingView();
+      });
   }
 }
 export interface IHotelInfo {

@@ -39,6 +39,7 @@ import { OrderBookDto } from "../order/models/OrderBookDto";
 import { FlightCabinType } from "../flight/models/flight/FlightCabinType";
 import { FlightFareRuleEntity } from "../flight/models/FlightFareRuleEntity";
 import { StorageService } from "../services/storage-service.service";
+import { LogService } from "../services/log/log.service";
 const LAST_INTERNATIONAL_FLIGHT_SEARCH_CONDITION_KEY =
   "last_international_flight_search_condition_key";
 export interface IFlightCabinType {
@@ -209,7 +210,8 @@ export class InternationalFlightService {
     private staffService: HrService,
     private memerService: MemberService,
     private storage: StorageService,
-    private LangService: LangService
+    private LangService: LangService,
+    private logService: LogService
   ) {
     this.searchModelSource = new BehaviorSubject({} as any);
     this.bookInfoSource = new BehaviorSubject([]);
@@ -318,7 +320,9 @@ export class InternationalFlightService {
         res.IllegalReasons = res.IllegalReasons || [];
         res.Insurances = res.Insurances || {};
         res.ServiceFees = res.ServiceFees || ({} as any);
-        res.ExpenseTypes=(res.ExpenseTypes||[]).filter(it=>!it.Tag||it.Tag.toLowerCase()=='internationalflight');
+        res.ExpenseTypes = (res.ExpenseTypes || []).filter(
+          (it) => !it.Tag || it.Tag.toLowerCase() == "internationalflight"
+        );
         console.log("平均前", { ...res.ServiceFees });
         // 后台计算服务费根据 item.passenger.AccountId 累加,所以现在需要给每一个 item.passenger.AccountId 平均服务费
         const fees = {};
@@ -367,7 +371,17 @@ export class InternationalFlightService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService.getPromiseData<IBookOrderResult>(req);
+    return this.apiService.getPromiseData<IBookOrderResult>(req).then((r) => {
+      if (r && r.TradeNo && r.TradeNo == "0") {
+        this.logService.addException({
+          Tag: `国际机票订单下单异常 返回的订单号${r.TradeNo}`,
+          Error: r,
+          Method: req.Method,
+          Message: r.Message,
+        });
+      }
+      return r;
+    });
   }
   isPassportHmTwPass(type: CredentialsType) {
     return (
@@ -438,7 +452,6 @@ export class InternationalFlightService {
     };
     return this.fetchPassengerCredentials.promise;
   }
-
 
   private initFilterCondition() {
     this.filterCondition = {
@@ -929,9 +942,9 @@ export class InternationalFlightService {
       )
       .map((it) => it.bookInfo.flightRoute.Id);
     selectedRids = [...selectedRids, route.Id];
-    const flightRouteInfos = (
-      this.flightListResult.FlightRoutes || []
-    ).filter((r) => selectedRids.some((sr) => sr == r.Id));
+    const flightRouteInfos = (this.flightListResult.FlightRoutes || []).filter(
+      (r) => selectedRids.some((sr) => sr == r.Id)
+    );
     req.Data = {
       FlightRouteInfos: flightRouteInfos.map((r) => {
         const res = new FlightRouteEntity();
@@ -998,15 +1011,14 @@ export class InternationalFlightService {
       }
     }
     if (result.flightCabinCodeDis) {
-      this.flightListResult.FlightSegments = this.flightListResult.FlightSegments.map(
-        (seg) => {
+      this.flightListResult.FlightSegments =
+        this.flightListResult.FlightSegments.map((seg) => {
           const cabinCode = result.flightCabinCodeDis[seg.Number];
           if (cabinCode) {
             seg.CabinCode = cabinCode;
           }
           return seg;
-        }
-      );
+        });
     }
 
     return true;
