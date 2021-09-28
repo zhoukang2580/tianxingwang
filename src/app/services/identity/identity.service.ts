@@ -366,12 +366,12 @@ export class IdentityService {
       .pipe(
         map((r: IResponse<IdentityEntity>) => r),
         finalize(() => {
-          console.log(`用时${Date.now() - st}`);
+          console.log(`鐢ㄦ椂${Date.now() - st}`);
         })
       )
       .subscribe((r) => {
         if (r.Status) {
-          AppHelper.alert(r.Message, true, "确定").then((s) => {
+          AppHelper.alert(r.Message, true, "纭畾").then((s) => {
             this.removeIdentity();
             this.router.navigate([AppHelper.getRoutePath("login")], {
               queryParams: { preventAutoLogin: true },
