@@ -82,6 +82,7 @@ export class LogService {
   }
   addException(ex: ExceptionEntity) {
     ex.Tag = ex.Tag || `AppErrorLog`;
+    ex.TimeStamp = ex.TimeStamp || `${new Date()}`;
     this.logs.unshift(ex);
     if (this.logs.length > 500) {
       this.logs = this.logs.slice(0, 500);
