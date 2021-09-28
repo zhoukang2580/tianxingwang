@@ -104,7 +104,7 @@ export class AppHelper {
   static async getAppVersion() {
     await AppHelper.platform.ready();
     if (!this.cordovaGetAppVersion) {
-      this.cordovaGetAppVersion = window["cordova.getAppVersion"];
+      this.cordovaGetAppVersion = window["cordova"].getAppVersion;
     }
     if (!this.cordovaGetAppVersion) {
       const info = await this.getAppVersionAndPkgNameFromConfigXml();
