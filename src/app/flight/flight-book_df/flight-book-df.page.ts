@@ -980,7 +980,7 @@ export class FlightBookDfPage
       ticketAgreement = await this.onBookServeAgreement();
     }
     if (!ticketAgreement) {
-      AppHelper.alert("请勾选购票协议");
+      // AppHelper.alert("请勾选购票协议");
       return;
     }
     this.isShowFee = false;

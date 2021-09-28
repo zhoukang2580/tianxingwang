@@ -616,67 +616,67 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       if (this.isSubmitDisabled) {
         return;
       }
-      if (ticketAgreement) {
+      if (!ticketAgreement) {
         return;
       }
-        const bookDto: GpBookReq = new GpBookReq();
-        const arr = this.initialBookDtoGpModel;
-        const canbook = await this.fillBookLinkmans();
-        const canbook2 = await this.fillBookPassengers(bookDto, arr, isSave);
-        // console.log(canbook);
-        if (canbook && canbook2) {
-          const res: IBookOrderResult = await this.flightGpService
-            .bookGpFlight(bookDto)
-            .catch((e) => {
-              AppHelper.alert(e);
-              return null;
-            });
-          if (res) {
-            if (res.TradeNo && res.TradeNo != "0") {
-              this.isSubmitDisabled = true;
-              this.isHasTask = res.HasTasks;
-              this.payResult = false;
-              this.flightGpService.removeAllBookInfos();
-              let checkPayResult = false;
-              const isCheckPay = res.IsCheckPay;
-              if (!isSave) {
-                if (isCheckPay) {
-                  this.isCheckingPay = true;
-                  checkPayResult = await this.checkPay(res.TradeNo);
-                  this.isCheckingPay = false;
-                } else {
-                  this.payResult = true;
-                }
-                if (checkPayResult) {
-                  if (this.isHasTask) {
-                    await AppHelper.alert(
-                      LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
-                      true
-                    );
-                  } else {
-                    if (isCheckPay) {
-                      const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
-                      this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
-                    }
-                  }
-                } else {
+      const bookDto: GpBookReq = new GpBookReq();
+      const arr = this.initialBookDtoGpModel;
+      const canbook = await this.fillBookLinkmans();
+      const canbook2 = await this.fillBookPassengers(bookDto, arr, isSave);
+      // console.log(canbook);
+      if (canbook && canbook2) {
+        const res: IBookOrderResult = await this.flightGpService
+          .bookGpFlight(bookDto)
+          .catch((e) => {
+            AppHelper.alert(e);
+            return null;
+          });
+        if (res) {
+          if (res.TradeNo && res.TradeNo != "0") {
+            this.isSubmitDisabled = true;
+            this.isHasTask = res.HasTasks;
+            this.payResult = false;
+            this.flightGpService.removeAllBookInfos();
+            let checkPayResult = false;
+            const isCheckPay = res.IsCheckPay;
+            if (!isSave) {
+              if (isCheckPay) {
+                this.isCheckingPay = true;
+                checkPayResult = await this.checkPay(res.TradeNo);
+                this.isCheckingPay = false;
+              } else {
+                this.payResult = true;
+              }
+              if (checkPayResult) {
+                if (this.isHasTask) {
                   await AppHelper.alert(
-                    LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                    LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
                     true
                   );
+                } else {
+                  if (isCheckPay) {
+                    const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
+                    this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
+                  }
                 }
-                await AppHelper.alert("下单成功");
               } else {
-                if (isSave) {
-                  // bookDto.IsAllowIssueTicket = false;
-                  await AppHelper.alert("订单已保存!");
-                }
+                await AppHelper.alert(
+                  LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
+                  true
+                );
               }
-              await this.empty();
-              this.goToMyOrders();
+              await AppHelper.alert("下单成功");
+            } else {
+              if (isSave) {
+                // bookDto.IsAllowIssueTicket = false;
+                await AppHelper.alert("订单已保存!");
+              }
             }
+            await this.empty();
+            this.goToMyOrders();
           }
         }
+      }
       
     } catch (error) {
       console.error(error);
