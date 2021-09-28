@@ -3,7 +3,7 @@
     <div class="info">
         <div class="name" (click)="onSwitchCustomer()">
             <ion-text class="txt " notranslate>{{selectedCompany||identity?.Name}}<span class="margin-l">欢迎您</span></ion-text>
-            <ion-text class="btn" color='secondary' *ngIf="canSelectCompany">切换客户</ion-text>
+            <ion-text class="btn ion-text-nowrap" color='secondary' *ngIf="canSelectCompany">切换客户</ion-text>
         </div>
         <div class="scan-pic" *ngIf="canShow">
             <app-scan-comp >
