@@ -5,7 +5,7 @@ import { ApiService } from "../api/api.service";
 import { IdentityService } from "../identity/identity.service";
 import { Injectable, NgZone } from "@angular/core";
 import { Router } from "@angular/router";
-import { tap, switchMap, map, finalize } from "rxjs/operators";
+import { tap, switchMap, map, finalize, filter } from "rxjs/operators";
 import { of, throwError } from "rxjs";
 import { AppHelper } from "src/app/appHelper";
 import { IResponse } from "../api/IResponse";
@@ -38,14 +38,32 @@ export class LoginService {
     private storage: StorageService,
     private ngZone: NgZone
   ) {
-    this.identityService.getIdentitySource().subscribe((id) => {
-      this.identity = id;
-      this.ngZone.runOutsideAngular(() => {
-        setTimeout(() => {
-          this.check();
-        }, this.checkLoginTime);
+    const req = new RequestEntity();
+    req.Method = "";
+    this.identityService
+      .getIdentitySource()
+      .pipe(
+        tap((id) => {
+          this.identity = id;
+        }),
+        filter((it) => it && !!it.Ticket && !!it.Id)
+      )
+      .subscribe(() => {
+        this.apiService.getUrl(req).then((url) => {
+          this.identityService.getWebSocketUrl(url).subscribe(
+            (r) => {
+              if (r && r.Data && r.Data.Url) {
+                this.apiService.setWebSocket(r.Data.Url);
+              } else {
+                this.checkIfOtherLogin(true);
+              }
+            },
+            (e) => {
+              this.checkIfOtherLogin(true);
+            }
+          );
+        });
       });
-    });
   }
   checkIsDeviceBinded(deviceNumber: string) {
     const req = new RequestEntity();
@@ -89,11 +107,7 @@ export class LoginService {
     if (this.checkPathIsWechatOrDingtalk()) {
       return;
     }
-    if (
-      AppHelper.isWechatH5() ||
-      AppHelper.isWechatMini() ||
-      AppHelper.isApp()
-    ) {
+    if (AppHelper.isWechatH5() || AppHelper.isWechatMini()) {
       const sdkType = AppHelper.isWechatH5()
         ? ""
         : AppHelper.isWechatMini()
@@ -308,59 +322,8 @@ export class LoginService {
     });
     this.router.navigate([AppHelper.getRoutePath("login")]);
   }
-  async check() {
-    const ticket = AppHelper.getTicket();
-    if (
-      !this.identity ||
-      !this.identity.Ticket ||
-      !this.identity.Id ||
-      !ticket ||
-      environment.mockProBuild
-    ) {
-      return;
-    }
-    const req = new RequestEntity();
-    req.IsShowLoading = true;
-    req.Method = "ApiHomeUrl-Identity-Check";
-    req.Data = JSON.stringify({
-      LoginType: this.getLoginType(),
-    });
-    let st = Date.now();
-    const url = await this.getUrl(req);
-    console.log(`ApiHomeUrl-Identity-Check getUrl ${Date.now() - st}`, url);
-    if (!url) {
-      return;
-    }
-    const formObj = Object.keys(req)
-      .map((k) => `${k}=${req[k]}`)
-      .join("&");
-    st = Date.now();
-    return this.http
-      .post(url, formObj, {
-        headers: { "content-type": "application/x-www-form-urlencoded" },
-        observe: "body",
-      })
-      .pipe(
-        map((r: IResponse<IdentityEntity>) => r),
-        finalize(() => {
-          console.log(`用时${Date.now() - st}`);
-        })
-      )
-      .subscribe((r) => {
-        if (r.Status) {
-          AppHelper.alert(r.Message, true, "确定").then((s) => {
-            this.preventAutoLogin = true;
-            this.identityService.removeIdentity();
-            this.router.navigate([AppHelper.getRoutePath("login")]);
-          });
-        } else {
-          this.ngZone.runOutsideAngular(() => {
-            setTimeout(() => {
-              this.check();
-            }, this.checkLoginTime);
-          });
-        }
-      });
+  private async checkIfOtherLogin(isLoop: boolean) {
+    return this.identityService.identityCheck(isLoop);
   }
   async getUrl(req: RequestEntity): Promise<string> {
     return this.apiService.getUrl(req);
@@ -374,12 +337,17 @@ export class LoginService {
     }
   }
   async autoLogin(showLoading?: { loadingMsg: string }) {
-    if (this.preventAutoLogin || !AppHelper.isApp()) {
+    if (
+      this.preventAutoLogin ||
+      !AppHelper.isApp() ||
+      (this.identity && this.identity.Ticket)
+    ) {
       return false;
     }
     if (this.isAutoLoginPromise) {
       return this.isAutoLoginPromise;
     }
+    console.log("loginservice autoLogin");
     try {
       // 需要注意，判断if(isAutoLoginPromise)...到这里之前，不能有 await的代码，否则并发调用就不能得到有效的控制
       this.isAutoLoginPromise = new Promise<boolean>(async (rsv) => {
@@ -433,24 +401,6 @@ export class LoginService {
     return this.isAutoLoginPromise;
   }
   getLoginType() {
-    if (AppHelper.isPDA()) {
-      return "PDA";
-    }
-    if (AppHelper.isApp()) {
-      return "App";
-    }
-    if (AppHelper.isDingtalkH5()) {
-      return "DingtalkH5";
-    }
-    if (AppHelper.isWechatH5()) {
-      return "WechatH5";
-    }
-    if (AppHelper.isWechatMini()) {
-      return "WechatMini";
-    }
-    if (AppHelper.isH5()) {
-      return "H5";
-    }
-    return "";
+    return AppHelper.getCurrentPlatform();
   }
 }

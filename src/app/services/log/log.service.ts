@@ -6,25 +6,26 @@ import { AppHelper } from "../../appHelper";
 import { HttpClient } from "@angular/common/http";
 import { ExceptionEntity } from "./exception.entity";
 import { IdentityService } from "../../services/identity/identity.service";
-import { catchError, finalize } from "rxjs/operators";
-import {serializeError} from 'serialize-error';
+import { catchError, finalize, timeout } from "rxjs/operators";
+import { serializeError } from "serialize-error";
+import { LogEntity } from "./log.entity";
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class LogService {
-  private exceptions: ExceptionEntity[] = [];
+  private logs: LogEntity[] = [];
   private identityEntity: IdentityEntity;
   private subscription = Subscription.EMPTY;
   private started = false;
   constructor(private http: HttpClient, identityService: IdentityService) {
-    identityService.getIdentitySource().subscribe(r => {
+    identityService.getIdentitySource().subscribe((r) => {
       this.identityEntity = r;
     });
   }
-  private async sendException() {
+  private async sendLog() {
     this.started = true;
     try {
-      const ex: ExceptionEntity = this.exceptions[0];
+      const ex: LogEntity = this.logs[0];
       if (!ex) {
         this.subscription.unsubscribe();
         this.started = false;
@@ -34,17 +35,22 @@ export class LogService {
       const req = new RequestEntity();
       req.Method = "ApiLogUrl-Error-Add";
       const detail = JSON.stringify(serializeError(ex));
+      ex.Tag = `${ex.Tag}_from_${
+        AppHelper.platform.is("android") ? "android" : "ios"
+      }_version=${await AppHelper.getAppVersion()}`;
       req.Data = JSON.stringify({
-        Address: ex.Method,
-        Message: ex.Message,
-        Detail: detail,
+        Address: ex["Method"] || ex.Tag || "",
+        Message: ex.Message || ex.Tag,
+        Detail: detail || ex.Tag,
         AccountId: identity ? identity.Id : "",
-        Device: await AppHelper.getDeviceId()
+        Device: await AppHelper.getDeviceId(),
       });
-      console.log("发送错误,detail " + detail);
+      // console.log("发送错误,detail " + detail);
       const formObj = Object.keys(req)
-        .map(k => `${k}=${req[k]}`)
+        .map((k) => `${k}=${req[k]}`)
         .join("&");
+      let due = req.Timeout || 30 * 1000;
+      due = due < 1000 ? due * 1000 : due;
       const url = AppHelper.getApiUrl();
       return this.http
         .post(
@@ -52,19 +58,20 @@ export class LogService {
           `${formObj}&x-requested-with=XMLHttpRequest`,
           {
             headers: { "content-type": "application/x-www-form-urlencoded" },
-            observe: "body"
+            observe: "body",
           }
         )
         .pipe(
-          catchError(e => {
+          timeout(due),
+          catchError((e) => {
             return throwError(e instanceof Error ? e : new Error(e));
           })
         )
         .subscribe(
           () => {
-            this.exceptions = this.exceptions.filter(it => it !== ex);
+            this.logs = this.logs.filter((it) => it !== ex);
           },
-          e => {
+          (e) => {
             console.error("sendException", e);
           }
         );
@@ -74,16 +81,31 @@ export class LogService {
     }
   }
   addException(ex: ExceptionEntity) {
-    this.exceptions.unshift(ex);
-    if (this.exceptions.length > 500) {
-      this.exceptions = this.exceptions.slice(0, 500);
+    ex.Tag = ex.Tag || `AppErrorLog`;
+    ex.TimeStamp = ex.TimeStamp || `${new Date()}`;
+    this.logs.unshift(ex);
+    if (this.logs.length > 500) {
+      this.logs = this.logs.slice(0, 500);
     }
-    if (this.exceptions.length && !this.started) {
+    this.start();
+  }
+  addLog(ex: ExceptionEntity | LogEntity) {
+    this.logs.unshift(ex);
+    if (this.logs.length > 500) {
+      this.logs = this.logs.slice(0, 500);
+    }
+    this.start();
+  }
+  private start() {
+    if (this.logs.length && !this.started) {
+      if (this.started) {
+        return;
+      }
       this.subscription.unsubscribe();
       this.started = true;
       this.subscription = interval(1000 * 20).subscribe(() => {
         console.log("发送错误消息");
-        this.sendException();
+        this.sendLog();
       });
     }
   }

@@ -35,6 +35,7 @@ import { DayModel } from "../tmc/models/DayModel";
 import { SelectAndReplaceTrainInfoComponent } from "./components/select-and-replaceinfo/select-and-replaceinfo.component";
 import { AccountEntity } from "../account/models/AccountEntity";
 import { StorageService } from "../services/storage-service.service";
+import { LogService } from "../services/log/log.service";
 const KEY_TRAIN_TRAFFICLINES_DATA = "train-traficlines-data";
 export class SearchTrainModel {
   TrainCode: string;
@@ -82,7 +83,8 @@ export class TrainService {
     private modalCtrl: ModalController,
     private calendarService: CalendarService,
     private router: Router,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private logService: LogService
   ) {
     this.bookInfoSource = new BehaviorSubject([]);
     this.searchModelSource = new BehaviorSubject(new SearchTrainModel());
@@ -1447,7 +1449,17 @@ export class TrainService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService.getPromise<IBookOrderResult>(req);
+    return this.apiService.getPromise<IBookOrderResult>(req).then((r) => {
+      if (r && r.Data && r.Data.TradeNo && r.Data.TradeNo == "0") {
+        this.logService.addException({
+          Tag: `GP机票订单下单异常 返回的订单号${r.Data.TradeNo}`,
+          Error: r,
+          Method: req.Method,
+          Message: r.Message,
+        });
+      }
+      return r;
+    });
   }
   removeAllBookInfos() {
     this.bookInfos = [];

@@ -21,13 +21,13 @@
       </ion-label>
     </ion-item>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf='isShowMode'>
     <ion-item>
       <ion-label>夜间模式</ion-label>
       <ion-toggle (ionChange)='onToggleDarkMode($event)' color='secondary' [checked]='isDarkMode'></ion-toggle>
     </ion-item>
   </ion-list>
-  <ion-list>
+  <ion-list *ngIf='isShowLanguage'>
     <ion-item (click)="onLanguageSettings()" detail>
       <ion-label class="has-left-icon">
         语言设置

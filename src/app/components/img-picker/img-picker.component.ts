@@ -40,7 +40,7 @@ export class ImgPickerComponent implements OnInit, OnDestroy {
       minContainerHeight: this.plt.height(),
       minContainerWidth: this.plt.width(),
       minCropBoxWidth: this.plt.width() * 0.9,
-      minCropBoxHeight: this.plt.width() * 0.7,
+      minCropBoxHeight: this.plt.width() * 0.9,
       responsive: true,
       // modal: true,
       // aspectRatio: 1 / 1,

@@ -43,7 +43,7 @@ export class RequestEntity {
       AppHelper.getTicketName(),
     ];
     for (const p in paramters) {
-      if (tags.includes(p.toLowerCase())) {
+      if (tags.find((it) => it == p.toLowerCase())) {
         continue;
       }
       this[p] = paramters[p]||"";

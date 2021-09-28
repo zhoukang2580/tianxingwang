@@ -1445,7 +1445,7 @@ export class InterHotelBookDfPage implements OnInit, OnDestroy, AfterViewInit {
       });
       this.isSubmitDisabled = false;
       if (res) {
-        if (res.TradeNo) {
+        if (res.TradeNo && res.TradeNo != "0") {
           // AppHelper.alert(
           //   this.LangService.isCn ? "订单已保存!" : "Order saved"
           // );

@@ -1,5 +1,6 @@
-export class ExceptionEntity {
+import { LogEntity } from "./log.entity";
+
+export class ExceptionEntity extends LogEntity {
   Method: string;
-  Message: string;
   Error:any
 }

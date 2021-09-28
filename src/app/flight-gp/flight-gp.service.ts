@@ -51,6 +51,7 @@ import { PassengerEntity } from "./models/flightgp/PassengerEntity";
 import { GpBookReq } from "../order/models/GpBookReq";
 import { FlightCityService } from "./flight-city.service";
 import { StorageService } from "../services/storage-service.service";
+import { LogService } from "../services/log/log.service";
 
 export class SearchFlightModel {
   BackDate: string; //  Yes 航班日期（yyyy-MM-dd）
@@ -115,7 +116,8 @@ export class FlightGpService {
     private tmcService: TmcService,
     private flightCityService: FlightCityService,
     private calendarService: CalendarService,
-    private storage: StorageService
+    private storage: StorageService,
+    private logService: LogService
   ) {
     this.searchFlightModel = new SearchFlightModel();
     this.searchFlightModel.tripType = TripType.departureTrip;
@@ -1291,7 +1293,17 @@ export class FlightGpService {
     req.Data = bookDto;
     req.IsShowLoading = true;
     req.Timeout = 60;
-    return this.apiService.getPromiseData<IBookOrderResult>(req);
+    return this.apiService.getPromiseData<IBookOrderResult>(req).then((r) => {
+      if (r && r.TradeNo && r.TradeNo == "0") {
+        this.logService.addException({
+          Tag: `GP机票订单下单异常 返回的订单号${r.TradeNo}`,
+          Error: r,
+          Method: req.Method,
+          Message: r.Message,
+        });
+      }
+      return r;
+    });
   }
 
   async getPassengerCredentials(

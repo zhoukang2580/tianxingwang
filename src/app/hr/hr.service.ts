@@ -33,12 +33,10 @@ interface IWb {
   Value: IWorkbench[];
 }
 export interface IWorkbench {
-  Id: string;
   Name: string;
-  ImageUrl: string;
-  ImageBase64: string;
-  Url: string;
+  Value: IWorkbenchItem[];
 }
+
 @Injectable({
   providedIn: "root",
 })
@@ -48,11 +46,11 @@ export class HrService {
   private fetchingReqStaffCredentialsPromise: Promise<MemberCredential[]>;
   private fetchingStaffPromise: Promise<StaffEntity>;
   private hrInvitationSource: Subject<IHrInvitation>;
-  private workbenchPromise: Promise<any>;
+  private workbenchPromise: { [hrId: string]: Promise<IWorkbench[]> };
   private identity: IdentityEntity;
   hrInvitation: IHrInvitation;
-  workbenchesUpdatedSource: Subject<any>;
-  workbenches: IWb[];
+  workbenchesUpdatedSource: Subject<IWorkbench[]>;
+  workbenches: { [hrId: string]: IWorkbench[] };
   staffCredentials: MemberCredential[];
   constructor(
     private apiService: ApiService,
@@ -61,10 +59,14 @@ export class HrService {
   ) {
     this.hrInvitationSource = new BehaviorSubject(null);
     this.workbenchesUpdatedSource = new BehaviorSubject(null);
-    this.identityService.getIdentitySource().subscribe(async (id) => {
-      this.identity = id;
+    this.identityService.getIdentitySource().subscribe(async (it) => {
+      this.identity = it;
       this.disposal();
-      this.workbenchesUpdatedSource.next(this.workbenches);
+      this.workbenches = await this.getWbsFromCache();
+      if (!this.workbenches) {
+        this.workbenches = {};
+      }
+      this.workbenchesUpdatedSource.next(this.workbenches[this.getHrId()]);
       if (this.checkHasHrId()) {
         const k = this.getCacheKey();
         if (k) {
@@ -73,7 +75,6 @@ export class HrService {
         this.updateWorkbenches();
       }
     });
-    identityService.getIdentitySource().subscribe(async (it) => {});
   }
   private checkHasHrId() {
     return (
@@ -91,20 +92,27 @@ export class HrService {
     // if (!this.identity || !this.identity.Ticket) {
     //   return this.workbenches;
     // }
-    if (!forceUpdate || !this.checkHasHrId()) {
-      if (!this.workbenches) {
-        this.workbenches = await this.getWbsFromCache();
-      }
-      return this.workbenches;
+    const hrId = this.getHrId();
+    if (!hrId) {
+      return null;
     }
-    if (this.workbenchPromise) {
-      return this.workbenchPromise;
+    if (!this.workbenches) {
+      this.workbenches = {};
+    }
+    if (!forceUpdate || !this.checkHasHrId()) {
+      return this.workbenches[hrId];
+    }
+    if (this.workbenchPromise && this.workbenchPromise[hrId]) {
+      return this.workbenchPromise[hrId];
     }
     req.IsShowLoading = !this.workbenches || !this.workbenches.length;
-    this.workbenchPromise = this.apiService
+    if (!this.workbenchPromise) {
+      this.workbenchPromise = {};
+    }
+    this.workbenchPromise[hrId] = this.apiService
       .getPromiseData<any>(req)
       .then((it) => {
-        this.workbenches = Object.keys(it).map((k) => {
+        this.workbenches[hrId] = Object.keys(it).map((k) => {
           return {
             Name: k,
             Value: it[k],
@@ -112,7 +120,7 @@ export class HrService {
         });
         if (AppHelper.isApp()) {
           const ps: Promise<any>[] = [];
-          this.workbenches.forEach((it) => {
+          this.workbenches[hrId].forEach((it) => {
             if (it.Value) {
               it.Value.forEach((itm) => {
                 if (itm.ImageUrl) {
@@ -131,41 +139,70 @@ export class HrService {
         } else {
           this.cacheWbs(this.workbenches);
         }
-        return this.workbenches;
+        return this.workbenches[hrId];
       })
       .finally(() => {
-        this.workbenchPromise = null;
+        this.workbenchPromise[hrId] = null;
       });
-    return this.workbenchPromise;
+    return this.workbenchPromise[hrId];
+  }
+  async getUrlData(dataUrl: string) {
+    const req = new RequestEntity();
+    req.Method = "HrApiUrl-Workbench-GetData";
+    req.Data = {
+      DataUrl: dataUrl,
+    };
+    return this.apiService.getPromiseData<{ label: string }>(req);
+  }
+  async getHrs() {
+    const req = new RequestEntity();
+    req.Method = "HrApiUrl-Workbench-Hrs";
+    req.Data = {};
+    return this.apiService.getPromiseData<IHrItem[]>(req);
+  }
+  async changeHr(hr: IHrItem) {
+    const req = new RequestEntity();
+    req.Method = "HrApiUrl-Workbench-ChangeHr";
+    req.Data = {
+      HrId: hr.Number,
+    };
+    req.IsShowLoading=true;
+    return this.apiService.getPromiseData<any>(req);
   }
   private updateWorkbenches() {
     console.log("updateWorkbenches");
-    this.getWorkbenches(true)
-      .then((wb) => {
-        if (wb) {
-          this.workbenchesUpdatedSource.next(wb);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-      });
+    this.getWorkbenches(true).then((wb) => {
+      if (wb) {
+        this.workbenchesUpdatedSource.next(wb);
+      }
+    });
   }
-  private cacheWbs(wb: IWb[]) {
+  private cacheWbs(wb: { [hrid: string]: IWorkbench[] }) {
     const k = this.getCacheKey();
     if (k) {
       this.storage.set(k, wb);
     }
   }
-  private getWbsFromCache() {
+  private getWbsFromCache(): { [hrid: string]: IWorkbench[] } {
     const k = this.getCacheKey();
     if (k) {
       this.storage.get(k);
     }
     return null;
   }
+  private getHrId() {
+    return this.identity && this.identity.Numbers && this.identity.Numbers.HrId;
+  }
   private getCacheKey() {
     try {
-      return `${this.identity.Id}_${KEY_WORKBENCHES}`;
+      if (
+        this.identity &&
+        this.identity.Id &&
+        this.identity.Numbers &&
+        this.identity.Numbers.HrId
+      ) {
+        return `${this.identity.Id}_${KEY_WORKBENCHES}`;
+      }
     } catch (e) {
       console.error(e);
     }
@@ -455,14 +492,12 @@ export class OrganizationEntity {
   ShortName?: string;
   Children?: OrganizationEntity[];
 }
+export interface ICostCenter extends IOrganization {}
 export class CostCenterEntity extends BaseEntity {
-  join(arg0: string): any {
-    throw new Error("Method not implemented.");
-  }
   /// <summary>
   ///
   /// </summary>
-  Hr: HrEntity;
+  Hr: any;
   /// <summary>
   ///名称
   /// </summary>
@@ -693,4 +728,25 @@ export interface IHrInvitation {
   number: string;
   gender: string;
   birthday: string;
+}
+
+export interface IWorkbenchItem {
+  Id: string;
+  Name: string;
+  DataUrlData: string;
+  ImageUrl: string;
+  ImageBase64: string;
+  Url: {
+    isBlank: boolean; // false;
+    isOpenInAppBrowser: boolean; // false;
+    path: string; //"";
+    url: string; // "ddddd?ticket=a8508f9aad8d40dd9bedda54cd3ec964";
+    wechatMiniAppId: string; // "";
+    wechatMiniPath: string; // "";
+  };
+}
+export interface IHrItem {
+  Number: string;
+  Name: string;
+  IsIdentity: boolean; // true标识当前选择的
 }

@@ -13,7 +13,7 @@ export class HrInvitationListPage implements OnInit {
 
   ifsuccess:''
 
-  constructor(private staffService: HrService
+  constructor(private hrService: HrService
     , private router: Router,) {
 
   }
@@ -22,20 +22,20 @@ export class HrInvitationListPage implements OnInit {
     this.loadList();
   }
   private async loadList() {
-    this.invitationlist = await this.staffService.getListAsync().catch((e)=>{
+    this.invitationlist = await this.hrService.getListAsync().catch((e)=>{
       console.error(e);
       return [];
     });
   }
   acceptclick(i:any){
 
-    this.staffService.handle(i.Id,true).catch((e)=>{
+    this.hrService.handle(i.Id,true).catch((e)=>{
       console.error(e);
     })
     // this.router.navigate(["invitation"],{queryParams:{mmsid:i}});
   }
   failclick(i:any){
-    this.staffService.handle(i.Id,false).catch((e)=>{
+    this.hrService.handle(i.Id,false).catch((e)=>{
       console.error(e);
     })
   }

@@ -640,7 +640,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       //   }
       // }
       if (res) {
-        if (res.TradeNo) {
+        if (res.TradeNo && res.TradeNo != "0") {
           this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;
           let isHasTask = res.HasTasks;

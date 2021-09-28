@@ -1,6 +1,6 @@
 import { IdentityEntity } from "./identity.entity";
 import { RequestEntity } from "../api/Request.entity";
-import { Injectable } from "@angular/core";
+import { Injectable, NgZone } from "@angular/core";
 import {
   of,
   throwError,
@@ -30,7 +30,9 @@ import { ExceptionEntity } from "../log/exception.entity";
 import { LanguageHelper } from "src/app/languageHelper";
 import { environment } from "src/environments/environment";
 import { CONFIG } from "src/app/config";
-
+import { Router } from "@angular/router";
+import { StorageService } from "../storage-service.service";
+const KEY_API_CONFIG = "KEY_API_CONFIG_CACHE_KEY";
 @Injectable({
   providedIn: "root",
 })
@@ -39,12 +41,19 @@ export class IdentityService {
   private identityEntity: IdentityEntity;
   private identitySource: Subject<IdentityEntity>;
   private checkTicketPromise: Promise<IdentityEntity>;
+  private checkTime = 2 * 60 * 1000;
+  private timeoutId: any;
   private reqLoadingStatus: {
     reqMethod: string;
     isShow: boolean;
     msg: string;
   }[] = [];
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private ngZone: NgZone,
+    private router: Router,
+    private storage: StorageService
+  ) {
     this.identityEntity = new IdentityEntity();
     this.identityEntity.Ticket = AppHelper.getTicket();
     this.identityEntity.Name = AppHelper.getStorage("loginname");
@@ -302,5 +311,79 @@ export class IdentityService {
           return throwError(error);
         })
       );
+  }
+  private async getUrl(req: RequestEntity) {
+    if (req.Url) {
+      return req.Url;
+    }
+    const apiConfig = await this.storage.get(KEY_API_CONFIG);
+    if (apiConfig && !req.IsForward && req.Method) {
+      const urls = req.Method.split("-");
+      const url = apiConfig.Urls[urls[0]];
+      if (url) {
+        req.Url = url + "/" + urls[1] + "/" + urls[2];
+      }
+    }
+    return req.Url;
+  }
+  private getLoginType() {
+    return AppHelper.getCurrentPlatform();
+  }
+  async identityCheck(isLoop: boolean) {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+    const ticket = AppHelper.getTicket();
+    if (
+      !this.identityEntity ||
+      !this.identityEntity.Ticket ||
+      !this.identityEntity.Id ||
+      !ticket
+    ) {
+      return;
+    }
+    const req = new RequestEntity();
+    req.IsShowLoading = true;
+    req.Method = "ApiHomeUrl-Identity-Check";
+    req.Data = JSON.stringify({
+      LoginType: this.getLoginType(),
+    });
+    let st = Date.now();
+    const url = await this.getUrl(req);
+    console.log(`apiService checkIfOtherLogin getUrl ${Date.now() - st}`, url);
+    if (!url) {
+      return;
+    }
+    const formObj = Object.keys(req)
+      .map((k) => `${k}=${req[k]}`)
+      .join("&");
+    st = Date.now();
+    return this.http
+      .post(url, formObj, {
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        observe: "body",
+      })
+      .pipe(
+        map((r: IResponse<IdentityEntity>) => r),
+        finalize(() => {
+          console.log(`用时 ${Date.now() - st}`);
+        })
+      )
+      .subscribe((r) => {
+        if (r.Status) {
+          AppHelper.alert(r.Message, true, "确定").then((s) => {
+            this.removeIdentity();
+            this.router.navigate([AppHelper.getRoutePath("login")], {
+              queryParams: { preventAutoLogin: true },
+            });
+          });
+        } else {
+          this.ngZone.runOutsideAngular(() => {
+            this.timeoutId = setTimeout(() => {
+              this.identityCheck(isLoop);
+            }, this.checkTime);
+          });
+        }
+      });
   }
 }

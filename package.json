@@ -157,7 +157,6 @@
     "platforms": [
       "ios",
       "android"
-    ],
-    "locator": "phonegap-push-plugin"
+    ]
   }
 }

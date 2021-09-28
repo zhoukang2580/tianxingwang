@@ -632,7 +632,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
               return null;
             });
           if (res) {
-            if (res.TradeNo) {
+            if (res.TradeNo && res.TradeNo != "0") {
               this.isSubmitDisabled = true;
               this.isHasTask = res.HasTasks;
               this.payResult = false;
