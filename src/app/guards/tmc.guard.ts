@@ -46,29 +46,6 @@ export class TmcGuard implements CanActivate, CanActivateChild {
       .getIdentityAsync()
       .then((identity) => {
         console.log("tmc guard identity ", identity);
-        if(this.tmcService.isAgent){
-          this.router
-          .navigate([AppHelper.getRoutePath("login")])
-          .then(() => {
-            AppHelper.alert("仅允许钉钉绑定的客户员工登录");
-          });
-          return false;
-        }
-        if (identity && identity.Id && identity.Ticket && identity.Numbers) {
-          if (identity.Numbers.TmcId) {
-            const query = AppHelper.getQueryParamers();
-            const tmcid = query.tmcid || query.TmcId || "";
-            if (tmcid && tmcid != identity.Numbers.TmcId) {
-              this.router
-                .navigate([AppHelper.getRoutePath("login")])
-                .then(() => {
-                  AppHelper.alert("非法登录");
-                });
-
-              return false;
-            }
-          }
-        }
         if (
           !identity ||
           !identity.Id ||
@@ -79,6 +56,46 @@ export class TmcGuard implements CanActivate, CanActivateChild {
           this.router.navigate([AppHelper.getRoutePath("home")]);
           return false;
         }
+        if (AppHelper.isDingtalkH5()) {
+          const query = AppHelper.getQueryParamers();
+          const tmcid = query.tmcid || query.TmcId || "";
+          if (!tmcid) {
+            this.router.navigate([AppHelper.getRoutePath("login")]).then(() => {
+              AppHelper.alert("钉钉未绑定客户！");
+            });
+            return false;
+          }
+          const idtmcid =
+            identity &&
+            identity.Id &&
+            identity.Ticket &&
+            identity.Numbers &&
+            identity.Numbers.TmcId;
+          if (this.tmcService.isAgent) {
+            if (idtmcid && tmcid != idtmcid) {
+              this.router
+                .navigate([AppHelper.getRoutePath("login")])
+                .then(() => {
+                  AppHelper.alert("仅允许钉钉绑定的客户员工登录");
+                });
+              return false;
+            }
+          }
+          if (identity && identity.Id && identity.Ticket && identity.Numbers) {
+            if (identity.Numbers.TmcId) {
+              if (tmcid != identity.Numbers.TmcId) {
+                this.router
+                  .navigate([AppHelper.getRoutePath("login")])
+                  .then(() => {
+                    AppHelper.alert("非法登录");
+                  });
+                return false;
+              }
+            }
+          }
+        }
+
+        
         if (
           identity &&
           identity.Numbers &&
