@@ -1616,7 +1616,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         return { TradeNo: "", HasTasks: true } as IBookOrderResult;
       });
       if (res) {
-        if (res.TradeNo) {
+        if (res.TradeNo && res.TradeNo != "0") {
           // AppHelper.toast("下单成功!", 1400, "top");
           this.isPlaceOrderOk = true;
           let isHasTask = res.HasTasks;

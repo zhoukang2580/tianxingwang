@@ -752,7 +752,7 @@ export class BookEnPage
           return null;
         });
       if (res) {
-        if (res.TradeNo) {
+        if (res.TradeNo && res.TradeNo != "0") {
           // AppHelper.toast("下单成功!", 1400, "top");
           // this.isPlaceOrderOk = true;
           this.isSubmitDisabled = true;

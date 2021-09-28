@@ -899,7 +899,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           });
       }
       if (res) {
-        if (res.TradeNo) {
+        if (res.TradeNo && res.TradeNo != "0") {
           this.isPlaceOrderOk = true;
           let isHasTask = res.HasTasks;
           let payResult = false;
