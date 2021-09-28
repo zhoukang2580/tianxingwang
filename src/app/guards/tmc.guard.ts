@@ -65,21 +65,11 @@ export class TmcGuard implements CanActivate, CanActivateChild {
             });
             return false;
           }
-          const idtmcid =
-            identity &&
-            identity.Id &&
-            identity.Ticket &&
-            identity.Numbers &&
-            identity.Numbers.TmcId;
           if (this.tmcService.isAgent) {
-            if (idtmcid && tmcid != idtmcid) {
-              this.router
-                .navigate([AppHelper.getRoutePath("login")])
-                .then(() => {
-                  AppHelper.alert("仅允许钉钉绑定的客户员工登录");
-                });
-              return false;
-            }
+            this.router.navigate([AppHelper.getRoutePath("login")]).then(() => {
+              AppHelper.alert("仅允许绑定钉钉的客户下的员工登录");
+            });
+            return false;
           }
           if (identity && identity.Id && identity.Ticket && identity.Numbers) {
             if (identity.Numbers.TmcId) {
@@ -95,7 +85,6 @@ export class TmcGuard implements CanActivate, CanActivateChild {
           }
         }
 
-        
         if (
           identity &&
           identity.Numbers &&
