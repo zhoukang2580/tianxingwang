@@ -1071,6 +1071,7 @@ export class FlightGpService {
         oldSeg.FlightDynamicPlaneType = newSeg.PlaneType;
         oldSeg.TakeoffOntimeRate = newSeg.TakeoffOntimeRate;
         oldSeg.AverageDelay = newSeg.AverageDelay;
+        oldSeg.FlightRule = newSeg.FlightRule;
       }
       if (one) {
         console.log("替换信息");

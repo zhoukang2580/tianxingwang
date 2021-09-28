@@ -335,8 +335,9 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   private async onTicketNeedKnow() {
     try {
       this.rules = []
-      for (const it of this.initialBookDtoGpModel) {
-        const ruleKey = it.Routes[0].Segment.FlightRule.AirlineRules;
+      if (this.initialBookDtoGpModel.Routes[0].Segment.FlightRule) {
+        // for (const it of this.initialBookDtoGpModel) {
+        const ruleKey = this.initialBookDtoGpModel.Routes[0].Segment.FlightRule.AirlineRules;
         for (const k of Object.keys(ruleKey)) {
           const arr = ruleKey[k];
           for (const item of arr) {
@@ -348,19 +349,20 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
             }
           }
         }
+        // }
+        const it = this.initialBookDtoGpModel;
+        if (it.Routes[0].Segment.FlightRule.CommonRules) {
+          it.Routes[0].Segment.FlightRule.CommonRules.forEach((e) => {
+            for (const itemK of Object.keys(e)) {
+              this.rules.push({
+                key: itemK,
+                src: e[itemK]
+              })
+            }
+          });
+        }
+        console.log(this.rules, "rules")
       }
-      const it = this.initialBookDtoGpModel[0]
-      if (it.Routes[0].Segment.FlightRule.CommonRules) {
-        it.Routes[0].Segment.FlightRule.CommonRules.forEach((e) => {
-          for (const itemK of Object.keys(e)) {
-            this.rules.push({
-              key: itemK,
-              src: e[itemK]
-            })
-          }
-        });
-      }
-      console.log(this.rules, "rules")
     } catch (error) {
       console.error(error);
     }
@@ -594,7 +596,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
 
   async onSubmit(isSave: boolean, event: CustomEvent) {
     try {
-      
+
       this.isPageTimeout = this.flightGpService.checkIfTimeout();
       if (this.flightGpService.checkIfTimeout()) {
         await this.flightGpService.showTimeoutPop(false, this.pageUrl);
@@ -615,6 +617,8 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         return;
       }
       if (ticketAgreement) {
+        return;
+      }
         const bookDto: GpBookReq = new GpBookReq();
         const arr = this.initialBookDtoGpModel;
         const canbook = await this.fillBookLinkmans();
@@ -673,7 +677,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
             }
           }
         }
-      }
+      
     } catch (error) {
       console.error(error);
     }

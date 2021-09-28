@@ -100,8 +100,6 @@ export class SelectedConfirmBookInfosGpPage implements OnInit, OnDestroy {
       .pipe(
         tap(async (infos) => {
           this.bookInfos = infos;
-          
-          console.log(infos, 'infos');
           // const m = this.flightService.getSearchFlightModel();
           // this.showSelectReturnTripButton =
           //   !m.isExchange && m.isRoundTrip;

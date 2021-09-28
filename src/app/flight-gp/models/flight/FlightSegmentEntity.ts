@@ -227,4 +227,6 @@ export class FlightSegmentEntity {
   AverageDelay:string;
   PlaneAge: string;
   TakeoffOntimeRate: string;
+
+  FlightRule:any;
 }
