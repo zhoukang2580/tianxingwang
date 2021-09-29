@@ -44,8 +44,12 @@ ion-content.padding-half-c {
 .b {
   background: #ffffff;
   border-radius: 0.5em;
+  .date {
+    margin: 0 1em;
+    padding: 0.5em 0 0 0.2em;
+  }
   .trip {
-    padding: 0.5em 0;
+    padding: 0 0 0.5em 0;
     display: flex;
     align-items: center;
     justify-content: space-around;
