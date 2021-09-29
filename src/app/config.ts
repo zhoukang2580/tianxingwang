@@ -3,7 +3,7 @@ export const CONFIG = {
   mockProBuild: true,
   isShowPrivacy: true,
   production: true,
-  isShowVConsole:false&&!!window["cordova"],
+  isShowVConsole:!!window["cordova"],
   isForWechatMiniApproval: false,
   isEnableTranslate: true,
   defaultStyle: "df",
