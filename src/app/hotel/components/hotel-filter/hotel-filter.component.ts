@@ -121,6 +121,8 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
         this.items = this.hotelQuery.filters[0].items;
       }
       this.hotelService.setHotelQuerySource(this.hotelQuery);
+
+      console.log(this.hotelQuery.filters,"filter");
     }
   }
   private async resetTabBrand() {
