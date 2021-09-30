@@ -596,6 +596,9 @@ export class AppHelper {
     this._queryParamers["style"] = style || "";
     AppHelper.setStorage("style", style);
   }
+  static getTimestamp() {
+    return Math.floor(+moment().utc().utcOffset(8)/1000);
+  }
   static getLanguage() {
     return (
       AppHelper.getStorage<string>("language") ||
@@ -1025,7 +1028,7 @@ export class AppHelper {
   }
   private static getRequestEntity() {
     const req: any = {};
-    req.Timestamp = Math.floor(Date.now() / 1000);
+    req.Timestamp = AppHelper.getTimestamp();
     req.Language = AppHelper.getLanguage();
     req.Ticket = AppHelper.getTicket();
     req.TicketName = AppHelper.getTicketName();

@@ -692,7 +692,7 @@ export class HotelService {
   private async setLocalHotelCityCache(cities: TrafficlineEntity[]) {
     if (AppHelper.isApp()) {
       await this.storage.set(`LocalHotelCityCache`, {
-        LastUpdateTime: (this.lastUpdateTime = Math.floor(Date.now() / 1000)),
+        LastUpdateTime: (this.lastUpdateTime = AppHelper.getTimestamp()),
         HotelCities: cities,
       } as LocalHotelCityCache);
     }

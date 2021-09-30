@@ -45,6 +45,6 @@ export class TrainscheduleComponent implements OnInit {
   }
   private getTimeColor(arrivalTime: string) {
     const now = new Date();
-    return Math.floor(Date.now() / 1000) > this.getTime(arrivalTime);
+    return AppHelper.getTimestamp() > this.getTime(arrivalTime);
   }
 }

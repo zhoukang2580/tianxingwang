@@ -464,7 +464,7 @@ export class TmcService {
     if (
       (local && !forceUpdate) ||
       (local &&
-        Math.floor(Date.now() / 1000) - local.lastUpdateTime >= 12 * 3600)
+        AppHelper.getTimestamp() - local.lastUpdateTime >= 12 * 3600)
     ) {
       return local.countries as CountryEntity[];
     }
@@ -482,7 +482,7 @@ export class TmcService {
       local.countries = [...countries, ...local.countries];
     } else {
       local = {
-        lastUpdateTime: Math.floor(Date.now() / 1000),
+        lastUpdateTime: AppHelper.getTimestamp(),
         countries,
       };
     }
@@ -947,9 +947,7 @@ export class TmcService {
           ),
           ...r.Trafficlines,
         ];
-        this.localDomesticAirports.LastUpdateTime = Math.floor(
-          Date.now() / 1000
-        );
+        this.localDomesticAirports.LastUpdateTime = AppHelper.getTimestamp();
         local.Trafficlines = this.localDomesticAirports.Trafficlines = airports;
         await this.storage.set(KEY_HOME_AIRPORTS, this.localDomesticAirports);
       }
@@ -1002,9 +1000,7 @@ export class TmcService {
           ...r.Trafficlines,
         ];
         local.Trafficlines = airports;
-        this.localInternationAirports.LastUpdateTime = Math.floor(
-          Date.now() / 1000
-        );
+        this.localInternationAirports.LastUpdateTime = AppHelper.getTimestamp();
         this.localInternationAirports.Trafficlines = local.Trafficlines;
         st = window.performance.now();
         this.storage

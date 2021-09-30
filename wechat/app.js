@@ -61,7 +61,7 @@ App({
     if (!args || !args.key || !args.token) {
       return;
     }
-    const timestamp = Math.floor(Date.now() / 1000);
+    const timestamp = AppHelper.getTimestamp();
     const sign = this.getSign(timestamp, args.token, "");
     var url = this.urls.stepUrl;
     wx.request({

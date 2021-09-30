@@ -742,7 +742,7 @@ export class CalendarService {
       retD.day = d.date() + "";
       retD.displayName = retD.day;
       retD.timeStamp = Math.floor(+d / 1000);
-      retD.enabled = Math.floor(+d / 1000) >= Math.floor(Date.now() / 1000);
+      retD.enabled = Math.floor(+d / 1000) >= AppHelper.getTimestamp();
       const y = new Date().getFullYear();
       let month = `${new Date().getMonth() + 1}`;
       let date = `${new Date().getDate()}`;

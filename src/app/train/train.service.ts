@@ -946,7 +946,7 @@ export class TrainService {
       arr = await this.cacheTrafficLinesAsync(result.Trafficlines);
     }
     this.localTrafficLine = {
-      lastUpdateTime: Math.floor(Date.now() / 1000),
+      lastUpdateTime:AppHelper.getTimestamp(),
       TrafficLines:
         (arr && arr.TrafficLines) ||
         (this.localTrafficLine && this.localTrafficLine.TrafficLines) ||
@@ -1052,7 +1052,7 @@ export class TrainService {
     }
   }
   private async cacheTrafficLinesAsync(lines: TrafficlineEntity[]) {
-    const now = Math.floor(Date.now() / 1000);
+    const now = AppHelper.getTimestamp();
     const lastLocal = await this.getCachedTrafficLinesAsync();
     const local: CacheTrafficLineModel = {
       lastUpdateTime: now,

@@ -23,7 +23,7 @@ export class RequestEntity {
   IsForward?: boolean;
   Timeout?: number;
   constructor() {
-    this.Timestamp = Math.floor(Date.now() / 1000);
+    this.Timestamp = AppHelper.getTimestamp();
     this.Language = AppHelper.getLanguage();
     this.Ticket = AppHelper.getTicket();
     this.TicketName = AppHelper.getTicketName();
