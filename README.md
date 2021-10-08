@@ -110,7 +110,7 @@ ng serve --disableHostCheck
 在xcode打包时候，找到 info，找到 LSApplicationQueriesSchemes 添加 alipay ，alipays
 ## 微信唤起
 在xcode打包时候，找到 info，找到 LSApplicationQueriesSchemes 添加 weixinULAPI
-在info标签下，找到最下面的URL Types 添加 微信的 url type wechat 或者 weixin 否则跳转微信后无法返回APP
+在info标签下，找到最下面的URL Types 添加 微信的 url type weixinULAPI 否则跳转微信后无法返回APP
 ## 热更新打包
 1. 确定环境变量
 2. 执行打包命令
