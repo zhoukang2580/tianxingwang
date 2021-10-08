@@ -70,7 +70,7 @@ import { StorageService } from "src/app/services/storage-service.service";
 export class TrainListDfPage implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(DaysCalendarComponent) daysCalendarComp: DaysCalendarComponent;
   @ViewChild(RefresherComponent) refresher: RefresherComponent;
-  @ViewChild(IonInfiniteScroll) scroller: IonInfiniteScroll;
+  @ViewChild(IonInfiniteScroll,{static:true}) scroller: IonInfiniteScroll;
   @ViewChild(IonContent) cnt: IonContent;
   private pageSize = 15;
   private lastSelectedPassengerIds: string[];
