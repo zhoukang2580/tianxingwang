@@ -1,0 +1,1 @@
+ng serve --liveReload=false 
