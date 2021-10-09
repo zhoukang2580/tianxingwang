@@ -300,7 +300,13 @@ export class BookEnPage
         )
       );
     }
-    if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+    if (
+      !this.orderTravelPayTypes ||
+      !this.orderTravelPayTypes.length ||
+      !this.orderTravelPayTypes.some(
+        (it) => it.value == +this.OrderTravelPayType
+      )
+    ) {
       this.orderTravelPayType = null;
     }
 

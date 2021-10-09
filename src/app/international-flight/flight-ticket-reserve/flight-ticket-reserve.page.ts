@@ -219,7 +219,13 @@ export class FlightTicketReservePage
         cabinPaytypes.some((cbt) => cbt == it.label)
       );
     }
-    if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+    if (
+      !this.orderTravelPayTypes ||
+      !this.orderTravelPayTypes.length ||
+      !this.orderTravelPayTypes.some(
+        (it) => it.value == +this.OrderTravelPayType
+      )
+    ) {
       this.orderTravelPayType = null;
     }
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);

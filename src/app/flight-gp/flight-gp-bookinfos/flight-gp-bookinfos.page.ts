@@ -449,7 +449,13 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       }
     });
     this.orderTravelPayType = this.initialBookDtoGpModel.DefaultPayType.Key;
-    if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+    if (
+      !this.orderTravelPayTypes ||
+      !this.orderTravelPayTypes.length ||
+      !this.orderTravelPayTypes.some(
+        (it) => it.value == +this.OrderTravelPayType
+      )
+    ) {
       this.orderTravelPayType = null;
     }
 
