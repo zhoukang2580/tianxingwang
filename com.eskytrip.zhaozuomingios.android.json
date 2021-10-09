@@ -1,0 +1,12 @@
+{
+  "DownloadUrl": "",
+  "ApkDownloadUrl": "",
+  "Ignore": true,
+  "IsShowThirdPartyLogin": true,
+  "EnabledHcpUpdate": true,
+  "EnabledAppUpdate": true,
+  "Md5": "0dfbf4508925ed80f455e269e6bb40f2",
+  "ApkMd5": "ea18c969209ee4444be6df759d9fc398",
+  "Version": "15.7.0",
+  "UpdateDescriptions": []
+}
