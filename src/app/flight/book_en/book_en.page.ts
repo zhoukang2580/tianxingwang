@@ -163,7 +163,7 @@ export class BookEnPage
     private plt: Platform,
     private router: Router,
     private storage: StorageService,
-    private LangService: LangService
+    private langService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -220,7 +220,7 @@ export class BookEnPage
         .pipe(
           map(([tmc, isSelfType, identity]) => {
             return (
-              tmc.FlightApprovalType  &&
+              tmc.FlightApprovalType &&
               tmc.FlightApprovalType != TmcApprovalType.None &&
               !isSelfType &&
               !(identity && identity.Numbers && identity.Numbers.AgentId)
@@ -474,7 +474,7 @@ export class BookEnPage
         });
       }
     });
-    const result = await this.tmcService.getTravelUrls(args,'Flight');
+    const result = await this.tmcService.getTravelUrls(args, "Flight");
     const trvaelNumber = this.tmcService.getTravelFormNumber();
     if (result) {
       this.vmCombindInfos.forEach((combindInfo) => {
@@ -1092,7 +1092,7 @@ export class BookEnPage
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumber", "outnumber");
               showErrorMsg(
-                it.label + this.LangService.isCn ? "必填" : " Required ",
+                it.label + this.langService.isCn ? "必填" : " Required ",
                 combindInfo,
                 el
               );
@@ -1120,6 +1120,14 @@ export class BookEnPage
           "orderTravelPayTypeid",
           "orderTravelPayTypeid"
         );
+        if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+          const tip = this.langService.isEn
+            ? "Payment method is not set, please contact customer service."
+            : "没有可选择的支付方式或支付方式已经被关闭，请联系客服。";
+          AppHelper.alert(tip);
+          this.moveRequiredEleToViewPort(el);
+          return false;
+        }
         showErrorMsg(
           LanguageHelper.Flight.getrOderTravelPayTypeTip(),
           combindInfo,
@@ -1626,7 +1634,7 @@ export class BookEnPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      !Tmc.FlightApprovalType 
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }

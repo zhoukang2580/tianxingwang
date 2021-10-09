@@ -262,7 +262,7 @@
             Payment method:
           </ion-item-divider>
           <ion-item [disabled]='searchTrainModel?.isExchange'>
-            <div style='width: 100%'>
+            <div style='width: 100%' *ngIf='orderTravelPayTypes?.length else nopaytypesEle'>
               <ion-radio-group [(ngModel)]='viewModel.orderTravelPayType' mode='md' name='travelPayType'
                 (ionChange)="calcTotalPrice()">
                 <ion-item *ngFor='let pt of orderTravelPayTypes'>
@@ -273,6 +273,9 @@
                 </ion-item>
               </ion-radio-group>
             </div>
+            <ng-template #nopaytypesEle>
+              <div class="no-paytypes-tip" color='danger'> 没有可选择的支付方式或支付方式已经被关闭，请联系客服。</div>
+            </ng-template>
           </ion-item>
         </ion-item-group>
       </ion-list>

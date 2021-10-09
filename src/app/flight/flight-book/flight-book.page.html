@@ -39,7 +39,8 @@
                         </ion-item>
                         <ion-item>
                             <div style='width: 100%'>
-                                <app-fly-list-item [flightSegment]='s.flightSegment' [isAgreement]='s.flightPolicy?.Cabin?.FareType==FlightCabinFareType.Agreement' [showDetails]='true' [flightPolicy]='s.flightPolicy'>
+                                <app-fly-list-item [flightSegment]='s.flightSegment' [isAgreement]='s.flightPolicy?.Cabin?.FareType==FlightCabinFareType.Agreement' [showDetails]='true'
+                                    [flightPolicy]='s.flightPolicy'>
                                 </app-fly-list-item>
                                 <div class='price'>
                                     <ion-label color='danger'>机票票价:￥{{s.flightPolicy?.Cabin?.SalesPrice}}</ion-label>
@@ -250,7 +251,7 @@
                     支付方式：
                 </ion-item-divider>
                 <ion-item>
-                    <div style='width: 100%'>
+                    <div style='width: 100%' *ngIf='orderTravelPayTypes?.length else nopaytypesEle'>
                         <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' (ionChange)='calcTotalPrice()'>
                             <ion-item *ngFor='let pt of orderTravelPayTypes'>
                                 <ion-label>{{pt.label}}
@@ -263,6 +264,9 @@
                             </ion-item>
                         </ion-radio-group>
                     </div>
+                    <ng-template #nopaytypesEle>
+                        <div class="no-paytypes-tip" color='danger'> 没有可选择的支付方式或支付方式已经被关闭，请联系客服。</div>
+                     </ng-template>
                 </ion-item>
             </ion-item-group>
         </ng-container>

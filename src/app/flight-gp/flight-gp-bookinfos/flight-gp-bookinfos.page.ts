@@ -1,40 +1,78 @@
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
-import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
-import { flyInOut } from 'src/app/animations/flyInOut';
-import { AppHelper } from 'src/app/appHelper';
-import { RefresherComponent } from 'src/app/components/refresher/refresher.component';
-import { CostCenterEntity, OrganizationEntity, StaffApprover, StaffEntity, HrService } from 'src/app/hr/hr.service';
-import { InsuranceProductEntity } from 'src/app/insurance/models/InsuranceProductEntity';
-import { LanguageHelper } from 'src/app/languageHelper';
-import { OrderTravelPayType, OrderTravelType } from 'src/app/order/models/OrderTravelEntity';
-import { CredentialsEntity } from 'src/app/tmc/models/CredentialsEntity';
-import { PassengerDto } from 'src/app/tmc/models/PassengerDto';
-import { IBookOrderResult, InitialBookDtoModel, PassengerBookInfo, TmcEntity, TmcService, TravelFormEntity } from 'src/app/tmc/tmc.service';
-import { TaskType } from 'src/app/workflow/models/TaskType';
+import {
+  Component,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+} from "@angular/core";
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  Router,
+  RouterStateSnapshot,
+} from "@angular/router";
+import { BehaviorSubject, fromEvent, Subject, Subscription } from "rxjs";
+import { flyInOut } from "src/app/animations/flyInOut";
+import { AppHelper } from "src/app/appHelper";
+import { RefresherComponent } from "src/app/components/refresher/refresher.component";
+import {
+  CostCenterEntity,
+  OrganizationEntity,
+  StaffApprover,
+  StaffEntity,
+  HrService,
+} from "src/app/hr/hr.service";
+import { InsuranceProductEntity } from "src/app/insurance/models/InsuranceProductEntity";
+import { LanguageHelper } from "src/app/languageHelper";
+import {
+  OrderTravelPayType,
+  OrderTravelType,
+} from "src/app/order/models/OrderTravelEntity";
+import { CredentialsEntity } from "src/app/tmc/models/CredentialsEntity";
+import { PassengerDto } from "src/app/tmc/models/PassengerDto";
+import {
+  IBookOrderResult,
+  InitialBookDtoModel,
+  PassengerBookInfo,
+  TmcEntity,
+  TmcService,
+  TravelFormEntity,
+} from "src/app/tmc/tmc.service";
+import { TaskType } from "src/app/workflow/models/TaskType";
 // import { ITmcOutNumberInfo } from '../components/flight-outnumber/flight-outnumber.component';
-import { CardBinsBookInfo, IFlightSegmentInfo } from '../models/PassengerFlightInfo';
-import { FlightGpService } from '../flight-gp.service';
-import { OrderBookDto } from 'src/app/order/models/OrderBookDto';
-import { BookGpDto } from '../models/flightgp/BookGpDto';
-import { Routes } from '../models/flightgp/Routes';
-import { TicketchangingComponent } from '../components/ticketchanging/ticketchanging.component';
-import { IonCheckbox, IonContent, ModalController, NavController, Platform, PopoverController } from '@ionic/angular';
-import { ProductItemType } from 'src/app/tmc/models/ProductItems';
-import { GpBookReq, GpPassengerDto } from 'src/app/order/models/GpBookReq';
-import { OrderLinkmanDto } from '../models/flightgp/OrderLinkmanDto';
-import { IdentityEntity } from 'src/app/services/identity/identity.entity';
-import { IdentityService } from 'src/app/services/identity/identity.service';
-import { OrderService } from 'src/app/order/order.service';
-import { BackButtonComponent } from 'src/app/components/back-button/back-button.component';
-import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
-import { FlightSegmentEntity } from 'src/app/flight/models/flight/FlightSegmentEntity';
-import { OpenUrlComponent } from 'src/app/pages/components/open-url-comp/open-url.component';
+import {
+  CardBinsBookInfo,
+  IFlightSegmentInfo,
+} from "../models/PassengerFlightInfo";
+import { FlightGpService } from "../flight-gp.service";
+import { OrderBookDto } from "src/app/order/models/OrderBookDto";
+import { BookGpDto } from "../models/flightgp/BookGpDto";
+import { Routes } from "../models/flightgp/Routes";
+import { TicketchangingComponent } from "../components/ticketchanging/ticketchanging.component";
+import {
+  IonCheckbox,
+  IonContent,
+  ModalController,
+  NavController,
+  Platform,
+  PopoverController,
+} from "@ionic/angular";
+import { ProductItemType } from "src/app/tmc/models/ProductItems";
+import { GpBookReq, GpPassengerDto } from "src/app/order/models/GpBookReq";
+import { OrderLinkmanDto } from "../models/flightgp/OrderLinkmanDto";
+import { IdentityEntity } from "src/app/services/identity/identity.entity";
+import { IdentityService } from "src/app/services/identity/identity.service";
+import { OrderService } from "src/app/order/order.service";
+import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
+import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
+import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
+import { LangService } from "src/app/services/lang.service";
 
 @Component({
-  selector: 'app-flight-gp-bookinfos',
-  templateUrl: './flight-gp-bookinfos.page.html',
-  styleUrls: ['./flight-gp-bookinfos.page.scss'],
+  selector: "app-flight-gp-bookinfos",
+  templateUrl: "./flight-gp-bookinfos.page.html",
+  styleUrls: ["./flight-gp-bookinfos.page.scss"],
   animations: [flyInOut],
 })
 export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
@@ -59,8 +97,8 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     name: string;
     identityCard: string;
     id: string;
-  }[]
-  expenseTypes: { Name: string; Tag: string; }[];
+  }[];
+  expenseTypes: { Name: string; Tag: string }[];
   private subscriptions: Subscription[] = [];
   private totalPriceSource: Subject<number>;
   errors: any;
@@ -98,7 +136,8 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   isDent = false;
   isAgent = false;
   private pageUrl;
-  @ViewChild(BackButtonComponent, { static: true }) backbtn: BackButtonComponent;
+  @ViewChild(BackButtonComponent, { static: true })
+  backbtn: BackButtonComponent;
   @ViewChild(IonContent, { static: true }) contnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
@@ -117,6 +156,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     private identityService: IdentityService,
     private plt: Platform,
     private natCtrl: NavController,
+    private langService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -141,7 +181,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     this.isRoundTrip = this.flightGpService.getSearchFlightModel().isRoundTrip;
     this.flightGpService.setPassengerBookInfosSource(
       this.flightGpService.getPassengerBookInfos().filter((it) => !!it.bookInfo)
-    )
+    );
     this.subscriptions.push(
       this.totalPriceSource.subscribe((p) => {
         this.totalPrice = p;
@@ -159,7 +199,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         Name: "",
         Mobile: "",
         Email: "",
-      }
+      };
       // this.refresh(false);
     } catch (error) {
       console.error(error);
@@ -190,7 +230,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   }
 
   addPassengerGp() {
-    this.router.navigate([AppHelper.getRoutePath("select-passenger-gp")])
+    this.router.navigate([AppHelper.getRoutePath("select-passenger-gp")]);
   }
 
   onAddLinkman() {
@@ -203,11 +243,14 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     }
     const Id = item.passengerEntity.Id;
     console.log(Id, "id");
-    this.router.navigate([AppHelper.getRoutePath("flight-gp-update-passenger")], {
-      queryParams: {
-        id: Id,
+    this.router.navigate(
+      [AppHelper.getRoutePath("flight-gp-update-passenger")],
+      {
+        queryParams: {
+          id: Id,
+        },
       }
-    });
+    );
   }
 
   onTicketStatus() {
@@ -254,10 +297,11 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
 
     if (ok) {
       this.selectedFrequent.splice(id, 1);
-      await this.flightGpService.setfrequentBookInfoSource(this.selectedFrequent);
+      await this.flightGpService.setfrequentBookInfoSource(
+        this.selectedFrequent
+      );
       this.calcTotalPrice();
     }
-
   }
 
   async refresh(byUser: boolean) {
@@ -288,15 +332,27 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         for (let s of this.selectedFrequent) {
           if (s.passengerEntity.Id == undefined) {
             var end = this.initialBookDtoGpModel.FrequentPassengers.pop();
-            s.passengerEntity.Id = end.Id
+            s.passengerEntity.Id = end.Id;
           }
         }
       }
 
       if (this.initialBookDtoGpModel) {
-        this.DateTime = this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(0, 10);
-        this.goOff = this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(11, 16);
-        this.endOff = this.initialBookDtoGpModel.Routes[0].Segment.ArrivalTime.substring(11, 16);
+        this.DateTime =
+          this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(
+            0,
+            10
+          );
+        this.goOff =
+          this.initialBookDtoGpModel.Routes[0].Segment.TakeoffTime.substring(
+            11,
+            16
+          );
+        this.endOff =
+          this.initialBookDtoGpModel.Routes[0].Segment.ArrivalTime.substring(
+            11,
+            16
+          );
         const Pordu = this.initialBookDtoGpModel?.InsuranceResult?.Products;
         if (Pordu) {
           for (let pro = 0; pro < Pordu.length; pro++) {
@@ -309,12 +365,11 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         let cardInfo = this.initialBookDtoGpModel.CardBins;
         let cardBins = this.flightGpService.getCardBinsBookInfo();
         if (cardInfo) {
-
           cardBins[0] = cardInfo;
           this.flightGpService.setCardBinsBookInfoSource(cardBins);
         }
       }
-      console.log(this.initialBookDtoGpModel, 'initialBookDtoModel')
+      console.log(this.initialBookDtoGpModel, "initialBookDtoModel");
 
       await this.onTicketNeedKnow();
 
@@ -334,18 +389,19 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
 
   private async onTicketNeedKnow() {
     try {
-      this.rules = []
+      this.rules = [];
       if (this.initialBookDtoGpModel.Routes[0].Segment.FlightRule) {
         // for (const it of this.initialBookDtoGpModel) {
-        const ruleKey = this.initialBookDtoGpModel.Routes[0].Segment.FlightRule.AirlineRules;
+        const ruleKey =
+          this.initialBookDtoGpModel.Routes[0].Segment.FlightRule.AirlineRules;
         for (const k of Object.keys(ruleKey)) {
           const arr = ruleKey[k];
           for (const item of arr) {
             for (const itemK of Object.keys(item)) {
               this.rules.push({
                 key: itemK,
-                src: item[itemK]
-              })
+                src: item[itemK],
+              });
             }
           }
         }
@@ -356,12 +412,12 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
             for (const itemK of Object.keys(e)) {
               this.rules.push({
                 key: itemK,
-                src: e[itemK]
-              })
+                src: e[itemK],
+              });
             }
           });
         }
-        console.log(this.rules, "rules")
+        console.log(this.rules, "rules");
       }
     } catch (error) {
       console.error(error);
@@ -393,10 +449,12 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       }
     });
     this.orderTravelPayType = this.initialBookDtoGpModel.DefaultPayType.Key;
+    if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+      this.orderTravelPayType = null;
+    }
 
     console.log(this.orderTravelPayTypes, "orderTravelPayType");
   }
-
 
   getInsuranceDetails(detail: string) {
     return detail && detail.split("\n").join("<br/>");
@@ -419,7 +477,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     console.log("initializeBookDto", bookGpDto);
     this.initialBookDtoModel = await this.flightGpService.getInitializeBookDto(
       bookGpDto
-    )
+    );
     this.initialPassengerServiceFeesObj();
     return this.initialBookDtoModel;
   }
@@ -462,20 +520,23 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     }
   }
 
-
   calcTotalPrice() {
     try {
-      console.log('order', this.orderTravelPayTypes + ":" + this.orderTravelPayType);
+      console.log(
+        "order",
+        this.orderTravelPayTypes + ":" + this.orderTravelPayType
+      );
       let totalPrice = this.getTotalPriceNumber();
       if (this.initialBookDtoGpModel && this.selectedInsuranceProductId) {
         if (this.initialBookDtoGpModel?.InsuranceResult?.Products) {
           const ins = this.initialBookDtoGpModel.InsuranceResult.Products.find(
-            (it) =>
-              it &&
-              it.Id == this.selectedInsuranceProductId
+            (it) => it && it.Id == this.selectedInsuranceProductId
           );
           console.log("totalPrice ", totalPrice);
-          const insPrice = AppHelper.multiply(ins.Price, this.selectedFrequent.length)
+          const insPrice = AppHelper.multiply(
+            ins.Price,
+            this.selectedFrequent.length
+          );
           totalPrice = AppHelper.add(totalPrice, insPrice);
         }
       }
@@ -486,7 +547,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     }
   }
   private getServiceFees() {
-    return 0
+    return 0;
   }
   back(evt?: CustomEvent) {
     if (evt) {
@@ -500,9 +561,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         t.dismiss();
       }
     });
-
   }
-
 
   ngAfterViewInit() {
     if (this.checkboxes) {
@@ -545,19 +604,30 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   }
 
   private getTotalPriceNumber() {
-    let feestotalPrice = 0
+    let feestotalPrice = 0;
     try {
       if (this.selectedFrequent) {
-        if (this.initialBookDtoGpModel && this.initialBookDtoGpModel.Routes && this.initialBookDtoGpModel.Routes[0]) {
-          let ticketprice = this.initialBookDtoGpModel.Routes[0].Fare.TicketPrice;
+        if (
+          this.initialBookDtoGpModel &&
+          this.initialBookDtoGpModel.Routes &&
+          this.initialBookDtoGpModel.Routes[0]
+        ) {
+          let ticketprice =
+            this.initialBookDtoGpModel.Routes[0].Fare.TicketPrice;
           let tax = this.initialBookDtoGpModel?.Routes[0].Fare.Tax;
-          feestotalPrice = AppHelper.multiply(AppHelper.add(ticketprice, tax), this.selectedFrequent.length);
+          feestotalPrice = AppHelper.multiply(
+            AppHelper.add(ticketprice, tax),
+            this.selectedFrequent.length
+          );
           return feestotalPrice;
         }
         const infos = this.flightGpService.getPassengerBookInfosGp();
         let ticketprice = +infos[0].Cabin.TicketPrice;
         let tax = +infos[0].Cabin.Tax;
-        feestotalPrice = AppHelper.multiply(AppHelper.add(ticketprice, tax), this.selectedFrequent.length);
+        feestotalPrice = AppHelper.multiply(
+          AppHelper.add(ticketprice, tax),
+          this.selectedFrequent.length
+        );
       }
     } catch (e) {
       console.error(e);
@@ -584,10 +654,10 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       if (isTicketstatus == false) {
         console.log("请勾选购票协议");
         this.isShowAgreementAlert = !this.isShowAgreementAlert;
-        return false
+        return false;
       } else {
-        console.log("已勾选购票协议")
-        return true
+        console.log("已勾选购票协议");
+        return true;
       }
     } catch (error) {
       console.error(error);
@@ -596,7 +666,6 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
 
   async onSubmit(isSave: boolean, event: CustomEvent) {
     try {
-
       this.isPageTimeout = this.flightGpService.checkIfTimeout();
       if (this.flightGpService.checkIfTimeout()) {
         await this.flightGpService.showTimeoutPop(false, this.pageUrl);
@@ -609,7 +678,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       const isPay = this.initialBookDtoGpModel?.InsuranceResult;
       if (!isPay) {
         AppHelper.alert("提交失败,请联系工作人员配置支付方式");
-        return
+        return;
       }
       this.isShowFee = false;
       event.stopPropagation();
@@ -622,6 +691,9 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       const bookDto: GpBookReq = new GpBookReq();
       const arr = this.initialBookDtoGpModel;
       const canbook = await this.fillBookLinkmans();
+      if (!canbook) {
+        return false;
+      }
       const canbook2 = await this.fillBookPassengers(bookDto, arr, isSave);
       // console.log(canbook);
       if (canbook && canbook2) {
@@ -655,8 +727,15 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
                   );
                 } else {
                   if (isCheckPay) {
-                    const isp = this.orderTravelPayType == OrderTravelPayType.Person || this.orderTravelPayType == OrderTravelPayType.Credit;
-                    this.payResult = await this.orderService.payOrder(res.TradeNo, null, false, isp ? this.tmcService.getQuickexpressPayWay() : []);
+                    const isp =
+                      this.orderTravelPayType == OrderTravelPayType.Person ||
+                      this.orderTravelPayType == OrderTravelPayType.Credit;
+                    this.payResult = await this.orderService.payOrder(
+                      res.TradeNo,
+                      null,
+                      false,
+                      isp ? this.tmcService.getQuickexpressPayWay() : []
+                    );
                   }
                 }
               } else {
@@ -677,7 +756,6 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
           }
         }
       }
-      
     } catch (error) {
       console.error(error);
     }
@@ -690,7 +768,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
   }
 
   fillBookPassengers(bookDto: GpBookReq, combindInfos: any, isSave: boolean) {
-    console.log(combindInfos, 'arr');
+    console.log(combindInfos, "arr");
     bookDto.PassengerDtos = [];
     let rets: GpPassengerDto[] = [];
     for (let fre of this.selectedFrequent) {
@@ -712,7 +790,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       Name: this.orderLinkmanDto.Name,
       Mobile: this.orderLinkmanDto.Mobile,
       Email: this.orderLinkmanDto.Email,
-      MessageLang: this.orderLinkmanDto.MessageLang
+      MessageLang: this.orderLinkmanDto.MessageLang,
     };
 
     bookDto.Linkman = Linkman;
@@ -722,10 +800,27 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       for (let insur of combindInfos?.InsuranceResult?.Products) {
         if (insur.Id == this.selectedInsuranceProductId) {
           bookDto.Insurance = {
-            ...insur
-          }
+            ...insur,
+          };
         }
       }
+    }
+    if (!this.orderTravelPayType) {
+      if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+        const el = this.getEleByAttr(
+          "orderTravelPayTypeId",
+          "orderTravelPayTypeId"
+        );
+        const tip = this.langService.isEn
+          ? "Payment method is not set, please contact customer service."
+          : "没有可选择的支付方式或支付方式已经被关闭，请联系客服。";
+        AppHelper.alert(tip).then(() => {
+          this.moveRequiredEleToViewPort(el);
+        });
+        return false;
+      }
+      AppHelper.alert("请选择支付方式");
+      return false;
     }
     bookDto.PayType = this.orderTravelPayType;
 
@@ -782,7 +877,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         const el = this.getEleByAttr("travesInfo", "travesInfo");
         this.moveRequiredEleToViewPort(el);
         AppHelper.alert("乘客不能为空,请添加乘客");
-        return
+        return;
       }
 
       if (this.initialBookDtoGpModel.IsCompelBuyIns) {
@@ -796,44 +891,47 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       const orderLinkman = {
         Name: this.orderLinkmanDto.Name,
         Mobile: this.orderLinkmanDto.Mobile,
-        Email: this.orderLinkmanDto.Email
+        Email: this.orderLinkmanDto.Email,
       };
       let reg = /^[\u4E00-\u9FA5]{1,8}$/;
       let reg1 = /^1[0-9]{10}$/;
-      let reg2 = /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
-      console.log(!reg2.test(orderLinkman.Email) || orderLinkman.Email == "", "sas")
+      let reg2 =
+        /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/;
+      console.log(
+        !reg2.test(orderLinkman.Email) || orderLinkman.Email == "",
+        "sas"
+      );
       if (!orderLinkman.Name) {
         const el = this.getEleByAttr("PassengerName", "PassengerName");
         this.moveRequiredEleToViewPort(el);
         AppHelper.alert("请输入姓名");
-        return
+        return;
       } else if (!reg.test(orderLinkman.Name)) {
         const el = this.getEleByAttr("PassengerName", "PassengerName");
         this.moveRequiredEleToViewPort(el);
         AppHelper.alert("请正确填写乘客姓名");
-        return
+        return;
       } else if (!orderLinkman.Mobile) {
         const el = this.getEleByAttr("Mobile", "Mobile");
         this.moveRequiredEleToViewPort(el);
         AppHelper.alert("请输入手机号");
-        return
+        return;
       } else if (!reg1.test(orderLinkman.Mobile)) {
         const el = this.getEleByAttr("Mobile", "Mobile");
         this.moveRequiredEleToViewPort(el);
         AppHelper.alert("手机号输入有误");
-        return
+        return;
       } else if (orderLinkman.Email != "") {
         if (!reg2.test(orderLinkman.Email) || orderLinkman.Email == "") {
           const el = this.getEleByAttr("Email", "Email");
           this.moveRequiredEleToViewPort(el);
           AppHelper.alert("邮箱格式不正确");
-          return
+          return;
         }
       }
     }
 
     return isture;
-
   }
 
   private async checkPay(tradeNo: string) {
@@ -859,4 +957,3 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     });
   }
 }
-

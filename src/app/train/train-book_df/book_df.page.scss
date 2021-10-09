@@ -11,6 +11,10 @@ ion-item {
     --padding-end: 0;
   }
 }
+.no-paytypes-tip {
+  padding: 0.5em 1em;
+  color: var(--ion-color-danger);
+}
 ion-content {
   ion-list + ion-list {
     margin: 10px;

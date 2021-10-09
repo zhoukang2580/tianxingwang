@@ -105,7 +105,8 @@
         </div>
         <div class="hint" *ngIf="isDent">
             <svg class="bi bi-exclamation-circle-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"></path>
+                <path fill-rule="evenodd"
+                    d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 4a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 4zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"></path>
             </svg>
             <span>
                 政府采购机票仅支持公务卡验证，如需预算单位验证，请联系您的机票服务商，谢谢您的配合！
@@ -166,13 +167,13 @@
         </div>
     </div>
 
-    <div class="payways" *ngIf="orderTravelPayTypes && orderTravelPayTypes.length">
+    <div class="payways" [attr.orderTravelPayTypeId]='"orderTravelPayTypeId"'>
         <div class="title">
             <div class="name">
                 支付方式
             </div>
         </div>
-        <div class="info">
+        <div class="info" *ngIf='orderTravelPayTypes?.length else nopaytypesEle'>
             <ion-radio-group [(ngModel)]='orderTravelPayType' name='travelPayType' mode='md' (ionChange)='calcTotalPrice()'>
                 <ion-item *ngFor='let pt of orderTravelPayTypes'>
                     <ion-label>{{pt.label}}
@@ -185,6 +186,9 @@
                 </ion-item>
             </ion-radio-group>
         </div>
+        <ng-template #nopaytypesEle>
+            <div class="no-paytypes-tip" color='danger'> 没有可选择的支付方式或支付方式已经被关闭，请联系客服。</div>
+        </ng-template>
     </div>
 </ion-content>
 <app-waiting-check-pay [isLoading]='true' *ngIf='isCheckingPay'>正在预订中，请稍候...</app-waiting-check-pay>

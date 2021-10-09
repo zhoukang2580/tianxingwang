@@ -1318,6 +1318,14 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           "orderTravelPayTypeid",
           "orderTravelPayTypeid"
         );
+        if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+          const tip = this.langService.isEn
+            ? "Payment method is not set, please contact customer service."
+            : "没有可选择的支付方式或支付方式已经被关闭，请联系客服。";
+          AppHelper.alert(tip);
+          this.moveRequiredEleToViewPort(el);
+          return false;
+        }
         showErrorMsg(
           LanguageHelper.Flight.getrOderTravelPayTypeTip(),
           combindInfo,
@@ -1363,7 +1371,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           p.Train = {} as any;
         }
         p.Train.InsuranceProducts = p.InsuranceProducts;
-        p.InsuranceProducts=[];
+        p.InsuranceProducts = [];
       }
       bookDto.Passengers.push(p);
     }
@@ -1494,7 +1502,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
         info.isLoadingNumber = true;
       });
     });
-    const result = await this.tmcService.getTravelUrls(args,'Train');
+    const result = await this.tmcService.getTravelUrls(args, "Train");
     if (result) {
       this.viewModel.combindInfos.forEach((item) =>
         item.tmcOutNumberInfos.forEach((info) => {

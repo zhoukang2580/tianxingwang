@@ -110,7 +110,8 @@ import { StorageService } from "src/app/services/storage-service.service";
   animations: [flyInOut],
 })
 export class FlightBookPage
-  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy {
+  implements OnInit, AfterViewInit, CanComponentDeactivate, OnDestroy
+{
   private isShowInsuranceBack = false;
   private isPlaceOrderOk = false;
   private isManagentCredentails = false;
@@ -135,7 +136,7 @@ export class FlightBookPage
   tmc: TmcEntity;
   travelForm: TravelFormEntity;
   illegalReasons: IllegalReasonEntity[] = [];
-  expenseTypes: {Name:string;Tag:string;}[];
+  expenseTypes: { Name: string; Tag: string }[];
   selfStaff: StaffEntity;
   identity: IdentityEntity;
   isCheckingPay: boolean;
@@ -170,7 +171,7 @@ export class FlightBookPage
     private plt: Platform,
     private router: Router,
     private storage: StorageService,
-    private LangService: LangService
+    private langService: LangService
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
   }
@@ -208,7 +209,7 @@ export class FlightBookPage
             }
           }
         }
-      } catch { }
+      } catch {}
       setTimeout(() => {
         if (!this.isShowInsuranceBack || this.isManagentCredentails) {
           this.refresh(false);
@@ -535,7 +536,7 @@ export class FlightBookPage
         });
       }
     });
-    const result = await this.tmcService.getTravelUrls(args,'Flight');
+    const result = await this.tmcService.getTravelUrls(args, "Flight");
     const trvaelNumber = this.tmcService.getTravelFormNumber();
     if (result) {
       this.vmCombindInfos.forEach((combindInfo) => {
@@ -747,10 +748,11 @@ export class FlightBookPage
     if (!info) {
       return "";
     }
-    return `[${info.tripType == TripType.departureTrip
+    return `[${
+      info.tripType == TripType.departureTrip
         ? LanguageHelper.getDepartureTip()
         : LanguageHelper.getReturnTripTip()
-      }]`;
+    }]`;
   }
   back() {
     this.natCtrl.back();
@@ -889,7 +891,8 @@ export class FlightBookPage
           this.goToMyOrders({
             isHasTask: isHasTask,
             payResult,
-            isCheckPay: isCheckPay ||
+            isCheckPay:
+              isCheckPay ||
               this.orderTravelPayType == OrderTravelPayType.Person ||
               this.orderTravelPayType == OrderTravelPayType.Credit,
           });
@@ -1015,7 +1018,8 @@ export class FlightBookPage
         item.isShowDetail = true;
       }
       await AppHelper.alert(
-        `${item.vmCredential && item.vmCredential.Name} 【${item.vmCredential && item.vmCredential.Number
+        `${item.vmCredential && item.vmCredential.Name} 【${
+          item.vmCredential && item.vmCredential.Number
         }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
@@ -1098,10 +1102,11 @@ export class FlightBookPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${p.Mobile
+        p.Mobile = `${
+          p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-          }`;
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1111,10 +1116,11 @@ export class FlightBookPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${p.Email
+        p.Email = `${
+          p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-          }`;
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1182,7 +1188,7 @@ export class FlightBookPage
             if (it.required && !it.value) {
               const el = this.getEleByAttr("outnumberid", combindInfo.id);
               showErrorMsg(
-                it.label + (this.LangService.isCn ? "必填" : " Required "),
+                it.label + (this.langService.isCn ? "必填" : " Required "),
                 combindInfo,
                 el
               );
@@ -1210,6 +1216,14 @@ export class FlightBookPage
           "orderTravelPayTypeid",
           "orderTravelPayTypeid"
         );
+        if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+          const tip = this.langService.isEn
+            ? "Payment method is not set, please contact customer service."
+            : "没有可选择的支付方式或支付方式已经被关闭，请联系客服。";
+          AppHelper.alert(tip);
+          this.moveRequiredEleToViewPort(el);
+          return false;
+        }
         showErrorMsg(
           LanguageHelper.Flight.getrOderTravelPayTypeTip(),
           combindInfo,
@@ -1594,28 +1608,28 @@ export class FlightBookPage
         combineInfo.travelType = OrderTravelType.Business; // 默认全部因公
         combineInfo.insuranceProducts = this.isShowInsurances(
           item.bookInfo &&
-          item.bookInfo.flightSegment &&
-          item.bookInfo.flightSegment.TakeoffTime
+            item.bookInfo.flightSegment &&
+            item.bookInfo.flightSegment.TakeoffTime
         )
           ? insurances
           : [];
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1716,7 +1730,7 @@ export class FlightBookPage
     if (
       !Tmc ||
       Tmc.FlightApprovalType == TmcApprovalType.None ||
-      !Tmc.FlightApprovalType 
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }
@@ -1744,7 +1758,8 @@ export class FlightBookPage
     const staff = info.credentialStaff;
     if (
       !Tmc ||
-      Tmc.FlightApprovalType == TmcApprovalType.None || !Tmc.FlightApprovalType
+      Tmc.FlightApprovalType == TmcApprovalType.None ||
+      !Tmc.FlightApprovalType
     ) {
       return false;
     }

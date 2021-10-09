@@ -1639,6 +1639,14 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           "orderTravelPayTypeid",
           "orderTravelPayTypeid"
         );
+        if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+          const tip = this.langService.isEn
+            ? "Payment method is not set, please contact customer service."
+            : "没有可选择的支付方式或支付方式已经被关闭，请联系客服。";
+          AppHelper.alert(tip);
+          this.moveRequiredEleToViewPort(el);
+          return false;
+        }
         showErrorMsg(
           LanguageHelper.Flight.getrOderTravelPayTypeTip(),
           combindInfo,

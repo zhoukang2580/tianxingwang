@@ -8,6 +8,10 @@ ion-input.TravelNumber {
   // opacity: .8;
   font-size: 0.8rem;
 }
+.no-paytypes-tip {
+  padding: 0.5em 1em;
+  color: var(--ion-color-danger);
+}
 ion-content {
   ion-list + ion-list {
     padding: 0.3em 0;

@@ -91,7 +91,8 @@ import { StorageService } from "src/app/services/storage-service.service";
   styleUrls: ["./international-flight-book-df.page.scss"],
 })
 export class InternationalFlightBookDfPage
-  implements OnInit, OnDestroy, AfterViewInit {
+  implements OnInit, OnDestroy, AfterViewInit
+{
   private subscriptions: Subscription[] = [];
   private subscription = Subscription.EMPTY;
   private checkPayCount = 5;
@@ -129,9 +130,9 @@ export class InternationalFlightBookDfPage
   isDingTalk = AppHelper.isDingtalkH5();
   isRoundTrip = false;
   isself = false;
-  expenseTypes: { Name: string; Tag: string; }[];
+  expenseTypes: { Name: string; Tag: string }[];
   OrderTravelType = OrderTravelType;
-  PromptInformation = '';
+  PromptInformation = "";
   constructor(
     private flightService: InternationalFlightService,
     private route: ActivatedRoute,
@@ -268,14 +269,14 @@ export class InternationalFlightBookDfPage
               };
               return r;
             });
-          const segs = this.flightService.flightListResult.FlightSegments.filter(
-            (s) =>
+          const segs =
+            this.flightService.flightListResult.FlightSegments.filter((s) =>
               p.FlightRoutes.some(
                 (r) =>
                   r.FlightSegmentIds &&
                   r.FlightSegmentIds.some((rsegid) => rsegid == s.Id)
               )
-          );
+            );
           p.FlightSegments = segs;
         }
         const account = new AccountEntity();
@@ -340,11 +341,10 @@ export class InternationalFlightBookDfPage
               it.bookInfo.flightRoute &&
               it.bookInfo.flightRoute.FlightSegments
             ) {
-              it.bookInfo.flightRoute.FlightSegments = it.bookInfo.flightRoute.FlightSegments.map(
-                (seg) => {
+              it.bookInfo.flightRoute.FlightSegments =
+                it.bookInfo.flightRoute.FlightSegments.map((seg) => {
                   return seg;
-                }
-              );
+                });
             }
             it.bookInfo = {
               ...it.bookInfo,
@@ -456,7 +456,7 @@ export class InternationalFlightBookDfPage
         });
       }
     });
-    const result = await this.tmcService.getTravelUrls(args, 'Flight');
+    const result = await this.tmcService.getTravelUrls(args, "Flight");
     if (result) {
       this.vmCombindInfos.forEach((item) => {
         if (item.tmcOutNumberInfos) {
@@ -881,18 +881,22 @@ export class InternationalFlightBookDfPage
     ) => {
       await AppHelper.alert(
         !this.langService.isCn
-          ? `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-            item.bookInfo.credential.Givenname)
-          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
-          }】 ${msg} Information cannot be empty`
-          : `${(item.credentialStaff && item.credentialStaff.Name) ||
-          (item.bookInfo.credential &&
-            item.bookInfo.credential.Surname +
-            item.bookInfo.credential.Givenname)
-          } 【${item.bookInfo.credential && item.bookInfo.credential.Number
-          }】 ${msg} 信息不能为空`
+          ? `${
+              (item.credentialStaff && item.credentialStaff.Name) ||
+              (item.bookInfo.credential &&
+                item.bookInfo.credential.Surname +
+                  item.bookInfo.credential.Givenname)
+            } 【${
+              item.bookInfo.credential && item.bookInfo.credential.Number
+            }】 ${msg} Information cannot be empty`
+          : `${
+              (item.credentialStaff && item.credentialStaff.Name) ||
+              (item.bookInfo.credential &&
+                item.bookInfo.credential.Surname +
+                  item.bookInfo.credential.Givenname)
+            } 【${
+              item.bookInfo.credential && item.bookInfo.credential.Number
+            }】 ${msg} 信息不能为空`
       );
       this.moveRequiredEleToViewPort(ele);
     };
@@ -1041,10 +1045,11 @@ export class InternationalFlightBookDfPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${p.Mobile
-          ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
-          : combindInfo.credentialStaffOtherMobile
-          }`;
+        p.Mobile = `${
+          p.Mobile
+            ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
+            : combindInfo.credentialStaffOtherMobile
+        }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -1054,10 +1059,11 @@ export class InternationalFlightBookDfPage
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${p.Email
-          ? p.Email + "," + combindInfo.credentialStaffOtherEmail
-          : combindInfo.credentialStaffOtherEmail
-          }`;
+        p.Email = `${
+          p.Email
+            ? p.Email + "," + combindInfo.credentialStaffOtherEmail
+            : combindInfo.credentialStaffOtherEmail
+        }`;
       }
       if (combindInfo.insuranceProducts) {
         p.InsuranceProducts = [];
@@ -1153,6 +1159,14 @@ export class InternationalFlightBookDfPage
           "orderTravelPayTypeid",
           "orderTravelPayTypeid"
         );
+        if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+          const tip = this.langService.isEn
+            ? "Payment method is not set, please contact customer service."
+            : "没有可选择的支付方式或支付方式已经被关闭，请联系客服。";
+          AppHelper.alert(tip);
+          this.moveRequiredEleToViewPort(el);
+          return false;
+        }
         showErrorMsg(
           LanguageHelper.Flight.getrOderTravelPayTypeTip(),
           combindInfo,
@@ -1201,7 +1215,7 @@ export class InternationalFlightBookDfPage
     let tmp = credentials;
     tmp = [];
     if (credentials) {
-      // credentials = credentials.filter((t) => t.Type != CredentialsType.IdCard 
+      // credentials = credentials.filter((t) => t.Type != CredentialsType.IdCard
       // &&t.Type !=CredentialsType.AlienPermanentResidenceIdCard
       // &&t.Type !=CredentialsType.Other
       // &&t.Type !=CredentialsType.ResidencePermit);
@@ -1209,8 +1223,8 @@ export class InternationalFlightBookDfPage
         const hasHKMO = this.searchModel.trips.some((t) => {
           return "HK,MO".includes(
             t.bookInfo &&
-            t.bookInfo.flightRoute &&
-            t.bookInfo.flightRoute.ToCountry
+              t.bookInfo.flightRoute &&
+              t.bookInfo.flightRoute.ToCountry
           );
         });
         const hasTW = this.searchModel.trips.some((t) => {
@@ -1227,15 +1241,20 @@ export class InternationalFlightBookDfPage
         }
         if (hasHKMO) {
           credentials = credentials.filter(
-            (t) => t.Type == CredentialsType.Passport
-              || t.Type == CredentialsType.HmPass);
+            (t) =>
+              t.Type == CredentialsType.Passport ||
+              t.Type == CredentialsType.HmPass
+          );
         } else if (hasTW) {
           credentials = credentials.filter(
-            (t) => t.Type == CredentialsType.Passport
-              || t.Type == CredentialsType.TwPass);
+            (t) =>
+              t.Type == CredentialsType.Passport ||
+              t.Type == CredentialsType.TwPass
+          );
         } else {
           credentials = credentials.filter(
-            (t) => t.Type == CredentialsType.Passport);
+            (t) => t.Type == CredentialsType.Passport
+          );
         }
       }
     }
@@ -1610,20 +1629,20 @@ export class InternationalFlightBookDfPage
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-              return {
-                checked: idx == 0,
-                mobile,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  mobile,
+                };
+              })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-              return {
-                checked: idx == 0,
-                email,
-              };
-            })
+                return {
+                  checked: idx == 0,
+                  email,
+                };
+              })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
