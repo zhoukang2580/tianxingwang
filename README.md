@@ -264,3 +264,4 @@ pods/target support files/pods-项目名称.debug.xcconfig,pods-项目名称.rel
 1.项目蓝色图标－>Targets->General->Linked Frameworks and Libraries
 2.删除 Pods_XXX___.frameworks
 可以成功编译
+如果ios发布，确定不需要background modes的voice ip的功能，则在编译的时候，在tagets 里面的signing&capabilities里面的modes处把voice over id 的√去掉。不要选中，然后编译发布，否则发布要提供视频demo证明需要这个功能！没有提供就审核被拒！
