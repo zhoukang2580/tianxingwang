@@ -15,6 +15,9 @@
 </ion-header>
 
 <ion-content>
+  <h2 *ngIf='!isWechatMini' class="tip">
+    请联系贵司人事，扫二维码完成相关认证
+  </h2>
   <ng-container *ngIf='isWechatMini'>
     <div class="img">
       <div class="swiper-container" #container>
@@ -22,7 +25,8 @@
           <ng-container *ngIf='banners?.length else deftpl'>
             <div class="swiper-slide" *ngFor='let pic of banners'>
               <img [lazyLoad]='pic.ImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl'
-                style="object-fit: cover;-o-object-fit: cover; max-height: 40vh;width: 100vw; height: 40vh;" /></div>
+                style="object-fit: cover;-o-object-fit: cover; max-height: 40vh;width: 100vw; height: 40vh;" />
+            </div>
           </ng-container>
           <ng-template #deftpl>
             <div class="swiper-slide">
@@ -30,7 +34,8 @@
               -o-object-fit: cover;
               max-height: 40vh;
               width: 100vw;
-              height: 40vh;" /></div>
+              height: 40vh;" />
+            </div>
           </ng-template>
         </div>
       </div>
