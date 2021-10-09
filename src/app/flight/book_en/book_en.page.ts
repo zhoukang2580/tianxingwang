@@ -300,6 +300,10 @@ export class BookEnPage
         )
       );
     }
+    if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+      this.orderTravelPayType = null;
+    }
+
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
   }
   getExplain(explain: string) {

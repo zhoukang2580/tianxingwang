@@ -1227,6 +1227,9 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.orderTravelPayTypes,
       `viewModel.orderTravelPayType=${this.viewModel.orderTravelPayType}`
     );
+    if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+      this.viewModel.orderTravelPayType = null;
+    }
   }
   onOrderTravelPayTypeSelect(pt: { value: number }) {
     this.orderTravelPayTypes = this.orderTravelPayTypes.map((it) => {

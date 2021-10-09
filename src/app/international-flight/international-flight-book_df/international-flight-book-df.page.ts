@@ -234,6 +234,9 @@ export class InternationalFlightBookDfPage
         cabinPaytypes.some((cbt) => cbt == it.label)
       );
     }
+    if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+      this.orderTravelPayType = null;
+    }
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
   }
   getExplain(explain: string) {

@@ -414,6 +414,9 @@ export class FlightBookDfPage
         )
       );
     }
+    if (!this.orderTravelPayTypes || !this.orderTravelPayTypes.length) {
+      this.orderTravelPayType = null;
+    }
     console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
   }
   getExplain(explain: string) {
