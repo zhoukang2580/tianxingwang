@@ -74,7 +74,12 @@
                 <div class="check-all" (click)="onUpdate($event,item)">
                     <div class="inside">
                         <div class="left">
-                            <div class="name">{{item?.passengerEntity?.Name}}</div>
+                            <div class="name">
+                                <div class="ind">{{index+1}}</div>
+                                <span style="padding-left: 8px;">
+                                    {{item?.passengerEntity?.Name}}
+                                </span>
+                            </div>
                             <div class="id">
                                 <div class="idcard">{{item?.passengerEntity?.CredentialsTypeName}}</div>
                                 <span *ngIf="item?.passengerEntity?.CredentialsTypeName == '身份证'">
