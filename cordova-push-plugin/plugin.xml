@@ -236,10 +236,10 @@
     </config-file>
 
     <config-file target="*-Info.plist" parent="UIBackgroundModes">
-      <array>
+      <!-- <array>
         <string>remote-notification</string>
         <string>voip</string>
-      </array>
+      </array> -->
     </config-file>
 
     <config-file target="*-Debug.plist" parent="aps-environment">
