@@ -163,6 +163,7 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
   activeTab: ProductItem;
   curIndex = 0;
   hotIndex = 0;
+  private isGetLocation=false;
   constructor(
     private mapService: MapService,
     private identityService: IdentityService,
@@ -188,7 +189,15 @@ export class TmcHomeDfPage implements OnInit, OnDestroy, AfterViewInit {
     route.queryParamMap.subscribe(async (p) => {
       this.clearBookInfos();
       this.check();
-      this.hotelService.getMyPosition().catch();
+      if(!this.isGetLocation){
+        this.hotelService.getMyPosition()
+        .then(()=>{
+          this.isGetLocation=true;
+        })
+        .catch(()=>{
+          this.isGetLocation=false;
+        });
+      }
       this.isAgent = this.tmcService.isAgent;
       if (p.get("selectedCompany")) {
         this.tmcService.setSelectedCompanySource(p.get("selectedCompany"));
