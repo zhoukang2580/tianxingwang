@@ -301,7 +301,7 @@
       <ion-icon name="caret-down-outline" color="secondary" *ngIf="!isShowFee"></ion-icon>
       <ion-icon name="caret-up-outline" color="secondary" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
-    <ion-button class="submit" slot="end" size="small"  color="secondary" (click)="bookTrainBy12306($event)" [disabled]="isSubmitDisabled">12306 Book
+    <ion-button class="submit" slot="end" size="small"  *ngIf='isShow12306BookBtn' color="secondary" (click)="bookTrainBy12306($event)" [disabled]="isSubmitDisabled">12306 Book
     </ion-button>
     <ion-button class="submit" slot="end" size="small" color="secondary" *ngIf='isShowSubmitBtn' (click)="bookTrain(false,$event)" [disabled]="isSubmitDisabled">Submit
     </ion-button>

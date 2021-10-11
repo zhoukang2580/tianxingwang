@@ -102,6 +102,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
   isShowSubmitBtn = false;
+  isShow12306BookBtn = true;
   isShowOtherInfo = false;
   // @Input() isOtherCostCenter: boolean;
   // @Input() otherCostCenterCode: string;
@@ -166,6 +167,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.navCtrl.pop();
   }
   async doRefresh(byUser: boolean) {
+    this.isShow12306BookBtn=!this.isExchangeBook();
     this.staffService.isSelfBookType().then((is) => {
       this.isSelfBookType = is;
     });

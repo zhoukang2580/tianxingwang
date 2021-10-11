@@ -92,6 +92,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
   isShowSubmitBtn = false;
+  isShow12306BookBtn = true;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -145,6 +146,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     return !!ticket;
   }
   async doRefresh(byUser: boolean) {
+    this.isShow12306BookBtn=!this.isExchangeBook();
     this.staffService.isSelfBookType().then((is) => {
       this.isSelfBookType = is;
     });
