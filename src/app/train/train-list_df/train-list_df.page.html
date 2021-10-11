@@ -1,5 +1,5 @@
-<ion-header >
-  <ion-toolbar >
+<ion-header>
+  <ion-toolbar>
     <ion-buttons slot='start'>
       <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
@@ -8,16 +8,12 @@
         <span class="city-name">
           {{vmFromCity?.CityName||vmFromCity?.Name}}
         </span>
-        <!-- <ion-icon name='caret-down-outline' *ngIf=' !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked'></ion-icon> -->
       </ion-text>
       <ion-text color='{{!searchTrainModel?.isExchange&&!searchTrainModel?.isLocked&&!searchTrainModel?.IsRangeExchange ?"secondary":"medium"}}'>
         <i (click)='onSwapStation()'><img src="assets/images/3.png" alt=""></i>
-        <!-- <div (click)='onSwapStation()'> -->
-        <!-- </div> -->
       </ion-text>
       <ion-text (click)='onSelectStation(false)' class='to-station' color='{{searchTrainModel?.isExchange||!searchTrainModel?.isLocked &&!searchTrainModel?.IsRangeExchange?"secondary":"medium"}}'>
         <span class="city-name">{{vmToCity?.CityName||vmToCity?.Name}}</span>
-        <!-- <ion-icon name='caret-down-outline' *ngIf='searchTrainModel?.isExchange||!searchTrainModel?.isLocked'></ion-icon> -->
       </ion-text>
     </ion-title>
     <ion-buttons slot='end'>

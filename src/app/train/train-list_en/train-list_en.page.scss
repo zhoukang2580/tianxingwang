@@ -38,15 +38,7 @@ ion-content {
     text-align: center;
   }
 }
-ion-title {
-  font-size: 0.9rem;
-  &.text-start {
-    text-align: start;
-  }
-  &.text-center {
-    text-align: center;
-  }
-}
+
 .xs-font-size {
   font-size: 0.6rem;
 }
@@ -100,4 +92,29 @@ ion-list.fakelist {
 }
 .icon-search-train {
   margin: 0 1em;
+}
+.title {
+  font-size: 0.9rem;
+  &.text-start {
+    text-align: start;
+  }
+  &.text-center {
+    text-align: center;
+  }
+}
+.icon-search-train {
+  margin: 0 1em;
+}
+
+img {
+  width: 14px;
+  margin: 0px 7px -4px;
+}
+
+.city-name {
+  font-size: 14px;
+  color: #000;
+}
+[color="medium"] .city-name {
+  color: var(--ion-color-medium);
 }

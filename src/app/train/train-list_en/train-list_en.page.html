@@ -1,5 +1,5 @@
 <ion-header class='ion-text-center'>
-  <ion-toolbar>
+  <!-- <ion-toolbar>
     <ion-buttons slot='start'>
       <app-back-button defaultHref=''></app-back-button>
     </ion-buttons>
@@ -20,6 +20,35 @@
         <ion-icon name='caret-down-outline' *ngIf='searchTrainModel?.isExchange||!searchTrainModel?.isLocked'></ion-icon>
       </ion-text>
     </ion-title>
+  </ion-toolbar> -->
+  <ion-toolbar >
+    <ion-buttons slot='start'>
+      <app-back-button defaultHref=''></app-back-button>
+    </ion-buttons>
+    <ion-title class='sm-font-size title' [class.ion-text-start]='(isShowAddPassenger$|async)' [class.ion-text-center]='!(isShowAddPassenger$|async)'>
+      <ion-text (click)='onSelectStation(true)' color='{{ !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked&&!searchTrainModel?.IsRangeExchange ?"secondary":"medium"}}' class='from-station'>
+        <span class="city-name">
+          {{vmFromCity?.CityName||vmFromCity?.Name}}
+        </span>
+      </ion-text>
+      <ion-text color='{{!searchTrainModel?.isExchange&&!searchTrainModel?.isLocked&&!searchTrainModel?.IsRangeExchange ?"secondary":"medium"}}'>
+        <i (click)='onSwapStation()'><img src="assets/images/3.png" alt=""></i>
+      </ion-text>
+      <ion-text (click)='onSelectStation(false)' class='to-station' color='{{searchTrainModel?.isExchange||!searchTrainModel?.isLocked &&!searchTrainModel?.IsRangeExchange?"secondary":"medium"}}'>
+        <span class="city-name">{{vmToCity?.CityName||vmToCity?.Name}}</span>
+      </ion-text>
+    </ion-title>
+    <ion-buttons slot='end'>
+      <ion-button fill='clear' color='secondary' (click)='filterPolicyTrains()' size='small'>
+        <ion-text class='sm-font-size'>Policy</ion-text>
+      </ion-button>
+      <ion-button fill='clear' *ngIf='(isShowAddPassenger$|async)&& !searchTrainModel?.isExchange&&!searchTrainModel?.isLocked' color='secondary' size='small' (click)='onSelectPassenger()'>
+        <ion-icon color='secondary' name="person-add-outline"></ion-icon>
+        <ion-badge color='danger' *ngIf='selectedPassengersNumbers$|async as n'>
+          <ion-text color='light' class='xs-font-size'>{{n}}</ion-text>
+        </ion-badge>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content #cnt>

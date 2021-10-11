@@ -1,4 +1,4 @@
-<ion-header>
+<!-- <ion-header>
     <ion-toolbar>
         <ion-buttons slot='start'>
             <app-back-button defaultHref=''></app-back-button>
@@ -59,4 +59,61 @@
             </ng-container>
         </ion-card-content>
     </ion-card>
-</ion-content>
+</ion-content> -->
+
+<ion-header>
+    <ion-toolbar style="--border-width: 0;">
+      <ion-buttons slot='start'>
+        <app-back-button color='light' defaultHref=''></app-back-button>
+      </ion-buttons>
+      <ion-text class="ion-text" *ngIf='isShowSelectedInfos$ |async'>火车票查询</ion-text>
+      <ion-title *ngIf='!(isShowSelectedInfos$ |async)'>火车票查询</ion-title>
+      <ion-buttons class='small-font' slot='end'>
+        <ion-button *ngIf='(isShowSelectedInfos$ |async)&&(!searchTrainModel?.isExchange)' fill='clear' color='secondary' size='small' (click)='onShowSelectedBookInfos()'>已选行程<ion-badge color='danger'>
+            <ion-text color='light'>{{selectedBookInfos}}</ion-text>
+          </ion-badge>
+        </ion-button>
+        <ion-button fill='clear' color='secondary' size='small' (click)='onSelectPassenger()' *ngIf='canAddPassengers&&(!searchTrainModel?.isExchange)'>
+          <ion-icon name="person-add-outline"></ion-icon>
+          <ion-badge color='danger'>
+            <ion-text color='light'>
+              {{selectedPassengers}}
+            </ion-text>
+          </ion-badge>
+        </ion-button>
+        <ion-button fill='clear' color='secondary' size='small' (click)='onShowStandardDesc()' *ngIf='isSelf'>Policy
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content style="z-index: 99;--background: transparent;">
+    <ion-card class='ion-padding'>
+      <ion-text color='danger' style="opacity: 0.7;font-size: 0.7rem;" *ngIf='searchTrainModel?.isExchange'>{{exchangeTip}}
+      </ion-text>
+      <ion-card-content>
+        <ion-buttons class="ion-justify-content-between">
+          <ion-text style="font-size: 1.5em;" class="ion-text-wrap city-name ion-text-start" [class.disabled]='searchTrainModel?.isLocked || searchTrainModel?.isExchange' (click)='onSelectCity(true)'
+            color='{{searchTrainModel?.isLocked && searchTrainModel?.isExchange?"medium":"dark"}}'>
+            {{searchTrainModel?.fromCity?.Nickname}}</ion-text>
+          <ion-button color='{{searchTrainModel?.isLocked&&searchTrainModel?.isExchange?"medium":"secondary"}}' [disabled]='searchTrainModel?.isLocked&&searchTrainModel?.isExchange'
+            (click)='onSwapCity()'>
+            <img src="assets/images/qiehuan.png" style="width: 35px;" alt="">
+          </ion-button>
+          <ion-text style="font-size: 1.5em;" class="ion-text-wrap city-name ion-text-end"
+            [class.disabled]='(searchTrainModel?.isLocked && !searchTrainModel?.isExchange )|| searchTrainModel?.IsRangeExchange' (click)='onSelectCity(false)'
+            color='{{(searchTrainModel?.isLocked && !searchTrainModel?.isExchange )|| searchTrainModel?.IsRangeExchange?"medium":"dark"}}'>
+            {{searchTrainModel?.toCity?.Nickname}}</ion-text>
+        </ion-buttons>
+        <section class="flight-date">
+          <app-search-day-comp [day]='goDate'  (click)="onSelecDate(true)" [disabled]='searchTrainModel?.isLocked&&!searchTrainModel?.isExchange'>
+          </app-search-day-comp>
+        </section>
+        <ion-button class='ion-margin-top' style='width: 100%;' (click)="searchTrain()" color="secondary" expand="block">
+          <ion-text class="text_search">Search</ion-text>
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ion-content>
+  <div class="img_bg">
+    <img src="assets/images/train_bj.png" alt="">
+  </div>

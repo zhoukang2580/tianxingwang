@@ -203,22 +203,22 @@ export class CalendarService {
     }
     return df;
   }
-  getDayOfWeekNames(n: number) {
+  getDayOfWeekNames(n: number,isAbbreviation=true) {
     switch (n) {
       case 0:
-        return LanguageHelper.getSundayTip();
+        return LanguageHelper.getSundayTip(isAbbreviation);
       case 1:
-        return LanguageHelper.getMondayTip();
+        return LanguageHelper.getMondayTip(isAbbreviation);
       case 2:
-        return LanguageHelper.getTuesdayTip();
+        return LanguageHelper.getTuesdayTip(isAbbreviation);
       case 3:
-        return LanguageHelper.getWednesdayTip();
+        return LanguageHelper.getWednesdayTip(isAbbreviation);
       case 4:
-        return LanguageHelper.getThursdayTip();
+        return LanguageHelper.getThursdayTip(isAbbreviation);
       case 5:
-        return LanguageHelper.getFridayTip();
+        return LanguageHelper.getFridayTip(isAbbreviation);
       case 6:
-        return LanguageHelper.getSaturdayTip();
+        return LanguageHelper.getSaturdayTip(isAbbreviation);
     }
   }
   private getCalendars(beginDate: string, endDate: string) {

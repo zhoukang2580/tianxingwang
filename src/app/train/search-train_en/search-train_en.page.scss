@@ -1,66 +1,115 @@
-ion-content {
-    background-position: center;
-    background-attachment: scroll;
-    ion-segment {
-        --indicator-color: rgba(var(--ion-color-dark-rgb), 0.16);
-    }
-    ion-toolbar {
-        --background: transparent;
-    }
-    ion-buttons.small-font {
-        font-size: 0.6rem;
-    }
-    .flight-date {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        .date-week {
-            display: flex;
-            align-items: flex-end;
-            margin: 0 0.5rem;
-            h2 {
-                font-size: 1.2rem;
-            }
-            h6 {
-                margin-left: 0.5rem;
-                font-size: 0.7rem;
-            }
-        }
-    }
-    .tabs {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        width: 100%;
-        ion-button {
-            --height: auto;
-            --padding-start: 0;
-            --padding-end: 0;
-            --border-radius: 0;
-            --opacity: 1;
-            ion-label {
-                margin: 0;
-                h6 {
-                    font-size: 0.7rem;
-                }
-            }
-            &.button-ios {
-                ion-icon[name="airplane"] {
-                    transform: rotateZ(-30deg);
-                }
-            }
-            &.button-md {
-                ion-icon[name="airplane"] {
-                    transform: rotateZ(72deg);
-                }
-            }
-        }
-    }
+.ion-text {
+  color: #fff;
 }
 
-.danger {
-    font-size: 6px;
-    max-width: 10px;
+ion-content {
+  background-position: center;
+  background-attachment: scroll;
+  ion-segment {
+    --indicator-color: rgba(var(--ion-color-dark-rgb), 0.16);
+  }
+  ion-toolbar {
+    --background: transparent;
+  }
+
+  ion-buttons.small-font {
+    font-size: 0.6rem;
+  }
+
+  .flight-date {
+    padding: 1em 0;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: space-between;
+    .date-week {
+      display: flex;
+      align-items: flex-end;
+      margin: 0 0.5rem;
+      h2 {
+        font-size: 1.2rem;
+      }
+      h6 {
+        margin-left: 0.5rem;
+        font-size: 0.7rem;
+      }
+    }
+  }
+  .tabs {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+    ion-button {
+      --height: auto;
+      --padding-start: 0;
+      --padding-end: 0;
+      --border-radius: 0;
+      --opacity: 1;
+      ion-label {
+        margin: 0;
+        h6 {
+          font-size: 0.7rem;
+        }
+      }
+      &.button-ios {
+        ion-icon[name="airplane"] {
+          transform: rotateZ(-30deg);
+        }
+      }
+      &.button-md {
+        ion-icon[name="airplane"] {
+          transform: rotateZ(72deg);
+        }
+      }
+    }
+  }
+}
+.city-name {
+  flex-basis: 45%;
+  &.disabled {
+    color: var(--ion-color-medium);
+  }
+}
+.img_bg {
+  width: 109%;
+  position: absolute;
+  left: -10px;
+  top: -2px;
+  right: 0;
+  height: 260px;
+  z-index: 90;
+}
+ion-title {
+  color: #fff;
+  text-align: center;
+}
+
+ion-header {
+  z-index: 100;
+}
+ion-toolbar {
+  --background: transparent;
+  --border-width: 0;
+}
+
+ion-card {
+  box-shadow: none;
+  z-index: 100;
+  position: relative;
+  top: 18%;
+}
+ion-content {
+  --background: #ffffff;
+}
+//   ion-card-content {
+//     line-height: 5rem;
+//   }
+
+.ion-margin-top {
+  --border-radius: 20px;
+  height: 2.6em;
+}
+
+.text_search {
+  font-size: 1.2em;
 }

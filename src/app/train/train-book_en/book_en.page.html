@@ -41,7 +41,7 @@
           <ion-item-divider>Passenger information:</ion-item-divider>
           <ion-item [disabled]='searchTrainModel?.isExchange'>
             <div style='width: 100%'>
-              <app-book-credential-comp_en [attr.credentialcompid]='combindInfo.id'
+              <app-book-credential-comp [attr.credentialcompid]='combindInfo.id'
                 [credential]='combindInfo?.vmCredential' *ngIf='!searchTrainModel?.isExchange else excredentialTemp'
                 [canEdit]='true' [canEditNumber]='false'
                 [isself]='isSelfBookType'
@@ -49,7 +49,7 @@
                 [canEditName]='combindInfo?.vmCredential.Type==CredentialsType.HvPass||combindInfo?.vmCredential.Type==CredentialsType.Taiwan'
                 (savecredential)='onSavecredential($event,combindInfo)' [credentials]='combindInfo?.credentials'
                 (modify)='onModify(combindInfo)'>
-              </app-book-credential-comp_en>
+              </app-book-credential-comp>
               <ng-template #excredentialTemp>
                 <app-book-credential-comp [attr.credentialcompid]='combindInfo.id' [canEdit]='false' 
                   [credential]='combindInfo?.vmCredential' (savecredential)='onSavecredential($event,combindInfo)'

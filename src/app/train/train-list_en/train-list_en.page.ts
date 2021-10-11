@@ -1,16 +1,13 @@
-import {
-  Component, Input,
-} from "@angular/core";
-// tslint:disable-next-line: max-line-length
-import { TrainListPage } from '../train-list/train-list.page';
+import { Component, Input } from "@angular/core";
+import { TrainListBasePage } from "../train-list/train-list-base.page";
 @Component({
   selector: "app-train-list_en",
   templateUrl: "./train-list_en.page.html",
   styleUrls: ["./train-list_en.page.scss"],
 })
-export class TrainListEnPage extends TrainListPage {
+export class TrainListEnPage extends TrainListBasePage {
   @Input() langOpt = {
-    about : "",
+    about: "",
     time: "H",
     minute: "m",
     isStopInfo: "Stop",
@@ -19,6 +16,6 @@ export class TrainListEnPage extends TrainListPage {
     Left: "Left",
     agreement: "agreement",
     agreementDesc: "agreementDesc",
-    reserve: "Book"
-  }
+    reserve: "Book",
+  };
 }

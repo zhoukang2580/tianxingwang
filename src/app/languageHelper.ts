@@ -371,11 +371,11 @@ export class LanguageHelper {
   static getTaiwanEpTip(): string {
     return "入台证";
   }
-  
+
   static getResidencePermit(): string {
     return "港澳台居民身份证";
   }
-  
+
   static getAlienPermanentResidenceIdCard(): string {
     return "外国人永久居留身份证";
   }
@@ -418,49 +418,56 @@ export class LanguageHelper {
   static getBackDateTip() {
     return "请选择返程日期";
   }
-  static getSundayTip() {
+  static getSundayTip(isAbbreviation = true) {
     if (LanguageHelper.lang == "en") {
+      if (isAbbreviation) return "Sun.";
       return "Sunday";
     }
     return "周日";
   }
-  static getMondayTip() {
+  static getMondayTip(isAbbreviation = true) {
     if (LanguageHelper.lang == "en") {
+      if (isAbbreviation) return "Mon.";
       return "Monday";
     }
     return "周一";
   }
-  static getTuesdayTip() {
+  static getTuesdayTip(isAbbreviation = true) {
     if (LanguageHelper.lang == "en") {
+      if (isAbbreviation) return "Tues.";
       return "Tuesday";
     }
     return "周二";
   }
-  static getWednesdayTip() {
+  static getWednesdayTip(isAbbreviation = true) {
     if (LanguageHelper.lang == "en") {
+      if (isAbbreviation) return "Wed.";
       return "Wednesday";
     }
     return "周三";
   }
-  static getThursdayTip() {
+  static getThursdayTip(isAbbreviation = true) {
     if (LanguageHelper.lang == "en") {
+      if (isAbbreviation) return "Thur.";
       return "Thursday";
     }
     return "周四";
   }
-  static getFridayTip() {
+  static getFridayTip(isAbbreviation = true) {
     if (LanguageHelper.lang == "en") {
+      if (isAbbreviation) return "Fri.";
       return "Friday";
     }
     return "周五";
   }
-  static getSaturdayTip() {
+  static getSaturdayTip(isAbbreviation = true) {
     if (LanguageHelper.lang == "en") {
+      if (isAbbreviation) return "Sat.";
       return "Saturday";
     }
     return "周六";
   }
-  static getTodayTip() {
+  static getTodayTip(isAbbreviation = false) {
     if (LanguageHelper.lang == "en") {
       return "Today";
     }
