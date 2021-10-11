@@ -448,18 +448,23 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         });
       }
     });
-    this.orderTravelPayType = this.initialBookDtoGpModel.DefaultPayType.Key;
-    if (
-      !this.orderTravelPayTypes ||
-      !this.orderTravelPayTypes.length ||
-      !this.orderTravelPayTypes.some(
-        (it) => it.value == +this.OrderTravelPayType
-      )
-    ) {
-      this.orderTravelPayType = null;
-    }
+    this.orderTravelPayType = this.getDefaultPayType(this.initialBookDtoGpModel.DefaultPayType.Key);
+  }
+  private getDefaultPayType(tmcPayType: number) {
+    const one = (this.orderTravelPayTypes || []).find(
+      (it) => it.value == tmcPayType
+    );
+    const key = Object.keys(OrderTravelPayType).find(
+      (k) => OrderTravelPayType[k] == (one && one.value)
+    );
+    const orderTravelPayType = key && OrderTravelPayType[key];
 
-    console.log(this.orderTravelPayTypes, "orderTravelPayType");
+    console.log(
+      "initOrderTravelPayTypes",
+      this.orderTravelPayTypes,
+      orderTravelPayType
+    );
+    return orderTravelPayType;
   }
 
   getInsuranceDetails(detail: string) {

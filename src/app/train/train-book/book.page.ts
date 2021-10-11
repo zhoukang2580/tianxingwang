@@ -925,15 +925,28 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       this.orderTravelPayTypes,
       `viewModel.orderTravelPayType=${this.viewModel.orderTravelPayType}`
     );
-    if (
-      !this.orderTravelPayTypes ||
-      !this.orderTravelPayTypes.length ||
-      !this.orderTravelPayTypes.some(
-        (it) => it.value == +this.OrderTravelPayType
-      )
-    ) {
-      this.orderTravelPayType = null;
+    this.orderTravelPayType = this.getDefaultPayType(
+      this.tmc && this.tmc.TrainPayType
+    );
+  }
+  private getDefaultPayType(tmcPayType: number) {
+    const one = (this.orderTravelPayTypes || []).find(
+      (it) => it.value == tmcPayType
+    );
+    const key = Object.keys(OrderTravelPayType).find(
+      (k) => OrderTravelPayType[k] == (one && one.value)
+    );
+    const orderTravelPayType = key && OrderTravelPayType[key];
+
+    console.log(
+      "initOrderTravelPayTypes",
+      this.orderTravelPayTypes,
+      orderTravelPayType
+    );
+    if (orderTravelPayType) {
+      one.checked = true;
     }
+    return orderTravelPayType;
   }
   onOrderTravelPayTypeSelect(pt: { value: number }) {
     this.orderTravelPayTypes = this.orderTravelPayTypes.map((it) => {

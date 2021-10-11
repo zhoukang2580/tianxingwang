@@ -234,16 +234,23 @@ export class InternationalFlightBookDfPage
         cabinPaytypes.some((cbt) => cbt == it.label)
       );
     }
-    if (
-      !this.orderTravelPayTypes ||
-      !this.orderTravelPayTypes.length ||
-      !this.orderTravelPayTypes.some(
-        (it) => it.value == +this.OrderTravelPayType
-      )
-    ) {
-      this.orderTravelPayType = null;
-    }
-    console.log("initOrderTravelPayTypes", this.orderTravelPayTypes);
+    this.orderTravelPayType = this.getDefaultPayType(this.tmc && this.tmc.IntFlightPayType);
+  }
+  private getDefaultPayType(tmcPayType: number) {
+    const one = (this.orderTravelPayTypes || []).find(
+      (it) => it.value == tmcPayType
+    );
+    const key = Object.keys(OrderTravelPayType).find(
+      (k) => OrderTravelPayType[k] == (one && one.value)
+    );
+    const orderTravelPayType = key && OrderTravelPayType[key];
+
+    console.log(
+      "initOrderTravelPayTypes",
+      this.orderTravelPayTypes,
+      orderTravelPayType
+    );
+    return orderTravelPayType;
   }
   getExplain(explain: string) {
     return explain && explain.replace(/\\n/g, "<br/>");
