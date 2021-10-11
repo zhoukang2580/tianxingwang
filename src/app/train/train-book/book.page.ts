@@ -670,7 +670,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           await this.trainService.getBindAccountNumber();
       }
       if (
-        !is12306Book &&
+        !is12306Book &&!this.isExchangeBook()&&
         this.initialBookDto &&
         (!this.initialBookDto.AccountNumber12306 ||
           !this.initialBookDto.AccountNumber12306.IsIdentity)
@@ -687,7 +687,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       }
-      if (is12306Book) {
+      if (is12306Book&&!this.isExchangeBook()) {
         isOfficialBooked = await this.checkAndBind12306(
           isNamePasswordValidateFail
         );

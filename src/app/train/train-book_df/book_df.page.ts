@@ -167,7 +167,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.navCtrl.pop();
   }
   async doRefresh(byUser: boolean) {
-    this.isShow12306BookBtn=!this.isExchangeBook();
+    this.isShow12306BookBtn = !this.isExchangeBook();
     this.staffService.isSelfBookType().then((is) => {
       this.isSelfBookType = is;
     });
@@ -782,18 +782,14 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
       if (
         !is12306Book &&
+        !this.isExchangeBook() &&
         this.initialBookDto &&
         (!this.initialBookDto.AccountNumber12306 ||
           !this.initialBookDto.AccountNumber12306.IsIdentity)
       ) {
         if (!isExchangeBook) {
-          isCancel = await AppHelper.alert(
-            tip2,
-            true,
-            "取消",
-            "验证12306"
-          );
-          if(isCancel){
+          isCancel = await AppHelper.alert(tip2, true, "取消", "验证12306");
+          if (isCancel) {
             return;
           }
           isOfficialBooked = !isCancel;
@@ -803,7 +799,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           }
         }
       }
-      if (is12306Book) {
+      if (is12306Book && !this.isExchangeBook()) {
         isOfficialBooked = await this.checkAndBind12306(
           isNamePasswordValidateFail
         );
