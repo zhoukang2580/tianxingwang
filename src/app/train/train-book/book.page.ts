@@ -76,6 +76,7 @@ import { OrderTrainTicketEntity } from "src/app/order/models/OrderTrainTicketEnt
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { OrderService } from "src/app/order/order.service";
 import { StorageService } from "src/app/services/storage-service.service";
+import { Validate12306Component } from "../components/validate12306/validate12306.component";
 
 @Component({
   selector: "app-train-book",
@@ -90,6 +91,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   private subscription = Subscription.EMPTY;
   searchTrainModel: SearchTrainModel;
   isSubmitDisabled = false;
+  isShowSubmitBtn = false;
   @ViewChildren(IonCheckbox) checkboxes: QueryList<IonCheckbox>;
   @ViewChild(IonContent) cnt: IonContent;
   @ViewChild(RefresherComponent) ionRefresher: RefresherComponent;
@@ -133,11 +135,21 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
   back() {
     this.navCtrl.pop();
   }
+  private isExchangeBook() {
+    const bookInfos = this.trainService
+      .getBookInfos()
+      .filter((it) => !!it.bookInfo);
+    const exchangeInfo = bookInfos.find((it) => !!it.exchangeInfo);
+    const exchange = exchangeInfo && exchangeInfo.exchangeInfo;
+    const ticket = exchange && exchange.ticket;
+    return !!ticket;
+  }
   async doRefresh(byUser: boolean) {
     this.staffService.isSelfBookType().then((is) => {
       this.isSelfBookType = is;
     });
     try {
+      this.isShowSubmitBtn = this.isExchangeBook();
       if (this.ionRefresher) {
         this.ionRefresher.complete();
         this.ionRefresher.disabled = true;
@@ -521,17 +533,120 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-  async bookTrain(isSave: boolean = false, event: CustomEvent) {
+  private async showBindTip() {
+    const tip1 = `12306官方规定已通过核验的常用乘客在添加后30天内不可删除；每个账号最多添加15个(含本人)常用乘客！`;
+    const exchangeInfo = this.trainService
+      .getBookInfos()
+      .find((it) => !!it.exchangeInfo);
+    const isExchangeBook =
+      exchangeInfo &&
+      exchangeInfo.exchangeInfo &&
+      !!exchangeInfo.exchangeInfo.ticket;
+    if (!this.isSelfBookType) {
+      if (!isExchangeBook) {
+        await AppHelper.alert(tip1, true);
+      }
+    }
+  }
+  async bookTrainBy12306(
+    event: CustomEvent,
+    isNamePasswordValidateFail = false
+  ) {
+    this.bookTrain(false, event, true, isNamePasswordValidateFail);
+  }
+  private async checkAndBind12306(isNamePasswordValidateFail: boolean) {
+    await this.showBindTip();
+    if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
+      if (this.initialBookDto.AccountNumber12306.IsIdentity) {
+        return true;
+      }
+    }
+    return this.validate12306(isNamePasswordValidateFail);
+  }
+  async onValidate12306() {
+    try {
+      await this.showBindTip();
+      const ok = await this.validate12306(false);
+      if (ok) {
+        this.initialBookDto.AccountNumber12306 =
+          await this.trainService.getBindAccountNumber();
+      }
+    } catch (e) {
+      console.error(e);
+      AppHelper.alert(e);
+    }
+  }
+  private async reloadAccount12306Number() {
+    if (this.initialBookDto) {
+      const accountNumber12306 = await this.trainService.getBindAccountNumber();
+      // 除了普通角色，其他角色后台可能不进行验证，所以，后台加载不到这个验证的账号信息
+      if (accountNumber12306 && accountNumber12306.Name) {
+        this.initialBookDto.AccountNumber12306 = accountNumber12306;
+      }
+      if (this.isSelfBookType) {
+        // 如果在验证界面退出了验证状态
+        if (!accountNumber12306 || !accountNumber12306.Name) {
+          this.initialBookDto.AccountNumber12306 = accountNumber12306;
+        }
+      }
+    }
+  }
+  private async validate12306(isNamePasswordValidateFail: boolean) {
+    try {
+      if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
+        this.initialBookDto.AccountNumber12306 =
+          await this.trainService.getBindAccountNumber();
+      }
+      const an = this.initialBookDto.AccountNumber12306;
+      const m = await AppHelper.modalController.create({
+        component: Validate12306Component,
+        componentProps: {
+          name: an && an.Name,
+          password: an && an.Number,
+          isNamePasswordValidateFail,
+        },
+      });
+      m.present();
+      const res = await m.onDidDismiss();
+      this.reloadAccount12306Number();
+      if (res && res.data) {
+        if (this.initialBookDto) {
+          // 以传入的为准
+          this.initialBookDto.AccountNumber12306 = {
+            Name: res.data.Name,
+            Number: res.data.Number,
+          };
+        }
+        return true;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return false;
+  }
+  async bookTrain(
+    isSave: boolean = false,
+    event: CustomEvent,
+    is12306Book: boolean = true,
+    isNamePasswordValidateFail = false
+  ) {
+    const exchangeInfo = this.trainService
+      .getBookInfos()
+      .find((it) => !!it.exchangeInfo);
+    const isExchangeBook =
+      exchangeInfo &&
+      exchangeInfo.exchangeInfo &&
+      !!exchangeInfo.exchangeInfo.ticket;
+    const tip2 = `您尚未验证12306账户,可能导致无法线上退改签,则需登陆乘车人12306账户或至火车站退改签`;
+    const tip3 = `您当前不是12306官方预订,可能导致无法线上退改签,则需登陆乘车人12306账户或至火车站退改签`;
     this.isShowFee = false;
+    const bookDto: OrderBookDto = new OrderBookDto();
+    bookDto.IsFromOffline = isSave;
     event.stopPropagation();
     if (this.isSubmitDisabled) {
       return;
     }
-    const exchangeInfo = this.trainService
-      .getBookInfos()
-      .find((it) => !!it.exchangeInfo);
-    const bookDto: OrderBookDto = new OrderBookDto();
-    bookDto.IsFromOffline = isSave;
+    let isCancel = false;
     let canBook = false;
     let canBook2 = false;
     this.viewModel.combindInfos = this.fillGroupConbindInfoApprovalInfo(
@@ -546,103 +661,131 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
     ) {
       bookDto.TicketId = exchangeInfo.exchangeInfo.ticket.Id;
     }
-    const exchangeTip = "改签申请提交成功";
     if (canBook && canBook2) {
+      let isOfficialBooked = false;
+      if (this.initialBookDto && !this.initialBookDto.AccountNumber12306) {
+        this.initialBookDto.AccountNumber12306 =
+          await this.trainService.getBindAccountNumber();
+      }
+      if (
+        !is12306Book &&
+        this.initialBookDto &&
+        (!this.initialBookDto.AccountNumber12306 ||
+          !this.initialBookDto.AccountNumber12306.IsIdentity)
+      ) {
+        if (!isExchangeBook) {
+          isCancel = await AppHelper.alert(tip2, true, "取消", "验证12306");
+          if (isCancel) {
+            return;
+          }
+          isOfficialBooked = !isCancel;
+          if (isOfficialBooked) {
+            this.bookTrainBy12306(event);
+            return;
+          }
+        }
+      }
+      if (is12306Book) {
+        isOfficialBooked = await this.checkAndBind12306(
+          isNamePasswordValidateFail
+        );
+        if (!isOfficialBooked) {
+          if (!isExchangeBook) {
+            isCancel = await AppHelper.alert(
+              tip2,
+              true,
+              "取消",
+              "重新验证12306"
+            );
+            if (isCancel) {
+              return;
+            }
+            isOfficialBooked = !isCancel;
+            if (isOfficialBooked) {
+              this.bookTrainBy12306(event);
+              return;
+            }
+          }
+        }
+        if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
+          this.initialBookDto.AccountNumber12306.IsIdentity = isOfficialBooked;
+        }
+      }
+      bookDto.IsOfficialBooked = isOfficialBooked;
+      if (!bookDto.IsOfficialBooked) {
+        if (!is12306Book) {
+          if (!isExchangeBook) {
+            if (!isCancel) {
+              isCancel = await AppHelper.alert(tip3, true, "取消", "12306预订");
+              if (isCancel) {
+                return;
+              }
+              if (!isCancel) {
+                this.bookTrainBy12306(event);
+                return;
+              }
+            }
+          }
+        }
+      }
+      if (bookDto.IsOfficialBooked) {
+        if (this.initialBookDto && this.initialBookDto.AccountNumber12306) {
+          bookDto.AccountNumber = this.initialBookDto.AccountNumber12306;
+        }
+      }
+      this.isSubmitDisabled = true;
       let res: IBookOrderResult;
       if (exchangeInfo && exchangeInfo.exchangeInfo) {
         res = await this.trainService.exchangeBook(bookDto).catch((e) => {
+          this.isSubmitDisabled = false;
           AppHelper.alert(e);
           return null;
         });
       } else {
-        res = await this.trainService.bookTrain(bookDto).catch((e) => {
-          const msg: string = e;
-          if (msg && /\d{11}-/.test(msg)) {
-            const tips = msg
-              .split("/")
-              .filter((it) => !!it)
-              .map((it) => {
-                const [phone, code] = it.split("-");
-                return `使用手机号${phone},发送验证码${code}到12306进行手机身份验证(验证码30分钟内有效)`;
-              })
-              .join("\r\n");
-            AppHelper.alert(tips);
-            return;
-          }
-          AppHelper.alert(e);
-          return null;
-        });
+        await this.trainService
+          .bookTrain(bookDto)
+          .then((r) => {
+            if (r.Status) {
+              res = r.Data;
+            } else {
+              this.isSubmitDisabled = false;
+              if (r.Code == "MessageCodeValidate") {
+                AppHelper.alert(r.Message).then((ok) => {
+                  if (
+                    this.initialBookDto &&
+                    this.initialBookDto.AccountNumber12306
+                  ) {
+                    this.initialBookDto.AccountNumber12306.IsIdentity = false;
+                  }
+                  this.bookTrainBy12306(event, true);
+                });
+                return;
+              }
+              if (r.Code == "TrainCheckPassenger") {
+                const msg: string = r.Message;
+                const ok = this.checkTrainCheckPassenger(msg);
+                if (ok) {
+                  return;
+                }
+              }
+              AppHelper.alert(r.Message);
+            }
+          })
+          .catch((e) => {
+            console.error(e);
+            this.isSubmitDisabled = false;
+            const msg: string = e;
+            const ok = this.checkTrainCheckPassenger(msg);
+            res = null;
+            if (ok) {
+              return;
+            }
+            return null;
+          });
       }
-      // if (res) {
-      //   if (res.TradeNo) {
-      //     this.isSubmitDisabled = true;
-      //     this.isSubmitDisabled = true;
-      //     let isHasTask = res.HasTasks;
-      //     let payResult = false;
-      //     const isself = await this.staffService.isSelfBookType();
-      //     if (!isSave) {
-      //       let checkPayResult = false;
-      //       if (res.IsCheckPay) {
-      //         this.isCheckingPay = true;
-      //         checkPayResult = await this.checkPay(res.TradeNo);
-      //         this.isCheckingPay = false;
-      //       } else {
-      //         payResult = true;
-      //       }
-      //       if (checkPayResult) {
-      //         if (res.HasTasks) {
-      //           if (isself) {
-      //             await AppHelper.alert(
-      //               exchangeInfo && exchangeInfo.exchangeInfo
-      //                 ? res.Message || exchangeTip
-      //                 : LanguageHelper.Order.getBookTicketWaitingApprovToPayTip(),
-      //               true
-      //             );
-      //           }
-      //         } else {
-      //           payResult = await this.tmcService.payOrder(res.TradeNo);
-      //         }
-      //       } else {
-      //         if (isself) {
-      //           await AppHelper.alert(
-      //             LanguageHelper.Order.getBookTicketWaitingTip(res.IsCheckPay),
-      //             true
-      //           );
-      //         }
-      //       }
-      //     } else {
-      //       if (isSave) {
-      //         await AppHelper.alert(
-      //           this.langService.isEn ? "Order saved" : "订单已保存!",
-      //           true
-      //         );
-      //       } else {
-      //         // await AppHelper.alert(
-      //         //   exchangeInfo && exchangeInfo.exchangeInfo
-      //         //     ? res.Message || exchangeTip
-      //         //     : this.langService.isEn
-      //         //       ? "Checkout success"
-      //         //       : "下单成功!",
-      //         //   true
-      //         // );
-      //       }
-      //     }
-      //     this.trainService.removeAllBookInfos();
-      //     this.viewModel.combindInfos = [];
-      //     this.trainService.setSearchTrainModelSource({
-      //       ...this.trainService.getSearchTrainModel(),
-      //       isExchange: false,
-      //       isLocked: false,
-      //     });
-      //     const isExchange = exchangeInfo && !!exchangeInfo.exchangeInfo;
-      //     // const isApproval =
-      //     this.goToMyOrders({ isExchange, payResult, isHasTask:isHasTask&&isself });
-      //   }
-      // }
       if (res) {
         if (res.TradeNo && res.TradeNo != "0") {
           this.isPlaceOrderOk = true;
-          this.isSubmitDisabled = true;
           let isHasTask = res.HasTasks;
           let payResult = false;
           this.trainService.removeAllBookInfos();
@@ -669,8 +812,10 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
                 // }
                 if (isCheckPay) {
                   const isp =
-                    this.orderTravelPayType == OrderTravelPayType.Person ||
-                    this.orderTravelPayType == OrderTravelPayType.Credit;
+                    this.viewModel.orderTravelPayType ==
+                      OrderTravelPayType.Person ||
+                    this.viewModel.orderTravelPayType ==
+                      OrderTravelPayType.Credit;
                   payResult = await this.orderService.payOrder(
                     res.TradeNo,
                     null,
@@ -680,7 +825,7 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
                 }
               }
             } else {
-              if (isSelf) {
+              if (isSelf && isCheckPay) {
                 await AppHelper.alert(
                   LanguageHelper.Order.getBookTicketWaitingTip(isCheckPay),
                   true
@@ -706,6 +851,39 @@ export class TrainBookPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+  private checkTrainCheckPassenger(msg: string) {
+    if (msg && /\d{11}-/.test(msg)) {
+      let vcode = "";
+      const tips = msg
+        .split("/")
+        .filter((it) => !!it)
+        .map((it) => {
+          const [phone, code] = it.split("-");
+          vcode = code;
+          return `使用手机号${phone},发送验证码${code}到12306进行手机身份验证(验证码30分钟内有效)`;
+        })
+        .join("\r\n");
+      if (AppHelper.isApp()) {
+        AppHelper.alert(tips, true, "用本机号码发送", "取消").then((ok) => {
+          if (ok) {
+            this.onSendSms(vcode);
+          }
+        });
+      } else {
+        AppHelper.alert(tips);
+      }
+      return true;
+    }
+    return false;
+  }
+  private onSendSms(vcode: string) {
+    const a = document.createElement("a");
+    a.href = `sms:12306${
+      AppHelper.platform.is("ios") ? "&" : "?"
+    }body=${vcode}`;
+    a.click();
+  }
+
   private getTotalServiceFees() {
     let fees = 0;
     if (this.initialBookDto && this.initialBookDto.ServiceFees) {

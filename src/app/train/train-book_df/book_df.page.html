@@ -364,9 +364,9 @@
       <ion-icon name="chevron-down-outline" *ngIf="!isShowFee"></ion-icon>
       <ion-icon name="chevron-up-outline" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
-    <ion-button class="submit" slot="end" size="small" *ngIf='isShowBind12306btn' color="secondary" (click)="bookTrainBy12306($event)" [disabled]="isSubmitDisabled">12306预订
+    <ion-button class="submit" slot="end" size="small"  color="secondary" (click)="bookTrainBy12306($event)" [disabled]="isSubmitDisabled">12306预订
     </ion-button>
-    <ion-button class="submit" slot="end" size="small" color="secondary" (click)="bookTrain(false,$event)" [disabled]="isSubmitDisabled">提交订单
+    <ion-button class="submit" slot="end" size="small" color="secondary" *ngIf='isShowSubmitBtn' (click)="bookTrain(false,$event)" [disabled]="isSubmitDisabled">提交订单
     </ion-button>
   </ion-toolbar>
 </ion-footer>

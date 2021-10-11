@@ -103,7 +103,6 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   isSubmitDisabled = false;
   isShowSubmitBtn = false;
   isShowOtherInfo = false;
-  isShowBind12306btn = true;
   // @Input() isOtherCostCenter: boolean;
   // @Input() otherCostCenterCode: string;
   // @Input() otherCostCenterName: string;
@@ -171,7 +170,6 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.isSelfBookType = is;
     });
     try {
-      this.isShowBind12306btn = !this.isExchangeBook();
       this.isShowSubmitBtn = this.isExchangeBook();
       if (this.ionRefresher) {
         this.ionRefresher.complete();
@@ -665,7 +663,6 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     event: CustomEvent,
     isNamePasswordValidateFail = false
   ) {
-    this.isShowBind12306btn = true;
     this.bookTrain(false, event, true, isNamePasswordValidateFail);
   }
   private async checkAndBind12306(isNamePasswordValidateFail: boolean) {
@@ -741,7 +738,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
   async bookTrain(
     isSave: boolean = false,
     event: CustomEvent,
-    is12306Book: boolean = false,
+    is12306Book: boolean = true,
     isNamePasswordValidateFail = false
   ) {
     const exchangeInfo = this.trainService
@@ -760,7 +757,7 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
     if (this.isSubmitDisabled) {
       return;
     }
-    let isDirectBook = false;
+    let isCancel = false;
     let canBook = false;
     let canBook2 = false;
     this.viewModel.combindInfos = this.fillGroupConbindInfoApprovalInfo(
@@ -788,13 +785,16 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
           !this.initialBookDto.AccountNumber12306.IsIdentity)
       ) {
         if (!isExchangeBook) {
-          isDirectBook = await AppHelper.alert(
+          isCancel = await AppHelper.alert(
             tip2,
             true,
-            "直接预订",
+            "取消",
             "验证12306"
           );
-          isOfficialBooked = !isDirectBook;
+          if(isCancel){
+            return;
+          }
+          isOfficialBooked = !isCancel;
           if (isOfficialBooked) {
             this.bookTrainBy12306(event);
             return;
@@ -807,13 +807,16 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
         );
         if (!isOfficialBooked) {
           if (!isExchangeBook) {
-            isDirectBook = await AppHelper.alert(
+            isCancel = await AppHelper.alert(
               tip2,
               true,
-              "直接预订",
+              "取消",
               "重新验证12306"
             );
-            isOfficialBooked = !isDirectBook;
+            if (isCancel) {
+              return;
+            }
+            isOfficialBooked = !isCancel;
             if (isOfficialBooked) {
               this.bookTrainBy12306(event);
               return;
@@ -828,14 +831,12 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
       if (!bookDto.IsOfficialBooked) {
         if (!is12306Book) {
           if (!isExchangeBook) {
-            if (!isDirectBook) {
-              const direct = await AppHelper.alert(
-                tip3,
-                true,
-                "直接预订",
-                "12306预订"
-              );
-              if (!direct) {
+            if (!isCancel) {
+              isCancel = await AppHelper.alert(tip3, true, "取消", "12306预订");
+              if (isCancel) {
+                return;
+              }
+              if (!isCancel) {
                 this.bookTrainBy12306(event);
                 return;
               }
