@@ -686,11 +686,11 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
       if (this.rules && this.rules.length) {
         ticketAgreement = await this.onBookServeAgreement();
       }
-      const isPay = this.initialBookDtoGpModel?.InsuranceResult;
-      if (!isPay) {
-        AppHelper.alert("提交失败,请联系工作人员配置支付方式");
-        return;
-      }
+      // const isPay = this.initialBookDtoGpModel?.InsuranceResult;
+      // if (!isPay) {
+      //   AppHelper.alert("提交失败,请联系工作人员配置支付方式");
+      //   return;
+      // }
       this.isShowFee = false;
       event.stopPropagation();
       if (this.isSubmitDisabled) {
