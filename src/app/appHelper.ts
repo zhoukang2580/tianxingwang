@@ -101,6 +101,11 @@ export class AppHelper {
     ).trim();
     return hcpVersion;
   }
+  static setHcpVersion(hcpV: string) {
+    if (hcpV && hcpV.trim()) {
+      AppHelper.setStorage<string>("apphcpversion", hcpV);
+    }
+  }
   static async getAppVersion() {
     await AppHelper.platform.ready();
     if (!this.cordovaGetAppVersion) {
@@ -597,7 +602,7 @@ export class AppHelper {
     AppHelper.setStorage("style", style);
   }
   static getTimestamp() {
-    return Math.floor(+moment().utc().utcOffset(8)/1000);
+    return Math.floor(+moment().utc().utcOffset(8) / 1000);
   }
   static getLanguage() {
     return (

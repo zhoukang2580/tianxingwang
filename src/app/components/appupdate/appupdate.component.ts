@@ -48,11 +48,11 @@ export class AppUpdateComponent implements OnInit {
     this.timeoutId = setTimeout(async () => {
       try {
         const res = await this.fileService.checkIfVersionUpdated();
-        console.log("checkIfVersionUpdated AppUpdateComponent",res)
-        this.forceUpdate = res.canUpdate;
+        console.log("checkIfVersionUpdated AppUpdateComponent", res);
+        this.forceUpdate = res.isAppUpdate||res.isHcpUpdate;
         this.updateInfo = {} as any;
         this.updateInfo.taskDesc = "请您及时更新app";
-        if (res.canUpdate) {
+        if (res.isAppUpdate) {
           await AppHelper.alert("请您及时更新app", true, "确定");
           await AppHelper.platform.ready();
           if (this.plt.is("ios")) {
@@ -67,12 +67,19 @@ export class AppUpdateComponent implements OnInit {
           } else {
             if (res.updateUrl) {
               if (window["cordova"] && window["cordova"].InAppBrowser) {
-                window["cordova"].InAppBrowser.open(encodeURI(res.updateUrl), "_system");
-              }else{
+                window["cordova"].InAppBrowser.open(
+                  encodeURI(res.updateUrl),
+                  "_system"
+                );
+              } else {
                 window.open(encodeURI(res.updateUrl), "_blank");
               }
             }
           }
+          this.startCheckVersion();
+        }
+        if(res.isHcpUpdate){
+          await this.hcpUpdate();
           this.startCheckVersion();
         }
       } catch (e) {
@@ -152,7 +159,7 @@ export class AppUpdateComponent implements OnInit {
       this.isCanIgnore = res.ignore;
       // 如果主版本不更新，检查热更
       if (!res.isCanUpdate) {
-        this.hcpUpdate();
+        await this.hcpUpdate();
         return;
       }
       if (res.ignore) {

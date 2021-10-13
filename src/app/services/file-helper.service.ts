@@ -329,21 +329,31 @@ export class FileHelperService {
   async checkIfVersionUpdated() {
     let res = {
       updateUrl: "",
-      canUpdate: false,
+      isAppUpdate: false,
+      isHcpUpdate: false,
     };
     try {
       const sv = await this.getServerVersion();
-      const lv:string = await this.getAppVersion().catch(async () => {
-        const r = await this.getMockPkgNameAndVersion().catch(() => null);
-        return r && r.version;
-      });
-      const isOk = this.checkIfUpdateAppByVersion(sv.Version, lv);
-      const isOk2 = this.checkIfHcpUpdateByVersion(sv.Version, lv);
-      res.canUpdate = isOk2 || isOk;
+      const installAppVersion: string = await this.getAppVersion().catch(
+        async () => {
+          const r = await this.getMockPkgNameAndVersion().catch(() => null);
+          return r && r.version;
+        }
+      );
+      const isAppUpdate = this.checkIfUpdateAppByVersion(
+        sv.Version,
+        installAppVersion
+      );
+      let isHcpUpdate = this.checkIfHcpUpdateByVersion(
+        sv.Version,
+        installAppVersion
+      );
+      const localHcpV = AppHelper.getHcpVersion();
+      res.isAppUpdate = isAppUpdate;
       res.updateUrl = sv.ApkDownloadUrl;
+      res.isHcpUpdate = isHcpUpdate && localHcpV != sv.Version;
     } catch (e) {
       console.error("checkIfVersionUpdated ", e);
-      res.canUpdate = false;
     }
     return res;
   }
@@ -674,7 +684,8 @@ export class FileHelperService {
     return hcpVersion;
   }
   private setHcpVersionToLoacal(version: string) {
-    AppHelper.setStorage("apphcpversion", version);
+    // AppHelper.setStorage("apphcpversion", version);
+    AppHelper.setHcpVersion(version);
   }
   private async getMd5JsonFile() {
     const path = `${this.dataDirectory}${this.updateDirectoryName}`;
