@@ -48,6 +48,7 @@ export class AppUpdateComponent implements OnInit {
     this.timeoutId = setTimeout(async () => {
       try {
         const res = await this.fileService.checkIfVersionUpdated();
+        console.log("checkIfVersionUpdated AppUpdateComponent",res)
         this.forceUpdate = res.canUpdate;
         this.updateInfo = {} as any;
         this.updateInfo.taskDesc = "请您及时更新app";
@@ -66,7 +67,7 @@ export class AppUpdateComponent implements OnInit {
           } else {
             if (res.updateUrl) {
               if (window["cordova"] && window["cordova"].InAppBrowser) {
-                window.open(encodeURI(res.updateUrl), "_system");
+                window["cordova"].InAppBrowser.open(encodeURI(res.updateUrl), "_system");
               }else{
                 window.open(encodeURI(res.updateUrl), "_blank");
               }

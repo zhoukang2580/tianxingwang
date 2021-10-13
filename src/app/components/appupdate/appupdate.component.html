@@ -7,7 +7,7 @@
 </ion-label> -->
 <ion-label color='primary' class='ion-margin-bottom'>
   {{updateInfo?.taskDesc}}
-  <ion-note color='success'>{{updateInfo?.progress}}</ion-note>
+  <ion-note color='success'>{{updateInfo?.progress?.replace("NaN%","")?.replace("NaN","")}}</ion-note>
 </ion-label>
 <!-- <ion-progress-bar color="secondary" [value]="updateInfo?.loaded" [buffer]='updateInfo?.total'>
 </ion-progress-bar> -->
