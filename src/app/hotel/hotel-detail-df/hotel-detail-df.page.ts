@@ -79,7 +79,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   private lastSelectPassengers: string[];
   @ViewChild(IonHeader) ionHeader: IonHeader;
   @ViewChild("bg") bgEle: ElementRef<HTMLElement>;
-  @ViewChild("cnt",{static:true}) cnt: ElementRef<HTMLElement>;
+  @ViewChild("cnt", { static: true }) cnt: ElementRef<HTMLElement>;
   // @ViewChild(IonContent) content: IonContent;
   @ViewChild(IonRefresher) ionRefresher: IonRefresher;
   @ViewChild("houseInfo") private houseInfoEle: IonList;
@@ -261,11 +261,12 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     );
     this.subscriptions.push(
       this.route.queryParamMap.subscribe(async (q) => {
-        this.hotelId = q.get("hotelId");
-        this.hotelprice = q.get("hotelprice");
+        this.hotelId =
+          q.get("hotelId") || q.get("hotelid") || q.get("id") || q.get("Id");
+        this.hotelprice = q.get("hotelprice") || q.get("price")||q.get("hotelPrice");
         const isSelf = await this.staffService.isSelfBookType();
         const isReload = this.checkIfPassengerChanged();
-        if (!this.hotel || isReload) {
+        if (!this.hotel || isReload||this.hotelId) {
           this.doRefresh();
         }
       })
@@ -337,7 +338,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.hotelDetailSub.unsubscribe();
     }
     this.hotelDetailSub = this.hotelService
-      .getHotelDetail(this.hotelId,this.hotelprice)
+      .getHotelDetail(this.hotelId, this.hotelprice)
       .pipe(
         map((res) => res && res.Data),
         tap((r) => {
@@ -356,7 +357,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
               this.hotelDayPrice = { Hotel: this.hotel } as any;
               this.hotelPolicy = await this.getPolicy();
               // this.content.scrollToTop();
-              this.cnt.nativeElement.scrollTop=0;
+              this.cnt.nativeElement.scrollTop = 0;
               this.initFilterPolicy();
               this.checkIfBookedRoomPlan();
               this.initHotelDetailInfos();
@@ -687,9 +688,10 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
           tip = `(${info.passenger.Policy.HotelIllegalTip})`;
         }
         if (rules) {
-          const msg = (Array.isArray(rules)
-            ? rules
-            : Object.keys(rules).map((k) => rules[k])
+          const msg = (
+            Array.isArray(rules)
+              ? rules
+              : Object.keys(rules).map((k) => rules[k])
           ).join(",");
           tip = `${msg}${tip}`;
         }
@@ -977,9 +979,8 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.rects.houseInfo = this.houseInfoEle["el"].getBoundingClientRect();
     }
     if (this.trafficInfoEle && this.trafficInfoEle["el"]) {
-      this.rects.trafficInfo = this.trafficInfoEle[
-        "el"
-      ].getBoundingClientRect();
+      this.rects.trafficInfo =
+        this.trafficInfoEle["el"].getBoundingClientRect();
     }
     // console.log(this.rects);
   }
@@ -998,7 +999,7 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
         a.href = `tel:${phoneNumber}`;
         a.click();
       }
-    } 
+    }
   }
   private checkScroll() {
     this.domCtrl.write(async (_) => {
