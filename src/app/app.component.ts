@@ -143,9 +143,9 @@ export class AppComponent
 
     this.initializeApp();
     this.platform.ready().then(() => {
-      if (this.platform.is("ios") && AppHelper.isApp()) {
-        this.splashScreen.show();
-      }
+      // if (this.platform.is("ios") && AppHelper.isApp()) {
+      //   this.splashScreen.show();
+      // }
       console.log(`platform ready`);
       this.app = navigator["app"];
       document.addEventListener(
