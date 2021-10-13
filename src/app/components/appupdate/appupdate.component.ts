@@ -65,13 +65,9 @@ export class AppUpdateComponent implements OnInit {
               });
           } else {
             if (res.updateUrl) {
-              // if (window["cordova"] && window["cordova"].InAppBrowser) {
-              //   window.open(encodeURI(res.updateUrl), "_system");
-              // }else{
-              // }
-              if (AppHelper.isApp()) {
+              if (window["cordova"] && window["cordova"].InAppBrowser) {
                 window.open(encodeURI(res.updateUrl), "_system");
-              } else {
+              }else{
                 window.open(encodeURI(res.updateUrl), "_blank");
               }
             }
