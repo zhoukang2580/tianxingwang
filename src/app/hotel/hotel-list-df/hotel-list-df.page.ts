@@ -348,11 +348,13 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     // this.router.navigate([AppHelper.getRoutePath("hotel-city")]);
     const rs = await this.hotelCityService.onSelectCity(true, true);
     if (rs && rs.city) {
+      const oldMyPos={...this.hotelService.getSearchHotelModel().myPosition};
       this.hotelService.setSearchHotelModel({
         ...this.searchHotelModel,
         destinationCity: rs.city,
+        myPosition:null
       });
-      if (this.checkDestinationChanged()) {
+      if (this.checkDestinationChanged()||(oldMyPos.Lat||oldMyPos.Lng)) {
         this.doRefresh();
       }
     }
