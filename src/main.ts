@@ -19,6 +19,7 @@ import { MapService } from "./app/services/map/map.service";
 import { HttpClient } from "@angular/common/http";
 import { Router, ActivatedRoute } from "@angular/router";
 import { CONFIG } from "./app/config";
+import { FileHelperService } from './app/services/file-helper.service';
 // const module = window["module"];
 try {
   AppHelper.initlizeQueryParamers();
@@ -76,7 +77,7 @@ function initStyle() {
 
 platformBrowserDynamic()
   .bootstrapModule(AppModule)
-  .then((moduleRef) => {
+  .then(async (moduleRef) => {
     AppHelper.setHttpClient(moduleRef.injector.get(HttpClient));
     // 为了设置模式
     moduleRef.injector.get(ThemeService);
@@ -89,6 +90,7 @@ platformBrowserDynamic()
     AppHelper.setToastController(moduleRef.injector.get(ToastController));
     AppHelper.setModalController(moduleRef.injector.get(ModalController));
     AppHelper.setPopoverController(moduleRef.injector.get(PopoverController));
+    await FileHelperService.checkAndLoadHcpPage();
     return moduleRef;
   })
   .catch((err) => console.log(err));
