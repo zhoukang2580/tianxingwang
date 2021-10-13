@@ -73,6 +73,8 @@ export class FileHelperService {
   private serverVersion: string;
   private dataDirectory: string;
   private hcpPlugin: Hcp;
+  private getServerVersionPromise: Promise<IUpdateList>;
+  private serverVersionInfo: IUpdateList;
   startIndexPath: string;
   fileInfo: any = {};
   constructor(
@@ -324,43 +326,53 @@ export class FileHelperService {
     }
     return this.appVersion.getPackageName();
   }
-  private async getServerVersion(onprogress?: (evt: IHcpUpdateModel) => void) {
-    this.logMessage(
-      `this.appVersion.getPackageName=${await this.getPackageName()}`
-    );
-    const req = new RequestEntity();
-    req.Method = "ServiceVersionUrl-Home-Index";
-    const pkgName = await this.getPackageName();
-    req["type"] = "loadjson";
-    req.Data = {
-      Name: `${pkgName}.${
-        this.plt.is("ios") ? "ios" : "android"
-      }`.toLowerCase(),
+  async checkIfVersionUpdated() {
+    let res = {
+      updateUrl: "",
+      canUpdate: false,
     };
-    req.IsShowLoading = true;
-    req.LoadingMsg = "正在初始化";
-    // this.logMessage("apiconfig", this.apiService.apiConfig);
-    // this.logMessage("requrl", await this.apiService.getUrl(req));
-    if (AppHelper.isFunction(onprogress)) {
-      onprogress({
-        total: 100,
-        loaded: 80,
-        taskDesc: LanguageHelper.getHcpFetchServerVersionTip(),
-      } as IHcpUpdateModel);
+    try {
+      const sv = await this.getServerVersion();
+      const lv:string = await this.getAppVersion().catch(async () => {
+        const r = await this.getMockPkgNameAndVersion().catch(() => null);
+        return r && r.version;
+      });
+      const isOk = this.checkIfUpdateAppByVersion(sv.Version, lv);
+      const isOk2 = this.checkIfHcpUpdateByVersion(sv.Version, lv);
+      res.canUpdate = isOk2 || isOk;
+      res.updateUrl = sv.ApkDownloadUrl;
+    } catch (e) {
+      console.error("checkIfVersionUpdated ", e);
+      res.canUpdate = false;
     }
-    return new Promise<IUpdateList>((resolve, reject) => {
-      const sub = this.apiService.getResponse<string>(req).subscribe(
-        (r) => {
-          if (AppHelper.isFunction(onprogress)) {
-            onprogress({
-              total: 100,
-              loaded: 100,
-              taskDesc: LanguageHelper.getHcpFetchServerVersionTip(),
-            } as IHcpUpdateModel);
-          }
-          if (r.Status && r.Data) {
+    return res;
+  }
+  private async getServerVersion() {
+    if (this.serverVersionInfo) {
+      return this.serverVersionInfo;
+    }
+    if (!this.getServerVersionPromise) {
+      this.logMessage(
+        `this.appVersion.getPackageName=${await this.getPackageName()}`
+      );
+      const req = new RequestEntity();
+      req.Method = "ServiceVersionUrl-Home-Index";
+      const pkgName = await this.getPackageName();
+      req["type"] = "loadjson";
+      req.Data = {
+        Name: `${pkgName}.${
+          this.plt.is("ios") ? "ios" : "android"
+        }`.toLowerCase(),
+      };
+      req.IsShowLoading = true;
+      req.LoadingMsg = "正在初始化";
+
+      this.getServerVersionPromise = this.apiService
+        .getPromiseData<string>(req)
+        .then((d) => {
+          if (d) {
             try {
-              const a: IUpdateList = JSON.parse(r.Data);
+              const a: IUpdateList = JSON.parse(d);
               // 设置是否显示第三方登录
               AppHelper.setStorage(
                 "IsShowThirdPartyLogin",
@@ -372,25 +384,21 @@ export class FileHelperService {
                 }
                 window["vConsole"] = new window["VConsole"]();
               }
-              resolve(a);
+              this.serverVersionInfo = a;
+              return a;
             } catch (e) {
-              console.error(e);
-              reject("配置文件格式错误");
+              console.error(e || "配置文件格式错误");
             }
           } else {
-            reject(r.Message || "网络错误，无法获取配置文件");
+            console.error("网络错误，无法获取配置文件");
           }
-        },
-        (e) => {
-          reject(e);
-        },
-        () => {
-          if (sub) {
-            console.log("sub.unsubscribe()");
-            sub.unsubscribe();
-          }
-        }
-      );
+          return null;
+        });
+    }
+    // this.logMessage("apiconfig", this.apiService.apiConfig);
+    // this.logMessage("requrl", await this.apiService.getUrl(req));
+    return this.getServerVersionPromise.finally(() => {
+      this.getServerVersionPromise = null;
     });
   }
   async checkHcpUpdate(): Promise<{
@@ -441,7 +449,7 @@ export class FileHelperService {
           this.localVersion = await this.getInstallAppVersionNumber();
         }
         // await this.listDirFiles(`${this.dataDirectory}`, `${this.updateDirectoryName}`);
-        const update = await this.getServerVersion(onprogress);
+        const update = await this.getServerVersion();
         this.serverVersion = update.Version;
         // 根据版本判断，是否需要热更新
         const versionUpdate = this.checkIfHcpUpdateByVersion(
@@ -1023,7 +1031,7 @@ export class FileHelperService {
     this.logMessage("checkAppUpdate 检查");
 
     await this.plt.ready();
-    const up = await this.getServerVersion(onprogress).catch((e) => {
+    const up = await this.getServerVersion().catch((e) => {
       this.logMessage("checkAppUpdate error", e);
       return null;
     });
@@ -1067,7 +1075,7 @@ export class FileHelperService {
     };
     try {
       await this.plt.ready();
-      const up = await this.getServerVersion(onprogress);
+      const up = await this.getServerVersion();
       this.logMessage(`updateApk`, up);
       this.localVersion = await this.getInstallAppVersionNumber();
       if (!up || !up.Version || up.Version.length === 0 || !up.DownloadUrl) {

@@ -24,6 +24,8 @@ export class AppUpdateComponent implements OnInit {
   };
   @HostBinding("class.forceUpdate") forceUpdate: boolean;
   isCanIgnore: boolean;
+  private checkVersionDue = 5 * 1000;
+  private timeoutId: any;
   constructor(
     private fileService: FileHelperService,
     private logService: LogService,
@@ -33,9 +35,53 @@ export class AppUpdateComponent implements OnInit {
   ) {}
   async ngOnInit() {
     if (AppHelper.isApp()) {
-      this.appUpdate();
+      await this.appUpdate();
+      this.startCheckVersion();
     }
     // this.appUpdate();
+  }
+
+  private startCheckVersion() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+    this.timeoutId = setTimeout(async () => {
+      try {
+        const res = await this.fileService.checkIfVersionUpdated();
+        this.forceUpdate = res.canUpdate;
+        this.updateInfo = {} as any;
+        this.updateInfo.taskDesc = "请您及时更新app";
+        if (res.canUpdate) {
+          await AppHelper.alert("请您及时更新app", true, "确定");
+          await AppHelper.platform.ready();
+          if (this.plt.is("ios")) {
+            const url = encodeURI(
+              `https://apps.apple.com/cn/app/${AppHelper.getAppStoreAppId()}`
+            );
+            this.safariViewController
+              .show({ url, hidden: false })
+              .subscribe((r) => {
+                console.log("open url", url, r);
+              });
+          } else {
+            if (res.updateUrl) {
+              // if (window["cordova"] && window["cordova"].InAppBrowser) {
+              //   window.open(encodeURI(res.updateUrl), "_system");
+              // }else{
+              // }
+              if (AppHelper.isApp()) {
+                window.open(encodeURI(res.updateUrl), "_system");
+              } else {
+                window.open(encodeURI(res.updateUrl), "_blank");
+              }
+            }
+          }
+          this.startCheckVersion();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }, this.checkVersionDue);
   }
   /**
    *
