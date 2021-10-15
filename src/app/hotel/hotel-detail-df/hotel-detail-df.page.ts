@@ -72,7 +72,8 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   private hotelDayPrice: HotelDayPriceEntity;
   private curPos = 0;
   private subscriptions: Subscription[] = [];
-  private hotelDetailSub = Subscription.EMPTY;
+  // private hotelDetailSub = Subscription.EMPTY;
+  private loadHotelDeailPromise: Promise<HotelEntity>;
   private isAutoOpenHotelInfoDetails = true;
   private isAutoOpenMap = true;
   private headerHeight = 0;
@@ -243,7 +244,6 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
   ngOnInit() {
-    this.subscriptions.push(this.hotelDetailSub);
     this.roomDefaultImg = this.hotelService.RoomDefaultImg;
     AppHelper.isWechatMiniAsync().then((isMini) => {
       this.isShowTrafficInfo = !isMini;
@@ -263,18 +263,31 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       this.route.queryParamMap.subscribe(async (q) => {
         this.hotelId =
           q.get("hotelId") || q.get("hotelid") || q.get("id") || q.get("Id");
-        this.hotelprice = q.get("hotelprice") || q.get("price")||q.get("hotelPrice");
+        this.hotelprice =
+          q.get("hotelprice") || q.get("price") || q.get("hotelPrice");
         const isSelf = await this.staffService.isSelfBookType();
         const isReload = this.checkIfPassengerChanged();
-        if (!this.hotel || isReload||this.hotelId) {
+        if (!this.hotel || isReload) {
           this.doRefresh();
         }
       })
     );
+    this.hotelId = this.getHotelIdFromQuery();
+    if (this.hotelId) {
+      this.doRefresh();
+    }
     this.configService.get().then((c) => {
       this.config = c;
     });
     // this.doRefresh();
+  }
+  private getHotelIdFromQuery() {
+    return (
+      this.route.snapshot.queryParams.hotelId ||
+      this.route.snapshot.queryParams.hotelid ||
+      this.route.snapshot.queryParams.Id ||
+      this.route.snapshot.queryParams.id
+    );
   }
   private checkIfPassengerChanged() {
     if (this.lastSelectPassengers) {
@@ -324,55 +337,67 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   async doRefresh() {
     if (!this.config) {
+      this.config = {} as any;
       this.configService
         .get()
         .then((config) => {
           this.config = config;
         })
-        .catch(() => 0);
+        .catch(() => {
+          this.config = null;
+        });
     }
     if (this.ionRefresher) {
       this.ionRefresher.complete();
     }
-    if (this.hotelDetailSub) {
-      this.hotelDetailSub.unsubscribe();
+    this.getHotelDetail();
+  }
+  private async getHotelDetail() {
+    if (this.loadHotelDeailPromise) {
+      return this.loadHotelDeailPromise;
     }
-    this.hotelDetailSub = this.hotelService
-      .getHotelDetail(this.hotelId, this.hotelprice)
-      .pipe(
-        map((res) => res && res.Data),
-        tap((r) => {
-          console.log(r);
-        })
-      )
-      .pipe(finalize(() => {}))
-      .subscribe(
-        async (hotel) => {
-          if (hotel) {
-            this.hotel = hotel.Hotel;
-            if (this.hotel) {
-              this.lastSelectPassengers = this.hotelService
-                .getBookInfos()
-                .map((it) => it.passenger && it.passenger.Id);
-              this.hotelDayPrice = { Hotel: this.hotel } as any;
-              this.hotelPolicy = await this.getPolicy();
-              // this.content.scrollToTop();
-              this.cnt.nativeElement.scrollTop = 0;
-              this.initFilterPolicy();
-              this.checkIfBookedRoomPlan();
-              this.initHotelDetailInfos();
-              setTimeout(() => {
-                this.initRects();
-              }, 1000);
+    this.loadHotelDeailPromise = new Promise<any>((rsv) => {
+      if (!this.hotelId) {
+        return rsv(null);
+      }
+      this.hotelService
+        .getHotelDetail(this.hotelId, this.hotelprice)
+        .pipe(map((res) => res && res.Data))
+        .pipe(finalize(() => {}))
+        .subscribe(
+          async (hotel) => {
+            if (hotel) {
+              this.hotel = hotel.Hotel;
+              if (this.hotel) {
+                this.lastSelectPassengers = this.hotelService
+                  .getBookInfos()
+                  .map((it) => it.passenger && it.passenger.Id);
+                this.hotelDayPrice = { Hotel: this.hotel } as any;
+                this.hotelPolicy = await this.getPolicy();
+                // this.content.scrollToTop();
+                this.cnt.nativeElement.scrollTop = 0;
+                this.initFilterPolicy();
+                this.checkIfBookedRoomPlan();
+                this.initHotelDetailInfos();
+                setTimeout(() => {
+                  this.initRects();
+                }, 1000);
+              }
+              this.initHotelImages();
+              this.initHotelRoomImages();
+              rsv(hotel);
+            } else {
+              rsv(null);
             }
-            this.initHotelImages();
-            this.initHotelRoomImages();
+          },
+          (e) => {
+            AppHelper.alert(e.Message || e);
           }
-        },
-        (e) => {
-          AppHelper.alert(e.Message || e);
-        }
-      );
+        );
+    });
+    return this.loadHotelDeailPromise.finally(() => {
+      this.loadHotelDeailPromise = null;
+    });
   }
   private initHotelDetailInfos() {
     if (this.hotel && this.hotel.HotelDetails) {
@@ -846,7 +871,9 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
   private getAvgPrice(plan: RoomPlanEntity) {
     return this.hotelService.getAvgPrice(plan);
   }
-  async onShowRoomDetails(room: RoomEntity) {
+  async onShowRoomDetails(room: RoomEntity, evt: CustomEvent) {
+    evt.preventDefault();
+    evt.stopPropagation();
     // this.curSelectedRoom = room;
     // this.curSelectedRoom.Hotel = this.curSelectedRoom.Hotel || this.hotel;
     let roomImages = this.getRoomImages(room);
@@ -864,7 +891,11 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
       config: this.config,
       agent: this.agent,
     };
-    this.router.navigate(["hotel-room-detail-df"]);
+    this.router.navigate(["hotel-room-detail-df"]).then(() => {
+      // setTimeout(() => {
+      //   room["isShowRoomPlans"] = true;
+      // }, 200);
+    });
     // const m = await this.modalCtrl.create({
     //   component: RoomDetailComponent,
     //   componentProps: {

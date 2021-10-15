@@ -135,7 +135,7 @@
               <div class="room-detail-desc">
                 <span *ngFor='let d of getRoomDescriptions(room)'>{{d}} </span>
               </div>
-              <ion-text color='secondary' (click)='onShowRoomDetails(room)'>详情</ion-text>
+              <ion-text color='secondary' (click)='onShowRoomDetails(room,$event)'>详情</ion-text>
             </ion-label>
             <ion-button color='danger' class='full' [disabled]='true' *ngIf='isFullOnly(room.RoomPlans)'>
               <ion-text color='light'>已满房</ion-text>
