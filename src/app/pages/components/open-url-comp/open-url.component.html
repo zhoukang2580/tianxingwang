@@ -14,8 +14,8 @@
       <ion-button color='secondary' (click)='onShowDonwloadItems()'>附件</ion-button>
     </ion-buttons>
     <ion-buttons slot='end'>
-      <div class="w" [class.b]='!isOpenAsModal'>
-        <ng-container *ngIf='!isOpenAsModal'>
+      <div class="w">
+        <ng-container>
           <div class="dots" (click)='onToggleActionSheet()'>
             <div class="dot"></div>
             <div class="dot c"></div>
@@ -23,7 +23,7 @@
           </div>
           <div class="line">|</div>
         </ng-container>
-        <div class="exit" (click)='onBack($event)'>
+        <div class="exit" (click)='onBack()'>
           <div class="inner"></div>
         </div>
       </div>
@@ -33,10 +33,7 @@
 </ion-header>
 
 <ng-container [class.hidden]='!url'>
-  <!-- <div class='wrapper' >
-    <iframe [src]='url' #iframe></iframe>
-  </div> -->
-  <ion-content>
+  <ion-content [scrollY]='false'>
     <iframe [src]='url' #iframe></iframe>
   </ion-content>
 </ng-container>

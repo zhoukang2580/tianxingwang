@@ -4,20 +4,17 @@ import {
   Platform,
   IonContent,
 } from "@ionic/angular";
-import { Subject, BehaviorSubject, Subscription } from "rxjs";
+import { BehaviorSubject, Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import {
   Component,
   OnInit,
-  QueryList,
   ElementRef,
-  ViewChildren,
   AfterViewInit,
   ViewChild,
   OnDestroy,
   Renderer2,
   NgZone,
-  EventEmitter,
 } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import {
@@ -27,10 +24,7 @@ import {
 } from "@ionic-native/in-app-browser/ngx";
 import { AppHelper } from "src/app/appHelper";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
-import { map, tap } from "rxjs/operators";
 import { FileHelperService } from "src/app/services/file-helper.service";
-import { FileOpener } from "@ionic-native/file-opener/ngx";
-import { SwiperSlidesComponent } from "src/app/components/swiper-slides/swiper-slides.component";
 import { ConfigService } from "src/app/services/config/config.service";
 import { ConfigEntity } from "src/app/services/config/config.entity";
 import { ImgControlComponent } from "src/app/components/img-control/img-control.component";
@@ -58,7 +52,6 @@ export class OpenUrlComponent
   isOpenAsModal = false;
   isIos = false;
   private isOpenInAppBrowser = false;
-  private isAppendTicket = false;
   private isback = false;
   private goPath = "";
   private goPathQueryParams: any;
@@ -83,12 +76,10 @@ export class OpenUrlComponent
     activatedRoute: ActivatedRoute,
     private domSanitizer: DomSanitizer,
     private loadingCtrl: LoadingController,
-    private navCtrl: NavController,
     private iab: InAppBrowser,
     private plt: Platform,
     private configService: ConfigService,
     private router: Router,
-    private render: Renderer2,
     private fileService: FileHelperService,
     private ngZone: NgZone,
     private keyboard: Keyboard
@@ -105,15 +96,11 @@ export class OpenUrlComponent
       if (p.get("horizontal")) {
         this.horizontal = p.get("horizontal");
       }
-      let url;
-      if (p.get("url")) {
-        url = this.getUrl(p.get("url"));
-        this.orgOpenUrl = url;
-      }
+      const url = this.getUrl(p.get("url"));
+      this.orgOpenUrl = url;
       this.goPath = p.get("goPath");
       this.goPathQueryParams = p.get("goPathQueryParams") || "";
       console.log("open url page ", p);
-      const isIframe = p.get("isIframeOpen");
       // if (isIframe) {
       //   this.isIframeOpen = isIframe == "true";
       // }
@@ -126,14 +113,10 @@ export class OpenUrlComponent
           // this.isIframeOpen = false;
           this.openInAppBrowser(url);
         } else {
-          if (url) {
-            this.openInIframe(url);
-          }
-        }
-      } else {
-        if (url) {
           this.openInIframe(url);
         }
+      } else {
+        this.openInIframe(url);
       }
       if (p.get("title")) {
         this.title = p.get("title");
@@ -167,9 +150,6 @@ export class OpenUrlComponent
           url += `?lang=${AppHelper.getLanguage()}`;
         }
       }
-      if (this.isAppendTicket) {
-        url=this.appenTicket(url)
-      }
     }
     return url;
   }
@@ -177,11 +157,9 @@ export class OpenUrlComponent
     this.isOpenActionSheet = !this.isOpenActionSheet;
   }
   private openInIframe(url: string) {
-    if (url) {
-      this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
-        this.getUrl(url)
-      );
-    }
+    this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
+      this.getUrl(url)
+    );
   }
   onMockBack() {
     // this.backButton.back();
@@ -191,7 +169,6 @@ export class OpenUrlComponent
     if (this.browser) {
       this.browser.close();
     }
-    const color = "#2596D9";
     const options: InAppBrowserOptions = {
       usewkwebview: "yes",
       location: "no",
@@ -234,7 +211,9 @@ export class OpenUrlComponent
     return this.isback;
   }
   async onReload() {
-    await AppHelper.dismissModalLayers();
+    if (!this.isOpenAsModal) {
+      await AppHelper.dismissModalLayers();
+    }
     this.onToggleActionSheet();
     // this.openInIframe(this.appenVersion(this.orgOpenUrl));
     this.reloadPage();
@@ -242,7 +221,9 @@ export class OpenUrlComponent
   private reloadPage() {
     console.log("reloadpage", this.appenVersion(this.orgOpenUrl));
     setTimeout(() => {
-      window["__OpenPageUrlObj"].isDorefreshList = false;
+      if (window["__OpenPageUrlObj"]) {
+        window["__OpenPageUrlObj"].isDorefreshList = false;
+      }
       this.openInIframe(this.appenVersion(this.orgOpenUrl));
     }, 200);
   }
@@ -253,20 +234,6 @@ export class OpenUrlComponent
           url = `${url}&v_v=${Date.now()}`;
         } else {
           url = `${url}?v_v=${Date.now()}`;
-        }
-      }
-    }
-    return url;
-  }
-  private appenTicket(url: string) {
-    if (url) {
-      const tn: string = (AppHelper.getTicketName() || "").toLowerCase();
-      const tk = AppHelper.getTicket();
-      if (!url.includes(tn)) {
-        if (url.includes("?")) {
-          url = `${url}&${tn}=${tk}`;
-        } else {
-          url = `${url}?${tn}=${tk}`;
         }
       }
     }
@@ -355,71 +322,6 @@ export class OpenUrlComponent
     }
     this.onShowDonwloadItems();
   }
-  private onmessage(evt: MessageEvent) {
-    console.log(
-      "onmessage",
-      evt.data,
-      "this.isDestroyed " + OpenUrlComponent.isDestroyed
-    );
-    if (evt.data && evt.data.type) {
-      if (evt.data.type == "back") {
-        if (this.goPath) {
-          this.router.navigate([this.goPath], {
-            queryParams: {
-              goPathQueryParams: this.goPathQueryParams,
-            },
-          });
-        } else {
-          this.isback = evt.data.isBack;
-          this.backSource.next(this.isback);
-          if (this.isback) {
-            if (!OpenUrlComponent.isDestroyed) {
-              OpenUrlComponent.isDestroyed = true;
-              this.backButton.popToPrePage();
-            }
-          }
-        }
-      } else if (evt.data.type == "openmodal") {
-        if (this.isImage(evt.data.url)) {
-          this.openImage(evt.data.url);
-        } else {
-          const isBlank = evt.data.isBlank;
-          this.openModal(evt.data.url, isBlank).then(async (m) => {
-            if (m) {
-              m.present();
-              await m.onDidDismiss();
-              try {
-                const iframe = this.cnt["el"].querySelector("iframe");
-                console.log(
-                  "reloadpage window['__OpenPageUrlObj']",
-                  iframe.contentWindow
-                );
-                console.log(
-                  "this.iframe.nativeElement.contentWindow",
-                  iframe.contentWindow
-                );
-                this.iframe.nativeElement = iframe;
-                this.postMessage({ type: "doRefreshListFromApp", origin: "*" });
-              } catch (e) {
-                console.error(e);
-              }
-              // if( window['__OpenPageUrlObj']&& window['__OpenPageUrlObj'].isDorefreshList){
-              //   this.reloadPage();
-              // }
-            }
-          });
-        }
-      } else if (evt.data.type == "download") {
-        // if (this.isImage(evt.data.url)) {
-        //   this.openImage(evt.data.url);
-        //   return;
-        // }
-        this.downloadFile(evt.data.url, evt.data.name || evt.data.fileName);
-      } else if ((evt.data.type || "").toLowerCase() == "dorefreshlist") {
-        window["__OpenPageUrlObj"] = { isDorefreshList: true };
-      }
-    }
-  }
   async openImage(src) {
     const m = await AppHelper.modalController.create({
       component: ImgControlComponent,
@@ -455,42 +357,7 @@ export class OpenUrlComponent
     });
   }
   ngAfterViewInit() {}
-  private showLoading() {
-    setTimeout(async () => {
-      if (this.iframe) {
-        const iframe = this.iframe;
-        if (iframe) {
-          let isDismiss = false;
-          const l = await this.loadingCtrl.create({ message: "请稍候" });
-          l.backdropDismiss = true;
-          l.present();
-          iframe.nativeElement.onload = () => {
-            console.log("iframe load");
-            if (isDismiss) {
-              return;
-            }
-            isDismiss = true;
-            l.dismiss();
-          };
-          iframe.nativeElement.onerror = (e) => {
-            console.error("iframe load error");
-            if (isDismiss) {
-              return;
-            }
-            isDismiss = true;
-            l.dismiss();
-          };
-          setTimeout(() => {
-            if (!isDismiss) {
-              isDismiss = true;
-              l.dismiss();
-            }
-          }, 2 * 1000);
-        }
-      }
-    }, 200);
-  }
-  onBack(evt?: CustomEvent) {
+  onBack() {
     if (this.isOpenAsModal) {
       this.closeModal();
       return;
@@ -510,6 +377,9 @@ export class OpenUrlComponent
     m.present();
   }
   ngOnInit() {
+    if(this.url){
+      this.orgOpenUrl=decodeURIComponent(this.url);
+    }
     if (this.url && !`${this.url}`.includes("safe")) {
       this.url = this.domSanitizer.bypassSecurityTrustResourceUrl(
         this.getUrl(this.url)

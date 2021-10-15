@@ -42,6 +42,7 @@ import {
 import { ImageRecoverService } from "./services/imageRecover/imageRecover.service";
 import { Keyboard } from "@ionic-native/keyboard/ngx";
 import { filter, map, mergeMap, switchMap } from "rxjs/operators";
+import { OpenUrlComponent } from "./pages/components/open-url-comp/open-url.component";
 import { IdentityService } from "./services/identity/identity.service";
 import { CordovaPushPluginHelper } from "./cordovaPushPluginHelper";
 export interface App {
@@ -106,6 +107,7 @@ export class AppComponent
     fileService: FileHelperService,
     private keybord: Keyboard
   ) {
+    window['OpenUrlComponent']=OpenUrlComponent;
     window["isAndroid"] = this.platform.is("android");
     this.message$ = messageService.getMessage();
     this.loading$ = apiService.getLoading().pipe(
