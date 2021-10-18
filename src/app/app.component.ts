@@ -81,10 +81,14 @@ export class AppComponent
   implements AfterViewInit, AfterContentInit, OnChanges, OnInit
 {
   app: App = window.navigator["app"];
-  message$: Observable<MessageModel>;
+  messages: MessageModel[];
   openSelectCity$: Observable<boolean>;
   showFlyDayPage$: Observable<boolean>;
   loading$: Observable<{ isLoading: boolean; msg: string }>;
+  get hasmsg() {
+    return this.messages && this.messages.some((it) => !it.IsRead);
+  }
+  testmessage;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -108,8 +112,14 @@ export class AppComponent
     private keybord: Keyboard
   ) {
     window['OpenUrlComponent']=OpenUrlComponent;
+    this.messages = [];
     window["isAndroid"] = this.platform.is("android");
-    this.message$ = messageService.getMessage();
+    messageService.getMessage().subscribe((msg) => {
+      console.log("msg", msg);
+      if (msg) {
+        this.messages.push(msg);
+      }
+    });
     this.loading$ = apiService.getLoading().pipe(
       mergeMap((l) =>
         AppHelper.loadingSubject.pipe(
@@ -171,7 +181,48 @@ export class AppComponent
   ngAfterContentInit() {
     console.log("ngAfterContentInit");
   }
-
+  async onTap(msg, del = false) {
+    try {
+      const id = await this.identityService.getIdentityAsync();
+      const ticket = id.Ticket;
+      if (del) {
+        msg.IsRead = true;
+        return;
+      }
+      if (this.messages) {
+        this.messages.forEach((m) => {
+          m.IsRead = true;
+        });
+      }
+      if (msg && msg.Url) {
+        const url = JSON.stringify(msg.Url);
+        if (url.includes("http")) {
+          if (!url.includes(AppHelper.getTicketName())) {
+            if (url.includes("?")) {
+              msg.Url = `${msg.Url}&${AppHelper.getTicketName()}=${ticket}`;
+            } else {
+              msg.Url = `${msg.Url}?${AppHelper.getTicketName()}=${ticket}`;
+            }
+          }
+          AppHelper.modalController
+            .create({
+              component: OpenUrlComponent,
+              componentProps: {
+                isOpenAsModal: true,
+                url: msg.Url,
+              },
+            })
+            .then((m) => {
+              m.present();
+            });
+        } else {
+          AppHelper.jump(this.router, msg.Url, {});
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
   getPath() {
     let path = AppHelper.getQueryString("path");
     path = decodeURIComponent(path);
@@ -238,25 +289,6 @@ export class AppComponent
   private jumpToRoute(route: string) {
     return this.router.navigate([AppHelper.getRoutePath(route)]).then(() => {
       if (!environment.production) {
-        // this.router.navigate(["hr-invitation"], {
-        //   queryParams: {
-        //     hrid: "1",
-        //     hrName: "东美在线",
-        //     costCenterId: "100000018",
-        //     costCenterName: "第二成本中心",
-        //     organizationId: "100000013",
-        //     organizationName: "(A008)产品技术部",
-        //     policyId: "100000005",
-        //     policyName: "总监差旅标准",
-        //     roleIds: "2",
-        //     roleNames: "行政人事",
-        //   },
-        // });
-        // AppHelper.modalController
-        //   .create({ component: Bind12306Component })
-        //   .then((m) => {
-        //     m.present();
-        //   });
         // AppHelper.getQueryParamers()['mmsid'] = 2;
         // this.router.navigate(['mms-order-lottery'], { queryParams: { mmsid: 2 } });
         // this.router.navigate(['mms-admin-home'], { queryParams: { mmsid: 2 } });
@@ -304,8 +336,7 @@ export class AppComponent
       }
       this.apiService.hideLoadingView();
       if (
-        curUrl == "/login" ||
-        curUrl == AppHelper.getRoutePath("login") ||
+        curUrl.includes("login") ||
         curUrl.includes("home") ||
         curUrl.includes("tabs/my") ||
         curUrl.includes("/tabs/trip")

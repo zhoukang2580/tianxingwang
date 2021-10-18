@@ -1,5 +1,23 @@
 <ion-app>
-  <app-message [message]='message$|async'></app-message>
+  <!-- <div class="msg-container" [class.show]='hasmsg'>
+    <ng-container *ngFor='let msg of messages'>
+      <ion-list *ngIf='!msg.IsRead' lines='none' @myInsertRemoveTrigger (click)='onTap(msg)'>
+        <ion-item-sliding style="box-shadow: 0 2px 6px #999999c7;border-radius: 8px;">
+          <ion-item>
+            <app-message [message]='msg'></app-message>
+          </ion-item>
+          <ion-item-options side="end">
+            <ion-item-option color="secondary"  (click)='onTap(msg)'>
+              ²é¿´
+            </ion-item-option>
+            <ion-item-option color="danger"  (click)='onTap(msg,true)'>
+              <ion-text color='light'>Çå³ý</ion-text>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      </ion-list>
+    </ng-container>
+  </div> -->
   <ion-router-outlet></ion-router-outlet>
   <input type="file" id='file' hidden>
   <app-update-comp></app-update-comp>
