@@ -61,7 +61,7 @@ export class FunctionTestPage implements OnInit {
   }
   onPos() {
     this.mapService
-      .getCurMapPoint()
+      .getMyCurMapPoint()
       .then((r) => {
         this.posInfo = r;
       })
