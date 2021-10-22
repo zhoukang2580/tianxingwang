@@ -2,13 +2,7 @@
 import Big from "big.js";
 import * as moment from "moment";
 import { environment } from "src/environments/environment";
-import {
-  UrlSegment,
-  UrlSegmentGroup,
-  Route,
-  Router,
-  ActivatedRoute,
-} from "@angular/router";
+import { Router, ActivatedRoute } from "@angular/router";
 import { HttpClient, HttpResponseBase } from "@angular/common/http";
 import {
   AlertController,
@@ -19,9 +13,8 @@ import {
   PopoverController,
 } from "@ionic/angular";
 import { LanguageHelper } from "./languageHelper";
-import { BehaviorSubject, Subject, TimeoutError } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import * as uuidJs from "uuid-js";
-import { FileHelperService } from "./services/file-helper.service";
 import { CONFIG } from "src/app/config";
 import { filter, finalize } from "rxjs/operators";
 import { EventEmitter } from "@angular/core";
@@ -43,7 +36,7 @@ export class AppHelper {
     msg: "",
     method: "",
   });
-  static _appDomain = !environment.mockProBuild
+  static _appDomain = !CONFIG.mockProBuild
     ? CONFIG.appDomain.production
     : CONFIG.appDomain.debug;
   constructor() {}
@@ -100,11 +93,6 @@ export class AppHelper {
       AppHelper.getStorage<string>("apphcpversion") || ""
     ).trim();
     return hcpVersion;
-  }
-  static setHcpVersion(hcpV: string) {
-    if (hcpV && hcpV.trim()) {
-      AppHelper.setStorage<string>("apphcpversion", hcpV);
-    }
   }
   static async getAppVersion() {
     await AppHelper.platform.ready();
@@ -1220,6 +1208,18 @@ export class AppHelper {
         return true;
       } else if (!AppHelper.isApp() && queryParams.isBlank) {
         window.open(url);
+        return true;
+      }
+      if (queryParams.isOpenAsModal && window["OpenUrlComponent"]) {
+        const m = await AppHelper.modalController.create({
+          // 这个值在appcomponent.ts里面赋值，如果直接导入，会出现循环引用的警告
+          component: window["OpenUrlComponent"],
+          componentProps: {
+            isOpenAsModal: true,
+            url,
+          },
+        });
+        m.present();
         return true;
       }
       router.navigate(["open-url"], {
