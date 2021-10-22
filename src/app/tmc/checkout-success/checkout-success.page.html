@@ -3,7 +3,7 @@
     <ion-buttons slot="start" style="font-size: 25px">
       <ion-icon name="chevron-back-outline" (click)="onOrderList()"></ion-icon>
     </ion-buttons>
-    <ion-title>下单成功</ion-title>
+    <ion-title>跳转订单列表</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="down">
-      <div class="success">下单成功</div>
+      <div class="success">您的订单正在预订，稍后请至订单列表查询</div>
       <div class="active ion-text-nowrap" *ngIf="isApproval">
         您的订单需要审批{{isCheckPay?"、请于审批完成后到订单列表进行支付":""}}
       </div>
