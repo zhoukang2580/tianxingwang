@@ -35,10 +35,11 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
   };
   city: TrafficlineEntity;
   tabId;
-  isApproval: boolean;
   isShow = true;
-  isCheckPay = true;
-  payResult = false;
+  showTipMsg = "";
+  private isApproval: boolean;
+  private isCheckPay = true;
+  private payResult = false;
   private isCanBack = false;
   private recommendHotelDefaultImg;
   constructor(
@@ -49,13 +50,38 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
     private route: ActivatedRoute,
     private calendarService: CalendarService
   ) {}
-
+  private initShowTipMsg() {
+    this.showTipMsg = "";
+    if (this.isApproval) {// 需要审批
+      this.showTipMsg = "您的订单需要审批，稍后请至订单列表查询";
+      if (this.isCheckPay) {
+        if (!this.payResult) {
+          this.showTipMsg =
+            "您的订单需要审批，请于审批完成后到订单列表进行支付";
+        }
+      }
+    } else {// 不需要审批
+      if (this.isCheckPay) {//需要支付
+        if (!this.payResult) {
+          // 未支付成功
+          this.showTipMsg = "您的订单尚未支付，请您稍后到订单列表进行支付";
+        }else{
+          //支付成功
+          this.showTipMsg = "您的订单正在预订，稍后请至订单列表查询";
+        }
+      } else {
+        // 不需要支付
+        this.showTipMsg = "您的订单正在预订，稍后请至订单列表查询";
+      }
+    }
+  }
   ngOnInit() {
     this.route.queryParamMap.subscribe(async (q) => {
       this.tabId = q.get("tabId");
       this.isApproval = q.get("isApproval") == "true";
       this.isCheckPay = q.get("isCheckPay") == "true";
       this.payResult = q.get("payResult") == "true";
+      this.initShowTipMsg();
       const hasRight = await this.tmcService.checkHasHotelBookRight();
       console.log(q, "hasright", hasRight);
       if (q.get("cityCode")) {
@@ -96,7 +122,7 @@ export class CheckoutSuccessPage implements OnInit, CanComponentDeactivate {
         .getMoment(1, this.date)
         .format("YYYY-MM-DD"),
     });
-    this.isCanBack=true;
+    this.isCanBack = true;
     this.router.navigate(["hotel-list"]);
   }
   private async getRecommendHotel() {

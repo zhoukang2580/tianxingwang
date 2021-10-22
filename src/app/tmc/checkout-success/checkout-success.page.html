@@ -14,15 +14,11 @@
       </div>
     </div>
     <div class="down">
-      <div class="success">您的订单正在预订，稍后请至订单列表查询</div>
-      <div class="active ion-text-nowrap" *ngIf="isApproval">
-        您的订单需要审批{{isCheckPay?"、请于审批完成后到订单列表进行支付":""}}
-      </div>
-      <div class="active ion-text-nowrap" *ngIf="!payResult&&isCheckPay">
-        <ion-text color='danger'>
-          您的订单尚未支付，请您稍后到订单列表进行支付
-        </ion-text>
-      </div>
+      <ng-container *ngIf='showTipMsg'>
+        <div class="success">
+          <ion-text color='secondary'>{{showTipMsg}}</ion-text>
+        </div>
+      </ng-container>
     </div>
   </div>
   <!-- <div class="integral" *ngIf="tabId==3">
