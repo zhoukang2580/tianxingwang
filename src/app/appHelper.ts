@@ -94,6 +94,10 @@ export class AppHelper {
     ).trim();
     return hcpVersion;
   }
+  static setHcpVersion(hcpVersion: string) {
+    AppHelper.setStorage<string>("apphcpversion", hcpVersion);
+    return hcpVersion;
+  }
   static async getAppVersion() {
     await AppHelper.platform.ready();
     if (!this.cordovaGetAppVersion) {
