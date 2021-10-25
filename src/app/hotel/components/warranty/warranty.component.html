@@ -5,7 +5,8 @@
         {{title}}
         <div class="disable_flex animated" (animationend)='onHide()' [class.shake]="isshow">
             <ion-checkbox [(ngModel)]='checked' disabled="false" class="btn_margin3" border-color="secondary"></ion-checkbox>
-            <ion-text (click)="checkbox_click()" class="font_read" color="medium">我已阅读以上温馨提示和
+            <ion-text (click)="checkbox_click()" class="font_read" color="medium">我已阅读以上温馨提示
+                <span *ngIf="isShowCreditCard">和</span>
             </ion-text>
             <a *ngIf="isShowCreditCard" (click)="onAgreement()">天行商旅快捷支付及信用卡担保协议</a>
         </div>
