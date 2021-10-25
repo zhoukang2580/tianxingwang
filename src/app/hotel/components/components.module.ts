@@ -27,6 +27,7 @@ import { HotelAddcontactsCompComponent } from './hotel-addcontacts-comp/hotel-ad
 import { ShowFreebookTipComponent } from './show-freebook-tip/show-freebook-tip.component';
 import { HotelSearchDfComponent } from './hotel-search-df/hotel-search-df.component';
 import { HotelOutNumberComponent } from './hotel-outnumber/hotel-outnumber.component';
+import { GuaranteeAgreementComponent } from "./guarantee-agreement/guarantee-agreement.component";
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { HotelOutNumberComponent } from './hotel-outnumber/hotel-outnumber.compo
     HotelOutNumberComponent,
     OverHotelComponent,
     ShowFreebookTipComponent,
+    GuaranteeAgreementComponent
   ],
   imports: [
     CommonModule,
@@ -81,6 +83,7 @@ import { HotelOutNumberComponent } from './hotel-outnumber/hotel-outnumber.compo
     TmcComponentsModule,
     ChangeRoomplanDateComponent,
     OverHotelComponent,
+    GuaranteeAgreementComponent
   ],
   entryComponents: [ShowMsgComponent],
 })

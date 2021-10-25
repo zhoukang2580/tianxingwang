@@ -263,9 +263,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   }
   getCredentialTypeName(item: IPassengerHotelBookInfo) {
     switch (
-      item &&
-      item.creditCardPersionInfo &&
-      item.creditCardPersionInfo.credentialType
+    item &&
+    item.creditCardPersionInfo &&
+    item.creditCardPersionInfo.credentialType
     ) {
       case `${CredentialsType.IdCard}`:
         return "身份证";
@@ -630,20 +630,16 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   ) {
     await AppHelper.alert(
       this.langService.isCn
-        ? `${
-            (item.credentialStaff && item.credentialStaff.Name) ||
-            (item.credential &&
-              item.credential.Surname + item.credential.Givenname)
-          } 【${
-            item.credential && item.credential.HideNumber
-          }】 ${msg} 信息不能为空`
-        : `${
-            (item.credentialStaff && item.credentialStaff.Name) ||
-            (item.credential &&
-              item.credential.Surname + item.credential.Givenname)
-          } 【${
-            item.credential && item.credential.HideNumber
-          }】 ${msg} Information cannot be empty`
+        ? `${(item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.Surname + item.credential.Givenname)
+        } 【${item.credential && item.credential.HideNumber
+        }】 ${msg} 信息不能为空`
+        : `${(item.credentialStaff && item.credentialStaff.Name) ||
+        (item.credential &&
+          item.credential.Surname + item.credential.Givenname)
+        } 【${item.credential && item.credential.HideNumber
+        }】 ${msg} Information cannot be empty`
     );
     this.moveRequiredEleToViewPort(ele);
   }
@@ -765,9 +761,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
   private fillBookLinkmans(bookDto: OrderBookDto) {
     bookDto.Linkmans = [];
     const showErrorMsg = (msg: string, item: IPassengerHotelBookInfo) =>
-      `联系人${
-        (item.credentialStaff && item.credentialStaff.Name) ||
-        (item.credential && item.credential.Number)
+      `联系人${(item.credentialStaff && item.credentialStaff.Name) ||
+      (item.credential && item.credential.Number)
       }信息${msg}不能为空`;
     for (let i = 0; i < this.combindInfos.length; i++) {
       const item = this.combindInfos[i];
@@ -870,17 +865,17 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         p.OrderCard.SetVariable(
           "CredentialsName",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.name
+          combindInfo.creditCardPersionInfo.name
         );
         p.OrderCard.SetVariable(
           "CredentialsNumber",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialNumber
+          combindInfo.creditCardPersionInfo.credentialNumber
         );
         p.OrderCard.SetVariable(
           "CredentialsType",
           combindInfo.creditCardPersionInfo &&
-            combindInfo.creditCardPersionInfo.credentialType
+          combindInfo.creditCardPersionInfo.credentialType
         );
         p.OrderCard.SetVariable(
           "Year",
@@ -969,11 +964,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherMobile) {
-        p.Mobile = `${
-          p.Mobile
+        p.Mobile = `${p.Mobile
             ? p.Mobile + "," + combindInfo.credentialStaffOtherMobile
             : combindInfo.credentialStaffOtherMobile
-        }`;
+          }`;
       }
       p.Email =
         (combindInfo.credentialStaffEmails &&
@@ -983,11 +977,10 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
             .join(",")) ||
         "";
       if (combindInfo.credentialStaffOtherEmail) {
-        p.Email = `${
-          p.Email
+        p.Email = `${p.Email
             ? p.Email + "," + combindInfo.credentialStaffOtherEmail
             : combindInfo.credentialStaffOtherEmail
-        }`;
+          }`;
       }
       p.IllegalReason =
         combindInfo.otherIllegalReason || combindInfo.illegalReason || "";
@@ -1289,20 +1282,20 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         combineInfo.credentialStaffMobiles =
           cstaff && cstaff.Account && cstaff.Account.Mobile
             ? cstaff.Account.Mobile.split(",").map((mobile, idx) => {
-                return {
-                  checked: idx == 0,
-                  mobile,
-                };
-              })
+              return {
+                checked: idx == 0,
+                mobile,
+              };
+            })
             : [];
         combineInfo.credentialStaffEmails =
           cstaff && cstaff.Account && cstaff.Account.Email
             ? cstaff.Account.Email.split(",").map((email, idx) => {
-                return {
-                  checked: idx == 0,
-                  email,
-                };
-              })
+              return {
+                checked: idx == 0,
+                email,
+              };
+            })
             : [];
         combineInfo.credentialStaffApprovers = credentialStaffApprovers;
         combineInfo.organization = {
@@ -1540,6 +1533,8 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
+
+
   async onBook(isSave: boolean, event: CustomEvent) {
     this.isShowFee = false;
     event.stopPropagation();
@@ -1591,6 +1586,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
           title: this.getRoomPlanRulesDesc(
             this.combindInfos[0].bookInfo.bookInfo.roomPlan
           ),
+          isShowCreditCard: this.combindInfos[0].creditCardInfo.isShowCreditCard
         },
       });
       await popover.present();
@@ -1819,7 +1815,7 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       });
     });
-    const result = await this.tmcService.getTravelUrls(args,'Hotel');
+    const result = await this.tmcService.getTravelUrls(args, 'Hotel');
     const travelnumber = this.tmcService.getTravelFormNumber();
     if (result) {
       this.combindInfos.forEach((combindInfo) => {

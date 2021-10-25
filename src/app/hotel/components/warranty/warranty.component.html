@@ -1,11 +1,13 @@
-<div class="ion-text-center ion-padding" >
+<div class="ion-text-center ion-padding">
     <ion-text class="font_title" color="secondary">温馨提示</ion-text>
     <p class="font_style">
-    
+
         {{title}}
-        <div  class="disable_flex animated" (animationend)='onHide()' [class.shake]="isshow">
-            <ion-checkbox [(ngModel)]='checked'  disabled="false" class="btn_margin3"  border-color="secondary"></ion-checkbox>
-            <ion-text (click)="checkbox_click()" class="font_read" color="medium">我已阅读以上温馨提示</ion-text>
-    </div>
-<ion-button color='secondary' class="ion-margin-top"  style="width:50%" (click)="onanimation()">确定</ion-button>
+        <div class="disable_flex animated" (animationend)='onHide()' [class.shake]="isshow">
+            <ion-checkbox [(ngModel)]='checked' disabled="false" class="btn_margin3" border-color="secondary"></ion-checkbox>
+            <ion-text (click)="checkbox_click()" class="font_read" color="medium">我已阅读以上温馨提示和
+            </ion-text>
+            <a *ngIf="isShowCreditCard" (click)="onAgreement()">天行商旅快捷支付及信用卡担保协议</a>
+        </div>
+        <ion-button color='secondary' class="ion-margin-top" style="width:50%" (click)="onanimation()">确定</ion-button>
 </div>
