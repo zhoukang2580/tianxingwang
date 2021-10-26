@@ -912,7 +912,11 @@ export class TrainBookDfPage implements OnInit, AfterViewInit, OnDestroy {
               checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
             } else {
-              payResult = true;
+              payResult = !(
+                this.viewModel.orderTravelPayType ==
+                  OrderTravelPayType.Person ||
+                this.viewModel.orderTravelPayType == OrderTravelPayType.Credit
+              );
             }
             if (checkPayResult) {
               if (isSelf && isHasTask) {

@@ -415,7 +415,9 @@ export class FlightBookDfPage
       );
     }
 
-    this.orderTravelPayType = this.getDefaultPayType(this.tmc && this.tmc.FlightPayType);
+    this.orderTravelPayType = this.getDefaultPayType(
+      this.tmc && this.tmc.FlightPayType
+    );
   }
   private getDefaultPayType(tmcPayType: number) {
     const one = (this.orderTravelPayTypes || []).find(
@@ -1050,7 +1052,10 @@ export class FlightBookDfPage
               checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
             } else {
-              this.payResult = true;
+              this.payResult = !(
+                this.orderTravelPayType == OrderTravelPayType.Credit ||
+                this.orderTravelPayType == OrderTravelPayType.Person
+              );
             }
             if (checkPayResult) {
               if (this.isself && this.isHasTask) {

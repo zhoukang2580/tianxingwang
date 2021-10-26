@@ -448,7 +448,9 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
         });
       }
     });
-    this.orderTravelPayType = this.getDefaultPayType(this.initialBookDtoGpModel.DefaultPayType.Key);
+    this.orderTravelPayType = this.getDefaultPayType(
+      this.initialBookDtoGpModel.DefaultPayType.Key
+    );
   }
   private getDefaultPayType(tmcPayType: number) {
     const one = (this.orderTravelPayTypes || []).find(
@@ -728,7 +730,10 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
                 checkPayResult = await this.checkPay(res.TradeNo);
                 this.isCheckingPay = false;
               } else {
-                this.payResult = true;
+                this.payResult = !(
+                  this.orderTravelPayType == OrderTravelPayType.Person ||
+                  this.orderTravelPayType == OrderTravelPayType.Credit
+                );
               }
               if (checkPayResult) {
                 if (this.isHasTask) {
@@ -755,7 +760,7 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
                   true
                 );
               }
-              await AppHelper.alert("下单成功");
+              // await AppHelper.alert("下单成功");
             } else {
               if (isSave) {
                 // bookDto.IsAllowIssueTicket = false;

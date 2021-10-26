@@ -300,7 +300,9 @@ export class BookEnPage
         )
       );
     }
-    this.orderTravelPayType = this.getDefaultPayType(this.tmc && this.tmc.FlightPayType);
+    this.orderTravelPayType = this.getDefaultPayType(
+      this.tmc && this.tmc.FlightPayType
+    );
   }
   private getDefaultPayType(tmcPayType: number) {
     const one = (this.orderTravelPayTypes || []).find(
@@ -783,7 +785,10 @@ export class BookEnPage
               checkPayResult = await this.checkPay(res.TradeNo);
               this.isCheckingPay = false;
             } else {
-              payResult = true;
+              payResult = !(
+                this.orderTravelPayType == OrderTravelPayType.Person ||
+                this.orderTravelPayType == OrderTravelPayType.Credit
+              );
             }
             if (checkPayResult) {
               if (this.isself && isHasTask) {
