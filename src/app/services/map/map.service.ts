@@ -14,7 +14,7 @@ export interface MapPoint {
   province?: string;
   cityName?: string;
   address?: {
-    city: string; // "上海市";
+    city?: string; // "上海市";
     city_code?: string; // 0;
     country?: string; // "";
     district?: string; // "";
@@ -31,7 +31,6 @@ export class MapService {
   private st = Date.now();
   private querys: any;
   private initBMapPromise: Promise<any>;
-  private bMapLocalSearchObj;
   private bMapLocalSearchSources: Subject<any[]>;
   private getMyPositionInfoPromise: Promise<IMyPositionInfo>;
   private getCurrentPositionByBMapPromise: Promise<MapPoint>;
@@ -67,6 +66,41 @@ export class MapService {
   panTo(map, point: MapPoint) {
     if (map && point) {
       map.panTo(point);
+    }
+  }
+
+  geocoderGetPoint(address: string, city: string) {
+    if (MapService.BMap) {
+      const geoCoder = new MapService.BMap.Geocoder();
+      return new Promise<MapPoint>((rsv) => {
+        setTimeout(() => {
+          rsv(null);
+        }, 1 * 60 * 1000);
+        geoCoder.getPoint(
+          address,
+          (d: MapPoint) => {
+            rsv(d);
+          },
+          city
+        );
+      });
+    }
+  }
+  geocoderGetLocation(point: MapPoint, options?: LocationOptions) {
+    if (MapService.BMap) {
+      const geoCoder = new MapService.BMap.Geocoder();
+      return new Promise<GeocoderResult>((rsv) => {
+        setTimeout(() => {
+          rsv(null);
+        }, 1 * 60 * 1000);
+        geoCoder.getLocation(
+          point,
+          (d: GeocoderResult) => {
+            rsv(d);
+          },
+          options
+        );
+      });
     }
   }
   addMarker(map, point: MapPoint) {
@@ -263,38 +297,60 @@ export class MapService {
         );
       }
     );
-    return this.getCurrentPositionByBMapPromise.finally(()=>{
-      this.getCurrentPositionByBMapPromise=null;
+    return this.getCurrentPositionByBMapPromise.finally(() => {
+      this.getCurrentPositionByBMapPromise = null;
     });
   }
   getBMapLocalSearchSources() {
     return this.bMapLocalSearchSources.asObservable();
   }
-  onBMapLocalSearch(kw: string, p?: MapPoint) {
-    if (!this.bMapLocalSearchObj) {
-      let pt;
-      if (!p) {
-        p = {
-          lat: "31.18334",
-          lng: "121.43348",
-        };
-      }
-      pt = new MapService.BMap.Point(p.lng, p.lat);
-      this.bMapLocalSearchObj = new MapService.BMap.LocalSearch(pt, {
-        pageCapacity: 20,
-        onSearchComplete: (r) => {
-          // console.log(r);
-          this.bMapLocalSearchSources.next((r && r.Ar) || []);
-        },
-      });
-    } else {
-      this.bMapLocalSearchObj.search(kw);
+  removeOverlay(map:any,overlay:any){
+    if(map&&overlay){
+      map.removeOverlay(overlay)
     }
-    return this.bMapLocalSearchSources.asObservable();
+  }
+  async bMapLocalSearch(address: string, cityName: string,forceLocal?:boolean) {
+    return new Promise<LocalSearchResult[]>((rsv) => {
+      let p: MapPoint;
+      let isRsv = false;
+      if (MapService.BMap) {
+        const ss = new MapService.BMap.LocalSearch(cityName, {
+          pageCapacity: 20,
+          onSearchComplete: async (r: {
+            Br: LocalSearchResult[];
+            bounds: any; // undefined;
+            center: any; // undefined;
+            city: string; // "上海市";
+            keyword: string; // "13号线 长清路";
+            moreResultsUrl: string; // "https://api.map.baidu.com/place/search?res=jsapi&query=13号线 长清路&region=上海市&output=html";
+            province: string; // "上海市";
+            radius: any; // undefined;
+            suggestions: any[];
+            viewport: any; // undefined;
+          }) => {
+            console.log(r);
+            if (!isRsv) {
+              rsv(r && r.Br);
+            }
+            isRsv = true;
+          },
+        });
+        // forceLocal 是否限定在城市内部
+        ss.search(address, { forceLocal });
+      } else {
+        isRsv = true;
+        rsv(null);
+      }
+      setTimeout(() => {
+        if (!isRsv) {
+          rsv(null);
+        }
+      }, 2 * 60 * 1000);
+    });
   }
   private async getCityAddressComponentsFromMap(
     p: MapPoint
-  ): Promise<AddressComponents> {
+  ): Promise<AddressComponent> {
     if (!this.checkIfWindowHasBMapObj()) {
       await this.initBMap();
     }
@@ -577,6 +633,10 @@ export class MapService {
         return;
       }
       let st = Date.now();
+      if (!MapService.BMap.LocalCity) {
+        s(null);
+        return;
+      }
       const myCity = new MapService.BMap.LocalCity();
       let isResolve = false;
       setTimeout(() => {
@@ -611,13 +671,43 @@ export class MapService {
     });
   }
 }
-export interface AddressComponents {
+export interface AddressComponent {
   province: string; // 上海市
   city: string; // 上海市
   district: string; // 徐汇区
   street: string; // 肇嘉浜路
   streetNumber: string; // 366号11c
   town?: string; // 天平路街道
+}
+export interface LocationOptions {
+  poiRadius: number; //	Number	附近POI所处于的最大半径，默认为100米
+  numPois: number; //	返回的POI点个数，默认为10个。取值范围
+}
+export interface GeocoderResult {
+  point: MapPoint; //	坐标点
+  address: string; //	String	地址描述
+  addressComponents: AddressComponent; //	结构化的地址描述
+  surroundingPois: Array<LocalResultPoi>; //附近的POI点
+  business: string; //	String	商圈字段，代表此点所属的商圈
+}
+export interface LocalResultPoi {
+  title: string; //	String	结果的名称标题
+  point: MapPoint; //	Point	该结果所在的地理位置
+  url: string; //	String	在百度地图中展示该结果点的详情信息链接
+  address: string; //	String	地址（根据数据部分提供）。注：当结果点类型为公交站或地铁站时，地址信息为经过该站点的所有车次
+  city: string; //	String	所在城市
+  phoneNumber: string; //	String	电话，根据数据部分提供
+  postcode: string; //	String	邮政编码，根据数据部分提供
+  type: string; //	PoiType	类型，根据数据部分提供
+  isAccurate: boolean; //	Boolean	是否精确匹配。只适用LocalSearch的search方法检索的结果
+  province: string; //	String	所在省份
+  tags: string[]; //	Array<String>	POI的标签，如商务大厦、餐馆等。目前只有LocalSearch的回调函数onSearchComplete(result)中的result和Geocoder.getLocation的回调函数的参数GeocoderResult.surroundingPois涉及的LocalResultPoi有tags字段。其他API涉及的LocalResultPoi没有该字段
+  detailUrl: string; //String	在百度地图详情页面展示该结果点的链接。localsearch的结果中才有
+}
+export enum PoiType {
+  BMAP_POI_TYPE_NORMAL = "BMAP_POI_TYPE_NORMAL", //	一般位置点
+  BMAP_POI_TYPE_BUSSTOP = "BMAP_POI_TYPE_BUSSTOP", //	公交车站位置点
+  BMAP_POI_TYPE_SUBSTOP = "BMAP_POI_TYPE_SUBSTOP", //	地铁车站位置点
 }
 interface IMyPositionInfo {
   position: {
@@ -634,4 +724,25 @@ interface IMyPositionInfo {
       street_number?: string; // "";
     };
   };
+}
+type BMap = any;
+interface LocalSearchResult {
+  address: string; // "地铁13号线"
+  city: string; // "上海市"
+  detailUrl: string; // "http://api.map.baidu.com/place/detail?uid=8e96868f139f405cc17da27d&output=html&source=jsapi"
+  isAccurate: boolean; // false
+  phoneNumber: string; // undefined
+  point: {
+    lng: string; // 121.49516012980966,
+    lat: string; // 31.17977651039708,
+    Ye: string; //'inner'
+  };
+  postcode: string; // undefined
+  province: string; // "上海市"
+  src_type: string; // ""
+  tags: string[]; // (3) ['交通设施', '地铁/轻轨', '地铁/轻轨站']
+  title: string; // "长清路"
+  type: number; // 3
+  uid: string; // "8e96868f139f405cc17da27d"
+  url: string; // "https://gsp0.baidu.com/80MWsjip0QIZ8tyhnq/?s=inf%26uid%3D8e96868f139f405cc17da27d%26c%3D289&i=0&sr=1"
 }

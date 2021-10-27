@@ -70,7 +70,7 @@ export class FunctionTestPage implements OnInit {
       });
   }
   onSearchPos() {
-    this.mapService.onBMapLocalSearch(this.kw);
+    // this.mapService.onBMapLocalSearch(this.kw);
   }
   onGetInfoByLatlng() {
     this.mapService
