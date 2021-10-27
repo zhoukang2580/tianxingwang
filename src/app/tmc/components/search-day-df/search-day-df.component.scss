@@ -1,37 +1,38 @@
 section {
-  display: flex;
-  align-items: center;
-  .day {
-    margin: 0 0.2em;
-    font-family: sans-serif;
-    font-size: 1.5rem;
-  }
-  h5 {
-    margin: 0;
-    padding: 0;
-    font-size: 0.7rem;
-  }
-}
-:host.disabled {
-  section {
-    color: var(--ion-color-medium);
-    i {
-      color: var(--ion-color-medium);
+    display: flex;
+    align-items: center;
+    .day {
+        margin: 0 0.2em;
+        font-family: sans-serif;
+        font-size: 1.5rem;
     }
-  }
+    h5 {
+        margin: 0;
+        padding: 0;
+        font-size: 0.7rem;
+    }
 }
+
+:host.disabled {
+    section {
+        color: var(--ion-color-medium);
+        i {
+            color: var(--ion-color-medium);
+        }
+    }
+}
+
 .date {
-  text-align: end;
-  &.start {
-    text-align: start;
-  }
+    text-align: end;
+    &.start {
+        text-align: start;
+    }
 }
 
-.h2{
-  font-size: larger;
+.h2 {
+    font-size: larger;
 }
 
-.h5{
-  color: #333333;
+.h5 {
+    // color: #333333;
 }
-

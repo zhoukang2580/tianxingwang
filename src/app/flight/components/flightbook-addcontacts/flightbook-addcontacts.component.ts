@@ -9,9 +9,11 @@ import {
   Output,
   EventEmitter,
   HostBinding,
+  ElementRef,
 } from "@angular/core";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { AddcontactsModalComponent } from "src/app/tmc/components/addcontacts-modal/addcontacts-modal.component";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-flightbook-addcontacts",
@@ -23,7 +25,18 @@ export class FlightBookAddcontactsCompComponent implements OnInit {
   @Input() buttonText = "添加联系人";
   @Input() contacts: AddContact[];
   @Output() contactsChange: EventEmitter<any>;
-  constructor(public modalCtrl: ModalController) {
+  constructor(
+    public modalCtrl: ModalController,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+  ) {
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
     this.contactsChange = new EventEmitter();
   }
 

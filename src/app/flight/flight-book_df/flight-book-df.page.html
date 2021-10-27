@@ -25,8 +25,7 @@
             <ion-list class='c-info' *ngFor='let combindInfo of vmCombindInfos;let last=last;let idx=index;' lines='none'>
                 <ion-item lines='none' style="display: none;">
                     <ion-label>选择证件</ion-label>
-                    <ion-select #credentialSelect [(ngModel)]='combindInfo.vmCredential' name='Type' okText="确定" cancelText="取消" selectedText='{{combindInfo.vmCredential?.Type|credential}}'
-                        [compareWith]='credentialCompareFn'>
+                    <ion-select #credentialSelect [(ngModel)]='combindInfo.vmCredential' name='Type' okText="确定" cancelText="取消" selectedText='{{combindInfo.vmCredential?.Type|credential}}' [compareWith]='credentialCompareFn'>
                         <ion-select-option [value]="opt" *ngFor='let opt of combindInfo?.credentials'>
                             {{(opt?.Type|credential)}}{{opt?.HideNumber}}
                         </ion-select-option>
@@ -48,8 +47,7 @@
                     </div>
                     <ng-container *ngIf='combindInfo?.insuranceProducts?.length'>
                         <div class="insurances">
-                            <ion-radio-group mode="md" allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId'
-                                (ionChange)='calcTotalPrice()'>
+                            <ion-radio-group mode="md" allow-empty-selection='true' [value]='combindInfo.selectedInsuranceProductId' [(ngModel)]='combindInfo.selectedInsuranceProductId' (ionChange)='calcTotalPrice()'>
                                 <div *ngFor='let insurance of combindInfo?.insuranceProducts' class='ins'>
                                     <div class="ins-item">
                                         <ion-item>
@@ -84,13 +82,12 @@
                         </div>
                     </ng-container>
                     <div style='width: 100%;padding: 0 1em;' *ngIf='combindInfo?.modal?.bookInfo as s'>
-                        <p *ngIf='s.flightSegment.Carrier=="9C"' style="font-size: 14px;color:darkblue">
+                        <p *ngIf='s.flightSegment.Carrier=="9C"' style="font-size: 14px;color:blue">
                             温馨提醒： 无论何种原因航班延误或取消，春秋航空不提供任何补偿。
                         </p>
                         <div [@flyInOut] *ngIf='combindInfo?.showFriendlyReminder'>
                             <ion-label color='success' class='small-font ion-text-wrap'>
-                                温馨提醒: 国内廉价航司机票部分舱位不包含免费托运行李服务，免费托运行李相关事宜可以拨打我们客服电话咨询。（例如： 中联航: 每位旅客可携带1件免费随身行李，重量不能超过10千克且体积不超过20×30×40厘米。托运行李收费标准：X ≤ 5KG 柜台价格30元； 5KG &lt; X ≤ 10KG 柜台价格60元； 10KG &lt;
-                                X ≤ 15KG 柜台价格90元； 15KG &lt; X ≤ 20KG 柜台价格120元；等） </ion-label>
+                                温馨提醒: 国内廉价航司机票部分舱位不包含免费托运行李服务，免费托运行李相关事宜可以拨打我们客服电话咨询。（例如： 中联航: 每位旅客可携带1件免费随身行李，重量不能超过10千克且体积不超过20×30×40厘米。托运行李收费标准：X ≤ 5KG 柜台价格30元； 5KG &lt; X ≤ 10KG 柜台价格60元； 10KG &lt; X ≤ 15KG 柜台价格90元； 15KG &lt; X ≤ 20KG 柜台价格120元；等） </ion-label>
                         </div>
                         <div class="rules-desc row n-b">
                             <ion-label color='danger' *ngIf='s?.flightPolicy?.Rules?.length'>
@@ -284,7 +281,7 @@
                     </ion-radio-group>
                 </div>
                 <ng-template #nopaytypesEle>
-                   <div class="no-paytypes-tip" color='danger'> 没有可选择的支付方式或支付方式已经被关闭，请联系客服。</div>
+                    <div class="no-paytypes-tip" color='danger'> 没有可选择的支付方式或支付方式已经被关闭，请联系客服。</div>
                 </ng-template>
             </div>
         </ng-container>

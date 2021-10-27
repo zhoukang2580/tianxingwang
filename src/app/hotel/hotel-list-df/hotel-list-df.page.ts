@@ -42,6 +42,7 @@ import { BackButtonComponent } from "src/app/components/back-button/back-button.
 import { HrService } from "src/app/hr/hr.service";
 import { ShowFreebookTipComponent } from "../components/show-freebook-tip/show-freebook-tip.component";
 import { HotelCityService } from "../hotel-city.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 interface ISearchTextValue {
   Text: string;
   Value?: string; // Code
@@ -117,6 +118,8 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
     private staffService: HrService,
     private configService: ConfigService,
     private hotelCityService: HotelCityService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
     plt: Platform
   ) {
     this.filterTab = {
@@ -124,6 +127,13 @@ export class HotelListDfPage implements OnInit, OnDestroy, AfterViewInit {
       label: "",
     } as any;
     this.isIos = plt.is("ios");
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
   onBackdropClick(evt: CustomEvent) {
     if (evt) {

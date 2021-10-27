@@ -93,6 +93,7 @@ import { OrderService } from "src/app/order/order.service";
 import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
 import { CredentialsType } from "src/app/member/pipe/credential.pipe";
 import { StorageService } from "src/app/services/storage-service.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-flight-book-df",
@@ -195,9 +196,18 @@ export class FlightBookDfPage
     private router: Router,
     private storage: StorageService,
     private langService: LangService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
   expanseCompareFn(t1: string, t2: string) {
     return t1 && t2 ? t1 === t2 : false;

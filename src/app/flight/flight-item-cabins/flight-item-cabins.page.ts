@@ -8,7 +8,7 @@ import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "./../models/flight/FlightSegmentEntity";
 import { ActivatedRoute, Router } from "@angular/router";
 import { FlightService } from "src/app/flight/flight.service";
-import { Component, EventEmitter, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, EventEmitter, OnInit, ViewChild } from "@angular/core";
 import {
   ModalController,
   AlertController,
@@ -42,6 +42,7 @@ import { SelectFlightsegmentCabinComponent } from "../components/select-flightse
 import { SelectFlightPassengerComponent } from "../components/select-flight-passenger/select-flight-passenger.component";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { FlightDynamicService } from "src/app/flight-dynamic/flight-dynamic.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-flight-item-cabins",
@@ -85,10 +86,19 @@ export class FlightItemCabinsPage implements OnInit {
     private popoverController: PopoverController,
     private orderService: OrderService,
     private navCtrl: NavController,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
   ) {
     route.queryParamMap.subscribe(async (p) => {
       this.pageUrl = this.router.url;
+      this.themeService.getModeSource().subscribe(m=>{
+        if(m=='dark'){
+          this.refEle.nativeElement.classList.add("dark")
+        }else{
+          this.refEle.nativeElement.classList.remove("dark")
+        }
+      })
       try {
         this.vmFlightSegment = this.flightService.currentViewtFlightSegment;
         // this.initFlightSegments(this.vmFlightSegment);

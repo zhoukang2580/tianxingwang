@@ -1,561 +1,616 @@
 .f-t {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  ion-icon {
-    margin: 0 1em;
-  }
-  ion-text {
-    font-size: 15px;
-    font-family: PingFang SC;
-    font-weight: bold;
-    color: #333333;
-  }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ion-icon {
+        margin: 0 1em;
+    }
+    ion-text {
+        font-size: 15px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #333333;
+    }
 }
+
 .no-paytypes-tip {
-  padding: 0.5em 1em;
-  color: var(--ion-color-danger);
+    padding: 0.5em 1em;
+    color: var(--ion-color-danger);
 }
+
 .main-info {
-  img.editicon {
-    width: 1em;
-    margin: 0 1em;
-    min-width: 1em;
-  }
-  .add {
-    font-size: 14px;
-  }
-  margin-top: -0.5em;
-  border-radius: 10px;
-  background-color: var(--ion-color-light);
-  .f-list-item {
-    padding: 13.5px 1em;
-    .row1 {
-      display: flex;
-      margin-bottom: 11.5px;
-      justify-content: space-between;
+    img.editicon {
+        width: 1em;
+        margin: 0 1em;
+        min-width: 1em;
     }
-    .row2 {
-      font-size: 12px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      color: #333333;
+    .add {
+        font-size: 14px;
     }
-    background: #ffffff;
-    border-radius: 5px;
-    position: relative;
-    .price {
-      position: absolute;
-      right: 0.5em;
-      top: 13.5px;
-      font-size: 18px;
-      font-family: PingFang SC;
-      font-weight: bold;
-      color: #ff3333;
-      small {
-        font-size: 9px;
-      }
+    margin-top: -0.5em;
+    border-radius: 10px;
+    background-color: var(--ion-color-light);
+    .f-list-item {
+        padding: 13.5px 1em;
+        .row1 {
+            display: flex;
+            margin-bottom: 11.5px;
+            justify-content: space-between;
+        }
+        .row2 {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: #333333;
+        }
+        background: #ffffff;
+        border-radius: 5px;
+        position: relative;
+        .price {
+            position: absolute;
+            right: 0.5em;
+            top: 13.5px;
+            font-size: 18px;
+            font-family: PingFang SC;
+            font-weight: bold;
+            color: #ff3333;
+            small {
+                font-size: 9px;
+            }
+        }
+        .center {
+            margin: 0 1em;
+        }
+        .name {
+            font-size: 12px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: #333333;
+            margin-top: 9.5px;
+        }
+        .time {
+            font-size: 18px;
+            font-family: DIN;
+            font-weight: 550;
+            color: #333333;
+        }
+        .line {
+            opacity: 0.5;
+            color: gray;
+            margin: 0 2px;
+        }
+        .air {
+            display: flex;
+            font-size: 10px;
+            font-family: PingFang SC;
+            font-weight: 400;
+            color: #999999;
+            line-height: 15px;
+            img {
+                width: 1.3em;
+                height: 1.3em;
+                object-fit: contain;
+                min-height: 1.3em;
+                min-width: 1.3em;
+            }
+            .agreement {
+                color: tomato;
+            }
+            .left {
+                display: flex;
+                flex-flow: row wrap;
+                flex: 1;
+            }
+            .ticket-info {
+                font-size: 12px;
+                font-family: PingFang SC;
+                font-weight: 500;
+                line-height: 15px;
+                color: #333333;
+                display: flex;
+                flex-flow: column;
+                align-items: flex-end;
+                margin-left: auto;
+            }
+        }
+        .tax {
+            padding: 0.5em 0 0;
+            display: flex;
+            line-height: 1.7;
+            .insurance small {
+                font-size: 8px;
+            }
+        }
+        .takeofftime {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            padding: 1em 0 0;
+            margin-bottom: -0.5em;
+            color: #333333;
+        }
+        .center {
+            min-width: 75px;
+            .txt {
+                font-family: PingFang SC;
+                font-weight: 400;
+                color: #333333;
+                font-size: 10px;
+                text-align: center;
+            }
+            .img-t {
+                padding-bottom: 2px;
+            }
+            .img-b {
+                padding-top: 8px;
+            }
+            .img {
+                line-height: 0;
+            }
+        }
     }
-    .center {
-      margin: 0 1em;
+    .insurances {
+        ion-radio-group {
+            font-size: 14px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: #333333;
+            display: flex;
+            flex-flow: row wrap;
+        }
+        .ins {
+            width: 100%;
+            background: transparent;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .ins-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-right: 1em;
+            ion-item {
+                font-size: 14px;
+                padding: 0;
+                margin: 0;
+            }
+            small {
+                font-size: 10px;
+                margin-left: 1em;
+                margin-right: -0.5em;
+            }
+            .name {
+                margin-right: auto;
+                margin-left: 0.5em;
+                font-family: PingFang SC;
+                font-weight: 500;
+                color: #333333;
+            }
+            .price {
+                font-family: PingFang SC;
+                font-weight: bold;
+                color: #333333;
+            }
+        }
+        .show-more {
+            display: flex;
+            justify-content: space-between;
+            ion-icon {
+                opacity: 0.6;
+                font-size: 16px;
+            }
+            padding: 0.5em;
+        }
+        .ins-detail {
+            padding: 0 1em;
+            font-size: 14px;
+            margin-top: -0.5em;
+        }
     }
-    .name {
-      font-size: 12px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      color: #333333;
-      margin-top: 9.5px;
-    }
-    .time {
-      font-size: 18px;
-      font-family: DIN;
-      font-weight: 550;
-      color: #333333;
-    }
-    .line {
-      opacity: 0.5;
-      color: gray;
-      margin: 0 2px;
-    }
-    .air {
-      display: flex;
-      font-size: 10px;
-      font-family: PingFang SC;
-      font-weight: 400;
-      color: #999999;
-      line-height: 15px;
-      img {
-        width: 1.3em;
-        height: 1.3em;
-        object-fit: contain;
-        min-height: 1.3em;
-        min-width: 1.3em;
-      }
-      .agreement {
-        color: tomato;
-      }
-      .left {
+    .header {
         display: flex;
-        flex-flow: row wrap;
-        flex: 1;
-      }
-      .ticket-info {
+        align-items: center;
+        border-bottom: 1px solid #eeeeee;
+        padding: 0.8em 1em;
+    }
+    .c-num {
         font-size: 12px;
         font-family: PingFang SC;
         font-weight: 500;
-        line-height: 15px;
         color: #333333;
-        display: flex;
-        flex-flow: column;
-        align-items: flex-end;
-        margin-left: auto;
-      }
     }
-    .tax {
-      padding: 0.5em 0 0;
-      display: flex;
-      line-height: 1.7;
-      .insurance small {
-        font-size: 8px;
-      }
-    }
-    .takeofftime {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 14px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      padding: 1em 0 0;
-      margin-bottom: -0.5em;
-      color: #333333;
-    }
-    .center {
-      min-width: 75px;
-      .txt {
-        font-family: PingFang SC;
-        font-weight: 400;
-        color: #333333;
-        font-size: 10px;
-        text-align: center;
-      }
-      .img-t {
-        padding-bottom: 2px;
-      }
-      .img-b {
-        padding-top: 8px;
-      }
-      .img {
-        line-height: 0;
-      }
-    }
-  }
-  .insurances {
-    ion-radio-group {
-      font-size: 14px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      color: #333333;
-      display: flex;
-      flex-flow: row wrap;
-    }
-    .ins {
-      width: 100%;
-      background: transparent;
-      border-bottom: 1px solid #eeeeee;
-    }
-    .ins-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-right: 1em;
-      ion-item {
-        font-size: 14px;
-        padding: 0;
-        margin: 0;
-      }
-      small {
-        font-size: 10px;
-        margin-left: 1em;
-        margin-right: -0.5em;
-      }
-      .name {
-        margin-right: auto;
-        margin-left: 0.5em;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #333333;
-      }
-      .price {
+    .c-name {
+        max-width: 30%;
+        margin-right: 0.5em;
+        font-size: 16px;
         font-family: PingFang SC;
         font-weight: bold;
         color: #333333;
-      }
     }
-    .show-more {
-      display: flex;
-      justify-content: space-between;
-      ion-icon {
-        opacity: 0.6;
-        font-size: 16px;
-      }
-      padding: 0.5em;
+    .toggle-icon {
+        margin-left: auto;
     }
-    .ins-detail {
-      padding: 0 1em;
-      font-size: 14px;
-      margin-top: -0.5em;
-    }
-  }
-  .header {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #eeeeee;
-    padding: 0.8em 1em;
-  }
-  .c-num {
-    font-size: 12px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-  }
-  .c-name {
-    max-width: 30%;
-    margin-right: 0.5em;
-    font-size: 16px;
-    font-family: PingFang SC;
-    font-weight: bold;
-    color: #333333;
-  }
-  .toggle-icon {
-    margin-left: auto;
-  }
 }
 
 .section {
-  border-radius: 10px;
-  margin: 0.5em;
-  background-color: var(--ion-color-light);
-  &.n-p-b {
-    padding-bottom: 0;
-  }
-  &.payways {
-    ion-item {
-      --border-color: #eee;
+    border-radius: 10px;
+    margin: 0.5em;
+    background-color: var(--ion-color-light);
+    &.n-p-b {
+        padding-bottom: 0;
     }
-  }
-  .title {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5em;
-    border-bottom: 1px solid #eee;
-    &.n-b {
-      border: none;
+    &.payways {
+        ion-item {
+            --border-color: #eee;
+        }
     }
-    .name {
-      font-size: 15px;
-      font-family: PingFang SC;
-      font-weight: bold;
-      color: #333333;
+    .title {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5em;
+        border-bottom: 1px solid #eee;
+        &.n-b {
+            border: none;
+        }
+        .name {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: bold;
+            color: #333333;
+        }
     }
-  }
-  .row {
-    padding: 0.5em 1em;
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    .label {
-      width: 102px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      color: #666666;
+    .row {
+        padding: 0.5em 1em;
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        .label {
+            width: 102px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: #666666;
+        }
+        .value {
+            flex: 1;
+        }
+        &.rules-desc {
+            padding: 0.5em 0;
+        }
+        .mobiles,
+        .emails {
+            &.ismulti .label {
+                align-self: flex-start;
+                padding-top: 1em;
+            }
+        }
+        ion-item {
+            width: 100%;
+            --min-height: initial;
+            font-size: 14px;
+            --padding-start: 0;
+            ion-label {
+                margin: 0 0.5em;
+            }
+            ion-checkbox {
+                width: 1.2em;
+                height: 1.2em;
+                margin: 0;
+            }
+        }
+        ion-input {
+            --padding-start: 0;
+            --padding-bottom: 0;
+            --padding-top: 0;
+        }
+        ion-icon {
+            margin-left: auto;
+            color: var(--ion-color-dark);
+            opacity: 0.8;
+            font-size: 19px;
+        }
+        border-bottom: 1px solid #eeeeee;
+        &:last-child {
+            border: none;
+        }
+        &.n-b {
+            border: none;
+        }
     }
-    .value {
-      flex: 1;
-    }
-    &.rules-desc {
-      padding: 0.5em 0;
-    }
-    .mobiles,
-    .emails {
-      &.ismulti .label {
-        align-self: flex-start;
-        padding-top: 1em;
-      }
-    }
-    ion-item {
-      width: 100%;
-      --min-height: initial;
-      font-size: 14px;
-      --padding-start: 0;
-      ion-label {
-        margin: 0 0.5em;
-      }
-      ion-checkbox {
-        width: 1.2em;
-        height: 1.2em;
-        margin: 0;
-      }
-    }
-    ion-input {
-      --padding-start: 0;
-      --padding-bottom: 0;
-      --padding-top: 0;
-    }
-    ion-icon {
-      margin-left: auto;
-      color: var(--ion-color-dark);
-      opacity: 0.8;
-      font-size: 19px;
-    }
-    border-bottom: 1px solid #eeeeee;
-    &:last-child {
-      border: none;
-    }
-    &.n-b {
-      border: none;
-    }
-  }
 }
 
 .spacebetween {
-  display: flex;
-  justify-content: space-between;
-  color: var(--ion-color-dark);
+    display: flex;
+    justify-content: space-between;
+    color: var(--ion-color-dark);
 }
 
 .c-info {
-  background: transparent;
+    background: transparent;
 }
 
 ion-footer {
-  // height: 49px;
-  &.freebook {
-    height: 70px;
-  }
-  background: #ffffff;
-  .price-detail {
-    display: flex;
-    align-items: center;
-    padding: 0.8em;
-    .submit-btn {
-      flex: 1;
-      width: 90px;
-      height: 32px;
-      background: #5099fe;
-      border-radius: 5px;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-left: auto;
-      margin-right: 0.5em;
+    // height: 49px;
+    &.freebook {
+        height: 70px;
     }
-    .detail {
-      font-size: 8px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      color: #333333;
-      margin-left: 1em;
+    background: #ffffff;
+    .price-detail {
+        display: flex;
+        align-items: center;
+        padding: 0.8em;
+        .submit-btn {
+            flex: 1;
+            width: 90px;
+            height: 32px;
+            background: #5099fe;
+            border-radius: 5px;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: 0.5em;
+        }
+        .detail {
+            font-size: 8px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: #333333;
+            margin-left: 1em;
+        }
+        .total {
+            font-size: 12px;
+            color: red;
+        }
+        .price {
+            font-size: 18px;
+        }
+        .left {
+            flex: 30%;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        .btns {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
     }
-    .total {
-      font-size: 12px;
-      color: red;
+    &.freebook .freebook-price {
+        padding: 0.5em 0.8em;
+        margin-top: -1.2em;
     }
-    .price {
-      font-size: 18px;
-    }
-    .left {
-      flex: 30%;
-      display: flex;
-      align-items: center;
-      white-space: nowrap;
-    }
-    .btns {
-      flex: 1;
-      display: flex;
-      align-items: center;
-    }
-  }
-  &.freebook .freebook-price {
-    padding: 0.5em 0.8em;
-    margin-top: -1.2em;
-  }
 }
 
 .ticketKnow {
-  display: flex;
-  width: 100%;
-  height: 40px;
-  align-items: center;
-  background: #eee;
-  ion-item {
+    display: flex;
     width: 100%;
-  }
-  ion-checkbox {
-    width: 0.85rem;
-    height: 0.85rem;
-  }
-  ion-label {
-    font-size: 14px;
-  }
+    height: 40px;
+    align-items: center;
+    background: #eee;
+    ion-item {
+        width: 100%;
+    }
+    ion-checkbox {
+        width: 0.85rem;
+        height: 0.85rem;
+    }
+    ion-label {
+        font-size: 14px;
+    }
 }
 
 .translate {
-  border-radius: 5px 5px 0px 0px;
-  padding: 0 0.3em;
-  font-size: 14px;
-  background-color: white;
-  transform: translate(0, 100%);
-  position: fixed;
-  transition: all ease-in-out 200ms;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: -1;
-  opacity: 0;
-  max-width: 100%;
-  width: 100%;
-  &.show {
-    z-index: 1002;
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-  .needKnow {
-    width: 100%;
-    max-height: 150vh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    -webkit-overflow-scrolling: touch;
-    .titels {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 5px;
-      .del {
-        font-size: 26px;
-        color: #666;
-      }
-      .centent {
-        font-size: 18px;
-        font-weight: bold;
-      }
-    }
-  }
-  ion-item {
+    border-radius: 5px 5px 0px 0px;
+    padding: 0 0.3em;
     font-size: 14px;
-    border-bottom: 1px solid #eee;
-    line-height: 3;
-    ion-icon {
-      font-size: 20px;
+    background-color: white;
+    transform: translate(0, 100%);
+    position: fixed;
+    transition: all ease-in-out 200ms;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    opacity: 0;
+    max-width: 100%;
+    width: 100%;
+    &.show {
+        z-index: 1002;
+        opacity: 1;
+        transform: translate(0, 0);
     }
-  }
+    .needKnow {
+        width: 100%;
+        max-height: 150vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        -webkit-overflow-scrolling: touch;
+        .titels {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px;
+            .del {
+                font-size: 26px;
+                color: #666;
+            }
+            .centent {
+                font-size: 18px;
+                font-weight: bold;
+            }
+        }
+    }
+    ion-item {
+        font-size: 14px;
+        border-bottom: 1px solid #eee;
+        line-height: 3;
+        ion-icon {
+            font-size: 20px;
+        }
+    }
 }
 
 .agreement-alert {
-  position: fixed;
-  top: 51%;
-  left: 10%;
-  right: 10%;
-  transform: translate3d(0, 1000%, 0);
-  transform: translate3d(0, -50%, 0);
-  z-index: 1000;
-  background: var(--ion-color-light);
-  transition: all 0.2s ease-in-out;
-  border-radius: 5px;
-  padding: 1em 2em 0.5em;
-  header {
-    padding: 10px;
-    text-align: center;
-    font-size: 17px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-  }
-  .agreement-c {
-    padding: 10px 0;
-    font-size: 14px;
-  }
-  .buttons {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    .button {
-      width: 90px;
-      height: 28px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 4px;
-      font-size: 14px;
-      color: #eee;
-      background: #5099fe;
+    position: fixed;
+    top: 51%;
+    left: 10%;
+    right: 10%;
+    transform: translate3d(0, 1000%, 0);
+    transform: translate3d(0, -50%, 0);
+    z-index: 1000;
+    background: var(--ion-color-light);
+    transition: all 0.2s ease-in-out;
+    border-radius: 5px;
+    padding: 1em 2em 0.5em;
+    header {
+        padding: 10px;
+        text-align: center;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
     }
-    :first-child {
-      background: #fff;
-      border: 1px solid #237fff8a;
-      color: #5099fe;
+    .agreement-c {
+        padding: 10px 0;
+        font-size: 14px;
     }
-  }
+    .buttons {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        .button {
+            width: 90px;
+            height: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #eee;
+            background: #5099fe;
+        }
+         :first-child {
+            background: #fff;
+            border: 1px solid #237fff8a;
+            color: #5099fe;
+        }
+    }
 }
 
 .transfrom {
-  border-radius: 10px 10px 0px 0px;
-  padding: 0 1em;
-  font-size: 14px;
-  background-color: white;
-  transform: translate(0, 100%);
-  position: fixed;
-  transition: all ease-in-out 200ms;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: -1;
-  opacity: 0;
-  max-width: 100%;
-  width: 100%;
-  &.show {
-    z-index: 11;
-    opacity: 1;
-    transform: translate(0, -44px);
-  }
-  .wrapper {
+    border-radius: 10px 10px 0px 0px;
+    padding: 0 1em;
+    font-size: 14px;
+    background-color: white;
+    transform: translate(0, 100%);
+    position: fixed;
+    transition: all ease-in-out 200ms;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    opacity: 0;
+    max-width: 100%;
     width: 100%;
-    max-height: 70vh;
-    overflow-x: hidden;
-    overflow-y: auto;
-    &::-webkit-scrollbar {
-      display: none;
+    &.show {
+        z-index: 11;
+        opacity: 1;
+        transform: translate(0, -44px);
     }
-    -webkit-overflow-scrolling: touch;
-  }
-  .itm {
-    border-bottom: 1px solid #eeeeee;
-    padding: 1em 0.3em;
-    &:last-child {
-      border: none;
+    .wrapper {
+        width: 100%;
+        max-height: 70vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        -webkit-overflow-scrolling: touch;
     }
-  }
-  .name-num {
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-  }
-  .spacebetween {
-    margin: 0.5em 0;
-    color: #666666;
-  }
+    .itm {
+        border-bottom: 1px solid #eeeeee;
+        padding: 1em 0.3em;
+        &:last-child {
+            border: none;
+        }
+    }
+    .name-num {
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #333333;
+    }
+    .spacebetween {
+        margin: 0.5em 0;
+        color: #666666;
+    }
 }
 
 .zz {
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  z-index: 1;
-  opacity: 0.5;
-  background-color: var(--ion-color-dark);
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    opacity: 0.5;
+    background-color: var(--ion-color-dark);
+}
+
+:host.dark {
+    .section {
+        background-color: initial;
+        .c-name,
+        .c-num {
+            color: var(--ion-text-color);
+        }
+        .flight-info {
+            .f-list-item {
+                background: initial;
+                .row1 {
+                    .time,
+                    .name {
+                        color: var(--ion-text-color);
+                    }
+                    .center {
+                        .txt {
+                            color: var(--ion-text-color);
+                        }
+                    }
+                }
+                .row2 {
+                    .air {
+                        color: var(--ion-text-color);
+                        .ticket-info {
+                            color: var(--ion-text-color);
+                        }
+                    }
+                    .takeofftime {
+                        color: var(--ion-text-color);
+                    }
+                }
+            }
+        }
+        .title {
+            .name {
+                color: var(--ion-text-color);
+            }
+        }
+        .row {
+            .label {
+                color: var(--ion-text-color);
+            }
+        }
+    }
+    ion-footer {
+        background: initial;
+        .detail {
+            color: var(--ion-text-color);
+        }
+    }
 }

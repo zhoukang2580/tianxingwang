@@ -91,7 +91,8 @@ export class SearchFlightDfPage
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
     private langService: LangService,
-    private plt: Platform
+    private plt: Platform,
+    
   ) {
     this.isIos = plt.is("ios");
     const sub = route.queryParamMap.subscribe(async (q) => {

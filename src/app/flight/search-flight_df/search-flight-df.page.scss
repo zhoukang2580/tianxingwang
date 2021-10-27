@@ -1,220 +1,219 @@
 ion-header {
-  ion-toolbar {
-    --background: transparent;
-    --border-width: 0;
-  }
+    ion-toolbar {
+        --background: transparent;
+        --border-width: 0;
+    }
 }
+
 .bgimg {
-  position: absolute;
-  z-index: -1;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 200px;
-  width: 100%;
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 200px;
+    width: 100%;
 }
 
 ion-card {
-  z-index: 100;
-  box-shadow: 0px 8px 12px 0px #dcd4fcb0;
+    z-index: 100;
+    box-shadow: 0px 8px 12px 0px #dcd4fcb0;
 }
 
 .cnt {
-  top: 106px;
-  --background: transparent;
-  z-index: 1000;
-  position: absolute;
-  left: 0;
-  right: 0;
-  .wrapper {
-    position: relative;
-    height: 44px;
-  }
+    top: 106px;
+    --background: transparent;
+    z-index: 1000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    .wrapper {
+        position: relative;
+        height: 44px;
+    }
 }
-.search-img {
-  margin-top: 3.1em;
-  position: absolute;
-  background-color: #f6f6f6;
-  right: 0.6em;
-  left: 0.6em;
-  z-index: 101;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 41px;
-  border-top-right-radius: 8px;
-  border-top-left-radius: 8px;
-  // border-bottom: 1px dashed gray;
-  &.ios {
-    right: 1em;
-    left: 1em;
-    // top: 24%;
-  }
 
-  .left,
-  .right {
-    margin-top: -6px;
-    height: 54px;
-    text-align: center;
-    flex: 1;
-    position: relative;
+.search-img {
+    margin-top: 3.1em;
+    position: absolute;
+    background-color: #f6f6f6;
+    right: 0.6em;
+    left: 0.6em;
+    z-index: 101;
     display: flex;
     align-items: center;
-    justify-content: center;
-    img {
-      max-height: 100%;
-      width: 12em;
+    justify-content: space-between;
+    height: 41px;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+    // border-bottom: 1px dashed gray;
+    &.ios {
+        right: 1em;
+        left: 1em;
+        // top: 24%;
     }
-  }
-
-  .left {
-    left: -1.1px;
-  }
-
-  .right {
-    right: -1.5px;
-  }
-
-  &.ios {
-    .left {
-      left: -1px;
-    }
-
+    .left,
     .right {
-      right: -1.5px;
+        margin-top: -6px;
+        height: 54px;
+        text-align: center;
+        flex: 1;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        img {
+            max-height: 100%;
+            width: 12em;
+        }
     }
-  }
-
-  .text {
-    position: absolute;
-    font-size: 15px;
-    font-family: PingFang SC;
-    font-weight: bold;
-    color: #333333;
-    top: 50%;
-    transform: translate(0, -30%);
-  }
-
-  .right .text {
-    margin-right: -0.5em;
-  }
-
-  .left .text {
-    margin-left: -1.5em;
-  }
-}
-.city {
-  width: 100%;
-  margin-top: 1.5em;
-  justify-content: space-between;
-  img {
-    width: 1.8em;
-    height: 1.8em;
-    transition: all ease-in-out 200ms;
-    transform: rotateZ(0);
-    &.rotate {
-      transform: rotateZ(360deg);
+    .left {
+        left: -1.1px;
     }
-  }
-  .city-name {
-    font-size: 18px;
-    font-family: PingFang SC;
-    font-weight: bold;
-    color: #333333;
-    flex-basis: 33.33%;
-    max-width: 33.33%;
-  }
-}
-.flight-date {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5em 0;
-}
-.btn-search {
-  height: 40px;
-  background: #5099fe;
-  border-radius: 20px;
-  color: white;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 1em;
-}
-.segments {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 48px;
-  font-size: 14px;
-  margin: 0.5em 0;
-  .seg {
-    flex: 1;
-    text-align: center;
-    position: relative;
-    &.active {
-      color: var(--ion-color-secondary);
-      &::after {
+    .right {
+        right: -1.5px;
+    }
+    &.ios {
+        .left {
+            left: -1px;
+        }
+        .right {
+            right: -1.5px;
+        }
+    }
+    .text {
         position: absolute;
-        content: "";
-        left: 50%;
-        height: 4px;
-        width: 44px;
-        background-color: #5099fe;
-        bottom: -10.5px;
-        transform: translateX(-50%);
-        border-radius: 4px;
-      }
+        font-size: 15px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #333333;
+        top: 50%;
+        transform: translate(0, -30%);
     }
-  }
+    .right .text {
+        margin-right: -0.5em;
+    }
+    .left .text {
+        margin-left: -1.5em;
+    }
 }
+
+.city {
+    width: 100%;
+    margin-top: 1.5em;
+    justify-content: space-between;
+    img {
+        width: 1.8em;
+        height: 1.8em;
+        transition: all ease-in-out 200ms;
+        transform: rotateZ(0);
+        &.rotate {
+            transform: rotateZ(360deg);
+        }
+    }
+    .city-name {
+        font-size: 18px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: var(--ion-text-color);
+        flex-basis: 33.33%;
+        max-width: 33.33%;
+    }
+}
+
+.flight-date {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5em 0;
+}
+
+.btn-search {
+    height: 40px;
+    background: #5099fe;
+    border-radius: 20px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 1em;
+}
+
+.segments {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+    font-size: 14px;
+    margin: 0.5em 0;
+    .seg {
+        flex: 1;
+        text-align: center;
+        position: relative;
+        &.active {
+            color: var(--ion-color-secondary);
+            &::after {
+                position: absolute;
+                content: "";
+                left: 50%;
+                height: 4px;
+                width: 44px;
+                background-color: #5099fe;
+                bottom: -10.5px;
+                transform: translateX(-50%);
+                border-radius: 4px;
+            }
+        }
+    }
+}
+
 .international {
-  padding-top: 48px;
-  ion-card-content {
-    padding: 0.5em;
-    margin-top: 1em;
-  }
-  .multi-city {
-    .index-number {
-      align-self: flex-start;
-      background: var(--ion-color-secondary);
-      color: white;
-      width: 1.5em;
-      height: 1.5em;
-      line-height: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      padding: 0.5em;
-      // margin-top: 0.5em;
-      margin-right: 0.5em;
+    padding-top: 48px;
+    ion-card-content {
+        padding: 0.5em;
+        margin-top: 1em;
     }
-  }
-  ul {
-    list-style: none;
-    margin: 0.5em;
-    padding: 0;
-    li {
-      margin-top: 0.5em;
-      display: flex;
-      &:not(:last-child) {
-        border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
-      }
+    .multi-city {
+        .index-number {
+            align-self: flex-start;
+            background: var(--ion-color-secondary);
+            color: white;
+            width: 1.5em;
+            height: 1.5em;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            padding: 0.5em;
+            // margin-top: 0.5em;
+            margin-right: 0.5em;
+        }
     }
-  }
-  .city-name {
-    white-space: normal;
-    max-width: 7em;
-    min-width: 7em;
-  }
-  .from-to-city {
-    flex: 1;
-    .swap {
-      font-size: 0.9rem;
+    ul {
+        list-style: none;
+        margin: 0.5em;
+        padding: 0;
+        li {
+            margin-top: 0.5em;
+            display: flex;
+            &:not(:last-child) {
+                border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
+            }
+        }
     }
-    .city-wrapper {
-      margin: 0.5em 0;
+    .city-name {
+        white-space: normal;
+        max-width: 7em;
+        min-width: 7em;
     }
-  }
+    .from-to-city {
+        flex: 1;
+        .swap {
+            font-size: 0.9rem;
+        }
+        .city-wrapper {
+            margin: 0.5em 0;
+        }
+    }
 }

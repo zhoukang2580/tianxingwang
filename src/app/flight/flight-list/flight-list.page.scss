@@ -1,197 +1,211 @@
 ion-text {
-  &.from-city,
-  &.to-city {
-    display: inline-flex;
-    align-items: center;
-    font-size: 15px;
-    font-family: PingFang SC;
-    font-weight: bold;
-    color: #333333;
-  }
+    &.from-city,
+    &.to-city {
+        display: inline-flex;
+        align-items: center;
+        font-size: 15px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: var(--ion-text-color);
+    }
 }
+
 ion-list {
-  margin-top: 10px;
-  padding-top: 0;
+    margin-top: 10px;
+    padding-top: 0;
 }
+
 .xs-font-size {
-  font-size: 0.7rem;
+    font-size: 0.7rem;
 }
+
 ion-grid,
 ion-row,
 ion-col {
-  margin: 0;
-  padding: 0;
-  color: var(--ion-color-secondary);
+    margin: 0;
+    padding: 0;
+    color: var(--ion-color-secondary);
 }
+
 ion-title {
-  &.text-start {
-    text-align: start;
-  }
-  &.text-center {
-    text-align: center;
-  }
-  ion-text {
-    font-size: 0.8rem;
-    font-weight: bolder;
-  }
-  .icon {
-    font-size: 0.9rem;
-    margin: 0 0.5em;
-  }
+    &.text-start {
+        text-align: start;
+    }
+    &.text-center {
+        text-align: center;
+    }
+    ion-text {
+        font-size: 0.8rem;
+        font-weight: bolder;
+    }
+    .icon {
+        font-size: 0.9rem;
+        margin: 0 0.5em;
+    }
 }
+
 .sm-font-size {
-  font-size: 0.8rem;
-}
-.tabs {
-  display: flex;
-  align-items: center;
-  .tab {
-    flex: 1;
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
-    padding: 0.5rem;
-    ion-icon {
-      font-size: 1.3rem;
-      --opacity: 0.6;
-      color: var(--ion-color-medium);
-    }
-    ion-note {
-      font-size: 0.7rem;
-    }
-    &.filtered {
-      position: relative;
-      &::after {
-        position: absolute;
-        content: "";
-        height: 0.5em;
-        width: 0.5em;
-        background-color: var(--ion-color-danger);
-        display: block;
-        left: calc(50% + 0.9em);
-        transform: translateX(-50%);
-        border-radius: 50%;
-      }
-    }
-    &.active {
-      --opacity: 1;
-      ion-icon {
-        color: var(--ion-color-secondary);
-      }
-      ion-note {
-        color: var(--ion-color-secondary);
-      }
-    }
-  }
-}
-ion-toolbar.fly-days {
-  --border-width: 0;
-}
-.info {
-  width: 100%;
-}
-.info .row {
-  .row:first-child {
-    width: 67%;
-  }
-  .row:last-child {
-    width: 33%;
-  }
-  .time {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 1rem;
-    margin-bottom: 0;
-    .line {
-      font-size: 0.6rem;
-    }
-  }
-  .price {
-    align-self: center;
-  }
-  img {
-    max-width: 1em;
-    min-width: 1em;
-    width: 1em;
-    margin: 0 0.3em 0 0;
-  }
-  .airports {
     font-size: 0.8rem;
-    display: flex;
-    justify-content: space-between;
-  }
-  .desc {
-    .code-share-number {
-      color: var(--ion-color-secondary);
-    }
-    font-size: 0.7rem;
-    white-space: nowrap;
+}
+
+.tabs {
     display: flex;
     align-items: center;
-  }
+    .tab {
+        flex: 1;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        padding: 0.5rem;
+        ion-icon {
+            font-size: 1.3rem;
+            --opacity: 0.6;
+            color: var(--ion-color-medium);
+        }
+        ion-note {
+            font-size: 0.7rem;
+        }
+        &.filtered {
+            position: relative;
+            &::after {
+                position: absolute;
+                content: "";
+                height: 0.5em;
+                width: 0.5em;
+                background-color: var(--ion-color-danger);
+                display: block;
+                left: calc(50% + 0.9em);
+                transform: translateX(-50%);
+                border-radius: 50%;
+            }
+        }
+        &.active {
+            --opacity: 1;
+            ion-icon {
+                color: var(--ion-color-secondary);
+            }
+            ion-note {
+                color: var(--ion-color-secondary);
+            }
+        }
+    }
 }
+
+ion-toolbar.fly-days {
+    --border-width: 0;
+}
+
+.info {
+    width: 100%;
+}
+
+.info .row {
+    .row:first-child {
+        width: 67%;
+    }
+    .row:last-child {
+        width: 33%;
+    }
+    .time {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 1rem;
+        margin-bottom: 0;
+        .line {
+            font-size: 0.6rem;
+        }
+    }
+    .price {
+        align-self: center;
+    }
+    img {
+        max-width: 1em;
+        min-width: 1em;
+        width: 1em;
+        margin: 0 0.3em 0 0;
+    }
+    .airports {
+        font-size: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+    }
+    .desc {
+        .code-share-number {
+            color: var(--ion-color-secondary);
+        }
+        font-size: 0.7rem;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+    }
+}
+
 .rotate-icon {
-  margin: 0 1em;
-  &.small-margin {
-    margin: 0 0.15em;
-  }
+    margin: 0 1em;
+    &.small-margin {
+        margin: 0 0.15em;
+    }
 }
+
 app-fly-filter {
-  z-index: 0;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow: auto;
-  transform: translateY(100%);
-  opacity: 0;
-  transition: all ease-in-out 100ms;
-  overflow: hidden;
-  &.show {
-    transform: translateY(0);
-    top: 0;
-    z-index: 1000;
-    opacity: 1;
-  }
+    z-index: 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: auto;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: all ease-in-out 100ms;
+    overflow: hidden;
+    &.show {
+        transform: translateY(0);
+        top: 0;
+        z-index: 1000;
+        opacity: 1;
+    }
 }
+
 .flight {
-  list-style-type: none;
-  margin: 0;
-  padding: 0.4em;
-  li {
-    background: white;
-    border-radius: 5px;
-    margin-bottom: 0.4em;
-  }
-  background-color: #f6f6f6;
+    list-style-type: none;
+    margin: 0;
+    padding: 0.4em;
+    li {
+        // background: white;
+        border-radius: 5px;
+        margin-bottom: 0.4em;
+    }
+    // background-color: #f6f6f6;
 }
 
 .flight h4,
 .flight h5 {
-  margin: 0.3em 0;
+    margin: 0.3em 0;
 }
+
 .lowest-item {
-  display: flex;
-  ion-button {
-    margin-left: auto;
-  }
-}
-.flight.recomend {
-  app-flight-segment-item-df {
-    width: 100%;
-  }
-  padding: 0;
-  margin-top: 10px;
-  background: white;
-  li {
-    position: relative;
-    margin: 0.5em;
-    border-radius: 0.3em;
+    display: flex;
     ion-button {
-      position: absolute;
-      right: 0.5em;
-      bottom: 0.5em;
+        margin-left: auto;
     }
-  }
+}
+
+.flight.recomend {
+    app-flight-segment-item-df {
+        width: 100%;
+    }
+    padding: 0;
+    margin-top: 10px;
+    // background: white;
+    li {
+        position: relative;
+        margin: 0.5em;
+        border-radius: 0.3em;
+        ion-button {
+            position: absolute;
+            right: 0.5em;
+            bottom: 0.5em;
+        }
+    }
 }

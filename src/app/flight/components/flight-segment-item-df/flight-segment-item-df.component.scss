@@ -1,125 +1,127 @@
 .f-list-item {
-  padding: 13.5px 1em 13.5px 0.3em;
-  display: flex;
-  background: #ffffff;
-  border-radius: 5px;
-  position: relative;
-  .air-img {
-    width: 1.5em;
-    height: 1.5em;
-    align-self: center;
-    margin-right: 0.3em;
-    min-width: 1.5em;
-    min-height: 1.5em;
-    object-fit: contain;
-  }
-  .row1 {
+    padding: 13.5px 1em 13.5px 0.3em;
     display: flex;
-    margin-bottom: 11.5px;
-  }
-  .row2 {
-    font-size: 12px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-  }
+    // background: var(--ion-text-color);
+    border-radius: 5px;
+    position: relative;
+    .air-img {
+        width: 1.5em;
+        height: 1.5em;
+        align-self: center;
+        margin-right: 0.3em;
+        min-width: 1.5em;
+        min-height: 1.5em;
+        object-fit: contain;
+    }
+    .row1 {
+        display: flex;
+        margin-bottom: 11.5px;
+    }
+    .row2 {
+        font-size: 12px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: var(--ion-text-color);
+    }
+    .price {
+        position: absolute;
+        right: 0.5em;
+        top: 13.5px;
+        font-size: 18px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #ff3333;
+        small {
+            font-size: 9px;
+        }
+        .tip {
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: var(--ion-color-success);
+            text-align: end;
+        }
+    }
+    .center {
+        margin: 0 1em;
+    }
+    .name {
+        font-size: 12px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: var(--ion-text-color);
+        margin-top: 9.5px;
+    }
+    .time {
+        font-size: 18px;
+        font-family: DIN;
+        font-weight: 550;
+        color: var(--ion-text-color);
+    }
+    .line {
+        opacity: 0.5;
+        color: gray;
+        margin: 0 2px;
+    }
+    .air {
+        display: flex;
+        align-items: center;
+        img {
+            width: 1.3em;
+            height: 1.3em;
+            object-fit: contain;
+            min-height: 1.3em;
+            min-width: 1.3em;
+        }
+        .agreement {
+            color: tomato;
+        }
+    }
+    .center {
+        min-width: 75px;
+        .txt {
+            font-family: PingFang SC;
+            font-weight: 400;
+            color: var(--ion-text-color);
+            font-size: 10px;
+            text-align: center;
+        }
+        .img-t {
+            padding-bottom: 2px;
+        }
+        .img-b {
+            padding-top: 8px;
+        }
+        .img {
+            line-height: 0;
+        }
+    }
+}
 
-  .price {
+.agreement-airline {
+    width: 2.7em;
     position: absolute;
     right: 0.5em;
-    top: 13.5px;
-    font-size: 18px;
-    font-family: PingFang SC;
-    font-weight: bold;
-    color: #ff3333;
-    small {
-      font-size: 9px;
-    }
-    .tip {
-      font-size: 0.7rem;
-      font-weight: bold;
-      color: var(--ion-color-success);
-      text-align: end;
-    }
-  }
-  .center {
-    margin: 0 1em;
-  }
-  .name {
-    font-size: 12px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-    margin-top: 9.5px;
-  }
-  .time {
-    font-size: 18px;
-    font-family: DIN;
-    font-weight: 550;
-    color: #333333;
-  }
-  .line {
-    opacity: 0.5;
-    color: gray;
-    margin: 0 2px;
-  }
-  .air {
-    display: flex;
-    align-items: center;
-    img {
-      width: 1.3em;
-      height: 1.3em;
-      object-fit: contain;
-      min-height: 1.3em;
-      min-width: 1.3em;
-    }
-    .agreement {
-      color: tomato;
-    }
-  }
-  .center {
-    min-width: 75px;
-    .txt {
-      font-family: PingFang SC;
-      font-weight: 400;
-      color: #333333;
-      font-size: 10px;
-      text-align: center;
-    }
-    .img-t {
-      padding-bottom: 2px;
-    }
-    .img-b {
-      padding-top: 8px;
-    }
-    .img {
-      line-height: 0;
-    }
-  }
+    bottom: 1em;
 }
-.agreement-airline {
-  width: 2.7em;
-  position: absolute;
-  right: 0.5em;
-  bottom: 1em;
-}
+
 .recomend-segment {
-  padding: 0.5em;
-  border-radius: 0.3em;
-  border-top-left-radius: 0;
-  .price {
-    align-self: flex-start;
-  }
-  background-color: rgba(var(--ion-color-secondary-rgb), 0.1);
+    padding: 0.5em;
+    border-radius: 0.3em;
+    border-top-left-radius: 0;
+    .price {
+        align-self: flex-start;
+    }
+    background-color: rgba(var(--ion-color-secondary-rgb), 0.1);
 }
+
 .tip.recomend-segment {
-  background: var(--ion-color-primary);
-  // background: transparent;
-  width: 6em;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  padding: 0.1em 0.2em;
-  font-size: 0.7rem;
-  color: var(--ion-color-success);
-  text-align: center;
+    background: var(--ion-color-primary);
+    // background: transparent;
+    width: 6em;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    padding: 0.1em 0.2em;
+    font-size: 0.7rem;
+    color: var(--ion-color-success);
+    text-align: center;
 }
