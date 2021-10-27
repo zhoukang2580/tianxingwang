@@ -153,12 +153,12 @@ ion-header ion-title {
     display: flex;
     align-items: center;
     justify-content: center;
-    .txt{
+    .txt {
       margin-right: 1em;
     }
     padding: 0.5em 1.7em;
     color: white;
-    background-color: rgba(0125,125,125,0.3);
+    background-color: rgba(0125, 125, 125, 0.3);
   }
 }
 
@@ -494,5 +494,34 @@ ion-header ion-title {
       overflow: hidden;
       max-width: 14em;
     }
+  }
+}
+:host.dark {
+  .notice {
+    .trip-item {
+      box-shadow: 1px 1px 13px 5px var(--ion-color-secondary);
+    }
+  }
+  .home,
+  .banners,
+  .hot-hotel {
+    --background: initial;
+  }
+  .round-wrapper {
+    background-color: initial;
+  }
+  .products {
+    .plane,
+    .hotel,
+    .train,
+    .car,
+    .gp {
+      .txt {
+        color: var(--ion-text-color);
+      }
+    }
+  }
+  .entries .item .txt {
+    color: var(--ion-text-color);
   }
 }

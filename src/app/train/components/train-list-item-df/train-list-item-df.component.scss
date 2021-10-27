@@ -26,7 +26,7 @@
     &::after {
       content: attr(adddaytip);
       position: absolute;
-      right: -1.5em;
+      right: -0.5em;
       top: -1.8em;
       font-size: 0.6rem;
     }
@@ -103,7 +103,7 @@ img.access-by-IdCard {
     }
   }
 }
-.no-seat{
+.no-seat {
   opacity: 0.5;
   // background: #fefefe;
 }
@@ -144,6 +144,7 @@ img.access-by-IdCard {
 }
 :host {
   width: 100%;
+  padding: 0.3em 0;
 }
 .disabled {
   opacity: 0.6;

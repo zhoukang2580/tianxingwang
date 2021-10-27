@@ -13,7 +13,7 @@
 <ion-content>
     <ion-item-group *ngFor='let bookInfo of bookInfos'>
         <ng-container *ngIf='bookInfo?.bookInfo'>
-            <ion-item lines='none' style="--background:#fff">
+            <ion-item lines='none'>
                 <div class='detail'>
                     <ion-label color='dark'>{{bookInfo?.credential?.Name}}&nbsp;&nbsp;{{bookInfo?.credential?.HideNumber}}</ion-label>
                     <div class='date'>

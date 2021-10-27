@@ -113,7 +113,8 @@ ion-list.fakelist {
   margin-top: 0;
 }
 ion-list {
-  background: #f6f6f6;
+  // background: #f6f6f6;
+  background:transparent;
   margin-bottom: -15px;
 }
 .icon-search-train {
@@ -127,7 +128,7 @@ img {
 
 .city-name {
   font-size: 14px;
-  color: #000;
+  // color: #000;
 }
 [color="medium"] .city-name {
   color: var(--ion-color-medium);

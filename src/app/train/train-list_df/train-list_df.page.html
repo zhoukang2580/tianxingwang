@@ -48,13 +48,10 @@
     暂无数据
   </app-or-comp>
   <ion-list>
-    <ul class='train'>
-      <li *ngFor='let item of vmTrains;trackBy:trackBy;let idx=index;' #li [class.no-seats]='!item.isHasSeats'>
-        <!-- <ion-text color='danger'>{{idx}}</ion-text> -->
-        <app-train-list-item-df [train]='item' (bookTicket)='onBookTicket(item,$event)' (scheduleEmit)='schedules(item)'>
-        </app-train-list-item-df>
-      </li>
-    </ul>
+    <ion-item *ngFor='let item of vmTrains;trackBy:trackBy;let idx=index;' #li [class.no-seats]='!item.isHasSeats'>
+      <app-train-list-item-df [train]='item' (bookTicket)='onBookTicket(item,$event)' (scheduleEmit)='schedules(item)'>
+      </app-train-list-item-df>
+    </ion-item>
   </ion-list>
   <ng-container #fakeList *ngIf='isLoading'>
     <ion-list class='fakelist'>
@@ -85,11 +82,6 @@
   <ion-infinite-scroll (ionInfinite)='loadMore()' threshold='20%'>
     <ion-infinite-scroll-content>加载更多...</ion-infinite-scroll-content>
   </ion-infinite-scroll>
-  <!-- <ion-fab vertical="bottom" [class.show]='isShowFab' (click)='onScrollToTop()' horizontal="end" edge slot="fixed">
-    <ion-fab-button color='secondary'>
-      <ion-icon name="chevron-up-outline"></ion-icon>
-    </ion-fab-button>
-  </ion-fab> -->
   <ion-fab>
     <app-pin-fab></app-pin-fab>
   </ion-fab>

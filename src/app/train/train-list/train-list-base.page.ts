@@ -324,7 +324,7 @@ export class TrainListBasePage implements OnInit, AfterViewInit, OnDestroy {
     if (this.scroller) {
       this.scroller.complete();
       if (this.scroller) {
-        this.scroller.disabled = trains.length < this.pageSize;
+        this.scroller.disabled = !trains||trains.length < this.pageSize;
       }
     }
   }
@@ -405,7 +405,7 @@ export class TrainListBasePage implements OnInit, AfterViewInit, OnDestroy {
         filterCondition: this.filterCondition,
         trains: JSON.parse(JSON.stringify(this.trains)),
       },
-      cssClass: "offset-top-40 top-radius-8",
+      cssClass: "offset-top-29 top-radius-8",
       showBackdrop: false,
       swipeToClose: true,
     });
@@ -520,17 +520,18 @@ export class TrainListBasePage implements OnInit, AfterViewInit, OnDestroy {
       this.vmTrains = trains;
       this.apiService.hideLoadingView();
       this.isLoading = false;
+    } catch (e) {
+      console.error(e);
+    } finally {
       if (this.refresher) {
         this.refresher.disabled = true;
         setTimeout(() => {
           this.refresher.disabled = false;
         }, 100);
       }
-      this.scrollToTop();
-    } catch (e) {
-      console.error(e);
-    } finally {
       this.isLoading = false;
+      this.scrollToTop();
+      this.closeScroller();
     }
   }
   async onBookTicket(train: TrainEntity, seat: TrainSeatEntity) {

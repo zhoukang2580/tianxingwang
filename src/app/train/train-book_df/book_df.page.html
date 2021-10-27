@@ -44,49 +44,11 @@
                 </app-train-list-item-df>
                 <ion-label color="danger" class="ion-label-text">如果本次列车剩余席位无法满足您的选座需求,系统将自动为您分配席位</ion-label>
                 <ion-label color="danger" class="ion-label-text" *ngIf="combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules">
-                  超标:{{combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.join(";")
-                  }}
+                  <span>超标:{{combindInfo?.bookInfo?.bookInfo?.trainPolicy?.Rules?.join(";")}}</span>
                 </ion-label>
               </div>
             </ion-item>
           </ion-item-group>
-
-          <!-- <ng-container *ngIf="combindInfo?.insuranceProducts?.length">
-            <ion-item-group>
-              <ion-item-divider color="primary"> 保险: </ion-item-divider>
-              <ion-radio-group [disabled]="searchTrainModel?.isExchange" mode="md" allow-empty-selection="true" [value]="combindInfo.selectedInsuranceProduct"
-                [(ngModel)]="combindInfo.selectedInsuranceProduct" (ionChange)="calcTotalPrice()">
-                <div *ngFor="let insurance of combindInfo?.insuranceProducts">
-                  <div class="insurance-item">
-                    <ion-item style="--background: transparent; flex: 1">
-                      <ion-radio [value]="insurance.insuranceResult.Id" [disabled]="insurance.disabled"></ion-radio>
-                      <ion-label>
-                        {{insurance.insuranceResult?.Name}}({{insurance.insuranceResult?.Price}}元)</ion-label>
-                    </ion-item>
-                    <ion-label color="secondary" class="ion-text-nowrap" (click)="onShowInsuranceDetail(insurance,$event)">
-                      详情
-                      <ion-icon name="caret-up-outline" *ngIf="insurance.showDetail">
-                      </ion-icon>
-                      <ion-icon name="caret-down-outline" *ngIf="!insurance.showDetail">
-                      </ion-icon>
-                    </ion-label>
-                  </div>
-                  <div [@flyInOut] *ngIf="insurance.showDetail" style="width: 100%" (click)="insurance.showDetail=!insurance.showDetail">
-                    <ion-row>
-                      <ion-col>
-                        <ion-label color="medium" class="small-font ion-text-wrap">
-                          <div style="user-select: text" [innerHtml]="getInsuranceDetails(insurance.insuranceResult?.Detail)"></div>
-                        </ion-label>
-                      </ion-col>
-                    </ion-row>
-                    <ion-item style="--background: transparent" *ngIf="insurance.insuranceResult?.DetailUrl" detail button (click)="onShowProductDetail(insurance.insuranceResult,$event)">
-                      <ion-label color="secondary">显示更多</ion-label>
-                    </ion-item>
-                  </div>
-                </div>
-              </ion-radio-group>
-            </ion-item-group>
-          </ng-container> -->
         </ion-list>
         <ion-list lines='none' *ngIf='combindInfo?.insuranceProducts?.length'>
           <div class="insurances">
@@ -364,7 +326,7 @@
       <ion-icon name="chevron-down-outline" *ngIf="!isShowFee"></ion-icon>
       <ion-icon name="chevron-up-outline" *ngIf="isShowFee"></ion-icon>
     </ion-buttons>
-    <ion-button class="submit" slot="end" size="small"  color="secondary" *ngIf='isShow12306BookBtn' (click)="bookTrainBy12306($event)" [disabled]="isSubmitDisabled">12306预订
+    <ion-button class="submit" slot="end" size="small" color="secondary" *ngIf='isShow12306BookBtn' (click)="bookTrainBy12306($event)" [disabled]="isSubmitDisabled">12306预订
     </ion-button>
     <ion-button class="submit" slot="end" size="small" color="secondary" *ngIf='isShowSubmitBtn' (click)="bookTrain(false,$event)" [disabled]="isSubmitDisabled">提交订单
     </ion-button>

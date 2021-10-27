@@ -53,9 +53,9 @@ ion-content {
     background: #ffffff;
     border-radius: 10px;
   }
-  .list {
-    background: #f5f7f9;
-  }
+  // .list {
+  //   background: #f5f7f9;
+  // }
   .name {
     width: 43px;
     height: 14px;
@@ -92,7 +92,7 @@ ion-content {
     font-size: 16px;
     font-family: PingFang SC;
     font-weight: bold;
-    color: #333333;
+    //  color: #333333;
     margin-left: 20px;
     width: 100px;
   }
@@ -114,7 +114,7 @@ ion-content {
     font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;
-    color: #333333;
+    // color: #333333;
     height: 35px;
   }
 }
@@ -183,7 +183,7 @@ ion-content {
     align-items: center;
     .label {
       min-width: 7.5em;
-      color: #666666;
+      // color: #666666;
     }
   }
 }
@@ -191,7 +191,7 @@ ion-content {
   .label {
     margin: 0 1.5em;
     max-width: 6.5em;
-    color: #666666;
+    // color: #666666;
   }
 }
 .zz {
@@ -206,12 +206,12 @@ ion-content {
 }
 
 .list {
-  --background: #f6f6f6;
+  // --background: #f6f6f6;
   .payment_method {
     font-size: 18px;
     font-family: PingFang SC;
     font-weight: bold;
-    color: #333333;
+    // color: #333333;
     --inner-border-width: 0;
   }
   .pay-met {
@@ -255,7 +255,7 @@ ion-footer .toolbar {
     font-size: 14px;
     font-family: PingFang SC;
     font-weight: 500;
-    color: #333333;
+    // color: #333333;
     display: flex;
     flex-flow: row wrap;
   }
@@ -287,12 +287,12 @@ ion-footer .toolbar {
       padding-left: 0.5em;
       font-family: PingFang SC;
       font-weight: 500;
-      color: #333333;
+      // color: #333333;
     }
     .ins-price {
       font-family: PingFang SC;
       font-weight: bold;
-      color: #333333;
+      // color: #333333;
     }
   }
   .show-more {
@@ -320,7 +320,7 @@ ion-footer .toolbar {
     font-size: 8px;
     font-family: PingFang SC;
     font-weight: 500;
-    color: #333333;
+    //  color: #333333;
     line-height: 12px;
   }
 }
@@ -345,7 +345,7 @@ ion-footer .toolbar {
   font-size: 14px;
   display: flex;
   .label {
-    color: #666666;
+    // color: #666666;
     min-width: 6.5rem;
     display: flex;
     align-items: center;
@@ -355,7 +355,7 @@ ion-footer .toolbar {
 .ion-no-margin {
   font-size: 14px;
   .serFee {
-    color: #666666;
+    // color: #666666;
     margin-left: 20px;
     max-width: 6.5em;
   }
