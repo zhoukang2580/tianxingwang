@@ -304,12 +304,16 @@ export class MapService {
   getBMapLocalSearchSources() {
     return this.bMapLocalSearchSources.asObservable();
   }
-  removeOverlay(map:any,overlay:any){
-    if(map&&overlay){
-      map.removeOverlay(overlay)
+  removeOverlay(map: any, overlay: any) {
+    if (map && overlay) {
+      map.removeOverlay(overlay);
     }
   }
-  async bMapLocalSearch(address: string, cityName: string,forceLocal?:boolean) {
+  async bMapLocalSearch(
+    address: string,
+    cityName: string,
+    forceLocal?: boolean
+  ) {
     return new Promise<LocalSearchResult[]>((rsv) => {
       let p: MapPoint;
       let isRsv = false;
@@ -512,6 +516,14 @@ export class MapService {
       longitude: lngs,
       latitude: lats,
     };
+  }
+  getDistance(map, p1: MapPoint, p2: MapPoint):number {
+    if(map&&p1&&p2){
+      return map.getDistance(
+        new MapService.BMap.Point(p1.lng, p1.lat),
+        new MapService.BMap.Point(p2.lng, p2.lat)
+      );
+    }
   }
   async getMyPositionInfo() {
     const st = Date.now();
