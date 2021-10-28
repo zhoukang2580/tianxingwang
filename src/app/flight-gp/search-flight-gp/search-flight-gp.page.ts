@@ -88,7 +88,7 @@ export class SearchFlightGpPage
         this.refEle.nativeElement.classList.remove("dark")
       }
     })
-
+    // AppHelper.toast("sdfsdf递四方速递发是的是的发送到",20000000)
     const sub = route.queryParamMap.subscribe(async (q) => {
       this.isAgent = this.tmcService.isAgent;
       this.isEn = this.langService.isEn;

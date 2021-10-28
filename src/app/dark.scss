@@ -4,5 +4,6 @@ body.dark {
   }
   ion-toast {
     color: var(--ion-text-color);
+    --background: var(--ion-color-step-450);
   }
 }
