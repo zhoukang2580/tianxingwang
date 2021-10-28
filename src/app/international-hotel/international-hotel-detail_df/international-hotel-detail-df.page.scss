@@ -1,291 +1,317 @@
 .bg {
-  height: 30vh;
-  width: 100%;
-  min-height: 30vh;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center center;
-  background-color: var(--ion-color-light);
-  position: relative;
-  z-index: 99;
-  .back-button {
-    position: absolute;
-    left: 1em;
-    top: 2em;
-    width: 2em;
-    height: 2em;
-    z-index: 100;
-    color: var(--ion-color-light);
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-  }
+    height: 30vh;
+    width: 100%;
+    min-height: 30vh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-color: var(--ion-color-light);
+    position: relative;
+    z-index: 99;
+    .back-button {
+        position: absolute;
+        left: 1em;
+        top: 2em;
+        width: 2em;
+        height: 2em;
+        z-index: 100;
+        color: var(--ion-color-light);
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
 }
+
 .arrow-icon {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  padding-right: 1em;
-  ion-icon {
-    font-size: 1.3rem;
-    color: var(--ion-color-secondary);
-  }
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 1em;
+    ion-icon {
+        font-size: 1.3rem;
+        color: var(--ion-color-secondary);
+    }
 }
 
 ion-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-}
-.div-for-scroll {
-  min-height: 60vh;
-}
-.info {
-  background-color: var(--ion-color-light);
-  padding: 1em;
-}
-.name {
-  font-size: 15px;
-  font-family: PingFang SC;
-  font-weight: 500;
-  color: #333333;
-}
-.address {
-  font-size: 12px;
-  font-family: PingFang SC;
-  font-weight: 500;
-  color: #666666;
-  display: flex;
-  align-items: center;
-  ion-icon {
-    font-size: 16px;
-  }
-}
-.grade-stars {
-  padding: 0.5em 0;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  .grade {
-    margin-right: 1em;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-  }
-  .stars {
-    display: flex;
-    align-items: center;
-    font-size: 10px;
-  }
-}
-.loc-phone {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-  margin-right: 1em;
-  font-size: 12px;
-  ion-icon {
-    font-size: 20px;
-  }
-  .loc {
-    text-align: center;
-    margin-right: 33px;
-    img {
-      width: 14px;
-    }
-  }
-  .phone {
-    text-align: center;
-    img {
-      width: 14px;
-    }
-  }
-}
-.date {
-  margin-top: 0.5rem;
-  padding: 1em;
-  background-color: var(--ion-color-light);
-  font-size: 16px;
-  font-family: PingFang SC;
-  font-weight: 500;
-  color: #333333;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  .desc {
-    font-size: 12px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #999999;
-  }
-  .num {
-    align-self: flex-end;
-  }
-  .weekName {
-    text-align: center;
-  }
-}
-.rules {
-  margin-top: 0.5rem;
-  font-size: 15px;
-  background-color: var(--ion-color-light);
-  padding: 1em 1em 0;
-  font-size: 9px;
-  font-family: PingFang SC;
-  font-weight: 500;
-  line-height: 20px;
-}
-.room-info-title {
-  padding: 1em;
-  font-size: 15px;
-  font-family: PingFang SC;
-  font-weight: 500;
-  color: #333333;
-}
-.room-list {
-  .img {
-    width: 100%;
-    height: 100%;
-    border-radius: 10px;
-  }
-  .item-wrapper {
-    width: 100%;
-  }
-  .item-wrapper,
-  .room-info,
-  .room-plans {
-    width: 100%;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  .item-wrapper {
-    // max-height: 65vh;
-    overflow-y: auto;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    padding-bottom: 1em;
-  }
-
-  .room-plans {
-    app-room-plan-item + app-room-plan-item {
-      display: block;
-      width: 100%;
-      border-top: 1px dashed rgba(var(--ion-color-dark-rgb), 0.12);
-    }
-  }
-
-  .room-info {
-    position: sticky;
+    position: fixed;
     top: 0;
-    display: flex;
-    align-items: flex-start;
-    // background-color: white;
-    z-index: 10;
-  }
+    left: 0;
+    right: 0;
+    z-index: 999;
+}
 
-  .item-wrapper ion-thumbnail {
-    align-self: flex-start;
-    min-width: 6.25em;
-    min-height: 6.25em;
-    margin-top: 2px;
-    position: relative;
+.div-for-scroll {
+    min-height: 60vh;
+}
 
-    .images-nums {
-      position: absolute;
-      right: 0.8em;
-      bottom: 0.4em;
-      padding: 0.3em;
-      color: var(--ion-color-light);
-      background-color: rgba(0, 0, 0, 0.5);
-      border-radius: 0.2em;
-      font-size: 0.5rem;
-    }
-  }
+.info {
+    background-color: var(--ion-color-light);
+    padding: 1em;
+}
 
-  ion-label.item {
-    width: 100%;
-    margin: 0 0 0 0.5em;
-  }
-  .room-detail-desc {
-    display: flex;
-    align-items: center;
-    flex-flow: row wrap;
-    font-size: 12px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #999999;
-    span {
-      margin: 0 0.25em;
-    }
-  }
-  .room-name {
+.name {
     font-size: 15px;
     font-family: PingFang SC;
     font-weight: 500;
-    color: #333333;
-    margin-right: 0.5em;
-  }
-  .name {
+    // color: #333333;
+}
+
+.address {
+    font-size: 12px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #666666;
+    display: flex;
+    align-items: center;
+    ion-icon {
+        font-size: 16px;
+    }
+}
+
+.grade-stars {
+    padding: 0.5em 0;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    .grade {
+        margin-right: 1em;
+        font-family: PingFang SC;
+        font-weight: 500;
+        // color: #333333;
+    }
+    .stars {
+        display: flex;
+        align-items: center;
+        font-size: 10px;
+    }
+}
+
+.loc-phone {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 1em;
+    font-size: 12px;
+    ion-icon {
+        font-size: 20px;
+    }
+    .loc {
+        text-align: center;
+        margin-right: 33px;
+        img {
+            width: 14px;
+        }
+    }
+    .phone {
+        text-align: center;
+        img {
+            width: 14px;
+        }
+    }
+}
+
+.date {
+    margin-top: 0.5rem;
+    padding: 1em;
+    background-color: var(--ion-color-light);
+    font-size: 16px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    // color: #333333;
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
+    .desc {
+        font-size: 12px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #999999;
+    }
+    .num {
+        align-self: flex-end;
+    }
+    .weekName {
+        text-align: center;
+    }
 }
+
+.rules {
+    margin-top: 0.5rem;
+    font-size: 15px;
+    background-color: var(--ion-color-light);
+    padding: 1em 1em 0;
+    font-size: 9px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.room-info-title {
+    padding: 1em;
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    // color: #333333;
+}
+
+.room-list {
+    .img {
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+    }
+    .item-wrapper {
+        width: 100%;
+    }
+    .item-wrapper,
+    .room-info,
+    .room-plans {
+        width: 100%;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
+    .item-wrapper {
+        // max-height: 65vh;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        padding-bottom: 1em;
+    }
+    .room-plans {
+        app-room-plan-item+app-room-plan-item {
+            display: block;
+            width: 100%;
+            border-top: 1px dashed rgba(var(--ion-color-dark-rgb), 0.12);
+        }
+    }
+    .room-info {
+        position: sticky;
+        top: 0;
+        display: flex;
+        align-items: flex-start;
+        // background-color: white;
+        z-index: 10;
+    }
+    .item-wrapper ion-thumbnail {
+        align-self: flex-start;
+        min-width: 6.25em;
+        min-height: 6.25em;
+        margin-top: 2px;
+        position: relative;
+        .images-nums {
+            position: absolute;
+            right: 0.8em;
+            bottom: 0.4em;
+            padding: 0.3em;
+            color: var(--ion-color-light);
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 0.2em;
+            font-size: 0.5rem;
+        }
+    }
+    ion-label.item {
+        width: 100%;
+        margin: 0 0 0 0.5em;
+    }
+    .room-detail-desc {
+        display: flex;
+        align-items: center;
+        flex-flow: row wrap;
+        font-size: 12px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #999999;
+        span {
+            margin: 0 0.25em;
+        }
+    }
+    .room-name {
+        font-size: 15px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        // color: #333333;
+        margin-right: 0.5em;
+    }
+    .name {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
 .show-desc {
-  display: flex;
-  .full {
-    margin-left: auto;
-  }
+    display: flex;
+    .full {
+        margin-left: auto;
+    }
 }
+
 .hotel-info {
-  margin-top: 0.5rem;
+    margin-top: 0.5rem;
 }
+
 ion-item-divider {
-  --background: initial;
-  font-size: 15px;
-  font-family: PingFang SC;
-  font-weight: 500;
-  color: #333333;
+    --background: initial;
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    // color: #333333;
 }
+
 .desc-name {
-  font-size: 14px;
-  font-family: PingFang SC;
-  font-weight: bold;
-  color: #333333;
+    font-size: 14px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    // color: #333333;
 }
+
 .desc-detail {
-  font-size: 14px;
-  font-family: PingFang SC;
-  font-weight: 500;
-  color: #666666;
-  padding-left: 1em;
-  // line-height: 17px;
+    font-size: 14px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #666666;
+    padding-left: 1em;
+    // line-height: 17px;
 }
+
 ion-row {
-  padding: 0.5em;
+    padding: 0.5em;
 }
+
 .other-templ {
-  .desc-name {
-    padding-bottom: 0.5em;
-  }
+    .desc-name {
+        padding-bottom: 0.5em;
+    }
 }
+
 .tmpl {
-  display: flex;
-  align-items: center;
-  .desc-name {
-    align-self: flex-start;
-  }
-  .desc-detail {
-    flex: 1;
-  }
+    display: flex;
+    align-items: center;
+    .desc-name {
+        align-self: flex-start;
+    }
+    .desc-detail {
+        flex: 1;
+    }
+}
+
+:host.dark {
+    .info {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+        .address {
+            color: var(--ion-text-color);
+        }
+    }
+    .date {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    .rules {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
 }

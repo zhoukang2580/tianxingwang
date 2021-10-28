@@ -9,7 +9,8 @@ import {
   ViewChild,
   AfterViewInit,
   Input,
-  OnDestroy
+  OnDestroy,
+  ElementRef
 } from "@angular/core";
 import { IonRange } from "@ionic/angular";
 import {
@@ -18,6 +19,7 @@ import {
   HotelQueryEntity
 } from "src/app/hotel/models/HotelQueryEntity";
 import { InternationalHotelService } from "../../international-hotel.service";
+import { ThemeService } from 'src/app/services/theme/theme.service';
 interface ILowerUper {
   lower: number;
   upper: number;
@@ -55,8 +57,19 @@ export class InterHotelStarPriceComponent
   hotelQuery: HotelQueryEntity;
   @ViewChild(IonRange) rangeEle: IonRange;
   @Output() starPriceChange: EventEmitter<any>;
-  constructor(private hotelService: InternationalHotelService) {
+  constructor(
+    private hotelService: InternationalHotelService,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
+  ) {
     this.starPriceChange = new EventEmitter();
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
   private onStarPriceChange() {
     this.hotelService.setHotelQuerySource(this.hotelQuery);
@@ -65,7 +78,7 @@ export class InterHotelStarPriceComponent
   onFilter() {
     this.onStarPriceChange();
   }
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }

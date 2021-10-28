@@ -53,6 +53,7 @@ import { SelectedPassengersComponent } from "src/app/tmc/components/selected-pas
 import { LangService } from "src/app/services/lang.service";
 import { SelectPassengerEnPage } from "src/app/tmc/select-passenger_en/select-passenger_en.page";
 import { HotelDetailEntity } from "src/app/hotel/models/HotelDetailEntity";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-international-hotel-detail-df",
@@ -112,9 +113,20 @@ export class InternationalHotelDetailDfPage
     private popoverController: PopoverController,
     private staffService: HrService,
     public modalController: ModalController,
-    public langService: LangService
-  ) {
-    this.isIos = plt.is("ios");
+    public langService: LangService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+
+
+    ) {
+      this.isIos = plt.is("ios");
+      this.themeService.getModeSource().subscribe(m=>{
+           if(m=='dark'){
+             this.refEle.nativeElement.classList.add("dark")
+           }else{
+             this.refEle.nativeElement.classList.remove("dark")
+           }
+         })
   }
   getBgPic() {
     return (

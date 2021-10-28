@@ -1,55 +1,69 @@
 .flex {
-  display: flex;
-  align-items: center;
-  .label {
-    width: 102px;
-  }
-  ion-input {
-    --padding-top: 0;
-    --padding-bottom: 0;
-  }
+    display: flex;
+    align-items: center;
+    .label {
+        width: 102px;
+    }
+    ion-input {
+        --padding-top: 0;
+        --padding-bottom: 0;
+    }
 }
+
 .trash {
-  margin-left: auto;
-  margin-right: 1em;
+    margin-left: auto;
+    margin-right: 1em;
 }
+
 .linkmans {
-  padding: 1em;
-  font-size: 14px;
+    padding: 1em;
+    font-size: 14px;
 }
 
 .padding-v {
-  padding: 0.8em 0;
+    padding: 0.8em 0;
 }
+
 .center {
-  justify-content: center;
+    justify-content: center;
 }
+
 ion-button {
-  height: 2em;
+    height: 2em;
 }
+
 ion-icon.trash {
-  font-size: 1rem;
-}
-.linkman {
-  margin-top: 0.5em;
-}
-.btn {
-  width: 264px;
-  height: 26px;
-  border: 1px solid #bfbfbf;
-  border-radius: 5px;
-  font-size: 14px;
-  font-family: PingFang SC;
-  font-weight: 500;
-  color: #333333;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  ion-icon {
     font-size: 1rem;
-    margin-right: 0.5em;
-  }
 }
+
+.linkman {
+    margin-top: 0.5em;
+}
+
+.btn {
+    width: 264px;
+    height: 26px;
+    border: 1px solid #bfbfbf;
+    border-radius: 5px;
+    font-size: 14px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    // color: #333333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ion-icon {
+        font-size: 1rem;
+        margin-right: 0.5em;
+    }
+}
+
 .btn-wrapper {
-  background: #f6f6f6;
+    background: #f6f6f6;
+}
+
+:host.dark {
+    .btn-wrapper {
+        background-color: initial;
+    }
 }

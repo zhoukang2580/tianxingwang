@@ -1,69 +1,81 @@
 .custome-price {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 1em;
-  flex: 1;
-  color: var(--ion-color-danger);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 1em;
+    flex: 1;
+    color: var(--ion-color-danger);
 }
 
 ion-chip {
-  width: 100%;
-  justify-content: center;
-  text-transform: capitalize;
+    width: 100%;
+    justify-content: center;
+    text-transform: capitalize;
 }
+
 ion-item-divider {
-  --background: initial;
+    --background: initial;
 }
+
 .title {
-  font-size: 13px;
-  font-family: PingFang SC;
-  font-weight: bold;
-  color: #333333;
-  --background: initial;
+    font-size: 13px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    // color: #333333;
+    --background: initial;
 }
+
 ion-item-divider {
-  text-transform: capitalize;
+    text-transform: capitalize;
 }
 
 .wrapper {
-  -webkit-overflow-scrolling: touch;
-  height: 60vh;
-  overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    // height: 60vh;
+    overflow: auto;
 }
 
 ion-range {
-  --knob-size: 1.5em;
+    --knob-size: 1.5em;
 }
 
 :host {
-  display: block;
+    display: block;
 }
+
 .items {
-  width: 100%;
+    width: 100%;
 }
+
 ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  width: 100%;
-  display: flex;
-  flex-flow: row wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
 }
+
 ul li {
-  min-width: 22%;
-  border-radius: 5px;
-  text-align: center;
-  margin: 0.25em;
-  padding: 0.5em;
-  background: rgba(246, 246, 246, 1);
-  &.active {
-    color: var(--ion-color-secondary);
-    background: rgba(var(--ion-color-secondary-rgb), 0.3);
-  }
-  .text {
-    font-size: 12px;
-    font-family: PingFang SC;
-    font-weight: 500;
-  }
+    min-width: 22%;
+    border-radius: 5px;
+    text-align: center;
+    margin: 0.25em;
+    padding: 0.5em;
+    background: rgba(246, 246, 246, 1);
+    &.active {
+        color: var(--ion-color-secondary);
+        background: rgba(var(--ion-color-secondary-rgb), 0.3);
+    }
+    .text {
+        font-size: 12px;
+        font-family: PingFang SC;
+        font-weight: 500;
+    }
+}
+
+:host.dark {
+    ul li {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
 }

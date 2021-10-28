@@ -32,7 +32,7 @@ ion-header {
                 display: flex;
                 margin-left: 0.5em;
                 align-items: center;
-                background-color: #f6f6f6;
+                background-color: var(--ion-item-background, var(--ion-background-color, #fff));
                 .hint {
                     overflow: hidden;
                     text-overflow: ellipsis;
