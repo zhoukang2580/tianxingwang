@@ -1,136 +1,166 @@
 .img {
-    // width: 110%;
-    position: absolute;
-    left: -0.5em;
-    top: 0;
-    right: -0.6em;
-    height: 260px;
-    z-index: 10;
-    img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    z-index: 90;
+  // width: 110%;
+  position: absolute;
+  left: -0.5em;
+  top: 0;
+  right: -0.6em;
+  height: 260px;
+  z-index: 10;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  z-index: 90;
 }
 
 ion-header {
-    z-index: 100;
+  z-index: 100;
 }
 
 ion-toolbar,
 ion-toolbar.ios {
-    --background: transparent;
-    --border-width: 0;
+  --background: transparent;
+  --border-width: 0;
 }
 
 ion-card {
-    z-index: 100;
-    box-shadow: 0px 8px 12px 0px #dcd4fcb0;
+  z-index: 100;
+  box-shadow: 0px 8px 12px 0px #dcd4fcb0;
 }
 
 .cnt {
-    top: 19vh;
-    --background: transparent;
-    z-index: 1000;
-    .wrapper {
-        position: relative;
-    }
+  top: 19vh;
+  --background: transparent;
+  z-index: 1000;
+  .wrapper {
+    position: relative;
+  }
 }
 
 .search-img {
-    margin-top: -1em;
-    position: absolute;
-    right: 0.6em;
-    left: 0.6em;
-    z-index: 101;
+  margin-top: -1em;
+  position: absolute;
+  right: 0.6em;
+  left: 0.6em;
+  z-index: 101;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4em;
+  &.ios {
+    right: 1em;
+    left: 1em;
+    // top: 24%;
+  }
+  .left,
+  .right {
+    height: 100%;
+    text-align: center;
+    flex: 1;
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    height: 4em;
-    &.ios {
-        right: 1em;
-        left: 1em;
-        // top: 24%;
+    justify-content: center;
+    img {
+      max-height: 100%;
+      min-width: 12em;
     }
-    .left,
-    .right {
-        height: 100%;
-        text-align: center;
-        flex: 1;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        img {
-            max-height: 100%;
-            min-width: 12em;
-        }
-    }
+  }
+  .left {
+    left: -1px;
+  }
+  .right {
+    right: -1.5px;
+  }
+  &.ios {
     .left {
-        left: -1px;
+      left: -1px;
     }
     .right {
-        right: -1.5px;
+      right: -1.5px;
     }
-    &.ios {
-        .left {
-            left: -1px;
-        }
-        .right {
-            right: -1.5px;
-        }
-    }
-    .text {
-        position: absolute;
-        font-size: 15px;
-        font-family: PingFang SC;
-        font-weight: bold;
-        // color: #333333;
-        top: 50%;
-        transform: translate(0, -30%);
-    }
-    .right .text {
-        margin-right: -0.5em;
-    }
-    .left .text {
-        margin-left: -1.5em;
-    }
+  }
+  .text {
+    position: absolute;
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    // color: #333333;
+    top: 50%;
+    transform: translate(0, -30%);
+  }
+  .right .text {
+    margin-right: -0.5em;
+  }
+  .left .text {
+    margin-left: -1.5em;
+  }
 }
 
 .segments {
-    background-color: #f6f6f6;
+  //   background-color: #f6f6f6;
+  position: relative;
+  height: 3em;
+  display: flex;
+  align-items: center;
+  .seg {
+    flex: 1;
+    text-align: center;
     position: relative;
-    height: 3em;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &.active {
+      color: var(--ion-text-color);
+      .line {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .line {
+        opacity: 0;
+        transition: all ease-in-out 200ms;
+        transform: scale(0);
+        height: 2px;
+        background-color: var(--ion-text-color);
+        position: absolute;
+        left: 28%;
+        right: 28%;
+        border-radius: 2px;
+        bottom: 0;
+    }
+  }
 }
 
 .date {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .content {
-    margin-top: -1em;
-    line-height: 3;
+  margin-top: -1em;
+  line-height: 3;
 }
 
 .btn_search {
-    width: 100%;
-    --border-radius: 18px;
+  width: 100%;
+  --border-radius: 18px;
 }
 
 .night {
-    font-size: 14px;
-    // color: #333333;
+  font-size: 14px;
+  // color: #333333;
 }
 
 .destination {
-    margin-left: -0.5em;
+  margin-left: -0.5em;
 }
 
 .pos {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }

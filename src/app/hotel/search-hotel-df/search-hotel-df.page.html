@@ -46,18 +46,29 @@
 
 <ion-content class="cnt">
   <div class="wrapper">
-    <div class="search-img" [class.ios]='isIos' #imgEles>
-      <div class="left" (click)='onToggleDomestic(true)'>
+    <div class="search-img" [class.ios]='isIos' #imgEles [ngClass]='{ios:isIos,hidden:themeMode=="dark"}'>
+      <div class="left" (click)='onToggleDomestic(true)' #limg>
         <img src="assets/images/hotel-rect.png" class="left" alt="" *ngIf='isDomestic'>
         <span class="text">国内</span>
       </div>
-      <div class="right" (click)='onToggleDomestic(false)'>
+      <div class="right" (click)='onToggleDomestic(false)' #rimg>
         <img src="assets/images/hotel-rect-r.png" class="right" *ngIf='!isDomestic' alt="">
         <span class="text">国际*港澳台</span>
       </div>
     </div>
     <ion-card #ionCardEle>
-      <div class="segments"></div>
+      <div class="segments">
+        <ng-container *ngIf='themeMode=="dark"'>
+          <div class="seg" (click)='onToggleDomestic(true)' [class.active]='isDomestic'>
+            <span class="text">国内</span>
+            <div class="line"></div>
+          </div>
+          <div class="seg" (click)='onToggleDomestic(false)' [class.active]='!isDomestic'>
+            <span class="text">国际*港澳台</span>
+            <div class="line"></div>
+          </div>
+        </ng-container>
+      </div>
       <ion-card-content class="content" *ngIf='isDomestic'>
         <div class='ion-padding-top' style="margin-top: 10px; display: none;" *ngIf=''>
           <ion-segment mode='md' (ionChange)="onSegmentChanged($event)" value="{{searchHotelModel?.hotelType}}" color="secondary">
@@ -87,7 +98,7 @@
             <span>{{changeDateTipMsg}}</span>
           </div>
         </ng-container>
-        <div class='destination' lines='none' detail >
+        <div class='destination' lines='none' detail>
           <ion-item lines='none' class="destination">
             <ion-label style="max-width: 60px;" (click)='onSearchCity()'>目的地</ion-label>
             <ion-label (click)='onSearchCity()'>
@@ -108,7 +119,7 @@
             </ion-button>
           </ion-item>
         </div>
-        <ion-button class="btn_search" (click)="onSearchHotel()"  color="secondary" expand="block">
+        <ion-button class="btn_search" (click)="onSearchHotel()" color="secondary" expand="block">
           <ion-text>查&nbsp;&nbsp;询</ion-text>
         </ion-button>
         <!-- <ion-button class="btn_search" *ngIf='(canAddPassengers) && selectedPassengers==0' class='ion-margin-top' style='width: 100%' (click)='onSelectPassenger()' color="secondary" expand="block">

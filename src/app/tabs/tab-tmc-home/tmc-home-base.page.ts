@@ -161,6 +161,7 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
   activeTab: ProductItem;
   curIndex = 0;
   hotIndex = 0;
+  jiantou='assets/home/jiantou.png';
   private isGetLocation=false;
   constructor(
     private mapService: MapService,
@@ -187,8 +188,10 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
   ) {
     this.themeService.getModeSource().subscribe(m=>{
       if(m=='dark'){
+        this.jiantou=`assets/home/jiantou-white.png`
         this.refEle.nativeElement.classList.add("dark")
       }else{
+        this.jiantou=`assets/home/jiantou.png`
         this.refEle.nativeElement.classList.remove("dark")
       }
     })

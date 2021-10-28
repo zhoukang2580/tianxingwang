@@ -40,6 +40,7 @@ import { environment } from "src/environments/environment";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
 import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { HotelCityService } from "../hotel-city.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 @Component({
   selector: "app-search-hotel-df",
   templateUrl: "./search-hotel-df.page.html",
@@ -75,6 +76,8 @@ export class SearchHotelDfPage
   isPositioning = false;
   isLeavePage = false;
   isShowPositionbtn = !AppHelper.isWechatMini();
+  leftImage='assets/images/hotel-rect.png';
+  rightImage='assets/images/hotel-rect-r.png';
   private getHoursCondition() {
     return this.hotelService.hotelIsCanSelectYesterday();
   }
@@ -106,7 +109,7 @@ export class SearchHotelDfPage
     }
     return 0;
   }
-
+  themeMode
   constructor(
     public router: Router,
     private hotelService: HotelService,
@@ -118,7 +121,8 @@ export class SearchHotelDfPage
     plt: Platform,
     private tmcService: TmcService,
     private popoverCtrl: PopoverController,
-    private internationalHotelService: InternationalHotelService
+    private internationalHotelService: InternationalHotelService,
+    private themeService:ThemeService
   ) {
     const sub = route.queryParamMap.subscribe(async (q) => {
       const fromCityCode = q.get("FromCityCode");
@@ -148,6 +152,17 @@ export class SearchHotelDfPage
       this.isIos = plt.is("ios");
     });
     this.subscriptions.push(sub);
+    this.themeService.getModeSource().subscribe(m=>{
+      this.themeMode=m;
+      if(m=='dark'){
+        this.leftImage='assets/images/hotel-rect-l-dark.png'
+        this.rightImage='assets/images/hotel-rect-r-dark.png'
+      }else{
+        
+        this.leftImage='assets/images/hotel-rect-l.png'
+        this.rightImage='assets/images/hotel-rect-r.png'
+      }
+    })
   }
   canDeactivate() {
     if (this.hotelCityService.isShowingPage) {
@@ -183,10 +198,11 @@ export class SearchHotelDfPage
           if (!this.isIos) {
             offset = 15;
           }
-          top = cardRect.top - rect.height + imgEleRect.height / 2 - offset;
-          if (top && top > 0) {
-            this.imgEles.nativeElement.style.top = `${top}px`;
-          }
+          // top = cardRect.top - rect.height + imgEleRect.height / 2 - offset;
+          // if (top && top > 0) {
+          //   this.imgEles.nativeElement.style.top = `${top}px`;
+          // }
+          
         }
       } catch (e) {
         console.error(e);
