@@ -233,3 +233,24 @@ app-fly-filter {
         }
     }
 }
+
+:host.dark {
+    ion-text {
+        &.from-city,
+        &.to-city {
+            color: var(--ion-text-color);
+        }
+    }
+    .hint {
+        background-color: initial;
+    }
+    .flight {
+        background-color: initial;
+        .recomend {
+            background-color: initial;
+        }
+        li {
+            background-color: initial;
+        }
+    }
+}

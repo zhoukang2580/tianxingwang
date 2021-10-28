@@ -23,7 +23,7 @@
         font-size: 12px;
         font-family: PingFang SC;
         font-weight: 500;
-        color: #333333;
+        // color: #333333;
     }
     .price {
         position: absolute;
@@ -50,14 +50,14 @@
         font-size: 12px;
         font-family: PingFang SC;
         font-weight: 500;
-        color: #333333;
+        // color: #333333;
         margin-top: 9.5px;
     }
     .time {
         font-size: 18px;
         font-family: DIN;
         font-weight: 550;
-        color: #333333;
+        // color: #333333;
     }
     .line {
         opacity: 0.5;
@@ -83,7 +83,7 @@
         .txt {
             font-family: PingFang SC;
             font-weight: 400;
-            color: #333333;
+            // color: #333333;
             font-size: 10px;
             text-align: center;
         }
@@ -126,4 +126,10 @@
     font-size: 0.7rem;
     color: var(--ion-color-success);
     text-align: center;
+}
+
+:host.dark {
+    .f-list-item {
+        background-color: initial;
+    }
 }

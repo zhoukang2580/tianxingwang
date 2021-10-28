@@ -4,7 +4,7 @@ import { DayModel } from "../../tmc/models/DayModel";
 import { CalendarService } from "../../tmc/calendar.service";
 import { FlightSegmentEntity } from "../models/flight/FlightSegmentEntity";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
 import {
   ModalController,
   NavController,
@@ -32,6 +32,7 @@ import { FlightCabinFareType } from "../models/flight/FlightCabinFareType";
 import { FlightGpService } from "../flight-gp.service";
 import { FilterConditionModel } from "../models/flight/advanced-search-cond/FilterConditionModel";
 import { BackButtonComponent } from "src/app/components/back-button/back-button.component";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-flight-gp-item-cabins",
@@ -75,8 +76,17 @@ export class FlightGpItemCabinsPage implements OnInit {
     private popoverController: PopoverController,
     private orderService: OrderService,
     private navCtrl: NavController,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
   ) {
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
     activatedRoute.queryParamMap.subscribe(async (p) => {
       this.pageUrl = this.router.url;
       try {

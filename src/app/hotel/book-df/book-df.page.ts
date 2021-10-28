@@ -87,6 +87,7 @@ import { HotelBookType } from "../models/HotelBookType";
 import { SelectComponent } from "src/app/components/select/select.component";
 import { OrderService } from "src/app/order/order.service";
 import { StorageService } from "src/app/services/storage-service.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 @Component({
   selector: "app-book-df",
   templateUrl: "./book-df.page.html",
@@ -161,7 +162,9 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
     private plt: Platform,
     route: ActivatedRoute,
     private langService: LangService,
-    private orderService: OrderService
+    private orderService: OrderService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
   ) {
     this.subscriptions.push(
       route.queryParamMap.subscribe(() => {
@@ -173,6 +176,13 @@ export class BookDfPage implements OnInit, AfterViewInit, OnDestroy {
         }
       })
     );
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
   months(year) {
     const m = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];

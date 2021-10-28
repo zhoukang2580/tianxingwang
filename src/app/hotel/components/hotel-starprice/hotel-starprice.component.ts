@@ -8,7 +8,8 @@ import {
   ViewChild,
   AfterViewInit,
   Input,
-  OnDestroy
+  OnDestroy,
+  ElementRef
 } from "@angular/core";
 import { IonRange, ModalController } from "@ionic/angular";
 import {
@@ -17,6 +18,7 @@ import {
   IStarPriceTabItem
 } from "src/app/hotel/models/HotelQueryEntity";
 import { HotelService } from "src/app/hotel/hotel.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 interface ILowerUper {
   lower: number;
@@ -57,9 +59,18 @@ export class HotelStarPriceComponent
   @Output() starPriceChange: EventEmitter<any>;
   constructor(
     private hotelService: HotelService,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
   ) {
     this.starPriceChange = new EventEmitter();
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
   private onStarPriceChange() {
     this.hotelService.setHotelQuerySource(this.hotelQuery);

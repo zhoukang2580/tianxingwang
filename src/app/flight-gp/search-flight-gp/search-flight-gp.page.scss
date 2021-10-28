@@ -232,3 +232,12 @@ ion-card {
         }
     }
 }
+
+:host.dark {
+    .city .city-name {
+        color: var(--ion-text-color);
+    }
+    .hint {
+        background-color: initial;
+    }
+}

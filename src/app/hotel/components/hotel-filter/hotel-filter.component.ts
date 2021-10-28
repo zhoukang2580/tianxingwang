@@ -14,12 +14,14 @@ import {
   OnChanges,
   SimpleChanges,
   OnDestroy,
+  ElementRef,
 } from "@angular/core";
 import { BrandEntity } from "src/app/hotel/models/BrandEntity";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import { ToastController, ModalController } from "@ionic/angular";
 import { AmenityEntity } from "../../models/AmenityEntity";
 import { HotelService } from "../../hotel.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-hotel-filter",
@@ -41,9 +43,19 @@ export class HotelFilterComponent implements OnInit, OnDestroy {
   constructor(
     private toastCtrl: ToastController,
     private hotelService: HotelService,
-    private modalCtrl: ModalController
-  ) {
-    this.filter = new EventEmitter();
+    private modalCtrl: ModalController,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+
+    ) {
+      this.filter = new EventEmitter();
+      this.themeService.getModeSource().subscribe(m=>{
+           if(m=='dark'){
+             this.refEle.nativeElement.classList.add("dark")
+           }else{
+             this.refEle.nativeElement.classList.remove("dark")
+           }
+         })
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();

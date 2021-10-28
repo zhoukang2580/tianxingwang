@@ -42,6 +42,7 @@ import { FlightCityService } from "../flight-city.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { FlightService } from "src/app/flight/flight.service";
 import { StorageService } from "src/app/services/storage-service.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 @Component({
   selector: "app-flight-gp-list",
   templateUrl: "./flight-gp-list.page.html",
@@ -80,8 +81,7 @@ import { StorageService } from "src/app/services/storage-service.service";
   ],
 })
 export class FlightGpListPage
-  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate
-{
+  implements OnInit, AfterViewInit, OnDestroy, CanComponentDeactivate {
   private subscriptions: Subscription[] = [];
   private isRotatingIcon = false;
   private pageUrl;
@@ -148,8 +148,17 @@ export class FlightGpListPage
     private modalCtrl: ModalController,
     private popoverController: PopoverController,
     private storage: StorageService,
-    private tmcService: TmcService
+    private tmcService: TmcService,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
   ) {
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
     this.subscriptions.push(
       this.identityService.getIdentitySource().subscribe((id) => {
         this.identity = id;
@@ -180,23 +189,23 @@ export class FlightGpListPage
           goArrivalDateTime:
             goInfo && goInfo.bookInfo && goInfo.bookInfo.flightSegment
               ? moment(goInfo.bookInfo.flightSegment.ArrivalTime).format(
-                  "YYYY-MM-DD HH:mm"
-                )
+                "YYYY-MM-DD HH:mm"
+              )
               : "",
           backTakeOffDateTime:
             backInfo &&
-            backInfo.bookInfo &&
-            backInfo.bookInfo.flightSegment &&
-            backInfo.bookInfo.tripType == TripType.returnTrip
+              backInfo.bookInfo &&
+              backInfo.bookInfo.flightSegment &&
+              backInfo.bookInfo.tripType == TripType.returnTrip
               ? moment(backInfo.bookInfo.flightSegment.TakeoffTime).format(
-                  "YYYY-MM-DD HH:mm"
-                )
+                "YYYY-MM-DD HH:mm"
+              )
               : "",
         };
       })
     );
     this.route.queryParamMap.subscribe(async (d) => {
-      this.isAgent=this.tmcService.isAgent;
+      this.isAgent = this.tmcService.isAgent;
       this.pageUrl = this.router.url;
       if (d.get("isClearBookInfos") == "true") {
         this.flightGpService.clearSelectedBookInfos([]);
@@ -232,7 +241,7 @@ export class FlightGpListPage
     try {
       return (
         this.searchFlightModel.fromCity.Code !=
-          this.oldSearchCities.fromCityCode ||
+        this.oldSearchCities.fromCityCode ||
         this.searchFlightModel.toCity.Code != this.oldSearchCities.toCityCode
       );
     } catch (e) {
@@ -259,7 +268,7 @@ export class FlightGpListPage
         if (
           arrival.replace("T", " ").substring(0, 10) == this.day ||
           this.searchFlightModel.Date ==
-            arrival.replace("T", " ").substring(0, 10)
+          arrival.replace("T", " ").substring(0, 10)
         ) {
           return `${arrival.replace("T", " ")}之后已无航班`;
         }

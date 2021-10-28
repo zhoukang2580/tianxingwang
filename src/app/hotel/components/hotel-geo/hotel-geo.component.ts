@@ -9,6 +9,7 @@ import {
   OnChanges,
   SimpleChanges,
   OnDestroy,
+  ElementRef,
 } from "@angular/core";
 import { HotelConditionModel } from "src/app/hotel/models/ConditionModel";
 import {
@@ -19,6 +20,7 @@ import {
 import { Subscription } from "rxjs";
 import { GeoEntity } from "../../models/GeoEntity";
 import { HotelService } from "../../hotel.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-hotel-geo",
@@ -40,9 +42,19 @@ export class HotelGeoComponent implements OnInit, OnDestroy {
   constructor(
     private hotelService: HotelService,
     private modalCtrl: ModalController,
-    private domCtrl: DomController
+    private domCtrl: DomController,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+    
   ) {
     this.geoFilterChange = new EventEmitter();
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();

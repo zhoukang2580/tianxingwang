@@ -9,7 +9,7 @@ import { HrService } from "../../hr/hr.service";
 import { CalendarService } from "../../tmc/calendar.service";
 import { AppHelper } from "src/app/appHelper";
 import { Router, ActivatedRoute } from "@angular/router";
-import { Component, OnInit, OnDestroy, AfterViewInit } from "@angular/core";
+import { Component, OnInit, OnDestroy, AfterViewInit, ElementRef } from "@angular/core";
 import { Subscription, of, from } from "rxjs";
 import { DayModel } from "../../tmc/models/DayModel";
 import {
@@ -25,6 +25,7 @@ import { FlightGpService, SearchFlightModel } from "../flight-gp.service";
 import { FlightCityService } from "src/app/flight/flight-city.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { StorageService } from "src/app/services/storage-service.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 @Component({
   selector: "app-search-flight-gp",
   templateUrl: "./search-flight-gp.page.html",
@@ -74,9 +75,20 @@ export class SearchFlightGpPage
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
     private langService: LangService,
-    private plt: Platform
+    private plt: Platform,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+ 
   ) {
     this.isIos = plt.is("ios");
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
+
     const sub = route.queryParamMap.subscribe(async (q) => {
       this.isAgent = this.tmcService.isAgent;
       this.isEn = this.langService.isEn;

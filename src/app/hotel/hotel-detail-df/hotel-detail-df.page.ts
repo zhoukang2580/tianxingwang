@@ -58,6 +58,7 @@ import { FilterPassengersPolicyComponent } from "src/app/tmc/components/filter-p
 import { DayModel } from "src/app/tmc/models/DayModel";
 import { HotelDetailEntity } from "../models/HotelDetailEntity";
 import { StorageService } from "src/app/services/storage-service.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 type IHotelDetailTab = "houseInfo" | "hotelInfo" | "trafficInfo";
 
 @Component({
@@ -128,9 +129,18 @@ export class HotelDetailDfPage implements OnInit, AfterViewInit, OnDestroy {
     private modalCtrl: ModalController,
     private plt: Platform,
     private apiService: ApiService,
-    private popoverController: PopoverController
-  ) {
-    this.isMd = plt.is("android");
+    private popoverController: PopoverController,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+    ) {
+      this.isMd = plt.is("android");
+      this.themeService.getModeSource().subscribe(m=>{
+           if(m=='dark'){
+             this.refEle.nativeElement.classList.add("dark")
+           }else{
+             this.refEle.nativeElement.classList.remove("dark")
+           }
+         })
   }
   onSlideChange(idx: number) {
     this.curPos = idx;

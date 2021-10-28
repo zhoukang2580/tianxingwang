@@ -9,9 +9,11 @@ import {
   Output,
   EventEmitter,
   HostBinding,
+  ElementRef,
 } from "@angular/core";
 import { AddContact } from "src/app/tmc/models/AddContact";
 import { AddcontactsModalComponent } from "src/app/tmc/components/addcontacts-modal/addcontacts-modal.component";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-hotel-addcontacts-comp",
@@ -24,9 +26,19 @@ export class HotelAddcontactsCompComponent implements OnInit {
   @Output() contactsChange: EventEmitter<any>;
   constructor(
     public modalCtrl: ModalController,
-    private langService: LangService
-  ) {
-    this.contactsChange = new EventEmitter();
+    private langService: LangService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+
+    ) {
+      this.contactsChange = new EventEmitter();
+      this.themeService.getModeSource().subscribe(m=>{
+           if(m=='dark'){
+             this.refEle.nativeElement.classList.add("dark")
+           }else{
+             this.refEle.nativeElement.classList.remove("dark")
+           }
+         })
   }
 
   ngOnInit() {}
