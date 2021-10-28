@@ -1,58 +1,58 @@
 .hotel-item {
-    display: flex;
-    align-items: center;
-    padding: 0.15em 0 0.15em 0.5em;
-    // border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
-    .hotel-img {
-        width: 100px;
-        height: 100px;
-        border-radius: 5px;
-        margin-right: 14px;
-        object-fit: cover;
+  display: flex;
+  align-items: center;
+  padding: 0.15em 0 0.15em 0.5em;
+  // border-top: 1px solid rgba(var(--ion-color-dark-rgb), 0.15);
+  .hotel-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 5px;
+    margin-right: 14px;
+    object-fit: cover;
+  }
+  .right-side {
+    font-family: PingFang SC;
+    font-weight: 500;
+    // color: #333333;
+    flex: 1;
+    .name {
+      font-size: 15px;
+      font-weight: 650;
     }
-    .right-side {
-        font-family: PingFang SC;
-        font-weight: 500;
-        // color: #333333;
-        flex: 1;
-        .name {
-            font-size: 15px;
-            font-weight: 650;
+    .grade-stars {
+      font-size: inherit;
+      margin: 0;
+      padding: 0.25em 0;
+      display: flex;
+      align-items: center;
+      .grade {
+        font-size: 10px;
+        margin-right: 4px;
+      }
+      .stars {
+        display: flex;
+        align-items: center;
+        ion-icon {
+          font-size: 14px;
         }
-        .grade-stars {
-            font-size: inherit;
-            margin: 0;
-            padding: 0.25em 0;
-            display: flex;
-            align-items: center;
-            .grade {
-                font-size: 10px;
-                margin-right: 4px;
-            }
-            .stars {
-                display: flex;
-                align-items: center;
-                ion-icon {
-                    font-size: 14px;
-                }
-            }
-        }
-        .price {
-            font-size: 18px;
-            margin-left: auto;
-            color: #ff2121;
-            .small {
-                font-size: 14px;
-            }
-        }
+      }
     }
+    .price {
+      font-size: 18px;
+      margin-left: auto;
+      color: #ff2121;
+      .small {
+        font-size: 14px;
+      }
+    }
+  }
 }
 
 .location {
-    padding: 0.25em 0;
-    display: flex;
-    align-items: center;
-    // flex-flow: row wrap;
-    font-size: 13px;
-    color: #666666;
+  padding: 0.25em 0;
+  display: flex;
+  align-items: center;
+  // flex-flow: row wrap;
+  font-size: 12px;
+  color: var(--ion-color-medium);
 }

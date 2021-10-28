@@ -85,7 +85,7 @@
                 color: var(--ion-text-color);
             }
             ul li {
-                background-color: initial;
+                background-color:rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.07);
             }
         }
     }

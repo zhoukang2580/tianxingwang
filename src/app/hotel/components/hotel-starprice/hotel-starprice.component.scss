@@ -1,3 +1,4 @@
+
 .custome-price {
     display: flex;
     align-items: center;
@@ -76,6 +77,6 @@ ul li {
 
 :host.dark {
     ul li {
-        background-color: initial;
+        background-color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.07);
     }
 }

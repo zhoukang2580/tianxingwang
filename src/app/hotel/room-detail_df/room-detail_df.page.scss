@@ -21,7 +21,7 @@ ion-col {
   font-size: 10px;
   font-family: PingFang SC;
   font-weight: 500;
-  color: #333333;
+  // color: #333333;
 }
 :host {
   z-index: 100;
@@ -29,6 +29,7 @@ ion-col {
 ion-item-divider {
   --background: initial;
   padding: 1em 0 0.5em 1em;
+  color: var(--ion-text-color);
 }
 .flex {
   display: flex;
@@ -39,12 +40,13 @@ ion-item-divider {
   .name {
     align-self: flex-start;
     margin-right: 0.5em;
+    color: #999;
   }
   .desc {
     flex: 1;
     font-family: PingFang SC;
     font-weight: 500;
-    color: #666666;
+    color: var(--ion-color-medium);
   }
 }
 .details {

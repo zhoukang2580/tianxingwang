@@ -1,413 +1,413 @@
 .spacebetween {
-    display: flex;
-    justify-content: space-between;
-    // font-size: 0.8em;
-    color: var(--ion-color-dark);
+  display: flex;
+  justify-content: space-between;
+  // font-size: 0.8em;
+  color: var(--ion-color-dark);
 }
 
 ion-content.cnt {
-    --padding-end: 0.8em;
-    --padding-start: 0.8em;
+  --padding-end: 0.8em;
+  --padding-start: 0.8em;
 }
 
 .fee {
-    background-color: var(--ion-color-primary);
-    border-top-right-radius: 10px;
-    border-top-left-radius: 10px;
-    font-size: 14px;
-    box-shadow: 0.1em 0.2em 0.6em rgba(0, 0, 0, 0.1);
+  background-color: var(--ion-color-primary);
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+  font-size: 14px;
+  box-shadow: 0.1em 0.2em 0.6em rgba(0, 0, 0, 0.1);
 }
 
 .transfrom {
-    transform: translate(0, 100%);
-    position: fixed;
-    transition: all ease-in-out 200ms;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: -1;
-    opacity: 0;
-    max-width: 100%;
+  transform: translate(0, 100%);
+  position: fixed;
+  transition: all ease-in-out 200ms;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  opacity: 0;
+  max-width: 100%;
+  width: 100%;
+  &.show {
+    z-index: 1;
+    opacity: 1;
+    transform: translate(0, -44px);
+  }
+  .wrapper {
+    display: flex;
     width: 100%;
-    &.show {
-        z-index: 1;
-        opacity: 1;
-        transform: translate(0, -44px);
-    }
-    .wrapper {
-        display: flex;
-        width: 100%;
-        // max-width: 100%;
-        overflow: scroll;
-    }
+    // max-width: 100%;
+    overflow: scroll;
+  }
 }
 
 .zz {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    z-index: 1;
-    opacity: 0.5;
-    background-color: var(--ion-color-dark);
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 1;
+  opacity: 0.5;
+  background-color: var(--ion-color-dark);
 }
 
 .exceeding {
-    display: flex;
-    padding-bottom: 5px;
-    ion-label {
-        flex: 3;
-        font-size: 14px;
-    }
+  display: flex;
+  padding-bottom: 5px;
+  ion-label {
+    flex: 3;
+    font-size: 14px;
+  }
 }
 
 .selfpay {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 31px;
-    height: 16px;
-    background: #eecf9a;
-    border-radius: 2px;
-    color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 31px;
+  height: 16px;
+  background: #eecf9a;
+  border-radius: 2px;
+  color: #fff;
 }
 
 .hotel {
-    .padding-v {
-        padding: 0.25em 0;
-    }
-    width: 100%;
-    .name {
-        display: flex;
-        align-items: center;
-        font-size: 15px;
-        font-family: PingFang SC;
-        font-weight: bold;
-        color: #333333;
-    }
-    .room-info {
-        font-size: 14px;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #333333;
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        span {
-            margin-right: 0.4em;
-        }
-    }
-    .date {
-        padding: 0.8rem 0;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #333333;
-        display: flex;
-        align-items: center;
-        font-size: 13px;
-        white-space: nowrap;
-        .totals {
-            font-size: 12px;
-            color: #ea394b;
-        }
-    }
-    .arrival-time,
-    .flex .label {
-        @extend .name;
-        width: initial;
-    }
-}
-
-.editicon {
-    width: 14px;
-    margin: 0 1em;
-}
-
-.cname {
-    min-width: 100%;
-    font-size: 18px;
+  .padding-v {
+    padding: 0.25em 0;
+  }
+  width: 100%;
+  .name {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
     font-family: PingFang SC;
     font-weight: bold;
     color: #333333;
-    align-self: flex-start;
-    margin-bottom: 10px;
+  }
+  .room-info {
+    font-size: 14px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    span {
+      margin-right: 0.4em;
+    }
+  }
+  .date {
+    padding: 0.8rem 0;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    white-space: nowrap;
+    .totals {
+      font-size: 12px;
+      color: #ea394b;
+    }
+  }
+  .arrival-time,
+  .flex .label {
+    @extend .name;
+    width: initial;
+  }
+}
+
+.editicon {
+  width: 14px;
+  margin: 0 1em;
+}
+
+.cname {
+  min-width: 100%;
+  font-size: 18px;
+  font-family: PingFang SC;
+  font-weight: bold;
+  color: #333333;
+  align-self: flex-start;
+  margin-bottom: 10px;
 }
 
 .flex .label.cname {
-    width: initial;
-    margin-right: 0.78125em;
+  width: initial;
+  margin-right: 0.78125em;
 }
 
 .cnumber {
-    font-size: 14px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-    margin-right: 16px;
+  font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
+  margin-right: 16px;
 }
 
 .font {
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-    font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
+  font-size: 14px;
 }
 
 ion-list .info {
-    width: 100%;
-    padding: 0.5em 1em;
-    @extend .font;
+  width: 100%;
+  padding: 0.5em 1em;
+  @extend .font;
 }
 
 .credit-card-info {
-    .flex .label {
-        width: 130px;
-    }
+  .flex .label {
+    width: 130px;
+  }
 }
 
 .section {
-    margin-top: 1em;
+  margin-top: 1em;
 }
 
 .row:not(:last-child) {
-    border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eee;
 }
 
 .flex {
-    display: flex;
-    align-items: center;
-    .label {
-        width: 102px;
-    }
-    ion-input {
-        --padding-top: 0;
-        --padding-bottom: 0;
-        --padding-start: 0;
-    }
+  display: flex;
+  align-items: center;
+  .label {
+    width: 102px;
+  }
+  ion-input {
+    --padding-top: 0;
+    --padding-bottom: 0;
+    --padding-start: 0;
+  }
 }
 
 .padding-v {
-    padding: 0.5em 0;
+  padding: 0.5em 0;
 }
 
 .flex-justify {
-    justify-content: space-between;
+  justify-content: space-between;
 }
 
 .sm-font {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .title {
-    display: flex;
-    justify-content: space-between;
-    padding: 0.5em;
-    border-bottom: 1px solid #eee;
-    &.n-b {
-        border: none;
-    }
-    .name {
-        font-size: 15px;
-        font-family: PingFang SC;
-        font-weight: bold;
-        color: #333333;
-    }
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5em;
+  border-bottom: 1px solid #eee;
+  &.n-b {
+    border: none;
+  }
+  .name {
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: bold;
+    color: #333333;
+  }
 }
 
 ion-icon[name="caret-down-outline"] {
-    font-size: 0.9rem;
+  font-size: 0.9rem;
 }
 
 .passenger-info {
-    .costcenter {
-        ion-icon {
-            margin-left: auto;
-        }
+  .costcenter {
+    ion-icon {
+      margin-left: auto;
     }
-    .flex.mobiles.multi .label {
-        align-self: flex-start;
+  }
+  .flex.mobiles.multi .label {
+    align-self: flex-start;
+  }
+  .flex.emails.multi .label {
+    align-self: flex-start;
+  }
+  .flex.emails,
+  .flex.mobiles {
+    .item {
+      display: flex;
+      align-items: center;
+      span {
+        margin-left: 0.2em;
+      }
+      ion-checkbox {
+        width: 1em;
+        height: 1em;
+        margin: 0;
+      }
     }
-    .flex.emails.multi .label {
-        align-self: flex-start;
+  }
+  .tmc-name {
+    font-size: 10px;
+  }
+  .name {
+    display: flex;
+    align-items: center;
+    ion-icon {
+      margin-left: auto;
     }
-    .flex.emails,
-    .flex.mobiles {
-        .item {
-            display: flex;
-            align-items: center;
-            span {
-                margin-left: 0.2em;
-            }
-            ion-checkbox {
-                width: 1em;
-                height: 1em;
-                margin: 0;
-            }
-        }
-    }
-    .tmc-name {
-        font-size: 10px;
-    }
-    .name {
-        display: flex;
-        align-items: center;
-        ion-icon {
-            margin-left: auto;
-        }
-    }
+  }
 }
 
 .outnumbers {
-    margin: 0 -1.6em;
-    padding: 0 0.5em 0 0;
+  margin: 0 -1.6em;
+  padding: 0 0.5em 0 0;
 }
 
 .freebook-price {
-    padding: 0.5em;
-    .price {
-        font-size: 18px;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: var(--ion-color-danger);
-    }
-    .detail {
-        display: flex;
-        align-items: center;
-        font-size: 15px;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #333333;
-    }
+  padding: 0.5em;
+  .price {
+    font-size: 18px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: var(--ion-color-danger);
+  }
+  .detail {
+    display: flex;
+    align-items: center;
+    font-size: 15px;
+    font-family: PingFang SC;
+    font-weight: 500;
+    color: #333333;
+  }
 }
 
 .m-left {
-    margin-left: 8px;
+  margin-left: 8px;
 }
 
 .rules {
-    font-size: 14px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-    padding: 14.5px 0;
+  font-size: 14px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
+  padding: 14.5px 0;
 }
 
 .b-top {
-    border-top: 1px solid #5d5d5d2e;
+  border-top: 1px solid #5d5d5d2e;
 }
 
 .line {
-    width: 100%;
-    height: 1px;
-    background: #eee;
+  width: 100%;
+  height: 1px;
+  background: #eee;
 }
 
 ion-list {
-    background: #ffffff;
-    border-radius: 10px;
+  background: #ffffff;
+  border-radius: 10px;
 }
 
 ion-content.ion-padding {
-    padding: 0.8rem;
+  padding: 0.8rem;
 }
 
 .addcontacts {
-    padding: 0;
+  padding: 0;
 }
 
 .orderpaytypes ion-item ion-label {
-    font-size: 16px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
+  font-size: 16px;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #333333;
 }
 
 ion-footer {
-    height: 49px;
-    &.freebook {
-        height: 70px;
+  height: 49px;
+  &.freebook {
+    height: 70px;
+  }
+  background: #ffffff;
+  .price-detail {
+    display: flex;
+    align-items: center;
+    padding: 0.8em;
+    .submit-btn {
+      width: 150px;
+      height: 32px;
+      background: #5099fe;
+      border-radius: 5px;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: auto;
+      margin-right: 0.5em;
     }
-    background: #ffffff;
-    .price-detail {
-        display: flex;
-        align-items: center;
-        padding: 0.8em;
-        .submit-btn {
-            width: 150px;
-            height: 32px;
-            background: #5099fe;
-            border-radius: 5px;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-left: auto;
-            margin-right: 0.5em;
-        }
-        .detail {
-            font-size: 12px;
-            font-family: PingFang SC;
-            font-weight: 500;
-            color: #333333;
-            margin-left: 1em;
-        }
-        .total {
-            font-size: 15px;
-            color: red;
-        }
-        .price {
-            font-size: 18px;
-        }
+    .detail {
+      font-size: 12px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: #333333;
+      margin-left: 1em;
     }
-    &.freebook .freebook-price {
-        padding: 0.5em 0.8em;
-        margin-top: -1.2em;
+    .total {
+      font-size: 15px;
+      color: red;
     }
+    .price {
+      font-size: 18px;
+    }
+  }
+  &.freebook .freebook-price {
+    padding: 0.5em 0.8em;
+    margin-top: -1.2em;
+  }
 }
 
 .flex-row-wrap {
-    flex-flow: row wrap;
+  flex-flow: row wrap;
 }
 
 :host.dark {
-    ion-list {
-        background-color: initial;
-        .info {
-            color: var(--ion-text-color);
-            .cname,
-            .cnumber {
-                color: var(--ion-text-color);
-            }
-            .hotel {
-                .name,
-                .date,
-                .room-info {
-                    color: var(--ion-text-color);
-                }
-                .flex .label {
-                    color: var(--ion--text-color);
-                }
-            }
-        }
-        .title {
-            .name {
-                color: var(--ion-text-color);
-            }
-        }
-    }
-    .orderpaytypes ion-item ion-label {
+  ion-list {
+    background-color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.07);
+    .info {
+      color: var(--ion-text-color);
+      .cname,
+      .cnumber {
         color: var(--ion-text-color);
-    }
-    .rules {
-        color: var(--ion-text-color);
-    }
-    ion-footer {
-        background-color: initial;
-        .price-detail {
-            .detail {
-                color: var(--ion-text-color);
-            }
+      }
+      .hotel {
+        .name,
+        .date,
+        .room-info {
+          color: var(--ion-text-color);
         }
+        .flex .label {
+          color: var(--ion--text-color);
+        }
+      }
     }
+    .title {
+      .name {
+        color: var(--ion-text-color);
+      }
+    }
+  }
+  .orderpaytypes ion-item ion-label {
+    color: var(--ion-text-color);
+  }
+  .rules {
+    color: var(--ion-text-color);
+  }
+  ion-footer {
+    background-color: initial;
+    .price-detail {
+      .detail {
+        color: var(--ion-text-color);
+      }
+    }
+  }
 }
