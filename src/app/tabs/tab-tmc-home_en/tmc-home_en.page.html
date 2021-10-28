@@ -1,135 +1,207 @@
-<ion-header>
-    <ion-toolbar color='primary'>
-        <ion-buttons slot='start' class="ion-margin-start" *ngIf='canShow'>
-            <app-scan-comp></app-scan-comp>
-        </ion-buttons>
-        <ion-title class='ion-text-center' appShowtip>
-            <ng-container *ngIf='(canSelectCompany)'>
-                <ion-text *ngIf='(selectedCompany)'>{{selectedCompany}}</ion-text>
-            </ng-container>
-            <ion-text class="ion-margin-start">欢迎你
-                <ng-container *ngIf='identity?.Name'>,<label notranslate>{{identity?.Name}}</label> </ng-container>
-            </ion-text>
-        </ion-title>
-        <ion-buttons slot='end'>
-            <ion-button fill='clear' size='small' (click)='onSwitchCustomer()' *ngIf='identity?.Numbers?.AgentId;else selectCompany'>
-                <ion-chip color='success'>
-                    <ion-label>切换客户</ion-label>
-                </ion-chip>
-            </ion-button>
-        </ion-buttons>
-        <ng-template #selectCompany>
-            <ion-button fill='clear' size='small' (click)='onSwitchCompany()' *ngIf="(canSelectCompany)&&companies?.length>1">
-                <ion-chip color='success'>
-                    <ion-label>切换公司</ion-label>
-                </ion-chip>
-            </ion-button>
-        </ng-template>
-    </ion-toolbar>
-</ion-header>
-<ion-content>
-
+<div class="top-d"></div>
+<ion-content class="home">
+    <div class="info">
+        <div class="name" (click)="onSwitchCustomer()">
+            <ion-text class="txt " notranslate>{{selectedCompany||identity?.Name}}<span class="margin-l">Welcome</span></ion-text>
+            <ion-text class="btn ion-text-nowrap" color='secondary' *ngIf="canSelectCompany">Switch</ion-text>
+        </div>
+        <div class="scan-pic" *ngIf="canShow">
+            <app-scan-comp >
+                <img src="assets/images/home-scan.png" alt="" />
+            </app-scan-comp>
+            <!-- <app-scan-comp (scanResult)='onScanResult($event)' [isAutoCloseScanPage]='true'>
+                <img src="assets/images/home-scan.png" alt="" />
+            </app-scan-comp> -->
+        </div>
+    </div>
     <div class="banners">
-        <div class="swiper-container" #container>
+        <div class="swiper-container" #bannersEl>
             <div class="swiper-wrapper">
-                <ng-container *ngIf='banners?.length else deftpl'>
-                    <div class="swiper-slide" *ngFor='let pic of banners'>
+                <ng-container *ngIf="banners?.length else deftpl">
+                    <div class="swiper-slide" *ngFor="let pic of banners" (click)='onJump(pic)'>
                         <div class="inner">
-                            <img [lazyLoad]='pic.ImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' />
-                            <div class="desc" *ngIf='pic.Title'>{{pic.Title}}</div>
+                            <img [lazyLoad]="pic.ImageUrl" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
                         </div>
                     </div>
                 </ng-container>
                 <ng-template #deftpl>
                     <div class="swiper-slide">
-                        <img [lazyLoad]='config?.DefaultImageUrl' [defaultImage]='config?.DefaultImageUrl' [loadingImage]='config?.PrerenderImageUrl' style="object-fit: cover;
-            -o-object-fit: cover;
-            max-height: 40vh;
-            width: 100vw;
-            height: 40vh;" /></div>
+                        <div class="inner">
+                            <img [lazyLoad]="config?.DefaultImageUrl" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
+                        </div>
+                    </div>
                 </ng-template>
             </div>
         </div>
+        <div class="dots" *ngIf="banners?.length">
+            <div class="dot" *ngFor="let d of banners;let idx=index;" [class.active]="idx==curIndex"></div>
+        </div>
     </div>
-    <ion-toolbar class="text-swiper">
-        <ng-container *ngIf='isLoadingNotice else noticeTpl'>
-            <ion-skeleton-text style="width: 100%;height: 1.5em;" animated></ion-skeleton-text>
-        </ng-container>
-        <ng-template #noticeTpl>
-            <div class="blueBack" *ngIf="agentNotices?.length" (click)='goToBulletinList("agentNotice")'>
-                <ion-slides class="announcement-container" [options]='swiperOption' (ionSlideTouchEnd)='onSlideTouchEnd()'>
-                    <ion-slide *ngFor='let n of agentNotices'>
-                        <div class='announcement'>
-                            <ion-icon name="notifications-outline" color="secondary" style="font-size:18px;padding-right: 5px">
-                            </ion-icon>
-                            <div class="text ion-text-start">{{n.text}}</div>
-                            <ion-icon name="chevron-forward-outline" style="font-size:18px"></ion-icon>
+    <div class="round-wrapper">
+        <div class="annoucement-container" [class.hidden]="!agentNotices?.length" (click)='goToBulletinList("agentNotice")'>
+            <div class="swiper-container" #announcementEl>
+                <div class="swiper-wrapper">
+                    <ng-container *ngIf="agentNotices?.length">
+                        <div class="swiper-slide" *ngFor="let n of agentNotices">
+                            <div class="announcement">
+                                <img src="assets/home/home-tip.png" class="tip" alt="" />
+                                <div class="text">{{n.text}}</div>
+                                <ion-icon name="chevron-forward-outline" class="icon-right"></ion-icon>
+                            </div>
                         </div>
-                    </ion-slide>
-                </ion-slides>
+                    </ng-container>
+                </div>
             </div>
-        </ng-template>
-    </ion-toolbar>
-    <div style='margin-top: -0.5em;'>
-        <ion-list>
-            <ion-grid class="products">
-                <ion-row>
-                    <ion-col size="4">
-                        <div class="item" (click)='goToPage("flight")'>
-                            <ion-label>
-                                <!-- <i class="icon icon-home-plane"></i> -->
-                                <img src="assets/svgs/home-plane2.svg" alt="国内机票">
-                            </ion-label>
-                            <ion-text notranslate>Domestic Flights</ion-text>
+        </div>
+        <div class="products">
+            <div class="plane item" (click)='goToPage("flight")'>
+                <img src="assets/home/home-plane.png" alt="" />
+                <span class="txt" notranslate>Flight</span>
+            </div>
+            <div class="hotel item" (click)='goToPage("hotel")'>
+                <img src="assets/home/home-hotel.png" alt="" />
+                <span class="txt" notranslate>Hotel</span>
+            </div>
+            <div class="train item" (click)='goToPage("train")'>
+                <img src="assets/home/home-train.png" alt="" />
+                <span class="txt" notranslate>Train</span>
+            </div>
+            <div class="car item" (click)='goToPage("rentalCar")' *ngIf="isShowRentalCar&&(!identity?.Numbers?.AgentId)">
+                <img src="assets/home/home-car.png" alt="" />
+                <span class="txt" notranslate>Use Car</span>
+            </div>
+            <div *ngIf="isShowFlightGp" class="gp item" (click)='goToPage("flightGp")'>
+                <img src="assets/home/gp-ticket.png" alt="">
+                <span class="txt" notranslate>GP Flight</span>
+            </div>
+        </div>
+        <div class="entries">
+            <div class="item" *ngIf="!isAgent&&staff?.StaffNumber&&false" (click)="goBusiness()">
+                <img src="assets/home/home-travel.png" alt="" />
+                <div class="txt" notranslate>Travel Application</div>
+            </div>
+            <!-- <div class="item">
+        <img src="assets/home/home-mms.png" alt="" />
+        <div class="txt">积分商城</div>
+      </div> -->
+            <div class="item" (click)="onDemand()">
+                <img class="imgs" src="assets/home/demand.png" alt="" />
+                <div class="txt" notranslate>Demand </div>
+            </div>
+            <div class="item" (click)="onFlightDynamic()" *ngIf='hasFlightDynamic'>
+                <img class="dy-imgs" src="assets/home/flight-dynamic.png" alt="" />
+                <div class="txt" notranslate>Flight Dynamics</div>
+            </div>
+            <div class="item" (click)="onWaitingtask()">
+                <img class="wt-imgs" src="assets/home/waitingtask.png" alt="" />
+                <div class="txt" notranslate>To Do</div>
+                <label class="badge" *ngIf='accountWaitingTasksNumber'>{{accountWaitingTasksNumber}}</label>
+            </div>
+        </div>
+        <div class="notice">
+            <div class="swiper-container" [class.hidden]="!tripList ||! tripList.length" #tripEle>
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" *ngFor="let trip of tripList;">
+                        <div class="trip-item">
+                            <img src="assets/images/1.png" *ngIf='trip.Type=="Flight"' alt="" />
+                            <img src="assets/images/2.png" *ngIf='trip.Type=="Hotel"' alt="" />
+                            <img src="assets/images/3.png" *ngIf='trip.Type=="Train"' alt="" />
+                            <div class="wp" (click)="goToDetailPage(trip.OrderId,trip.Type)">
+                                <div class="not-wrap">
+                                    <div class="not-name" notranslate>{{trip.PassagerName}}</div>
+                                    <div class="wait-trip">You have a ticket for travel</div>
+                                    <div class="view-now">View Now</div>
+                                </div>
+                                <div *ngIf="trip.Type == 'Flight'">
+                                    <div class="wrapper">
+                                        <div class="trips">
+                                            <div class="starting-city" notranslate>{{trip?.FromCityName}}</div>
+                                            <div class="jiantou"><img [src]="jiantou" /></div>
+                                            <div class="arriving-city"><span notranslate>{{trip?.ToName}}</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="fly-time">
+                                        <span >{{trip.Name}}</span><span *ngIf='trip.displayTimeName'>&nbsp;The plane will take off in {{trip.displayTimeName}} </span>
+                                    </div>
+                                </div>
+                                <div *ngIf="trip.Type == 'Train'">
+                                    <div class="wrapper">
+                                        <div class="trips">
+                                            <div class="starting-city" notranslate>{{trip?.FromName}}</div>
+                                            <div class="jiantou"><img [src]="jiantou" /></div>
+                                            <div class="arriving-city"><span notranslate>{{trip?.ToName}}</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="fly-time"><span notranslate>{{trip.Name}}</span><span *ngIf='trip.displayTimeName'>&nbsp;The train will leave in {{trip.displayTimeName}}</span>
+                                    </div>
+                                </div>
+                                <div *ngIf="trip.Type == 'Hotel'" class="hotel">
+                                    <div class="wrapper">
+                                        <div class="trips">
+                                            <div class="starting-city" notranslate>{{trip?.Name}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="fly-time" notranslate><span *ngIf='trip.StartTime'>{{trip.StartTime?.substr(0,10)}} Check In</span></div>
+                                </div>
+                            </div>
                         </div>
-                    </ion-col>
-                    <ion-col size="4" *ngIf='isShowoverseaFlight'>
-                        <div class="item" (click)='goToPage("international-flight")'>
-                            <ion-label>
-                                <!-- <i class="icon icon-home-plane"></i> -->
-                                <img src="assets/svgs/product-plane2.svg" alt="国际机票">
-                            </ion-label>
-                            <ion-text>Overseas Flights</ion-text>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hot-hotel">
+        <div class="title" notranslate>Recommend Hotels</div>
+        <div class="swiper-container" #hothotel>
+            <div class="swiper-wrapper">
+                <ng-container *ngIf="boutiqueHotel?.HotelDayPrices?.length else deftpl">
+                    <div class="swiper-slide" *ngFor="let pic of boutiqueHotel.HotelDayPrices" (click)="goToDetail(pic.Id)">
+                        <div class="inner">
+                            <img [lazyLoad]="pic.HotelFileName" [defaultImage]="recommendHotelDefaultImg||config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
                         </div>
-                    </ion-col>
-                    <ion-col (click)='goToPage("train")' size="4">
-                        <div class="item">
-                            <ion-label>
-                                <img src="assets/svgs/home-train2.svg" alt="火车票">
-                                <!-- <i class="icon icon-home-train"></i> -->
-                            </ion-label>
-                            <ion-text>Trains</ion-text>
+                    </div>
+                </ng-container>
+                <ng-template #deftpl>
+                    <div class="swiper-slide" *ngFor="let bot of boutiqueHotel">
+                        <div class="inner">
+                            <img [lazyLoad]="bot?.HotelDefaultImg" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" />
                         </div>
-                    </ion-col>
-                    <ion-col (click)='goToPage("hotel")' size="4">
-                        <div class="item">
-                            <ion-label>
-                                <img src="assets/svgs/hotel2.svg" alt="酒店" [style.height.em]='3'>
-                                <!-- <i class="icon icon-hotel"></i> -->
-                            </ion-label>
-                            <ion-text>Domestic Hotels</ion-text>
-                        </div>
-                    </ion-col>
-                    <ion-col (click)='goToPage("international-hotel")' size="4">
-                        <div class="item">
-                            <ion-label>
-                                <img src="assets/svgs/product-hotel2.svg" alt="酒店" [style.height.em]='3'>
-                                <!-- <i class="icon icon-hotel"></i> -->
-                            </ion-label>
-                            <ion-text>Overseas Hotels</ion-text>
-                        </div>
-                    </ion-col>
-                    <ion-col (click)='goToPage("rentalCar")' size="4" *ngIf='isShowRentalCar&&(!identity?.Numbers?.AgentId)'>
-                        <div class="item">
-                            <ion-label>
-                                <img src="assets/svgs/home-rentalCar2.svg" alt="用车" [style.height.em]='3'>
-                                <!-- <i class="icon icon-hotel"></i> -->
-                            </ion-label>
-                            <ion-text color=''>Car</ion-text>
-                        </div>
-                    </ion-col>
-                </ion-row>
-            </ion-grid>
-        </ion-list>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+        <div class="dots-up" *ngIf="boutiqueHotel?.HotelDayPrices?.length">
+            <div class="dot" *ngFor="let d of boutiqueHotel?.HotelDayPrices;let ind=index;" [class.active]="ind==hotIndex"></div>
+        </div>
+    </div>
+
+    <div class="points-mall" [class.hidden]='!hasShop'>
+        <div class="title" notranslate>积分商城</div>
+        <div class="commodity">
+            <div class="list" *ngFor="let item of exchangeList" (click)="onRedeemNow()">
+                <div class="left">
+                    <div class="item-name" notranslate>{{item.Name}}</div>
+                    <div class="jf" notranslate>{{item.Count}}积分</div>
+                    <button class="btn1" notranslate>立即兑换</button>
+                </div>
+                <div class="right">
+                    <img [lazyLoad]="item.ImageUrl" [defaultImage]="config?.DefaultImageUrl" [loadingImage]="config?.PrerenderImageUrl" alt="" />
+                </div>
+            </div>
+            <div class="list" style="background: linear-gradient(90deg, #fbddb1 0%, #fbc696 100%)">
+                <div class="left">
+                    <div class="item-sign" notranslate>签到有奖</div>
+                    <div class="jd" notranslate>20积分</div>
+                    <button class="btn2" *ngIf="isRegister" (click)="onSignIn()" [class.disabled]='!isCanDailySigned'>
+                        <span *ngIf='!isCanDailySigned' notranslate>今日已签到</span>
+                        <span *ngIf='isCanDailySigned' notranslate>立即签到</span>
+                    </button>
+                </div>
+                <div class="right">
+                    <img src="assets/home/mobile.png" alt="" />
+                </div>
+            </div>
+        </div>
     </div>
 </ion-content>

@@ -161,8 +161,8 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
   activeTab: ProductItem;
   curIndex = 0;
   hotIndex = 0;
-  jiantou='assets/home/jiantou.png';
-  private isGetLocation=false;
+  jiantou = "assets/home/jiantou.png";
+  private isGetLocation = false;
   constructor(
     private mapService: MapService,
     private identityService: IdentityService,
@@ -180,33 +180,34 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
     private flightService: FlightService,
     route: ActivatedRoute,
     private configService: ConfigService,
-    private scanService:QrScanService,
+    private scanService: QrScanService,
     private loginService: LoginService,
-    private refEle:ElementRef<HTMLElement>,
-    private themeService:ThemeService,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
     private langService: LangService // private appHelper:AppHelper
   ) {
-    this.themeService.getModeSource().subscribe(m=>{
-      if(m=='dark'){
-        this.jiantou=`assets/home/jiantou-white.png`
-        this.refEle.nativeElement.classList.add("dark")
-      }else{
-        this.jiantou=`assets/home/jiantou.png`
-        this.refEle.nativeElement.classList.remove("dark")
+    this.themeService.getModeSource().subscribe((m) => {
+      if (m == "dark") {
+        this.jiantou = `assets/home/jiantou-white.png`;
+        this.refEle.nativeElement.classList.add("dark");
+      } else {
+        this.jiantou = `assets/home/jiantou.png`;
+        this.refEle.nativeElement.classList.remove("dark");
       }
-    })
+    });
     this.staff = null;
     route.queryParamMap.subscribe(async (p) => {
       this.clearBookInfos();
       this.check();
-      if(!this.isGetLocation){
-        this.hotelService.getMyPosition()
-        .then(()=>{
-          this.isGetLocation=true;
-        })
-        .catch(()=>{
-          this.isGetLocation=false;
-        });
+      if (!this.isGetLocation) {
+        this.hotelService
+          .getMyPosition()
+          .then(() => {
+            this.isGetLocation = true;
+          })
+          .catch(() => {
+            this.isGetLocation = false;
+          });
       }
       this.isAgent = this.tmcService.isAgent;
       if (p.get("selectedCompany")) {
@@ -295,7 +296,7 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private checkShouldAndHasSelectTmc() {
-    return this.tmcService.checkShouldAndHasSelectTmc()
+    return this.tmcService.checkShouldAndHasSelectTmc();
   }
   private async loadBanners() {
     if (!this.banners || !this.banners.length) {
@@ -383,9 +384,13 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
       const h = Math.floor((seconds - 24 * 3600 * d) / 3600);
       const mm = Math.floor((seconds - 24 * 3600 * d - h * 3600) / 60);
       const ss = seconds - d * 24 * 3600 - h * 3600 - mm * 60;
-      return `${d > 0 ? d + "天" : ""}${
+      const str = `${d > 0 ? d + "天" : ""}${
         d > 0 ? h + "小时" : h > 0 ? h + "小时" : ""
       }${mm > 0 ? mm + "分钟" : ""}${this.getHHMM(ss)}秒`;
+      if(AppHelper.getLanguage()=='en'){
+        return str.replace("小时",'h').replace("分钟",'m').replace("秒",'s')
+      }
+      return str;
     }
     return "";
   }
@@ -495,14 +500,12 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-
   goToDetail(id) {
     this.hotelService.RoomDefaultImg = this.recommendHotelDefaultImg;
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
       queryParams: { hotelId: id },
     });
   }
-
 
   getTaskUrl(task) {
     return task && (task.HandleUrl || task.Url);
@@ -685,7 +688,14 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async goToPage(
-    entry: "flight" | "hotel" | "train" | "rentalCar" | "flightGp",
+    entry:
+      | "flight"
+      | "hotel"
+      | "train"
+      | "rentalCar"
+      | "flightGp"
+      | "international-hotel"
+      | "international-flight",
     queryParams?: any
   ) {
     const msg = "您没有预订权限";
