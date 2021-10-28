@@ -1,5 +1,6 @@
 import {
   Component,
+  ElementRef,
   OnInit,
   QueryList,
   ViewChild,
@@ -68,6 +69,7 @@ import { CanComponentDeactivate } from "src/app/guards/candeactivate.guard";
 import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
 import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
 import { LangService } from "src/app/services/lang.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-flight-gp-bookinfos",
@@ -156,9 +158,18 @@ export class FlightGpBookinfosPage implements OnInit, CanComponentDeactivate {
     private identityService: IdentityService,
     private plt: Platform,
     private natCtrl: NavController,
-    private langService: LangService
+    private langService: LangService,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
   ) {
     this.totalPriceSource = new BehaviorSubject(0);
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
 
   private async initSearchModelParams() {

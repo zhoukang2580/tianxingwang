@@ -1,177 +1,193 @@
 .fly-item {
-  padding-top: 0.5em;
+    padding-top: 0.5em;
 }
 
 .cabin-item {
-  width: 100%;
+    width: 100%;
 }
 
 .rule {
-  font-size: 0.8rem;
+    font-size: 0.8rem;
 }
 
 .show-more {
-  width: 100%;
-  text-align: center;
+    width: 100%;
+    text-align: center;
 }
 
 .disabled {
-  opacity: 0.6;
+    opacity: 0.6;
 }
 
 .from-to-city {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  flex: 1;
-  ion-icon {
-    font-size: 24px;
-    padding: 0 16px;
-  }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1;
+    ion-icon {
+        font-size: 24px;
+        padding: 0 16px;
+    }
 }
 
 ion-content.padding-half-c {
-  --padding-start: 0.5em;
-  --padding-end: 0.5em;
+    --padding-start: 0.5em;
+    --padding-end: 0.5em;
 }
 
 .desc {
-  width: 100%;
-  font-size: 0.7rem;
-  padding: 1em 0;
+    width: 100%;
+    font-size: 0.7rem;
+    padding: 1em 0;
 }
+
 .seperator {
-  margin: 0 0.2em;
-  opacity: 0.8;
+    margin: 0 0.2em;
+    opacity: 0.8;
 }
+
 .b {
-  .date {
-    margin: 0 1em;
-  }
-  background: #ffffff;
-  border-radius: 0.5em;
-  margin-top: 0.5em;
-  padding: 0.3em 0;
-  .trip {
-    padding: 0 0 0.5em 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    line-height: 2;
-  }
-  .time {
-    font-size: 1.5rem;
-    font-family: DIN;
-    font-weight: 500;
-    color: #343434;
-  }
-  .l .time {
-    text-align: start;
-  }
-  .r .time {
-    text-align: end;
-  }
-  .airport {
-    font-size: 0.6rem;
-    font-family: PingFang SC;
-    font-weight: 400;
-    color: #343434;
-  }
-  .aircompany {
-    padding: 1em 1.8em 1.5em 1.9em;
-    &.hasflydynamic {
-      padding: 1em 1.8em 1.5em 0.6em;
+    .date {
+        margin: 0 1em;
     }
-    position: relative;
-    font-size: 0.6rem;
-    display: flex;
-    align-items: center;
-    background: #eee;
-    flex-wrap: wrap;
-
-    .icon {
-      font-size: 18px;
-      color: #666;
-      position: absolute;
-      top: 50%;
-      right: 0;
-      transform: translate(0, -50%);
+    background: #ffffff;
+    border-radius: 0.5em;
+    margin-top: 0.5em;
+    padding: 0.3em 0;
+    .trip {
+        padding: 0 0 0.5em 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        line-height: 2;
     }
-  }
-
-  .aircompany img {
-    width: 1rem;
-    height: 1rem;
-    margin-right: 0.5em;
-  }
-  .line {
-    width: 4.5em;
-    height: 2px;
-    background-color: var(--ion-color-secondary);
-    position: relative;
-    &::before {
-      position: absolute;
-      right: 0;
-      content: "";
-      background-color: var(--ion-color-secondary);
-      width: 8px;
-      height: 2px;
-      transform: rotateZ(36deg) translate(-1px, -2px);
+    .time {
+        font-size: 1.5rem;
+        font-family: DIN;
+        font-weight: 500;
+        color: #343434;
     }
-  }
-  .duration,
-  .fly {
-    font-size: 0.6rem;
-    font-family: PingFang SC;
-    font-weight: 400;
-    color: #343434;
-    text-align: center;
-  }
+    .l .time {
+        text-align: start;
+    }
+    .r .time {
+        text-align: end;
+    }
+    .airport {
+        font-size: 0.6rem;
+        font-family: PingFang SC;
+        font-weight: 400;
+        color: #343434;
+    }
+    .aircompany {
+        padding: 1em 1.8em 1.5em 1.9em;
+        &.hasflydynamic {
+            padding: 1em 1.8em 1.5em 0.6em;
+        }
+        position: relative;
+        font-size: 0.6rem;
+        display: flex;
+        align-items: center;
+        background: #eee;
+        flex-wrap: wrap;
+        .icon {
+            font-size: 18px;
+            color: #666;
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translate(0, -50%);
+        }
+    }
+    .aircompany img {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5em;
+    }
+    .line {
+        width: 4.5em;
+        height: 2px;
+        background-color: var(--ion-color-secondary);
+        position: relative;
+        &::before {
+            position: absolute;
+            right: 0;
+            content: "";
+            background-color: var(--ion-color-secondary);
+            width: 8px;
+            height: 2px;
+            transform: rotateZ(36deg) translate(-1px, -2px);
+        }
+    }
+    .duration,
+    .fly {
+        font-size: 0.6rem;
+        font-family: PingFang SC;
+        font-weight: 400;
+        // color: #343434;
+        text-align: center;
+    }
 }
 
 .cabin-item {
-  .price {
-    font-size: 1.55rem;
-    padding: 0.2em 0;
-    small {
-      font-size: 0.85rem;
+    .price {
+        font-size: 1.55rem;
+        padding: 0.2em 0;
+        small {
+            font-size: 0.85rem;
+        }
+        .c {
+            border: 2px solid var(--ion-color-secondary);
+            border-radius: 50%;
+            width: 0.8em;
+            height: 0.8em;
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            left: -0.1em;
+            bottom: 0.1em;
+            ion-text {
+                font-size: 0.5em;
+            }
+        }
     }
-    .c {
-      border: 2px solid var(--ion-color-secondary);
-      border-radius: 50%;
-      width: 0.8em;
-      height: 0.8em;
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      left: -0.1em;
-      bottom: 0.1em;
-      ion-text {
-        font-size: 0.5em;
-      }
+    .discount {
+        font-size: 0.75rem;
     }
-  }
-  .discount {
-    font-size: 0.75rem;
-  }
-  .remain {
-    font-size: 0.65rem;
-  }
-  .ion-margin-top {
-    padding-left: 3em;
-  }
+    .remain {
+        font-size: 0.65rem;
+    }
+    .ion-margin-top {
+        padding-left: 3em;
+    }
 }
 
 .rules {
-  margin-top: -0.5em;
+    margin-top: -0.5em;
 }
 
 // .cabin-list-item+.cabin-list-item {
 //     margin-top: 0.5em;
 // }
 ion-item {
-  border-radius: 0.5em;
-  margin-top: 0.5em;
+    border-radius: 0.5em;
+    margin-top: 0.5em;
+}
+
+:host.dark {
+    .b {
+        background-color: initial;
+        .time,
+        .airport {
+            color: var(--ion-text-color);
+        }
+        .duration .fly {
+            color: var(--ion-text-color);
+        }
+        .aircompany {
+            background-color: initial;
+        }
+    }
 }

@@ -282,7 +282,7 @@
         border-top: 1px solid #eee;
         .label {
             min-width: 6.5em;
-            color: #666666;
+            // color: #666666;
         }
         .ipt ion-input {
             height: 55px;
@@ -392,7 +392,7 @@
             padding: 5px;
             .del {
                 font-size: 26px;
-                color: #666;
+                // color: #666;
             }
             .centent {
                 font-size: 18px;
@@ -525,4 +525,50 @@
 .no-paytypes-tip {
     padding: 0.5em 1em;
     color: var(--ion-color-danger);
+}
+
+:host.dark {
+    .next {
+        ion-item-divider {
+            background-color: initial;
+        }
+        .hint {
+            background-color: initial;
+        }
+    }
+    .insurances {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+        .ins-item {
+            .name {
+                color: var(--ion-text-color);
+            }
+        }
+    }
+    .contact_Info {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    .payways {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    .price-detail {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+        .detail {
+            color: var(--ion-text-color);
+        }
+        ion-icon {
+            color: var(--ion-text-color);
+        }
+    }
+    .translate {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    .agreement-alert {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+        header {
+            color: var(--ion-text-color);
+        }
+        .agreement-c {
+            color: var(--ion-text-color);
+        }
+    }
 }

@@ -1,7 +1,8 @@
-import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { IonApp, IonContent, IonHeader } from '@ionic/angular';
 import { AccountCardEntity } from 'src/app/account/models/AccountCardEntity';
 import { AppHelper } from 'src/app/appHelper';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 import { FlightGpService } from '../../flight-gp.service';
 
 @Component({
@@ -24,13 +25,26 @@ export class SelectCardBinsComponent implements OnInit {
 
   businessList: any;
   constructor(
-    private flightGp:FlightGpService,
-  ) { }
+    private flightGp: FlightGpService,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
+
+  ) {
+
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
+
+  }
 
   async ngOnInit() {
     try {
-      this.accountCardEntity = await this.flightGp.getIssuingBank().then((r)=>{
-        if(r && r.length){
+      this.accountCardEntity = await this.flightGp.getIssuingBank().then((r) => {
+        if (r && r.length) {
           console.log(r);
         }
         return r;
@@ -99,7 +113,7 @@ export class SelectCardBinsComponent implements OnInit {
     }
     try {
       const arr = this.letterEles.toArray();
-      console.log(arr,'arr');
+      console.log(arr, 'arr');
       const ele = arr.find((it) => it["el"].getAttribute("letter") == letter);
       const rect = ele["el"].getBoundingClientRect();
       const headerEle = this.headerEle["el"].clientHeight;
@@ -113,7 +127,7 @@ export class SelectCardBinsComponent implements OnInit {
     console.log(letter);
   }
 
-  
+
   onSelect(it) {
     AppHelper.modalController.getTop().then((t) => {
       if (t) {
