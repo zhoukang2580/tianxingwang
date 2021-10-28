@@ -430,7 +430,6 @@ export class SearchFlightGpPage
       isDomestic: true,
       isFrom: isFromCity,
       isShowPage: true,
-      isShowSegs: true,
     });
     if (rs) {
       const s = this.searchFlightModel;

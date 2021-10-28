@@ -106,11 +106,11 @@
   }
   .header {
     background-color: var(--ion-background-color);
+    color: var(--ion-text-color);
     height: 44px;
     display: flex;
     align-items: center;
     padding: 0.3em 0;
-    color: var(--ion-text-color);
     .searchbar {
       height: 100%;
       flex: 1;
@@ -142,6 +142,7 @@
     border-bottom: 1px solid #e5e5e5;
     .segment {
       position: relative;
+      color: var(--ion-color-medium);
       &.active {
         label {
           color: var(--ion-color-secondary);

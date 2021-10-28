@@ -1629,6 +1629,7 @@ export class FlightGpService {
     const domesticAirports = await this.getDomesticAirports();
     return this.flightCityService.onSelectCity({
       ...data,
+      isShowSegs: false,
       isShowAirports: false,
       pageClassName: "flight-gp-city-page-container",
       domesticAirports,

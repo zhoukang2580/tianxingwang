@@ -248,7 +248,7 @@ function CityPage(domesticCities, interCities, pageClassName, lang = "cn") {
     // that.isShowSegs
     const seg = document.createElement("div");
     seg.innerHTML = `
-          <div class='segments'>
+          <div class='segments ${that.isShowSegs ? "" : "hidden"}'>
               <div class='segment d active'>
                   <label>国内</label>    
               </div>    
@@ -329,6 +329,10 @@ function CityPage(domesticCities, interCities, pageClassName, lang = "cn") {
         }
       } else {
         page.classList.remove("show");
+      }
+      const segs=page.querySelector(".segments");
+      if(segs){
+        segs.classList.toggle("hidden",!that.isShowSegs);
       }
     }
   }
