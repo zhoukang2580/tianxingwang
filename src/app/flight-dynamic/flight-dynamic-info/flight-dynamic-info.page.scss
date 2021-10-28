@@ -1,6 +1,6 @@
 ion-header {
     padding: 5px;
-    background: #fff;
+    // background: #fff;
     .tit {
         div {
             font-size: 20px;
@@ -44,7 +44,7 @@ ion-header {
                 font-size: 14px;
                 font-family: PingFang SC;
                 font-weight: 500;
-                color: #333333;
+                // color: #333333;
             }
         }
     }
@@ -80,7 +80,7 @@ ion-header {
                 color: #666666;
                 .terminal {
                     font-size: 16px;
-                    color: #333;
+                    // color: #333;
                 }
                 .select {
                     text-align: end;
@@ -90,10 +90,10 @@ ion-header {
                 }
                 .time {
                     padding: 0 10px;
-                    color: #333;
+                    // color: #333;
                 }
                 .boarding_needing {
-                    color: #333;
+                    // color: #333;
                     font-size: 15px;
                     ion-col:first-child {
                         color: #6699FF;
@@ -107,13 +107,13 @@ ion-header {
                 }
             }
             .down_nac {
-                background: #fff;
+                // background: #fff;
                 border-radius: 10px;
                 padding: 10px 20px;
                 line-height: 1.8;
                 width: 100%;
                 font-size: 14px;
-                color: #333;
+                // color: #333;
                 .up,
                 .down {
                     display: flex;
@@ -129,7 +129,7 @@ ion-header {
         display: flex;
         padding: 12px;
         justify-content: space-between;
-        background: #fff;
+        // background: #fff;
         margin: 12px;
         border-radius: 12px;
         .pro {
@@ -173,6 +173,21 @@ ion-footer {
             font-size: 20px;
             font-weight: 500;
             letter-spacing: .2em;
+        }
+    }
+}
+
+:host.dark {
+    .con-cnt .sec-footer {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    .list {
+        background: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    ion-footer {
+        background: var(--ion-item-background, var(--ion-background-color, #fff));
+        .btn_chare {
+            color: var(--ion-text-color);
         }
     }
 }

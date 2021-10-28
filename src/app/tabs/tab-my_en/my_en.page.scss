@@ -93,3 +93,12 @@ ion-list:not(.top-panal) {
 ion-content {
     --background: #fff;
 }
+
+:host.dark {
+    ion-content {
+        --background: initial;
+    }
+    ion-card {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+}

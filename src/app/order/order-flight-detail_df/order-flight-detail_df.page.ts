@@ -58,6 +58,7 @@ import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
 import { OrderItemPricePopoverEnComponent } from "../components/order-item-price-popover_en/order-item-price-popover_en.component";
 import { FlightSegmentEntity } from "src/app/flight/models/flight/FlightSegmentEntity";
 import { FilterConditionModel } from "src/app/flight/models/flight/advanced-search-cond/FilterConditionModel";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-order-flight-detail_df",
@@ -109,8 +110,20 @@ export class OrderFlightDetailDfPage
     private orderService: OrderService,
     private identityService: IdentityService,
     private langService: LangService,
-    private calendarService: CalendarService
-  ) {}
+    private calendarService: CalendarService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+
+
+    ) {
+    this.themeService.getModeSource().subscribe(m=>{
+         if(m=='dark'){
+           this.refEle.nativeElement.classList.add("dark")
+         }else{
+           this.refEle.nativeElement.classList.remove("dark")
+         }
+       })
+  }
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {

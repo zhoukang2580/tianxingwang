@@ -52,7 +52,8 @@ export class SearchInternationalFlightPage
     private flightService: InternationalFlightService,
     private popoverCtrl: PopoverController,
     public router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    
   ) {}
   compareWithFn = (o1, o2) => {
     return o1 && o2 ? o1 === o2 : false;

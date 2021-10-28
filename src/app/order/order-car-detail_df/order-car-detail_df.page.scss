@@ -1,70 +1,73 @@
 .swiper-slide {
-  align-items: flex-start;
-  width: 100%;
-  height: auto;
-  background: #fff;
-  text-align: left;
-  & > *:first-child {
+    align-items: flex-start;
     width: 100%;
-    overflow: auto;
-  }
-  .bold{
-    font-weight: bold;
-    font-size: 1rem;
-    color: #333;
-  }
+    height: auto;
+    background: #fff;
+    text-align: left;
+    &>*:first-child {
+        width: 100%;
+        overflow: auto;
+    }
+    .bold {
+        font-weight: bold;
+        font-size: 1rem;
+        color: #333;
+    }
 }
+
 ion-row {
-  padding-left: 1em;
-  // border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
+    padding-left: 1em;
+    // border-bottom: 1px solid rgba(var(--ion-color-dark-rgb), 0.13);
 }
+
 ion-row ion-col {
-  align-self: flex-start;
-  font-size: 0.8rem;
-  color: var(--ion-color-medium);
-  // &:first-child {
-  //   color: var(--ion-color-medium);
-  // }
+    align-self: flex-start;
+    font-size: 0.8rem;
+    color: var(--ion-color-medium);
+    // &:first-child {
+    //   color: var(--ion-color-medium);
+    // }
 }
+
 .con-header {
-  height: 126px;
-  background: #5099fe;
-  width: 100%;
-  .con-toolbar {
-    --background: #5099fe;
-  }
-  .conter {
-    display: flex;
-    align-items: center;
-    margin-left: 30px;
+    height: 126px;
+    background: #5099fe;
     width: 100%;
-    height: 3.5em;
-    div :first-child {
-      margin-right: 16px;
+    .con-toolbar {
+        --background: #5099fe;
     }
-    img {
-      width: 27.5px;
-      margin-top: 6px;
+    .conter {
+        display: flex;
+        align-items: center;
+        margin-left: 30px;
+        width: 100%;
+        height: 3.5em;
+        div :first-child {
+            margin-right: 16px;
+        }
+        img {
+            width: 27.5px;
+            margin-top: 6px;
+        }
+        .status {
+            font-size: 24px;
+            color: #fff;
+        }
     }
-    .status {
-      font-size: 24px;
-      color: #fff;
-    }
-  }
 }
 
 .ion-item-divider {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  padding-top: 20px;
-  padding-bottom: 6px;
-  border-top: 0.1px solid #eae6e6;
-  padding-left: 20px;
-  font-size: 18px;
-  font-weight: bold;
-  img {
-    width: 27px;
-    margin-right: 16px;
-  }
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding-top: 20px;
+    padding-bottom: 6px;
+    border-top: 0.1px solid #eae6e6;
+    padding-left: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    img {
+        width: 27px;
+        margin-right: 16px;
+    }
 }

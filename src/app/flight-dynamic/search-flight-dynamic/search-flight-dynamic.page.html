@@ -9,19 +9,31 @@
 <div class="bg"></div>
 <ion-content class="cnt" [class.ios]='isIos'>
     <div class="wrapper">
-        <div class="search-img" [class.ios]='isIos' #imgEles>
-            <div class="left" (click)="onFlightNumber()">
-                <img src="assets/images/hotel-rect.png" [class.hidden]='flightno !="flightno"' class="left" alt="">
+        <div class="search-img" #imgEles [ngClass]='{ios:isIos,hidden:themeMode=="dark"}'>
+            <div class="left" (click)="onFlightNumber()" #limg>
+                <img src="assets/images/hotel-rect-l.png" [class.hidden]='flightno !="flightno"' class="left" alt="">
                 <span class="text" [class.color]='flightno !="flightno"'>按航班号</span>
             </div>
-            <div class="right" (click)="onLandingZone()">
+            <div class="right" (click)="onLandingZone()" #rimg>
                 <img src="assets/images/hotel-rect-r.png" [class.hidden]='flightno !="strip"' class="right" alt="">
                 <span class="text" [class.color]='flightno !="strip"'>按起降地</span>
             </div>
         </div>
     </div>
-    <ion-card class='ion-padding' [class.hidden]='flightno!="flightno"'>
-        <ion-card-content>
+    <ion-card>
+        <div class="segments">
+            <ng-container *ngIf='themeMode=="dark"'>
+                <div class="seg" (click)="onFlightNumber()" [class.active]='isFlightNum'>
+                    <span class="text">按航班号</span>
+                    <div class="line"></div>
+                </div>
+                <div class="seg" (click)="onLandingZone()" [class.active]='!isFlightNum'>
+                    <span class="text">按起降地</span>
+                    <div class="line"></div>
+                </div>
+            </ng-container>
+        </div>
+        <ion-card-content [class.hidden]='flightno !="flightno"'>
             <section>
                 <div class="flight-dt num">
                     航班号
@@ -41,17 +53,15 @@
                     <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
                 </div>
             </section>
+            <div class="btn-search" (click)="searchFlight(fliNumber)">查询航班</div>
+            <div class="history" *ngIf="histroyList && histroyList.length">
+                <ul>
+                    <li *ngFor='let s of histroyList;let idx = index' (click)="onSelect(s)">{{s}}<span (click)="ondelete(idx)"><ion-icon name="close-outline"></ion-icon></span></li>
+                </ul>
+                <ion-icon class="delete-all" name="trash-outline" (click)="onDelAll(histroyList)"></ion-icon>
+            </div>
         </ion-card-content>
-        <div class="btn-search" (click)="searchFlight(fliNumber)">查询航班</div>
-        <div class="history" *ngIf="histroyList && histroyList.length">
-            <ul>
-                <li *ngFor='let s of histroyList;let idx = index' (click)="onSelect(s)">{{s}}<span (click)="ondelete(idx)"><ion-icon name="close-outline"></ion-icon></span></li>
-            </ul>
-            <ion-icon class="delete-all" name="trash-outline" (click)="onDelAll(histroyList)"></ion-icon>
-        </div>
-    </ion-card>
-    <ion-card class="ion-padding" [class.hidden]='flightno !="strip"'>
-        <ion-card-content>
+        <ion-card-content [class.hidden]='flightno !="strip"'>
             <ion-buttons class="city">
                 <div class="left" (click)='onSelectCity(true)'>
                     <ion-text class="tocity">出发城市</ion-text>
@@ -78,13 +88,13 @@
                     <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
                 </div>
             </section>
+            <div class="btn-search" (click)="queryFlight()">查询航班</div>
+            <div class="history" *ngIf="airportList && airportList.length">
+                <ul>
+                    <li *ngFor='let s of airportList;let index = index' (click)="onSelectFromToCity($event,s)">{{s?.fromCity.Nickname}}-{{s?.toCity.Nickname}}<span (click)="ondelete(index)"><ion-icon name="close-outline"></ion-icon></span></li>
+                </ul>
+                <ion-icon class="delete-all" name="trash-outline" (click)="onDelAll(airportList)"></ion-icon>
+            </div>
         </ion-card-content>
-        <div class="btn-search" (click)="queryFlight()">查询航班</div>
-        <div class="history" *ngIf="airportList && airportList.length">
-            <ul>
-                <li *ngFor='let s of airportList;let index = index' (click)="onSelectFromToCity($event,s)">{{s?.fromCity.Nickname}}-{{s?.toCity.Nickname}}<span (click)="ondelete(index)"><ion-icon name="close-outline"></ion-icon></span></li>
-            </ul>
-            <ion-icon class="delete-all" name="trash-outline" (click)="onDelAll(airportList)"></ion-icon>
-        </div>
     </ion-card>
 </ion-content>

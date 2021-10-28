@@ -54,6 +54,7 @@ import { MOCK_TMC_DATA } from "../mock-data";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
 import { HotelOrderPricePopoverComponent } from "../components/hotel-order-price-popover/hotel-order-price-popover.component";
 import { SearchHotelModel } from "src/app/hotel/hotel.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 export interface TabItem {
   label: string;
@@ -105,8 +106,19 @@ export class OrderHotelDetailDfPage
     private domCtrl: DomController,
     private orderService: OrderService,
     private identityService: IdentityService,
-    private calendarService: CalendarService
-  ) {}
+    private calendarService: CalendarService,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
+
+  ) {
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
+  }
   scrollTop: number;
 
   compareFn(t1: OrderFlightTicketEntity, t2: OrderFlightTicketEntity) {

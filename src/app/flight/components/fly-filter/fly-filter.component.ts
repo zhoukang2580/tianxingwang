@@ -14,10 +14,12 @@ import {
   ViewChild,
   OnDestroy,
   AfterViewInit,
+  ElementRef,
 } from "@angular/core";
 import { TakeOffTimeSpanComponent } from "./take-off-timespan/take-off-timespan.component";
 import { CabinEnComponent } from "./cabin_en/cabin_en.component";
 import { TakeOffTimeSpanDfComponent } from "./take-off-timespan-df/take-off-timespan-df.component";
+import { ThemeService } from "src/app/services/theme/theme.service";
 @Component({
   selector: "app-fly-filter",
   templateUrl: "./fly-filter.component.html",
@@ -52,10 +54,22 @@ export class FlyFilterComponent implements OnInit, OnDestroy, AfterViewInit {
   filterCondition: FilterConditionModel;
   tab: number;
   userOps: any;
-  constructor(private modalCtrl: ModalController) {}
-  ngOnDestroy() {}
+  constructor(
+    private modalCtrl: ModalController,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
+  ) {
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
+  }
+  ngOnDestroy() { }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() { }
   ngOnInit() {
     this.tab = 1;
   }

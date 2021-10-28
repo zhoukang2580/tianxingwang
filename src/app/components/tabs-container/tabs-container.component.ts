@@ -18,6 +18,7 @@ import {
 import { AppHelper } from "src/app/appHelper";
 import { Subscription, fromEvent } from "rxjs";
 import { IonSegment, IonSegmentButton } from "@ionic/angular";
+import { ThemeService } from "src/app/services/theme/theme.service";
 interface ITab {
   isActive: boolean;
   name: string;
@@ -50,12 +51,24 @@ export class TabsContainerComponent
   };
   activeTab: ITab;
   private isFirstActive = false;
-  constructor(private render: Renderer2, private el: ElementRef<HTMLElement>) {
+  constructor(
+    private render: Renderer2,
+    private el: ElementRef<HTMLElement>,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+    ) {
+    this.themeService.getModeSource().subscribe(m=>{
+         if(m=='dark'){
+           this.refEle.nativeElement.classList.add("dark")
+         }else{
+           this.refEle.nativeElement.classList.remove("dark")
+         }
+       })
     this.activetab = new EventEmitter();
     this.scroll = new EventEmitter();
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() { }
   ngAfterViewInit() {
     setTimeout(() => {
       this.initMax();
@@ -86,7 +99,7 @@ export class TabsContainerComponent
       console.error(e);
     }
   }
-  ngOnInit() {}
+  ngOnInit() { }
   private moveActiveTabToCenter() {
     if (this.isSegments) {
       this.moveSegmentViewToCenter();

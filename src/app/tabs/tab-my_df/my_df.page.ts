@@ -2,7 +2,7 @@ import { environment } from "src/environments/environment";
 import { ConfigEntity } from "../../services/config/config.entity";
 import { MessageService } from "../../message/message.service";
 import { AppHelper } from "src/app/appHelper";
-import { Component, OnInit } from "@angular/core";
+import { Component, ElementRef, OnInit } from "@angular/core";
 
 import { OnDestroy } from "@angular/core";
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
@@ -20,6 +20,7 @@ import { ORDER_TABS } from "src/app/order/product-list/product-list.page";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { LangService } from "src/app/services/lang.service";
 import { MemberService } from "src/app/member/member.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 interface PageModel {
   Name: string;
   RealName: string;
@@ -73,9 +74,19 @@ export class MyDfPage implements OnDestroy, OnInit {
     private messageService: MessageService,
     private staffService: HrService,
     private actionSheetCtrl: ActionSheetController,
-    private langService: LangService
+    private langService: LangService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+
   ) {
     this.isIos = plt.is("ios");
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
     this.subscriptions.push(
       this.identityService.getIdentitySource().subscribe((identity) => {
         this.isAgent =

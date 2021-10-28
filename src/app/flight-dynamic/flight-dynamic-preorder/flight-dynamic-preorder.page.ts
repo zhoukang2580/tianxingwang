@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppHelper } from 'src/app/appHelper';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 import { FlightDynamicService } from '../flight-dynamic.service';
 import { FlightDynamicDetailPage } from '../model/FlightDynamicDetailsModel';
 
@@ -21,8 +22,18 @@ export class FlightDynamicPreorderPage implements OnInit {
   constructor(
     private route:ActivatedRoute,
     private flightDynamicService:FlightDynamicService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+    ) { 
+    this.themeService.getModeSource().subscribe(m=>{
+         if(m=='dark'){
+           this.refEle.nativeElement.classList.add("dark")
+         }else{
+           this.refEle.nativeElement.classList.remove("dark")
+         }
+       })
+  }
 
   async ngOnInit() {
     try {

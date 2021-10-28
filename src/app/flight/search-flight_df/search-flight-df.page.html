@@ -26,7 +26,7 @@
 <img src="assets/images/search-flight.png" alt="" class="bgimg">
 <ion-content class="cnt">
     <div class="wrapper">
-        <div class="search-img" [class.ios]='isIos' #imgEles>
+        <div class="search-img" #imgEles [ngClass]='{ios:isIos,hidden:themeMode=="dark"}'>
             <div class="left" (click)='onToggleDomestic("domestic")'>
                 <img src="assets/images/hotel-rect.png" class="left" alt="" [class.hidden]='domestic!="domestic"'>
                 <span class="text">国内</span>
@@ -37,8 +37,20 @@
             </div>
         </div>
     </div>
-    <ion-card class='ion-padding' [class.hidden]='domestic!="domestic"'>
-        <ion-card-content>
+    <ion-card class='ion-padding'>
+        <div class="segments">
+            <ng-container *ngIf='themeMode=="dark"'>
+                <div class="seg" (click)='onToggleDomestic("domestic")' [class.active]='isDomestic'>
+                    <span class="text">国内</span>
+                    <div class="line"></div>
+                </div>
+                <div class="seg" (click)='onToggleDomestic("international")' [class.active]='!isDomestic'>
+                    <span class="text">国际*港澳台</span>
+                    <div class="line"></div>
+                </div>
+            </ng-container>
+        </div>
+        <ion-card-content [class.hidden]='domestic!="domestic"'>
             <div class="segments" *ngIf='isSelf'>
                 <div class="seg" (click)='segmentChanged("single")' [class.active]='isSingle'>单程</div>
                 <div class="seg"></div>
@@ -60,13 +72,11 @@
                 <app-search-day-comp *ngIf="!isSingle" [day]='backDate' (click)="onSelecFlyDate(false,true)">
                 </app-search-day-comp>
             </section>
+            <div class="btn-search" (click)="searchFlight()">查询航班</div>
         </ion-card-content>
-        <div class="btn-search" (click)="searchFlight()">查询航班</div>
         <!-- <div class="btn-search" (click)="onSelectPassenger()" *ngIf='(!isSelf && selectedPassengers==0)'>请添加乘客</div> -->
-    </ion-card>
-    <ion-card class='international' [class.hidden]='domestic!="international"'>
-        <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>
-        <ion-card-content>
+        <ion-card-content class='international' [class.hidden]='domestic!="international"'>
+            <ion-card-subtitle *ngIf='disabled' color='danger'>当前正在选择回程</ion-card-subtitle>
             <ion-segment mode='ios' (ionChange)="onTripsSegmentChanged($event)" [value]='searchInterFlightModel?.voyageType' color='secondary' [disabled]='disabled'>
                 <ion-segment-button value="{{FlightVoyageType.OneWay}}">
                     <ion-label><strong>单程</strong></ion-label>
@@ -128,4 +138,7 @@
             <div class="btn-search" (click)="onSelectPassenger(false)" *ngIf='(!isSelf && selectedPassengersIn==0)'>请添加乘客</div>
         </ion-card-content>
     </ion-card>
+    <!-- <ion-card >
+
+    </ion-card> -->
 </ion-content>

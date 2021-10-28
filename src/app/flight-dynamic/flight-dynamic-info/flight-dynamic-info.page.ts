@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AppHelper } from 'src/app/appHelper';
 import { ApiService } from 'src/app/services/api/api.service';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 import { FlightDynamicService, SearchDynamicModule } from '../flight-dynamic.service';
 import { FlightDynamicDetailPage } from '../model/FlightDynamicDetailsModel';
 
@@ -50,9 +51,17 @@ export class FlightDynamicInfoPage implements OnInit {
     private flightDynamicService: FlightDynamicService,
     private router: Router,
     private route: ActivatedRoute,
-    private apiService: ApiService
-  ) {
-
+    private apiService: ApiService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+    ) {
+    this.themeService.getModeSource().subscribe(m=>{
+         if(m=='dark'){
+           this.refEle.nativeElement.classList.add("dark")
+         }else{
+           this.refEle.nativeElement.classList.remove("dark")
+         }
+       })
   }
 
   async ngOnInit() {

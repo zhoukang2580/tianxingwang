@@ -37,6 +37,7 @@ import { FlightCityService } from "../flight-city.service";
 import { CONFIG } from "src/app/config";
 import { flatten } from "@angular/compiler";
 import { StorageService } from "src/app/services/storage-service.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 @Component({
   selector: "app-search-flight-df",
   templateUrl: "./search-flight-df.page.html",
@@ -60,6 +61,7 @@ export class SearchFlightDfPage
   isShowBookInfos$ = of(0);
   isCanleave = true;
   isleave = true;
+  isDomestic = true;
   seg = "single";
   domestic: "domestic" | "international" = "domestic";
   selectedInterPassengers: any[];
@@ -76,6 +78,9 @@ export class SearchFlightDfPage
   isEn = false;
   isIos = false;
   isSwapingCity = false;
+  leftImage='assets/images/hotel-rect.png';
+  rightImage='assets/images/hotel-rect-r.png';
+  themeMode
   constructor(
     public router: Router,
     route: ActivatedRoute,
@@ -92,9 +97,20 @@ export class SearchFlightDfPage
     private popoverCtrl: PopoverController,
     private langService: LangService,
     private plt: Platform,
-    
+    private themeService:ThemeService
   ) {
     this.isIos = plt.is("ios");
+    this.themeService.getModeSource().subscribe(m=>{
+      this.themeMode=m;
+      if(m=='dark'){
+        this.leftImage='assets/images/hotel-rect-l-dark.png'
+        this.rightImage='assets/images/hotel-rect-r-dark.png'
+      }else{
+        
+        this.leftImage='assets/images/hotel-rect-l.png'
+        this.rightImage='assets/images/hotel-rect-r.png'
+      }
+    })
     const sub = route.queryParamMap.subscribe(async (q) => {
       this.isEn = this.langService.isEn;
       this.isSelf = await this.staffService.isSelfBookType();
@@ -187,6 +203,7 @@ export class SearchFlightDfPage
       }
     }
     this.domestic = segv;
+    this.isDomestic = this.domestic == "domestic" ? true : false;
   }
   private checkBackDateIsAfterflyDate() {
     if (this.goDate && this.backDate) {

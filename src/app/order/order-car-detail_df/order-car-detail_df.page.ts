@@ -44,8 +44,10 @@ export class CarOrderDetailDfPage implements OnInit, OnDestroy, AfterViewInit {
     private orderService: OrderService,
     private route: ActivatedRoute,
     private plt: Platform,
-    private tmcService: TmcService
-  ) {}
+    private tmcService: TmcService,
+  ) {
+
+  }
   ngOnDestroy() {
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }

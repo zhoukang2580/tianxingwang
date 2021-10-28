@@ -40,6 +40,7 @@ import { flyInOut } from "src/app/animations/flyInOut";
 import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
 import { OrderTravelPayType } from "../models/OrderTravelEntity";
 import { TrainOrderPricePopoverComponent } from "../components/train-order-price-popover/train-order-price-popover.component";
+import { ThemeService } from "src/app/services/theme/theme.service";
 @Component({
   selector: "app-order-train-detail_df",
   templateUrl: "./order-train-detail_df.page.html",
@@ -47,8 +48,7 @@ import { TrainOrderPricePopoverComponent } from "../components/train-order-price
   animations: [flyInOut],
 })
 export class OrderTrainDetailDfPage
-  implements OnInit, AfterViewInit, OnDestroy
-{
+  implements OnInit, AfterViewInit, OnDestroy {
   OrderHotelType = OrderHotelType;
   private subscriptions: Subscription[] = [];
   tmc: TmcEntity;
@@ -85,8 +85,18 @@ export class OrderTrainDetailDfPage
     private popoverCtrl: PopoverController,
     private domCtrl: DomController,
     private orderService: OrderService,
-    private identityService: IdentityService
-  ) {}
+    private identityService: IdentityService,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
+  ) {
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
+  }
 
   getPassengerCostOrgInfo(ticket: OrderTrainTicketEntity) {
     const passengerId = ticket && ticket.Passenger && ticket.Passenger.Id;

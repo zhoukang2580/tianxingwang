@@ -217,3 +217,39 @@ ion-card {
         }
     }
 }
+
+.segments {
+    //   background-color: #f6f6f6;
+    position: relative;
+    height: 3em;
+    display: flex;
+    align-items: center;
+    .seg {
+        flex: 1;
+        text-align: center;
+        position: relative;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        // &.active {
+        //     color: var(--ion-text-color);
+        //     .line {
+        //         transform: scale(1);
+        //         opacity: 1;
+        //     }
+        // }
+        .line {
+            opacity: 0;
+            transition: all ease-in-out 200ms;
+            transform: scale(0);
+            height: 2px;
+            background-color: var(--ion-text-color);
+            position: absolute;
+            left: 28%;
+            right: 28%;
+            border-radius: 2px;
+            bottom: 0;
+        }
+    }
+}

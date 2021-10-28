@@ -150,7 +150,7 @@ section {
         font-size: 18px;
         font-family: PingFang SC;
         font-weight: bold;
-        color: #333333;
+        // color: #333333;
     }
     .left,
     .right {
@@ -239,5 +239,23 @@ section {
                 border-radius: 4px;
             }
         }
+        .line {
+            opacity: 0;
+            transition: all ease-in-out 200ms;
+            transform: scale(0);
+            height: 2px;
+            background-color: var(--ion-text-color);
+            position: absolute;
+            left: 28%;
+            right: 28%;
+            border-radius: 2px;
+            bottom: 0;
+        }
+    }
+}
+
+:host.dark {
+    .history ul li {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
     }
 }

@@ -103,3 +103,15 @@
         }
     }
 }
+
+:host.dark {
+    .cnt .list {
+        background: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    .cnt .list ion-item-group .divider {
+        background-color: initial;
+    }
+    .cnt .list ion-item-group ion-item {
+        color: var(--ion-text-color);
+    }
+}

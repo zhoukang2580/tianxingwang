@@ -1,150 +1,150 @@
 :host {
-  width: 100%;
-  ion-row {
-    align-items: start;
-    font-size: 12px;
-  }
+    width: 100%;
+    ion-row {
+        align-items: start;
+        font-size: 12px;
+    }
 }
 
 .order-item {
-  margin: 5px;
+    margin: 5px;
 }
 
 .flex {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .item {
-  padding: 0.5em 0.6em;
-  display: flex;
-  align-items: flex-start;
-  font-size: 12px;
-  .id {
-    min-width: 5.9em;
-  }
-  .left {
-    flex: 80%;
+    padding: 0.5em 0.6em;
     display: flex;
-  }
-  .status {
-    color: #666666;
-  }
-  & > *:first-child {
-    min-width: 4rem;
-    margin-right: 0.5em;
-    color: var(--ion-color-medium);
-  }
-  span {
-    margin-right: 0.5em;
-  }
-  .item-con {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333333;
-    img {
-      width: 27.5px;
+    align-items: flex-start;
+    font-size: 12px;
+    .id {
+        min-width: 5.9em;
     }
-    .ticketgp {
-      width: 1.7em;
-      height: 1.7em;
-      min-height: 1.7em;
-      min-width: 1.7em;
-      background: var(--ion-color-danger);
-      margin-left: 10px;
-      border-radius: 50%;
-      font-size: 14px;
-      color: white;
-      font-family: fangsong;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .left {
+        flex: 80%;
+        display: flex;
     }
-  }
-  .item-tail {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-  }
+    .status {
+        color: #666666;
+    }
+    &>*:first-child {
+        min-width: 4rem;
+        margin-right: 0.5em;
+        color: var(--ion-color-medium);
+    }
+    span {
+        margin-right: 0.5em;
+    }
+    .item-con {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        font-weight: bold;
+        // color: #333333;
+        img {
+            width: 27.5px;
+        }
+        .ticketgp {
+            width: 1.7em;
+            height: 1.7em;
+            min-height: 1.7em;
+            min-width: 1.7em;
+            background: var(--ion-color-danger);
+            margin-left: 10px;
+            border-radius: 50%;
+            font-size: 14px;
+            color: white;
+            font-family: fangsong;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    .item-tail {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+    }
 }
 
 .select-text {
-  user-select: text;
+    user-select: text;
 }
 
 .error-SMSCode {
-  font-size: 12px;
-  color: var(--ion-color-danger);
+    font-size: 12px;
+    color: var(--ion-color-danger);
 }
 
 .select-text strong {
-  user-select: text;
-  font: inherit;
+    user-select: text;
+    font: inherit;
 }
 
-.order-flight-ticket ~ .order-flight-ticket,
-.order-train-ticket ~ .order-train-ticket {
-  border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
+.order-flight-ticket~.order-flight-ticket,
+.order-train-ticket~.order-train-ticket {
+    border-top: 1px dashed rgba(var(--ion-color-medium-rgb), 0.2);
 }
 
 .order-flight-ticket {
-  border-top: 1px solid #dad1d1;
+    border-top: 1px solid #dad1d1;
 }
 
 .btn-show-margin {
-  margin-bottom: -8px;
+    margin-bottom: -8px;
 }
 
 .hotel {
-  .orderid {
-    margin: 0 1.6em;
-  }
-  .status-name {
-    margin-left: auto;
-    margin-right: 1em;
-  }
-  .free-book-tag {
-    display: inline-block;
-    padding: 0.05em 0.5em;
-    background-color: #5098fe56;
-    font-size: 10px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
-    border-radius: 4px;
-    margin-right: 1em;
-  }
+    .orderid {
+        margin: 0 1.6em;
+    }
+    .status-name {
+        margin-left: auto;
+        margin-right: 1em;
+    }
+    .free-book-tag {
+        display: inline-block;
+        padding: 0.05em 0.5em;
+        background-color: #5098fe56;
+        font-size: 10px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #333333;
+        border-radius: 4px;
+        margin-right: 1em;
+    }
 }
 
 .hotel,
 .train {
-  .frist-ion {
-    font-size: 10px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #666666;
-    border-bottom: 1px solid #eadcdc;
-    line-height: 22px;
-    .strong {
-      font: inherit;
+    .frist-ion {
+        font-size: 10px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #666666;
+        border-bottom: 1px solid #eadcdc;
+        line-height: 22px;
+        .strong {
+            font: inherit;
+        }
     }
-  }
-  .ion-img,
-  .ion-train {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    img {
-      width: 22px;
-      margin-top: 5px;
+    .ion-img,
+    .ion-train {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        img {
+            width: 22px;
+            margin-top: 5px;
+        }
     }
-  }
-  .payin {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+    .payin {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 }

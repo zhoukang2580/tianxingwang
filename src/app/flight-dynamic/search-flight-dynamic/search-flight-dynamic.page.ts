@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { of, Subscription } from 'rxjs';
@@ -15,13 +15,14 @@ import { FlightCityService } from 'src/app/flight/flight-city.service';
 import { ITripInfo } from 'src/app/international-flight/international-flight.service';
 import { CanComponentDeactivate } from 'src/app/guards/candeactivate.guard';
 import { StorageService } from 'src/app/services/storage-service.service';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 
 @Component({
   selector: 'app-search-flight-dynamic',
   templateUrl: './search-flight-dynamic.page.html',
   styleUrls: ['./search-flight-dynamic.page.scss'],
 })
-export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit,CanComponentDeactivate {
+export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit, CanComponentDeactivate {
   private textChange: EventEmitter<string>;
   searchConditionSubscription = Subscription.EMPTY;
   searchDynamicModel: SearchDynamicModule
@@ -46,7 +47,9 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
 
   private subscriptions: Subscription[] = [];
   flightno: "flightno" | "strip" = "flightno";
+  isFlightNum = true;
   showReturnTrip = true;
+  themeMode
   constructor(
     private flightDynamicService: FlightDynamicService,
     private calendarService: CalendarService,
@@ -54,9 +57,20 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     private staffService: HrService,
     private storage: StorageService,
     private router: Router,
-    private plt: Platform
+    private plt: Platform,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
+
   ) {
     this.isIos = plt.is("ios");
+    this.themeService.getModeSource().subscribe(m => {
+      this.themeMode=m;
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
 
   async ngOnInit() {
@@ -97,7 +111,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     console.log("on destroyed");
     this.searchConditionSubscription.unsubscribe();
   }
-  canDeactivate(){
+  canDeactivate() {
     if (this.flightDynamicService.isShowingPage) {
       this.flightDynamicService.onSelectCity({ isShowPage: false, isFrom: false });
       return false;
@@ -190,7 +204,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       isShowPage: true,
       isShowSegs: false,
       isShowHotCity: false
-      
+
     });
     if (rs) {
       const s = this.searchDynamicModel;
@@ -266,7 +280,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       Sequence: 22,
       // 出发城市，不是出发城市的那个机场
       Tag: "Airport",
-      
+
     } as TrafficlineEntity;
     const lastFromCity =
       (await this.storage
@@ -312,10 +326,12 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
 
   onFlightNumber() {
     this.flightno = 'flightno';
+    this.isFlightNum = !this.isFlightNum;
   }
 
   onLandingZone() {
     this.flightno = 'strip';
+    this.isFlightNum = !this.isFlightNum;
   }
 
   searchFlight(flightNo: string) {
@@ -339,7 +355,7 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
     if (delRepetition && this.fliNumber.trim().length > 0) {
       this.histroyList.unshift(this.fliNumber);
     }
-    this.histroyList = this.histroyList.slice(0,6);
+    this.histroyList = this.histroyList.slice(0, 6);
     this.fliNumber = '';
     this.router.navigate([AppHelper.getRoutePath("flight-dynamic-details")], {
       queryParams: { flightNo: flightNo }
@@ -358,13 +374,13 @@ export class SearchFlightDynamicPage implements OnInit, OnDestroy, AfterViewInit
       this.cagAirport = this.searchDynamicModel;
 
       const arrList = this.airportList.filter(it => it.fromCity.Nickname == this.cagAirport.fromCity.Nickname && it.toCity.Nickname == this.cagAirport.toCity.Nickname);
-      
-      if(!arrList.length){
+
+      if (!arrList.length) {
         this.airportList.push(this.cagAirport);
       }
-      
+
       console.log(this.airportList);
-      
+
       // this.removeDuplicate(this.airportList);
       s.Date = this.goDate.date;
       s.FromAirport = fromCode;

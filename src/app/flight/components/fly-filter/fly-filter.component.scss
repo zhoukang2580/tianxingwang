@@ -1,104 +1,112 @@
 ion-toggle {
-  --background-checked: rgba(var(--ion-color-secondary-rgb), 0.5);
-  // --handle-background     :red;
-  --handle-background-checked: var(--ion-color-secondary);
+    --background-checked: rgba(var(--ion-color-secondary-rgb), 0.5);
+    // --handle-background     :red;
+    --handle-background-checked: var(--ion-color-secondary);
 }
 
 form {
-  background-color: var(--ion-color-primary);
-  padding: 2em 0em 1em;
+    background-color: var(--ion-color-primary);
+    padding: 2em 0em 1em;
 }
 
 ion-toolbar {
-  // --background: var(--ion-color-light);
-  section {
-    display: flex;
-    align-items: center;
-
-    ion-button {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    // --background: var(--ion-color-light);
+    section {
+        display: flex;
+        align-items: center;
+        ion-button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     }
-  }
 }
 
 .search-cond {
-  // border-top: 0.8px solid rgba(var(--ion-color-dark-rgb), 0.12);
-  display: flex;
-  padding-top: 1px;
-
-  .left {
+    // border-top: 0.8px solid rgba(var(--ion-color-dark-rgb), 0.12);
     display: flex;
-    flex-flow: column nowrap;
-    justify-content: center;
-    // height: 45vh;
-    height: 208px;
-    overflow: auto;
-    padding-bottom: 1em;
-    .tab {
-      position: relative;
-      &.user-op::after {
-        position: absolute;
-        content: "";
-        display: block;
-        width: 0.5rem;
-        height: 0.5rem;
-        border-radius: 50%;
-        background: var(--ion-color-secondary);
-        right: 0.2rem;
-        top: 0.2rem;
-      }
-      flex: 1;
-      padding: 0.5rem;
-      padding-left: 1rem;
-
-      &.active {
-        background-color: white;
-      }
+    padding-top: 1px;
+    .left {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        // height: 45vh;
+        height: 208px;
+        overflow: auto;
+        padding-bottom: 1em;
+        .tab {
+            position: relative;
+            &.user-op::after {
+                position: absolute;
+                content: "";
+                display: block;
+                width: 0.5rem;
+                height: 0.5rem;
+                border-radius: 50%;
+                background: var(--ion-color-secondary);
+                right: 0.2rem;
+                top: 0.2rem;
+            }
+            flex: 1;
+            padding: 0.5rem;
+            padding-left: 1rem;
+            &.active {
+                background-color: white;
+            }
+        }
+        // .tab + .tab {
+        //   border-top: 0.8px solid rgba(var(--ion-color-dark-rgb), 0.12);
+        // }
     }
-
-    // .tab + .tab {
-    //   border-top: 0.8px solid rgba(var(--ion-color-dark-rgb), 0.12);
-    // }
-  }
-  .left,
-  .right {
-    background: #f5f5f5;
-    &::-webkit-scrollbar {
-      display: none;
+    .left,
+    .right {
+        background: #f5f5f5;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        -webkit-overflow-scrolling: touch;
     }
-    -webkit-overflow-scrolling: touch;
-  }
-  .right {
-    flex: 1;
-    position: sticky;
-    overflow: auto;
-    top: 0;
-    flex: 3;
-    max-height: 45vh;
-  }
+    .right {
+        flex: 1;
+        position: sticky;
+        overflow: auto;
+        top: 0;
+        flex: 3;
+        max-height: 45vh;
+    }
 }
+
 .non-stop {
-  padding: 0.5em;
-  display: flex;
-  align-items: center;
-  .c {
-    ion-toggle {
-      margin-right: 0;
-    }
+    padding: 0.5em;
     display: flex;
     align-items: center;
-    margin-right: 1em;
-  }
-}
-ion-footer {
-  padding: 0.5em;
-  ion-buttons {
-    justify-content: space-around;
-    ion-button {
-      flex: 1;
+    .c {
+        ion-toggle {
+            margin-right: 0;
+        }
+        display: flex;
+        align-items: center;
+        margin-right: 1em;
     }
-  }
+}
+
+ion-footer {
+    padding: 0.5em;
+    ion-buttons {
+        justify-content: space-around;
+        ion-button {
+            flex: 1;
+        }
+    }
+}
+
+:host.dark {
+    .search-cond .left,
+    .search-cond .right {
+        background-color: initial;
+    }
+    .search-cond .left .tab.active {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
 }

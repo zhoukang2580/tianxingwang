@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Component, ElementRef, OnDestroy, OnInit } from "@angular/core";
 import { Router, ActivatedRoute, NavigationEnd } from "@angular/router";
 import { Platform, ActionSheetController } from "@ionic/angular";
 import { Subscription, Observable } from "rxjs";
@@ -14,6 +14,7 @@ import { ConfigService } from "src/app/services/config/config.service";
 import { IdentityEntity } from "src/app/services/identity/identity.entity";
 import { IdentityService } from "src/app/services/identity/identity.service";
 import { LangService } from "src/app/services/lang.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 import { ProductItem, ProductItemType } from "src/app/tmc/models/ProductItems";
 import { TmcService } from "src/app/tmc/tmc.service";
 import { environment } from "src/environments/environment";
@@ -65,9 +66,19 @@ export class MyEnPage implements OnDestroy, OnInit {
     private route: ActivatedRoute,
     private messageService: MessageService,
     private staffService: HrService,
-    private actionSheetCtrl: ActionSheetController,
-    private langService: LangService
+    private langService:LangService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
+
   ) {
+    this.isIos = plt.is("ios");
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
     this.isIos = plt.is("ios");
     this.subscriptions.push(
       this.identityService.getIdentitySource().subscribe((identity) => {

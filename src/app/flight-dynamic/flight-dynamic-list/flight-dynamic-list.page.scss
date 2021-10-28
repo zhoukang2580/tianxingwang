@@ -5,7 +5,7 @@
 }
 
 .navigation {
-    background: #eee;
+    // background: #eee;
     position: sticky;
     top: 0;
     z-index: 1;
@@ -15,7 +15,7 @@
         display: flex;
         height: 40px;
         font-size: 12px;
-        color: #333;
+        // color: #333;
         li {
             list-style-type: none;
             flex: 1;
@@ -38,12 +38,12 @@
     .date {
         padding-right: 20px;
         font-size: 1.2rem;
-        color: #333333;
+        // color: #333333;
     }
 }
 
 .list {
-    background: #fff;
+    // background: #fff;
     .item {
         border-bottom: 1px solid #988c8c;
         ul {
