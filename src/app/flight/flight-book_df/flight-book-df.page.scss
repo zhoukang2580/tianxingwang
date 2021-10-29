@@ -564,7 +564,7 @@ ion-footer {
 
 :host.dark {
     .section {
-        background-color: initial;
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
         .c-name,
         .c-num {
             color: var(--ion-text-color);
@@ -610,6 +610,18 @@ ion-footer {
     ion-footer {
         background: initial;
         .detail {
+            color: var(--ion-text-color);
+        }
+    }
+    .translate {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    .transfrom {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+        .name-num {
+            color: var(--ion-text-color);
+        }
+        .spacebetween {
             color: var(--ion-text-color);
         }
     }

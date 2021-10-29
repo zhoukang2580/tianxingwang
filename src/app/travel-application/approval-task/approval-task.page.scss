@@ -196,3 +196,15 @@ p.h_line_mini {
     font-size: 14px;
     color: #716161;
 }
+
+:host.dark {
+    .tabbar {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    .section div {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+    .h_line {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
+}

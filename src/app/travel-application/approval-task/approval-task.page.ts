@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy, ElementRef } from "@angular/core";
 import { OrderService } from "src/app/order/order.service";
 import { TaskEntity } from "src/app/workflow/models/TaskEntity";
 import { Subscription } from "rxjs";
@@ -16,6 +16,7 @@ import { OrderStatusType } from "src/app/order/models/OrderEntity";
 import { TaskModel } from "src/app/order/models/TaskModel";
 import { TaskStatusType } from "src/app/workflow/models/TaskStatusType";
 import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
+import { ThemeService } from "src/app/services/theme/theme.service";
 
 @Component({
   selector: "app-approval-tack",
@@ -50,8 +51,18 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
     private orderService: OrderService,
     private identityService: IdentityService,
     private router: Router,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
+  ) {
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
+  }
 
   ngOnInit() {
     this.queryparamSub = this.route.queryParamMap.subscribe((q) => {
@@ -126,13 +137,11 @@ export class ApprovalTaskPage implements OnInit, OnDestroy {
       .catch((_) => null);
     let url = this.getTaskUrl(task);
     if (url?.includes("?")) {
-      url = `${url}&taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}&taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     } else {
-      url = `${url}?taskid=${task.Id}&ticket=${
-        (identity && identity.Ticket) || ""
-      }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
+      url = `${url}?taskid=${task.Id}&ticket=${(identity && identity.Ticket) || ""
+        }&isApp=true&lang=${AppHelper.getLanguage() || ""}`;
     }
     return url;
   }
