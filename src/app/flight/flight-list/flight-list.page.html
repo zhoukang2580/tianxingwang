@@ -74,16 +74,20 @@
   <app-or-comp *ngIf='!isLoading&&vmFlights?.length==0'>
     <div [innerHtml]='getNoMoreDataDesc()'></div>
   </app-or-comp>
-  <ion-list>
+  <ion-list lines='none'>
     <ul class='flight recomend' *ngIf='lowestPriceSegments?.length==1'>
-      <li *ngFor='let s of lowestPriceSegments' class='lowest-item' (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item-df [segment]='s' [isRecomendSegment]='true'>
-        </app-flight-segment-item-df>
-      </li>
+      <ion-item>
+        <li *ngFor='let s of lowestPriceSegments' class='lowest-item' (click)='goToFlightCabinsDetails(s)'>
+          <app-flight-segment-item-df [segment]='s' [isRecomendSegment]='true'>
+          </app-flight-segment-item-df>
+        </li>
+      </ion-item>
     </ul>
     <ul class='flight'>
       <li *ngFor='let s of vmFlights; trackBy:trackById' #fli (click)='goToFlightCabinsDetails(s)'>
-        <app-flight-segment-item-df [segment]='s'></app-flight-segment-item-df>
+        <ion-item>
+          <app-flight-segment-item-df [segment]='s'></app-flight-segment-item-df>
+        </ion-item>
       </li>
     </ul>
   </ion-list>

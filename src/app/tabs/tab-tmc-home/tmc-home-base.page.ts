@@ -1,5 +1,4 @@
 import { MemberService, MemberCredential } from "../../member/member.service";
-import { NavController, IonSlides } from "@ionic/angular";
 import { FlightService } from "src/app/flight/flight.service";
 import { HotelService } from "../../hotel/hotel.service";
 import { TrainService } from "src/app/train/train.service";
@@ -12,7 +11,6 @@ import { ApiService } from "../../services/api/api.service";
 import { AppHelper } from "src/app/appHelper";
 import Swiper from "swiper";
 import {
-  Component,
   OnInit,
   OnDestroy,
   ElementRef,
@@ -20,7 +18,7 @@ import {
   AfterViewInit,
   Directive,
 } from "@angular/core";
-import { Observable, Subject, BehaviorSubject, Subscription } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { ActivatedRoute, Router } from "@angular/router";
 import { PayService } from "src/app/services/pay/pay.service";
 import { TmcService } from "src/app/tmc/tmc.service";
@@ -35,8 +33,6 @@ import { LangService } from "src/app/services/lang.service";
 import { ProductItem } from "src/app/tmc/models/ProductItems";
 import { MapService } from "src/app/services/map/map.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
-import { AgentEntity } from "src/app/tmc/models/AgentEntity";
-import { OpenUrlComponent } from "src/app/pages/components/open-url-comp/open-url.component";
 import { QrScanService } from "src/app/services/qrScan/qrscan.service";
 import { ThemeService } from "src/app/services/theme/theme.service";
 @Directive()
