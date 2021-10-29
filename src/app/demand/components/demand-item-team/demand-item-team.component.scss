@@ -1,112 +1,125 @@
 .list {
-  margin: 10px;
-  border-radius: 10px;
-  .container {
-    line-height: 3.3;
-    padding-left: 1.5em;
-  }
-  .info {
-    font-size: 20px;
-    font-family: PingFang SC;
-    font-weight: bold;
-    color: #333333;
-  }
-  .footer {
-    line-height: 2;
-  }
-  ion-item {
-    --padding-start: 0;
-    ion-radio {
-      margin: 8px;
+    margin: 10px;
+    border-radius: 10px;
+    .container {
+        line-height: 3.3;
+        padding-left: 1.5em;
     }
-  }
-  .item {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    .label {
-      font-size: 15px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      color: #333333;
-      min-width: 5em;
+    .info {
+        font-size: 20px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #333333;
     }
-
-    label {
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      margin-right: 13px;
-      input {
-        margin-right: 12px;
-      }
+    .footer {
+        line-height: 2;
     }
-    .main {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      line-height: 1.5;
-      ion-datetime {
-        width: 100%;
-        --padding-bottom: 0;
-        --padding-end: 0;
+    ion-item {
         --padding-start: 0;
-        --padding-top: 0;
-      }
-      ion-input {
-        font-size: 15px;
-        max-width: 13.5em;
-      }
-      ion-select {
-        --padding-bottom: 0;
-        --padding-top: 0;
-        --padding-start: 0;
-      }
+        ion-radio {
+            margin: 8px;
+        }
     }
-
-    .more {
-      justify-content: flex-end;
-      margin-right: 1.7em;
-      font-size: 15px;
+    .item {
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #e0e0e0;
+        .label {
+            font-size: 15px;
+            font-family: PingFang SC;
+            font-weight: 500;
+            color: #333333;
+            min-width: 5em;
+        }
+        label {
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            margin-right: 13px;
+            input {
+                margin-right: 12px;
+            }
+        }
+        .main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            line-height: 1.5;
+            ion-datetime {
+                width: 100%;
+                --padding-bottom: 0;
+                --padding-end: 0;
+                --padding-start: 0;
+                --padding-top: 0;
+            }
+            ion-input {
+                font-size: 15px;
+                max-width: 13.5em;
+            }
+            ion-select {
+                --padding-bottom: 0;
+                --padding-top: 0;
+                --padding-start: 0;
+            }
+        }
+        .more {
+            justify-content: flex-end;
+            margin-right: 1.7em;
+            font-size: 15px;
+        }
+        ion-icon {
+            font-size: 18px;
+            margin-left: auto;
+            padding-right: 1em;
+        }
+        ion-text {
+            min-width: 13.9em;
+            font-size: 15px;
+        }
     }
-
-    ion-icon {
-      font-size: 18px;
-      margin-left: auto;
-      padding-right: 1em;
-    }
-    ion-text {
-      min-width: 13.9em;
-      font-size: 15px;
-    }
-  }
 }
+
 ion-select {
-  --padding-bottom: 0;
-  --padding-top: 0;
-  --padding-start: 0;
+    --padding-bottom: 0;
+    --padding-top: 0;
+    --padding-start: 0;
 }
+
 .group {
-  display: flex;
-  height: 3em;
+    display: flex;
+    height: 3em;
 }
 
 .ion-footer {
-  display: flex;
-  align-items: center;
-  justify-items: center;
-  background: #fff;
-  bottom: 10px;
-  width: 100%;
-  .btn_container {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-items: center;
+    background: #fff;
+    bottom: 10px;
     width: 100%;
-    .ion-top {
-      --border-radius: 20px;
-      width: 90%;
-      height: 2.5rem;
+    .btn_container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        .ion-top {
+            --border-radius: 20px;
+            width: 90%;
+            height: 2.5rem;
+        }
     }
-  }
+}
+
+:host.dark {
+    .list {
+        .info {
+            color: var(--ion-text-color);
+        }
+        .item .label {
+            color: var(--ion-text-color);
+        }
+    }
+    .ion-footer {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
 }

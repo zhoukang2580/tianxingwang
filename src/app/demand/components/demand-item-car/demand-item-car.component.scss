@@ -1,157 +1,171 @@
 .list {
-  margin: 10px;
-  border-radius: 10px;
-  ion-list {
-    border-bottom: 1px solid #e0e0e0;
-    margin-left: 24px;
-  }
-  .item {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    margin-left: 1.5em;
-    line-height: 3;
-    ion-input {
-      font-size: 15px;
-      --padding-top: 0;
-      --padding-end: 0;
-      --padding-bottom: 0;
+    margin: 10px;
+    border-radius: 10px;
+    ion-list {
+        border-bottom: 1px solid #e0e0e0;
+        margin-left: 24px;
     }
-    ion-datetime {
-      --padding-top: 0px;
-      --padding-end: 30px;
-      --padding-bottom: 0px;
-      --padding-start: 0px;
-      max-width: initial;
-    }
-    label {
-      font-size: 15px;
-      display: flex;
-      align-items: center;
-      margin-right: 13px;
-      input {
-        margin-right: 12px;
-      }
-    }
-
-    .main {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      ion-input {
-        font-size: 15px;
-        --padding-top: 0;
-        --padding-end: 0;
-        --padding-bottom: 0;
-      }
-      .custom-options {
-        --padding-top: 0px;
-        --padding-end: 10px;
-        --padding-bottom: 0px;
-        --padding-start: 0px;
-      }
-    }
-    ion-icon {
-      font-size: 18px;
-      margin-left: auto;
-      padding-right: 1em;
-    }
-
-    .left {
-      flex: 1;
-      .label {
-        font-size: 11px;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #666666;
-        min-width: 7em;
+    .item {
         display: flex;
         align-items: center;
-        height: 25px;
-      }
-      .address {
+        border-bottom: 1px solid #e0e0e0;
+        margin-left: 1.5em;
+        line-height: 3;
+        ion-input {
+            font-size: 15px;
+            --padding-top: 0;
+            --padding-end: 0;
+            --padding-bottom: 0;
+        }
+        ion-datetime {
+            --padding-top: 0px;
+            --padding-end: 30px;
+            --padding-bottom: 0px;
+            --padding-start: 0px;
+            max-width: initial;
+        }
+        label {
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            margin-right: 13px;
+            input {
+                margin-right: 12px;
+            }
+        }
+        .main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            ion-input {
+                font-size: 15px;
+                --padding-top: 0;
+                --padding-end: 0;
+                --padding-bottom: 0;
+            }
+            .custom-options {
+                --padding-top: 0px;
+                --padding-end: 10px;
+                --padding-bottom: 0px;
+                --padding-start: 0px;
+            }
+        }
+        ion-icon {
+            font-size: 18px;
+            margin-left: auto;
+            padding-right: 1em;
+        }
+        .left {
+            flex: 1;
+            .label {
+                font-size: 11px;
+                font-family: PingFang SC;
+                font-weight: 500;
+                color: #666666;
+                min-width: 7em;
+                display: flex;
+                align-items: center;
+                height: 25px;
+            }
+            .address {
+                display: flex;
+                min-width: 36vh;
+            }
+            .yellow,
+            .green {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
+            .yellow {
+                background: chocolate;
+            }
+            .green {
+                background: green;
+            }
+        }
+    }
+    .time {
         display: flex;
-        min-width: 36vh;
-      }
-      .yellow,
-      .green {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-right: 10px;
-      }
-      .yellow {
-        background: chocolate;
-      }
-      .green {
-        background: green;
-      }
+        justify-content: space-between;
+        align-items: center;
+        margin-left: 1.5em;
+        line-height: 2.2;
+        border-bottom: 1px solid #e0e0e0;
+        .left,
+        .right {
+            display: grid;
+        }
+        .up {
+            font-size: 18px;
+        }
+        .down {
+            font-size: 14px;
+            color: #666666;
+        }
+        .a {
+            justify-content: flex-end;
+        }
     }
-  }
-  .time {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-left: 1.5em;
-    line-height: 2.2;
-    border-bottom: 1px solid #e0e0e0;
-    .left,
-    .right {
-      display: grid;
+    .department {
+        margin-right: 15px;
     }
-    .up {
-      font-size: 18px;
-    }
-    .down {
-      font-size: 14px;
-      color: #666666;
-    }
-    .a {
-      justify-content: flex-end;
-    }
-  }
+}
 
-  .department {
-    margin-right: 15px;
-  }
-}
 ion-select {
-  --padding-bottom: 0;
-  --padding-top: 0;
-  --padding-start: 0;
+    --padding-bottom: 0;
+    --padding-top: 0;
+    --padding-start: 0;
 }
+
 ion-segment {
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-.ion-footer {
-  display: flex;
-  align-items: center;
-  justify-items: center;
-  background: #fff;
-  .btn_container {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    .ion-top {
-      --border-radius: 20px;
-      width: 90%;
-      height: 2.5rem;
+    &::-webkit-scrollbar {
+        display: none;
     }
-  }
+}
+
+.ion-footer {
+    display: flex;
+    align-items: center;
+    justify-items: center;
+    background: #fff;
+    .btn_container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        .ion-top {
+            --border-radius: 20px;
+            width: 90%;
+            height: 2.5rem;
+        }
+    }
 }
 
 .group {
-  display: flex;
-  height: 3.4em;
-  ion-radio {
-    margin-right: 0.5em;
-  }
+    display: flex;
+    height: 3.4em;
+    ion-radio {
+        margin-right: 0.5em;
+    }
 }
 
 .date,
 .address {
-  min-width: 6.5em;
+    min-width: 6.5em;
+}
+
+:host.dark {
+    .list {
+        .info {
+            color: var(--ion-text-color);
+        }
+        .item .label {
+            color: var(--ion-text-color);
+        }
+    }
+    .ion-footer {
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
+    }
 }

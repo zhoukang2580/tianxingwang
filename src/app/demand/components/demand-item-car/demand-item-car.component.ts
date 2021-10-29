@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import { MapService } from "src/app/services/map/map.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import {
   CarType,
@@ -41,9 +42,18 @@ export class DemandItemCarComponent implements OnInit {
   demandCarType: CarType;
   constructor(
     private demandService: DemandService,
-    private mapService: MapService
+    private mapService: MapService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
   ) {
     this.demandCar = new EventEmitter();
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
 
   private seition;

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
 import {
   FlightService,
@@ -7,6 +7,7 @@ import {
 import { HotelCityService } from "src/app/hotel/hotel-city.service";
 import { HotelService } from "src/app/hotel/hotel.service";
 import { MapService } from "src/app/services/map/map.service";
+import { ThemeService } from "src/app/services/theme/theme.service";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import {
   DemandService,
@@ -27,9 +28,18 @@ export class DemandItemTeamComponent implements OnInit {
   constructor(
     private apiservice: DemandService,
     private calendarService: CalendarService,
-    private demandService: DemandService // private mapService: MapService
+    private demandService: DemandService, // private mapService: MapService
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
   ) {
     this.demandTeam = new EventEmitter();
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
 
   ngOnInit() {

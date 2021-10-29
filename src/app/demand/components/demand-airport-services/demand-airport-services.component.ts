@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from "@angular/core";
 import { AppHelper } from "src/app/appHelper";
+import { ThemeService } from "src/app/services/theme/theme.service";
 import { CalendarService } from "src/app/tmc/calendar.service";
 import { TrafficlineEntity } from "src/app/tmc/models/TrafficlineEntity";
 import { DemandAirportServiceModel, DemandService } from "../../demand.service";
@@ -17,9 +18,18 @@ export class DemandAirportServicesComponent implements OnInit {
   airport: TrafficlineEntity;
   constructor(
     private calendarService: CalendarService,
-    private demandService: DemandService
+    private demandService: DemandService,
+    private refEle:ElementRef<HTMLElement>,
+    private themeService:ThemeService,
   ) {
     this.demandAirport = new EventEmitter();
+    this.themeService.getModeSource().subscribe(m=>{
+      if(m=='dark'){
+        this.refEle.nativeElement.classList.add("dark")
+      }else{
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
 
   ngOnInit() {

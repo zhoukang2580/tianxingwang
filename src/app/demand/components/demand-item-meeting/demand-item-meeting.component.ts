@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 import { DemandTourModel } from '../../demand.service';
 
 @Component({
@@ -10,8 +11,18 @@ import { DemandTourModel } from '../../demand.service';
 export class DemandItemMeetingComponent implements OnInit {
   @Input() demandTourModel: DemandTourModel;
   @Output() demandTour: EventEmitter<any>;
-  constructor() {
+  constructor(
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
+  ) {
     this.demandTour = new EventEmitter();
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
 
   ngOnInit() {
@@ -22,16 +33,16 @@ export class DemandItemMeetingComponent implements OnInit {
   }
   onSubmit() {
     try {
-      if(this.demandTourModel){
-        if(!this.demandTourModel.MeetingType){
+      if (this.demandTourModel) {
+        if (!this.demandTourModel.MeetingType) {
           AppHelper.alert("请输入会议类型");
           return;
         }
-        if(!this.demandTourModel.LiaisonName){
+        if (!this.demandTourModel.LiaisonName) {
           AppHelper.alert("请输入联系人");
           return;
         }
-        if(!this.demandTourModel.LiaisonPhone){
+        if (!this.demandTourModel.LiaisonPhone) {
           AppHelper.alert("请输入联系电话");
           return;
         }
@@ -41,12 +52,12 @@ export class DemandItemMeetingComponent implements OnInit {
           return;
         }
 
-        if(!this.demandTourModel.CompanyName){
+        if (!this.demandTourModel.CompanyName) {
           AppHelper.alert("请输入公司名称");
           return;
         }
 
-        if(!this.demandTourModel.CompanyEmail){
+        if (!this.demandTourModel.CompanyEmail) {
           AppHelper.alert("请输入公司邮箱");
           return;
         }
@@ -57,7 +68,7 @@ export class DemandItemMeetingComponent implements OnInit {
           return;
         }
 
-        if(!this.demandTourModel.Remarks){
+        if (!this.demandTourModel.Remarks) {
           AppHelper.alert("请输入备注");
           return;
         }

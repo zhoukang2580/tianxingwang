@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { AppHelper } from 'src/app/appHelper';
 import { LanguageHelper } from 'src/app/languageHelper';
+import { ThemeService } from 'src/app/services/theme/theme.service';
 import { SelectCountryModalComponent } from 'src/app/tmc/components/select-country/select-countrymodal.component';
 import { CountryEntity } from 'src/app/tmc/models/CountryEntity';
 import { DemandService, DemandVisaModel } from '../../demand.service';
@@ -12,47 +13,55 @@ import { DemandSearchComponent } from '../demand-search/demand-search.component'
   styleUrls: ['./demand-item-visa.component.scss'],
 })
 export class DemandItemVisaComponent implements OnInit {
-
   private requestCode:
     | "issueNationality"
     | "identityNationality"
     | "birthDate"
     | "expireDate";
-  @Input() demandVisaModel:DemandVisaModel;
+  @Input() demandVisaModel: DemandVisaModel;
   @Output() demandVisa: EventEmitter<any>;
   constructor(
-    private demandService:DemandService
-  ) { 
+    private demandService: DemandService,
+    private refEle: ElementRef<HTMLElement>,
+    private themeService: ThemeService,
+  ) {
     this.demandVisa = new EventEmitter();
+    this.themeService.getModeSource().subscribe(m => {
+      if (m == 'dark') {
+        this.refEle.nativeElement.classList.add("dark")
+      } else {
+        this.refEle.nativeElement.classList.remove("dark")
+      }
+    })
   }
 
   ngOnInit() {
     this.demandVisaModel = {} as any;
   }
 
-  onSubmit(){
+  onSubmit() {
     try {
-      if(this.demandVisaModel){
-        if(!this.demandVisaModel.VisaType){
-        AppHelper.alert("请输入签证类型");
-        return;
+      if (this.demandVisaModel) {
+        if (!this.demandVisaModel.VisaType) {
+          AppHelper.alert("请输入签证类型");
+          return;
         }
-        if(!this.demandVisaModel.LiaisonName){
-        AppHelper.alert("请输入联系人");
-        return;
+        if (!this.demandVisaModel.LiaisonName) {
+          AppHelper.alert("请输入联系人");
+          return;
         }
-        if(!this.demandVisaModel.LiaisonPhone){
-        AppHelper.alert("请输入联系电话");
-        return;
+        if (!this.demandVisaModel.LiaisonPhone) {
+          AppHelper.alert("请输入联系电话");
+          return;
         }
         const reg = /^1(3|4|5|6|7|8|9)\d{9}$/;
         if (!(reg.test(this.demandVisaModel.LiaisonPhone))) {
           AppHelper.alert("电话格式不正确");
           return;
         }
-        if(!this.demandVisaModel.Email){
-        AppHelper.alert("请输入邮箱");
-        return;
+        if (!this.demandVisaModel.Email) {
+          AppHelper.alert("请输入邮箱");
+          return;
         }
 
         const reg1 = /^\w+@[a-z0-9]+(\.[a-z]+){1,3}$/g;
@@ -60,24 +69,24 @@ export class DemandItemVisaComponent implements OnInit {
           AppHelper.alert("邮箱格式不正确");
           return;
         }
-        
-        if(!this.demandVisaModel.Destination){
-        AppHelper.alert("请输入国家地区");
-        return;
+
+        if (!this.demandVisaModel.Destination) {
+          AppHelper.alert("请输入国家地区");
+          return;
         }
-        if(!this.demandVisaModel.WorkPlace){
-        AppHelper.alert("请输入工作地");
-        return;
+        if (!this.demandVisaModel.WorkPlace) {
+          AppHelper.alert("请输入工作地");
+          return;
         }
-        if(!this.demandVisaModel.Remarks){
-        AppHelper.alert("请输入备注");
-        return;
+        if (!this.demandVisaModel.Remarks) {
+          AppHelper.alert("请输入备注");
+          return;
         }
       }
     } catch (e) {
-      
+
     }
-    this.demandVisa.emit({demandVisaModel:this.demandVisaModel});
+    this.demandVisa.emit({ demandVisaModel: this.demandVisaModel });
   }
 
   async onSelectCountry() {
