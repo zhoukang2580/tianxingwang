@@ -13,7 +13,7 @@ import { OrderTravelPayType } from "../order/models/OrderTravelEntity";
 import { StaffEntity } from "../hr/hr.service";
 import { CredentialsEntity } from "./models/CredentialsEntity";
 import { TrafficlineEntity } from "./models/TrafficlineEntity";
-import {getFullChars} from "js-pinyin";
+import { getFullChars } from "js-pinyin";
 import * as moment from "moment";
 import { InsuranceProductEntity } from "../insurance/models/InsuranceProductEntity";
 import { PayService } from "../services/pay/pay.service";
@@ -40,6 +40,7 @@ import { TimeoutTipComponent } from "./components/timeout-tip/timeout-tip.compon
 import { FlightSegmentEntity } from "../flight-gp/models/flight/FlightSegmentEntity";
 import { FlightCabinEntity } from "../flight-gp/models/flight/FlightCabinEntity";
 import { StorageService } from "../services/storage-service.service";
+import { ConfigService } from "../services/config/config.service";
 export const KEY_HOME_AIRPORTS = `ApiHomeUrl-Resource-Airport`;
 export const KEY_INTERNATIONAL_AIRPORTS = `ApiHomeUrl-Resource-InternationalAirport`;
 interface SelectItem {
@@ -87,7 +88,8 @@ export class TmcService {
     private identityService: IdentityService,
     private payService: PayService,
     private platform: Platform,
-    private memberService: MemberService
+    private memberService: MemberService,
+    private configService: ConfigService
   ) {
     this.selectedCompanySource = new BehaviorSubject(null);
     this.identityService.getIdentitySource().subscribe((id) => {
@@ -463,8 +465,7 @@ export class TmcService {
     let local = await this.storage.get(req.Method);
     if (
       (local && !forceUpdate) ||
-      (local &&
-        AppHelper.getTimestamp() - local.lastUpdateTime >= 12 * 3600)
+      (local && AppHelper.getTimestamp() - local.lastUpdateTime >= 12 * 3600)
     ) {
       return local.countries as CountryEntity[];
     }
@@ -1066,6 +1067,12 @@ export class TmcService {
             LogoFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`,
             LogoFullFileName: r.Agent.LogoUrl || `assets/images/Logodm.png`,
           };
+          this.configService.getConfigAsync().then((c) => {
+            if (c && this.agent.LogoUrl) {
+              (c.LogoImageUrl = this.agent.LogoUrl),
+                (c.PrerenderImageUrl = AppHelper.getDefaultLoadingImage());
+            }
+          });
           return this.agent;
         }
         return r.Agent;
