@@ -1,3 +1,14 @@
 .MsoNormal {
     padding: 0 10px;
+    letter-spacing: 0.1em;
+}
+
+:host.dark {
+    .MsoNormal {
+        color: var(--ion-text-color);
+    }
+    b,
+    strong {
+        color: var(--ion-text-color);
+    }
 }
