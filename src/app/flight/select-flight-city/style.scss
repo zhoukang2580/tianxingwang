@@ -1,4 +1,8 @@
 .flight-city-page-container {
+--background: var(
+    --ion-toolbar-background,
+    var(--ion-background-color, #fff)
+  );
   padding-top: var(--ion-safe-area-top);
   transform: translate3d(100%, 0, 0);
   transition: all ease-in-out 200ms;
@@ -8,7 +12,7 @@
   overflow-y: auto;
   width: 100%;
   top: 0;
-  background-color: white;
+  background-color: var(--background);
   // z-index: 1000;
   &.show {
     transform: translate3d(0, 0, 0);
@@ -23,6 +27,7 @@
   .item {
     margin: 0;
     padding: 0.5em 1em;
+    color: var(--ion-text-color);
   }
   .list .item {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
@@ -39,7 +44,7 @@
   }
   .list .letter-header {
     font-weight: bolder;
-    background-color: #eee;
+    background-color: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.07);
     height: 20px;
     padding: 0 0.6em;
     position: static;
@@ -48,7 +53,7 @@
       font-size: 14px;
       font-family: PingFang SC;
       font-weight: 500;
-      color: #333333;
+      color: var(--ion-text-color);
     }
   }
   .letters-wrapper {
@@ -104,6 +109,8 @@
     padding: 0 0.5em 0 0.5em;
   }
   .header {
+    background-color: var(--ion-background-color);
+    color: var(--ion-text-color);
     height: 44px;
     display: flex;
     align-items: center;
@@ -117,6 +124,7 @@
       font-size: 1.5rem;
       opacity: 0.8;
       margin: 0 0.2em;
+      color: var(--ion-text-color);
     }
     .back-icon {
       font-size: 1.5rem;
@@ -141,6 +149,7 @@
     align-items: center;
     border-bottom: 1px solid #e5e5e5;
     .segment {
+      color: var(--ion-color-medium);
       position: relative;
       &.active {
         label {
@@ -195,14 +204,15 @@
       flex-basis: 100px;
       width: 100px;
       height: 112%;
-      background: #f1f1f1;
+      // background: #f1f1f1;
+      color: var(--ion-text-color);
       max-height: 102%;
       overflow: auto;
       overflow-x: hidden;
       .tab {
         padding: 1em;
         &.active {
-          background: #ffffff;
+          background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.07);
           color: var(--ion-color-secondary, #5099fe);
         }
       }
@@ -252,6 +262,7 @@
     align-items: stretch;
     margin: 0.5em;
     min-height: 35px;
+    color: var(--ion-text-color);
     &.full-w {
       width: 100%;
     }
@@ -277,7 +288,7 @@
         max-width: 31.333%;
       }
       font-size: 14px;
-      background: #f6f6f6;
+      background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.07);
       border-radius: 3px;
       padding: 0.5em 0.1em;
       border-radius: 3px;
@@ -340,6 +351,8 @@
     transform: translate3d(0, 0, 0);
   }
   .item {
+    color: var(--ion-text-color);
+    background: rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.07);
     padding: 0.5em 1em;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
     .city-name {
