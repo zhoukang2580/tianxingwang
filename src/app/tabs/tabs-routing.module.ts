@@ -42,13 +42,6 @@ const routes: Routes = [
           ),
       },
       {
-        path: "home_en",
-        loadChildren: () =>
-          import("./tab-home_en/home_en.module").then(
-            (m) => m.HomeEnPageModule
-          ),
-      },
-      {
         path: "my",
         loadChildren: () =>
           import("./tab-my_df/my_df.module").then((m) => m.MyPageDfModule),
