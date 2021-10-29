@@ -9,7 +9,7 @@
         <ion-thumbnail>
             <img [src]="entry.icon" alt="logo">
         </ion-thumbnail>
-        <ion-label class='ion-text-wrap'>{{entry.label}}</ion-label>
+        <ion-label class='ion-text-wrap'>{{entry.label}}<ng-container *ngIf='entry.id'>({{entry.id}})</ng-container></ion-label>
         <ion-checkbox #cbox slot="end" [(ngModel)]='entry.isChecked'  (ionChange)='onionChange()'>
         </ion-checkbox>
     </ion-item>

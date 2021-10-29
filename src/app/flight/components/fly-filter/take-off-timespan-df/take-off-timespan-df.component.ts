@@ -65,7 +65,7 @@ export class TakeOffTimeSpanDfComponent implements OnInit, AfterViewInit {
   ngOnDestroy() {}
   ngAfterViewInit() {}
   onionChange(evt?: CustomEvent) {
-    console.log(evt);
+    // console.log(evt);
     let arr = [];
     if (evt.detail && evt.detail.value == "unlimit") {
       this.filterCondition.takeOffTimeSpan.lower = 0;

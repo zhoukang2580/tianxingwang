@@ -312,7 +312,7 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
           this.banners = res || [];
           setTimeout(() => {
             this.updateBannerSwiper();
-          }, 2000);
+          }, 200);
         })
         .finally(() => {
           this.isLoadingBanners = false;
@@ -383,8 +383,8 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
       const str = `${d > 0 ? d + "天" : ""}${
         d > 0 ? h + "小时" : h > 0 ? h + "小时" : ""
       }${mm > 0 ? mm + "分钟" : ""}${this.getHHMM(ss)}秒`;
-      if(AppHelper.getLanguage()=='en'){
-        return str.replace("小时",'h').replace("分钟",'m').replace("秒",'s')
+      if (AppHelper.getLanguage() == "en") {
+        return str.replace("小时", "h").replace("分钟", "m").replace("秒", "s");
       }
       return str;
     }
@@ -497,10 +497,10 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async goToDetail(id) {
-    const ok=await this.tmcService.hasBookRight("hotel");
-    if(!ok){
+    const ok = await this.tmcService.hasBookRight("hotel");
+    if (!ok) {
       const msg = "您没有预订权限";
-      AppHelper.alert(msg)
+      AppHelper.alert(msg);
       return;
     }
     this.hotelService.RoomDefaultImg = this.recommendHotelDefaultImg;
@@ -513,7 +513,9 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
     return task && (task.HandleUrl || task.Url);
   }
 
-  ngAfterViewInit() {}
+  ngAfterViewInit() {
+    this.initSwiper();
+  }
   private destroySwiper() {
     if (this.bannersSwiper) {
       this.bannersSwiper.destroy();
@@ -539,6 +541,10 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initSwiperhotels() {
+    if (this.hotelsSwiper) {
+      this.hotelsSwiper.update();
+      return;
+    }
     if (this.hothotelEl && this.hothotelEl.nativeElement) {
       this.hotelsSwiper = new Swiper(this.hothotelEl.nativeElement, {
         autoplay: {
@@ -559,6 +565,10 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
     // this.initTaskSpwiper();
   }
   private initBannerSwiper() {
+    if (this.bannersSwiper) {
+      this.bannersSwiper.update();
+      return;
+    }
     if (this.bannersEl && this.bannersEl.nativeElement) {
       this.bannersSwiper = new Swiper(this.bannersEl.nativeElement, {
         autoplay: {
@@ -572,6 +582,10 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
   private initTripSpwiper() {
+    if (this.tripEleSwiper) {
+      this.tripEleSwiper.update();
+      return;
+    }
     const mySwiper: any = {
       loop: true,
       autoplay: {
@@ -585,6 +599,10 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private initAnnouncementSwiper() {
+    if (this.announcementElSwiper) {
+      this.announcementElSwiper.update();
+      return;
+    }
     const options: any = {
       autoplay: {
         disableOnInteraction: false,
