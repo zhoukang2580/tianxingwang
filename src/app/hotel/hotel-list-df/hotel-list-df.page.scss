@@ -112,7 +112,7 @@ ul {
 
 :host.dark {
     .hotel-query-wrapper {
-        background-color: initial;
+        background-color: var(--ion-item-background, var(--ion-background-color, #fff));
     }
     .segments-wrapper {
         background: initial;
