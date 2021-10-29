@@ -132,7 +132,7 @@ ng serve --disableHostCheck
 2. 执行`ionic cordova build android --prod --release` 生成 android apk
 3. 如果编译出错，试试删除android 平台，然后重新添加
     `ionic cordova platform rm android ` , `ionic cordova platform add android`
-
+4. 如果需要重新生成启动页面和图标，执行 `ionic cordova resources -f `
 
 ## 判断是否是测试库
 1. mockProBuild: true （测试库）
