@@ -500,7 +500,13 @@ export class TmcHomeBasePage implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  goToDetail(id) {
+  async goToDetail(id) {
+    const ok=await this.tmcService.hasBookRight("hotel");
+    if(!ok){
+      const msg = "您没有预订权限";
+      AppHelper.alert(msg)
+      return;
+    }
     this.hotelService.RoomDefaultImg = this.recommendHotelDefaultImg;
     this.router.navigate([AppHelper.getRoutePath("hotel-detail")], {
       queryParams: { hotelId: id },

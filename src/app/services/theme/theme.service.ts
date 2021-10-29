@@ -20,7 +20,7 @@ export class ThemeService {
   ) {
     this.modeSource = new BehaviorSubject(this.mode || ("" as any));
     this.initMode();
-    this.toggleDarkTheme(true)
+    // this.toggleDarkTheme(true)
   }
   private async initMode() {
     const prefersDark = window.matchMedia(`(prefers-color-scheme: dark)`);
