@@ -1,9 +1,9 @@
 export const CONFIG = {
   // 该变量用于 启用 --prod 编译，若为true，访问的是测试库的地址，否则访问生产地址
-  mockProBuild: !true,
+  mockProBuild: true,
   isShowPrivacy: true,
   production: true,
-  isShowVConsole:false&&!!window["cordova"],
+  isShowVConsole:!!window["cordova"],
   isForWechatMiniApproval: false,
   isEnableTranslate: true,
   defaultStyle: "df",
